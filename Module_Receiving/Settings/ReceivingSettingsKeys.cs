@@ -267,13 +267,8 @@ public static class ReceivingSettingsKeys
 
     public static class Defaults
     {
-        public const string DefaultPackageType = "Receiving.Defaults.DefaultPackageType";
-        public const string DefaultPackagesPerLoad = "Receiving.Defaults.DefaultPackagesPerLoad";
-        public const string DefaultWeightPerPackage = "Receiving.Defaults.DefaultWeightPerPackage";
-        public const string DefaultUnitOfMeasure = "Receiving.Defaults.DefaultUnitOfMeasure";
-        public const string DefaultLocation = "Receiving.Defaults.DefaultLocation";
-        public const string DefaultLoadNumberPrefix = "Receiving.Defaults.DefaultLoadNumberPrefix";
         public const string DefaultReceivingMode = "Receiving.Defaults.DefaultReceivingMode";
+        public const string CsvSaveLocation = "Receiving.Defaults.CsvSaveLocation";
     }
 
     public static class Integrations

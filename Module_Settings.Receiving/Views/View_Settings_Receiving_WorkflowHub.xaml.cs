@@ -1,26 +1,27 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using System;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
-using MTM_Receiving_Application.Module_Settings.Core.Models;
+using Microsoft.Extensions.DependencyInjection;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.Views;
 
 public sealed partial class View_Settings_Receiving_NavigationHub : Page
 {
     public ViewModel_Settings_Receiving_NavigationHub ViewModel { get; }
+    private IService_LoggingUtility? _logger;
 
     private Frame? NavigationFrameControl => GetHostFrame();
 
     private Frame? GetHostFrame()
     {
         // When hosted via SettingsFrame.Content, the Page.Frame property is often null.
-        // Parent can also be null early in the page lifecycle, so we walk up from this.
-
+        // Walk up the visual tree to find the Frame that contains this page.
         DependencyObject? parent = this;
         while (parent != null)
         {
@@ -46,6 +47,16 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
         InitializeComponent();
         ViewModel = viewModel;
         DataContext = ViewModel;
+        try
+        {
+            var serviceProvider = GetServiceProvider();
+            if (serviceProvider != null)
+            {
+                _logger = serviceProvider.GetService<IService_LoggingUtility>();
+                _logger?.LogInfo("View_Settings_Receiving_NavigationHub initialized", "Settings.Navigation");
+            }
+        }
+        catch { }
     }
 
     private void NavigateToStepIndex(int index)
@@ -61,9 +72,107 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
             return;
         }
 
-        NavigationFrameControl?.Navigate(step.ViewType);
+        NavigateUsingServiceProvider(step.ViewType);
         ViewModel.CurrentStepTitle = step.Title;
         TrySyncNavStateFromFrame();
+    }
+
+    /// <summary>
+    /// Navigates to a page by resolving it through the service provider.
+    /// This ensures all constructor dependencies (ViewModels, Services) are properly injected.
+    /// </summary>
+    /// <param name="pageType"></param>
+    private void NavigateUsingServiceProvider(Type pageType)
+    {
+        if (NavigationFrameControl is null)
+        {
+            return;
+        }
+
+        try
+        {
+            // Get the service provider from the App instance
+            var serviceProvider = GetServiceProvider();
+
+            if (serviceProvider is null)
+            {
+                System.Diagnostics.Debug.WriteLine("Service provider not available");
+                return;
+            }
+
+            // Instantiate the page using the service provider (constructor DI)
+            if (ActivatorUtilities.CreateInstance(serviceProvider, pageType) is Page page)
+            {
+                NavigationFrameControl.Content = page;
+                UpdateParentWindowHeader(pageType);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Navigation to {pageType.Name} failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Updates the header in the parent CoreWindow to reflect the new page.
+    /// </summary>
+    /// <param name="pageType"></param>
+    private void UpdateParentWindowHeader(Type pageType)
+    {
+        try
+        {
+            var coreWindow = Module_Settings.Core.Views.View_Settings_CoreWindow.GetInstance();
+            if (coreWindow != null)
+            {
+                var method = coreWindow.GetType().GetMethod(
+                    "UpdateHeaderForPageType",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                method?.Invoke(coreWindow, new object[] { pageType });
+            }
+        }
+        catch { }
+    }
+
+    /// <summary>
+    /// Gets the service provider from the application.
+    /// </summary>
+    private static IServiceProvider? GetServiceProvider()
+    {
+        try
+        {
+            if (Application.Current is App app)
+            {
+                // Access the internal _host field to get the IServiceProvider
+                var hostField = typeof(App).GetField("_host",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                if (hostField?.GetValue(app) is not object host)
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not retrieve _host field from App");
+                    return null;
+                }
+
+                // Get the Services property from IHost
+                var servicesProperty = host.GetType().GetProperty("Services",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+                if (servicesProperty?.GetValue(host) is IServiceProvider services)
+                {
+                    return services;
+                }
+
+                System.Diagnostics.Debug.WriteLine("Could not retrieve Services from IHost");
+                return null;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"Application.Current is not App, it's {Application.Current?.GetType().Name}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error getting service provider: {ex.Message}");
+            return null;
+        }
     }
 
     private void OnStep0Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(0);
@@ -78,91 +187,8 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
         await ViewModel.BackAsync();
     }
 
-    private async void OnNextClicked(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.NextAsync();
-    }
-
-    private async void OnSaveClicked(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.SaveAsync();
-    }
-
-    private async void OnResetClicked(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.ResetAsync();
-    }
-
-    private async void OnCancelClicked(object sender, RoutedEventArgs e)
-    {
-        var dialog = new ContentDialog
-        {
-            Title = "Discard changes?",
-            Content = "Discard any unsaved changes on this page?",
-            PrimaryButtonText = "Discard",
-            CloseButtonText = "Keep Editing",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = XamlRoot
-        };
-
-        var result = await ShowDialogAsync(dialog);
-        if (result == ContentDialogResult.Primary)
-        {
-            await ViewModel.CancelAsync();
-        }
-    }
-
-    private static Task<ContentDialogResult> ShowDialogAsync(ContentDialog dialog)
-    {
-        var tcs = new TaskCompletionSource<ContentDialogResult>();
-        IAsyncOperation<ContentDialogResult> operation = dialog.ShowAsync();
-        operation.Completed = (info, status) =>
-        {
-            if (status == AsyncStatus.Completed)
-            {
-                tcs.TrySetResult(info.GetResults());
-            }
-            else
-            {
-                tcs.TrySetResult(ContentDialogResult.None);
-            }
-        };
-
-        return tcs.Task;
-    }
-
-    private void OnNavigationFrameNavigated(object sender, NavigationEventArgs e)
-    {
-        TrySyncNavStateFromFrame();
-    }
-
     private void TrySyncNavStateFromFrame()
     {
-        var content = NavigationFrameControl?.Content;
-
-        if (content is FrameworkElement element)
-        {
-            if (element.DataContext is ViewModel_Shared_Base vmBase && !string.IsNullOrWhiteSpace(vmBase.Title))
-            {
-                ViewModel.CurrentStepTitle = vmBase.Title;
-            }
-
-            if (element.DataContext is ISettingsNavigationNavState stateFromVm)
-            {
-                ViewModel.ApplyNavState(stateFromVm);
-                ViewModel.CurrentActions = element.DataContext as ISettingsNavigationActions;
-                return;
-            }
-
-            if (element is ISettingsNavigationNavState stateFromView)
-            {
-                ViewModel.ApplyNavState(stateFromView);
-                ViewModel.CurrentActions = element as ISettingsNavigationActions;
-                return;
-            }
-        }
-
-        ViewModel.ApplyNavState(null);
-        ViewModel.CurrentActions = null;
+        // Placeholder for nav state synchronization if needed
     }
 }

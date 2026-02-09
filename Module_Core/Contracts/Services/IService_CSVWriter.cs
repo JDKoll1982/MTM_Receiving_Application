@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -8,18 +8,17 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 {
     /// <summary>
     /// Service for writing receiving data to CSV files.
-    /// Handles both local (%APPDATA%) and network paths with graceful fallback.
+    /// Uses the configured network path.
     /// </summary>
     public interface IService_CSVWriter
     {
         /// <summary>
-        /// Writes receiving loads to both local and network CSV files.
-        /// Network failure does not prevent local write (graceful degradation).
+        /// Writes receiving loads to the network CSV file.
         /// </summary>
         /// <param name="loads">List of loads to write</param>
-        /// <returns>Result object indicating success/failure for each destination</returns>
+        /// <returns>Result object indicating success/failure</returns>
         /// <exception cref="ArgumentException">If loads list is null or empty</exception>
-        /// <exception cref="InvalidOperationException">If local write fails (critical error)</exception>
+        /// <exception cref="InvalidOperationException">If write fails</exception>
         public Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_ReceivingLoad> loads);
 
         /// <summary>
@@ -50,20 +49,15 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <summary>
         /// Checks if CSV files exist.
         /// </summary>
-        /// <returns>Result indicating existence of local and network files</returns>
+        /// <returns>Result indicating existence of network files</returns>
         public Task<Model_CSVExistenceResult> CheckCSVFilesExistAsync();
 
         /// <summary>
-        /// Gets the configured local CSV file path.
-        /// </summary>
-        /// <returns>Absolute path to local CSV</returns>
-        public string GetLocalCSVPath();
-
-        /// <summary>
         /// Gets the configured network CSV file path.
+        /// Respects user-configured path from settings if available.
         /// </summary>
         /// <returns>UNC path to network CSV</returns>
-        public string GetNetworkCSVPath();
+        public Task<string> GetNetworkCSVPathAsync();
     }
 }
 

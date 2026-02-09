@@ -67,7 +67,6 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Spacing="4">
@@ -105,23 +104,6 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Spacing="4">
-                    <CheckBox 
-                        Content="Routing"
-                        IsChecked="{x:Bind ViewModel.IsRoutingChecked, Mode=TwoWay}"
-                        IsEnabled="{x:Bind ViewModel.IsRoutingEnabled, Mode=OneWay}"/>
-                    <TextBlock 
-                        Text="{x:Bind ViewModel.RoutingCount, Mode=OneWay}"
-                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                        Margin="28,0,0,0"
-                        FontSize="12"/>
-                    <Button 
-                        Content="Generate Report"
-                        Command="{x:Bind ViewModel.GenerateRoutingReportCommand}"
-                        HorizontalAlignment="Stretch"
-                        Margin="0,4,0,0"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="3" Spacing="4">
                     <CheckBox 
                         Content="Volvo"
                         IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"

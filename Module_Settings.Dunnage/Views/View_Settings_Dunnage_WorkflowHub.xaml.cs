@@ -1,14 +1,20 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.Extensions.DependencyInjection;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
+using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
+using System;
 
 namespace MTM_Receiving_Application.Module_Settings.Dunnage.Views;
 
 public sealed partial class View_Settings_Dunnage_NavigationHub : Page
 {
     public ViewModel_Settings_Dunnage_NavigationHub ViewModel { get; }
+    private IService_LoggingUtility? _logger;
 
     private Frame? NavigationFrameControl => GetHostFrame();
 
@@ -39,6 +45,23 @@ public sealed partial class View_Settings_Dunnage_NavigationHub : Page
         InitializeComponent();
         ViewModel = viewModel;
         DataContext = ViewModel;
+        try
+        {
+            var app = (App)Application.Current;
+            var hostField = typeof(App).GetField("_host",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (hostField?.GetValue(app) is object host)
+            {
+                var servicesProperty = host.GetType().GetProperty("Services",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (servicesProperty?.GetValue(host) is IServiceProvider services)
+                {
+                    _logger = services.GetService<IService_LoggingUtility>();
+                    _logger?.LogInfo("View_Settings_Dunnage_NavigationHub initialized", "Settings.Navigation");
+                }
+            }
+        }
+        catch { }
     }
 
     private void OnPrevPageClicked(object sender, RoutedEventArgs e) => ViewModel.PrevButtonPage();
@@ -62,9 +85,64 @@ public sealed partial class View_Settings_Dunnage_NavigationHub : Page
             return;
         }
 
-        NavigationFrameControl?.Navigate(step.ViewType);
+        NavigateUsingServiceProvider(step.ViewType);
         ViewModel.CurrentStepTitle = step.Title;
         TrySyncNavStateFromFrame();
+    }
+
+    /// <summary>
+    /// Navigates to a page by resolving it through the service provider.
+    /// This ensures all constructor dependencies (ViewModels, Services) are properly injected.
+    /// </summary>
+    /// <param name="pageType"></param>
+    private void NavigateUsingServiceProvider(Type pageType)
+    {
+        if (NavigationFrameControl is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var app = (App)Application.Current;
+            var hostField = typeof(App).GetField("_host",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            if (hostField?.GetValue(app) is not object host)
+            {
+                return;
+            }
+
+            var servicesProperty = host.GetType().GetProperty("Services",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            if (servicesProperty?.GetValue(host) is IServiceProvider services)
+            {
+                if (ActivatorUtilities.CreateInstance(services, pageType) is Page page)
+                {
+                    _logger?.LogInfo($"Navigating to page: {pageType.Name}", "Settings.Navigation");
+                    NavigationFrameControl.Content = page;
+                    
+                    // Update the header in the parent CoreWindow with the specific page type
+                    try
+                    {
+                        var coreWindow = View_Settings_CoreWindow.GetInstance();
+                        if (coreWindow != null)
+                        {
+                            var method = coreWindow.GetType().GetMethod("UpdateHeaderForPageType",
+                                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                            method?.Invoke(coreWindow, new object[] { pageType });
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Navigation failed for page {pageType.Name}: {ex.Message}", ex, "Settings.Navigation");
+            System.Diagnostics.Debug.WriteLine($"Navigation to {pageType.Name} failed: {ex.Message}");
+        }
     }
 
     private void OnStep0Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(0);
@@ -84,12 +162,12 @@ public sealed partial class View_Settings_Dunnage_NavigationHub : Page
         var step = button.Content as Model_SettingsNavigationStep
             ?? button.DataContext as Model_SettingsNavigationStep;
 
-        if (step is null)
+        if (step is null || step.ViewType is null)
         {
             return;
         }
 
-        (NavigationFrameControl ?? GetHostFrame())?.Navigate(step.ViewType);
+        NavigateUsingServiceProvider(step.ViewType);
         ViewModel.CurrentStepTitle = step.Title;
         TrySyncNavStateFromFrame();
     }

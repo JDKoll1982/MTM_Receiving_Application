@@ -114,10 +114,7 @@
                                        Header="{Binding ElementName=Root, Path=ViewModel.WeightQuantityHeaderText}"
                                        Value="{Binding WeightQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToDecimalConverter}}"
                                        Minimum="1"
-                                       SmallChange="1"                                               
-                                       LargeChange="10"
-                                               
-                                       SpinButtonPlacementMode="Inline"
+                                       AcceptsExpression="True"
                                        PlaceholderText="{Binding ElementName=Root, Path=ViewModel.WeightQuantityPlaceholderText}"
                                        AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.WeightQuantityAccessibilityName}"/>
                                 </Grid>

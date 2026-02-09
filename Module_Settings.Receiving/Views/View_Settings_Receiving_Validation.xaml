@@ -6,12 +6,6 @@
     <ScrollViewer>
         <Grid Padding="24">
             <StackPanel HorizontalAlignment="Center" Width="960" Spacing="16">
-                <TextBlock Text="Receiving Validation" Style="{StaticResource TitleTextBlockStyle}" />
-                <TextBlock Text="Control required fields and validation rules applied during Receiving."
-                           Style="{StaticResource BodyTextBlockStyle}"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           TextWrapping="Wrap" />
-
                 <Border Padding="16"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

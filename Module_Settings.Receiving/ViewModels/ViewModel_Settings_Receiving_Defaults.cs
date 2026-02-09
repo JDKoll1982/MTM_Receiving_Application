@@ -1,9 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
+using Windows.Storage.Pickers;
+using WinRT;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -15,39 +20,33 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
 
     private readonly IService_SettingsCoreFacade _settingsCore;
     private readonly IService_UserSessionManager _sessionManager;
-
-    [ObservableProperty]
-    private string _defaultPackageType = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultPackagesPerLoad = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultWeightPerPackage = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultUnitOfMeasure = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultLocation = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultLoadNumberPrefix = string.Empty;
+    private readonly IService_SettingsErrorHandler _settingsErrorHandler;
+    private Window? _settingsWindow;
 
     [ObservableProperty]
     private string _defaultReceivingMode = string.Empty;
 
+    [ObservableProperty]
+    private string _csvSaveLocation = string.Empty;
+
     public ViewModel_Settings_Receiving_Defaults(
         IService_SettingsCoreFacade settingsCore,
         IService_UserSessionManager sessionManager,
+        IService_SettingsErrorHandler settingsErrorHandler,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _settingsCore = settingsCore;
         _sessionManager = sessionManager;
+        _settingsErrorHandler = settingsErrorHandler;
         Title = "Receiving Defaults";
 
+        // Initialize with defaults before async load
+        DefaultReceivingMode = "Guided";
+        CsvSaveLocation = string.Empty;
+
+        // Load current settings asynchronously
         _ = LoadSettingsAsync();
     }
 
@@ -57,30 +56,43 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     public bool IsSaveVisible => true;
     public bool IsResetVisible => true;
 
+    /// <summary>
+    /// Sets the settings window to be used for the folder picker dialog.
+    /// This should be called from the view's code-behind.
+    /// </summary>
+    /// <param name="settingsWindow"></param>
+    public void SetSettingsWindow(Window settingsWindow)
+    {
+        _settingsWindow = settingsWindow;
+    }
+
     public async Task SaveAsync()
     {
         try
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackageType, DefaultPackageType);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad, DefaultPackagesPerLoad);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage, DefaultWeightPerPackage);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure, DefaultUnitOfMeasure);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation, DefaultLocation);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix, DefaultLoadNumberPrefix);
+            // Both settings are user-scoped to ensure they're properly personalized
             await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode, DefaultReceivingMode);
+            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.CsvSaveLocation, CsvSaveLocation);
 
+            await _settingsErrorHandler.ShowSuccessAsync("Receiving defaults saved successfully.", "Save Successful");
             ShowStatus("Receiving defaults saved.");
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Failed to save receiving defaults.", Enum_ErrorSeverity.Error, ex);
+            await _settingsErrorHandler.HandleErrorAsync("Failed to save receiving defaults.", "Save Error", ex);
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task PerformSaveAsync()
+    {
+        await SaveAsync();
     }
 
     public async Task ResetAsync()
@@ -89,13 +101,8 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         {
             IsBusy = true;
 
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackageType);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix);
             await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
+            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.CsvSaveLocation);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving defaults reset.");
@@ -125,16 +132,21 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     {
         try
         {
-            DefaultPackageType = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackageType);
-            DefaultPackagesPerLoad = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad);
-            DefaultWeightPerPackage = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage);
-            DefaultUnitOfMeasure = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure);
-            DefaultLocation = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
-            DefaultLoadNumberPrefix = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix);
-            DefaultReceivingMode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
+            var mode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
+            var location = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.CsvSaveLocation);
+            
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode loaded: '{mode}'");
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location loaded: '{location}'");
+            
+            DefaultReceivingMode = mode;
+            CsvSaveLocation = location;
+            
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode set to: '{DefaultReceivingMode}'");
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location set to: '{CsvSaveLocation}'");
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Error: {ex.Message}");
             await _errorHandler.HandleErrorAsync("Failed to load receiving defaults.", Enum_ErrorSeverity.Warning, ex, false);
         }
     }
@@ -157,7 +169,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         var result = await _settingsCore.SetSettingAsync(SettingsCategory, key, value ?? string.Empty, CurrentUserId);
         if (!result.IsSuccess)
         {
-            await _errorHandler.HandleDaoErrorAsync(result, $"Save {key}");
+            await _settingsErrorHandler.HandleErrorAsync(result.ErrorMessage ?? "Unknown error occurred", $"Save {key}");
         }
     }
 
@@ -167,6 +179,37 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         if (!result.IsSuccess)
         {
             await _errorHandler.HandleDaoErrorAsync(result, $"Reset {key}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseCsvLocationAsync()
+    {
+        try
+        {
+            var folderPicker = new FolderPicker();
+            
+            // Initialize the folder picker with the settings window
+            if (_settingsWindow != null)
+            {
+                WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, WinRT.Interop.WindowNative.GetWindowHandle(_settingsWindow));
+            }
+
+            // Set folder picker options
+            folderPicker.FileTypeFilter.Add("*");
+            folderPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+
+            // Show the folder picker dialog
+            var folder = await folderPicker.PickSingleFolderAsync();
+            
+            if (folder != null)
+            {
+                CsvSaveLocation = folder.Path;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync("Failed to browse for CSV save location.", Enum_ErrorSeverity.Warning, ex, false);
         }
     }
 }

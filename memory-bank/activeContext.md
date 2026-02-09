@@ -1,23 +1,36 @@
 # Active Context
 
-Last Updated: 2026-01-24
+**Last Updated:** 2025-01-19
 
-## Current focus
-- Maintain the repository Agent Skills documentation and skill set
-- Expand skill coverage as needed (e.g., DAO generator, x:Bind auditor)
+## Current Work Focus
 
-## Recent changes
-- Added/updated Agent Skills HTML pages under `docs/agent-skills-guide/`
-- Recreated `getting-started.html` with a comprehensive skill example
-- Added `folder-structure.html`, `examples.html`, and `best-practices.html`
+### Module_Core Service Tests (TASK002)
+Service unit tests now cover most Module_Core services. Remaining work centers on integration-only services and remaining helpers/DAOs/defaults.
 
-- Created `.github/skills/mvvm-architecture-enforcer/` (SKILL.md + scripts + references + templates)
-- Created `.github/instructions/skill-authoring.instructions.md`
-- Updated `getting-started.html` to link to the real skill resources
+## Recent Changes
 
-## Next steps
-- Consider adding a `LICENSE.txt` for the skill folder if you want explicit licensing
-- Add additional skills (choose from examples) and update docs accordingly
+### Added: Module_Core Service Unit Tests
 
-## Decisions
-- Do not create new architectural patterns; follow existing MVVM rules from `.github/copilot-instructions.md`
+**Files Created:**
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_DispatcherTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_DispatcherTimerWrapperTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_FocusTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_NavigationTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_AuthenticationTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_UserSessionManagerTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_ErrorHandlerTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_LoggingUtilityTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_InforVisualConnectTests.cs`
+- `MTM_Receiving_Application.Tests/Module_Core/Services/Help/Service_HelpTests.cs`
+
+**Integration Notes Added:**
+- `Service_Dispatcher`, `Service_DispatcherTimerWrapper`, `Service_Focus`
+- `Service_ErrorHandler`, `Service_UserSessionManager`, `Service_InforVisualConnect`
+- `Service_OnStartup_AppLifecycle`
+
+**Build Status:**
+- Build successful after updates.
+
+## Next Steps
+- Add integration-focused coverage plan for `Service_OnStartup_AppLifecycle` (no unit tests).
+- Continue with Helpers, DAOs, Defaults.

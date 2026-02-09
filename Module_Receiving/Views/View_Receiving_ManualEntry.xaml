@@ -83,9 +83,9 @@
                         <DataTemplate>
                             <TextBlock 
                                 Text="{Binding PartID}" 
-                                Foreground="{Binding PartID, Converter={StaticResource PartIDToQualityHoldTextColorConverter}}"
-                                VerticalAlignment="Center"
-                                Padding="12,0,12,0"/>
+                                Foreground="{Binding PartID, Converter={StaticResource PartIDToQualityHoldTextColorConverter}}"                                
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                     <controls:DataGridTemplateColumn.CellEditingTemplate>
@@ -93,17 +93,96 @@
                             <TextBox 
                                 Text="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 BorderThickness="0"
-                                VerticalAlignment="Stretch"/>
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                VerticalContentAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellEditingTemplate>
                 </controls:DataGridTemplateColumn>
                 
-                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnWeightQtyText, Mode=OneWay}" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"/>
-                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnHeatLotText, Mode=OneWay}" Binding="{Binding HeatLotNumber}"/>
+                <!-- Weight/Quantity column -->
+                <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnWeightQtyText, Mode=OneWay}" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox 
+                                Text="{Binding WeightQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalToStringConverter}}"
+                                BorderThickness="0"
+                                
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
+                
+                <!-- Heat/Lot Number column -->
+                <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnHeatLotText, Mode=OneWay}" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding HeatLotNumber}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox 
+                                Text="{Binding HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                BorderThickness="0"
+                                
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <!-- Package Type column -->
+                
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgTypeText, Mode=OneWay}" Binding="{Binding PackageType}" IsReadOnly="True"/>
-                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgsPerLoadText, Mode=OneWay}" Binding="{Binding PackagesPerLoad}"/>
+                
+                <!-- Packages Per Load column -->
+                <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgsPerLoadText, Mode=OneWay}" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding PackagesPerLoad}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox 
+                                Text="{Binding PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                BorderThickness="0"
+                                
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <!-- Weight Per Package column -->
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnWtPerPkgText, Mode=OneWay}" Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}" IsReadOnly="True"/>
-            </controls:DataGrid.Columns>
+
+</controls:DataGrid.Columns>
         </controls:DataGrid>
 
         <!-- Navigation -->

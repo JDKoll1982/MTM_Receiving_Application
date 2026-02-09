@@ -32,7 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private int _loadNumber;
 
         [ObservableProperty]
-        private decimal _weightQuantity;
+        private decimal _weightQuantity = 0;
 
         [ObservableProperty]
         private string _heatLotNumber = string.Empty;  // Default to empty, set to "Nothing Entered" on save if blank

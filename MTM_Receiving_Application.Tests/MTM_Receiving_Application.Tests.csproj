@@ -10,6 +10,38 @@
         <Platforms>x64;ARM64</Platforms>
         <PlatformTarget>x64</PlatformTarget>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="memory-bank\**" />
+      <Compile Remove="Module_Core\Models\**" />
+      <Content Remove="memory-bank\**" />
+      <Content Remove="Module_Core\Models\**" />
+      <EmbeddedResource Remove="memory-bank\**" />
+      <EmbeddedResource Remove="Module_Core\Models\**" />
+      <None Remove="memory-bank\**" />
+      <None Remove="Module_Core\Models\**" />
+      <Page Remove="memory-bank\**" />
+      <Page Remove="Module_Core\Models\**" />
+      <PRIResource Remove="memory-bank\**" />
+      <PRIResource Remove="Module_Core\Models\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="Module_Core\Models\Model_AppSettingsTests.cs" />
+      <Compile Include="Module_Core\Models\Model_AuthenticationResultTests.cs" />
+      <Compile Include="Module_Core\Models\Model_CreateUserResultTests.cs" />
+      <Compile Include="Module_Core\Models\Model_Dao_ResultTests.cs" />
+      <Compile Include="Module_Core\Models\Model_Dao_Result_FactoryTests.cs" />
+      <Compile Include="Module_Core\Models\Model_Dao_Result_GenericTests.cs" />
+      <Compile Include="Module_Core\Models\Model_HelpContentTests.cs" />
+      <Compile Include="Module_Core\Models\Model_InforVisualConnectionTests.cs" />
+      <Compile Include="Module_Core\Models\Model_InforVisualPartTests.cs" />
+      <Compile Include="Module_Core\Models\Model_InforVisualPOTests.cs" />
+      <Compile Include="Module_Core\Models\Model_ReportRowTests.cs" />
+      <Compile Include="Module_Core\Models\Model_SessionTimedOutEventArgsTests.cs" />
+      <Compile Include="Module_Core\Models\Model_UserSessionTests.cs" />
+      <Compile Include="Module_Core\Models\Model_UserTests.cs" />
+      <Compile Include="Module_Core\Models\Model_ValidationResultTests.cs" />
+      <Compile Include="Module_Core\Models\Model_WorkstationConfigTests.cs" />
+    </ItemGroup>
 
     <!-- xUnit packages (per project standards) -->
     <ItemGroup>
@@ -48,9 +80,5 @@
     the main app project -->
     <ItemGroup>
         <ProjectReference Include="..\MTM_Receiving_Application.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Module_Core\Models\InforVisual\" />
-      <Folder Include="memory-bank\" />
     </ItemGroup>
 </Project>

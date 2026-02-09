@@ -13,6 +13,14 @@
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                TextWrapping="Wrap" />
 
+
+
+                    <TextBlock Text="Receiving User Preferences" Style="{StaticResource TitleTextBlockStyle}" />
+                    <TextBlock Text="User-scoped preferences for Receiving. (UI pending implementation)"
+                               Style="{StaticResource BodyTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap" />
+
                     <controls:View_SettingsPlaceholderControl
                         TitleText="Preferences"
                         DescriptionText="This area will contain user-specific Receiving preferences." />

@@ -306,8 +306,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ReceivedDate = System.DateTime.Now,
                 LoadNumber = Loads.Count + 1,
                 PackageType = Enum_PackageType.Skid,  // Default package type
-                PackageTypeName = nameof(Enum_PackageType.Skid),  // Default package type name
-                PackagesPerLoad = 1  // Default to 1 package per load
+                PackageTypeName = nameof(Enum_PackageType.Skid)  // Default package type name
             };
             Loads.Add(newLoad);
             _workflowService.CurrentSession.Loads.Add(newLoad);

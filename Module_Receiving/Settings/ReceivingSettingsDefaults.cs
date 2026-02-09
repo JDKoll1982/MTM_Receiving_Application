@@ -54,8 +54,8 @@ public static class ReceivingSettingsDefaults
 
         // Edit mode
         [ReceivingSettingsKeys.UiText.EditModeLoadDataFrom] = "Load Data From:",
-        [ReceivingSettingsKeys.UiText.EditModeCurrentMemory] = "Current Memory",
-        [ReceivingSettingsKeys.UiText.EditModeCurrentLabels] = "Current Labels",
+        [ReceivingSettingsKeys.UiText.EditModeCurrentMemory] = "Not Saved to CSV",
+        [ReceivingSettingsKeys.UiText.EditModeCurrentLabels] = "CSV Data",
         [ReceivingSettingsKeys.UiText.EditModeHistory] = "History",
         [ReceivingSettingsKeys.UiText.EditModeFilterDate] = "Filter Date:",
         [ReceivingSettingsKeys.UiText.EditModeTo] = "to",
@@ -228,13 +228,8 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.Accessibility.ReviewSaveToDatabase] = "Save to Database",
 
         // Defaults for non-UI settings
-        [ReceivingSettingsKeys.Defaults.DefaultPackageType] = "Pallet",
-        [ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad] = "1",
-        [ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage] = "0",
-        [ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure] = "LBS",
-        [ReceivingSettingsKeys.Defaults.DefaultLocation] = "RECEIVING",
-        [ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix] = "L",
         [ReceivingSettingsKeys.Defaults.DefaultReceivingMode] = "Guided",
+        [ReceivingSettingsKeys.Defaults.CsvSaveLocation] = "",
 
         // Integrations defaults
         [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = "30",

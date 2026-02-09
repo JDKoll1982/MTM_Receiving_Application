@@ -83,11 +83,6 @@
                         <FontIcon Glyph="&#xE7B8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Routing Navigation" Tag="RoutingSettingsHub" Margin="0,0,0,4">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE724;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
                 <NavigationViewItem Content="Reporting Navigation" Tag="ReportingSettingsHub" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE9F9;" />

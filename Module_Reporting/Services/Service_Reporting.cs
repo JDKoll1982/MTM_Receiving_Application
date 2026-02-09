@@ -56,25 +56,6 @@ public class Service_Reporting : IService_Reporting
         return await _dao.GetDunnageHistoryAsync(startDate, endDate);
     }
 
-    public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
-        DateTime startDate,
-        DateTime endDate)
-    {
-        _logger.LogInfo($"Retrieving Routing history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
-        var result = await _dao.GetRoutingHistoryAsync(startDate, endDate);
-
-        // Normalize PO numbers
-        if (result.IsSuccess && result.Data != null)
-        {
-            foreach (var row in result.Data)
-            {
-                row.PONumber = NormalizePONumber(row.PONumber);
-            }
-        }
-
-        return result;
-    }
-
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
         DateTime startDate,
         DateTime endDate)

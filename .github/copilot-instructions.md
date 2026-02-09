@@ -727,7 +727,6 @@ catch (Exception ex)
 - `Module_Shared` - Shared ViewModels, Views, models
 - `Module_Receiving` - Receiving workflow and label generation
 - `Module_Dunnage` - Dunnage management
-- `Module_Routing` - Routing rules
 - `Module_Reporting` - Report generation
 - `Module_Settings` - Configuration UI
 - `Module_Volvo` - Volvo-specific integration

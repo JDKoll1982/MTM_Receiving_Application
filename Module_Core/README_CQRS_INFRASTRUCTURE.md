@@ -368,12 +368,6 @@ This will:
 
 - <https://serilog.net>
 
-**Project-Specific:**
-
-- Module Development Guide: `_bmad/module-agents/config/module-development-guide.md`
-- CQRS Diagrams: `_bmad/module-agents/diagrams/module-rebuild-diagrams.md`
-- Tech Stack Config: `_bmad/module-agents/config/stack-winui3-csharp.yaml`
-
 ---
 
 ## 🚀 You're Ready
@@ -385,5 +379,3 @@ Your Module_Core now has enterprise-grade CQRS infrastructure. All feature modul
 - ✅ Get structured logging automatically
 - ✅ Have audit trails for all operations
 - ✅ Return standardized results (Model_Dao_Result)
-
-**Next: Use `@module-rebuilder` to modernize an existing module or `@module-creator` to build a new one!**

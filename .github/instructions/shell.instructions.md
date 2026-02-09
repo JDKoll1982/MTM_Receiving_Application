@@ -1,6 +1,5 @@
 ---
-description: 'Shell scripting best practices and conventions for bash, sh, zsh, and other shells'
-applyTo: '**/*.sh'
+applyTo: "**/*.sh"
 ---
 
 # Shell Scripting Guidelines

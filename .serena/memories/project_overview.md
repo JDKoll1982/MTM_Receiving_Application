@@ -3,7 +3,7 @@
 **Project Name:** MTM Receiving Application
 
 **Purpose:**
-A modern WinUI 3 desktop application designed to streamline receiving operations for manufacturing facilities. It handles authentication, label generation (receiving, dunnage, routing), and integrates with a MySQL database for data persistence and audit trails.
+A modern WinUI 3 desktop application designed to streamline receiving operations for manufacturing facilities. It handles authentication, label generation (receiving, dunnage, volvo), and integrates with a MySQL database for data persistence and audit trails.
 
 **Key Features:**
 
@@ -15,7 +15,7 @@ A modern WinUI 3 desktop application designed to streamline receiving operations
   - Automatic timeout based on workstation type (30m personal, 15m shared).
   - Activity tracking (mouse, keyboard).
 - **Label Generation:**
-  - Receiving, Dunnage, and Routing labels.
+  - Receiving, Dunnage, and Volvo labels.
 - **Database Integration:**
   - MySQL backend.
   - Stored procedures for data access.

@@ -1,6 +1,5 @@
 ---
-description: 'Guidelines for creating high-quality custom instruction files for GitHub Copilot - Updated for 2026 standards'
-applyTo: '**/*.instructions.md'
+applyTo: "**/*.instructions.md"
 ---
 
 # Custom Instructions File Guidelines

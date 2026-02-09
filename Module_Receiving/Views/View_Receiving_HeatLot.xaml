@@ -35,21 +35,18 @@
                             ToolTipService.ToolTip="{x:Bind ViewModel.HeatLotAutoFillTooltipText, Mode=OneWay}"/>
                 </Grid>
 
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                     <ItemsControl ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}" 
-                         FlowDirection="LeftToRight"
-                         VerticalAlignment="Top">
+                         FlowDirection="LeftToRight">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <controls:UniformGrid Columns="3" VerticalAlignment="Top"/>
+                                <controls:UniformGrid Columns="2"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,0,4,4" 
                                       MinHeight="90"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Top"
                                       Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                                       Padding="16,12" 
                                       CornerRadius="8" 

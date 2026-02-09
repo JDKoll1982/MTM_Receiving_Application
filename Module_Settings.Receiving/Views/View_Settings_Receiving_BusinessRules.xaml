@@ -6,12 +6,6 @@
     <ScrollViewer>
         <Grid Padding="24">
             <StackPanel HorizontalAlignment="Center" Width="960" Spacing="16">
-                <TextBlock Text="Receiving Business Rules" Style="{StaticResource TitleTextBlockStyle}" />
-                <TextBlock Text="Configure workflow behavior, auto-save, and storage options."
-                           Style="{StaticResource BodyTextBlockStyle}"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           TextWrapping="Wrap" />
-
                 <Border Padding="16"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

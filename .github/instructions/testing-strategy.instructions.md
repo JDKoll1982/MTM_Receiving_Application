@@ -1,3 +1,7 @@
+---
+applyTo: "**"
+---
+
 # Testing Strategy Instructions
 
 > **Last Updated:** 2026-01-16  

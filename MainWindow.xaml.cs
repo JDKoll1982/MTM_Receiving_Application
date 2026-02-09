@@ -158,10 +158,6 @@ namespace MTM_Receiving_Application
                         // Title will be set by ContentFrame_Navigated
                         ContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView));
                         break;
-                    case "RoutingLabelPage":
-                        // Title will be set by ContentFrame_Navigated
-                        ContentFrame.Navigate(typeof(Module_Routing.Views.RoutingModeSelectionView));
-                        break;
                     case "VolvoShipmentEntry":
                         PageTitleTextBlock.Text = "Volvo Dunnage Requisition";
                         ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry));
@@ -314,14 +310,6 @@ namespace MTM_Receiving_Application
                         }
                     };
                 }
-            }
-            // If navigated to RoutingModeSelectionView, set simple title
-            else if (ContentFrame.Content is Module_Routing.Views.RoutingModeSelectionView)
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    PageTitleTextBlock.Text = "Internal Routing";
-                });
             }
             // Settings Window runs in a separate window (no ContentFrame integration).
         }
@@ -561,6 +549,7 @@ namespace MTM_Receiving_Application
         /// <summary>
         /// Navigate to a page type using dependency injection for view instantiation
         /// </summary>
+        /// <param name="pageType"></param>
         private bool NavigateWithDI(Type pageType)
         {
             try
@@ -587,6 +576,8 @@ namespace MTM_Receiving_Application
         /// <summary>
         /// Handle navigation failures
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ContentFrame_NavigationFailed(object sender, Microsoft.UI.Xaml.Navigation.NavigationFailedEventArgs e)
         {
             _logger.LogError($"Navigation failed: {e.Exception?.Message}", e.Exception, "MainWindow");

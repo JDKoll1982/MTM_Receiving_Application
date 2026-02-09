@@ -1,18 +1,50 @@
 # Product Context
 
-Last Updated: 2026-01-24
+**Last Updated:** 2025-01-19
 
-## Why this exists
-Receiving operations require accurate data capture and labeling, plus consistent workflows for different receiving modes (Receiving, Routing, Dunnage, Volvo).
+## Why This Project Exists
 
-## Problems it solves
-- Standardizes receiving workflows and data entry
-- Generates labels consistently
-- Integrates with ERP (Infor Visual) safely (read-only)
-- Provides settings and reporting modules
+Manufacturing facilities need efficient receiving operations to:
+- Track incoming materials accurately
+- Generate labels for parts and shipments
+- Integrate with ERP systems (Infor Visual)
+- Maintain compliance and audit trails
 
-## User experience goals
-- Fast, low-friction workflows
-- Clear validation and error messaging
-- Minimal manual rework
-- Consistent UI patterns across modules
+## Problems It Solves
+
+1. **Manual Label Generation** - Automates label creation for received parts
+2. **ERP Disconnection** - Provides real-time integration with Infor Visual
+3. **Workflow Inefficiency** - Streamlines receiving processes with guided workflows
+4. **Data Accuracy** - Validates data against ERP before processing
+5. **Audit Requirements** - Maintains comprehensive logging and audit trails
+
+## How It Should Work
+
+### User Experience Flow
+
+1. **Receiving Mode Selection** - User chooses receiving workflow type
+2. **Data Entry** - Guided entry with validation against ERP
+3. **Label Generation** - Automatic label creation with proper formatting
+4. **ERP Update** - Real-time synchronization with Infor Visual (read-only)
+5. **Audit Logging** - All operations logged with user, timestamp, machine
+
+### Key Features
+
+- **Multiple Receiving Workflows** - Support for different receiving scenarios
+- **Label Customization** - Configurable label formats per customer/part
+- **Batch Processing** - Handle multiple items efficiently
+- **Error Handling** - Clear error messages with recovery options
+- **Offline Capability** - Queue operations when ERP unavailable
+
+## User Personas
+
+1. **Receiving Clerk** - Primary user, processes incoming materials
+2. **Supervisor** - Reviews reports, manages settings
+3. **IT Administrator** - Maintains configuration, troubleshoots
+
+## Success Metrics
+
+- Time to process receiving reduced by 50%
+- Zero label errors
+- 100% audit trail completeness
+- User satisfaction rating > 4.5/5

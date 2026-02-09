@@ -31,4 +31,30 @@ public class Dao_SettingsCoreRoles
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at"))
             });
     }
+
+    /// <summary>
+    /// Gets a role by its name.
+    /// </summary>
+    /// <param name="roleName">The name of the role to retrieve</param>
+    /// <returns>Result containing the role or error</returns>
+    public Task<Model_Dao_Result<Model_SettingsRole>> GetByNameAsync(string roleName)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_role_name", roleName }
+        };
+
+        return Helper_Database_StoredProcedure.ExecuteSingleAsync(
+            _connectionString,
+            "sp_SettingsCore_Roles_GetByName",
+            reader => new Model_SettingsRole
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                RoleName = reader.GetString(reader.GetOrdinal("role_name")),
+                Description = reader.GetString(reader.GetOrdinal("description")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at"))
+            },
+            parameters);
+    }
 }
+

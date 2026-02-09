@@ -1,6 +1,5 @@
 ---
-description: 'Guidelines for conducting comprehensive research before generating documentation or code artifacts'
-applyTo: '**/*'
+applyTo: "**/*"
 ---
 
 # Comprehensive Research Before Creation

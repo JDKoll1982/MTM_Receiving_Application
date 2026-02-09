@@ -1,3 +1,0 @@
----
-agent: module-integration-validator
----

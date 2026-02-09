@@ -10,9 +10,6 @@ using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Views;
-using MTM_Receiving_Application.Module_Routing.Data;
-using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.Module_Routing.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Services;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
@@ -36,7 +33,7 @@ namespace MTM_Receiving_Application.Infrastructure.DependencyInjection;
 
 /// <summary>
 /// Extension methods for registering all application module services.
-/// Organizes service registration by feature module (Receiving, Dunnage, Routing, Volvo, Reporting, Settings, Shared).
+/// Organizes service registration by feature module (Receiving, Dunnage, Volvo, Reporting, Settings, Shared).
 /// </summary>
 public static class ModuleServicesExtensions
 {
@@ -52,7 +49,6 @@ public static class ModuleServicesExtensions
     {
         services.AddReceivingModule(configuration);
         services.AddDunnageModule(configuration);
-        services.AddRoutingModule(configuration);
         services.AddVolvoModule(configuration);
         services.AddReportingModule(configuration);
         services.AddSettingsModule(configuration);
@@ -100,7 +96,8 @@ public static class ModuleServicesExtensions
         {
             var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_CSVWriter(sessionManager, logger);
+            var settingsCore = sp.GetRequiredService<IService_SettingsCoreFacade>();
+            return new Service_CSVWriter(sessionManager, logger, settingsCore);
         });
         services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
         services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
@@ -203,94 +200,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog>();
 
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers Routing module services, DAOs, and ViewModels.
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    private static IServiceCollection AddRoutingModule(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
-            ?? throw new InvalidOperationException("MySql connection string not found");
-        var inforVisualConnectionString = configuration.GetConnectionString("InforVisual")
-            ?? throw new InvalidOperationException("InforVisual connection string not found");
-
-        // DAOs (Singleton)
-        services.AddSingleton(_ => new Dao_RoutingLabel(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_RoutingRecipient(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_RoutingOtherReason(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_RoutingUsageTracking(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_RoutingUserPreference(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_RoutingLabelHistory(mySqlConnectionString));
-        services.AddSingleton(_ => new Module_Routing.Data.Dao_InforVisualPO(inforVisualConnectionString));
-
-        // Services (Singleton)
-        services.AddSingleton<IRoutingService>(sp =>
-        {
-            var daoLabel = sp.GetRequiredService<Dao_RoutingLabel>();
-            var daoHistory = sp.GetRequiredService<Dao_RoutingLabelHistory>();
-            var inforVisualService = sp.GetRequiredService<IRoutingInforVisualService>();
-            var usageTrackingService = sp.GetRequiredService<IRoutingUsageTrackingService>();
-            var recipientService = sp.GetRequiredService<IRoutingRecipientService>();
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new RoutingService(daoLabel, daoHistory, inforVisualService, usageTrackingService,
-                recipientService, logger, configuration);
-        });
-
-        services.AddSingleton<IRoutingInforVisualService>(sp =>
-        {
-            var daoInforVisual = sp.GetRequiredService<Module_Routing.Data.Dao_InforVisualPO>();
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            var settings = configuration.GetSection("InforVisual").Get<Infrastructure.Configuration.InforVisualSettings>()
-                ?? new Infrastructure.Configuration.InforVisualSettings();
-            return new RoutingInforVisualService(daoInforVisual, logger, settings.UseMockData);
-        });
-
-        services.AddSingleton<IRoutingRecipientService>(sp =>
-        {
-            var daoRecipient = sp.GetRequiredService<Dao_RoutingRecipient>();
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new RoutingRecipientService(daoRecipient, logger);
-        });
-
-        services.AddSingleton<IRoutingUsageTrackingService>(sp =>
-        {
-            var daoUsageTracking = sp.GetRequiredService<Dao_RoutingUsageTracking>();
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new RoutingUsageTrackingService(daoUsageTracking, logger);
-        });
-
-        services.AddSingleton<IRoutingUserPreferenceService>(sp =>
-        {
-            var daoUserPreference = sp.GetRequiredService<Dao_RoutingUserPreference>();
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new RoutingUserPreferenceService(daoUserPreference, logger);
-        });
-
-        // ViewModels
-        services.AddSingleton<RoutingWizardContainerViewModel>();
-        services.AddTransient<RoutingWizardStep1ViewModel>();
-        services.AddTransient<RoutingWizardStep2ViewModel>();
-        services.AddTransient<RoutingWizardStep3ViewModel>();
-        services.AddTransient<RoutingManualEntryViewModel>();
-        services.AddTransient<RoutingEditModeViewModel>();
-        services.AddTransient<RoutingModeSelectionViewModel>();
-
-        // Views (Transient - Per-navigation instances)
-        services.AddTransient<Module_Routing.Views.RoutingWizardContainerView>();
-        services.AddTransient<Module_Routing.Views.RoutingWizardStep1View>();
-        services.AddTransient<Module_Routing.Views.RoutingWizardStep2View>();
-        services.AddTransient<Module_Routing.Views.RoutingWizardStep3View>();
-        services.AddTransient<Module_Routing.Views.RoutingManualEntryView>();
-        services.AddTransient<Module_Routing.Views.RoutingEditModeView>();
-        services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
 
         return services;
     }
@@ -404,6 +313,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_ViewModelRegistry, Service_ViewModelRegistry>();
         services.AddSingleton<IService_SettingsPagination, Service_SettingsPagination>();
         services.AddSingleton<IService_UserPreferences, Service_UserPreferences>();
+        services.AddSingleton<IService_SettingsErrorHandler, Service_SettingsErrorHandler>();
 
         // Settings ViewModels (Transient - Per-settings-page instances)
         RegisterSettingsViewModels(services);
@@ -429,7 +339,6 @@ public static class ModuleServicesExtensions
         // Navigation Hubs
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_NavigationHub>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_NavigationHub>();
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_NavigationHub>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_NavigationHub>();
         services.AddTransient<ViewModel_Settings_DeveloperTools_NavigationHub>();
@@ -449,14 +358,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_Workflow>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_Permissions>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_Audit>();
-
-        // Routing Settings Pages
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_SettingsOverview>();
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_FileIO>();
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_UiUx>();
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_BusinessRules>();
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_Resilience>();
-        services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_UserPreferences>();
 
         // Reporting Settings Pages
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_SettingsOverview>();
@@ -502,15 +403,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_System>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Database>();
-
-        // Routing Settings Views
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_NavigationHub>();
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_SettingsOverview>();
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_FileIO>();
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_UiUx>();
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_BusinessRules>();
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_Resilience>();
-        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_UserPreferences>();
 
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();

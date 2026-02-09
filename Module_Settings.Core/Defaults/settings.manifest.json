@@ -20,7 +20,7 @@
       "defaultValue": "Information",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Allowed: Verbose, Debug, Information, Warning, Error, Fatal"
     },
@@ -53,7 +53,7 @@
       "defaultValue": "C:/MTM/Exports",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Path"
     },
@@ -64,7 +64,7 @@
       "defaultValue": "",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": true,
       "validationRules": "Sensitive"
     },
@@ -75,7 +75,7 @@
       "defaultValue": "Guided Wizard",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -86,7 +86,7 @@
       "defaultValue": "Step-by-step process for standard receiving workflow.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -97,7 +97,7 @@
       "defaultValue": "Manual Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -108,7 +108,7 @@
       "defaultValue": "Customizable grid for bulk data entry and editing.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -119,7 +119,7 @@
       "defaultValue": "Edit Mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -130,7 +130,7 @@
       "defaultValue": "Edit existing loads without adding new ones.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -141,7 +141,7 @@
       "defaultValue": "Set as default mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -152,7 +152,7 @@
       "defaultValue": "Help",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -163,7 +163,7 @@
       "defaultValue": "Back",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -174,7 +174,7 @@
       "defaultValue": "Next",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -185,7 +185,7 @@
       "defaultValue": "Mode Selection",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -196,7 +196,7 @@
       "defaultValue": "Reset CSV",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -207,7 +207,7 @@
       "defaultValue": "Success!",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -218,7 +218,7 @@
       "defaultValue": "Save Failed",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -229,7 +229,7 @@
       "defaultValue": " loads saved successfully.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -240,7 +240,7 @@
       "defaultValue": "Save Details:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -251,7 +251,7 @@
       "defaultValue": "Local CSV:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -262,7 +262,7 @@
       "defaultValue": "Network CSV:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -273,7 +273,7 @@
       "defaultValue": "Database:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -284,7 +284,7 @@
       "defaultValue": "Saved",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -295,7 +295,7 @@
       "defaultValue": "Failed",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -306,7 +306,7 @@
       "defaultValue": "Start New Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -317,7 +317,7 @@
       "defaultValue": "Add Row",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -328,7 +328,7 @@
       "defaultValue": "Add Multiple",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -339,7 +339,7 @@
       "defaultValue": "Remove Row",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -350,7 +350,7 @@
       "defaultValue": "Auto-Fill",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -361,7 +361,7 @@
       "defaultValue": "Save & Finish",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -372,7 +372,7 @@
       "defaultValue": "Load #",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -383,7 +383,7 @@
       "defaultValue": "Part ID",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -394,7 +394,7 @@
       "defaultValue": "Weight/Qty",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -405,7 +405,7 @@
       "defaultValue": "Heat/Lot",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -416,7 +416,7 @@
       "defaultValue": "Pkg Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -427,7 +427,7 @@
       "defaultValue": "Pkgs/Load",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -438,7 +438,7 @@
       "defaultValue": "Wt/Pkg",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -449,7 +449,7 @@
       "defaultValue": "Load Data From:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -460,7 +460,7 @@
       "defaultValue": "Current Memory",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -471,7 +471,7 @@
       "defaultValue": "Current Labels",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -482,7 +482,7 @@
       "defaultValue": "History",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -493,7 +493,7 @@
       "defaultValue": "Filter Date:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -504,7 +504,7 @@
       "defaultValue": "to",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -515,7 +515,7 @@
       "defaultValue": "Last Week",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -526,7 +526,7 @@
       "defaultValue": "Today",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -537,7 +537,7 @@
       "defaultValue": "This Week",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -548,7 +548,7 @@
       "defaultValue": "Show All",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -559,7 +559,7 @@
       "defaultValue": "Page",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -570,7 +570,7 @@
       "defaultValue": "of",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -581,7 +581,7 @@
       "defaultValue": "Go",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -592,7 +592,7 @@
       "defaultValue": "Save & Finish",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -603,7 +603,7 @@
       "defaultValue": "Remove Row",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -614,7 +614,7 @@
       "defaultValue": "Load #",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -625,7 +625,7 @@
       "defaultValue": "Part ID",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -636,7 +636,7 @@
       "defaultValue": "Weight/Qty",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -647,7 +647,7 @@
       "defaultValue": "Heat/Lot",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -658,7 +658,7 @@
       "defaultValue": "Pkg Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -669,7 +669,7 @@
       "defaultValue": "Pkgs/Load",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -680,7 +680,7 @@
       "defaultValue": "Wt/Pkg",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -691,7 +691,7 @@
       "defaultValue": "Purchase Order Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -702,7 +702,7 @@
       "defaultValue": "Status:",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -713,7 +713,7 @@
       "defaultValue": "Load PO",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -724,7 +724,7 @@
       "defaultValue": "Switch to Non-PO",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -735,7 +735,7 @@
       "defaultValue": "Part Identifier",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -746,7 +746,7 @@
       "defaultValue": "Package Type (Auto-detected)",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -757,7 +757,7 @@
       "defaultValue": "Look Up Part",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -768,7 +768,7 @@
       "defaultValue": "Switch to PO Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -779,7 +779,7 @@
       "defaultValue": "Available Parts",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -790,7 +790,7 @@
       "defaultValue": "Part ID",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -801,7 +801,7 @@
       "defaultValue": "Description",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -812,7 +812,7 @@
       "defaultValue": "Remaining Qty",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -823,7 +823,7 @@
       "defaultValue": "Qty Ordered",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -834,7 +834,7 @@
       "defaultValue": "Line #",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -845,7 +845,7 @@
       "defaultValue": "Number of Loads (1-99)",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -856,7 +856,7 @@
       "defaultValue": "Enter the total number of skids/loads for this part.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -867,7 +867,7 @@
       "defaultValue": "Weight/Quantity",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -878,7 +878,7 @@
       "defaultValue": "Enter whole number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -889,7 +889,7 @@
       "defaultValue": "Load Entries",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -900,7 +900,7 @@
       "defaultValue": "Auto-Fill",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -911,7 +911,7 @@
       "defaultValue": "Fill blank heat numbers from rows above",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -922,7 +922,7 @@
       "defaultValue": "Load #{0}",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -933,7 +933,7 @@
       "defaultValue": "Heat/Lot Number (Optional)",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -944,7 +944,7 @@
       "defaultValue": "Enter heat/lot number or leave blank",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -955,7 +955,7 @@
       "defaultValue": "Package Type (Applied to all loads)",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -966,7 +966,7 @@
       "defaultValue": "Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -977,7 +977,7 @@
       "defaultValue": "Custom Name",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -988,7 +988,7 @@
       "defaultValue": "Save as default for this part",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -999,7 +999,7 @@
       "defaultValue": "#{0}",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1010,7 +1010,7 @@
       "defaultValue": "Packages per Load",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1021,7 +1021,7 @@
       "defaultValue": "Weight per Package",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1032,7 +1032,7 @@
       "defaultValue": "Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1043,7 +1043,7 @@
       "defaultValue": "of",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1054,7 +1054,7 @@
       "defaultValue": "Load Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1065,7 +1065,7 @@
       "defaultValue": "Purchase Order Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1076,7 +1076,7 @@
       "defaultValue": "Part ID",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1087,7 +1087,7 @@
       "defaultValue": "Remaining Quantity",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1098,7 +1098,7 @@
       "defaultValue": "Weight/Quantity",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1109,7 +1109,7 @@
       "defaultValue": "Heat/Lot Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1120,7 +1120,7 @@
       "defaultValue": "Packages Per Load",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1131,7 +1131,7 @@
       "defaultValue": "Package Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1142,7 +1142,7 @@
       "defaultValue": "Previous",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1153,7 +1153,7 @@
       "defaultValue": "Next",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1164,7 +1164,7 @@
       "defaultValue": "Table View",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1175,7 +1175,7 @@
       "defaultValue": "Single View",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1186,7 +1186,7 @@
       "defaultValue": "Add Another Part/PO",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1197,7 +1197,7 @@
       "defaultValue": "Save to Database",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1208,7 +1208,7 @@
       "defaultValue": "Load #",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1219,7 +1219,7 @@
       "defaultValue": "PO Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1230,7 +1230,7 @@
       "defaultValue": "Part ID",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1241,7 +1241,7 @@
       "defaultValue": "Remaining Qty",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1252,7 +1252,7 @@
       "defaultValue": "Weight/Qty",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1263,7 +1263,7 @@
       "defaultValue": "Heat/Lot #",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1274,7 +1274,7 @@
       "defaultValue": "Pkgs",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1285,7 +1285,7 @@
       "defaultValue": "Pkg Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1296,7 +1296,7 @@
       "defaultValue": "Receiving - Mode Selection",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1307,7 +1307,7 @@
       "defaultValue": "Receiving - Manual Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1318,7 +1318,7 @@
       "defaultValue": "Receiving - Edit Mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1329,7 +1329,7 @@
       "defaultValue": "Receiving - Enter PO Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1340,7 +1340,7 @@
       "defaultValue": "Receiving - Select Part",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1351,7 +1351,7 @@
       "defaultValue": "Receiving - Enter Number of Loads",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1362,7 +1362,7 @@
       "defaultValue": "Receiving - Enter Weight/Quantity",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1373,7 +1373,7 @@
       "defaultValue": "Receiving - Enter Heat/Lot Numbers",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1384,7 +1384,7 @@
       "defaultValue": "Receiving - Select Package Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1395,9 +1395,31 @@
       "defaultValue": "Receiving - Review & Save",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Defaults.DefaultReceivingMode",
+      "displayName": "Default Receiving Mode",
+      "defaultValue": "Guided",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Allowed: Guided, Manual, Edit"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Defaults.CsvSaveLocation",
+      "displayName": "CSV File Save Location",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path"
     },
     {
       "category": "Receiving",
@@ -1406,7 +1428,7 @@
       "defaultValue": "Receiving - Saving...",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1417,7 +1439,7 @@
       "defaultValue": "Receiving - Complete",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1428,7 +1450,7 @@
       "defaultValue": "Initializing...",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1439,7 +1461,7 @@
       "defaultValue": "Saving to local and network CSV...",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1450,7 +1472,7 @@
       "defaultValue": "Reset CSV Files",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1461,7 +1483,7 @@
       "defaultValue": "Are you sure you want to delete the local and network CSV files? This action cannot be undone.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1472,7 +1494,7 @@
       "defaultValue": "Delete",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1483,7 +1505,7 @@
       "defaultValue": "Cancel",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1494,7 +1516,7 @@
       "defaultValue": "Database Save Failed",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1505,7 +1527,7 @@
       "defaultValue": "Delete Anyway",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1516,7 +1538,7 @@
       "defaultValue": "Cancel",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1527,7 +1549,7 @@
       "defaultValue": "CSV files deleted successfully.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1538,7 +1560,7 @@
       "defaultValue": "Failed to delete CSV files or files not found.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1549,7 +1571,7 @@
       "defaultValue": "Workflow cleared. Please select a mode.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1560,7 +1582,7 @@
       "defaultValue": "Confirm Mode Selection",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1571,7 +1593,7 @@
       "defaultValue": "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1582,7 +1604,7 @@
       "defaultValue": "Continue",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1593,7 +1615,7 @@
       "defaultValue": "Cancel",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1604,7 +1626,7 @@
       "defaultValue": "Change Mode?",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1615,7 +1637,7 @@
       "defaultValue": "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1626,7 +1648,7 @@
       "defaultValue": "Yes, Change Mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1637,7 +1659,7 @@
       "defaultValue": "Cancel",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1648,7 +1670,7 @@
       "defaultValue": "Add Multiple Rows",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1659,7 +1681,7 @@
       "defaultValue": "Add",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1670,7 +1692,7 @@
       "defaultValue": "Cancel",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1681,7 +1703,7 @@
       "defaultValue": "Add Another Part/PO",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1692,7 +1714,7 @@
       "defaultValue": "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1703,7 +1725,7 @@
       "defaultValue": "Continue",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1714,7 +1736,7 @@
       "defaultValue": "Cancel",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1725,7 +1747,7 @@
       "defaultValue": "Unable to display dialog",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1736,7 +1758,7 @@
       "defaultValue": "Please enter a PO number.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1747,7 +1769,7 @@
       "defaultValue": "Please enter a Part ID.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1758,7 +1780,7 @@
       "defaultValue": "PO not found or contains no parts.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1769,7 +1791,7 @@
       "defaultValue": "Part not found.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1780,7 +1802,7 @@
       "defaultValue": "Purchase Order {0} loaded with {1} parts.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1791,7 +1813,7 @@
       "defaultValue": "Part {0} found.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1802,7 +1824,7 @@
       "defaultValue": "Warning: {0:N2} of this part has already been received today on this PO.",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1813,7 +1835,7 @@
       "defaultValue": "Warning: Total quantity ({0:N2}) exceeds PO ordered amount ({1:N2}).",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1824,7 +1846,7 @@
       "defaultValue": "Non-PO Item",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1835,7 +1857,7 @@
       "defaultValue": "Guided Wizard Mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1846,7 +1868,7 @@
       "defaultValue": "Manual Entry Mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1857,7 +1879,7 @@
       "defaultValue": "Edit Mode",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1868,7 +1890,7 @@
       "defaultValue": "Purchase Order Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1879,7 +1901,7 @@
       "defaultValue": "Load Purchase Order",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1890,7 +1912,7 @@
       "defaultValue": "Part Identifier",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1901,7 +1923,7 @@
       "defaultValue": "Look Up Part",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1912,7 +1934,7 @@
       "defaultValue": "Parts List",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1923,7 +1945,7 @@
       "defaultValue": "Number of Loads",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1934,7 +1956,7 @@
       "defaultValue": "Weight Quantity",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1945,7 +1967,7 @@
       "defaultValue": "Heat Lot Number",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1956,7 +1978,7 @@
       "defaultValue": "Package Type",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1967,7 +1989,7 @@
       "defaultValue": "Custom Package Name",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1978,7 +2000,7 @@
       "defaultValue": "Packages per Load",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -1989,7 +2011,7 @@
       "defaultValue": "Previous Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2000,7 +2022,7 @@
       "defaultValue": "Next Entry",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2011,7 +2033,7 @@
       "defaultValue": "Switch to Table View",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2022,7 +2044,7 @@
       "defaultValue": "Switch to Single View",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2033,7 +2055,7 @@
       "defaultValue": "Receiving Entries Table",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2044,7 +2066,7 @@
       "defaultValue": "Add Another Part or PO",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2055,7 +2077,7 @@
       "defaultValue": "Save to Database",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2066,7 +2088,7 @@
       "defaultValue": "false",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2077,7 +2099,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2088,7 +2110,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2099,7 +2121,7 @@
       "defaultValue": "false",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2110,7 +2132,7 @@
       "defaultValue": "false",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2121,7 +2143,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2132,7 +2154,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2143,7 +2165,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2154,7 +2176,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2165,7 +2187,7 @@
       "defaultValue": "1",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     },
@@ -2176,7 +2198,7 @@
       "defaultValue": "99",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     },
@@ -2187,7 +2209,7 @@
       "defaultValue": "0",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     },
@@ -2198,7 +2220,7 @@
       "defaultValue": "999999",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     },
@@ -2209,7 +2231,7 @@
       "defaultValue": "false",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2220,7 +2242,7 @@
       "defaultValue": "300",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     },
@@ -2231,7 +2253,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2242,7 +2264,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2253,7 +2275,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2264,7 +2286,7 @@
       "defaultValue": "ModeSelection",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2297,7 +2319,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2330,7 +2352,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2341,7 +2363,7 @@
       "defaultValue": "Pallet",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2352,7 +2374,7 @@
       "defaultValue": "1",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2363,7 +2385,7 @@
       "defaultValue": "0",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2374,7 +2396,7 @@
       "defaultValue": "LBS",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2385,7 +2407,7 @@
       "defaultValue": "RECEIVING",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2396,7 +2418,7 @@
       "defaultValue": "L",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2407,7 +2429,7 @@
       "defaultValue": "Guided",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
     },
@@ -2418,7 +2440,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2429,7 +2451,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2440,7 +2462,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2451,7 +2473,7 @@
       "defaultValue": "false",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2462,7 +2484,7 @@
       "defaultValue": "30",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     },
@@ -2473,7 +2495,7 @@
       "defaultValue": "true",
       "dataType": "Bool",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
     },
@@ -2484,7 +2506,7 @@
       "defaultValue": "3",
       "dataType": "Int",
       "scope": "System",
-      "permissionLevel": "Admin",
+      "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
     }

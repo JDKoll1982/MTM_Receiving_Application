@@ -46,7 +46,7 @@ public partial class App : Application
                 services.AddCqrsInfrastructure();
 
                 // ===== FEATURE MODULES =====
-                // Receiving, Dunnage, Routing, Volvo, Reporting, Settings, Shared
+                // Receiving, Dunnage, Volvo, Reporting, Settings, Shared
                 // Each module registers its DAOs, services, ViewModels, and Views
                 services.AddModuleServices(context.Configuration);
             })

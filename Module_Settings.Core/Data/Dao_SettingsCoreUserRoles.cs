@@ -37,4 +37,25 @@ public class Dao_SettingsCoreUserRoles
             },
             parameters);
     }
+
+    /// <summary>
+    /// Assigns a role to a user in the settings system.
+    /// </summary>
+    /// <param name="userId">The user's ID</param>
+    /// <param name="roleId">The role's ID to assign</param>
+    /// <returns>Result indicating success or failure</returns>
+    public Task<Model_Dao_Result> AssignRoleAsync(int userId, int roleId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_user_id", userId },
+            { "p_role_id", roleId }
+        };
+
+        return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_SettingsCore_UserRoles_Assign",
+            parameters);
+    }
 }
+

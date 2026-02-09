@@ -21,7 +21,7 @@ You are tasked with generating a professional SVG UI mockup for a WinUI 3 deskto
 
 ### View Information
 
-- **Module Name**: [MODULE_NAME] (e.g., "Volvo", "Receiving", "Dunnage", "Routing", "Reporting")
+- **Module Name**: [MODULE_NAME] (e.g., "Volvo", "Receiving", "Dunnage", "Reporting")
 - **View Name**: [VIEW_NAME] (e.g., "ShipmentEntry", "POEntry", "TypeSelection", "LabelEntry", "Main")
 - **Full View Path**: `View_[MODULE_NAME]_[VIEW_NAME].svg`
 - **Target Directory**: `specs/[MODULE_NUMBER]-[MODULE_NAME]-module/mockups/`
@@ -383,14 +383,6 @@ All spacing must follow 8px increments:
 - **Spec Inputs**: Dynamic form based on type
 - **Progress**: 7 steps in standard workflow
 - **Admin Screens**: No progress indicator
-
-### Routing Module
-
-- **Label Number**: Auto-increment display
-- **Department Auto-fill**: Visual feedback when triggered
-- **Duplicate Row**: Visual animation/feedback
-- **History Grouping**: Date headers with alternating group colors
-- **Progress**: 5 steps (LabelEntry → Review → Print → History)
 
 ### Volvo Module
 

@@ -1,6 +1,5 @@
 ---
-description: 'Guidelines for building C# applications'
-applyTo: '**/*.cs'
+applyTo: "**/*.cs"
 ---
 
 # C# Development

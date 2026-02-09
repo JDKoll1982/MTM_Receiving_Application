@@ -98,14 +98,10 @@ For each schema issue in the Database Schema Issues table:
 
 ### Step 2.2: Determine the Fix
 
-For missing columns:
-
-```sql
--- Example for sp_routing_recipient_get_all (missing 'default_department')
-ALTER TABLE routing_recipients
-ADD COLUMN default_department VARCHAR(100) NULL
-COMMENT 'Default department for routing recipient';
-```
+-- Example for sp_volvo_shipment_manifest_generate (missing 'manifest_date')
+ALTER TABLE volvo_shipment_manifests
+ADD COLUMN manifest_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+COMMENT 'Date and time the shipment manifest was generated';
 
 For wrong references:
 
@@ -197,7 +193,6 @@ Common locations:
 
 - `Module_Core/Data/`
 - `Module_Receiving/Data/`
-- `Module_Routing/Data/`
 - `Module_Settings/Data/`
 - `Module_Dunnage/Data/`
 - `Module_Volvo/Data/`
@@ -206,27 +201,33 @@ Common locations:
 
 From the "Related SPs" column, identify which methods need updating.
 
-Example for `Dao_Routing Label`:
+Example for `Dao_VolvoShipmentManifest`:
 
-- Related SPs: `sp_routing_label_insert`, `sp_routing_label_update`, `sp_routing_label_delete`, etc.
-- Methods to update: `Insert*Async`, `Update*Async`, `Delete*Async`
+- Related SPs: `sp_volvo_shipment_manifest_generate`, `sp_volvo_shipment_manifest_update`, `sp_volvo_shipment_manifest_delete`, etc.
+- Methods to update: `GenerateAsync`, `UpdateAsync`, `DeleteAsync`
 
 ### Step 4.3: Update Method Signatures
 
 **Before:**
 
 ```csharp
-public async Task<Model_Dao_Result> InsertRoutingLabelAsync(Model_RoutingLabel label)
+public async Task<Model_Dao_Result> InsertVolvoShipmentManifestAsync(Model_VolvoShipmentManifest manifest)
 {
     var parameters = new MySqlParameter[]
     {
-        new MySqlParameter("@p_part_number", label.PartNumber),
-        new MySqlParameter("@p_quantity", label.Quantity),
-        // ... 8 IN parameters
+        new MySqlParameter("@p_shipment_id", manifest.ShipmentID),
+        new MySqlParameter("@p_manifest_number", manifest.ManifestNumber),
+        new MySqlParameter("@p_destination", manifest.Destination),
+        new MySqlParameter("@p_total_pallets", manifest.TotalPallets),
+        new MySqlParameter("@p_total_weight", manifest.TotalWeight),
+        new MySqlParameter("@p_carrier_code", manifest.CarrierCode),
+        new MySqlParameter("@p_tracking_number", manifest.TrackingNumber),
+        new MySqlParameter("@p_manifest_date", manifest.ManifestDate),
+        // ... additional IN parameters as needed
     };
 
     return await Helper_Database_StoredProcedure.ExecuteAsync(
-        "sp_routing_label_insert",
+        "sp_volvo_shipment_manifest_insert",
         parameters,
         _connectionString
     );
@@ -236,16 +237,22 @@ public async Task<Model_Dao_Result> InsertRoutingLabelAsync(Model_RoutingLabel l
 **After (with OUT parameters):**
 
 ```csharp
-public async Task<Model_Dao_Result<int>> InsertRoutingLabelAsync(Model_RoutingLabel label)
+public async Task<Model_Dao_Result<int>> InsertVolvoShipmentManifestAsync(Model_VolvoShipmentManifest manifest)
 {
     var parameters = new MySqlParameter[]
     {
-        new MySqlParameter("@p_part_number", label.PartNumber),
-        new MySqlParameter("@p_quantity", label.Quantity),
-        // ... 8 IN parameters
+        new MySqlParameter("@p_shipment_id", manifest.ShipmentID),
+        new MySqlParameter("@p_manifest_number", manifest.ManifestNumber),
+        new MySqlParameter("@p_destination", manifest.Destination),
+        new MySqlParameter("@p_total_pallets", manifest.TotalPallets),
+        new MySqlParameter("@p_total_weight", manifest.TotalWeight),
+        new MySqlParameter("@p_carrier_code", manifest.CarrierCode ?? string.Empty),
+        new MySqlParameter("@p_tracking_number", manifest.TrackingNumber ?? string.Empty),
+        new MySqlParameter("@p_manifest_date", manifest.ManifestDate),
+        // ... additional IN parameters as needed
 
         // Add OUT parameters
-        new MySqlParameter("@p_new_label_id", MySqlDbType.Int32)
+        new MySqlParameter("@p_new_manifest_id", MySqlDbType.Int32)
         {
             Direction = ParameterDirection.Output
         },
@@ -256,14 +263,14 @@ public async Task<Model_Dao_Result<int>> InsertRoutingLabelAsync(Model_RoutingLa
     };
 
     var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-        "sp_routing_label_insert",
+        "sp_volvo_shipment_manifest_insert",
         parameters,
         _connectionString
     );
 
     if (result.Success)
     {
-        var newId = parameters.FirstOrDefault(p => p.ParameterName == "@p_new_label_id")?.Value as int?;
+        var newId = parameters.FirstOrDefault(p => p.ParameterName == "@p_new_manifest_id")?.Value as int?;
         return Model_Dao_Result<int>.Success(newId ?? 0, result.Message);
     }
 

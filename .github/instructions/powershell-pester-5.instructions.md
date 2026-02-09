@@ -1,6 +1,5 @@
 ---
-applyTo: '**/*.Tests.ps1'
-description: 'PowerShell Pester testing best practices based on Pester v5 conventions'
+applyTo: "**/*.Tests.ps1"
 ---
 
 # PowerShell Pester v5 Testing Guidelines

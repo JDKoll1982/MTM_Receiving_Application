@@ -205,4 +205,50 @@ BEGIN
       AND routine_name LIKE 'sp_SettingsCore_%';
 END $$
 
+DROP PROCEDURE IF EXISTS sp_SettingsCore_Roles_GetByName $$
+CREATE PROCEDURE sp_SettingsCore_Roles_GetByName(
+    IN p_role_name VARCHAR(100)
+)
+BEGIN
+    SELECT 
+        id,
+        role_name,
+        description,
+        created_at
+    FROM settings_roles
+    WHERE role_name = p_role_name
+    LIMIT 1;
+END $$
+
+DROP PROCEDURE IF EXISTS sp_SettingsCore_UserRoles_Assign $$
+CREATE PROCEDURE sp_SettingsCore_UserRoles_Assign(
+    IN p_user_id INT,
+    IN p_role_id INT
+)
+BEGIN
+    -- Check if user already has this role
+    IF NOT EXISTS (SELECT 1 FROM settings_user_roles 
+                   WHERE user_id = p_user_id AND role_id = p_role_id)
+    THEN
+        -- Insert the role assignment with error handling
+        BEGIN
+            DECLARE EXIT HANDLER FOR SQLEXCEPTION
+            BEGIN
+                -- Role may already exist or other constraint violation
+                -- This is non-critical so we continue silently
+            END;
+            
+            INSERT INTO settings_user_roles (user_id, role_id, assigned_at)
+            VALUES (p_user_id, p_role_id, NOW());
+        END;
+    END IF;
+END $$
+
 DELIMITER ;
+
+INSERT IGNORE INTO settings_roles (role_name, description, created_at)
+VALUES 
+    ('User', 'Basic user role - can modify own settings', NOW()),
+    ('Supervisor', 'Supervisor role - can manage user settings', NOW()),
+    ('Admin', 'Administrator role - full access to all settings', NOW()),
+    ('Developer', 'Developer role - unrestricted access for development', NOW());

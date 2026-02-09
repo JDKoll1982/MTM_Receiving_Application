@@ -36,17 +36,6 @@ public interface IService_Reporting
         DateTime endDate);
 
     /// <summary>
-    /// Retrieves Routing history data filtered by date range
-    /// Includes: Deliver To, Department, Package Description, PO Number, Employee, Date
-    /// </summary>
-    /// <param name="startDate">Start date for filter</param>
-    /// <param name="endDate">End date for filter</param>
-    /// <returns>DAO result containing list of report rows</returns>
-    public Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
-        DateTime startDate,
-        DateTime endDate);
-
-    /// <summary>
     /// Retrieves Volvo history data filtered by date range
     /// Includes: Shipment Date, Shipment Number, PO Number, Receiver Number, Status, Date
     /// </summary>

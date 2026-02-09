@@ -147,74 +147,6 @@ public class Dao_Reporting
     }
 
     /// <summary>
-    /// Retrieves routing history from view_routing_history view
-    /// </summary>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
-        DateTime startDate,
-        DateTime endDate)
-    {
-        try
-        {
-            var query = @"
-                SELECT
-                    id,
-                    po_number,
-                    line_number,
-                    package_description,
-                    deliver_to,
-                    department,
-                    location,
-                    quantity,
-                    employee_number,
-                    created_date,
-                    other_reason,
-                    source_module
-                FROM view_routing_history
-                WHERE created_date BETWEEN @StartDate AND @EndDate
-                ORDER BY created_date DESC, id DESC";
-
-            await using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            await using var command = new MySqlCommand(query, connection);
-            command.Parameters.AddWithValue("@StartDate", startDate.Date);
-            command.Parameters.AddWithValue("@EndDate", endDate.Date);
-
-            await using var reader = await command.ExecuteReaderAsync();
-            var rows = new List<Model_ReportRow>();
-
-            while (await reader.ReadAsync())
-            {
-                rows.Add(new Model_ReportRow
-                {
-                    Id = reader.GetInt32("id").ToString(),
-                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
-                    LineNumber = reader.IsDBNull(reader.GetOrdinal("line_number")) ? null : reader.GetString("line_number"),
-                    PackageDescription = reader.IsDBNull(reader.GetOrdinal("package_description")) ? null : reader.GetString("package_description"),
-                    DeliverTo = reader.IsDBNull(reader.GetOrdinal("deliver_to")) ? null : reader.GetString("deliver_to"),
-                    Department = reader.IsDBNull(reader.GetOrdinal("department")) ? null : reader.GetString("department"),
-                    Location = reader.IsDBNull(reader.GetOrdinal("location")) ? null : reader.GetString("location"),
-                    Quantity = reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetDecimal("quantity"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetInt32("employee_number").ToString(),
-                    CreatedDate = reader.GetDateTime("created_date"),
-                    OtherReason = reader.IsDBNull(reader.GetOrdinal("other_reason")) ? null : reader.GetString("other_reason"),
-                    SourceModule = reader.GetString("source_module")
-                });
-            }
-
-            return Model_Dao_Result_Factory.Success(rows);
-        }
-        catch (Exception ex)
-        {
-            return Model_Dao_Result_Factory.Failure<List<Model_ReportRow>>(
-                $"Error retrieving routing history: {ex.Message}",
-                ex);
-        }
-    }
-
-    /// <summary>
     /// Retrieves Volvo history from view_volvo_history view
     /// </summary>
     /// <param name="startDate"></param>
@@ -302,10 +234,6 @@ public class Dao_Reporting
             // Check Dunnage
             var dunnageCount = await GetCountAsync(connection, "view_dunnage_history", startDate, endDate);
             availability["Dunnage"] = dunnageCount;
-
-            // Check Routing
-            var routingCount = await GetCountAsync(connection, "view_routing_history", startDate, endDate);
-            availability["Routing"] = routingCount;
 
             // Check Volvo (placeholder)
             availability["Volvo"] = 0;

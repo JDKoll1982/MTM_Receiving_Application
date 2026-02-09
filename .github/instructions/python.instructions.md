@@ -1,6 +1,5 @@
 ---
-description: 'Python coding conventions and guidelines'
-applyTo: '**/*.py'
+applyTo: "**/*.py"
 ---
 
 # Python Coding Conventions

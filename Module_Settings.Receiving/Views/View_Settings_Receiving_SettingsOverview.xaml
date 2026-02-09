@@ -6,12 +6,6 @@
     <ScrollViewer>
         <Grid Padding="24">
             <StackPanel HorizontalAlignment="Center" Width="960" Spacing="16">
-                <TextBlock Text="Receiving Overview" Style="{StaticResource TitleTextBlockStyle}" />
-                <TextBlock Text="Review the current Receiving configuration and jump to common sections."
-                           Style="{StaticResource BodyTextBlockStyle}"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           TextWrapping="Wrap" />
-
                 <Border Padding="16"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

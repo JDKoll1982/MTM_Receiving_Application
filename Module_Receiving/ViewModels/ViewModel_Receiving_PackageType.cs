@@ -144,6 +144,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             await LoadPreferencesAsync();
+            
+            // Ensure package type is set for all loads after preferences are loaded
+            UpdateLoadsPackageType();
         }
 
         private async Task LoadPreferencesAsync()
@@ -151,7 +154,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var partId = _workflowService.CurrentPart?.PartID;
             if (string.IsNullOrEmpty(partId))
             {
-                return;
+                // If CurrentPart is not available, try to get from first load
+                if (Loads.Count > 0 && !string.IsNullOrEmpty(Loads[0].PartID))
+                {
+                    partId = Loads[0].PartID;
+                }
+                else
+                {
+                    _logger?.LogWarning("No part ID available for loading package preferences");
+                    // Set default to Skids
+                    SelectedPackageType = "Skids";
+                    return;
+                }
             }
 
             // Try to load from DB
@@ -168,25 +182,47 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     SelectedPackageType = "Custom";
                     CustomPackageTypeName = preference.PackageTypeName;
                 }
+                _logger?.LogInfo($"Loaded saved preference for part {partId}: {preference.PackageTypeName}");
             }
             else
             {
-                // Apply smart defaults based on PartID prefix
-                var partID = _workflowService.CurrentPart?.PartID ?? string.Empty;
-                if (partID.StartsWith("MMC", StringComparison.OrdinalIgnoreCase))
+                // Apply smart defaults based on PartID prefix or PartType from loads
+                var partType = Loads.Count > 0 ? Loads[0].PartType : string.Empty;
+                
+                // Check PartType first (more reliable than PartID parsing)
+                if (!string.IsNullOrEmpty(partType))
+                {
+                    if (partType.Equals("Coil", StringComparison.OrdinalIgnoreCase))
+                    {
+                        SelectedPackageType = "Coils";
+                        _logger?.LogInfo($"Auto-set package type to Coils based on PartType for part {partId}");
+                    }
+                    else if (partType.Equals("Sheet", StringComparison.OrdinalIgnoreCase))
+                    {
+                        SelectedPackageType = "Sheets";
+                        _logger?.LogInfo($"Auto-set package type to Sheets based on PartType for part {partId}");
+                    }
+                    else
+                    {
+                        SelectedPackageType = "Skids";
+                        _logger?.LogInfo($"Auto-set package type to Skids (default) based on PartType for part {partId}");
+                    }
+                }
+                // Fallback to PartID prefix detection
+                else if (partId.StartsWith("MMC", StringComparison.OrdinalIgnoreCase))
                 {
                     SelectedPackageType = "Coils";
-                    _logger?.LogInfo($"Auto-set package type to Coils for part {partID}");
+                    _logger?.LogInfo($"Auto-set package type to Coils for part {partId}");
                 }
-                else if (partID.StartsWith("MMF", StringComparison.OrdinalIgnoreCase))
+                else if (partId.StartsWith("MMF", StringComparison.OrdinalIgnoreCase))
                 {
                     SelectedPackageType = "Sheets";
-                    _logger?.LogInfo($"Auto-set package type to Sheets for part {partID}");
+                    _logger?.LogInfo($"Auto-set package type to Sheets for part {partId}");
                 }
                 else
                 {
                     SelectedPackageType = "Skids"; // Default fallback
-                    _logger?.LogInfo($"Auto-set package type to Skids (default) for part {partID}");
+                    _logger?.LogInfo($"Auto-set package type to Skids (default) for part {partId}");
                 }
             }
         }

@@ -1,6 +1,5 @@
 ---
-description: 'Guidelines for generating SQL statements and stored procedures'
-applyTo: '**/*.sql'
+applyTo: "**/*.sql"
 ---
 
 # SQL Development

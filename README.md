@@ -7,7 +7,7 @@ Modern WinUI 3 desktop application for manufacturing receiving operations with i
 The MTM Receiving Application streamlines the receiving process for manufacturing facilities by providing:
 
 - **Multi-tier authentication system** with automatic workstation detection
-- **Label generation** for receiving, dunnage, and routing operations
+- **Label generation** for receiving, dunnage, and volvo operations
 - **Database integration** with MySQL for data persistence and audit trails
 - **Session management** with automatic timeout for security
 
@@ -67,14 +67,6 @@ A guided, step-by-step workflow for receiving materials:
 - **Package Type**: Select package types with user preferences.
 - **Review**: Verify all data before saving.
 - **Persistence**: Saves to local CSV, network CSV, and MySQL database.
-
-### Label Generation
-
-_(Coming soon)_
-
-- Receiving labels with barcode integration
-- Dunnage/packing material labels
-- Internal routing labels
 
 ### Help System
 

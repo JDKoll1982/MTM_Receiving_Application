@@ -50,7 +50,9 @@
     </ItemGroup>
     <!-- Configuration Files -->
     <ItemGroup>
-        <None Include=".github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1" />
+        <None Include=".agent_work\Action-Log.md" />
+        <None Include=".agent_work\Decision-Record.md" />
+        <None Include=".agent_work\README.md" />
         <None Include="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
@@ -87,7 +89,6 @@
         <None Include=".github\**\*.json" />
         <None Include=".github\**\*.md" />
         <None Include=".github\**\*.sql" />
-        <None Include=".github\.last-agent-run" />
         <!-- Assets -->
         <None Include="Assets\app-icon.svg" />
     </ItemGroup>
@@ -270,5 +271,8 @@
     </ItemGroup>
     <ItemGroup>
       <PRIResource Remove="Properties\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
     </ItemGroup>
 </Project>

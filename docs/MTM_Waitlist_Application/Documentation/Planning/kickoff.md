@@ -390,41 +390,6 @@ gantt
     Training content + rollout plan :after d1, 7d
 ```
 
-## 12) BMAD “implementation-ready” placeholders
-
-Use these placeholders as prompts/inputs when driving implementation via BMAD.
-
-### BMAD inputs (fill in)
-
-- **App name**: `<TBD>`
-- **Sites**: `<list of site codes>`
-- **Roles**: `Operator | MaterialHandler | Quality | Lead | Admin`
-- **Analytics rights**: `<definition>`
-- **Zones**: `<list of zones>`
-- **Waitlist request types**: `<list of request types>`
-- **Validation rules** (Visual RO): `<WO/OP/Part checks>`
-- **Notification channels** (approved?): `<none|email|teams|intercom>`
-
-### BMAD task slices (repeat per module)
-
-- Define module scope + navigation entry
-- Define models (DTOs + persistence models)
-- Define service contracts
-- Define stored procedures (MySQL) + DAO methods
-- Define ViewModels (state + commands)
-- Define Views (bindings + UX)
-- Add audit trail events
-- Add tests (service + DAO)
-
-## 13) Open questions (track early)
-
-- Site identification: do we map by **hostname**, **IP**, or both?
-- How are “favorites/recents” scoped: per user, per site, or shared?
-- What is the minimum acceptable Quality alert path under security policy?
-- What data must be captured for “credit” and analytics (start/stop timestamps, reassignment events, etc.)?
-
----
-
 ## Source Notes
 
 This kickoff is derived from:

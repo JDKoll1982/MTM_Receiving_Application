@@ -1,6 +1,5 @@
 ---
-description: Serena semantic coding tools for efficient C# code navigation, symbol-level editing, and intelligent codebase exploration. Save 80-90% tokens on large codebase tasks.
-applyTo: '**/*.cs'
+applyTo: "**"
 ---
 
 # Serena Semantic Coding Tools for MTM Application

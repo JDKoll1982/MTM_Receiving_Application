@@ -1,6 +1,5 @@
 ---
-description: 'Standard workflow for creating and updating per-module documentation sets, including freshness logging.'
-applyTo: '**'
+applyTo: "**"
 ---
 
 # Module Documentation Maintenance

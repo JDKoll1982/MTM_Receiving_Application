@@ -73,7 +73,7 @@
             "instructions": "file:_bmad/module-agents/agents/module-rebuilder.md",
             "conversationStarters": [
                 "Rebuild Module_Receiving using CQRS patterns",
-                "Modernize Module_Routing to use MediatR",
+                "Modernize Module_Volvo to use MediatR",
                 "Migrate Module_Dunnage to FluentValidation"
             ],
             "additionalInstructions": [
@@ -232,7 +232,7 @@
             "description": "Validates constitution compliance post-rebuild with strict gates.",
             "instructions": "file:_bmad/module-agents/agents/compliance-auditor.md",
             "conversationStarters": [
-                "Audit Module_Routing for compliance",
+                "Audit Module_Volvo for compliance",
                 "Check constitution violations",
                 "Validate MVVM patterns"
             ],

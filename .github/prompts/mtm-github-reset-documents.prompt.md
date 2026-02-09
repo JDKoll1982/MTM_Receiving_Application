@@ -12,7 +12,7 @@ This is a WinUI 3 C# application using:
 
 - . NET 8, MVVM architecture with CommunityToolkit.Mvvm
 - MySQL database (READ/WRITE) and SQL Server/Infor Visual (READ ONLY)
-- Modular structure:  Module_Core, Module_Receiving, Module_Dunnage, Module_Routing, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
+- Modular structure:  Module_Core, Module_Receiving, Module_Dunnage, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
 - xUnit testing, strict MVVM separation with x:Bind in XAML
 
 ## MCP Tools Available
@@ -222,7 +222,7 @@ Before creating this file:
 
 **Specific Requirements:**
 
-- Reference actual modules:  Module_Core, Module_Receiving, Module_Dunnage, Module_Routing, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
+- Reference actual modules:  Module_Core, Module_Receiving, Module_Dunnage, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
 - Include code examples showing ViewModel structure, XAML binding patterns, DAO structure
 - Emphasize:  ViewModels MUST be partial classes, use x:Bind NOT Binding, DAOs instance-based NOT static
 - Database rules: MySQL stored procedures only, SQL Server READ ONLY

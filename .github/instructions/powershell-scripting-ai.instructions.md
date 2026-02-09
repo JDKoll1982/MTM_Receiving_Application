@@ -1,3 +1,7 @@
+---
+applyTo: "**/*.ps1,**/*.psm1"
+---
+
 # PowerShell Script Creation (AI-Assisted)
 
 Purpose: Provide a consistent approach for creating reliable .ps1 scripts with optional AI integration. Adapted from the NetNerds AI-for-PowerShell guidance.

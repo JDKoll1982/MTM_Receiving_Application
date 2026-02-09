@@ -610,49 +610,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Attempts to load data from default CSV locations (local or network).
+        /// Attempts to load data from the default CSV location.
         /// </summary>
         private async Task<bool> TryLoadFromDefaultCsvAsync()
         {
-            string localPath = _csvWriter.GetLocalCSVPath();
-            if (File.Exists(localPath))
-            {
-                try
-                {
-                    _logger.LogInfo($"Attempting to load from local CSV: {localPath}");
-                    var loadedData = await _csvWriter.ReadFromCSVAsync(localPath);
-
-                    if (loadedData.Count > 0)
-                    {
-                        _deletedLoads.Clear();
-                        _allLoads.Clear();
-                        foreach (var load in loadedData)
-                        {
-                            _allLoads.Add(load);
-                            _workflowService.CurrentSession.Loads.Add(load);
-                        }
-                        StatusMessage = $"Loaded {_allLoads.Count} loads from local labels";
-                        _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from local labels");
-                        CurrentDataSource = Enum_DataSourceType.CurrentLabels;
-                        _currentCsvPath = localPath;
-                        SelectAllButtonText = "Select All";
-
-                        FilterStartDate = DateTimeOffset.Now.AddYears(-1);
-                        FilterEndDate = DateTimeOffset.Now;
-
-                        FilterAndPaginate();
-                        return true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning($"Failed to load from local labels: {ex.Message}");
-                }
-            }
-
             try
             {
-                string networkPath = _csvWriter.GetNetworkCSVPath();
+                string networkPath = await _csvWriter.GetNetworkCSVPathAsync();
                 if (File.Exists(networkPath))
                 {
                     _logger.LogInfo($"Attempting to load from network labels: {networkPath}");

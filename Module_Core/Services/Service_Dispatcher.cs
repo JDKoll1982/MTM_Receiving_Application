@@ -40,6 +40,7 @@ namespace MTM_Receiving_Application.Module_Core.Services
         /// <summary>
         /// Constructor that accepts a dispatcher queue (for testing or explicit initialization).
         /// </summary>
+        /// <param name="dispatcherQueue"></param>
         public Service_Dispatcher(DispatcherQueue dispatcherQueue)
         {
             _dispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));

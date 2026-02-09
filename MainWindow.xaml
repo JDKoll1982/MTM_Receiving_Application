@@ -137,11 +137,6 @@
                         <FontIcon Glyph="&#xE7B8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="UPS / FedEx Labels" Tag="RoutingLabelPage" Margin="0,0,0,4">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE724;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
                 <NavigationViewItem Content="Volvo Dunnage Requisition" Tag="VolvoShipmentEntry" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7C1;" />
@@ -166,7 +161,7 @@
 
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame" HorizontalContentAlignment="Center"  />
+            <Frame x:Name="ContentFrame" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  />
         </NavigationView>
     </Grid>
 </Window>

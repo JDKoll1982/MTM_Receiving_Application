@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +8,7 @@ using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Shared.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Data;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Startup
 {
@@ -18,6 +19,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_CSVWriter _csvWriter;
+        private readonly Dao_SettingsCoreRoles _rolesDao;
+        private readonly Dao_SettingsCoreUserRoles _userRolesDao;
         private View_Shared_SplashScreenWindow? _splashScreen;
 
         public Service_OnStartup_AppLifecycle(
@@ -25,13 +28,17 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
             IService_ErrorHandler errorHandler,
-            IService_CSVWriter csvWriter)
+            IService_CSVWriter csvWriter,
+            Dao_SettingsCoreRoles rolesDao,
+            Dao_SettingsCoreUserRoles userRolesDao)
         {
             _serviceProvider = serviceProvider;
             _authService = authService;
             _sessionManager = sessionManager;
             _errorHandler = errorHandler;
             _csvWriter = csvWriter;
+            _rolesDao = rolesDao;
+            _userRolesDao = userRolesDao;
         }
 
         public async Task StartAsync()
@@ -88,7 +95,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     // Check result
                     if (newUserViewModel.NewEmployeeNumber > 0 && !newUserViewModel.IsCancelled)
                     {
-                        // Account created successfully - re-authenticate to get full user data
+                        // Account created successfully - assign default role for backwards compatibility
+                        await AssignDefaultRoleIfMissingAsync(newUserViewModel.NewEmployeeNumber);
+
+                        // Re-authenticate to get full user data
                         UpdateSplash(40, "Employee account created...");
                         userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(windowsUser);
 
@@ -151,6 +161,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 {
                     // User exists - use existing user account
                     authenticatedUser = userCheckResult.User;
+                }
+
+                // Assign default role if user doesn't have any (backwards compatibility)
+                if (authenticatedUser != null)
+                {
+                    await AssignDefaultRoleIfMissingAsync(authenticatedUser.EmployeeNumber);
                 }
 
                 // Ensure first-run never proceeds with missing defaults.
@@ -324,6 +340,61 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             if (string.IsNullOrWhiteSpace(user.DefaultDunnageMode))
             {
                 user.DefaultDunnageMode = "guided";
+            }
+        }
+
+        /// <summary>
+        /// Assigns the default "User" role to a user if they don't have any roles assigned.
+        /// This provides backwards compatibility for users created before the role system was implemented.
+        /// </summary>
+        /// <param name="employeeNumber">The employee number of the user</param>
+        private async Task AssignDefaultRoleIfMissingAsync(int employeeNumber)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Starting role assignment check for employee: {employeeNumber}");
+
+                // Check if user already has roles assigned
+                var userRolesResult = await _userRolesDao.GetByUserAsync(employeeNumber);
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] GetByUserAsync result: Success={userRolesResult.Success}, Count={userRolesResult.Data?.Count ?? 0}");
+                
+                if (userRolesResult.Success && userRolesResult.Data?.Count > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] User already has {userRolesResult.Data.Count} role(s), skipping assignment");
+                    return;
+                }
+
+                // Get the "User" role
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Looking up 'User' role");
+                var roleResult = await _rolesDao.GetByNameAsync("User");
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] GetByNameAsync result: Success={roleResult.Success}, RoleId={roleResult.Data?.Id ?? 0}, RoleName={roleResult.Data?.RoleName ?? "null"}");
+                
+                if (!roleResult.Success || roleResult.Data == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] 'User' role not found: {roleResult.ErrorMessage}");
+                    return;
+                }
+
+                // Assign the role to the user
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Assigning role {roleResult.Data.Id} ({roleResult.Data.RoleName}) to employee {employeeNumber}");
+                var assignResult = await _userRolesDao.AssignRoleAsync(employeeNumber, roleResult.Data.Id);
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] AssignRoleAsync result: Success={assignResult.Success}, ErrorMessage={assignResult.ErrorMessage ?? "null"}");
+                
+                if (assignResult.Success)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] ✓ Successfully assigned '{roleResult.Data.RoleName}' role to employee {employeeNumber}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] ✗ Failed to assign role: {assignResult.ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Exception during role assignment: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] StackTrace: {ex.StackTrace}");
+                // Log but don't fail startup if role assignment fails
+                // This is a non-critical operation
             }
         }
     }

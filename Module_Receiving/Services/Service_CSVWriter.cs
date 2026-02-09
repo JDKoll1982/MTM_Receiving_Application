@@ -3,6 +3,8 @@ using CsvHelper.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,32 +15,75 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 {
     /// <summary>
     /// Service for writing receiving data to CSV files.
-    /// Handles both local (%APPDATA%) and network paths with graceful fallback.
+    /// Respects the user-configured CSV save location from settings.
+    /// Falls back to default network path if not configured.
     /// </summary>
     public class Service_CSVWriter : IService_CSVWriter
     {
-        private readonly string _localCSVPath;
+        private const string SettingsCategory = "Receiving";
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
+        private readonly IService_SettingsCoreFacade _settingsCore;
 
-        public Service_CSVWriter(IService_UserSessionManager sessionManager, IService_LoggingUtility logger)
+        public Service_CSVWriter(
+            IService_UserSessionManager sessionManager,
+            IService_LoggingUtility logger,
+            IService_SettingsCoreFacade settingsCore)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            // Ensure directory exists
-            var appDir = Path.Combine(appDataPath, "MTM_Receiving_Application");
-            if (!Directory.Exists(appDir))
-            {
-                Directory.CreateDirectory(appDir);
-            }
-            _localCSVPath = Path.Combine(appDir, "ReceivingData.csv");
+            _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         }
 
-        private string GetNetworkCSVPathInternal()
+        private async Task<string> GetNetworkCSVPathInternalAsync()
         {
             _logger.LogInfo("Resolving network CSV path...");
+            try
+            {
+                // First, try to get user-configured path from settings
+                var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+                if (currentUserId.HasValue)
+                {
+                    var settingResult = await _settingsCore.GetSettingAsync(
+                        SettingsCategory,
+                        ReceivingSettingsKeys.Defaults.CsvSaveLocation,
+                        currentUserId.Value);
+
+                    if (settingResult.IsSuccess && !string.IsNullOrWhiteSpace(settingResult.Data?.Value))
+                    {
+                        var configuredPath = settingResult.Data.Value;
+                        _logger.LogInfo($"Using user-configured CSV path: {configuredPath}");
+                        
+                        // Ensure directory exists
+                        try
+                        {
+                            if (!Directory.Exists(configuredPath))
+                            {
+                                _logger.LogInfo($"Creating directory: {configuredPath}");
+                                Directory.CreateDirectory(configuredPath);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning($"Failed to create configured directory: {ex.Message}");
+                        }
+
+                        return Path.Combine(configuredPath, "ReceivingData.csv");
+                    }
+                }
+
+                // Fall back to default network path if not configured
+                return GetDefaultNetworkPath();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error resolving network path: {ex.Message}");
+                return GetDefaultNetworkPath();
+            }
+        }
+
+        private string GetDefaultNetworkPath()
+        {
             try
             {
                 string userName;
@@ -54,7 +99,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 var networkBase = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files";
                 var userDir = Path.Combine(networkBase, userName);
 
-                _logger.LogInfo($"Checking network directory: {userDir}");
+                _logger.LogInfo($"Using default network path: {userDir}");
                 // Ensure directory exists
                 if (!Directory.Exists(userDir))
                 {
@@ -72,7 +117,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error resolving network path: {ex.Message}");
+                _logger.LogError($"Error resolving default network path: {ex.Message}");
                 return @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\UnknownUser\ReceivingData.csv";
             }
         }
@@ -85,40 +130,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 throw new ArgumentException("Loads list cannot be null or empty", nameof(loads));
             }
 
-            var result = new Model_CSVWriteResult { RecordsWritten = loads.Count };
-
-            // Write to local CSV (required - failure is critical)
-            try
+            var result = new Model_CSVWriteResult
             {
-                _logger.LogInfo($"Writing to local CSV: {_localCSVPath}");
-                await WriteToFileAsync(_localCSVPath, loads);
-                result.LocalSuccess = true;
-                _logger.LogInfo("Local CSV write successful.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Local CSV write failed: {ex.Message}");
-                result.LocalSuccess = false;
-                result.LocalError = ex.Message;
-                throw new InvalidOperationException("Failed to write local CSV file", ex);
-            }
+                RecordsWritten = loads.Count,
+                LocalSuccess = true
+            };
 
-            // Attempt network CSV (optional - failure is not critical)
             try
             {
                 _logger.LogInfo("Attempting network CSV write...");
-                var networkPath = await Task.Run(() => GetNetworkCSVPathInternal());
+                var networkPath = await GetNetworkCSVPathInternalAsync();
                 _logger.LogInfo($"Network path resolved: {networkPath}");
                 await WriteToFileAsync(networkPath, loads);
                 result.NetworkSuccess = true;
+                result.NetworkFilePath = networkPath;
                 _logger.LogInfo("Network CSV write successful.");
             }
             catch (Exception ex)
             {
-                _logger.LogWarning($"Network CSV write failed: {ex.Message}");
+                _logger.LogError($"Network CSV write failed: {ex.Message}");
                 result.NetworkSuccess = false;
                 result.NetworkError = ex.Message;
-                // Don't throw - graceful degradation
+                throw new InvalidOperationException("Failed to write network CSV file", ex);
             }
 
             return result;
@@ -206,48 +239,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             var result = new Model_CSVDeleteResult();
 
-            // Clear local CSV
-            if (File.Exists(_localCSVPath))
+            try
             {
-                try
+                var networkPath = await GetNetworkCSVPathInternalAsync();
+                if (File.Exists(networkPath))
                 {
-                    await Task.Run(() =>
-                    {
-                        using var writer = new StreamWriter(_localCSVPath);
-                        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-                        csv.WriteHeader<Model_ReceivingLoad>();
-                        csv.NextRecord();
-                    });
-                    result.LocalDeleted = true;
-                }
-                catch (Exception ex)
-                {
-                    result.LocalDeleted = false;
-                    result.LocalError = ex.Message;
+                    using var writer = new StreamWriter(networkPath);
+                    using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                    csv.WriteHeader<Model_ReceivingLoad>();
+                    csv.NextRecord();
+                    result.NetworkDeleted = true;
                 }
             }
-
-            // Clear network CSV
-            await Task.Run(() =>
+            catch (Exception ex)
             {
-                try
-                {
-                    var networkPath = GetNetworkCSVPathInternal();
-                    if (File.Exists(networkPath))
-                    {
-                        using var writer = new StreamWriter(networkPath);
-                        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-                        csv.WriteHeader<Model_ReceivingLoad>();
-                        csv.NextRecord();
-                        result.NetworkDeleted = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    result.NetworkDeleted = false;
-                    result.NetworkError = ex.Message;
-                }
-            });
+                result.NetworkDeleted = false;
+                result.NetworkError = ex.Message;
+            }
 
             return result;
         }
@@ -256,29 +264,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             var result = new Model_CSVExistenceResult();
 
-            await Task.Run(() =>
+            try
             {
-                result.LocalExists = File.Exists(_localCSVPath);
-
-                try
-                {
-                    var networkPath = GetNetworkCSVPathInternal();
-                    result.NetworkExists = File.Exists(networkPath);
-                    result.NetworkAccessible = true;
-                }
-                catch
-                {
-                    result.NetworkExists = false;
-                    result.NetworkAccessible = false;
-                }
-            });
+                var networkPath = await GetNetworkCSVPathInternalAsync();
+                result.NetworkExists = File.Exists(networkPath);
+                result.NetworkAccessible = true;
+            }
+            catch
+            {
+                result.NetworkExists = false;
+                result.NetworkAccessible = false;
+            }
 
             return result;
         }
 
-        public string GetLocalCSVPath() => _localCSVPath;
-
-        public string GetNetworkCSVPath() => GetNetworkCSVPathInternal();
+        public async Task<string> GetNetworkCSVPathAsync() => await GetNetworkCSVPathInternalAsync();
     }
 }
 

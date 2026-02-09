@@ -36,9 +36,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private bool _isDunnageChecked;
 
     [ObservableProperty]
-    private bool _isRoutingChecked;
-
-    [ObservableProperty]
     private bool _isVolvoChecked;
 
     [ObservableProperty]
@@ -48,9 +45,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private bool _isDunnageEnabled = true;
 
     [ObservableProperty]
-    private bool _isRoutingEnabled = true;
-
-    [ObservableProperty]
     private bool _isVolvoEnabled = true;
 
     [ObservableProperty]
@@ -58,9 +52,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     [ObservableProperty]
     private int _dunnageCount;
-
-    [ObservableProperty]
-    private int _routingCount;
 
     [ObservableProperty]
     private int _volvoCount;
@@ -108,16 +99,14 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 // Update counts
                 ReceivingCount = result.Data.GetValueOrDefault("Receiving", 0);
                 DunnageCount = result.Data.GetValueOrDefault("Dunnage", 0);
-                RoutingCount = result.Data.GetValueOrDefault("Routing", 0);
                 VolvoCount = result.Data.GetValueOrDefault("Volvo", 0);
 
                 // Enable/disable checkboxes based on availability
                 IsReceivingEnabled = ReceivingCount > 0;
                 IsDunnageEnabled = DunnageCount > 0;
-                IsRoutingEnabled = RoutingCount > 0;
                 IsVolvoEnabled = VolvoCount > 0;
 
-                var totalCount = ReceivingCount + DunnageCount + RoutingCount + VolvoCount;
+                var totalCount = ReceivingCount + DunnageCount + VolvoCount;
                 ShowStatus($"Found {totalCount} total records", InfoBarSeverity.Success);
             }
             else
@@ -159,18 +148,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     }
 
     private bool CanGenerateDunnage() => IsDunnageChecked && IsDunnageEnabled && !IsBusy;
-
-    /// <summary>
-    /// Generates report for Routing module
-    /// </summary>
-    [RelayCommand(CanExecute = nameof(CanGenerateRouting))]
-    private async Task GenerateRoutingReportAsync()
-    {
-        await GenerateReportForModuleAsync("Routing",
-            () => _reportingService.GetRoutingHistoryAsync(StartDate.DateTime, EndDate.DateTime));
-    }
-
-    private bool CanGenerateRouting() => IsRoutingChecked && IsRoutingEnabled && !IsBusy;
 
     /// <summary>
     /// Generates report for Volvo module
@@ -340,11 +317,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     partial void OnIsDunnageCheckedChanged(bool value)
     {
         GenerateDunnageReportCommand.NotifyCanExecuteChanged();
-    }
-
-    partial void OnIsRoutingCheckedChanged(bool value)
-    {
-        GenerateRoutingReportCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsVolvoCheckedChanged(bool value)

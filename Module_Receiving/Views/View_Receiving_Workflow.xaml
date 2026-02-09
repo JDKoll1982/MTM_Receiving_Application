@@ -14,7 +14,7 @@
         <converters:Converter_StringFormat x:Key="StringFormatConverter"/>
     </Page.Resources>
 
-    <Grid>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <!-- Content Area -->
-        <Grid Grid.Row="1" Margin="16,12,16,16">
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Margin="16,12,16,16">
             <!-- Mode Selection View -->
             <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ModeSelectionHost" Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             
@@ -34,17 +34,17 @@
 
             <!-- Guided Wizard Views -->
             <!-- PO Entry View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="POEntryHost" Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="POEntryHost" Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <!-- Load Entry View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="LoadEntryHost" Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="LoadEntryHost" Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <!-- Weight/Quantity Entry View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="WeightQuantityHost" Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="WeightQuantityHost" Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <!-- Heat/Lot Entry View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="HeatLotHost" Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="HeatLotHost" Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <!-- Package Type Entry View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="PackageTypeHost" Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PackageTypeHost" Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <!-- Review View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ReviewHost" Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="ReviewHost" Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             
             <!-- Saving Progress -->
             <StackPanel Visibility="{x:Bind ViewModel.IsSavingVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"

@@ -1,6 +1,5 @@
 ---
-applyTo: '**/*.{cs,ts,java}'
-description: Enforces Object Calisthenics principles for business domain code to ensure clean, maintainable, and robust code
+applyTo: "**/*.{cs,ts,java}"
 ---
 # Object Calisthenics Rules
 

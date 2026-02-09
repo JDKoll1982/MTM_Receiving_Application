@@ -204,6 +204,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     break;
 
                 case Enum_ReceivingWorkflowStep.HeatLotEntry:
+                    // Set "Nothing Entered" for blank heat/lot fields before validation
+                    foreach (var load in CurrentSession.Loads)
+                    {
+                        if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
+                        {
+                            load.HeatLotNumber = "Nothing Entered";
+                        }
+                    }
+                    
+                    // Validate heat/lot numbers (only checks max length now)
                     foreach (var load in CurrentSession.Loads)
                     {
                         var result = _validation.ValidateHeatLotNumber(load.HeatLotNumber);
@@ -358,26 +368,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return result;
             }
 
+
             try
             {
                 var csvResult = await _csvWriter.WriteToCSVAsync(CurrentSession.Loads);
 
-                result.LocalCSVSuccess = csvResult.LocalSuccess;
+                result.LocalCSVSuccess = true;
                 result.NetworkCSVSuccess = csvResult.NetworkSuccess;
-                result.LocalCSVPath = _csvWriter.GetLocalCSVPath();
-                result.NetworkCSVPath = _csvWriter.GetNetworkCSVPath();
-
-                if (!csvResult.LocalSuccess)
-                {
-                    result.Errors.Add($"Local CSV write failed: {csvResult.LocalError}");
-                }
+                result.NetworkCSVPath = await _csvWriter.GetNetworkCSVPathAsync();
 
                 if (!csvResult.NetworkSuccess)
                 {
-                    result.Warnings.Add($"Network CSV write failed: {csvResult.NetworkError}");
+                    result.Errors.Add($"Network CSV write failed: {csvResult.NetworkError}");
                 }
 
-                result.Success = result.LocalCSVSuccess; // Network failure is just a warning
+                result.Success = result.NetworkCSVSuccess;
             }
             catch (Exception ex)
             {

@@ -162,10 +162,10 @@ $tableCreationOrder = @(
     # Core/lookup tables first
     "users", "departments", "dunnage_types", "dunnage_types", "dunnage_specs", "volvo_masterdata"
     # Then reference data
-    "routing_recipients", "routing_po_alternatives", "dunnage_parts"
+    "dunnage_parts"
     # Then transactional tables
     "receiving_history", "receiving_packages", "receiving_lines", "dunnage_history", "dunnage_requires_inventory"
-    "routing_label_data", "routing_history", "volvo_label_data", "volvo_line_data", "volvo_part_components"
+    "volvo_label_data", "volvo_line_data", "volvo_part_components"
     # Finally settings/preferences
     "user_preferences", "settings_universal", "reporting_scheduled_reports"
 )
@@ -203,14 +203,6 @@ foreach ($sp in $spDetails.Keys) {
         $category = "VolvoParts"
         $order = 40
     }
-    elseif ($sp -match "routing_recipient") {
-        $category = "RoutingRecipients"
-        $order = 45
-    }
-    elseif ($sp -match "routing_other_reason") {
-        $category = "RoutingReasons"
-        $order = 50
-    }
     elseif ($sp -match "receiving.*load|ReceivingLoad") {
         $category = "ReceivingLoads"
         $order = 100
@@ -230,14 +222,6 @@ foreach ($sp in $spDetails.Keys) {
     elseif ($sp -match "dunnage_requires_inventory") {
         $category = "InventoriedDunnage"
         $order = 140
-    }
-    elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
-        $category = "RoutingLabels"
-        $order = 150
-    }
-    elseif ($sp -match "routing_history") {
-        $category = "RoutingHistory"
-        $order = 160
     }
     elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {
         $category = "VolvoShipments"
@@ -305,7 +289,6 @@ function Get-MockValue {
     if ($paramName -match "email") { return "test@example.com" }
     if ($paramName -match "department") { return "Production" }
     if ($paramName -match "shift|p_shift") { return "1st Shift" }  # Default shift value
-    if ($paramName -match "match.*type|p_match_type") { return "Part Number" }  # Default routing match type
     if ($paramName -match "package.*type|p_package_type") { return 1 }
     if ($paramName -match "dunnage.*type|type_id") { return 1 }
     if ($paramName -match "part.*number|p_part_number") { return "TEST_PART" }
@@ -574,7 +557,6 @@ foreach ($dao in ($daoIssues.GetEnumerator() | Sort-Object Key)) {
         "Module_Core/Data/$daoName.cs",
         "Module_Receiving/Data/$daoName.cs",
         "Module_Dunnage/Data/$daoName.cs",
-        "Module_Routing/Data/$daoName.cs",
         "Module_Settings/Data/$daoName.cs",
         "Module_Volvo/Data/$daoName.cs"
     )

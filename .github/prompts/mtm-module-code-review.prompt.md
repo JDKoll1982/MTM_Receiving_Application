@@ -229,8 +229,7 @@ Documentation/FutureEnhancements/Module_Settings/
 ```
 .github/instructions/
 ├── service-volvo.instructions.md          # ← Service guides
-├── service-volvo-masterdata.instructions.md
-└── service-routing_v2.instructions.md     # ← Versioned if changed
+├── service-volvo-masterdata.instructions.md  # ← Updated guide with versioning
 ```
 
 ### In Database Folder

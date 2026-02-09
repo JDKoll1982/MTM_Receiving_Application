@@ -92,9 +92,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Model_ReceivingValidationResult ValidateHeatLotNumber(string heatLotNumber)
         {
+            // Heat/Lot number is optional - blank values are allowed and will be set to "Nothing Entered"
             if (string.IsNullOrWhiteSpace(heatLotNumber))
             {
-                return Model_ReceivingValidationResult.Error("Heat/Lot number is required");
+                return Model_ReceivingValidationResult.Success();
             }
 
             if (heatLotNumber.Length > 50)
