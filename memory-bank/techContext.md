@@ -93,7 +93,6 @@ MTM_Receiving_Application/
 ├── Module_Receiving/         # Receiving workflows
 ├── Module_Volvo/             # Volvo integration
 ├── Module_Dunnage/           # Dunnage management
-├── Module_Routing/           # Routing rules
 ├── Module_Reporting/         # Reporting
 ├── Module_Settings/          # Settings UI
 ├── Database/                 # Database scripts

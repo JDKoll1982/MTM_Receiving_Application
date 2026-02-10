@@ -73,7 +73,7 @@ public class Service_UserPreferences : IService_UserPreferences
         }
     }
 
-    public async Task<Model_Dao_Result> UpdateDefaultModeAsync(string username, string defaultMode)
+    public async Task<Model_Dao_Result> UpdateDefaultModeAsync(string username, string? defaultMode)
     {
         try
         {
@@ -109,7 +109,7 @@ public class Service_UserPreferences : IService_UserPreferences
         }
     }
 
-    public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(string username, string defaultMode)
+    public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(string username, string? defaultMode)
     {
         try
         {
@@ -145,7 +145,7 @@ public class Service_UserPreferences : IService_UserPreferences
         }
     }
 
-    public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(string username, string defaultMode)
+    public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(string username, string? defaultMode)
     {
         try
         {

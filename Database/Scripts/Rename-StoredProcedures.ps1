@@ -91,21 +91,9 @@ $moduleConventions = @{
             "sp_user_preferences_upsert.sql"              = "sp_Dunnage_UserPreferences_Upsert.sql"
         }
     }
-    "Routing"        = @{
-        Prefix   = "sp_Routing"
-        Note     = "Already standardized - keeping sp_routing_* lowercase pattern"
-        Mappings = @{}
-    }
     "Settings"       = @{
         Prefix   = "sp_Settings"
         Mappings = @{
-            "sp_RoutingRule_Delete.sql"            = "sp_Settings_RoutingRule_Delete.sql"
-            "sp_RoutingRule_FindMatch.sql"         = "sp_Settings_RoutingRule_FindMatch.sql"
-            "sp_RoutingRule_GetAll.sql"            = "sp_Settings_RoutingRule_GetAll.sql"
-            "sp_RoutingRule_GetById.sql"           = "sp_Settings_RoutingRule_GetById.sql"
-            "sp_RoutingRule_GetByPartNumber.sql"   = "sp_Settings_RoutingRule_GetByPartNumber.sql"
-            "sp_RoutingRule_Insert.sql"            = "sp_Settings_RoutingRule_Insert.sql"
-            "sp_RoutingRule_Update.sql"            = "sp_Settings_RoutingRule_Update.sql"
             "sp_ScheduledReport_Delete.sql"        = "sp_Settings_ScheduledReport_Delete.sql"
             "sp_ScheduledReport_GetActive.sql"     = "sp_Settings_ScheduledReport_GetActive.sql"
             "sp_ScheduledReport_GetAll.sql"        = "sp_Settings_ScheduledReport_GetAll.sql"
@@ -317,11 +305,13 @@ foreach ($module in $moduleConventions.Keys) {
                     if ($updated) {
                         Write-Host "            [✓] Updated: $relativePath" -ForegroundColor Green
                     }
-                } else {
+                }
+                else {
                     Write-Host "            [WHATIF] Would update: $relativePath" -ForegroundColor Yellow
                 }
             }
-        } else {
+        }
+        else {
             Write-Host "        [-] No references found" -ForegroundColor Gray
         }
 
@@ -329,7 +319,8 @@ foreach ($module in $moduleConventions.Keys) {
         if (-not $WhatIf) {
             Move-Item $oldPath $newPath -Force
             Write-Host "        [✓] File renamed" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "        [WHATIF] Would rename file" -ForegroundColor Yellow
         }
 

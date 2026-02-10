@@ -66,22 +66,6 @@ This file maps out what parts of the system are touched or affected when Module_
 
 ## Downstream Dependencies (What Depends on Receiving)
 
-### Module_Routing
-**How it depends**:
-- Reads receiving data from MySQL database
-- Routes completed receives to destinations
-- May trigger on CSV file events
-
-**Impact of Receiving changes**:
-- **Database schema changes**: Routing queries may break
-- **CSV format changes**: Routing CSV parsers must update
-- **Workflow changes**: Routing trigger timing may need adjustment
-
-**Testing required**:
-- Verify Routing can still read receiving records
-- Test routing triggers after receiving save
-- Validate CSV format compatibility
-
 ### Module_Reporting
 **How it depends**:
 - Queries receiving database for reports

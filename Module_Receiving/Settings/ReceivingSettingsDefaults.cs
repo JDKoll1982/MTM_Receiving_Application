@@ -33,6 +33,7 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle] = "Save Details:",
         [ReceivingSettingsKeys.UiText.CompletionLocalCsvLabel] = "Local CSV:",
         [ReceivingSettingsKeys.UiText.CompletionNetworkCsvLabel] = "Network CSV:",
+        [ReceivingSettingsKeys.UiText.CompletionCsvFileLabel] = "CSV File:",
         [ReceivingSettingsKeys.UiText.CompletionDatabaseLabel] = "Database:",
         [ReceivingSettingsKeys.UiText.CompletionSaved] = "Saved",
         [ReceivingSettingsKeys.UiText.CompletionFailed] = "Failed",
@@ -51,6 +52,7 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.UiText.ManualEntryColumnPkgType] = "Pkg Type",
         [ReceivingSettingsKeys.UiText.ManualEntryColumnPkgsPerLoad] = "Pkgs/Load",
         [ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg] = "Wt/Pkg",
+        [ReceivingSettingsKeys.UiText.ManualEntryColumnPoNumber] = "PO Number",
 
         // Edit mode
         [ReceivingSettingsKeys.UiText.EditModeLoadDataFrom] = "Load Data From:",
@@ -235,6 +237,9 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = "30",
         [ReceivingSettingsKeys.Integrations.MaxSyncRetries] = "3",
 
+        // Part Number Padding defaults
+        [ReceivingSettingsKeys.PartNumberPadding.RulesJson] = "[{\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
+
         // Validation defaults
         [ReceivingSettingsKeys.Validation.MinLoadCount] = "1",
         [ReceivingSettingsKeys.Validation.MaxLoadCount] = "99",
@@ -277,6 +282,9 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.Integrations.AutoPullPartDataEnabled] = true,
         [ReceivingSettingsKeys.Integrations.SyncToInforVisual] = false,
         [ReceivingSettingsKeys.Integrations.RetryFailedSyncs] = true,
+
+        // Part Number Padding
+        [ReceivingSettingsKeys.PartNumberPadding.Enabled] = true,
     };
 
     public static IReadOnlyDictionary<string, int> IntDefaults { get; } = new Dictionary<string, int>

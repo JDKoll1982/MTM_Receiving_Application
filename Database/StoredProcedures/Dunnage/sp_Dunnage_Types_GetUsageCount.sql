@@ -18,10 +18,6 @@ BEGIN
       AND is_active = TRUE;
 END$$
 
--- =============================================
--- ROUTING RULES CRUD OPERATIONS
--- =============================================
-
 
 
 DELIMITER ;

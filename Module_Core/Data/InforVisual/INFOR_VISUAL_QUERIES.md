@@ -51,16 +51,6 @@ Connection string is managed by `Helper_Database_Variables`.
 All queries (01-04) executed successfully against the live database without SQL errors.
 READ ONLY intent was respected.
 
-## Module_Routing Inventory
-
-| Query Name / Location | Method Usage | Parameter(s) | Query |
-|-----------------------|--------------|--------------|-------|
-| **Hardcoded (Module_Routing)** | `Dao_InforVisualPO.ValidatePOAsync` | `@PoNumber` | `SELECT COUNT(*) FROM PURCHASE_ORDER WITH (NOLOCK) WHERE PO_ID = @PoNumber AND SITE_REF = '002' AND STATUS IN ('O', 'P')` |
-| **Hardcoded (Module_Routing)** | `Dao_InforVisualPO.GetLinesAsync` | `@PoNumber` | `SELECT pol.PO_ID, pol.PO_LINE, pol.PART_ID, pol.QTY_ORDERED, pol.QTY_RECEIVED, pol.UNIT_PRICE, pol.STATUS, p.PART_NAME, po.VENDOR_ID FROM PURC_ORDER_LINE pol WITH (NOLOCK) INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PO_ID = po.PO_ID LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.PART_ID WHERE pol.PO_ID = @PoNumber AND pol.SITE_REF = '002' ORDER BY pol.PO_LINE` |
-| **Hardcoded (Module_Routing)** | `Dao_InforVisualPO.GetLineAsync` | `@PoNumber`, `@LineNumber` | Same as GetLinesAsync with `AND pol.PO_LINE = @LineNumber` |
-
-> **Note:** These queries appear to use incorrect column names (e.g. `PO_ID` vs `ID`, `SITE_REF` vs `SITE_ID`) and are expected to fail.
-
 ### Findings & Recommendations
 
 The `Module_Routing` DAO (`Dao_InforVisualPO`) contains severely broken SQL that does not match the live schema.

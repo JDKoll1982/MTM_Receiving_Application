@@ -4,8 +4,6 @@
 "sp_Dunnage_UserPreferences_GetRecentIcons.sql","C:","Settings","settings_dunnage_personal"
 "sp_Dunnage_UserPreferences_Upsert.sql","C:","Settings","settings_dunnage_personal, user, preferencevalue"
 "sp_volvo_part_check_references.sql","C:","Volvo","volvo_line_data, volvo_label_data"
-"sp_routing_user_preference_get.sql","C:","Settings","settings_routing_personal"
-"sp_routing_user_preference_save.sql","C:","Settings","settings_routing_personal, user, preference, default_mode"
 "sp_Volvo_Settings_Get.sql","C:","Settings","settings_module_volvo"
 "sp_Volvo_Settings_GetAll.sql","C:","Settings","settings_module_volvo"
 "sp_Volvo_Settings_Reset.sql","C:","Settings","settings_module_volvo"

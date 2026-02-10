@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Module_Settings.Reporting.Views;
 public sealed partial class View_Settings_Reporting_NavigationHub : Page
 {
     public ViewModel_Settings_Reporting_NavigationHub ViewModel { get; }
-    private IService_LoggingUtility? _logger;
+    private readonly IService_LoggingUtility? _logger;
 
     private Frame? NavigationFrameControl => GetHostFrame();
 

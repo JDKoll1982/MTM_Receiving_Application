@@ -77,6 +77,29 @@
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnLoadNumberText, Mode=OneWay}" Binding="{Binding LoadNumber}" IsReadOnly="True"/>
                 
+                <!-- PO Number column with auto-formatting -->
+                <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnPoNumberText, Mode=OneWay}" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding PoNumber}" 
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox 
+                                Text="{Binding PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                BorderThickness="0"
+                                LostFocus="PONumberTextBox_LostFocus"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
+                
                 <!-- Part ID column with conditional text color for quality hold -->
                 <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnPartIdText, Mode=OneWay}" Width="*">
                     <controls:DataGridTemplateColumn.CellTemplate>
@@ -93,6 +116,7 @@
                             <TextBox 
                                 Text="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 BorderThickness="0"
+                                LostFocus="PartIDTextBox_LostFocus"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 VerticalContentAlignment="Center"/>

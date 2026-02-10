@@ -49,6 +49,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _manualEntryColumnLoadNumberText = "Load #";
 
         [ObservableProperty]
+        private string _manualEntryColumnPoNumberText = "PO #";
+
+        [ObservableProperty]
         private string _manualEntryColumnPartIdText = "Part ID";
 
         [ObservableProperty]
@@ -102,6 +105,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ManualEntrySaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntrySaveAndFinish);
 
                 ManualEntryColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnLoadNumber);
+                ManualEntryColumnPoNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPoNumber);
                 ManualEntryColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPartId);
                 ManualEntryColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWeightQty);
                 ManualEntryColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnHeatLot);
@@ -306,7 +310,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ReceivedDate = System.DateTime.Now,
                 LoadNumber = Loads.Count + 1,
                 PackageType = Enum_PackageType.Skid,  // Default package type
-                PackageTypeName = nameof(Enum_PackageType.Skid)  // Default package type name
+                PackageTypeName = nameof(Enum_PackageType.Skid),  // Default package type name
+                EmployeeNumber = _workflowService.CurrentSession.User?.EmployeeNumber ?? 0,
+                UserId = _workflowService.CurrentSession.User?.WindowsUsername ?? string.Empty
             };
             Loads.Add(newLoad);
             _workflowService.CurrentSession.Loads.Add(newLoad);

@@ -27,6 +27,7 @@ public static class ReceivingSettingsKeys
         public const string CompletionSaveDetailsTitle = "Receiving.UiText.Completion.SaveDetailsTitle";
         public const string CompletionLocalCsvLabel = "Receiving.UiText.Completion.LocalCsvLabel";
         public const string CompletionNetworkCsvLabel = "Receiving.UiText.Completion.NetworkCsvLabel";
+        public const string CompletionCsvFileLabel = "Receiving.UiText.Completion.CsvFileLabel";
         public const string CompletionDatabaseLabel = "Receiving.UiText.Completion.DatabaseLabel";
         public const string CompletionSaved = "Receiving.UiText.Completion.Saved";
         public const string CompletionFailed = "Receiving.UiText.Completion.Failed";
@@ -39,6 +40,7 @@ public static class ReceivingSettingsKeys
         public const string ManualEntrySaveAndFinish = "Receiving.UiText.ManualEntry.SaveAndFinish";
 
         public const string ManualEntryColumnLoadNumber = "Receiving.UiText.ManualEntry.Column.LoadNumber";
+        public const string ManualEntryColumnPoNumber = "Receiving.UiText.ManualEntry.Column.PoNumber";
         public const string ManualEntryColumnPartId = "Receiving.UiText.ManualEntry.Column.PartId";
         public const string ManualEntryColumnWeightQty = "Receiving.UiText.ManualEntry.Column.WeightQty";
         public const string ManualEntryColumnHeatLot = "Receiving.UiText.ManualEntry.Column.HeatLot";
@@ -280,5 +282,11 @@ public static class ReceivingSettingsKeys
         public const string ErpConnectionTimeout = "Receiving.Integrations.ErpConnectionTimeout";
         public const string RetryFailedSyncs = "Receiving.Integrations.RetryFailedSyncs";
         public const string MaxSyncRetries = "Receiving.Integrations.MaxSyncRetries";
+    }
+
+    public static class PartNumberPadding
+    {
+        public const string Enabled = "Receiving.PartNumberPadding.Enabled";
+        public const string RulesJson = "Receiving.PartNumberPadding.RulesJson";
     }
 }

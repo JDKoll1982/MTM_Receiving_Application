@@ -133,7 +133,6 @@ function Get-SPCategory {
     if ($spName -match "^(sp_Get|sp_Create|sp_Upsert|sp_Validate|sp_Log|sp_seed|sp_update.*default)") { return "Authentication" }
     if ($spName -match "^(sp_dunnage|sp_custom_fields|sp_dunnage_requires_inventory|sp_user_preferences)") { return "Dunnage" }
     if ($spName -match "^(sp_.*receiving|receiving_)") { return "Receiving" }
-    if ($spName -match "^(sp_routing|sp_RoutingRule)") { return "Routing" }
     if ($spName -match "^(sp_SystemSettings|sp_UserSettings|sp_.*Settings|sp_Scheduled)") { return "Settings" }
     if ($spName -match "^(sp_volvo)") { return "Volvo" }
     if ($spName -match "^(sp_PackageType|carrier_delivery|dunnage_line)") { return "Settings" }
@@ -450,7 +449,7 @@ if (Test-Path $spReportsDir) {
 }
 New-Item -ItemType Directory -Path $spReportsDir -Force | Out-Null
 
-$categories = @("Authentication", "Dunnage", "Receiving", "Routing", "Settings", "Volvo", "Other")
+$categories = @("Authentication", "Dunnage", "Receiving", "Settings", "Volvo", "Other")
 $paramTypes = @("IN", "OUT", "INOUT")
 
 foreach ($cat in $categories) {

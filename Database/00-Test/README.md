@@ -137,7 +137,7 @@ Shows:
 
 - Total SPs analyzed (153)
 - Parameter statistics (IN/OUT/INOUT counts)
-- SPs organized by category (Users, Dunnage, Routing, etc.)
+- SPs organized by category (Users, Dunnage, Volvo, etc.)
 - Execution order groups (dependency-aware)
 - Complex SPs (8+ parameters)
 
@@ -210,8 +210,8 @@ Stored procedures are grouped by dependencies to minimize FK constraint errors:
 | Order Range | Category | Examples |
 |-------------|----------|----------|
 | 10-50 | Core/Lookup Tables | Users, Departments, Package Types |
-| 60-90 | Reference Data | Dunnage Types/Specs/Parts, Routing Recipients |
-| 100-200 | Transactional | Receiving Loads, Dunnage Loads, Routing Labels |
+| 60-90 | Reference Data | Dunnage Types/Specs/Parts |
+| 100-200 | Transactional | Receiving Loads, Dunnage Loads |
 | 200-999 | Settings/Preferences | System Settings, User Preferences |
 | 1000+ | Read Operations | All GET/SELECT queries |
 | 2000+ | Delete Operations | All DELETE queries |

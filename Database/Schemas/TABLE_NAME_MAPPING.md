@@ -27,14 +27,6 @@ Generated: 2026-01-11
 | Dunnage | `inventoried_dunnage` | `dunnage_requires_inventory` | Renamed for clarity |
 | Dunnage | `custom_field_definitions` | `dunnage_custom_fields` | Renamed for clarity |
 | Dunnage | `user_preferences` | `settings_dunnage_personal` | Moved to settings module |
-| **Routing** | | | |
-| Routing | `routing_recipients` | `routing_recipients` | No change |
-| Routing | `routing_other_reasons` | `routing_po_alternatives` | Renamed for clarity |
-| Routing | `routing_labels` | `routing_label_data` | Standardized naming |
-| Routing | `routing_usage_tracking` | `routing_recipient_tracker` | Renamed for clarity |
-| Routing | `routing_user_preferences` | `settings_routing_personal` | Moved to settings module |
-| Routing | `routing_label_history` | `routing_history` | Renamed for clarity |
-| Routing | N/A | `routing_home_locations` | New table |
 | **Volvo** | | | |
 | Volvo | `volvo_parts_master` | `volvo_masterdata` | Renamed for clarity |
 | Volvo | `volvo_shipments` | `volvo_label_data` | Standardized naming |
@@ -47,7 +39,6 @@ Generated: 2026-01-11
 | Settings | `settings_audit_log` | `settings_activity` | Renamed for clarity |
 | Settings | `package_type_mappings` | `receiving_package_type_mapping` | Moved to receiving module |
 | Settings | `package_types` | `receiving_package_types` | Moved to receiving module |
-| Settings | `routing_rules` | `routing_home_locations` | Moved to routing module |
 | Settings | `scheduled_reports` | `reporting_scheduled_reports` | Moved to reporting module |
 | **Reporting** | | | |
 | Reporting | N/A | `reporting_scheduled_reports` | New table (from settings) |
@@ -58,7 +49,6 @@ Generated: 2026-01-11
 |--------------|---------------|-------|
 | `vw_receiving_history` | `view_receiving_history` | Standardized prefix |
 | `vw_dunnage_history` | `view_dunnage_history` | Standardized prefix |
-| `vw_routing_history` | `view_routing_history` | Standardized prefix |
 | `vw_volvo_history` | `view_volvo_history` | Standardized prefix |
 | `vw_volvo_shipments_history` | `view_volvo_label_data_history` | Standardized prefix and naming |
 
@@ -75,7 +65,6 @@ Generated: 2026-01-11
 - **Examples**:
   - `auth_users` (module: auth, entity: users)
   - `receiving_label_data` (module: receiving, purpose: label data)
-  - `settings_routing_personal` (module: settings, scope: routing, level: personal)
 
 ### View Naming Pattern
 

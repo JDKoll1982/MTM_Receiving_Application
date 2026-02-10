@@ -15,19 +15,17 @@ $spFolder = Join-Path $repoRoot "Database\StoredProcedures"
 
 # Define table prefix to module mappings
 $tableToModule = @{
-    "auth_"                  = "Authentication"
-    "workstation_"           = "Authentication"
-    "dunnage_"               = "Dunnage"
-    "inventoried_dunnage"    = "Dunnage"
-    "receiving_"             = "Receiving"
-    "routing_"               = "Routing"
-    "routing_home_locations" = "Settings"  # This is routing rules config
-    "settings_"              = "Settings"
-    "scheduled_reports"      = "Settings"
-    "system_settings"        = "Settings"
-    "user_settings"          = "Settings"
-    "settings_audit_log"     = "Settings"
-    "volvo_"                 = "Volvo"
+    "auth_"               = "Authentication"
+    "workstation_"        = "Authentication"
+    "dunnage_"            = "Dunnage"
+    "inventoried_dunnage" = "Dunnage"
+    "receiving_"          = "Receiving"
+    "settings_"           = "Settings"
+    "scheduled_reports"   = "Settings"
+    "system_settings"     = "Settings"
+    "user_settings"       = "Settings"
+    "settings_audit_log"  = "Settings"
+    "volvo_"              = "Volvo"
 }
 
 function Get-TablesFromSP {
@@ -171,7 +169,8 @@ foreach ($spFile in $allSPs) {
         # Check if target already exists
         if (Test-Path $targetPath) {
             Write-Host "    [!] Target file already exists - SKIPPING" -ForegroundColor Red
-        } else {
+        }
+        else {
             if (-not $WhatIf) {
                 # Ensure target folder exists
                 if (-not (Test-Path $targetFolder)) {
@@ -181,7 +180,8 @@ foreach ($spFile in $allSPs) {
                 # Move file
                 Move-Item $spFile.FullName $targetPath -Force
                 Write-Host "    [✓] MOVED to $correctModule" -ForegroundColor Green
-            } else {
+            }
+            else {
                 Write-Host "    [WHATIF] Would move to $correctModule" -ForegroundColor Cyan
             }
 
@@ -193,7 +193,8 @@ foreach ($spFile in $allSPs) {
                 Tables     = ($tables -join ', ')
             }
         }
-    } else {
+    }
+    else {
         Write-Host "    [✓] Already in correct module" -ForegroundColor Green
     }
 
@@ -228,7 +229,8 @@ if ($moveLog.Count -gt 0) {
     Write-Host ""
     Write-Host "Detailed moves:" -ForegroundColor Cyan
     $moveLog | Format-Table -Property FileName, FromModule, ToModule -AutoSize
-} else {
+}
+else {
     Write-Host "[✓] All stored procedures are in the correct modules!" -ForegroundColor Green
 }
 

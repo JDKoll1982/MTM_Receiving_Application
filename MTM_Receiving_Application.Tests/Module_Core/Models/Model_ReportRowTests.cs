@@ -78,7 +78,6 @@ public class Model_ReportRowTests
     [Theory]
     [InlineData("Receiving")]
     [InlineData("Dunnage")]
-    [InlineData("Routing")]
     [InlineData("Volvo")]
     public void SourceModule_CanBeSetToValidModules(string module)
     {
@@ -94,29 +93,6 @@ public class Model_ReportRowTests
         var sut = new Model_ReportRow { CreatedDate = date };
 
         sut.CreatedDate.Should().Be(date);
-    }
-
-    [Fact]
-    public void RoutingSpecificFields_CanBeSet()
-    {
-        var sut = new Model_ReportRow
-        {
-            LineNumber = "001",
-            DeliverTo = "John Doe",
-            Department = "Production",
-            Location = "Building A",
-            PackageDescription = "Box of parts",
-            WorkOrderNumber = "WO-12345",
-            OtherReason = "Special delivery"
-        };
-
-        sut.LineNumber.Should().Be("001");
-        sut.DeliverTo.Should().Be("John Doe");
-        sut.Department.Should().Be("Production");
-        sut.Location.Should().Be("Building A");
-        sut.PackageDescription.Should().Be("Box of parts");
-        sut.WorkOrderNumber.Should().Be("WO-12345");
-        sut.OtherReason.Should().Be("Special delivery");
     }
 
     [Fact]

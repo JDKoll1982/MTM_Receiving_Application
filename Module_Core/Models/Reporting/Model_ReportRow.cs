@@ -4,12 +4,12 @@ namespace MTM_Receiving_Application.Module_Core.Models.Reporting;
 
 /// <summary>
 /// Unified data structure for report rows across all modules
-/// Used for end-of-day reporting with support for Receiving, Dunnage, Routing, and Volvo data
+/// Used for end-of-day reporting with support for Receiving, Dunnage, and Volvo data
 /// </summary>
 public class Model_ReportRow
 {
     /// <summary>
-    /// Primary identifier from source table (GUID for receiving/dunnage, integer for routing)
+    /// Primary identifier from source table (GUID for receiving/dunnage)
     /// </summary>
     public string Id { get; set; } = string.Empty;
 
@@ -49,46 +49,9 @@ public class Model_ReportRow
     public DateTime CreatedDate { get; set; }
 
     /// <summary>
-    /// Source module name (Receiving, Dunnage, Routing, Volvo)
+    /// Source module name (Receiving, Dunnage, Volvo)
     /// </summary>
     public string SourceModule { get; set; } = string.Empty;
-
-    // Routing-specific fields
-
-    /// <summary>
-    /// Routing: Line number from PO
-    /// </summary>
-    public string? LineNumber { get; set; }
-
-    /// <summary>
-    /// Routing: Delivery recipient name
-    /// </summary>
-    public string? DeliverTo { get; set; }
-
-    /// <summary>
-    /// Routing: Department name
-    /// </summary>
-    public string? Department { get; set; }
-
-    /// <summary>
-    /// Routing: Physical location
-    /// </summary>
-    public string? Location { get; set; }
-
-    /// <summary>
-    /// Routing: Package description
-    /// </summary>
-    public string? PackageDescription { get; set; }
-
-    /// <summary>
-    /// Routing: Work order number
-    /// </summary>
-    public string? WorkOrderNumber { get; set; }
-
-    /// <summary>
-    /// Routing: Other reason (for non-PO packages)
-    /// </summary>
-    public string? OtherReason { get; set; }
 
     /// <summary>
     /// Employee number who created the record

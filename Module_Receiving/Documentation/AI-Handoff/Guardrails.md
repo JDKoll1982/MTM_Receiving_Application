@@ -73,7 +73,7 @@ await connection.ExecuteAsync(sql, parameters);
 **Rule**: Never modify or reassign primary keys after creation  
 **Affected tables**: `receiving_load`, `receiving_line`
 
-**Why**: Other systems (Routing, Reporting) reference these IDs. Changing them breaks relationships.
+**Why**: Other systems (Reporting) reference these IDs. Changing them breaks relationships.
 
 **If you must delete**: Use soft delete flags instead of actual deletion where possible.
 
@@ -367,7 +367,7 @@ During testing, verify:
 |-----------|------------------|---------------------|
 | SQL Server write | ERP data corruption | High (may require vendor support) |
 | Skip PO validation | Invalid receives in production | Medium (manual data cleanup) |
-| Negative quantity | Routing failures, inventory errors | Low (data correction) |
+| Negative quantity | inventory errors | Low (data correction) |
 | Local CSV failure ignored | Lost label data | Medium (manual label creation) |
 | Session not saved | Lost user work on crash | Low (user re-enters) |
 | CSV format change without coordination | Label printing failure | Medium (restore old CSV format) |

@@ -81,15 +81,9 @@
                     <TextBlock Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                     
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind ViewModel.CompletionLocalCsvLabelText, Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind ViewModel.CompletionNetworkCsvLabelText, Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionCsvFileLabelText, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.CSVFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.CSVFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -98,6 +92,19 @@
                         <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
                 </StackPanel>
+
+                <!-- Failure Reason Display -->
+                <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
+                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.CSVFileErrorMessage, Mode=OneWay}" 
+                               Foreground="Red" 
+                               TextWrapping="Wrap"
+                               Visibility="{x:Bind ViewModel.LastSaveResult.CSVFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.DatabaseErrorMessage, Mode=OneWay}" 
+                               Foreground="Red" 
+                               TextWrapping="Wrap"
+                               Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                </StackPanel>
+                
                 
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
                     <Button Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"/>

@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Module_Settings.Volvo.Views;
 public sealed partial class View_Settings_Volvo_NavigationHub : Page
 {
     public ViewModel_Settings_Volvo_NavigationHub ViewModel { get; }
-    private IService_LoggingUtility? _logger;
+    private readonly IService_LoggingUtility? _logger;
 
     private Frame? NavigationFrameControl => GetHostFrame();
 

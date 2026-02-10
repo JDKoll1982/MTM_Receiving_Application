@@ -147,14 +147,6 @@ public class Service_Reporting : IService_Reporting
                     }
                     break;
 
-                case "routing":
-                    csv.AppendLine("Deliver To,Department,Package Description,PO Number,Work Order,Date");
-                    foreach (var row in data)
-                    {
-                        csv.AppendLine($"\"{row.DeliverTo ?? ""}\",\"{row.Department ?? ""}\",\"{row.PackageDescription ?? ""}\",\"{row.PONumber ?? ""}\",\"{row.WorkOrderNumber ?? ""}\",{row.CreatedDate:yyyy-MM-dd}");
-                    }
-                    break;
-
                 case "volvo":
                     csv.AppendLine("Shipment Number,PO Number,Receiver Number,Status,Date,Part Count");
                     foreach (var row in data)
@@ -236,14 +228,6 @@ public class Service_Reporting : IService_Reporting
                     html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Date</th>");
                     break;
 
-                case "routing":
-                    html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Deliver To</th>");
-                    html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Department</th>");
-                    html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Package Description</th>");
-                    html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>PO Number</th>");
-                    html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Date</th>");
-                    break;
-
                 default:
                     html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Data</th>");
                     break;
@@ -286,14 +270,6 @@ public class Service_Reporting : IService_Reporting
                         html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.PartNumber ?? ""}</td>");
                         html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.SpecsCombined ?? ""}</td>");
                         html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.Quantity ?? 0}</td>");
-                        html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.CreatedDate:yyyy-MM-dd}</td>");
-                        break;
-
-                    case "routing":
-                        html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.DeliverTo ?? ""}</td>");
-                        html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.Department ?? ""}</td>");
-                        html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.PackageDescription ?? ""}</td>");
-                        html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.PONumber ?? ""}</td>");
                         html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.CreatedDate:yyyy-MM-dd}</td>");
                         break;
                 }

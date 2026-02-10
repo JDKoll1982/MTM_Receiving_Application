@@ -275,7 +275,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 string? newMode = isChecked ? "guided" : null;
 
-                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode ?? "");
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode);
 
                 if (result.IsSuccess)
                 {
@@ -322,7 +322,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 string? newMode = isChecked ? "manual" : null;
 
-                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode ?? "");
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode);
 
                 if (result.IsSuccess)
                 {
@@ -369,7 +369,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 string? newMode = isChecked ? "edit" : null;
 
-                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode ?? "");
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode);
 
                 if (result.IsSuccess)
                 {

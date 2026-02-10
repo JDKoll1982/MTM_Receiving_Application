@@ -62,6 +62,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private string? _userId;
 
         [ObservableProperty]
+        private int _employeeNumber;
+
+        [ObservableProperty]
         private bool _isQualityHoldRequired;
 
         [ObservableProperty]

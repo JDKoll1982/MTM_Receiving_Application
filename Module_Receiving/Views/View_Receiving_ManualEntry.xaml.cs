@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Input;
@@ -12,6 +14,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Windows.System;
 using Windows.UI.Core;
@@ -23,20 +26,26 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         public ViewModel_Receiving_ManualEntry ViewModel { get; }
         private readonly IService_Focus _focusService;
         private readonly IService_QualityHoldWarning _qualityHoldWarning;
+        private readonly IService_ReceivingSettings _receivingSettings;
         private string? _lastCheckedPartID;
+        private List<Model_PartNumberPrefixRule> _paddingRules = new();
+        private bool _isPaddingEnabled;
 
         public View_Receiving_ManualEntry(
             ViewModel_Receiving_ManualEntry viewModel,
             IService_Focus focusService,
-            IService_QualityHoldWarning qualityHoldWarning)
+            IService_QualityHoldWarning qualityHoldWarning,
+            IService_ReceivingSettings receivingSettings)
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
             ArgumentNullException.ThrowIfNull(qualityHoldWarning);
+            ArgumentNullException.ThrowIfNull(receivingSettings);
 
             ViewModel = viewModel;
             _focusService = focusService;
             _qualityHoldWarning = qualityHoldWarning;
+            _receivingSettings = receivingSettings;
             this.DataContext = ViewModel;
             this.InitializeComponent();
 
@@ -44,6 +53,44 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ViewModel.Loads.CollectionChanged += Loads_CollectionChanged;
 
             _focusService.AttachFocusOnVisibility(this, AddRowButton);
+
+            // Load padding settings
+            _ = LoadPaddingSettingsAsync();
+        }
+
+        private async Task LoadPaddingSettingsAsync()
+        {
+            try
+            {
+                _isPaddingEnabled = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.PartNumberPadding.Enabled);
+                var rulesJson = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.PartNumberPadding.RulesJson);
+
+                if (!string.IsNullOrWhiteSpace(rulesJson))
+                {
+                    try
+                    {
+                        var rules = JsonSerializer.Deserialize<Model_PartNumberPrefixRule[]>(rulesJson);
+                        if (rules?.Length > 0)
+                        {
+                            _paddingRules = rules.ToList();
+                            Debug.WriteLine($"[ManualEntry] Loaded {_paddingRules.Count} padding rules");
+                        }
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        Debug.WriteLine($"[ManualEntry] Failed to deserialize padding rules JSON: {jsonEx.Message}");
+                        // Fall back to empty list
+                        _paddingRules = new List<Model_PartNumberPrefixRule>();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[ManualEntry] Failed to load padding settings: {ex.Message}");
+                // Ensure defaults
+                _isPaddingEnabled = false;
+                _paddingRules = new List<Model_PartNumberPrefixRule>();
+            }
         }
 
         private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -248,6 +295,140 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 );
             }
         }
+
+        /// <summary>
+        /// Auto-formats PO Number when user leaves the textbox.
+        /// Applies same formatting logic as guided workflow: PO-NNNNNN (6 digits, zero-padded)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PONumberTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not TextBox textBox)
+            {
+                return;
+            }
+
+            if (textBox.DataContext is not Model_ReceivingLoad load)
+            {
+                return;
+            }
+
+            var value = textBox.Text?.Trim();
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                load.PoNumber = null;
+                return;
+            }
+
+            // Auto-format PO number
+            string formattedPO = FormatPONumber(value);
+            
+            if (formattedPO != value)
+            {
+                load.PoNumber = formattedPO;
+                textBox.Text = formattedPO;
+            }
+        }
+
+        /// <summary>
+        /// Formats PO number to standard format: PO-NNNNNN (6 digits, zero-padded)
+        /// Handles inputs like: "66868", "PO-66868", "po-66868"
+        /// </summary>
+        /// <param name="input"></param>
+        private static string FormatPONumber(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return string.Empty;
+            }
+
+            string trimmed = input.Trim();
+
+            // Check if value starts with "po-" or "PO-" (case insensitive)
+            if (trimmed.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
+            {
+                // Extract the number part after "PO-"
+                string numberPart = trimmed.Substring(3);
+
+                // Check if it's all digits
+                if (numberPart.All(char.IsDigit) && numberPart.Length <= 6)
+                {
+                    return $"PO-{numberPart.PadLeft(6, '0')}";
+                }
+            }
+            else if (trimmed.All(char.IsDigit))
+            {
+                // Just numbers, no prefix
+                if (trimmed.Length <= 6)
+                {
+                    return $"PO-{trimmed.PadLeft(6, '0')}";
+                }
+            }
+
+            // Return as-is if it doesn't match expected format
+            return trimmed;
+        }
+
+        /// <summary>
+        /// Auto-formats Part ID when user leaves the textbox using configured padding rules.
+        /// Example: "MMC1000" → "MMC0001000" (if rule configured for MMC prefix with MaxLength 10)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PartIDTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not TextBox textBox)
+            {
+                return;
+            }
+
+            if (textBox.DataContext is not Model_ReceivingLoad load)
+            {
+                return;
+            }
+
+            var value = textBox.Text?.Trim();
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                load.PartID = string.Empty;
+                return;
+            }
+
+            // Auto-format Part ID using configured padding rules
+            string formattedPartID = ApplyPartNumberPadding(value);
+
+            if (formattedPartID != value)
+            {
+                load.PartID = formattedPartID;
+                textBox.Text = formattedPartID;
+                Debug.WriteLine($"[ManualEntry] Formatted PartID: '{value}' → '{formattedPartID}'");
+            }
+        }
+
+        /// <summary>
+        /// Applies part number padding rules to the input string.
+        /// </summary>
+        /// <param name="input"></param>
+        private string ApplyPartNumberPadding(string input)
+        {
+            if (!_isPaddingEnabled || _paddingRules.Count == 0)
+            {
+                return input;
+            }
+
+            var result = input;
+
+            foreach (var rule in _paddingRules.Where(r => r.IsEnabled))
+            {
+                result = rule.FormatPartNumber(result);
+            }
+
+            return result;
+        }
     }
 }
+
 

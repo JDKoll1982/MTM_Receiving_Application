@@ -2,6 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Receiving.Configuration;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
@@ -159,42 +160,79 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads, bool append = true)
         {
-            _logger.LogInfo($"WriteToFileAsync called for: {filePath}, Append: {append}");
+            _logger.LogInfo($"WriteToFileAsync called for: {filePath}, Append: {append}, Loads count: {loads?.Count ?? 0}");
+            
+            if (loads == null || loads.Count == 0)
+            {
+                _logger.LogWarning("No loads to write - loads list is null or empty");
+                return;
+            }
+
             await Task.Run(async () =>
             {
                 try
                 {
                     bool isNewFile = !File.Exists(filePath) || !append;
-                    _logger.LogInfo($"File exists check for {filePath}: {!isNewFile}");
+                    _logger.LogInfo($"File exists check for {filePath}: exists={File.Exists(filePath)}, isNewFile={isNewFile}");
+                    long fileSizeBefore = File.Exists(filePath) ? new FileInfo(filePath).Length : 0;
+                    _logger.LogInfo($"File size before write: {fileSizeBefore} bytes");
 
                     var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
-                        // We handle header manually
+                        // Use custom class map to control which properties are written
                     };
 
                     var fileMode = append ? FileMode.Append : FileMode.Create;
+                    _logger.LogInfo($"Opening file with mode: {fileMode}");
+                    
+                    if (append && File.Exists(filePath))
+                    {
+                        var lastChar = await GetLastCharacterOfFileAsync(filePath);
+                        _logger.LogInfo($"Last character of file before append: '{lastChar}' (code: {(int)lastChar})");
+                        if (lastChar != '\n' && lastChar != '\0')
+                        {
+                            _logger.LogInfo("File doesn't end with newline, appending newline before data...");
+                            await File.AppendAllTextAsync(filePath, Environment.NewLine);
+                        }
+                    }
+                    
                     await using var stream = new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
                     await using var writer = new StreamWriter(stream);
                     await using var csv = new CsvWriter(writer, config);
+                    
+                    _logger.LogInfo("Registering ClassMap...");
+                    csv.Context.RegisterClassMap<ReceivingLoadCsvMap>();
 
                     if (isNewFile)
                     {
+                        _logger.LogInfo("Writing header...");
                         csv.WriteHeader<Model_ReceivingLoad>();
                         csv.NextRecord();
                     }
 
+                    _logger.LogInfo($"Writing {loads.Count} load records...");
+                    int recordsWritten = 0;
                     foreach (var load in loads)
                     {
+                        _logger.LogInfo($"Writing load {load.LoadNumber}: PartID={load.PartID}, LoadID={load.LoadID}");
                         csv.WriteRecord(load);
                         csv.NextRecord();
+                        recordsWritten++;
                     }
 
+                    _logger.LogInfo($"Flushing CSV writer... {recordsWritten} records written");
+                    csv.Flush(); // CRITICAL: Must flush CsvWriter buffer to StreamWriter first!
+                    _logger.LogInfo("Flushing stream writer...");
                     await writer.FlushAsync();
-                    _logger.LogInfo($"Successfully wrote to {filePath}");
+                    
+                    long fileSizeAfter = new FileInfo(filePath).Length;
+                    _logger.LogInfo($"File size after write: {fileSizeAfter} bytes (delta: {fileSizeAfter - fileSizeBefore} bytes)");
+                    _logger.LogInfo($"Successfully wrote {recordsWritten} records to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error writing to file {filePath}: {ex.Message}");
+                    _logger.LogError($"Error writing to file {filePath}: {ex.Message}", ex);
+                    _logger.LogError($"Stack trace: {ex.StackTrace}");
                     throw;
                 }
             });
@@ -220,6 +258,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                     using var reader = new StreamReader(filePath);
                     using var csv = new CsvReader(reader, config);
+                    
+                    csv.Context.RegisterClassMap<ReceivingLoadCsvMap>();
 
                     var records = csv.GetRecords<Model_ReceivingLoad>();
                     var loads = new List<Model_ReceivingLoad>(records);
@@ -244,8 +284,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 var networkPath = await GetNetworkCSVPathInternalAsync();
                 if (File.Exists(networkPath))
                 {
-                    using var writer = new StreamWriter(networkPath);
-                    using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture);
+                    await using var writer = new StreamWriter(networkPath);
+                    await using var csv = new CsvWriter(writer, config);
+                    
+                    csv.Context.RegisterClassMap<ReceivingLoadCsvMap>();
                     csv.WriteHeader<Model_ReceivingLoad>();
                     csv.NextRecord();
                     result.NetworkDeleted = true;
@@ -258,6 +301,29 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
 
             return result;
+        }
+
+        private static async Task<char> GetLastCharacterOfFileAsync(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                return '\0';
+            }
+
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo.Length == 0)
+            {
+                return '\0';
+            }
+
+            await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            if (stream.Length > 0)
+            {
+                stream.Seek(-1, SeekOrigin.End);
+                int lastByte = stream.ReadByte();
+                return lastByte >= 0 ? (char)lastByte : '\0';
+            }
+            return '\0';
         }
 
         public async Task<Model_CSVExistenceResult> CheckCSVFilesExistAsync()

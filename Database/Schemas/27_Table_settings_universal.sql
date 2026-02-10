@@ -10,7 +10,7 @@ CREATE TABLE settings_universal (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto-incrementing primary key for the setting record',
 
     -- Organization
-    category VARCHAR(50) NOT NULL COMMENT 'Settings category (System, Security, Receiving, Dunnage, Routing, Volvo, Reporting, ERP, UserDefaults)',
+    category VARCHAR(50) NOT NULL COMMENT 'Settings category (System, Security, Receiving, Dunnage, Volvo, Reporting, ERP, UserDefaults)',
     sub_category VARCHAR(50) NULL COMMENT 'Optional sub-category for hierarchical organization',
 
     -- Setting identification

@@ -22,6 +22,8 @@ namespace MTM_Receiving_Application
         private readonly IService_SettingsWindowHost _settingsWindowHost;
         private readonly IServiceProvider _serviceProvider;
         private bool _hasNavigatedOnStartup = false;
+        private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
+        private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
 
         /// <summary>
         /// Gets the main content frame for navigation
@@ -87,11 +89,6 @@ namespace MTM_Receiving_Application
             // Wire up title bar events
             AppTitleBar.Loaded += AppTitleBar_Loaded;
             AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
-
-            // Show development tools in debug builds
-#if DEBUG
-            DatabaseTestMenuItem.Visibility = Visibility.Visible;
-#endif
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args)
@@ -142,7 +139,6 @@ namespace MTM_Receiving_Application
         {
             if (args.IsSettingsSelected)
             {
-                PageTitleTextBlock.Text = "Settings";
                 _settingsWindowHost.ShowSettingsWindow();
             }
             else if (args.SelectedItem is NavigationViewItem item)
@@ -170,119 +166,61 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "End of Day Reports";
                         ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
                         break;
-                    case "DatabaseTestView":
-                        try
-                        {
-                            _logger.LogInfo("Navigating to Settings Database Test view", "MainWindow");
-
-                            // Defensive checks
-                            if (ContentFrame == null)
-                            {
-                                _logger.LogError("ContentFrame is null - cannot navigate", null, "MainWindow");
-                                throw new InvalidOperationException("ContentFrame is null");
-                            }
-
-                            _logger.LogInfo($"ContentFrame state: IsLoaded={ContentFrame.IsLoaded}, BackStackDepth={ContentFrame.BackStackDepth}", "MainWindow");
-
-                            var viewType = typeof(Module_Settings.DeveloperTools.Views.View_SettingsDeveloperTools_DatabaseTest);
-                            _logger.LogInfo($"View type: {viewType.FullName}", "MainWindow");
-
-                            PageTitleTextBlock.Text = "Settings Database Test";
-
-                            // Try navigation with detailed logging
-                            _logger.LogInfo("Calling ContentFrame.Navigate()", "MainWindow");
-                            var navigated = ContentFrame.Navigate(viewType);
-                            _logger.LogInfo($"Navigation result: {navigated}", "MainWindow");
-
-                            if (!navigated)
-                            {
-                                _logger.LogError("Navigation returned false", null, "MainWindow");
-                            }
-                            else
-                            {
-                                _logger.LogInfo("Successfully navigated to Settings Database Test view", "MainWindow");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError($"Failed to navigate to Settings Database Test view: {ex.Message}", ex, "MainWindow");
-
-                            // Build detailed error message
-                            var errorDetails = new System.Text.StringBuilder();
-                            errorDetails.AppendLine("Failed to load Settings Database Test view:");
-                            errorDetails.AppendLine();
-                            errorDetails.AppendLine($"Error Type: {ex.GetType().FullName}");
-                            errorDetails.AppendLine($"Message: {ex.Message}");
-                            errorDetails.AppendLine();
-                            errorDetails.AppendLine("Stack Trace:");
-                            errorDetails.AppendLine(ex.StackTrace ?? "No stack trace available");
-
-                            // Add inner exception details if present
-                            if (ex.InnerException != null)
-                            {
-                                errorDetails.AppendLine();
-                                errorDetails.AppendLine("Inner Exception:");
-                                errorDetails.AppendLine($"Type: {ex.InnerException.GetType().FullName}");
-                                errorDetails.AppendLine($"Message: {ex.InnerException.Message}");
-                                errorDetails.AppendLine($"Stack: {ex.InnerException.StackTrace ?? "No stack trace"}");
-                            }
-
-                            // Show detailed error to user in scrollable view
-                            var scrollViewer = new ScrollViewer
-                            {
-                                Content = new TextBlock
-                                {
-                                    Text = errorDetails.ToString(),
-                                    TextWrapping = TextWrapping.Wrap,
-                                    FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
-                                    FontSize = 12,
-                                    IsTextSelectionEnabled = true
-                                },
-                                MaxHeight = 500,
-                                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
-                            };
-
-                            var errorDialog = new ContentDialog
-                            {
-                                Title = "Navigation Error - Detailed Information",
-                                Content = scrollViewer,
-                                CloseButtonText = "OK",
-                                XamlRoot = this.Content.XamlRoot
-                            };
-                            _ = errorDialog.ShowAsync();
-                        }
-                        break;
-
                 }
             }
         }
 
         private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
         {
+            _logger.LogInfo($"ContentFrame_Navigated: Navigated to {e.SourcePageType?.Name ?? "Unknown"}");
+
+            // Unsubscribe from previous ViewModel to prevent memory leaks and incorrect header updates
+            if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
+            {
+                _logger.LogInfo($"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}");
+                _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
+                _currentWorkflowViewModel = null;
+                _currentPropertyChangedHandler = null;
+            }
+
             // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
             if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView)
             {
                 var viewModel = receivingView.ViewModel;
                 if (viewModel != null)
                 {
+                    _logger.LogInfo($"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}");
+
                     // Update header with current step title (ensure UI thread)
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                        _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
                     });
 
-                    // Subscribe to property changes to keep header updated
-                    viewModel.PropertyChanged += (s, args) =>
+                    // Create and store the event handler
+                    _currentPropertyChangedHandler = (s, args) =>
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
+                            _logger.LogInfo($"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}");
                             // Ensure UI update happens on UI thread
                             DispatcherQueue.TryEnqueue(() =>
                             {
                                 PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                                _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
                             });
                         }
                     };
+
+                    // Subscribe to property changes to keep header updated
+                    viewModel.PropertyChanged += _currentPropertyChangedHandler;
+                    _currentWorkflowViewModel = viewModel;
+                    _logger.LogInfo("Successfully subscribed to Receiving ViewModel PropertyChanged");
+                }
+                else
+                {
+                    _logger.LogWarning("Receiving view ViewModel is null");
                 }
             }
             // If navigated to DunnageWorkflowView, subscribe to ViewModel changes to update header
@@ -291,24 +229,38 @@ namespace MTM_Receiving_Application
                 var viewModel = dunnageView.ViewModel;
                 if (viewModel != null)
                 {
+                    _logger.LogInfo($"Subscribing to Dunnage ViewModel. Current title: {viewModel.CurrentStepTitle}");
+
                     // Update header with current step title (ensure UI thread)
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                        _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
                     });
 
-                    // Subscribe to property changes to keep header updated
-                    viewModel.PropertyChanged += (s, args) =>
+                    // Create and store the event handler
+                    _currentPropertyChangedHandler = (s, args) =>
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
+                            _logger.LogInfo($"PropertyChanged received for Dunnage CurrentStepTitle: {viewModel.CurrentStepTitle}");
                             // Ensure UI update happens on UI thread
                             DispatcherQueue.TryEnqueue(() =>
                             {
                                 PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                                _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
                             });
                         }
                     };
+
+                    // Subscribe to property changes to keep header updated
+                    viewModel.PropertyChanged += _currentPropertyChangedHandler;
+                    _currentWorkflowViewModel = viewModel;
+                    _logger.LogInfo("Successfully subscribed to Dunnage ViewModel PropertyChanged");
+                }
+                else
+                {
+                    _logger.LogWarning("Dunnage view ViewModel is null");
                 }
             }
             // Settings Window runs in a separate window (no ContentFrame integration).
@@ -564,6 +516,60 @@ namespace MTM_Receiving_Application
 
                 // Set the content directly instead of using Navigate
                 ContentFrame.Content = page;
+
+                // Manually trigger the same logic as ContentFrame_Navigated since we're bypassing Navigate()
+                _logger.LogInfo($"NavigateWithDI: Navigated to {pageType.Name}");
+
+                // Unsubscribe from previous ViewModel to prevent memory leaks
+                if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
+                {
+                    _logger.LogInfo($"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}");
+                    _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
+                    _currentWorkflowViewModel = null;
+                    _currentPropertyChangedHandler = null;
+                }
+
+                // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes
+                if (page is Module_Receiving.Views.View_Receiving_Workflow receivingView)
+                {
+                    var viewModel = receivingView.ViewModel;
+                    if (viewModel != null)
+                    {
+                        _logger.LogInfo($"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}");
+
+                        // Update header with current step title (ensure UI thread)
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                        });
+
+                        // Create and store the event handler
+                        _currentPropertyChangedHandler = (s, args) =>
+                        {
+                            if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
+                            {
+                                _logger.LogInfo($"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}");
+                                // Ensure UI update happens on UI thread
+                                DispatcherQueue.TryEnqueue(() =>
+                                {
+                                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                                    _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                                });
+                            }
+                        };
+
+                        // Subscribe to property changes to keep header updated
+                        viewModel.PropertyChanged += _currentPropertyChangedHandler;
+                        _currentWorkflowViewModel = viewModel;
+                        _logger.LogInfo("Successfully subscribed to Receiving ViewModel PropertyChanged");
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Receiving view ViewModel is null");
+                    }
+                }
+
                 return true;
             }
             catch (Exception ex)

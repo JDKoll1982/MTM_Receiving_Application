@@ -20,6 +20,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public bool IsSuccess { get => Success; set => Success = value; }
         public Model_CSVWriteResult? CSVExportResult { get; set; }
 
+        // Guided mode consolidated CSV status (single CSV file)
+        public bool CSVFileSuccess => LocalCSVSuccess;
+        public string CSVFileErrorMessage { get; set; } = string.Empty;
+        public string DatabaseErrorMessage { get; set; } = string.Empty;
+
         public bool IsFullSuccess => LocalCSVSuccess && NetworkCSVSuccess && DatabaseSuccess;
         public bool IsPartialSuccess => (LocalCSVSuccess || DatabaseSuccess) && !IsFullSuccess;
     }

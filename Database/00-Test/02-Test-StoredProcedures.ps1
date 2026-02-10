@@ -157,10 +157,6 @@ try {
     if ($mockData.'sp_Dunnage_Parts_Insert') {
         $mockData.'sp_Dunnage_Parts_Insert'.parameters.p_part_id = "TEST_DUNNAGE_PART_$runToken"
     }
-    if ($mockData.'sp_Settings_RoutingRule_Insert') {
-        $mockData.'sp_Settings_RoutingRule_Insert'.parameters.p_pattern = "TEST_PATTERN_INSERT_$runToken"
-        $mockData.'sp_Settings_RoutingRule_Insert'.parameters.p_destination_location = "LOC_TEST_INSERT_$runToken"
-    }
     if ($mockData.'sp_Volvo_PartMaster_Insert') {
         # VARCHAR(20) constraint: keep this short
         $mockData.'sp_Volvo_PartMaster_Insert'.parameters.p_part_number = "TP$shortToken"

@@ -2509,6 +2509,28 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Int"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.PartNumberPadding.Enabled",
+      "displayName": "Part Number Padding - Enabled",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.PartNumberPadding.RulesJson",
+      "displayName": "Part Number Padding - Rules JSON",
+      "defaultValue": "[{\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
     }
   ]
 }

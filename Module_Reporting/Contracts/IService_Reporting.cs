@@ -62,7 +62,7 @@ public interface IService_Reporting
     /// Exports report data to CSV file matching MiniUPSLabel.csv structure
     /// </summary>
     /// <param name="data">Filtered report rows</param>
-    /// <param name="moduleName">Module name for filename (Receiving, Dunnage, Routing, Volvo)</param>
+    /// <param name="moduleName">Module name for filename (Receiving, Dunnage, Volvo)</param>
     /// <returns>DAO result with file path of generated CSV</returns>
     public Task<Model_Dao_Result<string>> ExportToCSVAsync(
         List<Model_ReportRow> data,

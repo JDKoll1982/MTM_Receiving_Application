@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 
 using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
+using CommunityToolkit.WinUI.UI.Triggers;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -23,6 +24,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _currentStepTitle = "Receiving - Mode Selection";
+
+        /// <summary>
+        /// Called when CurrentStepTitle changes - ensures MainWindow header updates
+        /// </summary>
+        partial void OnCurrentStepTitleChanged(string value)
+        {
+            _logger.LogInfo($"CurrentStepTitle changed to: {value}");
+        }
 
         [ObservableProperty]
         private bool _isModeSelectionVisible;
@@ -99,6 +108,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _completionNetworkCsvLabelText = "Network CSV:";
+
+        [ObservableProperty]
+        private string _completionCsvFileLabelText = "CSV File:";
 
         [ObservableProperty]
         private string _completionDatabaseLabelText = "Database:";
@@ -184,23 +196,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 CompletionSaveDetailsTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle);
                 CompletionLocalCsvLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLocalCsvLabel);
                 CompletionNetworkCsvLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionNetworkCsvLabel);
+                CompletionCsvFileLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionCsvFileLabel);
                 CompletionDatabaseLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionDatabaseLabel);
                 CompletionSavedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaved);
                 CompletionFailedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailed);
                 CompletionStartNewEntryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionStartNewEntry);
-
-                _stepTitles[Enum_ReceivingWorkflowStep.ModeSelection] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleModeSelection);
-                _stepTitles[Enum_ReceivingWorkflowStep.ManualEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleManualEntry);
-                _stepTitles[Enum_ReceivingWorkflowStep.EditMode] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleEditMode);
-                _stepTitles[Enum_ReceivingWorkflowStep.POEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitlePoEntry);
-                _stepTitles[Enum_ReceivingWorkflowStep.PartSelection] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitlePartSelection);
-                _stepTitles[Enum_ReceivingWorkflowStep.LoadEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleLoadEntry);
-                _stepTitles[Enum_ReceivingWorkflowStep.WeightQuantityEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleWeightQuantity);
-                _stepTitles[Enum_ReceivingWorkflowStep.HeatLotEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleHeatLot);
-                _stepTitles[Enum_ReceivingWorkflowStep.PackageTypeEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitlePackageType);
-                _stepTitles[Enum_ReceivingWorkflowStep.Review] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleReviewAndSave);
-                _stepTitles[Enum_ReceivingWorkflowStep.Saving] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleSaving);
-                _stepTitles[Enum_ReceivingWorkflowStep.Complete] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleComplete);
 
                 SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressInitializing);
 
@@ -216,19 +216,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 // fall back to existing hardcoded defaults already set in properties
             }
-        }
+        }        
 
         private void OnWorkflowStepChanged(object? sender, EventArgs e)
         {
-            _logger.LogInfo("StepChanged event received in ViewModel. Updating visibility.");
+            _logger.LogInfo($"StepChanged event received in ViewModel. Current step: {_workflowService.CurrentStep}. Updating visibility.");
 
-            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving)
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving && !_isSaving)
             {
-                _logger.LogInfo("Step is Saving. Enqueuing PerformSaveAsync via Dispatcher.");
+                _logger.LogInfo($"Step is Saving and not currently saving. Enqueuing PerformSaveAsync via Dispatcher.");
                 _dispatcherService.TryEnqueue(async () =>
                 {
                     await PerformSaveAsync();
                 });
+            }
+            else if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving && _isSaving)
+            {
+                _logger.LogWarning("Step is Saving but already in progress. Skipping duplicate save.");
             }
 
             // Hide all steps
@@ -245,60 +249,60 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsSavingVisible = false;
             IsCompleteVisible = false;
 
-            // Show current step and set title
+            // Show current step and set title (using hardcoded defaults like Dunnage does)
             switch (_workflowService.CurrentStep)
             {
                 case Enum_ReceivingWorkflowStep.ModeSelection:
                     IsModeSelectionVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.ModeSelection, out var modeTitle) ? modeTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Mode Selection";
                     break;
                 case Enum_ReceivingWorkflowStep.ManualEntry:
                     IsManualEntryVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.ManualEntry, out var manualTitle) ? manualTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Manual Entry";
                     break;
                 case Enum_ReceivingWorkflowStep.EditMode:
                     IsEditModeVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.EditMode, out var editTitle) ? editTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Edit Mode";
                     break;
                 case Enum_ReceivingWorkflowStep.POEntry:
                     IsPOEntryVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.POEntry, out var poTitle) ? poTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Enter PO Number";
                     break;
                 case Enum_ReceivingWorkflowStep.PartSelection:
                     IsPartSelectionVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.PartSelection, out var partTitle) ? partTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Select Part";
                     break;
                 case Enum_ReceivingWorkflowStep.LoadEntry:
                     IsLoadEntryVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.LoadEntry, out var loadTitle) ? loadTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Enter Load Information";
                     break;
                 case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
                     IsWeightQuantityEntryVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.WeightQuantityEntry, out var weightTitle) ? weightTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Enter Weight & Quantity";
                     break;
                 case Enum_ReceivingWorkflowStep.HeatLotEntry:
                     IsHeatLotEntryVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.HeatLotEntry, out var heatTitle) ? heatTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Enter Heat & Lot";
                     break;
                 case Enum_ReceivingWorkflowStep.PackageTypeEntry:
                     IsPackageTypeEntryVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.PackageTypeEntry, out var pkgTitle) ? pkgTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Enter Package Type";
                     break;
                 case Enum_ReceivingWorkflowStep.Review:
                     IsReviewVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.Review, out var reviewTitle) ? reviewTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Review & Save";
                     break;
                 case Enum_ReceivingWorkflowStep.Saving:
                     IsSavingVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.Saving, out var savingTitle) ? savingTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Saving";
                     break;
                 case Enum_ReceivingWorkflowStep.Complete:
                     IsCompleteVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.Complete, out var completeTitle) ? completeTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Complete";
                     break;
                 default:
                     IsModeSelectionVisible = true;
-                    CurrentStepTitle = _stepTitles.TryGetValue(Enum_ReceivingWorkflowStep.ModeSelection, out var defaultTitle) ? defaultTitle : CurrentStepTitle;
+                    CurrentStepTitle = "Receiving - Mode Selection";
                     break;
             }
 
@@ -415,27 +419,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                // Try to save to DB first
-                var saveResult = await _workflowService.SaveToDatabaseOnlyAsync();
-                if (!saveResult.Success)
-                {
-                    var warnDialog = new ContentDialog
-                    {
-                        Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.DbSaveFailedDialogTitle),
-                        Content = $"Failed to save to database: {string.Join(", ", saveResult.Errors)}\n\nDo you want to proceed with deleting CSV files anyway?",
-                        PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.DbSaveFailedDialogDeleteAnyway),
-                        CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.DbSaveFailedDialogCancel),
-                        DefaultButton = ContentDialogButton.Close,
-                        XamlRoot = xamlRoot
-                    };
-
-                    var warnResult = await warnDialog.ShowAsync();
-                    if (warnResult != ContentDialogResult.Primary)
-                    {
-                        return;
-                    }
-                }
-
+                // Reset CSV files (data is already in database from Save operation)
                 var deleteResult = await _workflowService.ResetCSVFilesAsync();
                 if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
                 {

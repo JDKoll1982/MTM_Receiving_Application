@@ -292,7 +292,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     PoNumber = IsNonPOItem ? null : CurrentPONumber,
                     PoLineNumber = CurrentPart?.POLineNumber ?? string.Empty,
                     LoadNumber = CurrentSession.Loads.Count + 1, // Increment load number globally
-                    IsNonPOItem = IsNonPOItem
+                    IsNonPOItem = IsNonPOItem,
+                    EmployeeNumber = CurrentSession.User?.EmployeeNumber ?? 0,
+                    UserId = CurrentSession.User?.WindowsUsername ?? string.Empty
                 };
                 CurrentSession.Loads.Add(load);
                 _currentBatchLoads.Add(load);
@@ -460,6 +462,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 result.Errors.AddRange(csvResult.Errors);
                 result.Warnings.AddRange(csvResult.Warnings);
 
+                // Populate CSV File error message if CSV save failed
+                if (!result.LocalCSVSuccess && csvResult.Errors.Count > 0)
+                {
+                    result.CSVFileErrorMessage = "CSV save failed: " + string.Join("; ", csvResult.Errors);
+                }
+
                 _logger.LogInfo("Reporting progress: Saving to database...");
                 messageProgress?.Report("Saving to database...");
                 percentProgress?.Report(60);
@@ -472,6 +480,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 if (!dbResult.Success)
                 {
                     result.Errors.AddRange(dbResult.Errors);
+                    // Populate Database error message if database save failed
+                    if (dbResult.Errors.Count > 0)
+                    {
+                        result.DatabaseErrorMessage = "Database save failed: " + string.Join("; ", dbResult.Errors);
+                    }
                 }
 
                 _logger.LogInfo("Reporting progress: Finalizing...");
@@ -488,9 +501,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     // Clear session
                     await _sessionManager.ClearSessionAsync();
                     CurrentSession.Loads.Clear();
-
-                    // Also clear CSV files since we saved successfully
-                    await _csvWriter.ClearCSVFilesAsync();
                 }
                 else
                 {
@@ -505,6 +515,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogError("Unexpected error during save session", ex);
                 result.Success = false;
                 result.Errors.Add($"Unexpected error: {ex.Message}");
+                result.CSVFileErrorMessage = "Unexpected error during save: " + ex.Message;
+                result.DatabaseErrorMessage = "Unexpected error during save: " + ex.Message;
                 return result;
             }
         }

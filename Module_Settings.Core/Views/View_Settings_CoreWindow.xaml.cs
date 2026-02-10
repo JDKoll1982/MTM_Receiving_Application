@@ -109,9 +109,9 @@ public sealed partial class View_Settings_CoreWindow : Window
         }
 
         _logger.LogInfo($"UpdateHeaderForPageType called with: {pageType.Name} (Full: {pageType.FullName})", "Settings.Navigation");
-        
+
         var (title, description) = GetPageHeader(pageType);
-        
+
         if (!string.IsNullOrEmpty(title))
         {
             _logger.LogInfo($"Header mapping found - Title: '{title}', Description: '{description}'", "Settings.Navigation");
@@ -133,115 +133,99 @@ public sealed partial class View_Settings_CoreWindow : Window
         return pageType.Name switch
         {
             // Receiving Settings Pages
-            "View_Settings_Receiving_SettingsOverview" => 
+            "View_Settings_Receiving_SettingsOverview" =>
                 ("Receiving Settings", "Review the current Receiving configuration and jump to common sections."),
-            "View_Settings_Receiving_Defaults" => 
+            "View_Settings_Receiving_Defaults" =>
                 ("Receiving Defaults", "Set common default values used when creating new loads and packages."),
-            "View_Settings_Receiving_Validation" => 
+            "View_Settings_Receiving_Validation" =>
                 ("Receiving Validation", "Control required fields and validation rules applied during Receiving."),
-            "View_Settings_Receiving_UserPreferences" => 
+            "View_Settings_Receiving_UserPreferences" =>
                 ("User Preferences", "Configure how the Receiving workflow behaves for your user account."),
-            "View_Settings_Receiving_BusinessRules" => 
+            "View_Settings_Receiving_BusinessRules" =>
                 ("Business Rules", "Configure workflow behavior, auto-save, and storage options."),
-            "View_Settings_Receiving_Integrations" => 
+            "View_Settings_Receiving_Integrations" =>
                 ("ERP Integration", "Configure ERP synchronization and automated data pulls."),
-            "View_Settings_Receiving_NavigationHub" => 
+            "View_Settings_Receiving_NavigationHub" =>
                 ("Receiving Navigation", "Manage Receiving module defaults and configuration pages."),
 
             // Dunnage Settings Pages
-            "View_Settings_Dunnage_SettingsOverview" => 
+            "View_Settings_Dunnage_SettingsOverview" =>
                 ("Dunnage Settings", "Review the current Dunnage configuration and jump to common sections."),
-            "View_Settings_Dunnage_UserPreferences" => 
+            "View_Settings_Dunnage_UserPreferences" =>
                 ("User Preferences", "Configure how the Dunnage workflow behaves for your user account."),
-            "View_Settings_Dunnage_UiUx" => 
+            "View_Settings_Dunnage_UiUx" =>
                 ("UI/UX Settings", "Customize the Dunnage user interface and experience."),
-            "View_Settings_Dunnage_Workflow" => 
+            "View_Settings_Dunnage_Workflow" =>
                 ("Workflow Settings", "Configure Dunnage workflow behavior and automation."),
-            "View_Settings_Dunnage_Permissions" => 
+            "View_Settings_Dunnage_Permissions" =>
                 ("Permissions", "Manage user permissions and access controls."),
-            "View_Settings_Dunnage_Audit" => 
+            "View_Settings_Dunnage_Audit" =>
                 ("Audit Log", "Review system audit logs and activity history."),
-            "View_Settings_Dunnage_NavigationHub" => 
+            "View_Settings_Dunnage_NavigationHub" =>
                 ("Dunnage Navigation", "Manage Dunnage module defaults and configuration pages."),
 
-            // Routing Settings Pages
-            "View_Settings_Routing_SettingsOverview" => 
-                ("Routing Settings", "Review the current Routing configuration and jump to common sections."),
-            "View_Settings_Routing_FileIO" => 
-                ("File I/O Settings", "Configure file import/export options and locations."),
-            "View_Settings_Routing_UiUx" => 
-                ("UI/UX Settings", "Customize the Routing user interface and experience."),
-            "View_Settings_Routing_BusinessRules" => 
-                ("Business Rules", "Define business rules and policies for routing operations."),
-            "View_Settings_Routing_Resilience" => 
-                ("Resilience Settings", "Configure error handling and recovery options."),
-            "View_Settings_Routing_UserPreferences" => 
-                ("User Preferences", "Configure how the Routing workflow behaves for your user account."),
-            "View_Settings_Routing_NavigationHub" => 
-                ("Routing Navigation", "Manage Routing module defaults and configuration pages."),
-
             // Reporting Settings Pages
-            "View_Settings_Reporting_SettingsOverview" => 
+            "View_Settings_Reporting_SettingsOverview" =>
                 ("Reporting Settings", "Review the current Reporting configuration and jump to common sections."),
-            "View_Settings_Reporting_FileIO" => 
+            "View_Settings_Reporting_FileIO" =>
                 ("File I/O Settings", "Configure file export options and output locations."),
-            "View_Settings_Reporting_Csv" => 
+            "View_Settings_Reporting_Csv" =>
                 ("CSV Settings", "Configure CSV export format and options."),
-            "View_Settings_Reporting_EmailUx" => 
+            "View_Settings_Reporting_EmailUx" =>
                 ("Email Settings", "Configure email delivery and formatting options."),
-            "View_Settings_Reporting_BusinessRules" => 
+            "View_Settings_Reporting_BusinessRules" =>
                 ("Business Rules", "Define business rules for report generation."),
-            "View_Settings_Reporting_Permissions" => 
+            "View_Settings_Reporting_Permissions" =>
                 ("Permissions", "Manage user permissions for reporting features."),
-            "View_Settings_Reporting_NavigationHub" => 
+            "View_Settings_Reporting_NavigationHub" =>
                 ("Reporting Navigation", "Manage Reporting module defaults and configuration pages."),
 
             // Volvo Settings Pages
-            "View_Settings_Volvo_SettingsOverview" => 
+            "View_Settings_Volvo_SettingsOverview" =>
                 ("Volvo Settings", "Review the current Volvo configuration and jump to common sections."),
-            "View_Settings_Volvo_DatabaseSettings" => 
+            "View_Settings_Volvo_DatabaseSettings" =>
                 ("Database Settings", "Configure Volvo database connection and options."),
-            "View_Settings_Volvo_ConnectionStrings" => 
+            "View_Settings_Volvo_ConnectionStrings" =>
                 ("Connection Strings", "Manage database and service connection strings."),
-            "View_Settings_Volvo_FilePaths" => 
+            "View_Settings_Volvo_FilePaths" =>
                 ("File Paths", "Configure file locations and paths for Volvo operations."),
-            "View_Settings_Volvo_UiConfiguration" => 
+            "View_Settings_Volvo_UiConfiguration" =>
                 ("UI Configuration", "Customize the Volvo user interface."),
-            "View_Settings_Volvo_ExternalizationBacklog" => 
+            "View_Settings_Volvo_ExternalizationBacklog" =>
                 ("Backlog", "Review pending items for externalization."),
-            "View_Settings_Volvo_NavigationHub" => 
+            "View_Settings_Volvo_NavigationHub" =>
                 ("Volvo Navigation", "Manage Volvo module defaults and configuration pages."),
 
             // Developer Tools Pages
-            "View_Settings_DeveloperTools_SettingsOverview" => 
+            "View_Settings_DeveloperTools_SettingsOverview" =>
                 ("Developer Tools", "Access diagnostic and developer utilities."),
-            "View_Settings_DeveloperTools_FeatureA" => 
+            "View_Settings_DeveloperTools_FeatureA" =>
                 ("Feature A", "Developer feature A settings."),
-            "View_Settings_DeveloperTools_FeatureB" => 
+            "View_Settings_DeveloperTools_FeatureB" =>
                 ("Feature B", "Developer feature B settings."),
-            "View_Settings_DeveloperTools_FeatureC" => 
+            "View_Settings_DeveloperTools_FeatureC" =>
                 ("Feature C", "Developer feature C settings."),
-            "View_Settings_DeveloperTools_FeatureD" => 
+            "View_Settings_DeveloperTools_FeatureD" =>
                 ("Feature D", "Developer feature D settings."),
-            "View_SettingsDeveloperTools_DatabaseTest" => 
+            "View_SettingsDeveloperTools_DatabaseTest" =>
                 ("Database Test", "Test database connectivity and queries."),
-            "View_Settings_DeveloperTools_NavigationHub" => 
+            "View_Settings_DeveloperTools_NavigationHub" =>
                 ("Developer Tools", "Access diagnostic and developer utilities."),
 
             // Core Settings Pages
-            "View_Settings_CoreNavigationHub" => 
+            "View_Settings_CoreNavigationHub" =>
                 ("Configuration", "Manage core system defaults, users, and infrastructure settings."),
-            "View_Settings_System" => 
+            "View_Settings_System" =>
                 ("System Settings", "Configure core system settings and defaults."),
-            "View_Settings_Users" => 
+            "View_Settings_Users" =>
                 ("User Management", "Manage application users and accounts."),
-            "View_Settings_Theme" => 
+            "View_Settings_Theme" =>
                 ("Theme Settings", "Configure application appearance and theme."),
-            "View_Settings_Database" => 
+            "View_Settings_Database" =>
                 ("Database Settings", "Configure database connections and options."),
-            "View_Settings_Logging" => 
+            "View_Settings_Logging" =>
                 ("Logging Settings", "Configure logging and diagnostic options."),
-            "View_Settings_SharedPaths" => 
+            "View_Settings_SharedPaths" =>
                 ("Shared Paths", "Configure shared file paths and locations."),
 
             _ => (string.Empty, string.Empty),
