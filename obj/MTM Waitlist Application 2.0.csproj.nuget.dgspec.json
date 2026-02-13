@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj": {}
+    "c:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj": {}
   },
   "projects": {
-    "C:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj": {
+    "c:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj",
+        "projectUniqueName": "c:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj",
         "projectName": "MTM Waitlist Application 2.0",
-        "projectPath": "C:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj",
+        "projectPath": "c:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj",
         "packagesPath": "C:\\Users\\johnk\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\obj\\",
+        "outputPath": "c:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

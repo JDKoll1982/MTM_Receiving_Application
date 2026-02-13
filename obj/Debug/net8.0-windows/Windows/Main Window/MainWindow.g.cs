@@ -95,8 +95,7 @@ namespace MTM_Waitlist_Application_2._0.Windows.Main_Window {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri(("/MTM Waitlist Application 2.0;V1.0.0.0;component/windows/main%20window/mainwindow" +
-                    ".xaml"), System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/MTM Waitlist Application 2.0;component/windows/main%20window/mainwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Windows\Main Window\MainWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
