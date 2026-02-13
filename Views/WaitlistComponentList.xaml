@@ -1,0 +1,44 @@
+﻿<UserControl
+    x:Class="MTM_Waitlist_Application_2._0.Views.WaitlistComponentList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    
+    
+    d:DesignHeight="600"
+    d:DesignWidth="750"
+    mc:Ignorable="d">
+
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            
+            <Grid.OpacityMask>
+                <VisualBrush Visual="{Binding ElementName=border}" />
+            </Grid.OpacityMask>
+            
+            <Border x:Name="border"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                <ListView x:Name="WList"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                          ItemsSource="{Binding WaitlistComponentListItemViewModels}"
+                          SelectedItem="{Binding SelectedWlItem}"
+                          d:ItemsSource="{d:SampleData ItemCount=5}"                          
+                          ItemTemplate="{StaticResource WaitlistTileDefault}">
+
+                </ListView>
+                
+            </Border>
+            
+        </Grid>
+        
+    </Grid>
+    
+</UserControl>

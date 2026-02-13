@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_LastSelectedProfileId>C:\Users\jkoll\source\repos\MTM Waitlist Application 2.0\MTM Waitlist Application 2.0\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ApplicationDefinition Update="App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Windows\UserLogin\UserLogin.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\WaitlistComponentDetails.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\WaitlistComponentList.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\HistoryView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\WaitlistView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\MessengerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\RequestView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="WinForms\Add\AddNewSkid.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WinForms\JobDetails\SelectedTaskDetails.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WinForms\New Job Setup\NewJobSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WinForms\New Job Setup\NewJobSetup_SetupNotes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WinForms\New Request\Windows\Pickup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WinForms\New Request\Windows\RequestType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\SmallButtonTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\WaitlistTiles\WaitlistDefault.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windows\UserLogin\UserLogin.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\WaitlistComponentDetails.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\WaitlistComponentList.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\DropDownMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windows\Main Window\MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\MenuButtonTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\AnalyticsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\HistoryView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\WaitlistView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\MessengerView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\RequestView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

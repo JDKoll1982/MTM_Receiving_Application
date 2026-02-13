@@ -1,0 +1,1095 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="&gt;&gt;Pickup_GroupBox_Breakdown.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="Pickup_Button_Dunnage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>116, 32</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Label_PartID.Location" type="System.Drawing.Point, System.Drawing">
+    <value>386, 19</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Label_AllocatedTime.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Pickup_Label_PartID.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.Location" type="System.Drawing.Point, System.Drawing">
+    <value>174, 15</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_CompletedParts.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>New Request - Pickup</value>
+  </data>
+  <data name="Pickup_GroupBox_Breakdown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 148</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_ETA.Name" xml:space="preserve">
+    <value>Pickup_TextBox_ETA</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Pickup_Button_NCMParts.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.Text" xml:space="preserve">
+    <value>Work Order</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Time.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_JobDetails.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Buttons.Parent" xml:space="preserve">
+    <value>Pickup_GroupBox_Bottom</value>
+  </data>
+  <data name="Pickup_Panel_Center.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_CompletedParts.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Buttons</value>
+  </data>
+  <data name="Pickup_Panel_Time.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="Pickup_Panel_Info.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="Pickup_Label_ETA.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_PartID.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Label_Operation.Size" type="System.Drawing.Size, System.Drawing">
+    <value>60, 15</value>
+  </data>
+  <data name="Pickup_Label_PartID.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Label_WorkOrder.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_ETA.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_Operation.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_GroupBox_JobDetails.Text" xml:space="preserve">
+    <value>Work Center and Job Details</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.Location" type="System.Drawing.Point, System.Drawing">
+    <value>511, 37</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_Operation.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Cancel.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Buttons</value>
+  </data>
+  <data name="Pickup_GroupBox_Breakdown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>613, 73</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>96, 96</value>
+  </data>
+  <data name="Pickup_Button_Cancel.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="Pickup_Label_ETA.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Pickup_Label_Operation.Text" xml:space="preserve">
+    <value>Operation</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_AllocatedTime.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Time</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Bottom.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_Panel_Center.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Center.Name" xml:space="preserve">
+    <value>Pickup_Panel_Center</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>637, 296</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Cancel.Name" xml:space="preserve">
+    <value>Pickup_Button_Cancel</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_ETA.Name" xml:space="preserve">
+    <value>Pickup_Label_ETA</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_AllocatedTime.Name" xml:space="preserve">
+    <value>Pickup_Label_AllocatedTime</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Info.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Breakdown.Name" xml:space="preserve">
+    <value>Pickup_GroupBox_Breakdown</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_ETA.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Time</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_Operation.Name" xml:space="preserve">
+    <value>Pickup_Label_Operation</value>
+  </data>
+  <data name="Pickup_Label_Operation.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_AllocatedTime.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_PartID.Name" xml:space="preserve">
+    <value>Pickup_TextBox_PartID</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_UnusedParts.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>134, 32</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Buttons.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Panel_Buttons.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Button_Cancel.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Label_ETA.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Bottom.Name" xml:space="preserve">
+    <value>Pickup_Panel_Bottom</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.Location" type="System.Drawing.Point, System.Drawing">
+    <value>343, 37</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Dunnage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Button_NCMParts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 32</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>51, 19</value>
+  </data>
+  <data name="Pickup_Button_Cancel.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.Size" type="System.Drawing.Size, System.Drawing">
+    <value>96, 23</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_ETA.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Time</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.Size" type="System.Drawing.Size, System.Drawing">
+    <value>73, 15</value>
+  </data>
+  <data name="Pickup_Label_PartID.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>123, 8</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 15</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_TextBox_Operation.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.Text" xml:space="preserve">
+    <value>Unused Components</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_JobDetails.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Button_Submit.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Bottom.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Pickup_Panel_Info.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_GroupBox_Top.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkCenter.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_PartID.Name" xml:space="preserve">
+    <value>Pickup_Label_PartID</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Time.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Label_Operation.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>491, 15</value>
+  </data>
+  <data name="Pickup_GroupBox_Buttons.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_UnusedParts.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Buttons</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_JobDetails.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkOrder.Name" xml:space="preserve">
+    <value>Pickup_TextBox_WorkOrder</value>
+  </data>
+  <data name="&gt;&gt;errorProvider1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ErrorProvider, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_Operation.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_UnusedParts.Name" xml:space="preserve">
+    <value>Pickup_Button_UnusedParts</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkOrder.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkCenter.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Checkbox_IncreaseTime.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_GroupBox_Breakdown.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Time.Name" xml:space="preserve">
+    <value>Pickup_Panel_Time</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Buttons.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>117, 32</value>
+  </data>
+  <data name="Pickup_Label_ETA.Location" type="System.Drawing.Point, System.Drawing">
+    <value>388, 19</value>
+  </data>
+  <data name="Pickup_Panel_Bottom.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Panel_Center.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Dunnage.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 23</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Button_Cancel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>116, 32</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkCenter.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkCenter.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Top.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkCenter.Name" xml:space="preserve">
+    <value>Pickup_Label_WorkCenter</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 23</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 23</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="Pickup_Label_ETA.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Panel_Time.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="groupBox1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>613, 56</value>
+  </data>
+  <data name="Pickup_Button_Cancel.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Bottom.Name" xml:space="preserve">
+    <value>Pickup_GroupBox_Bottom</value>
+  </data>
+  <data name="Pickup_Label_PartID.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_GroupBox_JobDetails.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="Pickup_Button_Submit.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Center.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Cancel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>104, 19</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_ETA.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkOrder.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.Location" type="System.Drawing.Point, System.Drawing">
+    <value>324, 37</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_AllocatedTime.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Cancel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Checkbox_IncreaseTime.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Time</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Submit.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Bottom</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_PartID.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_GroupBox_JobDetails.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 12</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_Operation.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_Label_ETA.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="groupBox1.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="Pickup_Button_Submit.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 15</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.Size" type="System.Drawing.Size, System.Drawing">
+    <value>86, 15</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_ETA.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 23</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="Pickup_Panel_Time.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_NCMParts.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 86</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_PartID.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_AllocatedTime.Name" xml:space="preserve">
+    <value>Pickup_TextBox_AllocatedTime</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 15</value>
+  </data>
+  <data name="Pickup_Button_Submit.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Buttons.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Panel_Bottom.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 150</value>
+  </data>
+  <data name="Pickup_Panel_Buttons.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Label_Operation.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Panel_Center.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Label_PartID.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.Name" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="Pickup_Button_Submit.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkCenter.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Breakdown.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Button_Submit.Text" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Info.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Label_PartID.Text" xml:space="preserve">
+    <value>Part Number</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Bottom.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Label_Operation.Location" type="System.Drawing.Point, System.Drawing">
+    <value>529, 19</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Time.Parent" xml:space="preserve">
+    <value>Pickup_GroupBox_Middle</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_CompletedParts.Name" xml:space="preserve">
+    <value>Pickup_Button_CompletedParts</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 162</value>
+  </data>
+  <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>653, 222</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkOrder.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 23</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Center.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Panel_Info.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="groupBox1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 227</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkOrder.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Pickup_Label_ETA.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Buttons.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 37</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Buttons.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkOrder.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.Text" xml:space="preserve">
+    <value>NCM Parts</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Button_UnusedParts.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Panel_Buttons.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Panel_Info.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Panel_Time.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>CenterScreen</value>
+  </data>
+  <data name="Pickup_Button_Cancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>491, 15</value>
+  </data>
+  <data name="Pickup_Panel_Buttons.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 55</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Dunnage.Name" xml:space="preserve">
+    <value>Pickup_Button_Dunnage</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_NCMParts.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Buttons</value>
+  </data>
+  <data name="Pickup_Panel_Bottom.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Checkbox_IncreaseTime.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Label_Operation.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_GroupBox_JobDetails.Size" type="System.Drawing.Size, System.Drawing">
+    <value>613, 68</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Panel_Bottom.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkCenter.Name" xml:space="preserve">
+    <value>Pickup_TextBox_WorkCenter</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_WorkCenter.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>NewRequest_Window_Pickup</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_CompletedParts.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Label_Operation.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Middle.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Buttons.Name" xml:space="preserve">
+    <value>Pickup_GroupBox_Buttons</value>
+  </data>
+  <data name="Pickup_Button_Submit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>117, 32</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Bottom.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 37</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="Pickup_Panel_Bottom.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Center.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.Text" xml:space="preserve">
+    <value>Allocated Time</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_JobDetails.Name" xml:space="preserve">
+    <value>Pickup_GroupBox_JobDetails</value>
+  </data>
+  <data name="Pickup_Label_PartID.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 15</value>
+  </data>
+  <data name="Pickup_Label_ETA.Size" type="System.Drawing.Size, System.Drawing">
+    <value>154, 15</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Bottom.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_UnusedParts.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Pickup_GroupBox_Buttons.Size" type="System.Drawing.Size, System.Drawing">
+    <value>613, 56</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Submit.Name" xml:space="preserve">
+    <value>Pickup_Button_Submit</value>
+  </data>
+  <data name="Pickup_Label_PartID.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Dunnage.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Buttons</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkOrder.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Middle.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.Location" type="System.Drawing.Point, System.Drawing">
+    <value>175, 37</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_Operation.Name" xml:space="preserve">
+    <value>Pickup_TextBox_Operation</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Top.Name" xml:space="preserve">
+    <value>Pickup_GroupBox_Top</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_WorkOrder.Name" xml:space="preserve">
+    <value>Pickup_Label_WorkOrder</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Buttons.Name" xml:space="preserve">
+    <value>Pickup_Panel_Buttons</value>
+  </data>
+  <data name="Pickup_GroupBox_Buttons.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 86</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Info.Name" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_Button_Cancel.Text" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Info.Parent" xml:space="preserve">
+    <value>Pickup_GroupBox_Top</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_PartID.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Middle.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_Label_ETA.Text" xml:space="preserve">
+    <value>Estimated Completion Time</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Label_WorkCenter.Text" xml:space="preserve">
+    <value>Work Center</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.Text" xml:space="preserve">
+    <value>Completed Parts</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Top.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Pickup_Button_UnusedParts.Location" type="System.Drawing.Point, System.Drawing">
+    <value>307, 15</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_Operation.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Info</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.IconPadding" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Middle.Name" xml:space="preserve">
+    <value>Pickup_GroupBox_Middle</value>
+  </data>
+  <data name="Pickup_Panel_Info.Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Breakdown.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;errorProvider1.Name" xml:space="preserve">
+    <value>errorProvider1</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.Text" xml:space="preserve">
+    <value>Unused Dunnage</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_NCMParts.Name" xml:space="preserve">
+    <value>Pickup_Button_NCMParts</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_NCMParts.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Submit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_GroupBox_Top.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Pickup_Panel_Time.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="Pickup_Panel_Center.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 59</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Button_Submit.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Checkbox_IncreaseTime.Name" xml:space="preserve">
+    <value>Pickup_Checkbox_IncreaseTime</value>
+  </data>
+  <data name="Pickup_Panel_Buttons.IconAlignment" type="System.Windows.Forms.ErrorIconAlignment, System.Windows.Forms">
+    <value>MiddleRight</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Panel_Bottom.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_Operation.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_AllocatedTime.Parent" xml:space="preserve">
+    <value>Pickup_Panel_Time</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Pickup_TextBox_AllocatedTime.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.Location" type="System.Drawing.Point, System.Drawing">
+    <value>221, 19</value>
+  </data>
+  <data name="&gt;&gt;Pickup_Label_PartID.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
+    <value>en</value>
+  </metadata>
+  <metadata name="errorProvider1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+</root>

@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="Pickup_Button_Cancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>509, 2</value>
+  </data>
+  <data name="Pickup_Button_Cancel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>116, 33</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>637, 261</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.Location" type="System.Drawing.Point, System.Drawing">
+    <value>231, 2</value>
+  </data>
+  <data name="Pickup_Button_UnusedParts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>134, 33</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>379, 2</value>
+  </data>
+  <data name="Pickup_Button_Dunnage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>116, 33</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 2</value>
+  </data>
+  <data name="Pickup_Button_CompletedParts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>117, 33</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.Location" type="System.Drawing.Point, System.Drawing">
+    <value>134, 2</value>
+  </data>
+  <data name="Pickup_Button_NCMParts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>83, 33</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Pickup_Panel_Buttons.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Pickup_Panel_Buttons.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 19</value>
+  </data>
+  <data name="Pickup_Panel_Buttons.Size" type="System.Drawing.Size, System.Drawing">
+    <value>631, 36</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Bottom</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 203</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.Size" type="System.Drawing.Size, System.Drawing">
+    <value>637, 58</value>
+  </data>
+  <data name="Pickup_GroupBox_Bottom.Text" xml:space="preserve">
+    <value>Make a Selection</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.Location" type="System.Drawing.Point, System.Drawing">
+    <value>342, 34</value>
+  </data>
+  <data name="Pickup_TextBox_ETA.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 34</value>
+  </data>
+  <data name="Pickup_TextBox_AllocatedTime.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Pickup_Checkbox_IncreaseTime.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>269, 61</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 19</value>
+  </data>
+  <data name="Pickup_Checkbox_IncreaseTime.Text" xml:space="preserve">
+    <value>Increase Time</value>
+  </data>
+  <data name="Pickup_Label_ETA.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="Pickup_Label_ETA.Location" type="System.Drawing.Point, System.Drawing">
+    <value>406, 10</value>
+  </data>
+  <data name="Pickup_Label_AllocatedTime.Location" type="System.Drawing.Point, System.Drawing">
+    <value>107, 10</value>
+  </data>
+  <data name="Pickup_Panel_Time.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Pickup_Panel_Time.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 19</value>
+  </data>
+  <data name="Pickup_Panel_Time.Size" type="System.Drawing.Size, System.Drawing">
+    <value>631, 83</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 92</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>637, 105</value>
+  </data>
+  <data name="Pickup_GroupBox_Middle.Text" xml:space="preserve">
+    <value>Request Time</value>
+  </data>
+  <data name="Pickup_TextBox_PartID.Location" type="System.Drawing.Point, System.Drawing">
+    <value>356, 30</value>
+  </data>
+  <data name="Pickup_TextBox_WorkCenter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 30</value>
+  </data>
+  <data name="Pickup_TextBox_WorkOrder.Location" type="System.Drawing.Point, System.Drawing">
+    <value>184, 30</value>
+  </data>
+  <data name="Pickup_Label_Operation.Location" type="System.Drawing.Point, System.Drawing">
+    <value>546, 10</value>
+  </data>
+  <data name="Pickup_Label_PartID.Location" type="System.Drawing.Point, System.Drawing">
+    <value>399, 10</value>
+  </data>
+  <data name="Pickup_Label_WorkOrder.Location" type="System.Drawing.Point, System.Drawing">
+    <value>230, 10</value>
+  </data>
+  <data name="Pickup_Label_WorkCenter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>56, 10</value>
+  </data>
+  <data name="Pickup_Panel_Info.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Pickup_Panel_Info.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 19</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Pickup_Panel_Info.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="Pickup_Panel_Info.Size" type="System.Drawing.Size, System.Drawing">
+    <value>631, 64</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.Size" type="System.Drawing.Size, System.Drawing">
+    <value>637, 86</value>
+  </data>
+  <data name="Pickup_GroupBox_Top.Text" xml:space="preserve">
+    <value>Request Information</value>
+  </data>
+  <data name="$this.MaximumSize" type="System.Drawing.Size, System.Drawing">
+    <value>653, 300</value>
+  </data>
+  <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>653, 300</value>
+  </data>
+  <data name="Pickup_TextBox_Operation.Location" type="System.Drawing.Point, System.Drawing">
+    <value>528, 30</value>
+  </data>
+</root>
