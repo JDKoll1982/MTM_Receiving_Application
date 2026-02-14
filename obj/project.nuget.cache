@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XpIQtQA2avk=",
+  "dgSpecHash": "vnKju7q95BM=",
   "success": true,
-  "projectFilePath": "c:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj",
+  "projectFilePath": "C:\\Users\\johnk\\source\\repos\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0\\MTM Waitlist Application 2.0.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\johnk\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\johnk\\.nuget\\packages\\documentformat.openxml\\2.7.2\\documentformat.openxml.2.7.2.nupkg.sha512",

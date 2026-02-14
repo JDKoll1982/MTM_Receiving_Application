@@ -1,0 +1,9 @@
+USE `mtm_waitlist`;
+
+CREATE TABLE IF NOT EXISTS `waitlist_components` (
+  `PartID` VARCHAR(50) NOT NULL,
+  `Operation` VARCHAR(50) NOT NULL,
+  `Component` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`PartID`, `Operation`, `Component`),
+  KEY `idx_waitlist_components_component` (`Component`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

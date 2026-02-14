@@ -93,7 +93,7 @@ namespace MTM_Waitlist_Application_2._0.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/MTM Waitlist Application 2.0;component/views/requestview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/MTM Waitlist Application 2.0;V1.0.0.0;component/views/requestview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\RequestView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
