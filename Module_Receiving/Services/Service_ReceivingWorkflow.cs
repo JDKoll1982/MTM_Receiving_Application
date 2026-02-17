@@ -55,6 +55,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public bool IsNonPOItem { get; set; }
         public int NumberOfLoads { get; set; } = 1;
 
+        // PO Header Data (from Model_InforVisualPO)
+        public string? CurrentPOVendor { get; set; }
+        public string? CurrentPOStatus { get; set; }
+        public DateTime? CurrentPODueDate { get; set; }
+
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
             IService_XLSWriter xlsWriter,
@@ -285,21 +290,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             for (int i = 1; i <= NumberOfLoads; i++)
             {
+                // Get current logged-in user from UserSessionManager
+                var currentUser = _userSessionManager?.CurrentSession?.User;
+
                 var load = new Model_ReceivingLoad
                 {
                     PartID = CurrentPart?.PartID ?? string.Empty,
-                    PartType = CurrentPart?.PartType ?? string.Empty,
+                    // PartType will be auto-set by OnPartIDChanged logic (MMC=Coil, MMF=Sheet)
                     PoNumber = IsNonPOItem ? null : CurrentPONumber,
                     PoLineNumber = CurrentPart?.POLineNumber ?? string.Empty,
                     LoadNumber = CurrentSession.Loads.Count + 1, // Increment load number globally
                     IsNonPOItem = IsNonPOItem,
-                    EmployeeNumber = CurrentSession.User?.EmployeeNumber ?? 0,
-                    UserId = CurrentSession.User?.WindowsUsername ?? string.Empty,
+                    EmployeeNumber = currentUser?.EmployeeNumber ?? 0,
+                    UserId = currentUser?.WindowsUsername ?? string.Empty,
                     // Additional Infor Visual / PO data
                     PartDescription = CurrentPart?.Description ?? string.Empty,
                     UnitOfMeasure = CurrentPart?.UnitOfMeasure ?? "EA",
                     QtyOrdered = CurrentPart?.QtyOrdered ?? 0,
-                    RemainingQuantity = CurrentPart?.RemainingQuantity ?? 0
+                    RemainingQuantity = CurrentPart?.RemainingQuantity ?? 0,
+                    // PO Header Data
+                    PoVendor = CurrentPOVendor ?? string.Empty,
+                    PoStatus = CurrentPOStatus ?? string.Empty,
+                    PoDueDate = CurrentPODueDate
                 };
                 CurrentSession.Loads.Add(load);
                 _currentBatchLoads.Add(load);

@@ -60,6 +60,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public int NumberOfLoads { get; set; }
 
         /// <summary>
+        /// Gets or sets the current PO vendor name from Infor Visual.
+        /// </summary>
+        public string? CurrentPOVendor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current PO status code from Infor Visual.
+        /// </summary>
+        public string? CurrentPOStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current PO due date from Infor Visual.
+        /// </summary>
+        public DateTime? CurrentPODueDate { get; set; }
+
+        /// <summary>
         /// Starts a new receiving workflow session.
         /// Loads any existing persisted session if available.
         /// </summary>

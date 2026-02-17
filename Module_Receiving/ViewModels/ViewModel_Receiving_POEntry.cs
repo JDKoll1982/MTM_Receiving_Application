@@ -248,10 +248,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     Parts.Clear();
 
-                    // Set PO status
+                    // Set PO status in ViewModel
                     PoStatus = result.Data.Status;
                     PoStatusDescription = result.Data.StatusDescription;
                     IsPOClosed = result.Data.IsClosed;
+
+                    // Set PO header data in Workflow Service for XLSX export
+                    _workflowService.CurrentPOVendor = result.Data.Vendor;
+                    _workflowService.CurrentPOStatus = result.Data.Status;
+                    _workflowService.CurrentPODueDate = null; // Model_InforVisualPO doesn't have DueDate yet
 
                     // Load parts and populate remaining quantity for each
                     foreach (var part in result.Data.Parts)

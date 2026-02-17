@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
@@ -160,7 +161,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public async Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads, bool append = true)
         {
             _logger.LogInfo($"WriteToFileAsync called for: {filePath}, Append: {append}, Loads count: {loads?.Count ?? 0}");
-            
+
             if (loads == null || loads.Count == 0)
             {
                 _logger.LogWarning("No loads to write - loads list is null or empty");
@@ -169,108 +170,139 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             await Task.Run(() =>
             {
-                try
+                const int maxRetries = 5;
+                int retryCount = 0;
+                Exception? lastException = null;
+
+                while (retryCount < maxRetries)
                 {
-                    bool isNewFile = !File.Exists(filePath) || !append;
-                    _logger.LogInfo($"File exists check for {filePath}: exists={File.Exists(filePath)}, isNewFile={isNewFile}");
-
-                    IXLWorkbook workbook;
-                    IXLWorksheet worksheet;
-
-                    if (isNewFile || !File.Exists(filePath))
+                    try
                     {
-                        // Create new workbook
-                        workbook = new XLWorkbook();
-                        worksheet = workbook.Worksheets.Add("Receiving Data");
+                        bool isNewFile = !File.Exists(filePath) || !append;
+                        _logger.LogInfo($"File exists check for {filePath}: exists={File.Exists(filePath)}, isNewFile={isNewFile}, retry={retryCount}");
 
-                        // Add ALL headers from Model_ReceivingLoad (for future label use)
-                        worksheet.Cell(1, 1).Value = "LoadID";
-                        worksheet.Cell(1, 2).Value = "Load Number";
-                        worksheet.Cell(1, 3).Value = "Part ID";
-                        worksheet.Cell(1, 4).Value = "Part Description";
-                        worksheet.Cell(1, 5).Value = "Part Type";
-                        worksheet.Cell(1, 6).Value = "PO Number";
-                        worksheet.Cell(1, 7).Value = "PO Line Number";
-                        worksheet.Cell(1, 8).Value = "PO Vendor";
-                        worksheet.Cell(1, 9).Value = "PO Status";
-                        worksheet.Cell(1, 10).Value = "PO Due Date";
-                        worksheet.Cell(1, 11).Value = "Qty Ordered";
-                        worksheet.Cell(1, 12).Value = "Weight/Quantity (lbs)";
-                        worksheet.Cell(1, 13).Value = "Unit of Measure";
-                        worksheet.Cell(1, 14).Value = "Heat/Lot Number";
-                        worksheet.Cell(1, 15).Value = "Remaining Quantity";
-                        worksheet.Cell(1, 16).Value = "Packages Per Load";
-                        worksheet.Cell(1, 17).Value = "Package Type";
-                        worksheet.Cell(1, 18).Value = "Weight Per Package";
-                        worksheet.Cell(1, 19).Value = "Is Non-PO Item";
-                        worksheet.Cell(1, 20).Value = "Received Date";
-                        worksheet.Cell(1, 21).Value = "User ID";
-                        worksheet.Cell(1, 22).Value = "Employee Number";
-                        worksheet.Cell(1, 23).Value = "Quality Hold Required";
-                        worksheet.Cell(1, 24).Value = "Quality Hold Acknowledged";
-                        worksheet.Cell(1, 25).Value = "Quality Hold Restriction Type";
+                        IXLWorkbook workbook;
+                        IXLWorksheet worksheet;
 
-                        // Format header row
-                        var headerRange = worksheet.Range("A1:Y1");
-                        headerRange.Style.Font.Bold = true;
-                        headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                        if (isNewFile || !File.Exists(filePath))
+                        {
+                            // Create new workbook
+                            workbook = new XLWorkbook();
+                            worksheet = workbook.Worksheets.Add("Receiving Data");
+
+                            // Add ALL headers from Model_ReceivingLoad (for future label use)
+                            worksheet.Cell(1, 1).Value = "LoadID";
+                            worksheet.Cell(1, 2).Value = "Load Number";
+                            worksheet.Cell(1, 3).Value = "Part ID";
+                            worksheet.Cell(1, 4).Value = "Part Description";
+                            worksheet.Cell(1, 5).Value = "Part Type";
+                            worksheet.Cell(1, 6).Value = "PO Number";
+                            worksheet.Cell(1, 7).Value = "PO Line Number";
+                            worksheet.Cell(1, 8).Value = "PO Vendor";
+                            worksheet.Cell(1, 9).Value = "PO Status";
+                            worksheet.Cell(1, 10).Value = "PO Due Date";
+                            worksheet.Cell(1, 11).Value = "Qty Ordered";
+                            worksheet.Cell(1, 12).Value = "Weight/Quantity (lbs)";
+                            worksheet.Cell(1, 13).Value = "Unit of Measure";
+                            worksheet.Cell(1, 14).Value = "Heat/Lot Number";
+                            worksheet.Cell(1, 15).Value = "Remaining Quantity";
+                            worksheet.Cell(1, 16).Value = "Packages Per Load";
+                            worksheet.Cell(1, 17).Value = "Package Type";
+                            worksheet.Cell(1, 18).Value = "Weight Per Package";
+                            worksheet.Cell(1, 19).Value = "Is Non-PO Item";
+                            worksheet.Cell(1, 20).Value = "Received Date";
+                            worksheet.Cell(1, 21).Value = "User ID";
+                            worksheet.Cell(1, 22).Value = "Employee Number";
+                            worksheet.Cell(1, 23).Value = "Quality Hold Required";
+                            worksheet.Cell(1, 24).Value = "Quality Hold Acknowledged";
+                            worksheet.Cell(1, 25).Value = "Quality Hold Restriction Type";
+
+                            // Format header row
+                            var headerRange = worksheet.Range("A1:Y1");
+                            headerRange.Style.Font.Bold = true;
+                            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                        }
+                        else
+                        {
+                            // Open existing workbook with retry logic for file locks
+                            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                            workbook = new XLWorkbook(fileStream);
+                            worksheet = workbook.Worksheet(1);
+                        }
+
+                        // Find next empty row
+                        int nextRow = worksheet.LastRowUsed()?.RowNumber() + 1 ?? 2;
+                        _logger.LogInfo($"Writing to rows starting at: {nextRow}");
+
+                        // Write data
+                        foreach (var load in loads)
+                        {
+                            worksheet.Cell(nextRow, 1).Value = load.LoadID.ToString();
+                            worksheet.Cell(nextRow, 2).Value = load.LoadNumber;
+                            worksheet.Cell(nextRow, 3).Value = load.PartID ?? string.Empty;
+                            worksheet.Cell(nextRow, 4).Value = load.PartDescription ?? string.Empty;
+                            worksheet.Cell(nextRow, 5).Value = load.PartType ?? string.Empty;
+                            worksheet.Cell(nextRow, 6).Value = load.PoNumber ?? string.Empty;
+                            worksheet.Cell(nextRow, 7).Value = load.PoLineNumber ?? string.Empty;
+                            worksheet.Cell(nextRow, 8).Value = load.PoVendor ?? string.Empty;
+                            worksheet.Cell(nextRow, 9).Value = load.PoStatus ?? string.Empty;
+                            worksheet.Cell(nextRow, 10).Value = load.PoDueDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+                            worksheet.Cell(nextRow, 11).Value = load.QtyOrdered;
+                            worksheet.Cell(nextRow, 12).Value = load.WeightQuantity;
+                            worksheet.Cell(nextRow, 13).Value = load.UnitOfMeasure ?? "EA";
+                            worksheet.Cell(nextRow, 14).Value = load.HeatLotNumber ?? string.Empty;
+                            worksheet.Cell(nextRow, 15).Value = load.RemainingQuantity;
+                            worksheet.Cell(nextRow, 16).Value = load.PackagesPerLoad;
+                            worksheet.Cell(nextRow, 17).Value = load.PackageTypeName ?? string.Empty;
+                            worksheet.Cell(nextRow, 18).Value = load.WeightPerPackage;
+                            worksheet.Cell(nextRow, 19).Value = load.IsNonPOItem ? "Yes" : "No";
+                            worksheet.Cell(nextRow, 20).Value = load.ReceivedDate.ToString("yyyy-MM-dd HH:mm:ss");
+                            worksheet.Cell(nextRow, 21).Value = load.UserId ?? string.Empty;
+                            worksheet.Cell(nextRow, 22).Value = load.EmployeeNumber;
+                            worksheet.Cell(nextRow, 23).Value = load.IsQualityHoldRequired ? "Yes" : "No";
+                            worksheet.Cell(nextRow, 24).Value = load.IsQualityHoldAcknowledged ? "Yes" : "No";
+                            worksheet.Cell(nextRow, 25).Value = load.QualityHoldRestrictionType ?? string.Empty;
+                            nextRow++;
+                        }
+
+                        // Auto-fit columns
+                        worksheet.Columns().AdjustToContents();
+
+                        // Save workbook - Use Save() for existing files, SaveAs() for new files
+                        if (isNewFile)
+                        {
+                            workbook.SaveAs(filePath);
+                        }
+                        else
+                        {
+                            workbook.Save();
+                        }
+
+                        workbook.Dispose();
+
+                        _logger.LogInfo($"Successfully wrote {loads.Count} records to {filePath}");
+                        return; // Success - exit retry loop
                     }
-                    else
+                    catch (IOException ioEx) when (retryCount < maxRetries - 1)
                     {
-                        // Open existing workbook
-                        workbook = new XLWorkbook(filePath);
-                        worksheet = workbook.Worksheet(1);
+                        // File is locked by another process
+                        lastException = ioEx;
+                        retryCount++;
+                        int delayMs = 100 * (int)Math.Pow(2, retryCount); // Exponential backoff: 200ms, 400ms, 800ms, 1600ms
+                        _logger.LogWarning($"File locked, retry {retryCount}/{maxRetries} after {delayMs}ms: {ioEx.Message}");
+                        Thread.Sleep(delayMs);
                     }
-
-                    // Find next empty row
-                    int nextRow = worksheet.LastRowUsed()?.RowNumber() + 1 ?? 2;
-
-                    // Write data
-                    foreach (var load in loads)
+                    catch (Exception ex)
                     {
-                        worksheet.Cell(nextRow, 1).Value = load.LoadID.ToString();
-                        worksheet.Cell(nextRow, 2).Value = load.LoadNumber;
-                        worksheet.Cell(nextRow, 3).Value = load.PartID ?? string.Empty;
-                        worksheet.Cell(nextRow, 4).Value = load.PartDescription ?? string.Empty;
-                        worksheet.Cell(nextRow, 5).Value = load.PartType ?? string.Empty;
-                        worksheet.Cell(nextRow, 6).Value = load.PoNumber ?? string.Empty;
-                        worksheet.Cell(nextRow, 7).Value = load.PoLineNumber ?? string.Empty;
-                        worksheet.Cell(nextRow, 8).Value = load.PoVendor ?? string.Empty;
-                        worksheet.Cell(nextRow, 9).Value = load.PoStatus ?? string.Empty;
-                        worksheet.Cell(nextRow, 10).Value = load.PoDueDate?.ToString("yyyy-MM-dd") ?? string.Empty;
-                        worksheet.Cell(nextRow, 11).Value = load.QtyOrdered;
-                        worksheet.Cell(nextRow, 12).Value = load.WeightQuantity;
-                        worksheet.Cell(nextRow, 13).Value = load.UnitOfMeasure ?? "EA";
-                        worksheet.Cell(nextRow, 14).Value = load.HeatLotNumber ?? string.Empty;
-                        worksheet.Cell(nextRow, 15).Value = load.RemainingQuantity;
-                        worksheet.Cell(nextRow, 16).Value = load.PackagesPerLoad;
-                        worksheet.Cell(nextRow, 17).Value = load.PackageTypeName ?? string.Empty;
-                        worksheet.Cell(nextRow, 18).Value = load.WeightPerPackage;
-                        worksheet.Cell(nextRow, 19).Value = load.IsNonPOItem ? "Yes" : "No";
-                        worksheet.Cell(nextRow, 20).Value = load.ReceivedDate.ToString("yyyy-MM-dd HH:mm:ss");
-                        worksheet.Cell(nextRow, 21).Value = load.UserId ?? string.Empty;
-                        worksheet.Cell(nextRow, 22).Value = load.EmployeeNumber;
-                        worksheet.Cell(nextRow, 23).Value = load.IsQualityHoldRequired ? "Yes" : "No";
-                        worksheet.Cell(nextRow, 24).Value = load.IsQualityHoldAcknowledged ? "Yes" : "No";
-                        worksheet.Cell(nextRow, 25).Value = load.QualityHoldRestrictionType ?? string.Empty;
-                        nextRow++;
+                        _logger.LogError($"Error writing to file {filePath}: {ex.Message}", ex);
+                        _logger.LogError($"Stack trace: {ex.StackTrace}");
+                        throw;
                     }
-
-                    // Auto-fit columns
-                    worksheet.Columns().AdjustToContents();
-
-                    // Save workbook
-                    workbook.SaveAs(filePath);
-                    workbook.Dispose();
-
-                    _logger.LogInfo($"Successfully wrote {loads.Count} records to {filePath}");
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error writing to file {filePath}: {ex.Message}", ex);
-                    _logger.LogError($"Stack trace: {ex.StackTrace}");
-                    throw;
-                }
+
+                // If we get here, all retries failed
+                _logger.LogError($"Failed to write to {filePath} after {maxRetries} retries");
+                throw new IOException($"Unable to write to {filePath} - file may be locked by another process", lastException);
             });
         }
 
