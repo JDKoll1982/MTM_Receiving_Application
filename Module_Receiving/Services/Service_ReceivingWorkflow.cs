@@ -375,16 +375,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             {
                 var xlsResult = await _xlsWriter.WriteToXLSAsync(CurrentSession.Loads);
 
-                result.LocalCSVSuccess = true;
-                result.NetworkCSVSuccess = xlsResult.NetworkSuccess;
-                result.NetworkCSVPath = await _xlsWriter.GetNetworkXLSPathAsync();
+                result.LocalXLSSuccess = true;
+                result.NetworkXLSSuccess = xlsResult.NetworkSuccess;
+                result.NetworkXLSPath = await _xlsWriter.GetNetworkXLSPathAsync();
 
                 if (!xlsResult.NetworkSuccess)
                 {
                     result.Errors.Add($"Network XLS write failed: {xlsResult.NetworkError}");
                 }
 
-                result.Success = result.NetworkCSVSuccess;
+                result.Success = result.NetworkXLSSuccess;
             }
             catch (Exception ex)
             {
@@ -455,17 +455,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 // Save to CSV
                 var xlsResult = await SaveToXLSOnlyAsync();
 
-                result.LocalCSVSuccess = xlsResult.LocalCSVSuccess;
-                result.NetworkCSVSuccess = xlsResult.NetworkCSVSuccess;
-                result.LocalCSVPath = xlsResult.LocalCSVPath;
-                result.NetworkCSVPath = xlsResult.NetworkCSVPath;
+                result.LocalXLSSuccess = xlsResult.LocalXLSSuccess;
+                result.NetworkXLSSuccess = xlsResult.NetworkXLSSuccess;
+                result.LocalXLSPath = xlsResult.LocalXLSPath;
+                result.NetworkXLSPath = xlsResult.NetworkXLSPath;
                 result.Errors.AddRange(xlsResult.Errors);
                 result.Warnings.AddRange(xlsResult.Warnings);
 
                 // Generate error message if CSV save failed
-                if (!result.LocalCSVSuccess && xlsResult.Errors.Count > 0)
+                if (!result.LocalXLSSuccess && xlsResult.Errors.Count > 0)
                 {
-                    result.CSVFileErrorMessage = "XLS save failed: " + string.Join("; ", xlsResult.Errors);
+                    result.XLSFileErrorMessage = "XLS save failed: " + string.Join("; ", xlsResult.Errors);
                 }
 
                 _logger.LogInfo("Reporting progress: Saving to database...");
@@ -493,7 +493,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                 // Final success check
                 // Success if Local CSV worked AND Database worked
-                result.Success = result.LocalCSVSuccess && result.DatabaseSuccess;
+                result.Success = result.LocalXLSSuccess && result.DatabaseSuccess;
 
                 if (result.Success)
                 {
@@ -515,7 +515,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogError("Unexpected error during save session", ex);
                 result.Success = false;
                 result.Errors.Add($"Unexpected error: {ex.Message}");
-                result.CSVFileErrorMessage = "Unexpected error during save: " + ex.Message;
+                result.XLSFileErrorMessage = "Unexpected error during save: " + ex.Message;
                 result.DatabaseErrorMessage = "Unexpected error during save: " + ex.Message;
                 return result;
             }

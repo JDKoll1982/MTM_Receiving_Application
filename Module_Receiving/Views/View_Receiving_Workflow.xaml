@@ -82,8 +82,8 @@
                     
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind ViewModel.CompletionXlsFileLabelText, Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -95,10 +95,10 @@
 
                 <!-- Failure Reason Display -->
                 <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
-                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.CSVFileErrorMessage, Mode=OneWay}" 
+                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.XLSFileErrorMessage, Mode=OneWay}" 
                                Foreground="Red" 
                                TextWrapping="Wrap"
-                               Visibility="{x:Bind ViewModel.LastSaveResult.CSVFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                               Visibility="{x:Bind ViewModel.LastSaveResult.XLSFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     <TextBlock Text="{x:Bind ViewModel.LastSaveResult.DatabaseErrorMessage, Mode=OneWay}" 
                                Foreground="Red" 
                                TextWrapping="Wrap"

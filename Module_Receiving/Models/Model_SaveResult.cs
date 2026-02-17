@@ -6,11 +6,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     {
         public bool Success { get; set; }
         public int LoadsSaved { get; set; }
-        public bool LocalCSVSuccess { get; set; }
-        public bool NetworkCSVSuccess { get; set; }
+        public bool LocalXLSSuccess { get; set; }
+        public bool NetworkXLSSuccess { get; set; }
         public bool DatabaseSuccess { get; set; }
-        public string? LocalCSVPath { get; set; }
-        public string? NetworkCSVPath { get; set; }
+        public string? LocalXLSPath { get; set; }
+        public string? NetworkXLSPath { get; set; }
         public List<string> Errors { get; set; } = new();
         public List<string> Warnings { get; set; } = new();
 
@@ -21,11 +21,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public Model_XLSWriteResult? CSVExportResult { get; set; }
 
         // Guided mode consolidated CSV status (single CSV file)
-        public bool CSVFileSuccess => LocalCSVSuccess;
-        public string CSVFileErrorMessage { get; set; } = string.Empty;
+        public bool XLSFileSuccess => LocalXLSSuccess;
+        public string XLSFileErrorMessage { get; set; } = string.Empty;
         public string DatabaseErrorMessage { get; set; } = string.Empty;
 
-        public bool IsFullSuccess => LocalCSVSuccess && NetworkCSVSuccess && DatabaseSuccess;
-        public bool IsPartialSuccess => (LocalCSVSuccess || DatabaseSuccess) && !IsFullSuccess;
+        public bool IsFullSuccess => LocalXLSSuccess && NetworkXLSSuccess && DatabaseSuccess;
+        public bool IsPartialSuccess => (LocalXLSSuccess || DatabaseSuccess) && !IsFullSuccess;
     }
 }
