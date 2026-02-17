@@ -125,18 +125,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        private static string BuildFallbackFilePath(string primaryFilePath)
-        {
-            var directory = Path.GetDirectoryName(primaryFilePath) ?? string.Empty;
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(primaryFilePath);
-            var extension = Path.GetExtension(primaryFilePath);
-            var suffix = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
-            var machine = Environment.MachineName;
-            var user = Environment.UserName;
-            var unique = Guid.NewGuid().ToString("N");
-            return Path.Combine(directory, $"{fileNameWithoutExtension}_shared_{suffix}_{machine}_{user}_{unique}{extension}");
-        }
-
         public async Task<Model_XLSWriteResult> WriteToXLSAsync(List<Model_ReceivingLoad> loads)
         {
             _logger.LogInfo($"Starting WriteToXLSAsync for {loads?.Count ?? 0} loads.");
@@ -164,25 +152,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             catch (IOException ioEx)
             {
                 var networkPath = await GetNetworkXLSPathInternalAsync();
-                var fallbackPath = BuildFallbackFilePath(networkPath);
+                var errorMessage = $"Unable to write to required network file '{networkPath}'. The file may be locked by another process. No fallback file was created.";
 
-                _logger.LogWarning($"Primary network XLS is locked. Attempting shared fallback write to: {fallbackPath}. Error: {ioEx.Message}");
-
-                try
-                {
-                    await WriteToFileAsync(fallbackPath, loads, append: false);
-                    result.NetworkSuccess = true;
-                    result.NetworkFilePath = fallbackPath;
-                    result.NetworkError = $"Primary network XLS file is locked. Wrote to shared fallback file: {fallbackPath}";
-                    _logger.LogWarning(result.NetworkError);
-                }
-                catch (Exception fallbackEx)
-                {
-                    _logger.LogError($"Fallback XLS write failed: {fallbackEx.Message}");
-                    result.NetworkSuccess = false;
-                    result.NetworkError = fallbackEx.Message;
-                    throw new InvalidOperationException("Failed to write network XLS file", fallbackEx);
-                }
+                _logger.LogError($"{errorMessage} Error: {ioEx.Message}", ioEx);
+                result.NetworkSuccess = false;
+                result.NetworkFilePath = networkPath;
+                result.NetworkError = errorMessage;
+                throw new InvalidOperationException(errorMessage, ioEx);
             }
             catch (Exception ex)
             {
