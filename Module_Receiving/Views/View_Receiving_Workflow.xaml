@@ -79,12 +79,21 @@
 
                 <StackPanel Spacing="8" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8">
                     <TextBlock Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                    
+
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind ViewModel.CompletionXlsFileLabelText, Mode=OneWay}"/>
                         <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
+
+                    <!-- File Path Display -->
+                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.NetworkXLSPath, Mode=OneWay}" 
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                               Margin="0,4,0,0"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind ViewModel.CompletionDatabaseLabelText, Mode=OneWay}"/>
