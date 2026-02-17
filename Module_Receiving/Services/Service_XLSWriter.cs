@@ -1,4 +1,6 @@
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -123,6 +125,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
+        private static string BuildFallbackFilePath(string primaryFilePath)
+        {
+            var directory = Path.GetDirectoryName(primaryFilePath) ?? string.Empty;
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(primaryFilePath);
+            var extension = Path.GetExtension(primaryFilePath);
+            var suffix = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
+            var machine = Environment.MachineName;
+            var user = Environment.UserName;
+            var unique = Guid.NewGuid().ToString("N");
+            return Path.Combine(directory, $"{fileNameWithoutExtension}_shared_{suffix}_{machine}_{user}_{unique}{extension}");
+        }
+
         public async Task<Model_XLSWriteResult> WriteToXLSAsync(List<Model_ReceivingLoad> loads)
         {
             _logger.LogInfo($"Starting WriteToXLSAsync for {loads?.Count ?? 0} loads.");
@@ -147,6 +161,29 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 result.NetworkFilePath = networkPath;
                 _logger.LogInfo("Network XLS write successful.");
             }
+            catch (IOException ioEx)
+            {
+                var networkPath = await GetNetworkXLSPathInternalAsync();
+                var fallbackPath = BuildFallbackFilePath(networkPath);
+
+                _logger.LogWarning($"Primary network XLS is locked. Attempting shared fallback write to: {fallbackPath}. Error: {ioEx.Message}");
+
+                try
+                {
+                    await WriteToFileAsync(fallbackPath, loads, append: false);
+                    result.NetworkSuccess = true;
+                    result.NetworkFilePath = fallbackPath;
+                    result.NetworkError = $"Primary network XLS file is locked. Wrote to shared fallback file: {fallbackPath}";
+                    _logger.LogWarning(result.NetworkError);
+                }
+                catch (Exception fallbackEx)
+                {
+                    _logger.LogError($"Fallback XLS write failed: {fallbackEx.Message}");
+                    result.NetworkSuccess = false;
+                    result.NetworkError = fallbackEx.Message;
+                    throw new InvalidOperationException("Failed to write network XLS file", fallbackEx);
+                }
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Network XLS write failed: {ex.Message}");
@@ -170,6 +207,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             await Task.Run(() =>
             {
+                var fileDirectory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrWhiteSpace(fileDirectory) && !Directory.Exists(fileDirectory))
+                {
+                    Directory.CreateDirectory(fileDirectory);
+                }
+
                 const int maxRetries = 5;
                 int retryCount = 0;
                 Exception? lastException = null;
@@ -178,57 +221,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 {
                     try
                     {
-                        bool isNewFile = !File.Exists(filePath) || !append;
-                        _logger.LogInfo($"File exists check for {filePath}: exists={File.Exists(filePath)}, isNewFile={isNewFile}, retry={retryCount}");
+                        bool fileExists = File.Exists(filePath);
+                        bool useExisting = fileExists && append;
+                        _logger.LogInfo($"File exists check for {filePath}: exists={fileExists}, useExisting={useExisting}, retry={retryCount}");
 
-                        IXLWorkbook workbook;
-                        IXLWorksheet worksheet;
-
-                        if (isNewFile || !File.Exists(filePath))
-                        {
-                            // Create new workbook
-                            workbook = new XLWorkbook();
-                            worksheet = workbook.Worksheets.Add("Receiving Data");
-
-                            // Add ALL headers from Model_ReceivingLoad (for future label use)
-                            worksheet.Cell(1, 1).Value = "LoadID";
-                            worksheet.Cell(1, 2).Value = "Load Number";
-                            worksheet.Cell(1, 3).Value = "Part ID";
-                            worksheet.Cell(1, 4).Value = "Part Description";
-                            worksheet.Cell(1, 5).Value = "Part Type";
-                            worksheet.Cell(1, 6).Value = "PO Number";
-                            worksheet.Cell(1, 7).Value = "PO Line Number";
-                            worksheet.Cell(1, 8).Value = "PO Vendor";
-                            worksheet.Cell(1, 9).Value = "PO Status";
-                            worksheet.Cell(1, 10).Value = "PO Due Date";
-                            worksheet.Cell(1, 11).Value = "Qty Ordered";
-                            worksheet.Cell(1, 12).Value = "Weight/Quantity (lbs)";
-                            worksheet.Cell(1, 13).Value = "Unit of Measure";
-                            worksheet.Cell(1, 14).Value = "Heat/Lot Number";
-                            worksheet.Cell(1, 15).Value = "Remaining Quantity";
-                            worksheet.Cell(1, 16).Value = "Packages Per Load";
-                            worksheet.Cell(1, 17).Value = "Package Type";
-                            worksheet.Cell(1, 18).Value = "Weight Per Package";
-                            worksheet.Cell(1, 19).Value = "Is Non-PO Item";
-                            worksheet.Cell(1, 20).Value = "Received Date";
-                            worksheet.Cell(1, 21).Value = "User ID";
-                            worksheet.Cell(1, 22).Value = "Employee Number";
-                            worksheet.Cell(1, 23).Value = "Quality Hold Required";
-                            worksheet.Cell(1, 24).Value = "Quality Hold Acknowledged";
-                            worksheet.Cell(1, 25).Value = "Quality Hold Restriction Type";
-
-                            // Format header row
-                            var headerRange = worksheet.Range("A1:Y1");
-                            headerRange.Style.Font.Bold = true;
-                            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
-                        }
-                        else
-                        {
-                            // Open existing workbook with FileShare.ReadWrite to allow LabelView and other apps to keep file open
-                            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-                            workbook = new XLWorkbook(fileStream);
-                            worksheet = workbook.Worksheet(1);
-                        }
+                        using var workbook = useExisting ? new XLWorkbook(filePath) : new XLWorkbook();
+                        var worksheet = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Receiving Data");
+                        EnsureHeaders(worksheet);
 
                         // Find next empty row
                         int nextRow = worksheet.LastRowUsed()?.RowNumber() + 1 ?? 2;
@@ -265,42 +264,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                             nextRow++;
                         }
 
-                        // Auto-fit columns
                         worksheet.Columns().AdjustToContents();
 
-                        // Save workbook - Use temp file strategy for concurrent access with label software
-                        if (isNewFile)
-                        {
-                            workbook.SaveAs(filePath);
-                        }
-                        else
-                        {
-                            // Save to temporary file first to avoid corruption while LabelView has file open
-                            var tempFilePath = Path.Combine(Path.GetDirectoryName(filePath) ?? "", 
-                                                           $"{Path.GetFileNameWithoutExtension(filePath)}_temp_{Guid.NewGuid():N}.xlsx");
-
-                            _logger.LogInfo($"Saving to temporary file: {tempFilePath}");
-                            workbook.SaveAs(tempFilePath);
-                            workbook.Dispose();
-                            workbook = null!; // Mark as disposed
-
-                            // Replace original file with temp file (atomic operation on NTFS)
-                            _logger.LogInfo($"Replacing {filePath} with {tempFilePath}");
-                            File.Copy(tempFilePath, filePath, overwrite: true);
-
-                            // Clean up temp file
-                            try
-                            {
-                                File.Delete(tempFilePath);
-                                _logger.LogInfo($"Deleted temporary file: {tempFilePath}");
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogWarning($"Could not delete temp file {tempFilePath}: {ex.Message}");
-                            }
-                        }
-
-                        workbook?.Dispose();
+                        EnableWorkbookSharing(workbook);
+                        workbook.SaveAs(filePath);
 
                         _logger.LogInfo($"Successfully wrote {loads.Count} records to {filePath}");
                         return; // Success - exit retry loop
@@ -326,6 +293,69 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogError($"Failed to write to {filePath} after {maxRetries} retries");
                 throw new IOException($"Unable to write to {filePath} - file may be locked by another process", lastException);
             });
+        }
+
+        private static void EnsureHeaders(IXLWorksheet worksheet)
+        {
+            if (!string.IsNullOrWhiteSpace(worksheet.Cell(1, 1).GetString()))
+            {
+                return;
+            }
+
+            worksheet.Cell(1, 1).Value = "LoadID";
+            worksheet.Cell(1, 2).Value = "Load Number";
+            worksheet.Cell(1, 3).Value = "Part ID";
+            worksheet.Cell(1, 4).Value = "Part Description";
+            worksheet.Cell(1, 5).Value = "Part Type";
+            worksheet.Cell(1, 6).Value = "PO Number";
+            worksheet.Cell(1, 7).Value = "PO Line Number";
+            worksheet.Cell(1, 8).Value = "PO Vendor";
+            worksheet.Cell(1, 9).Value = "PO Status";
+            worksheet.Cell(1, 10).Value = "PO Due Date";
+            worksheet.Cell(1, 11).Value = "Qty Ordered";
+            worksheet.Cell(1, 12).Value = "Weight/Quantity (lbs)";
+            worksheet.Cell(1, 13).Value = "Unit of Measure";
+            worksheet.Cell(1, 14).Value = "Heat/Lot Number";
+            worksheet.Cell(1, 15).Value = "Remaining Quantity";
+            worksheet.Cell(1, 16).Value = "Packages Per Load";
+            worksheet.Cell(1, 17).Value = "Package Type";
+            worksheet.Cell(1, 18).Value = "Weight Per Package";
+            worksheet.Cell(1, 19).Value = "Is Non-PO Item";
+            worksheet.Cell(1, 20).Value = "Received Date";
+            worksheet.Cell(1, 21).Value = "User ID";
+            worksheet.Cell(1, 22).Value = "Employee Number";
+            worksheet.Cell(1, 23).Value = "Quality Hold Required";
+            worksheet.Cell(1, 24).Value = "Quality Hold Acknowledged";
+            worksheet.Cell(1, 25).Value = "Quality Hold Restriction Type";
+
+            var headerRange = worksheet.Range("A1:Y1");
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+        }
+
+        private void EnableWorkbookSharing(XLWorkbook workbook)
+        {
+            try
+            {
+                var workbookPart = workbook.WorkbookPart;
+
+                if (workbookPart.WorkbookUserDataPart == null)
+                {
+                    var userDataPart = workbookPart.AddNewPart<WorkbookUserDataPart>();
+                    userDataPart.Users = new Users();
+                }
+
+                if (workbookPart.WorkbookRevisionHeaderPart == null)
+                {
+                    var revisionHeaderPart = workbookPart.AddNewPart<WorkbookRevisionHeaderPart>();
+                    revisionHeaderPart.Headers = new Headers { Guid = Guid.NewGuid().ToString("B") };
+                    revisionHeaderPart.AddNewPart<WorkbookRevisionLogPart>();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Unable to enable shared workbook metadata: {ex.Message}");
+            }
         }
 
         public async Task<List<Model_ReceivingLoad>> ReadFromXLSAsync(string filePath)

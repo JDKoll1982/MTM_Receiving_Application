@@ -431,6 +431,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(CurrentSession.Loads);
                 result.DatabaseSuccess = true;
                 result.LoadsSaved = savedCount;
+                if (savedCount < CurrentSession.Loads.Count)
+                {
+                    result.Warnings.Add($"{CurrentSession.Loads.Count - savedCount} load(s) were already in the database and were skipped.");
+                }
                 result.Success = true;
             }
             catch (Exception ex)

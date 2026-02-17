@@ -28,6 +28,24 @@ public class Dao_ReceivingLoad
         return poNumber.Replace("PO-", "", StringComparison.OrdinalIgnoreCase).Trim();
     }
 
+    private static bool IsDuplicateKeyError(Model_Dao_Result result)
+    {
+        if (result.Exception is MySqlException mySqlException && mySqlException.Number == 1062)
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(result.ErrorMessage))
+        {
+            return false;
+        }
+
+        var errorMessage = result.ErrorMessage;
+        return errorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
+            && (errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
+                || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase));
+    }
+
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
@@ -71,6 +89,11 @@ public class Dao_ReceivingLoad
 
                 if (!result.Success)
                 {
+                    if (IsDuplicateKeyError(result))
+                    {
+                        continue;
+                    }
+
                     throw new InvalidOperationException(result.ErrorMessage, result.Exception);
                 }
 
