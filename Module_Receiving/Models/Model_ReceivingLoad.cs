@@ -73,6 +73,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         [ObservableProperty]
         private string _qualityHoldRestrictionType = string.Empty;
 
+        // Additional fields from Infor Visual / PO data
+        [ObservableProperty]
+        private string _partDescription = string.Empty;
+
+        [ObservableProperty]
+        private string _unitOfMeasure = "EA";
+
+        [ObservableProperty]
+        private decimal _qtyOrdered;
+
+        [ObservableProperty]
+        private string _poVendor = string.Empty;
+
+        [ObservableProperty]
+        private string _poStatus = string.Empty;
+
+        [ObservableProperty]
+        private DateTime? _poDueDate;
+
         partial void OnPartIDChanged(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

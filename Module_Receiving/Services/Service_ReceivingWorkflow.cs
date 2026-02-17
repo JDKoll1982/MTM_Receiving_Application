@@ -294,7 +294,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     LoadNumber = CurrentSession.Loads.Count + 1, // Increment load number globally
                     IsNonPOItem = IsNonPOItem,
                     EmployeeNumber = CurrentSession.User?.EmployeeNumber ?? 0,
-                    UserId = CurrentSession.User?.WindowsUsername ?? string.Empty
+                    UserId = CurrentSession.User?.WindowsUsername ?? string.Empty,
+                    // Additional Infor Visual / PO data
+                    PartDescription = CurrentPart?.Description ?? string.Empty,
+                    UnitOfMeasure = CurrentPart?.UnitOfMeasure ?? "EA",
+                    QtyOrdered = CurrentPart?.QtyOrdered ?? 0,
+                    RemainingQuantity = CurrentPart?.RemainingQuantity ?? 0
                 };
                 CurrentSession.Loads.Add(load);
                 _currentBatchLoads.Add(load);

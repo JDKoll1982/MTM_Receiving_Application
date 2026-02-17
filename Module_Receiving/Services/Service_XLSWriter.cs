@@ -182,19 +182,36 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         // Create new workbook
                         workbook = new XLWorkbook();
                         worksheet = workbook.Worksheets.Add("Receiving Data");
-                        
-                        // Add headers
-                        worksheet.Cell(1, 1).Value = "Load Number";
-                        worksheet.Cell(1, 2).Value = "Part ID";
-                        worksheet.Cell(1, 3).Value = "PO Number";
-                        worksheet.Cell(1, 4).Value = "Quantity";
-                        worksheet.Cell(1, 5).Value = "Weight (lbs)";
-                        worksheet.Cell(1, 6).Value = "Heat/Lot Number";
-                        worksheet.Cell(1, 7).Value = "Received Date";
-                        worksheet.Cell(1, 8).Value = "Employee";
-                        
+
+                        // Add ALL headers from Model_ReceivingLoad (for future label use)
+                        worksheet.Cell(1, 1).Value = "LoadID";
+                        worksheet.Cell(1, 2).Value = "Load Number";
+                        worksheet.Cell(1, 3).Value = "Part ID";
+                        worksheet.Cell(1, 4).Value = "Part Description";
+                        worksheet.Cell(1, 5).Value = "Part Type";
+                        worksheet.Cell(1, 6).Value = "PO Number";
+                        worksheet.Cell(1, 7).Value = "PO Line Number";
+                        worksheet.Cell(1, 8).Value = "PO Vendor";
+                        worksheet.Cell(1, 9).Value = "PO Status";
+                        worksheet.Cell(1, 10).Value = "PO Due Date";
+                        worksheet.Cell(1, 11).Value = "Qty Ordered";
+                        worksheet.Cell(1, 12).Value = "Weight/Quantity (lbs)";
+                        worksheet.Cell(1, 13).Value = "Unit of Measure";
+                        worksheet.Cell(1, 14).Value = "Heat/Lot Number";
+                        worksheet.Cell(1, 15).Value = "Remaining Quantity";
+                        worksheet.Cell(1, 16).Value = "Packages Per Load";
+                        worksheet.Cell(1, 17).Value = "Package Type";
+                        worksheet.Cell(1, 18).Value = "Weight Per Package";
+                        worksheet.Cell(1, 19).Value = "Is Non-PO Item";
+                        worksheet.Cell(1, 20).Value = "Received Date";
+                        worksheet.Cell(1, 21).Value = "User ID";
+                        worksheet.Cell(1, 22).Value = "Employee Number";
+                        worksheet.Cell(1, 23).Value = "Quality Hold Required";
+                        worksheet.Cell(1, 24).Value = "Quality Hold Acknowledged";
+                        worksheet.Cell(1, 25).Value = "Quality Hold Restriction Type";
+
                         // Format header row
-                        var headerRange = worksheet.Range("A1:H1");
+                        var headerRange = worksheet.Range("A1:Y1");
                         headerRange.Style.Font.Bold = true;
                         headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
                     }
@@ -211,14 +228,31 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     // Write data
                     foreach (var load in loads)
                     {
-                        worksheet.Cell(nextRow, 1).Value = load.LoadNumber;
-                        worksheet.Cell(nextRow, 2).Value = load.PartID ?? string.Empty;
-                        worksheet.Cell(nextRow, 3).Value = load.PoNumber ?? string.Empty;
-                        worksheet.Cell(nextRow, 4).Value = load.WeightQuantity;
-                        worksheet.Cell(nextRow, 5).Value = load.WeightQuantity;
-                        worksheet.Cell(nextRow, 6).Value = load.HeatLotNumber ?? string.Empty;
-                        worksheet.Cell(nextRow, 7).Value = load.ReceivedDate.ToString("yyyy-MM-dd HH:mm:ss");
-                        worksheet.Cell(nextRow, 8).Value = load.EmployeeNumber;
+                        worksheet.Cell(nextRow, 1).Value = load.LoadID.ToString();
+                        worksheet.Cell(nextRow, 2).Value = load.LoadNumber;
+                        worksheet.Cell(nextRow, 3).Value = load.PartID ?? string.Empty;
+                        worksheet.Cell(nextRow, 4).Value = load.PartDescription ?? string.Empty;
+                        worksheet.Cell(nextRow, 5).Value = load.PartType ?? string.Empty;
+                        worksheet.Cell(nextRow, 6).Value = load.PoNumber ?? string.Empty;
+                        worksheet.Cell(nextRow, 7).Value = load.PoLineNumber ?? string.Empty;
+                        worksheet.Cell(nextRow, 8).Value = load.PoVendor ?? string.Empty;
+                        worksheet.Cell(nextRow, 9).Value = load.PoStatus ?? string.Empty;
+                        worksheet.Cell(nextRow, 10).Value = load.PoDueDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+                        worksheet.Cell(nextRow, 11).Value = load.QtyOrdered;
+                        worksheet.Cell(nextRow, 12).Value = load.WeightQuantity;
+                        worksheet.Cell(nextRow, 13).Value = load.UnitOfMeasure ?? "EA";
+                        worksheet.Cell(nextRow, 14).Value = load.HeatLotNumber ?? string.Empty;
+                        worksheet.Cell(nextRow, 15).Value = load.RemainingQuantity;
+                        worksheet.Cell(nextRow, 16).Value = load.PackagesPerLoad;
+                        worksheet.Cell(nextRow, 17).Value = load.PackageTypeName ?? string.Empty;
+                        worksheet.Cell(nextRow, 18).Value = load.WeightPerPackage;
+                        worksheet.Cell(nextRow, 19).Value = load.IsNonPOItem ? "Yes" : "No";
+                        worksheet.Cell(nextRow, 20).Value = load.ReceivedDate.ToString("yyyy-MM-dd HH:mm:ss");
+                        worksheet.Cell(nextRow, 21).Value = load.UserId ?? string.Empty;
+                        worksheet.Cell(nextRow, 22).Value = load.EmployeeNumber;
+                        worksheet.Cell(nextRow, 23).Value = load.IsQualityHoldRequired ? "Yes" : "No";
+                        worksheet.Cell(nextRow, 24).Value = load.IsQualityHoldAcknowledged ? "Yes" : "No";
+                        worksheet.Cell(nextRow, 25).Value = load.QualityHoldRestrictionType ?? string.Empty;
                         nextRow++;
                     }
 
@@ -259,17 +293,36 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     
                     // Skip header row, start from row 2
                     var rows = worksheet.RowsUsed().Skip(1);
-                    
+
                     foreach (var row in rows)
                     {
                         var load = new Model_ReceivingLoad
                         {
-                            LoadNumber = row.Cell(1).GetValue<int>(),
-                            PartID = row.Cell(2).GetString(),
-                            PoNumber = row.Cell(3).GetString(),
-                            WeightQuantity = row.Cell(4).GetValue<decimal>(),
-                            HeatLotNumber = row.Cell(6).GetString(),
-                            ReceivedDate = DateTime.TryParse(row.Cell(7).GetString(), out var date) ? date : DateTime.Now
+                            LoadID = Guid.TryParse(row.Cell(1).GetString(), out var loadId) ? loadId : Guid.NewGuid(),
+                            LoadNumber = row.Cell(2).GetValue<int>(),
+                            PartID = row.Cell(3).GetString(),
+                            PartDescription = row.Cell(4).GetString(),
+                            PartType = row.Cell(5).GetString(),
+                            PoNumber = row.Cell(6).GetString(),
+                            PoLineNumber = row.Cell(7).GetString(),
+                            PoVendor = row.Cell(8).GetString(),
+                            PoStatus = row.Cell(9).GetString(),
+                            PoDueDate = DateTime.TryParse(row.Cell(10).GetString(), out var dueDate) ? dueDate : null,
+                            QtyOrdered = row.Cell(11).GetValue<decimal>(),
+                            WeightQuantity = row.Cell(12).GetValue<decimal>(),
+                            UnitOfMeasure = row.Cell(13).GetString(),
+                            HeatLotNumber = row.Cell(14).GetString(),
+                            RemainingQuantity = row.Cell(15).GetValue<int>(),
+                            PackagesPerLoad = row.Cell(16).GetValue<int>(),
+                            PackageTypeName = row.Cell(17).GetString(),
+                            WeightPerPackage = row.Cell(18).GetValue<decimal>(),
+                            IsNonPOItem = row.Cell(19).GetString().Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                            ReceivedDate = DateTime.TryParse(row.Cell(20).GetString(), out var date) ? date : DateTime.Now,
+                            UserId = row.Cell(21).GetString(),
+                            EmployeeNumber = row.Cell(22).GetValue<int>(),
+                            IsQualityHoldRequired = row.Cell(23).GetString().Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                            IsQualityHoldAcknowledged = row.Cell(24).GetString().Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                            QualityHoldRestrictionType = row.Cell(25).GetString()
                         };
                         loads.Add(load);
                     }
@@ -296,21 +349,38 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 {
                     using var workbook = new XLWorkbook();
                     var worksheet = workbook.Worksheets.Add("Receiving Data");
-                    
-                    // Add headers only
-                    worksheet.Cell(1, 1).Value = "Load Number";
-                    worksheet.Cell(1, 2).Value = "Part ID";
-                    worksheet.Cell(1, 3).Value = "PO Number";
-                    worksheet.Cell(1, 4).Value = "Quantity";
-                    worksheet.Cell(1, 5).Value = "Weight (lbs)";
-                    worksheet.Cell(1, 6).Value = "Heat/Lot Number";
-                    worksheet.Cell(1, 7).Value = "Received Date";
-                    worksheet.Cell(1, 8).Value = "Employee";
-                    
-                    var headerRange = worksheet.Range("A1:H1");
+
+                    // Add ALL headers (same as WriteToFileAsync)
+                    worksheet.Cell(1, 1).Value = "LoadID";
+                    worksheet.Cell(1, 2).Value = "Load Number";
+                    worksheet.Cell(1, 3).Value = "Part ID";
+                    worksheet.Cell(1, 4).Value = "Part Description";
+                    worksheet.Cell(1, 5).Value = "Part Type";
+                    worksheet.Cell(1, 6).Value = "PO Number";
+                    worksheet.Cell(1, 7).Value = "PO Line Number";
+                    worksheet.Cell(1, 8).Value = "PO Vendor";
+                    worksheet.Cell(1, 9).Value = "PO Status";
+                    worksheet.Cell(1, 10).Value = "PO Due Date";
+                    worksheet.Cell(1, 11).Value = "Qty Ordered";
+                    worksheet.Cell(1, 12).Value = "Weight/Quantity (lbs)";
+                    worksheet.Cell(1, 13).Value = "Unit of Measure";
+                    worksheet.Cell(1, 14).Value = "Heat/Lot Number";
+                    worksheet.Cell(1, 15).Value = "Remaining Quantity";
+                    worksheet.Cell(1, 16).Value = "Packages Per Load";
+                    worksheet.Cell(1, 17).Value = "Package Type";
+                    worksheet.Cell(1, 18).Value = "Weight Per Package";
+                    worksheet.Cell(1, 19).Value = "Is Non-PO Item";
+                    worksheet.Cell(1, 20).Value = "Received Date";
+                    worksheet.Cell(1, 21).Value = "User ID";
+                    worksheet.Cell(1, 22).Value = "Employee Number";
+                    worksheet.Cell(1, 23).Value = "Quality Hold Required";
+                    worksheet.Cell(1, 24).Value = "Quality Hold Acknowledged";
+                    worksheet.Cell(1, 25).Value = "Quality Hold Restriction Type";
+
+                    var headerRange = worksheet.Range("A1:Y1");
                     headerRange.Style.Font.Bold = true;
                     headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
-                    
+
                     workbook.SaveAs(networkPath);
                     result.NetworkDeleted = true;
                 }
