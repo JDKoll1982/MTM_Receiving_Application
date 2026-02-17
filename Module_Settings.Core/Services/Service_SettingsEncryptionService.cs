@@ -43,24 +43,48 @@ public class Service_SettingsEncryptionService : ISettingsEncryptionService
             return string.Empty;
         }
 
-        var key = GetOrCreateKey();
-        var payload = Convert.FromBase64String(cipherText);
+        try
+        {
+            var key = GetOrCreateKey();
+            var payload = Convert.FromBase64String(cipherText);
 
-        using var aes = Aes.Create();
-        aes.Key = key;
+            using var aes = Aes.Create();
+            aes.Key = key;
 
-        var ivLength = aes.BlockSize / 8;
-        var iv = new byte[ivLength];
-        var cipherBytes = new byte[payload.Length - ivLength];
+            var ivLength = aes.BlockSize / 8;
+            if (payload.Length <= ivLength)
+            {
+                System.Diagnostics.Trace.TraceWarning("Settings decrypt failed: payload was shorter than IV length.");
+                return string.Empty;
+            }
 
-        Buffer.BlockCopy(payload, 0, iv, 0, ivLength);
-        Buffer.BlockCopy(payload, ivLength, cipherBytes, 0, cipherBytes.Length);
+            var iv = new byte[ivLength];
+            var cipherBytes = new byte[payload.Length - ivLength];
 
-        aes.IV = iv;
-        using var decryptor = aes.CreateDecryptor();
-        var plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+            Buffer.BlockCopy(payload, 0, iv, 0, ivLength);
+            Buffer.BlockCopy(payload, ivLength, cipherBytes, 0, cipherBytes.Length);
 
-        return Encoding.UTF8.GetString(plainBytes);
+            aes.IV = iv;
+            using var decryptor = aes.CreateDecryptor();
+            var plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+
+            return Encoding.UTF8.GetString(plainBytes);
+        }
+        catch (FormatException ex)
+        {
+            System.Diagnostics.Trace.TraceError($"Settings decrypt failed: invalid base64 payload. {ex.Message}");
+            return string.Empty;
+        }
+        catch (CryptographicException ex)
+        {
+            System.Diagnostics.Trace.TraceError($"Settings decrypt failed: crypto error. {ex.Message}");
+            return string.Empty;
+        }
+        catch (ArgumentException ex)
+        {
+            System.Diagnostics.Trace.TraceError($"Settings decrypt failed: invalid payload. {ex.Message}");
+            return string.Empty;
+        }
     }
 
     public void RotateKey()
@@ -80,10 +104,26 @@ public class Service_SettingsEncryptionService : ISettingsEncryptionService
     {
         if (File.Exists(KeyPath))
         {
-            var protectedKey = File.ReadAllBytes(KeyPath);
-            return ProtectedData.Unprotect(protectedKey, null, DataProtectionScope.CurrentUser);
+            try
+            {
+                var protectedKey = File.ReadAllBytes(KeyPath);
+                return ProtectedData.Unprotect(protectedKey, null, DataProtectionScope.CurrentUser);
+            }
+            catch (CryptographicException ex)
+            {
+                System.Diagnostics.Trace.TraceError($"Settings key unprotect failed. Regenerating key. {ex.Message}");
+            }
+            catch (IOException ex)
+            {
+                System.Diagnostics.Trace.TraceError($"Settings key read failed. Regenerating key. {ex.Message}");
+            }
         }
 
+        return CreateAndPersistKey();
+    }
+
+    private static byte[] CreateAndPersistKey()
+    {
         var directory = Path.GetDirectoryName(KeyPath);
         if (!string.IsNullOrWhiteSpace(directory))
         {

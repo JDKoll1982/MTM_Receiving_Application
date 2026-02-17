@@ -1,4 +1,4 @@
-﻿namespace MTM_Receiving_Application.Module_Core.Helpers.Database;
+namespace MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 /// <summary>
 /// Manages database connection strings for different environments
