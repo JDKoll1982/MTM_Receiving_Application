@@ -266,8 +266,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                         worksheet.Columns().AdjustToContents();
 
-                        EnableWorkbookSharing(workbook);
                         workbook.SaveAs(filePath);
+                        EnableWorkbookSharing(filePath);
 
                         _logger.LogInfo($"Successfully wrote {loads.Count} records to {filePath}");
                         return; // Success - exit retry loop
@@ -333,11 +333,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
         }
 
-        private void EnableWorkbookSharing(XLWorkbook workbook)
+        private void EnableWorkbookSharing(string filePath)
         {
             try
             {
-                var workbookPart = workbook.WorkbookPart;
+                using var document = SpreadsheetDocument.Open(filePath, true);
+                var workbookPart = document.WorkbookPart;
+
+                if (workbookPart == null)
+                {
+                    return;
+                }
 
                 if (workbookPart.WorkbookUserDataPart == null)
                 {
@@ -351,6 +357,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     revisionHeaderPart.Headers = new Headers { Guid = Guid.NewGuid().ToString("B") };
                     revisionHeaderPart.AddNewPart<WorkbookRevisionLogPart>();
                 }
+
+                workbookPart.Workbook?.Save();
             }
             catch (Exception ex)
             {

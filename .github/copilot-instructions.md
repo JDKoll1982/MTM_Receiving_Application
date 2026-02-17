@@ -357,7 +357,6 @@ public static class Dao_ReceivingLine
 
 **Service Registration Pattern (App.xaml.cs):**
 
-```csharp
 // Singletons (shared state, stateless)
 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
 services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
@@ -793,4 +792,9 @@ dotnet test MTM_Receiving_Application.sln
 ## User Environment Consideration
 
 - Avoid using terminal commands for validation as running scripts via the terminal locks up the terminal; prefer non-terminal tooling (file reads/search) for validation.
+
+## XLSX Creation for Multi-User Access
+
+- When creating XLSX files, implement strategies to support multi-user access.
+- Use `FileShare.ReadWrite` or shared access strategies to allow concurrent edits without conflicts.
 
