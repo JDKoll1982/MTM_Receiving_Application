@@ -224,8 +224,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         }
                         else
                         {
-                            // Open existing workbook with retry logic for file locks
-                            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                            // Open existing workbook with FileShare.ReadWrite to allow LabelView and other apps to keep file open
+                            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                             workbook = new XLWorkbook(fileStream);
                             worksheet = workbook.Worksheet(1);
                         }
@@ -268,17 +268,39 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         // Auto-fit columns
                         worksheet.Columns().AdjustToContents();
 
-                        // Save workbook - Use Save() for existing files, SaveAs() for new files
+                        // Save workbook - Use temp file strategy for concurrent access with label software
                         if (isNewFile)
                         {
                             workbook.SaveAs(filePath);
                         }
                         else
                         {
-                            workbook.Save();
+                            // Save to temporary file first to avoid corruption while LabelView has file open
+                            var tempFilePath = Path.Combine(Path.GetDirectoryName(filePath) ?? "", 
+                                                           $"{Path.GetFileNameWithoutExtension(filePath)}_temp_{Guid.NewGuid():N}.xlsx");
+
+                            _logger.LogInfo($"Saving to temporary file: {tempFilePath}");
+                            workbook.SaveAs(tempFilePath);
+                            workbook.Dispose();
+                            workbook = null!; // Mark as disposed
+
+                            // Replace original file with temp file (atomic operation on NTFS)
+                            _logger.LogInfo($"Replacing {filePath} with {tempFilePath}");
+                            File.Copy(tempFilePath, filePath, overwrite: true);
+
+                            // Clean up temp file
+                            try
+                            {
+                                File.Delete(tempFilePath);
+                                _logger.LogInfo($"Deleted temporary file: {tempFilePath}");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning($"Could not delete temp file {tempFilePath}: {ex.Message}");
+                            }
                         }
 
-                        workbook.Dispose();
+                        workbook?.Dispose();
 
                         _logger.LogInfo($"Successfully wrote {loads.Count} records to {filePath}");
                         return; // Success - exit retry loop
