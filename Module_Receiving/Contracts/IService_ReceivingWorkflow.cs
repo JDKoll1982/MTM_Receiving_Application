@@ -104,9 +104,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public void ClearUIInputs();
 
         /// <summary>
-        /// Saves all loads in session to CSV only.
+        /// Saves all loads in session to XLS only.
         /// </summary>
-        public Task<Model_SaveResult> SaveToCSVOnlyAsync();
+        public Task<Model_SaveResult> SaveToXLSOnlyAsync();
 
         /// <summary>
         /// Saves all loads in session to database only.
@@ -118,10 +118,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         public Task ResetWorkflowAsync();
 
-        /// <summary>
-        /// Resets the CSV files (deletes them).
+        ///  <summary>
+        /// Resets the XLS files (deletes them).
         /// </summary>
-        public Task<Model_CSVDeleteResult> ResetCSVFilesAsync();
+        public Task<Model_XLSDeleteResult> ResetXLSFilesAsync();
 
         /// <summary>
         /// Persists current session state to JSON.

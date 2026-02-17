@@ -420,7 +420,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (result == ContentDialogResult.Primary)
             {
                 // Reset CSV files (data is already in database from Save operation)
-                var deleteResult = await _workflowService.ResetCSVFilesAsync();
+                var deleteResult = await _workflowService.ResetXLSFilesAsync();
                 if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
                 {
                     ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusCsvDeletedSuccess), InfoBarSeverity.Success);

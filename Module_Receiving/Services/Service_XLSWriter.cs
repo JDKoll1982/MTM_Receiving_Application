@@ -1,32 +1,31 @@
-using CsvHelper;
-using CsvHelper.Configuration;
+using ClosedXML.Excel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Configuration;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
     /// <summary>
-    /// Service for writing receiving data to CSV files.
-    /// Respects the user-configured CSV save location from settings.
+    /// Service for writing receiving data to XLS files.
+    /// Respects the user-configured XLS save location from settings.
     /// Falls back to default network path if not configured.
     /// </summary>
-    public class Service_CSVWriter : IService_CSVWriter
+    public class Service_XLSWriter : IService_XLSWriter
     {
         private const string SettingsCategory = "Receiving";
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_SettingsCoreFacade _settingsCore;
 
-        public Service_CSVWriter(
+        public Service_XLSWriter(
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_SettingsCoreFacade settingsCore)
@@ -36,9 +35,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         }
 
-        private async Task<string> GetNetworkCSVPathInternalAsync()
+        private async Task<string> GetNetworkXLSPathInternalAsync()
         {
-            _logger.LogInfo("Resolving network CSV path...");
+            _logger.LogInfo("Resolving network XLS path...");
             try
             {
                 // First, try to get user-configured path from settings
@@ -47,13 +46,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 {
                     var settingResult = await _settingsCore.GetSettingAsync(
                         SettingsCategory,
-                        ReceivingSettingsKeys.Defaults.CsvSaveLocation,
+                        ReceivingSettingsKeys.Defaults.XlsSaveLocation,
                         currentUserId.Value);
 
                     if (settingResult.IsSuccess && !string.IsNullOrWhiteSpace(settingResult.Data?.Value))
                     {
                         var configuredPath = settingResult.Data.Value;
-                        _logger.LogInfo($"Using user-configured CSV path: {configuredPath}");
+                        _logger.LogInfo($"Using user-configured XLS path: {configuredPath}");
                         
                         // Ensure directory exists
                         try
@@ -69,7 +68,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                             _logger.LogWarning($"Failed to create configured directory: {ex.Message}");
                         }
 
-                        return Path.Combine(configuredPath, "ReceivingData.csv");
+                        return Path.Combine(configuredPath, "ReceivingData.xls");
                     }
                 }
 
@@ -97,7 +96,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     userName = Environment.UserName;
                 }
 
-                var networkBase = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files";
+                var networkBase = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User XLS Files";
                 var userDir = Path.Combine(networkBase, userName);
 
                 _logger.LogInfo($"Using default network path: {userDir}");
@@ -114,24 +113,24 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         _logger.LogWarning($"Failed to create network directory: {ex.Message}");
                     }
                 }
-                return Path.Combine(userDir, "ReceivingData.csv");
+                return Path.Combine(userDir, "ReceivingData.xls");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error resolving default network path: {ex.Message}");
-                return @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\UnknownUser\ReceivingData.csv";
+                return @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User XLS Files\UnknownUser\ReceivingData.xls";
             }
         }
 
-        public async Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_ReceivingLoad> loads)
+        public async Task<Model_XLSWriteResult> WriteToXLSAsync(List<Model_ReceivingLoad> loads)
         {
-            _logger.LogInfo($"Starting WriteToCSVAsync for {loads?.Count ?? 0} loads.");
+            _logger.LogInfo($"Starting WriteToXLSAsync for {loads?.Count ?? 0} loads.");
             if (loads == null || loads.Count == 0)
             {
                 throw new ArgumentException("Loads list cannot be null or empty", nameof(loads));
             }
 
-            var result = new Model_CSVWriteResult
+            var result = new Model_XLSWriteResult
             {
                 RecordsWritten = loads.Count,
                 LocalSuccess = true
@@ -139,20 +138,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                _logger.LogInfo("Attempting network CSV write...");
-                var networkPath = await GetNetworkCSVPathInternalAsync();
+                _logger.LogInfo("Attempting network XLS write...");
+                var networkPath = await GetNetworkXLSPathInternalAsync();
                 _logger.LogInfo($"Network path resolved: {networkPath}");
                 await WriteToFileAsync(networkPath, loads);
                 result.NetworkSuccess = true;
                 result.NetworkFilePath = networkPath;
-                _logger.LogInfo("Network CSV write successful.");
+                _logger.LogInfo("Network XLS write successful.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Network CSV write failed: {ex.Message}");
+                _logger.LogError($"Network XLS write failed: {ex.Message}");
                 result.NetworkSuccess = false;
                 result.NetworkError = ex.Message;
-                throw new InvalidOperationException("Failed to write network CSV file", ex);
+                throw new InvalidOperationException("Failed to write network XLS file", ex);
             }
 
             return result;
@@ -168,66 +167,69 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return;
             }
 
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
                 try
                 {
                     bool isNewFile = !File.Exists(filePath) || !append;
                     _logger.LogInfo($"File exists check for {filePath}: exists={File.Exists(filePath)}, isNewFile={isNewFile}");
-                    long fileSizeBefore = File.Exists(filePath) ? new FileInfo(filePath).Length : 0;
-                    _logger.LogInfo($"File size before write: {fileSizeBefore} bytes");
 
-                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                    {
-                        // Use custom class map to control which properties are written
-                    };
+                    IXLWorkbook workbook;
+                    IXLWorksheet worksheet;
 
-                    var fileMode = append ? FileMode.Append : FileMode.Create;
-                    _logger.LogInfo($"Opening file with mode: {fileMode}");
-                    
-                    if (append && File.Exists(filePath))
+                    if (isNewFile || !File.Exists(filePath))
                     {
-                        var lastChar = await GetLastCharacterOfFileAsync(filePath);
-                        _logger.LogInfo($"Last character of file before append: '{lastChar}' (code: {(int)lastChar})");
-                        if (lastChar != '\n' && lastChar != '\0')
-                        {
-                            _logger.LogInfo("File doesn't end with newline, appending newline before data...");
-                            await File.AppendAllTextAsync(filePath, Environment.NewLine);
-                        }
+                        // Create new workbook
+                        workbook = new XLWorkbook();
+                        worksheet = workbook.Worksheets.Add("Receiving Data");
+                        
+                        // Add headers
+                        worksheet.Cell(1, 1).Value = "Load Number";
+                        worksheet.Cell(1, 2).Value = "Part ID";
+                        worksheet.Cell(1, 3).Value = "PO Number";
+                        worksheet.Cell(1, 4).Value = "Quantity";
+                        worksheet.Cell(1, 5).Value = "Weight (lbs)";
+                        worksheet.Cell(1, 6).Value = "Heat/Lot Number";
+                        worksheet.Cell(1, 7).Value = "Received Date";
+                        worksheet.Cell(1, 8).Value = "Employee";
+                        
+                        // Format header row
+                        var headerRange = worksheet.Range("A1:H1");
+                        headerRange.Style.Font.Bold = true;
+                        headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
                     }
-                    
-                    await using var stream = new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
-                    await using var writer = new StreamWriter(stream);
-                    await using var csv = new CsvWriter(writer, config);
-                    
-                    _logger.LogInfo("Registering ClassMap...");
-                    csv.Context.RegisterClassMap<ReceivingLoadCsvMap>();
-
-                    if (isNewFile)
+                    else
                     {
-                        _logger.LogInfo("Writing header...");
-                        csv.WriteHeader<Model_ReceivingLoad>();
-                        csv.NextRecord();
+                        // Open existing workbook
+                        workbook = new XLWorkbook(filePath);
+                        worksheet = workbook.Worksheet(1);
                     }
 
-                    _logger.LogInfo($"Writing {loads.Count} load records...");
-                    int recordsWritten = 0;
+                    // Find next empty row
+                    int nextRow = worksheet.LastRowUsed()?.RowNumber() + 1 ?? 2;
+
+                    // Write data
                     foreach (var load in loads)
                     {
-                        _logger.LogInfo($"Writing load {load.LoadNumber}: PartID={load.PartID}, LoadID={load.LoadID}");
-                        csv.WriteRecord(load);
-                        csv.NextRecord();
-                        recordsWritten++;
+                        worksheet.Cell(nextRow, 1).Value = load.LoadNumber;
+                        worksheet.Cell(nextRow, 2).Value = load.PartID ?? string.Empty;
+                        worksheet.Cell(nextRow, 3).Value = load.PoNumber ?? string.Empty;
+                        worksheet.Cell(nextRow, 4).Value = load.WeightQuantity;
+                        worksheet.Cell(nextRow, 5).Value = load.WeightQuantity;
+                        worksheet.Cell(nextRow, 6).Value = load.HeatLotNumber ?? string.Empty;
+                        worksheet.Cell(nextRow, 7).Value = load.ReceivedDate.ToString("yyyy-MM-dd HH:mm:ss");
+                        worksheet.Cell(nextRow, 8).Value = load.EmployeeNumber;
+                        nextRow++;
                     }
 
-                    _logger.LogInfo($"Flushing CSV writer... {recordsWritten} records written");
-                    csv.Flush(); // CRITICAL: Must flush CsvWriter buffer to StreamWriter first!
-                    _logger.LogInfo("Flushing stream writer...");
-                    await writer.FlushAsync();
-                    
-                    long fileSizeAfter = new FileInfo(filePath).Length;
-                    _logger.LogInfo($"File size after write: {fileSizeAfter} bytes (delta: {fileSizeAfter - fileSizeBefore} bytes)");
-                    _logger.LogInfo($"Successfully wrote {recordsWritten} records to {filePath}");
+                    // Auto-fit columns
+                    worksheet.Columns().AdjustToContents();
+
+                    // Save workbook
+                    workbook.SaveAs(filePath);
+                    workbook.Dispose();
+
+                    _logger.LogInfo($"Successfully wrote {loads.Count} records to {filePath}");
                 }
                 catch (Exception ex)
                 {
@@ -238,31 +240,39 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             });
         }
 
-        public async Task<List<Model_ReceivingLoad>> ReadFromCSVAsync(string filePath)
+        public async Task<List<Model_ReceivingLoad>> ReadFromXLSAsync(string filePath)
         {
-            _logger.LogInfo($"ReadFromCSVAsync called for: {filePath}");
+            _logger.LogInfo($"ReadFromXLSAsync called for: {filePath}");
             return await Task.Run(() =>
             {
                 try
                 {
                     if (!File.Exists(filePath))
                     {
-                        throw new FileNotFoundException($"CSV file not found: {filePath}");
+                        throw new FileNotFoundException($"XLS file not found: {filePath}");
                     }
 
-                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                    {
-                        HeaderValidated = null,
-                        MissingFieldFound = null
-                    };
-
-                    using var reader = new StreamReader(filePath);
-                    using var csv = new CsvReader(reader, config);
+                    var loads = new List<Model_ReceivingLoad>();
                     
-                    csv.Context.RegisterClassMap<ReceivingLoadCsvMap>();
-
-                    var records = csv.GetRecords<Model_ReceivingLoad>();
-                    var loads = new List<Model_ReceivingLoad>(records);
+                    using var workbook = new XLWorkbook(filePath);
+                    var worksheet = workbook.Worksheet(1);
+                    
+                    // Skip header row, start from row 2
+                    var rows = worksheet.RowsUsed().Skip(1);
+                    
+                    foreach (var row in rows)
+                    {
+                        var load = new Model_ReceivingLoad
+                        {
+                            LoadNumber = row.Cell(1).GetValue<int>(),
+                            PartID = row.Cell(2).GetString(),
+                            PoNumber = row.Cell(3).GetString(),
+                            WeightQuantity = row.Cell(4).GetValue<decimal>(),
+                            HeatLotNumber = row.Cell(6).GetString(),
+                            ReceivedDate = DateTime.TryParse(row.Cell(7).GetString(), out var date) ? date : DateTime.Now
+                        };
+                        loads.Add(load);
+                    }
 
                     _logger.LogInfo($"Successfully read {loads.Count} records from {filePath}");
                     return loads;
@@ -275,22 +285,33 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             });
         }
 
-        public async Task<Model_CSVDeleteResult> ClearCSVFilesAsync()
+        public async Task<Model_XLSDeleteResult> ClearXLSFilesAsync()
         {
-            var result = new Model_CSVDeleteResult();
+            var result = new Model_XLSDeleteResult();
 
             try
             {
-                var networkPath = await GetNetworkCSVPathInternalAsync();
+                var networkPath = await GetNetworkXLSPathInternalAsync();
                 if (File.Exists(networkPath))
                 {
-                    var config = new CsvConfiguration(CultureInfo.InvariantCulture);
-                    await using var writer = new StreamWriter(networkPath);
-                    await using var csv = new CsvWriter(writer, config);
+                    using var workbook = new XLWorkbook();
+                    var worksheet = workbook.Worksheets.Add("Receiving Data");
                     
-                    csv.Context.RegisterClassMap<ReceivingLoadCsvMap>();
-                    csv.WriteHeader<Model_ReceivingLoad>();
-                    csv.NextRecord();
+                    // Add headers only
+                    worksheet.Cell(1, 1).Value = "Load Number";
+                    worksheet.Cell(1, 2).Value = "Part ID";
+                    worksheet.Cell(1, 3).Value = "PO Number";
+                    worksheet.Cell(1, 4).Value = "Quantity";
+                    worksheet.Cell(1, 5).Value = "Weight (lbs)";
+                    worksheet.Cell(1, 6).Value = "Heat/Lot Number";
+                    worksheet.Cell(1, 7).Value = "Received Date";
+                    worksheet.Cell(1, 8).Value = "Employee";
+                    
+                    var headerRange = worksheet.Range("A1:H1");
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                    
+                    workbook.SaveAs(networkPath);
                     result.NetworkDeleted = true;
                 }
             }
@@ -303,36 +324,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return result;
         }
 
-        private static async Task<char> GetLastCharacterOfFileAsync(string filePath)
+        public async Task<Model_XLSExistenceResult> CheckXLSFilesExistAsync()
         {
-            if (!File.Exists(filePath))
-            {
-                return '\0';
-            }
-
-            var fileInfo = new FileInfo(filePath);
-            if (fileInfo.Length == 0)
-            {
-                return '\0';
-            }
-
-            await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            if (stream.Length > 0)
-            {
-                stream.Seek(-1, SeekOrigin.End);
-                int lastByte = stream.ReadByte();
-                return lastByte >= 0 ? (char)lastByte : '\0';
-            }
-            return '\0';
-        }
-
-        public async Task<Model_CSVExistenceResult> CheckCSVFilesExistAsync()
-        {
-            var result = new Model_CSVExistenceResult();
+            var result = new Model_XLSExistenceResult();
 
             try
             {
-                var networkPath = await GetNetworkCSVPathInternalAsync();
+                var networkPath = await GetNetworkXLSPathInternalAsync();
                 result.NetworkExists = File.Exists(networkPath);
                 result.NetworkAccessible = true;
             }
@@ -345,7 +343,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return result;
         }
 
-        public async Task<string> GetNetworkCSVPathAsync() => await GetNetworkCSVPathInternalAsync();
+        public async Task<string> GetNetworkXLSPathAsync() => await GetNetworkXLSPathInternalAsync();
     }
 }
-

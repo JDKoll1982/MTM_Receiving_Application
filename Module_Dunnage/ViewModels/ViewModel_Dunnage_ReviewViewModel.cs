@@ -20,13 +20,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
-    private readonly IService_MySQL_Dunnage _dunnageService; private readonly IService_Help _helpService; private readonly IService_DunnageCSVWriter _csvWriter;
+    private readonly IService_MySQL_Dunnage _dunnageService; private readonly IService_Help _helpService; private readonly IService_DunnageXLSWriter _xlsWriter;
     private readonly IService_Window _windowService;
 
     public ViewModel_Dunnage_Review(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
-        IService_DunnageCSVWriter csvWriter,
+        IService_DunnageXLSWriter xlsWriter,
         IService_Help helpService,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
@@ -35,7 +35,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
-        _csvWriter = csvWriter;
+        _xlsWriter = xlsWriter;
         _helpService = helpService;
         _windowService = windowService;
 
@@ -190,15 +190,15 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
                 return;
             }
 
-            // Save current session to CSV before clearing
+            // Save current session to XLS before clearing
             IsBusy = true;
-            StatusMessage = "Saving to CSV...";
-            var saveResult = await _workflowService.SaveToCSVOnlyAsync();
+            StatusMessage = "Saving to XLS...";
+            var saveResult = await _workflowService.SaveToXLSOnlyAsync();
 
             if (!saveResult.IsSuccess)
             {
                 await _errorHandler.HandleErrorAsync(
-                    $"Failed to save CSV backup: {saveResult.ErrorMessage}",
+                    $"Failed to save XLS backup: {saveResult.ErrorMessage}",
                     Enum_ErrorSeverity.Warning,
                     null,
                     true);
@@ -333,16 +333,16 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             }
 
             await _logger.LogInfoAsync($"Successfully saved {LoadCount} loads to database");
-            StatusMessage = "Exporting to CSV...";
+            StatusMessage = "Exporting to XLS...";
 
-            // Export to CSV
-            var csvResult = await _csvWriter.WriteToCSVAsync(SessionLoads.ToList());
+            // Export to XLS
+            var xlsResult = await _xlsWriter.WriteToXLSAsync(SessionLoads.ToList());
 
-            if (!csvResult.LocalSuccess)
+            if (!xlsResult.LocalSuccess)
             {
-                await _logger.LogWarningAsync($"CSV export failed for {LoadCount} loads: {csvResult.ErrorMessage}");
+                await _logger.LogWarningAsync($"XLS export failed for {LoadCount} loads: {xlsResult.ErrorMessage}");
                 await _errorHandler.HandleErrorAsync(
-                    csvResult.ErrorMessage ?? "CSV export failed",
+                    xlsResult.ErrorMessage ?? "XLS export failed",
                     Enum_ErrorSeverity.Warning,
                     null,
                     true);
@@ -350,11 +350,11 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             }
             else
             {
-                await _logger.LogInfoAsync($"Successfully exported {LoadCount} loads to CSV");
+                await _logger.LogInfoAsync($"Successfully exported {LoadCount} loads to XLS");
             }
 
             // Show success message
-            SuccessMessage = $"Successfully saved {LoadCount} load(s) to database and exported to CSV";
+            SuccessMessage = $"Successfully saved {LoadCount} load(s) to database and exported to XLS";
             IsSuccessMessageVisible = true;
 
             await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");
@@ -429,4 +429,5 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
 
     #endregion
 }
+
 

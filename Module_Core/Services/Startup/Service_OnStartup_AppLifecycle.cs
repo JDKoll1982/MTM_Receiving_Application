@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.WinUI;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Shared.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
@@ -18,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IService_Authentication _authService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_ErrorHandler _errorHandler;
-        private readonly IService_CSVWriter _csvWriter;
+        private readonly IService_XLSWriter _xlsWriter;
         private readonly Dao_SettingsCoreRoles _rolesDao;
         private readonly Dao_SettingsCoreUserRoles _userRolesDao;
         private View_Shared_SplashScreenWindow? _splashScreen;
@@ -28,7 +29,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
             IService_ErrorHandler errorHandler,
-            IService_CSVWriter csvWriter,
+            IService_XLSWriter xlsWriter,
             Dao_SettingsCoreRoles rolesDao,
             Dao_SettingsCoreUserRoles userRolesDao)
         {
@@ -36,7 +37,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             _authService = authService;
             _sessionManager = sessionManager;
             _errorHandler = errorHandler;
-            _csvWriter = csvWriter;
+            _xlsWriter = xlsWriter;
             _rolesDao = rolesDao;
             _userRolesDao = userRolesDao;
         }

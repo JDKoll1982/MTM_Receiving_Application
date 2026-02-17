@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_ReceivingWorkflow : IService_ReceivingWorkflow
     {
         private readonly IService_SessionManager _sessionManager;
-        private readonly IService_CSVWriter _csvWriter;
+        private readonly IService_XLSWriter _xlsWriter;
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
         private readonly IService_LoggingUtility _logger;
@@ -57,7 +57,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
-            IService_CSVWriter csvWriter,
+            IService_XLSWriter xlsWriter,
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
             IService_LoggingUtility logger,
@@ -65,7 +65,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_UserSessionManager userSessionManager)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
-            _csvWriter = csvWriter ?? throw new ArgumentNullException(nameof(csvWriter));
+            _xlsWriter = xlsWriter ?? throw new ArgumentNullException(nameof(xlsWriter));
             _mysqlReceiving = mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -357,7 +357,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _viewModelRegistry.ClearAllInputs();
         }
 
-        public async Task<Model_SaveResult> SaveToCSVOnlyAsync()
+        public async Task<Model_SaveResult> SaveToXLSOnlyAsync()
         {
             var result = new Model_SaveResult();
 
@@ -373,15 +373,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                var csvResult = await _csvWriter.WriteToCSVAsync(CurrentSession.Loads);
+                var xlsResult = await _xlsWriter.WriteToXLSAsync(CurrentSession.Loads);
 
                 result.LocalCSVSuccess = true;
-                result.NetworkCSVSuccess = csvResult.NetworkSuccess;
-                result.NetworkCSVPath = await _csvWriter.GetNetworkCSVPathAsync();
+                result.NetworkCSVSuccess = xlsResult.NetworkSuccess;
+                result.NetworkCSVPath = await _xlsWriter.GetNetworkXLSPathAsync();
 
-                if (!csvResult.NetworkSuccess)
+                if (!xlsResult.NetworkSuccess)
                 {
-                    result.Errors.Add($"Network CSV write failed: {csvResult.NetworkError}");
+                    result.Errors.Add($"Network XLS write failed: {xlsResult.NetworkError}");
                 }
 
                 result.Success = result.NetworkCSVSuccess;
@@ -453,19 +453,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 percentProgress?.Report(30);
 
                 // Save to CSV
-                var csvResult = await SaveToCSVOnlyAsync();
+                var xlsResult = await SaveToXLSOnlyAsync();
 
-                result.LocalCSVSuccess = csvResult.LocalCSVSuccess;
-                result.NetworkCSVSuccess = csvResult.NetworkCSVSuccess;
-                result.LocalCSVPath = csvResult.LocalCSVPath;
-                result.NetworkCSVPath = csvResult.NetworkCSVPath;
-                result.Errors.AddRange(csvResult.Errors);
-                result.Warnings.AddRange(csvResult.Warnings);
+                result.LocalCSVSuccess = xlsResult.LocalCSVSuccess;
+                result.NetworkCSVSuccess = xlsResult.NetworkCSVSuccess;
+                result.LocalCSVPath = xlsResult.LocalCSVPath;
+                result.NetworkCSVPath = xlsResult.NetworkCSVPath;
+                result.Errors.AddRange(xlsResult.Errors);
+                result.Warnings.AddRange(xlsResult.Warnings);
 
-                // Populate CSV File error message if CSV save failed
-                if (!result.LocalCSVSuccess && csvResult.Errors.Count > 0)
+                // Generate error message if CSV save failed
+                if (!result.LocalCSVSuccess && xlsResult.Errors.Count > 0)
                 {
-                    result.CSVFileErrorMessage = "CSV save failed: " + string.Join("; ", csvResult.Errors);
+                    result.CSVFileErrorMessage = "XLS save failed: " + string.Join("; ", xlsResult.Errors);
                 }
 
                 _logger.LogInfo("Reporting progress: Saving to database...");
@@ -537,10 +537,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<Model_CSVDeleteResult> ResetCSVFilesAsync()
+        public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
         {
             _logger.LogInfo("Resetting CSV files requested.");
-            return await _csvWriter.ClearCSVFilesAsync();
+            return await _xlsWriter.ClearXLSFilesAsync();
         }
 
         public async Task PersistSessionAsync()

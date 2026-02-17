@@ -303,10 +303,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
-                // Save current session to CSV before clearing
+                // Save current session to XLS before clearing
                 IsBusy = true;
-                StatusMessage = "Saving to CSV...";
-                var saveResult = await _workflowService.SaveToCSVOnlyAsync();
+                StatusMessage = "Saving to XLS...";
+                var saveResult = await _workflowService.SaveToXLSOnlyAsync();
 
                 if (!saveResult.Success)
                 {

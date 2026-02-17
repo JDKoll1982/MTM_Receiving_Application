@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
     public class Service_DunnageWorkflow : IService_DunnageWorkflow
     {
         private readonly IService_MySQL_Dunnage _dunnageService;
-        private readonly IService_DunnageCSVWriter _csvWriter;
+        private readonly IService_DunnageXLSWriter _xlsWriter;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ErrorHandler _errorHandler;
@@ -30,14 +30,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public Service_DunnageWorkflow(
             IService_MySQL_Dunnage dunnageService,
-            IService_DunnageCSVWriter csvWriter,
+            IService_DunnageXLSWriter xlsWriter,
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_ErrorHandler errorHandler,
             IService_ViewModelRegistry viewModelRegistry)
         {
             _dunnageService = dunnageService;
-            _csvWriter = csvWriter;
+            _xlsWriter = xlsWriter;
             _sessionManager = sessionManager;
             _logger = logger;
             _errorHandler = errorHandler;
@@ -143,7 +143,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<Model_SaveResult> SaveToCSVOnlyAsync()
+        public async Task<Model_SaveResult> SaveToXLSOnlyAsync()
         {
             try
             {
@@ -163,12 +163,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     }
                 }
 
-                var csvResult = await _csvWriter.WriteToCSVAsync(loads);
+                var xlsResult = await _xlsWriter.WriteToXLSAsync(loads);
 
                 return new Model_SaveResult
                 {
-                    IsSuccess = csvResult.LocalSuccess,
-                    CSVExportResult = csvResult
+                    IsSuccess = xlsResult.LocalSuccess,
+                    CSVExportResult = xlsResult
                 };
             }
             catch (Exception ex)
@@ -224,15 +224,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     return dbResult;
                 }
 
-                // Export to CSV
-                var csvResult = await SaveToCSVOnlyAsync();
+                // Export to XLS
+                var xlsResult = await SaveToXLSOnlyAsync();
 
-                return new Model_SaveResult
-                {
-                    IsSuccess = true,
-                    RecordsSaved = dbResult.RecordsSaved,
-                    CSVExportResult = csvResult.CSVExportResult
-                };
+                return xlsResult;
             }
             catch (Exception ex)
             {
@@ -248,9 +243,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StatusMessageRaised?.Invoke(this, "Session cleared");
         }
 
-        public async Task<Model_CSVDeleteResult> ResetCSVFilesAsync()
+        public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
         {
-            return await _csvWriter.ClearCSVFilesAsync();
+            return await _xlsWriter.ClearXLSFilesAsync();
         }
 
         public void AddCurrentLoadToSession()

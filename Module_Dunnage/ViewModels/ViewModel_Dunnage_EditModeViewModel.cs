@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CsvHelper;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
@@ -24,7 +24,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
-    private readonly IService_DunnageCSVWriter _csvWriter;
+    private readonly IService_DunnageXLSWriter _xlsWriter;
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
@@ -34,7 +34,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     public ViewModel_Dunnage_EditMode(
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
-        IService_DunnageCSVWriter csvWriter,
+        IService_DunnageXLSWriter xlsWriter,
         IService_DunnageWorkflow workflowService,
         IService_Window windowService,
         IService_Help helpService,
@@ -44,7 +44,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     {
         _dunnageService = dunnageService;
         _paginationService = paginationService;
-        _csvWriter = csvWriter;
+        _xlsWriter = xlsWriter;
         _workflowService = workflowService;
         _windowService = windowService;
         _helpService = helpService;
@@ -187,9 +187,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     }
 
     /// <summary>
-    /// T152: Load data from most recent CSV export (Current Labels)
-    /// T153: CSV parsing error handling with line number reporting
-    /// T155: Error handling for missing CSV file
+    /// T152: Load data from most recent XLS export (Current Labels)
+    /// T153: XLS parsing error handling with line number reporting
+    /// T155: Error handling for missing XLS file
     /// </summary>
     [RelayCommand]
     private async Task LoadFromCurrentLabelsAsync()
@@ -203,7 +203,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             var localPath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MTM_Receiving_Application",
-                "DunnageData.csv"
+                "DunnageData.xls"
             );
 
             // T155: Check if file exists
@@ -217,51 +217,47 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 );
                 _allLoads = new List<Model_DunnageLoad>();
                 StatusMessage = "No label file found";
-                _logger.LogWarning($"CSV file not found at {localPath}", "EditMode");
+                _logger.LogWarning($"XLS file not found at {localPath}", "EditMode");
                 return;
             }
 
-            // T152: Parse CSV using CsvHelper
-            using var reader = new System.IO.StreamReader(localPath);
-            using var csv = new CsvHelper.CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
-
+            // Parse XLS using ClosedXML
             var loadsList = new List<Model_DunnageLoad>();
-            int lineNumber = 1; // Start at 1 (header is line 0)
-
+            
             try
             {
-                csv.Read();
-                csv.ReadHeader();
-
-                while (csv.Read())
+                using var workbook = new ClosedXML.Excel.XLWorkbook(localPath);
+                var worksheet = workbook.Worksheet(1);
+                var rows = worksheet.RowsUsed().Skip(1); // Skip header row
+                
+                foreach (var row in rows)
                 {
-                    lineNumber++;
                     try
                     {
                         var load = new Model_DunnageLoad
                         {
-                            TypeName = csv.GetField<string>("Type") ?? string.Empty,
-                            PartId = csv.GetField<string>("PartID") ?? string.Empty,
-                            Quantity = csv.GetField<decimal>("Quantity"),
-                            PoNumber = csv.GetField<string>("PO") ?? string.Empty,
-                            Location = csv.GetField<string>("Location") ?? string.Empty,
-                            ReceivedDate = DateTime.TryParse(csv.GetField<string>("Date"), out var date) ? date : DateTime.Now
+                            TypeName = row.Cell(1).GetString() ?? string.Empty,
+                            PartId = row.Cell(2).GetString() ?? string.Empty,
+                            Quantity = row.Cell(3).GetValue<decimal>(),
+                            PoNumber = row.Cell(4).GetString() ?? string.Empty,
+                            Location = row.Cell(5).GetString() ?? string.Empty,
+                            ReceivedDate = DateTime.TryParse(row.Cell(6).GetString(), out var date) ? date : DateTime.Now
                         };
 
                         loadsList.Add(load);
                     }
                     catch (Exception rowEx)
                     {
-                        // T153: Line-specific error reporting
-                        _logger.LogWarning($"Failed to parse line {lineNumber}: {rowEx.Message}", "EditMode");
+                        // Row-specific error reporting
+                        _logger.LogWarning($"Failed to parse row {row.RowNumber()}: {rowEx.Message}", "EditMode");
                     }
                 }
             }
             catch (Exception parseEx)
             {
-                // T153: CSV parsing error with line number
+                // XLS parsing error
                 await _errorHandler.HandleErrorAsync(
-                    $"CSV parsing error at line {lineNumber}: {parseEx.Message}",
+                    $"XLS parsing error: {parseEx.Message}",
                     Enum_ErrorSeverity.Warning,
                     parseEx,
                     true
@@ -283,7 +279,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             CanNavigate = TotalPages > 1;
             StatusMessage = $"Loaded {TotalRecords} loads from labels";
 
-            _logger.LogInfo($"Loaded {TotalRecords} loads from CSV file", "EditMode");
+            _logger.LogInfo($"Loaded {TotalRecords} loads from XLS file", "EditMode");
         }
         catch (Exception ex)
         {
@@ -591,13 +587,13 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 return;
             }
 
-            // Export to CSV
-            var csvResult = await _csvWriter.WriteToCSVAsync(_allLoads);
+            // Export to XLS
+            var xlsResult = await _xlsWriter.WriteToXLSAsync(_allLoads);
 
-            if (!csvResult.LocalSuccess)
+            if (!xlsResult.LocalSuccess)
             {
                 await _errorHandler.HandleErrorAsync(
-                    csvResult.ErrorMessage ?? "CSV export failed",
+                    xlsResult.ErrorMessage ?? "XLS export failed",
                     Enum_ErrorSeverity.Warning,
                     null,
                     true);
@@ -726,5 +722,6 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     #endregion
 }
+
 
 

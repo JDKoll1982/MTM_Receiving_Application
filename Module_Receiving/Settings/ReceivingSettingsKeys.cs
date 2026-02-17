@@ -271,6 +271,7 @@ public static class ReceivingSettingsKeys
     {
         public const string DefaultReceivingMode = "Receiving.Defaults.DefaultReceivingMode";
         public const string CsvSaveLocation = "Receiving.Defaults.CsvSaveLocation";
+        public const string XlsSaveLocation = "Receiving.Defaults.XlsSaveLocation";
     }
 
     public static class Integrations

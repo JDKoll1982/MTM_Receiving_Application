@@ -92,12 +92,12 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_SessionManager(logger);
         });
-        services.AddSingleton<IService_CSVWriter>(sp =>
+        services.AddSingleton<IService_XLSWriter>(sp =>
         {
             var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             var settingsCore = sp.GetRequiredService<IService_SettingsCoreFacade>();
-            return new Service_CSVWriter(sessionManager, logger, settingsCore);
+            return new Service_XLSWriter(sessionManager, logger, settingsCore);
         });
         services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
         services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
@@ -158,7 +158,7 @@ public static class ModuleServicesExtensions
 
         // Services
         services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
-        services.AddTransient<IService_DunnageCSVWriter, Service_DunnageCSVWriter>();
+        services.AddTransient<IService_DunnageXLSWriter, Service_DunnageXLSWriter>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
         services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 

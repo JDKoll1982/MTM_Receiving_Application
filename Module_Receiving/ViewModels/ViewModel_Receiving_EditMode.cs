@@ -23,7 +23,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
-        private readonly IService_CSVWriter _csvWriter;
+        private readonly IService_XLSWriter _xlsWriter;
         private readonly IService_Pagination _paginationService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -132,7 +132,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private int _gotoPageNumber = 1;
 
-        private string? _currentCsvPath;
+        private string? _currentXlsPath;
         private readonly List<Model_ReceivingLoad> _deletedLoads = new();
         private readonly IService_Window _windowService;
 
@@ -143,7 +143,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="workflowService"></param>
         /// <param name="mysqlService"></param>
-        /// <param name="csvWriter"></param>
+        /// <param name="xlsWriter"></param>
         /// <param name="paginationService"></param>
         /// <param name="errorHandler"></param>
         /// <param name="logger"></param>
@@ -155,7 +155,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ViewModel_Receiving_EditMode(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
-            IService_CSVWriter csvWriter,
+            IService_XLSWriter xlsWriter,
             IService_Pagination paginationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
@@ -169,7 +169,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
-            _csvWriter = csvWriter;
+            _xlsWriter = xlsWriter;
             _paginationService = paginationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
@@ -577,18 +577,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Loads data from current label CSV files.
+        /// Loads data from current label XLS files.
         /// </summary>
         [RelayCommand]
         private async Task LoadFromCurrentLabelsAsync()
         {
             try
             {
-                _logger.LogInfo("User initiated Current Labels (CSV) load");
+                _logger.LogInfo("User initiated Current Labels (XLS) load");
                 IsBusy = true;
                 StatusMessage = "Checking for existing label files...";
 
-                if (await TryLoadFromDefaultCsvAsync())
+                if (await TryLoadFromDefaultXlsAsync())
                 {
                     return;
                 }
@@ -610,17 +610,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Attempts to load data from the default CSV location.
+        /// Attempts to load data from the default XLS location.
         /// </summary>
-        private async Task<bool> TryLoadFromDefaultCsvAsync()
+        private async Task<bool> TryLoadFromDefaultXlsAsync()
         {
             try
             {
-                string networkPath = await _csvWriter.GetNetworkCSVPathAsync();
+                string networkPath = await _xlsWriter.GetNetworkXLSPathAsync();
                 if (File.Exists(networkPath))
                 {
                     _logger.LogInfo($"Attempting to load from network labels: {networkPath}");
-                    var loadedData = await _csvWriter.ReadFromCSVAsync(networkPath);
+                    var loadedData = await _xlsWriter.ReadFromXLSAsync(networkPath);
 
                     if (loadedData.Count > 0)
                     {
@@ -634,7 +634,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         StatusMessage = $"Loaded {_allLoads.Count} loads from network labels";
                         _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from network labels");
                         CurrentDataSource = Enum_DataSourceType.CurrentLabels;
-                        _currentCsvPath = networkPath;
+                        _currentXlsPath = networkPath;
                         SelectAllButtonText = "Select All";
 
                         FilterStartDate = DateTimeOffset.Now.AddYears(-1);
@@ -866,14 +866,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         break;
 
                     case Enum_DataSourceType.CurrentLabels:
-                        if (string.IsNullOrEmpty(_currentCsvPath))
+                        if (string.IsNullOrEmpty(_currentXlsPath))
                         {
                             await _errorHandler.HandleErrorAsync("No label file path available for saving.", Enum_ErrorSeverity.Error);
                             return;
                         }
 
-                        _logger.LogInfo($"Overwriting label file: {_currentCsvPath}");
-                        await _csvWriter.WriteToFileAsync(_currentCsvPath, _allLoads, append: false);
+                        _logger.LogInfo($"Overwriting label file: {_currentXlsPath}");
+                        await _xlsWriter.WriteToFileAsync(_currentXlsPath, _allLoads, append: false);
                         StatusMessage = "Label file updated successfully";
                         await _errorHandler.ShowErrorDialogAsync("Success", "Label file updated successfully.", Enum_ErrorSeverity.Info);
                         break;
@@ -1077,5 +1077,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #endregion
     }
 }
+
+
 
 

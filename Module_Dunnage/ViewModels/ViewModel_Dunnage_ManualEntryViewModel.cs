@@ -22,14 +22,14 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
-    private readonly IService_DunnageCSVWriter _csvWriter;
+    private readonly IService_DunnageXLSWriter _xlsWriter;
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
 
     public ViewModel_Dunnage_ManualEntry(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
-        IService_DunnageCSVWriter csvWriter,
+        IService_DunnageXLSWriter xlsWriter,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -38,7 +38,7 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
-        _csvWriter = csvWriter;
+        _xlsWriter = xlsWriter;
         _windowService = windowService;
         _helpService = helpService;
     }
@@ -427,12 +427,12 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             }
 
             // Export to CSV
-            var csvResult = await _csvWriter.WriteToCSVAsync(Loads.ToList());
+            var xlsResult = await _xlsWriter.WriteToXLSAsync(Loads.ToList());
 
-            if (!csvResult.LocalSuccess)
+            if (!xlsResult.LocalSuccess)
             {
                 await _errorHandler.HandleErrorAsync(
-                    csvResult.ErrorMessage ?? "CSV export failed",
+                    xlsResult.ErrorMessage ?? "XLS export failed",
                     Enum_ErrorSeverity.Warning,
                     null,
                     true);

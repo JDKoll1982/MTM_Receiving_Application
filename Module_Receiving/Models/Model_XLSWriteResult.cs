@@ -1,9 +1,9 @@
 namespace MTM_Receiving_Application.Module_Receiving.Models
 {
     /// <summary>
-    /// Result of CSV write operation.
+    /// Result of XLS write operation.
     /// </summary>
-    public class Model_CSVWriteResult
+    public class Model_XLSWriteResult
     {
         public bool LocalSuccess { get; set; }
         public bool NetworkSuccess { get; set; }
