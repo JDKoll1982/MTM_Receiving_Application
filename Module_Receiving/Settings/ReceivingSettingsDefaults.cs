@@ -24,16 +24,16 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.UiText.WorkflowBack] = "Back",
         [ReceivingSettingsKeys.UiText.WorkflowNext] = "Next",
         [ReceivingSettingsKeys.UiText.WorkflowModeSelection] = "Mode Selection",
-        [ReceivingSettingsKeys.UiText.WorkflowResetCsv] = "Reset CSV",
+        [ReceivingSettingsKeys.UiText.WorkflowResetXls] = "Reset XLS",
 
         // Completion
         [ReceivingSettingsKeys.UiText.CompletionSuccessTitle] = "Success!",
         [ReceivingSettingsKeys.UiText.CompletionFailureTitle] = "Save Failed",
         [ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix] = " loads saved successfully.",
         [ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle] = "Save Details:",
-        [ReceivingSettingsKeys.UiText.CompletionLocalCsvLabel] = "Local CSV:",
-        [ReceivingSettingsKeys.UiText.CompletionNetworkCsvLabel] = "Network CSV:",
-        [ReceivingSettingsKeys.UiText.CompletionCsvFileLabel] = "CSV File:",
+        [ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel] = "Local XLS:",
+        [ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel] = "Network XLS:",
+        [ReceivingSettingsKeys.UiText.CompletionXlsFileLabel] = "XLS File:",
         [ReceivingSettingsKeys.UiText.CompletionDatabaseLabel] = "Database:",
         [ReceivingSettingsKeys.UiText.CompletionSaved] = "Saved",
         [ReceivingSettingsKeys.UiText.CompletionFailed] = "Failed",
@@ -161,20 +161,20 @@ public static class ReceivingSettingsDefaults
 
         // Workflow save progress defaults
         [ReceivingSettingsKeys.Workflow.SaveProgressInitializing] = "Initializing...",
-        [ReceivingSettingsKeys.Workflow.SaveProgressSavingCsv] = "Saving to local and network CSV...",
+        [ReceivingSettingsKeys.Workflow.SaveProgressSavingXls] = "Saving to local and network XLS...",
 
         // Workflow dialogs
-        [ReceivingSettingsKeys.Workflow.ResetCsvDialogTitle] = "Reset CSV Files",
-        [ReceivingSettingsKeys.Workflow.ResetCsvDialogContent] = "Are you sure you want to delete the local and network CSV files? This action cannot be undone.",
-        [ReceivingSettingsKeys.Workflow.ResetCsvDialogDelete] = "Delete",
-        [ReceivingSettingsKeys.Workflow.ResetCsvDialogCancel] = "Cancel",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle] = "Reset XLS Files",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogContent] = "Are you sure you want to delete the local and network XLS files? This action cannot be undone.",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete] = "Delete",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel] = "Cancel",
         [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogTitle] = "Database Save Failed",
         [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogDeleteAnyway] = "Delete Anyway",
         [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogCancel] = "Cancel",
 
         // Status
-        [ReceivingSettingsKeys.Workflow.StatusCsvDeletedSuccess] = "CSV files deleted successfully.",
-        [ReceivingSettingsKeys.Workflow.StatusCsvDeletedFailed] = "Failed to delete CSV files or files not found.",
+        [ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess] = "XLS files deleted successfully.",
+        [ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed] = "Failed to delete XLS files or files not found.",
         [ReceivingSettingsKeys.Workflow.StatusWorkflowCleared] = "Workflow cleared. Please select a mode.",
 
         // Dialogs

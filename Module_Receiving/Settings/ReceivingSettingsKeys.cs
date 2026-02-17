@@ -19,15 +19,15 @@ public static class ReceivingSettingsKeys
         public const string WorkflowBack = "Receiving.UiText.Workflow.Back";
         public const string WorkflowNext = "Receiving.UiText.Workflow.Next";
         public const string WorkflowModeSelection = "Receiving.UiText.Workflow.ModeSelection";
-        public const string WorkflowResetCsv = "Receiving.UiText.Workflow.ResetCsv";
+        public const string WorkflowResetXls = "Receiving.UiText.Workflow.ResetXls";
 
         public const string CompletionSuccessTitle = "Receiving.UiText.Completion.SuccessTitle";
         public const string CompletionFailureTitle = "Receiving.UiText.Completion.FailureTitle";
         public const string CompletionLoadsSavedSuffix = "Receiving.UiText.Completion.LoadsSavedSuffix";
         public const string CompletionSaveDetailsTitle = "Receiving.UiText.Completion.SaveDetailsTitle";
-        public const string CompletionLocalCsvLabel = "Receiving.UiText.Completion.LocalCsvLabel";
-        public const string CompletionNetworkCsvLabel = "Receiving.UiText.Completion.NetworkCsvLabel";
-        public const string CompletionCsvFileLabel = "Receiving.UiText.Completion.CsvFileLabel";
+        public const string CompletionLocalXlsLabel = "Receiving.UiText.Completion.LocalXlsLabel";
+        public const string CompletionNetworkXlsLabel = "Receiving.UiText.Completion.NetworkXlsLabel";
+        public const string CompletionXlsFileLabel = "Receiving.UiText.Completion.XlsFileLabel";
         public const string CompletionDatabaseLabel = "Receiving.UiText.Completion.DatabaseLabel";
         public const string CompletionSaved = "Receiving.UiText.Completion.Saved";
         public const string CompletionFailed = "Receiving.UiText.Completion.Failed";
@@ -152,19 +152,19 @@ public static class ReceivingSettingsKeys
         public const string StepTitleComplete = "Receiving.Workflow.StepTitle.Complete";
 
         public const string SaveProgressInitializing = "Receiving.Workflow.SaveProgress.Initializing";
-        public const string SaveProgressSavingCsv = "Receiving.Workflow.SaveProgress.SavingCsv";
+        public const string SaveProgressSavingXls = "Receiving.Workflow.SaveProgress.SavingXls";
 
-        public const string ResetCsvDialogTitle = "Receiving.Workflow.Dialog.ResetCsv.Title";
-        public const string ResetCsvDialogContent = "Receiving.Workflow.Dialog.ResetCsv.Content";
-        public const string ResetCsvDialogDelete = "Receiving.Workflow.Dialog.ResetCsv.Delete";
-        public const string ResetCsvDialogCancel = "Receiving.Workflow.Dialog.ResetCsv.Cancel";
+        public const string ResetXlsDialogTitle = "Receiving.Workflow.Dialog.ResetXls.Title";
+        public const string ResetXlsDialogContent = "Receiving.Workflow.Dialog.ResetXls.Content";
+        public const string ResetXlsDialogDelete = "Receiving.Workflow.Dialog.ResetXls.Delete";
+        public const string ResetXlsDialogCancel = "Receiving.Workflow.Dialog.ResetXls.Cancel";
 
         public const string DbSaveFailedDialogTitle = "Receiving.Workflow.Dialog.DbSaveFailed.Title";
         public const string DbSaveFailedDialogDeleteAnyway = "Receiving.Workflow.Dialog.DbSaveFailed.DeleteAnyway";
         public const string DbSaveFailedDialogCancel = "Receiving.Workflow.Dialog.DbSaveFailed.Cancel";
 
-        public const string StatusCsvDeletedSuccess = "Receiving.Workflow.Status.CsvDeletedSuccess";
-        public const string StatusCsvDeletedFailed = "Receiving.Workflow.Status.CsvDeletedFailed";
+        public const string StatusXlsDeletedSuccess = "Receiving.Workflow.Status.XlsDeletedSuccess";
+        public const string StatusXlsDeletedFailed = "Receiving.Workflow.Status.XlsDeletedFailed";
         public const string StatusWorkflowCleared = "Receiving.Workflow.Status.WorkflowCleared";
     }
 

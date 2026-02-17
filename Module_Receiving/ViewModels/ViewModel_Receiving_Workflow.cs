@@ -89,7 +89,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _workflowModeSelectionText = "Mode Selection";
 
         [ObservableProperty]
-        private string _workflowResetCsvText = "Reset CSV";
+        private string _workflowResetXlsText = "Reset XLS";
 
         [ObservableProperty]
         private string _completionSuccessTitleText = "Success!";
@@ -104,13 +104,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _completionSaveDetailsTitleText = "Save Details:";
 
         [ObservableProperty]
-        private string _completionLocalCsvLabelText = "Local CSV:";
+        private string _completionLocalXlsLabelText = "Local XLS:";
 
         [ObservableProperty]
-        private string _completionNetworkCsvLabelText = "Network CSV:";
+        private string _completionNetworkXlsLabelText = "Network XLS:";
 
         [ObservableProperty]
-        private string _completionCsvFileLabelText = "CSV File:";
+        private string _completionXlsFileLabelText = "XLS File:";
 
         [ObservableProperty]
         private string _completionDatabaseLabelText = "Database:";
@@ -188,15 +188,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 WorkflowBackText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowBack);
                 WorkflowNextText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowNext);
                 WorkflowModeSelectionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowModeSelection);
-                WorkflowResetCsvText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowResetCsv);
+                WorkflowResetXlsText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowResetXls);
 
                 CompletionSuccessTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSuccessTitle);
                 CompletionFailureTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailureTitle);
                 CompletionLoadsSavedSuffixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix);
                 CompletionSaveDetailsTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle);
-                CompletionLocalCsvLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLocalCsvLabel);
-                CompletionNetworkCsvLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionNetworkCsvLabel);
-                CompletionCsvFileLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionCsvFileLabel);
+                CompletionLocalXlsLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel);
+                CompletionNetworkXlsLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel);
+                CompletionXlsFileLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionXlsFileLabel);
                 CompletionDatabaseLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionDatabaseLabel);
                 CompletionSavedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaved);
                 CompletionFailedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailed);
@@ -356,7 +356,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("PerformSaveAsync started.");
 
                 // Update UI immediately
-                SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressSavingCsv);
+                SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressSavingXls);
                 SaveProgressValue = 30;
 
                 // Perform save
@@ -396,7 +396,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         [RelayCommand]
-        private async Task ResetCSVAsync()
+        private async Task ResetXLSAsync()
         {
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
@@ -408,10 +408,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var dialog = new ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetCsvDialogTitle),
-                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetCsvDialogContent),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetCsvDialogDelete),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetCsvDialogCancel),
+                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle),
+                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogContent),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete),
+                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = xamlRoot
             };
@@ -419,15 +419,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                // Reset CSV files (data is already in database from Save operation)
+                // Reset XLS files (data is already in database from Save operation)
                 var deleteResult = await _workflowService.ResetXLSFilesAsync();
                 if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
                 {
-                    ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusCsvDeletedSuccess), InfoBarSeverity.Success);
+                    ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess), InfoBarSeverity.Success);
                 }
                 else
                 {
-                    ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusCsvDeletedFailed), InfoBarSeverity.Warning);
+                    ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed), InfoBarSeverity.Warning);
                 }
             }
         }
