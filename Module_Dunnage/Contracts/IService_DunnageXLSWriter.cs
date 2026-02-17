@@ -89,7 +89,7 @@ public interface IService_DunnageXLSWriter
     /// <summary>
     /// Clears the contents of all XLS files created by the application from local and network paths
     /// </summary>
-    /// <param name="filenamePattern">Optional filename pattern to match (e.g., "DunnageData_*.xls"). If null, clears all XLS files.</param>
+    /// <param name="filenamePattern">Optional filename pattern to match (e.g., "DunnageData_*.xlsx"). If null, clears all XLS files.</param>
     /// <returns>XLS clear result with counts of cleared files and any errors</returns>
     public Task<Model_XLSDeleteResult> ClearXLSFilesAsync(string? filenamePattern = null);
 }

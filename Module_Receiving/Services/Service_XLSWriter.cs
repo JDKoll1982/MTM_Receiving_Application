@@ -68,7 +68,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                             _logger.LogWarning($"Failed to create configured directory: {ex.Message}");
                         }
 
-                        return Path.Combine(configuredPath, "ReceivingData.xls");
+                        return Path.Combine(configuredPath, "ReceivingData.xlsx");
                     }
                 }
 
@@ -113,12 +113,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         _logger.LogWarning($"Failed to create network directory: {ex.Message}");
                     }
                 }
-                return Path.Combine(userDir, "ReceivingData.xls");
+                return Path.Combine(userDir, "ReceivingData.xlsx");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error resolving default network path: {ex.Message}");
-                return @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User XLS Files\UnknownUser\ReceivingData.xls";
+                return @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User XLS Files\UnknownUser\ReceivingData.xlsx";
             }
         }
 

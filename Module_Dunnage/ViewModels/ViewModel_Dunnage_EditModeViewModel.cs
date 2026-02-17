@@ -203,7 +203,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             var localPath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MTM_Receiving_Application",
-                "DunnageData.xls"
+                "DunnageData.xlsx"
             );
 
             // T155: Check if file exists

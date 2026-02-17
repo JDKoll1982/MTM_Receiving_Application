@@ -58,7 +58,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 specKeys.Sort();
 
                 // Write to local path
-                string filename = $"{typeName}_{DateTime.Now:yyyyMMdd_HHmmss}.xls";
+                string filename = $"{typeName}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 var localPath = GetLocalXLSPath(filename);
                 await WriteXlsFileAsync(localPath, loads, specKeys);
                 await _logger.LogInfoAsync($"Successfully wrote {loads.Count} records to local XLS: {localPath}");
@@ -119,7 +119,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 var specKeys = allSpecKeys ?? await _dunnageService.GetAllSpecKeysAsync();
                 specKeys.Sort();
 
-                string xlsFilename = filename ?? $"DunnageData_{DateTime.Now:yyyyMMdd_HHmmss}.xls";
+                string xlsFilename = filename ?? $"DunnageData_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
 
                 var localPath = GetLocalXLSPath(xlsFilename);
                 await WriteDynamicXLSFileAsync(localPath, loads, specKeys);
@@ -213,7 +213,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     specKeys = specKeys.Distinct().ToList();
                 }
 
-                string filename = $"DunnageSelection_{DateTime.Now:yyyyMMdd_HHmmss}.xls";
+                string filename = $"DunnageSelection_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 return await WriteDynamicXLSAsync(selectedLoads, specKeys, filename);
             }
             catch (Exception ex)
@@ -391,10 +391,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 // Clear local files
                 try
                 {
-                    var localFolder = Path.GetDirectoryName(GetLocalXLSPath("dummy.xls"));
+                    var localFolder = Path.GetDirectoryName(GetLocalXLSPath("dummy.xlsx"));
                     if (Directory.Exists(localFolder))
                     {
-                        var filesToClear = Directory.GetFiles(localFolder, filenamePattern ?? "*.xls");
+                        var filesToClear = Directory.GetFiles(localFolder, filenamePattern ?? "*.xlsx");
                         foreach (var file in filesToClear)
                         {
                             File.Delete(file);
@@ -421,10 +421,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 {
                     if (await IsNetworkPathAvailableAsync())
                     {
-                        var networkFolder = Path.GetDirectoryName(GetNetworkXLSPath("dummy.xls"));
+                        var networkFolder = Path.GetDirectoryName(GetNetworkXLSPath("dummy.xlsx"));
                         if (Directory.Exists(networkFolder))
                         {
-                            var filesToClear = Directory.GetFiles(networkFolder, filenamePattern ?? "*.xls");
+                            var filesToClear = Directory.GetFiles(networkFolder, filenamePattern ?? "*.xlsx");
                             foreach (var file in filesToClear)
                             {
                                 File.Delete(file);
