@@ -110,17 +110,17 @@ await connection.ExecuteAsync(sql, parameters);
 
 ---
 
-## CSV File Safety
+## XLS File Safety
 
-### Local CSV is Critical
+### Local XLS is Critical
 
-**Rule**: Save operation must fail if local CSV cannot be written  
-**Enforcement**: `Service_CSVWriter` checks local path first
+**Rule**: Save operation must fail if local XLS cannot be written  
+**Enforcement**: `Service_XLSWriter` checks local path first
 
-**Why**: Local CSV is backup for database and source for label recovery.
+**Why**: Local XLS is backup for database and source for label recovery.
 
-**Acceptable failure**: Network CSV can fail (warning only)  
-**Unacceptable failure**: Local CSV failure must abort save
+**Acceptable failure**: Network XLS can fail (warning only)  
+**Unacceptable failure**: Local XLS failure must abort save
 
 **Validation**:
 - Test save with network path unavailable (should succeed with warning)
@@ -128,21 +128,21 @@ await connection.ExecuteAsync(sql, parameters);
 
 ---
 
-### CSV Format Must Match Label Templates
+### XLS Format Must Match Label Templates
 
 **Rule**: Field names and order must match label printer templates  
 **Enforcement**: Manual validation with label system vendor
 
-**Why**: Label printer parses CSV by column position/name. Changes break printing.
+**Why**: Label printer parses XLS by column position/name. Changes break printing.
 
-**Before changing CSV format**:
+**Before changing XLS format**:
 1. Coordinate with label system vendor
 2. Update label templates first (if possible)
 3. Test in non-production environment
 4. Have rollback plan
 
 **Validation**:
-- Generate test CSV
+- Generate test XLS
 - Submit to label printer test queue
 - Verify labels print correctly
 

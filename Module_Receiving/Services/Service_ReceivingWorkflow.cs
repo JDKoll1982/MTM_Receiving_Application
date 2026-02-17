@@ -389,8 +389,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Errors.Add($"CSV save failed: {ex.Message}");
-                _logger.LogError("CSV save failed", ex);
+                result.Errors.Add($"XLS save failed: {ex.Message}");
+                _logger.LogError("XLS save failed", ex);
             }
 
             return result;
@@ -448,11 +448,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                _logger.LogInfo("Reporting progress: Saving to local CSV...");
-                messageProgress?.Report("Saving to local CSV...");
+                _logger.LogInfo("Reporting progress: Saving to local XLS...");
+                messageProgress?.Report("Saving to local XLS...");
                 percentProgress?.Report(30);
 
-                // Save to CSV
+                // Save to XLS
                 var xlsResult = await SaveToXLSOnlyAsync();
 
                 result.LocalXLSSuccess = xlsResult.LocalXLSSuccess;
@@ -492,7 +492,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 percentProgress?.Report(90);
 
                 // Final success check
-                // Success if Local CSV worked AND Database worked
+                // Success if Local XLS worked AND Database worked
                 result.Success = result.LocalXLSSuccess && result.DatabaseSuccess;
 
                 if (result.Success)
@@ -539,7 +539,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
         {
-            _logger.LogInfo("Resetting CSV files requested.");
+            _logger.LogInfo("Resetting XLS files requested.");
             return await _xlsWriter.ClearXLSFilesAsync();
         }
 

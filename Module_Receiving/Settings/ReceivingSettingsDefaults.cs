@@ -56,8 +56,8 @@ public static class ReceivingSettingsDefaults
 
         // Edit mode
         [ReceivingSettingsKeys.UiText.EditModeLoadDataFrom] = "Load Data From:",
-        [ReceivingSettingsKeys.UiText.EditModeCurrentMemory] = "Not Saved to CSV",
-        [ReceivingSettingsKeys.UiText.EditModeCurrentLabels] = "CSV Data",
+        [ReceivingSettingsKeys.UiText.EditModeCurrentMemory] = "Not Saved to XLS",
+        [ReceivingSettingsKeys.UiText.EditModeCurrentLabels] = "XLS Data",
         [ReceivingSettingsKeys.UiText.EditModeHistory] = "History",
         [ReceivingSettingsKeys.UiText.EditModeFilterDate] = "Filter Date:",
         [ReceivingSettingsKeys.UiText.EditModeTo] = "to",
