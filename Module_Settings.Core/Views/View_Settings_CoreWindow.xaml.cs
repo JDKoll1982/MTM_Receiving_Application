@@ -170,7 +170,7 @@ public sealed partial class View_Settings_CoreWindow : Window
             "View_Settings_Reporting_FileIO" =>
                 ("File I/O Settings", "Configure file export options and output locations."),
             "View_Settings_Reporting_Csv" =>
-                ("CSV Settings", "Configure CSV export format and options."),
+                ("Data Export Settings", "Configure data export format and options."),
             "View_Settings_Reporting_EmailUx" =>
                 ("Email Settings", "Configure email delivery and formatting options."),
             "View_Settings_Reporting_BusinessRules" =>

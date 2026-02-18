@@ -40,13 +40,13 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Save To CSV" IsOn="{x:Bind ViewModel.SaveToCsvEnabled, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Save To CSV"
-                                          ToolTipService.ToolTip="When turned on, the app also saves a copy as a CSV file (like an Excel-friendly text file)."
-                                          IsOn="{x:Bind ViewModel.SaveToCsvEnabled, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="0" Grid.Column="1" Header="Save To Network CSV"
-                                          ToolTipService.ToolTip="When turned on, the CSV copy is saved to a shared network location (if configured)."
-                                          IsOn="{x:Bind ViewModel.SaveToNetworkCsvEnabled, Mode=TwoWay}" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Save To Label Table" IsOn="{x:Bind ViewModel.SaveToLabelTableEnabled, Mode=TwoWay}" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Save To Label Table"
+                                          ToolTipService.ToolTip="When turned on, the app also saves a copy to a database table (accessible format for reporting)."
+                                          IsOn="{x:Bind ViewModel.SaveToLabelTableEnabled, Mode=TwoWay}" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" Header="Save To Network Label Table"
+                                          ToolTipService.ToolTip="When turned on, the database table copy is saved to a shared network location (if configured)."
+                                          IsOn="{x:Bind ViewModel.SaveToNetworkLabelTableEnabled, Mode=TwoWay}" />
                             <ToggleSwitch Grid.Row="1" Grid.Column="0" Header="Save To Database"
                                           ToolTipService.ToolTip="When turned on, the app saves the receiving information into the database for reporting and history."
                                           IsOn="{x:Bind ViewModel.SaveToDatabaseEnabled, Mode=TwoWay}" />

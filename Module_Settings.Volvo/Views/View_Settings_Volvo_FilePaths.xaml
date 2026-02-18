@@ -13,8 +13,8 @@
             <Expander Header="Notes (what belongs here)" IsExpanded="True">
                 <StackPanel Spacing="8" Padding="0,8,0,0">
                     <TextBlock Text="Suggested controls (from Volvo SETTABLE_OBJECTS.md):" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                    <TextBlock Text="• Default CSV export directory → TextBox + FolderPicker" Style="{StaticResource BodyTextBlockStyle}" />
-                    <TextBlock Text="• Default CSV import source → TextBox + FileOpenPicker" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Default data export directory → TextBox + FolderPicker" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Default data import source → TextBox + FileOpenPicker" Style="{StaticResource BodyTextBlockStyle}" />
                     <TextBlock Text="• Label output directory → TextBox + FolderPicker" Style="{StaticResource BodyTextBlockStyle}" />
                 </StackPanel>
             </Expander>

@@ -36,7 +36,7 @@
                             </ComboBox>
 
                             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Spacing="8">
-                                <TextBlock Text="CSV File Save Location"
+                                <TextBlock Text="Label Database Table Save Location"
                                           Style="{StaticResource BodyTextBlockStyle}" />
                                 <Grid ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
@@ -45,13 +45,13 @@
                                     </Grid.ColumnDefinitions>
                                     
                                     <TextBox Grid.Column="0"
-                                            ToolTipService.ToolTip="The location where CSV files will be saved when completing receiving operations."
+                                            ToolTipService.ToolTip="The location where label database table files will be saved when completing receiving operations."
                                             IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CsvSaveLocation, Mode=OneWay}" />
+                                            Text="{x:Bind ViewModel.LabelTableSaveLocation, Mode=OneWay}" />
                                     
                                     <Button Grid.Column="1"
                                            Content="Browse..."
-                                           Command="{x:Bind ViewModel.BrowseCsvLocationCommand}"
+                                           Command="{x:Bind ViewModel.BrowseLabelTableLocationCommand}"
                                            Padding="16,8" />
                                 </Grid>
                             </StackPanel>

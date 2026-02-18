@@ -491,7 +491,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     }
 
     /// <summary>
-    /// Generates CSV labels using GenerateLabelCsvQuery (CQRS)
+    /// [STUB] Generates labels for shipment.
+    /// TODO: Implement database-backed label generation.
     /// </summary>
     [RelayCommand]
     private async Task GenerateLabelsAsync()
@@ -533,24 +534,24 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return;
             }
 
-            // Generate CSV using MediatR query
-            var csvQuery = new GenerateLabelCsvQuery
+            // Generate label data using MediatR query
+            var labelQuery = new GenerateLabelQuery
             {
                 ShipmentId = pendingResult.Data.Id
             };
-            var csvResult = await _mediator.Send(csvQuery);
+            var labelResult = await _mediator.Send(labelQuery);
 
-            if (csvResult.IsSuccess)
+            if (labelResult.IsSuccess)
             {
-                SuccessMessage = $"Labels generated successfully!\nFile: {csvResult.Data}";
+                SuccessMessage = $"Labels generated successfully!\nFile: {labelResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
-                await _logger.LogInfoAsync($"Labels generated for shipment ID: {pendingResult.Data.Id}, File: {csvResult.Data}");
+                await _logger.LogInfoAsync($"Labels generated for shipment ID: {pendingResult.Data.Id}, File: {labelResult.Data}");
             }
             else
             {
                 await _errorHandler.HandleErrorAsync(
-                    csvResult.ErrorMessage ?? "Failed to generate labels",
+                    labelResult.ErrorMessage ?? "Failed to generate labels",
                     Enum_ErrorSeverity.Medium,
                     null,
                     true);

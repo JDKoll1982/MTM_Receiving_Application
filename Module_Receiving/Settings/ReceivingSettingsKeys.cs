@@ -255,8 +255,8 @@ public static class ReceivingSettingsKeys
     {
         public const string AutoSaveEnabled = "Receiving.BusinessRules.AutoSaveEnabled";
         public const string AutoSaveIntervalSeconds = "Receiving.BusinessRules.AutoSaveIntervalSeconds";
-        public const string SaveToCsvEnabled = "Receiving.BusinessRules.SaveToCsvEnabled";
-        public const string SaveToNetworkCsvEnabled = "Receiving.BusinessRules.SaveToNetworkCsvEnabled";
+        public const string SaveToLabelTableEnabled = "Receiving.BusinessRules.SaveToLabelTableEnabled";
+        public const string SaveToNetworkLabelTableEnabled = "Receiving.BusinessRules.SaveToNetworkLabelTableEnabled";
         public const string SaveToDatabaseEnabled = "Receiving.BusinessRules.SaveToDatabaseEnabled";
         public const string DefaultModeOnStartup = "Receiving.BusinessRules.DefaultModeOnStartup";
         public const string RememberLastMode = "Receiving.BusinessRules.RememberLastMode";
@@ -270,7 +270,7 @@ public static class ReceivingSettingsKeys
     public static class Defaults
     {
         public const string DefaultReceivingMode = "Receiving.Defaults.DefaultReceivingMode";
-        public const string CsvSaveLocation = "Receiving.Defaults.CsvSaveLocation";
+        public const string LabelTableSaveLocation = "Receiving.Defaults.LabelTableSaveLocation";
         public const string XlsSaveLocation = "Receiving.Defaults.XlsSaveLocation";
     }
 

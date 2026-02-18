@@ -13,20 +13,21 @@ using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 
 /// <summary>
-/// Handler for ExportPartsCsvQuery - exports parts master data as CSV content.
+/// [STUB] Handler for export operations - exports parts master data.
+/// TODO: Implement database export operation.
 /// </summary>
-public class ExportPartsCsvQueryHandler : IRequestHandler<ExportPartsCsvQuery, Model_Dao_Result<string>>
+public class ExportPartsQueryHandler : IRequestHandler<ExportPartsQuery, Model_Dao_Result<string>>
 {
     private readonly Dao_VolvoPart _partDao;
     private readonly Dao_VolvoPartComponent _componentDao;
 
-    public ExportPartsCsvQueryHandler(Dao_VolvoPart partDao, Dao_VolvoPartComponent componentDao)
+    public ExportPartsQueryHandler(Dao_VolvoPart partDao, Dao_VolvoPartComponent componentDao)
     {
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
     }
 
-    public async Task<Model_Dao_Result<string>> Handle(ExportPartsCsvQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<string>> Handle(ExportPartsQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -36,8 +37,8 @@ public class ExportPartsCsvQueryHandler : IRequestHandler<ExportPartsCsvQuery, M
                 return Model_Dao_Result_Factory.Failure<string>(partsResult.ErrorMessage ?? "Failed to retrieve parts");
             }
 
-            var csv = new StringBuilder();
-            csv.AppendLine("PartNumber,QuantityPerSkid,Components");
+            var output = new StringBuilder();
+            output.AppendLine("PartNumber,QuantityPerSkid,Components");
 
             foreach (var part in partsResult.Data)
             {
@@ -49,10 +50,10 @@ public class ExportPartsCsvQueryHandler : IRequestHandler<ExportPartsCsvQuery, M
                     componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
                 }
 
-                csv.AppendLine($"{EscapeCsvField(part.PartNumber)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
+                output.AppendLine($"{EscapeDataField(part.PartNumber)},{part.QuantityPerSkid},{EscapeDataField(componentsStr)}");
             }
 
-            return Model_Dao_Result_Factory.Success(csv.ToString());
+            return Model_Dao_Result_Factory.Success(output.ToString());
         }
         catch (Exception ex)
         {
@@ -60,7 +61,7 @@ public class ExportPartsCsvQueryHandler : IRequestHandler<ExportPartsCsvQuery, M
         }
     }
 
-    private static string EscapeCsvField(string? field)
+    private static string EscapeDataField(string? field)
     {
         if (string.IsNullOrEmpty(field))
         {

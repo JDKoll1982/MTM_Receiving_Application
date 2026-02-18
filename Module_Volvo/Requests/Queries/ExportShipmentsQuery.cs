@@ -5,7 +5,8 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 
 /// <summary>
-/// Query to export shipment history to CSV.
+/// [STUB] Query to export shipment history data.
+/// TODO: Implement database export operation.
 /// </summary>
 public record ExportShipmentsQuery : IRequest<Model_Dao_Result<string>>
 {

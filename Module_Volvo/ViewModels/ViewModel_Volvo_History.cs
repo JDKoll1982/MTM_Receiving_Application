@@ -405,7 +405,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private bool CanEdit() => SelectedShipment != null && !IsBusy;
 
     /// <summary>
-    /// Exports history to CSV file
+    /// [STUB] Exports history data.
+    /// TODO: Implement database export operation.
     /// </summary>
     [RelayCommand]
     private async Task ExportAsync()
@@ -430,7 +431,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {
                 // Save file picker would go here
-                StatusMessage = $"Exported {History.Count} record(s) to CSV";
+                StatusMessage = $"Exported {History.Count} record(s) to database table";
             }
             else
             {

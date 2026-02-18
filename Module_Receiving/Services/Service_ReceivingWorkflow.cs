@@ -476,17 +476,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                // TODO(SpreadsheetRemoval): XLS save stubbed out \u2014 preserving DB save path only.
-                _logger.LogInfo("Reporting progress: Skipping XLS save (not implemented)...");
-                messageProgress?.Report("Skipping XLS save (not implemented)...");
+                // TODO: File save stubbed out - using database only
+                _logger.LogInfo("Reporting progress: Skipping file save (not implemented)...");
+                messageProgress?.Report("Skipping file save (not implemented)...");
                 percentProgress?.Report(30);
 
-                // Stub XLS result
+                // Stub file result
                 result.LocalXLSSuccess = false;
                 result.NetworkXLSSuccess = false;
                 result.LocalXLSPath = string.Empty;
                 result.NetworkXLSPath = string.Empty;
-                result.Warnings.Add("XLS save not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+                result.Warnings.Add("File save not implemented - TODO: Implement database export operation.");
 
                 _logger.LogInfo("Reporting progress: Saving to database...");
                 messageProgress?.Report("Saving to database...");
@@ -512,7 +512,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 percentProgress?.Report(90);
 
                 // Final success check
-                // TODO(SpreadsheetRemoval): Success now depends on DB only (XLS stubbed out).
+                // TODO: Success now depends on database only (file generation stubbed)
                 result.Success = result.DatabaseSuccess;
 
                 if (result.Success)

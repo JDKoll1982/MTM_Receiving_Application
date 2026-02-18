@@ -54,13 +54,20 @@ public interface IService_VolvoMasterData
     /// <returns>List of components</returns>
     public Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(string partNumber);
 
-    public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportCsvAsync(string csvFilePath);
+    /// <summary>
+    /// [STUB] Imports parts data.
+    /// TODO: Implement database import operation.
+    /// </summary>
+    /// <param name="filePath">File path to import from</param>
+    /// <returns>Tuple of (New, Updated, Unchanged) counts</returns>
+    public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(string filePath);
 
     /// <summary>
-    /// Exports all parts to CSV file
+    /// [STUB] Exports all parts data.
+    /// TODO: Implement database export operation.
     /// </summary>
-    /// <param name="csvFilePath">Path where CSV should be saved</param>
+    /// <param name="filePath">Path where export should be saved</param>
     /// <param name="includeInactive">Include deactivated parts</param>
-    /// <returns>Success result with file path</returns>
-    public Task<Model_Dao_Result<string>> ExportCsvAsync(string csvFilePath, bool includeInactive = false);
+    /// <returns>Exported data as string</returns>
+    public Task<Model_Dao_Result<string>> ExportDataAsync(string filePath, bool includeInactive = false);
 }

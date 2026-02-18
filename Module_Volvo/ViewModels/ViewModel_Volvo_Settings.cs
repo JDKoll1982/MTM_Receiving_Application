@@ -367,152 +367,24 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private bool CanViewComponents() => SelectedPart != null && !IsBusy;
 
     [RelayCommand]
-    private async Task ImportCsvAsync()
+    private async Task ImportDataAsync()
     {
-        if (IsBusy)
-        {
-            return;
-        }
-
-        try
-        {
-            // File picker
-            var picker = new FileOpenPicker();
-            picker.FileTypeFilter.Add(".csv");
-            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-
-            // Get window handle
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
-
-            var file = await picker.PickSingleFileAsync();
-            if (file == null)
-            {
-                return;
-            }
-
-            IsBusy = true;
-            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
-            await Task.CompletedTask;
-
-            // --- original implementation below (unreachable) ---
-            StatusMessage = "Importing CSV...";
-
-            var result = await _mediator.Send(new ImportPartsCsvCommand
-            {
-                CsvFilePath = file.Path
-            });
-
-            if (result.IsSuccess && result.Data != null)
-            {
-                var summary = $"Import complete: {result.Data.SuccessCount} succeeded, {result.Data.FailureCount} failed";
-                StatusMessage = summary;
-                await RefreshAsync();
-
-                // Show summary dialog
-                var dialog = new ContentDialog
-                {
-                    Title = "Import Complete",
-                    Content = summary,
-                    CloseButtonText = "OK"
-                };
-
-                if (_windowService != null)
-                {
-                    dialog.XamlRoot = _windowService.GetXamlRoot();
-                }
-
-                await dialog.ShowAsync();
-            }
-            else
-            {
-                await _errorHandler.ShowUserErrorAsync(
-                    result.ErrorMessage ?? "Failed to import CSV",
-                    "Import Error",
-                    nameof(ImportCsvAsync));
-                StatusMessage = "Import failed";
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorHandler.HandleException(
-                ex,
-                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
-                nameof(ImportCsvAsync),
-                nameof(ViewModel_Volvo_Settings));
-            StatusMessage = "Error importing CSV";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        await _logger.LogWarningAsync("Import operation called - not yet implemented");
+        await _errorHandler.ShowUserErrorAsync(
+            "TODO: Implement database import operation.",
+            "Not Implemented",
+            nameof(ImportDataAsync));
     }
 
+
     [RelayCommand]
-    private async Task ExportCsvAsync()
+    private async Task ExportDataAsync()
     {
-        if (IsBusy)
-        {
-            return;
-        }
-
-        try
-        {
-            // File picker
-            var picker = new FileSavePicker();
-            picker.FileTypeChoices.Add("CSV File", new[] { ".csv" });
-            picker.SuggestedFileName = $"volvo_parts_{DateTime.Now:yyyyMMdd}.csv";
-            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-
-            // Get window handle
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
-
-            var file = await picker.PickSaveFileAsync();
-            if (file == null)
-            {
-                return;
-            }
-
-            IsBusy = true;
-            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
-            await Task.CompletedTask;
-
-            // --- original implementation below (unreachable) ---
-            StatusMessage = "Exporting to CSV...";
-
-            var result = await _mediator.Send(new ExportPartsCsvQuery
-            {
-                IncludeInactive = ShowInactive
-            });
-
-            if (result.IsSuccess && result.Data != null)
-            {
-                await FileIO.WriteTextAsync(file, result.Data);
-                StatusMessage = $"Exported to {file.Path}";
-            }
-            else
-            {
-                await _errorHandler.ShowUserErrorAsync(
-                    result.ErrorMessage ?? "Failed to export CSV",
-                    "Export Error",
-                    nameof(ExportCsvAsync));
-                StatusMessage = "Export failed";
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorHandler.HandleException(
-                ex,
-                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
-                nameof(ExportCsvAsync),
-                nameof(ViewModel_Volvo_Settings));
-            StatusMessage = "Error exporting CSV";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        await _logger.LogWarningAsync("Export operation called - not yet implemented");
+        await _errorHandler.ShowUserErrorAsync(
+            "TODO: Implement database export operation.",
+            "Not Implemented",
+            nameof(ExportDataAsync));
     }
 
     partial void OnShowInactiveChanged(bool value)

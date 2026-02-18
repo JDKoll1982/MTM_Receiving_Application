@@ -4,9 +4,10 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 
 /// <summary>
-/// Query to export Volvo parts master data to CSV.
+/// [STUB] Query to export Volvo parts master data.
+/// TODO: Implement database export operation.
 /// </summary>
-public record ExportPartsCsvQuery : IRequest<Model_Dao_Result<string>>
+public record ExportPartsQuery : IRequest<Model_Dao_Result<string>>
 {
     /// <summary>
     /// Include inactive parts in the export.

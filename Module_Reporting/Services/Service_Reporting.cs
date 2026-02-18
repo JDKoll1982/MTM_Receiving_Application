@@ -114,18 +114,17 @@ public class Service_Reporting : IService_Reporting
     }
 
     /// <summary>
-    /// [STUB] CSV export pending MySQL implementation.
-    /// Future: Export data to MySQL-backed format (previously CSV matching MiniUPSLabel.csv structure).
+    /// [STUB] Data export pending implementation.
+    /// TODO: Implement database export operation.
     /// </summary>
     /// <param name="data"></param>
     /// <param name="moduleName"></param>
-    public async Task<Model_Dao_Result<string>> ExportToCSVAsync(
+    public async Task<Model_Dao_Result<string>> ExportDataAsync(
         List<Model_ReportRow> data,
         string moduleName)
     {
-        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
-        await _logger.LogWarningAsync($"ExportToCSVAsync called in {nameof(Service_Reporting)} — spreadsheet workflow not yet implemented.");
-        return Model_Dao_Result_Factory.Failure<string>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+        await _logger.LogWarningAsync($"Export operation called in {nameof(Service_Reporting)} - not yet implemented");
+        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database export operation.");
 
         // --- original implementation below (unreachable) ---
         try

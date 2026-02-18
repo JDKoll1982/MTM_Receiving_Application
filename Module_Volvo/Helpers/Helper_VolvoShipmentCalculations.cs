@@ -15,7 +15,7 @@ using MTM_Receiving_Application.Module_Volvo.Services;
 namespace MTM_Receiving_Application.Module_Volvo.Helpers;
 
 /// <summary>
-/// Helper methods for Volvo shipment calculations and CSV generation.
+/// Helper methods for Volvo shipment calculations and label generation.
 /// </summary>
 public static class Helper_VolvoShipmentCalculations
 {
@@ -108,7 +108,8 @@ public static class Helper_VolvoShipmentCalculations
     }
 
     /// <summary>
-    /// Generates CSV label file for a shipment and returns the file path.
+    /// [STUB] Generates labels for a shipment.
+    /// TODO: Implement database-backed label generation.
     /// </summary>
     /// <param name="shipmentDao"></param>
     /// <param name="lineDao"></param>
@@ -117,7 +118,7 @@ public static class Helper_VolvoShipmentCalculations
     /// <param name="authService"></param>
     /// <param name="logger"></param>
     /// <param name="shipmentId"></param>
-    public static async Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(
+    public static async Task<Model_Dao_Result<string>> GenerateLabelAsync(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
         Dao_VolvoPart partDao,
@@ -126,31 +127,13 @@ public static class Helper_VolvoShipmentCalculations
         IService_LoggingUtility logger,
         int shipmentId)
     {
-        try
-        {
-            var authResult = await authService.CanGenerateLabelsAsync();
-            if (!authResult.IsSuccess)
-            {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "You are not authorized to generate labels",
-                    Severity = Enum_ErrorSeverity.Warning
-                };
-            }
+        // TODO: Implement database-backed label generation
+        await Task.CompletedTask;
+        await logger.LogWarningAsync($"Label generation called for shipment {shipmentId} - not yet implemented");
+        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database-backed label generation.");
 
-            if (shipmentId <= 0)
-            {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "Invalid shipment ID",
-                    Severity = Enum_ErrorSeverity.Error
-                };
-            }
-
-            await logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
-
+        // --- Original implementation below (unreachable) ---
+        /*
             var shipmentResult = await shipmentDao.GetByIdAsync(shipmentId);
             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
             {
@@ -186,13 +169,13 @@ public static class Helper_VolvoShipmentCalculations
 
             var aggregatedPieces = explosionResult.Data;
 
-            const int MaxCsvLines = 10000;
-            if (aggregatedPieces.Count > MaxCsvLines)
+            const int MaxLabelLines = 10000;
+            if (aggregatedPieces.Count > MaxLabelLines)
             {
                 return new Model_Dao_Result<string>
                 {
                     Success = false,
-                    ErrorMessage = $"CSV generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxCsvLines})",
+                    ErrorMessage = $"Label generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxLabelLines})",
                     Severity = Enum_ErrorSeverity.Error
                 };
             }
@@ -200,26 +183,26 @@ public static class Helper_VolvoShipmentCalculations
             var shipment = shipmentResult.Data;
 
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
-            Directory.CreateDirectory(csvDirectory);
+            string outputDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
+            Directory.CreateDirectory(outputDirectory);
 
-            string fileName = "Volvo_Labels.csv"; // TODO(SpreadsheetRemoval): Legacy filename reference - update when MySQL export implemented
-            string filePath = Path.Combine(csvDirectory, fileName);
+            string fileName = "Volvo_Labels.csv"; // TODO: Transition to database table when implemented
+            string filePath = Path.Combine(outputDirectory, fileName);
 
-            var csvContent = new StringBuilder();
-            csvContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
+            var fileContent = new StringBuilder();
+            fileContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
 
             string dateFormatted = shipment.ShipmentDate.ToString("MM/dd/yyyy");
             string timeFormatted = DateTime.Now.ToString("HH:mm:ss");
 
             foreach (var kvp in aggregatedPieces.OrderBy(x => x.Key))
             {
-                csvContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
+                fileContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
             }
 
-            await File.WriteAllTextAsync(filePath, csvContent.ToString());
+            await File.WriteAllTextAsync(filePath, fileContent.ToString());
 
-            await logger.LogInfoAsync($"Label CSV generated: {filePath}");
+            await logger.LogInfoAsync($"Label generated: {filePath}");
 
             return new Model_Dao_Result<string>
             {
@@ -229,14 +212,15 @@ public static class Helper_VolvoShipmentCalculations
         }
         catch (Exception ex)
         {
-            await logger.LogErrorAsync($"Error generating label CSV: {ex.Message}", ex);
+            await logger.LogErrorAsync($"Error generating labels: {ex.Message}", ex);
             return new Model_Dao_Result<string>
             {
                 Success = false,
-                ErrorMessage = $"Error generating label CSV: {ex.Message}",
+                ErrorMessage = $"Error generating labels: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
                 Exception = ex
             };
         }
+        */
     }
 }

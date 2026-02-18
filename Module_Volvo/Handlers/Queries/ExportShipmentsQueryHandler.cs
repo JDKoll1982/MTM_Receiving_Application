@@ -11,7 +11,8 @@ using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 
 /// <summary>
-/// Handler for ExportShipmentsQuery - exports shipment history to CSV.
+/// [STUB] Handler for export operations - exports shipment history.
+/// TODO: Implement database export operation.
 /// </summary>
 public class ExportShipmentsQueryHandler : IRequestHandler<ExportShipmentsQuery, Model_Dao_Result<string>>
 {
@@ -35,24 +36,24 @@ public class ExportShipmentsQueryHandler : IRequestHandler<ExportShipmentsQuery,
                 historyResult.ErrorMessage ?? "Failed to retrieve history data");
         }
 
-        var csv = new StringBuilder();
-        csv.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
+        var output = new StringBuilder();
+        output.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
 
         foreach (var shipment in historyResult.Data)
         {
-            csv.AppendLine($"{shipment.ShipmentNumber}," +
+            output.AppendLine($"{shipment.ShipmentNumber}," +
                            $"{shipment.ShipmentDate:yyyy-MM-dd}," +
-                           $"{EscapeCsv(shipment.PONumber)}," +
-                           $"{EscapeCsv(shipment.ReceiverNumber)}," +
+                           $"{EscapeDataField(shipment.PONumber)}," +
+                           $"{EscapeDataField(shipment.ReceiverNumber)}," +
                            $"{shipment.Status}," +
                            $"{shipment.EmployeeNumber}," +
-                           $"{EscapeCsv(shipment.Notes)}");
+                           $"{EscapeDataField(shipment.Notes)}");
         }
 
-        return Model_Dao_Result_Factory.Success(csv.ToString());
+        return Model_Dao_Result_Factory.Success(output.ToString());
     }
 
-    private static string EscapeCsv(string? value)
+    private static string EscapeDataField(string? value)
     {
         if (string.IsNullOrEmpty(value))
         {

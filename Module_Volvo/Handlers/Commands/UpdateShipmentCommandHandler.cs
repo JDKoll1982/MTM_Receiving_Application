@@ -118,7 +118,7 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
 
             if (shipment.Status == VolvoShipmentStatus.Completed && !string.IsNullOrWhiteSpace(shipment.PONumber))
             {
-                await Helper_VolvoShipmentCalculations.GenerateLabelCsvAsync(
+                await Helper_VolvoShipmentCalculations.GenerateLabelAsync(
                     _shipmentDao,
                     _lineDao,
                     _partDao,

@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Services;
 
 /// <summary>
 /// Service for Volvo dunnage requisition business logic
-/// Handles component explosion, CSV generation, email formatting, and shipment management
+/// Handles component explosion, label generation, email formatting, and shipment management
 /// </summary>
 [Obsolete("Legacy service - replaced by CQRS handlers. Do not use in new code.", false)]
 public class Service_Volvo : IService_Volvo
@@ -154,49 +154,17 @@ public class Service_Volvo : IService_Volvo
     }
 
     /// <summary>
-    /// Generates CSV file for LabelView 2022 label printing
-    /// Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
+    /// [STUB] Generates labels for label printing.
+    /// TODO: Implement database-backed label generation.
     /// </summary>
     /// <param name="shipmentId"></param>
-    public async Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(int shipmentId)
+    public async Task<Model_Dao_Result<string>> GenerateLabelAsync(int shipmentId)
     {
-        try
-        {
-            // Authorization check
-            var authResult = await _authService.CanGenerateLabelsAsync();
-            if (!authResult.IsSuccess)
-            {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "You are not authorized to generate labels",
-                    Severity = Enum_ErrorSeverity.Warning
-                };
-            }
+        await _logger.LogWarningAsync($"Label generation called for shipment {shipmentId} - not yet implemented");
+        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database-backed label generation.");
 
-            // Validate shipmentId (prevent file path injection)
-            if (shipmentId <= 0)
-            {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "Invalid shipment ID",
-                    Severity = Enum_ErrorSeverity.Error
-                };
-            }
-
-            await _logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
-
-            // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
-            await _logger.LogWarningAsync($"GenerateLabelCsvAsync called — spreadsheet workflow not yet implemented.");
-            return new Model_Dao_Result<string>
-            {
-                Success = false,
-                ErrorMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.",
-                Severity = Enum_ErrorSeverity.Warning
-            };
-
-            // --- original implementation below (unreachable) ---
+        // --- Original implementation below (unreachable) ---
+        /*
             var shipmentResult = await _shipmentDao.GetByIdAsync(shipmentId);
             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
             {
@@ -238,30 +206,30 @@ public class Service_Volvo : IService_Volvo
 
             var aggregatedPieces = explosionResult.Data;
 
-            // Sanity check: prevent extremely large CSV files
-            const int MaxCsvLines = 10000;
-            if (aggregatedPieces.Count > MaxCsvLines)
+            // Sanity check: prevent extremely large label files
+            const int MaxLabelLines = 10000;
+            if (aggregatedPieces.Count > MaxLabelLines)
             {
                 return new Model_Dao_Result<string>
                 {
                     Success = false,
-                    ErrorMessage = $"CSV generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxCsvLines})",
+                    ErrorMessage = $"Label generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxLabelLines})",
                     Severity = Enum_ErrorSeverity.Error
                 };
             }
 
-            // Create CSV directory
+            // Create label output directory
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
-            Directory.CreateDirectory(csvDirectory);
+            string labelDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
+            Directory.CreateDirectory(labelDirectory);
 
-            // Note: Previously generated fixed filename Volvo_Labels.csv (overwrites previous)
+            // Note: Previously generated fixed filename Volvo_Labels.csv (legacy format, will transition to database table)
             string fileName = "Volvo_Labels.csv";
-            string filePath = Path.Combine(csvDirectory, fileName);
+            string filePath = Path.Combine(labelDirectory, fileName);
 
-            // Build CSV content
-            var csvContent = new StringBuilder();
-            csvContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
+            // Build label table content
+            var labelContent = new StringBuilder();
+            labelContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
 
             string dateFormatted = shipment.ShipmentDate.ToString("MM/dd/yyyy");
             string timeFormatted = DateTime.Now.ToString("HH:mm:ss");
@@ -270,13 +238,13 @@ public class Service_Volvo : IService_Volvo
             {
                 // Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
                 // Receiver field is empty for Volvo parts (per spec - hide PO field for V-EMB- parts)
-                csvContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
+                fileContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
             }
 
-            // Write CSV file
-            await File.WriteAllTextAsync(filePath, csvContent.ToString());
+            // Write file
+            await File.WriteAllTextAsync(filePath, fileContent.ToString());
 
-            await _logger.LogInfoAsync($"Label CSV generated: {filePath}");
+            await _logger.LogInfoAsync($"Labels generated: {filePath}");
 
             return new Model_Dao_Result<string>
             {
@@ -286,15 +254,16 @@ public class Service_Volvo : IService_Volvo
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error generating label CSV: {ex.Message}", ex);
+            await _logger.LogErrorAsync($"Error generating labels: {ex.Message}", ex);
             return new Model_Dao_Result<string>
             {
                 Success = false,
-                ErrorMessage = $"Error generating label CSV: {ex.Message}",
+                ErrorMessage = $"Error generating labels: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
                 Exception = ex
             };
         }
+        */
     }
 
     /// <summary>
@@ -925,7 +894,7 @@ public class Service_Volvo : IService_Volvo
 
     /// <summary>
     /// Updates an existing shipment and its lines
-    /// Regenerates CSV if applicable
+    /// Regenerates labels if applicable
     /// </summary>
     /// <param name="shipment"></param>
     /// <param name="lines"></param>
@@ -966,10 +935,10 @@ public class Service_Volvo : IService_Volvo
                 }
             }
 
-            // Regenerate CSV if completed
+            // Regenerate labels if completed
             if (shipment.Status == "completed" && !string.IsNullOrEmpty(shipment.PONumber))
             {
-                await GenerateLabelCsvAsync(shipment.Id);
+                await GenerateLabelAsync(shipment.Id);
             }
 
             return Model_Dao_Result_Factory.Success("Shipment updated successfully");
@@ -985,12 +954,13 @@ public class Service_Volvo : IService_Volvo
     }
 
     /// <summary>
-    /// Exports shipment history to CSV format
+    /// [STUB] Exports shipment history data.
+    /// TODO: Implement database export operation.
     /// </summary>
     /// <param name="startDate"></param>
     /// <param name="endDate"></param>
     /// <param name="status"></param>
-    public async Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
+    public async Task<Model_Dao_Result<string>> ExportHistoryToDataTableAsync(
         DateTime startDate,
         DateTime endDate,
         string status = "all")
@@ -1003,37 +973,37 @@ public class Service_Volvo : IService_Volvo
                 return Model_Dao_Result_Factory.Failure<string>("Failed to retrieve history data");
             }
 
-            var csv = new StringBuilder();
-            csv.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
+            var output = new StringBuilder();
+            output.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
 
             foreach (var shipment in historyResult.Data)
             {
-                csv.AppendLine($"{shipment.ShipmentNumber}," +
+                output.AppendLine($"{shipment.ShipmentNumber}," +
                               $"{shipment.ShipmentDate:yyyy-MM-dd}," +
-                              $"{EscapeCsv(shipment.PONumber)}," +
-                              $"{EscapeCsv(shipment.ReceiverNumber)}," +
+                              $"{EscapeDataField(shipment.PONumber)}," +
+                              $"{EscapeDataField(shipment.ReceiverNumber)}," +
                               $"{shipment.Status}," +
                               $"{shipment.EmployeeNumber}," +
-                              $"{EscapeCsv(shipment.Notes)}");
+                              $"{EscapeDataField(shipment.Notes)}");
             }
 
-            return Model_Dao_Result_Factory.Success(csv.ToString());
+            return Model_Dao_Result_Factory.Success(output.ToString());
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync(
                 $"Error exporting history: {ex.Message}",
                 ex,
-                nameof(ExportHistoryToCsvAsync));
+                nameof(ExportHistoryToDataTableAsync));
             return Model_Dao_Result_Factory.Failure<string>($"Error exporting history: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// Escapes CSV values (wraps in quotes if contains comma, quote, or newline)
+    /// Escapes data field values (wraps in quotes if contains comma, quote, or newline)
     /// </summary>
     /// <param name="value"></param>
-    private string EscapeCsv(string? value)
+    private string EscapeDataField(string? value)
     {
         if (string.IsNullOrEmpty(value))
         {

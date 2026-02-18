@@ -13,9 +13,10 @@ using MTM_Receiving_Application.Module_Volvo.Services;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 
 /// <summary>
-/// Handler for GenerateLabelCsvQuery - generates CSV label file for shipment.
+/// [STUB] Handler for label generation - generates labels for shipment.
+/// TODO: Implement database-backed label generation.
 /// </summary>
-public class GenerateLabelCsvQueryHandler : IRequestHandler<GenerateLabelCsvQuery, Model_Dao_Result<string>>
+public class GenerateLabelQueryHandler : IRequestHandler<GenerateLabelQuery, Model_Dao_Result<string>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
@@ -24,7 +25,7 @@ public class GenerateLabelCsvQueryHandler : IRequestHandler<GenerateLabelCsvQuer
     private readonly IService_VolvoAuthorization _authService;
     private readonly IService_LoggingUtility _logger;
 
-    public GenerateLabelCsvQueryHandler(
+    public GenerateLabelQueryHandler(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
         Dao_VolvoPart partDao,
@@ -40,9 +41,9 @@ public class GenerateLabelCsvQueryHandler : IRequestHandler<GenerateLabelCsvQuer
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Model_Dao_Result<string>> Handle(GenerateLabelCsvQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<string>> Handle(GenerateLabelQuery request, CancellationToken cancellationToken)
     {
-        return await Helper_VolvoShipmentCalculations.GenerateLabelCsvAsync(
+        return await Helper_VolvoShipmentCalculations.GenerateLabelAsync(
             _shipmentDao,
             _lineDao,
             _partDao,

@@ -45,12 +45,12 @@
             <AppBarSeparator/>
             <AppBarButton 
                 Icon="Import" 
-                Label="Import CSV" 
-                Command="{x:Bind ViewModel.ImportCsvCommand, Mode=OneWay}"/>
+                Label="Import Data" 
+                Command="{x:Bind ViewModel.ImportDataCommand, Mode=OneWay}"/>
             <AppBarButton 
                 Icon="Save" 
-                Label="Export CSV" 
-                Command="{x:Bind ViewModel.ExportCsvCommand, Mode=OneWay}"/>
+                Label="Export Data" 
+                Command="{x:Bind ViewModel.ExportDataCommand, Mode=OneWay}"/>
             <AppBarSeparator/>
             <AppBarButton 
                 Icon="Refresh" 

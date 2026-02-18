@@ -41,7 +41,7 @@ public interface IService_DunnageXLSWriter
     /// </summary>
     /// <param name="loads">List of loads to export</param>
     /// <param name="allSpecKeys">Union of all spec keys across all types (from GetAllSpecKeysAsync)</param>
-    /// <param name="filename">Optional custom filename (default format: DunnageData_{timestamp}.xlsx) [STUB - not implemented]</param>
+    /// <param name="filename">Optional custom filename [STUB - not implemented]</param>
     /// <returns>XLS write result with local/network paths and success status</returns>
     /// <remarks>
     /// Generates columns: ID, PartID, DunnageType, Quantity, PONumber, ReceivedDate, UserId, Location, LabelNumber, [Dynamic Spec Columns]

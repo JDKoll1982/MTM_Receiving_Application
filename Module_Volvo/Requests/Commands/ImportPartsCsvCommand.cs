@@ -5,20 +5,21 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 
 /// <summary>
-/// Command to bulk import parts from CSV file.
+/// [STUB] Command to bulk import parts data.
+/// TODO: Implement database import operation.
 /// </summary>
-public record ImportPartsCsvCommand : IRequest<Model_Dao_Result<ImportPartsCsvResult>>
+public record ImportPartsCommand : IRequest<Model_Dao_Result<ImportPartsResult>>
 {
     /// <summary>
-    /// Full file path to CSV file containing part data (PartNumber, QuantityPerSkid).
+    /// Full file path to data file containing part data.
     /// </summary>
-    public string CsvFilePath { get; init; } = string.Empty;
+    public string FilePath { get; init; } = string.Empty;
 }
 
 /// <summary>
-/// Result of CSV import operation with success/failure counts and error details.
+/// Result of import operation with success/failure counts and error details.
 /// </summary>
-public record ImportPartsCsvResult
+public record ImportPartsResult
 {
     /// <summary>
     /// Number of parts successfully imported.

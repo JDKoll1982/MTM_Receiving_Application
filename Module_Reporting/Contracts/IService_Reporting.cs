@@ -59,13 +59,13 @@ public interface IService_Reporting
         DateTime endDate);
 
     /// <summary>
-    /// [STUB] Exports report data (CSV format pending MySQL implementation).
-    /// Future: Export to MySQL-backed format (previously MiniUPSLabel.csv structure).
+    /// [STUB] Exports report data.
+    /// TODO: Implement database export operation.
     /// </summary>
     /// <param name="data">Filtered report rows</param>
     /// <param name="moduleName">Module name for filename (Receiving, Dunnage, Volvo)</param>
     /// <returns>DAO result with file path of generated CSV</returns>
-    public Task<Model_Dao_Result<string>> ExportToCSVAsync(
+    public Task<Model_Dao_Result<string>> ExportDataAsync(
         List<Model_ReportRow> data,
         string moduleName);
 

@@ -14,35 +14,35 @@ using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 
 /// <summary>
-/// Handler for ImportPartsCsvCommand - imports parts from CSV file.
+/// [STUB] Handler for import operations - imports parts data.
+/// TODO: Implement database import operation.
 /// </summary>
-public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvCommand, Model_Dao_Result<ImportPartsCsvResult>>
+public class ImportPartsCommandHandler : IRequestHandler<ImportPartsCommand, Model_Dao_Result<ImportPartsResult>>
 {
     private readonly Dao_VolvoPart _partDao;
     private readonly Dao_VolvoPartComponent _componentDao;
 
-    public ImportPartsCsvCommandHandler(Dao_VolvoPart partDao, Dao_VolvoPartComponent componentDao)
+    public ImportPartsCommandHandler(Dao_VolvoPart partDao, Dao_VolvoPartComponent componentDao)
     {
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
     }
 
-    public async Task<Model_Dao_Result<ImportPartsCsvResult>> Handle(ImportPartsCsvCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<ImportPartsResult>> Handle(ImportPartsCommand request, CancellationToken cancellationToken)
     {
-        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
         await Task.CompletedTask;
-        return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+        return Model_Dao_Result_Factory.Failure<ImportPartsResult>("TODO: Implement database import operation.");
 
         // --- original implementation below (unreachable) ---
         try
         {
-            if (string.IsNullOrWhiteSpace(request.CsvFilePath))
+            if (string.IsNullOrWhiteSpace(request.FilePath))
             {
-                return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>("CSV file path is required");
+                return Model_Dao_Result_Factory.Failure<ImportPartsResult>("File path is required");
             }
 
-            var csvContent = await File.ReadAllTextAsync(request.CsvFilePath, cancellationToken);
-            var lines = csvContent
+            var fileContent = await File.ReadAllTextAsync(request.FilePath, cancellationToken);
+            var lines = fileContent
                 .Split('\n')
                 .Select(l => l.Trim())
                 .Where(l => !string.IsNullOrWhiteSpace(l))
@@ -50,15 +50,15 @@ public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvComman
 
             if (lines.Count < 2)
             {
-                return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>(
-                    "CSV file must contain header and at least one data row");
+                return Model_Dao_Result_Factory.Failure<ImportPartsResult>(
+                    "File must contain header and at least one data row");
             }
 
             var header = lines[0];
             if (!header.Contains("PartNumber") || !header.Contains("QuantityPerSkid"))
             {
-                return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>(
-                    "CSV must contain columns: PartNumber, QuantityPerSkid, Components");
+                return Model_Dao_Result_Factory.Failure<ImportPartsResult>(
+                    "File must contain columns: PartNumber, QuantityPerSkid, Components");
             }
 
             int successCount = 0;
@@ -69,7 +69,7 @@ public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvComman
             {
                 try
                 {
-                    var fields = ParseCsvLine(lines[i]);
+                    var fields = ParseDataLine(lines[i]);
                     if (fields.Length < 2)
                     {
                         errors.Add($"Line {i + 1}: Invalid format - expected at least 2 fields");
@@ -153,7 +153,7 @@ public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvComman
                 }
             }
 
-            var result = new ImportPartsCsvResult
+            var result = new ImportPartsResult
             {
                 SuccessCount = successCount,
                 FailureCount = failureCount,
@@ -164,12 +164,12 @@ public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvComman
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>(
-                $"Unexpected error importing CSV: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<ImportPartsResult>(
+                $"Unexpected error importing data: {ex.Message}", ex);
         }
     }
 
-    private static string[] ParseCsvLine(string line)
+    private static string[] ParseDataLine(string line)
     {
         var fields = new List<string>();
         var currentField = new StringBuilder();

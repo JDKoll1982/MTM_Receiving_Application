@@ -162,7 +162,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private bool CanGenerateVolvo() => IsVolvoChecked && IsVolvoEnabled && !IsBusy;
 
     /// <summary>
-    /// Exports current report data to CSV
+    /// Exports current report data to database table format
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanExport))]
     private async Task ExportToCSVAsync()
@@ -180,16 +180,16 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             await Task.CompletedTask;
 
             // --- original implementation below (unreachable) ---
-            ShowStatus("Exporting to CSV...", InfoBarSeverity.Informational);
+            ShowStatus("Exporting data...", InfoBarSeverity.Informational);
 
-            var result = await _reportingService.ExportToCSVAsync(
+            var result = await _reportingService.ExportDataAsync(
                 ReportData.ToList(),
                 CurrentModuleName);
 
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {
-                ShowStatus($"CSV exported to: {result.Data}", InfoBarSeverity.Success);
-                _logger.LogInfo($"CSV exported: {result.Data}");
+                ShowStatus($"Data exported to: {result.Data}", InfoBarSeverity.Success);
+                _logger.LogInfo($"Data exported: {result.Data}");
             }
             else
             {
@@ -198,8 +198,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error exporting CSV: {ex.Message}", ex);
-            ShowStatus("Error exporting CSV", InfoBarSeverity.Error);
+            _logger.LogError($"Error exporting data: {ex.Message}", ex);
+            ShowStatus("Error exporting data", InfoBarSeverity.Error);
         }
         finally
         {

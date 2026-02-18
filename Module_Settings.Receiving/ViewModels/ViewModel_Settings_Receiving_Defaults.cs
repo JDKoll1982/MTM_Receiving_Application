@@ -27,7 +27,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     private string _defaultReceivingMode = string.Empty;
 
     [ObservableProperty]
-    private string _csvSaveLocation = string.Empty;
+    private string _labelTableSaveLocation = string.Empty;
 
     public ViewModel_Settings_Receiving_Defaults(
         IService_SettingsCoreFacade settingsCore,
@@ -44,7 +44,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
 
         // Initialize with defaults before async load
         DefaultReceivingMode = "Guided";
-        CsvSaveLocation = string.Empty;
+        LabelTableSaveLocation = string.Empty;
 
         // Load current settings asynchronously
         _ = LoadSettingsAsync();
@@ -74,7 +74,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
 
             // Both settings are user-scoped to ensure they're properly personalized
             await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode, DefaultReceivingMode);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.CsvSaveLocation, CsvSaveLocation);
+            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.LabelTableSaveLocation, LabelTableSaveLocation);
 
             await _settingsErrorHandler.ShowSuccessAsync("Receiving defaults saved successfully.", "Save Successful");
             ShowStatus("Receiving defaults saved.");
@@ -102,7 +102,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
             IsBusy = true;
 
             await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.CsvSaveLocation);
+            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.LabelTableSaveLocation);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving defaults reset.");
@@ -133,16 +133,16 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         try
         {
             var mode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
-            var location = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.CsvSaveLocation);
+            var location = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.LabelTableSaveLocation);
             
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode loaded: '{mode}'");
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location loaded: '{location}'");
             
             DefaultReceivingMode = mode;
-            CsvSaveLocation = location;
+            LabelTableSaveLocation = location;
             
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode set to: '{DefaultReceivingMode}'");
-            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location set to: '{CsvSaveLocation}'");
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location set to: '{LabelTableSaveLocation}'");
         }
         catch (Exception ex)
         {
@@ -183,7 +183,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     }
 
     [RelayCommand]
-    private async Task BrowseCsvLocationAsync()
+    private async Task BrowseLabelTableLocationAsync()
     {
         try
         {
@@ -204,12 +204,12 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
             
             if (folder != null)
             {
-                CsvSaveLocation = folder.Path;
+                LabelTableSaveLocation = folder.Path;
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Failed to browse for CSV save location.", Enum_ErrorSeverity.Warning, ex, false);
+            await _errorHandler.HandleErrorAsync("Failed to browse for label database table save location.", Enum_ErrorSeverity.Warning, ex, false);
         }
     }
 }

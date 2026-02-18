@@ -23,10 +23,10 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
     private string _autoSaveIntervalSeconds = string.Empty;
 
     [ObservableProperty]
-    private bool _saveToCsvEnabled;
+    private bool _saveToLabelTableEnabled;
 
     [ObservableProperty]
-    private bool _saveToNetworkCsvEnabled;
+    private bool _saveToNetworkLabelTableEnabled;
 
     [ObservableProperty]
     private bool _saveToDatabaseEnabled;
@@ -80,8 +80,8 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
 
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, AutoSaveEnabled.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds, AutoSaveIntervalSeconds);
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled, SaveToCsvEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled, SaveToNetworkCsvEnabled.ToString());
+            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled, SaveToLabelTableEnabled.ToString());
+            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled, SaveToNetworkLabelTableEnabled.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled, SaveToDatabaseEnabled.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup, DefaultModeOnStartup);
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode, RememberLastMode.ToString());
@@ -111,8 +111,8 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
 
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled);
+            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled);
+            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode);
@@ -152,8 +152,8 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
         {
             AutoSaveEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled]);
             AutoSaveIntervalSeconds = await GetStringSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
-            SaveToCsvEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled]);
-            SaveToNetworkCsvEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled]);
+            SaveToLabelTableEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled]);
+            SaveToNetworkLabelTableEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled]);
             SaveToDatabaseEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled]);
             DefaultModeOnStartup = await GetStringSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
             RememberLastMode = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.RememberLastMode]);

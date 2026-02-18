@@ -231,7 +231,7 @@ public static class ReceivingSettingsDefaults
 
         // Defaults for non-UI settings
         [ReceivingSettingsKeys.Defaults.DefaultReceivingMode] = "Guided",
-        [ReceivingSettingsKeys.Defaults.CsvSaveLocation] = "",
+        [ReceivingSettingsKeys.Defaults.LabelTableSaveLocation] = "",
 
         // Integrations defaults
         [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = "30",
@@ -266,8 +266,8 @@ public static class ReceivingSettingsDefaults
 
         // Business Rules
         [ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled] = false,
-        [ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled] = true,
-        [ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled] = true,
+        [ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled] = true,
+        [ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled] = true,
         [ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled] = true,
         [ReceivingSettingsKeys.BusinessRules.RememberLastMode] = true,
         [ReceivingSettingsKeys.BusinessRules.ConfirmModeChange] = true,

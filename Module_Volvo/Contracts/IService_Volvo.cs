@@ -7,8 +7,8 @@ using MTM_Receiving_Application.Module_Volvo.Models;
 namespace MTM_Receiving_Application.Module_Volvo.Contracts;
 
 /// <summary>
-/// Service interface for Volvo dunnage requisition business logic
-/// Handles component explosion, CSV generation, email formatting, and shipment management
+/// Service interface for Volvo dunnage requisition business logic.
+/// Handles component explosion, label generation, email formatting, and shipment management.
 /// </summary>
 public interface IService_Volvo
 {
@@ -23,14 +23,13 @@ public interface IService_Volvo
         List<Model_VolvoShipmentLine> lines);
 
     /// <summary>
-    /// Generates CSV file for LabelView 2022 label printing
-    /// Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
-    /// [STUB] CSV export not implemented - pending MySQL replacement.
-    /// Previously saved to: %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_[ID]_[Date].csv
+    /// [STUB] Generates labels for label printing.
+    /// TODO: Implement database-backed label generation.
+    /// Previously saved to: %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_[ID]_[Date] files
     /// </summary>
     /// <param name="shipmentId">Shipment ID to generate labels for</param>
-    /// <returns>File path where CSV was written</returns>
-    public Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(int shipmentId);
+    /// <returns>File path where labels were written</returns>
+    public Task<Model_Dao_Result<string>> GenerateLabelAsync(int shipmentId);
 
     /// <summary>
     /// Formats email text for PO requisition (with discrepancy notice if applicable)
@@ -138,7 +137,7 @@ public interface IService_Volvo
 
     /// <summary>
     /// Updates an existing shipment and its lines
-    /// Regenerates CSV if applicable
+    /// Regenerates labels if applicable
     /// </summary>
     /// <param name="shipment">Updated shipment data</param>
     /// <param name="lines">Updated shipment lines</param>
@@ -148,13 +147,13 @@ public interface IService_Volvo
         List<Model_VolvoShipmentLine> lines);
 
     /// <summary>
-    /// Exports shipment history to CSV format
+    /// Exports shipment history to database table format
     /// </summary>
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <param name="status">Status filter</param>
-    /// <returns>CSV content as string</returns>
-    public Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
+    /// <returns>Data table content as string</returns>
+    public Task<Model_Dao_Result<string>> ExportHistoryToDataTableAsync(
         DateTime startDate,
         DateTime endDate,
         string status = "all");

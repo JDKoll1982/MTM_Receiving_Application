@@ -13,7 +13,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 namespace MTM_Receiving_Application.Module_Volvo.Services;
 
 /// <summary>
-/// Service for managing Volvo parts master data including CRUD operations and CSV import/export
+/// Service for managing Volvo parts master data including CRUD operations and data import/export.
 /// </summary>
 [Obsolete("Legacy service - replaced by CQRS handlers. Do not use in new code.", false)]
 public class Service_VolvoMasterData : IService_VolvoMasterData
@@ -254,34 +254,33 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         }
     }
 
-    public async Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportCsvAsync(string csvFilePath)
+    public async Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(string filePath)
     {
-        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
-        await _logger.LogWarningAsync($"ImportCsvAsync called — spreadsheet workflow not yet implemented.");
-        return Model_Dao_Result_Factory.Failure<(int, int, int)>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+        await _logger.LogWarningAsync("Import operation called - not yet implemented");
+        return Model_Dao_Result_Factory.Failure<(int, int, int)>("TODO: Implement database import operation.");
 
         // --- original implementation below (unreachable) ---
         try
         {
-            await _logger.LogInfoAsync("Starting CSV import");
+            await _logger.LogInfoAsync("Starting data import");
 
-            if (string.IsNullOrWhiteSpace(csvFilePath))
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV content is empty");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("Import data content is empty");
             }
 
-            var lines = csvFilePath.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
+            var lines = filePath.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
 
             if (lines.Count < 2)
             {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV file must contain header and at least one data row");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("Import file must contain header and at least one data row");
             }
 
             // Validate header
             var header = lines[0];
             if (!header.Contains("PartNumber") || !header.Contains("QuantityPerSkid"))
             {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV must contain columns: PartNumber, QuantityPerSkid, Components");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("Import file must contain columns: PartNumber, QuantityPerSkid, Components");
             }
 
             int newCount = 0;
@@ -293,7 +292,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
             {
                 try
                 {
-                    var fields = ParseCsvLine(lines[i]);
+                    var fields = ParseDataLine(lines[i]);
 
                     if (fields.Length < 3)
                     {
@@ -392,21 +391,20 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error importing CSV: {ex.Message}", ex);
+            await _logger.LogErrorAsync($"Error importing data: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<(int, int, int)>($"Import failed: {ex.Message}");
         }
     }
 
-    public async Task<Model_Dao_Result<string>> ExportCsvAsync(string csvFilePath, bool includeInactive = false)
+    public async Task<Model_Dao_Result<string>> ExportDataAsync(string filePath, bool includeInactive = false)
     {
-        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
-        await _logger.LogWarningAsync($"ExportCsvAsync called — spreadsheet workflow not yet implemented.");
-        return Model_Dao_Result_Factory.Failure<string>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+        await _logger.LogWarningAsync("Export operation called - not yet implemented");
+        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database export operation.");
 
         // --- original implementation below (unreachable) ---
         try
         {
-            await _logger.LogInfoAsync($"Exporting parts to CSV (includeInactive={includeInactive})");
+            await _logger.LogInfoAsync($"Exporting parts to database table (includeInactive={includeInactive})");
 
             var partsResult = await GetAllPartsAsync(includeInactive);
             if (!partsResult.IsSuccess)
@@ -414,8 +412,8 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                 return Model_Dao_Result_Factory.Failure<string>(partsResult.ErrorMessage);
             }
 
-            var csv = new StringBuilder();
-            csv.AppendLine("PartNumber,QuantityPerSkid,Components");
+            var output = new StringBuilder();
+            output.AppendLine("PartNumber,QuantityPerSkid,Components");
 
             foreach (var part in partsResult.Data ?? new List<Model_VolvoPart>())
             {
@@ -427,20 +425,20 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
                 }
 
-                csv.AppendLine($"{EscapeCsvField(part.PartNumber ?? string.Empty)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
+                output.AppendLine($"{EscapeDataField(part.PartNumber ?? string.Empty)},{part.QuantityPerSkid},{EscapeDataField(componentsStr)}");
             }
 
             await _logger.LogInfoAsync($"Export complete: {partsResult.Data?.Count ?? 0} parts");
-            return Model_Dao_Result_Factory.Success(csv.ToString());
+            return Model_Dao_Result_Factory.Success(output.ToString());
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error exporting CSV: {ex.Message}", ex);
+            await _logger.LogErrorAsync($"Error exporting data: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<string>($"Export failed: {ex.Message}");
         }
     }
 
-    private string[] ParseCsvLine(string line)
+    private string[] ParseDataLine(string line)
     {
         var fields = new List<string>();
         var currentField = new StringBuilder();
@@ -469,7 +467,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         return fields.ToArray();
     }
 
-    private string EscapeCsvField(string field)
+    private string EscapeDataField(string field)
     {
         if (field == null)
         {

@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 {
     /// <summary>
     /// Placeholder stub — XLS file workflow is being replaced by MySQL.
-    /// TODO(SpreadsheetRemoval): Replace all methods with MySQL-backed implementations.
+    /// TODO: Replace all methods with database-backed implementations.
     /// </summary>
     public class Service_XLSWriter : IService_XLSWriter
     {

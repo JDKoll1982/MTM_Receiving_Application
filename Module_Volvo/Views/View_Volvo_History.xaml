@@ -57,7 +57,7 @@
                 VerticalAlignment="Bottom"/>
             
             <Button
-                Content="Export CSV"
+                Content="Export to Table"
                 Command="{x:Bind ViewModel.ExportCommand}"
                 VerticalAlignment="Bottom"/>
         </StackPanel>

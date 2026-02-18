@@ -41,7 +41,7 @@
                 <TextBlock Text="Component management will be available in a future update." 
                           Style="{StaticResource CaptionTextBlockStyle}"
                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                <TextBlock Text="For now, use CSV import to define components." 
+                <TextBlock Text="For now, use data import to define components." 
                           Style="{StaticResource CaptionTextBlockStyle}"
                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
             </StackPanel>

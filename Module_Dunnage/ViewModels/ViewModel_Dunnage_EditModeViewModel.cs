@@ -198,7 +198,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading label data...";
 
-            // TODO(SpreadsheetRemoval): Replace stub with MySQL read.
+            // TODO: Implement database read operation
             await _logger.LogWarningAsync("LoadFromCurrentLabelsAsync called — spreadsheet workflow not yet implemented.", "EditMode");
             StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
             _allLoads = new List<Model_DunnageLoad>();
