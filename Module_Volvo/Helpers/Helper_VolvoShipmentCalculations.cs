@@ -203,7 +203,7 @@ public static class Helper_VolvoShipmentCalculations
             string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
             Directory.CreateDirectory(csvDirectory);
 
-            string fileName = "Volvo_Labels.csv";
+            string fileName = "Volvo_Labels.csv"; // TODO(SpreadsheetRemoval): Legacy filename reference - update when MySQL export implemented
             string filePath = Path.Combine(csvDirectory, fileName);
 
             var csvContent = new StringBuilder();

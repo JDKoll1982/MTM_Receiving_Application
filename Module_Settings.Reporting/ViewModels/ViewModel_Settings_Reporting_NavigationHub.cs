@@ -21,7 +21,6 @@ public sealed partial class ViewModel_Settings_Reporting_NavigationHub : ViewMod
         SetSteps(
             new Model_SettingsNavigationStep("Overview", typeof(Views.View_Settings_Reporting_SettingsOverview)),
             new Model_SettingsNavigationStep("File I/O", typeof(Views.View_Settings_Reporting_FileIO)),
-            new Model_SettingsNavigationStep("CSV", typeof(Views.View_Settings_Reporting_Csv)),
             new Model_SettingsNavigationStep("Email / UX", typeof(Views.View_Settings_Reporting_EmailUx)),
             new Model_SettingsNavigationStep("Business Rules", typeof(Views.View_Settings_Reporting_BusinessRules)),
             new Model_SettingsNavigationStep("Permissions", typeof(Views.View_Settings_Reporting_Permissions)));

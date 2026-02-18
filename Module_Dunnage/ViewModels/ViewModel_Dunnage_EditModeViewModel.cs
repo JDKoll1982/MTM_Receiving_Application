@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using ClosedXML.Excel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -199,87 +198,13 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading label data...";
 
-            var username = Environment.UserName;
-            var localPath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "MTM_Receiving_Application",
-                "DunnageData.xlsx"
-            );
+            // TODO(SpreadsheetRemoval): Replace stub with MySQL read.
+            await _logger.LogWarningAsync("LoadFromCurrentLabelsAsync called — spreadsheet workflow not yet implemented.", "EditMode");
+            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
+            _allLoads = new List<Model_DunnageLoad>();
+            IsBusy = false;
+            return;
 
-            // T155: Check if file exists
-            if (!System.IO.File.Exists(localPath))
-            {
-                await _errorHandler.HandleErrorAsync(
-                    "No label file found for current user",
-                    Enum_ErrorSeverity.Warning,
-                    null,
-                    true
-                );
-                _allLoads = new List<Model_DunnageLoad>();
-                StatusMessage = "No label file found";
-                _logger.LogWarning($"XLS file not found at {localPath}", "EditMode");
-                return;
-            }
-
-            // Parse XLS using ClosedXML
-            var loadsList = new List<Model_DunnageLoad>();
-            
-            try
-            {
-                using var workbook = new ClosedXML.Excel.XLWorkbook(localPath);
-                var worksheet = workbook.Worksheet(1);
-                var rows = worksheet.RowsUsed().Skip(1); // Skip header row
-                
-                foreach (var row in rows)
-                {
-                    try
-                    {
-                        var load = new Model_DunnageLoad
-                        {
-                            TypeName = row.Cell(1).GetString() ?? string.Empty,
-                            PartId = row.Cell(2).GetString() ?? string.Empty,
-                            Quantity = row.Cell(3).GetValue<decimal>(),
-                            PoNumber = row.Cell(4).GetString() ?? string.Empty,
-                            Location = row.Cell(5).GetString() ?? string.Empty,
-                            ReceivedDate = DateTime.TryParse(row.Cell(6).GetString(), out var date) ? date : DateTime.Now
-                        };
-
-                        loadsList.Add(load);
-                    }
-                    catch (Exception rowEx)
-                    {
-                        // Row-specific error reporting
-                        _logger.LogWarning($"Failed to parse row {row.RowNumber()}: {rowEx.Message}", "EditMode");
-                    }
-                }
-            }
-            catch (Exception parseEx)
-            {
-                // XLS parsing error
-                await _errorHandler.HandleErrorAsync(
-                    $"XLS parsing error: {parseEx.Message}",
-                    Enum_ErrorSeverity.Warning,
-                    parseEx,
-                    true
-                );
-                return;
-            }
-
-            _allLoads = loadsList;
-            TotalRecords = _allLoads.Count;
-
-            // Set pagination source
-            _paginationService.SetSource(_allLoads);
-            TotalPages = _paginationService.TotalPages;
-            CurrentPage = _paginationService.CurrentPage;
-
-            // Load first page
-            LoadPage(1);
-
-            CanNavigate = TotalPages > 1;
-            StatusMessage = $"Loaded {TotalRecords} loads from labels";
-
-            _logger.LogInfo($"Loaded {TotalRecords} loads from XLS file", "EditMode");
         }
         catch (Exception ex)
         {

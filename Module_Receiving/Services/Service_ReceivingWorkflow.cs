@@ -376,9 +376,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_SaveResult> SaveToXLSOnlyAsync()
         {
-            var result = new Model_SaveResult();
+            // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+            await _logger.LogWarningAsync($"{nameof(SaveToXLSOnlyAsync)} called — spreadsheet workflow not yet implemented.");
+            var result = new Model_SaveResult
+            {
+                Success = false,
+                Errors = new List<string> { "Not implemented yet: spreadsheet workflow is being replaced by MySQL." }
+            };
+            return result;
 
-            // Validate session
+            // --- original XLS implementation below (unreachable) ---
             var validation = _validation.ValidateSession(CurrentSession.Loads);
             if (!validation.IsValid)
             {
@@ -469,25 +476,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                _logger.LogInfo("Reporting progress: Saving to local XLS...");
-                messageProgress?.Report("Saving to local XLS...");
+                // TODO(SpreadsheetRemoval): XLS save stubbed out \u2014 preserving DB save path only.
+                _logger.LogInfo("Reporting progress: Skipping XLS save (not implemented)...");
+                messageProgress?.Report("Skipping XLS save (not implemented)...");
                 percentProgress?.Report(30);
 
-                // Save to XLS
-                var xlsResult = await SaveToXLSOnlyAsync();
-
-                result.LocalXLSSuccess = xlsResult.LocalXLSSuccess;
-                result.NetworkXLSSuccess = xlsResult.NetworkXLSSuccess;
-                result.LocalXLSPath = xlsResult.LocalXLSPath;
-                result.NetworkXLSPath = xlsResult.NetworkXLSPath;
-                result.Errors.AddRange(xlsResult.Errors);
-                result.Warnings.AddRange(xlsResult.Warnings);
-
-                // Generate error message if CSV save failed
-                if (!result.LocalXLSSuccess && xlsResult.Errors.Count > 0)
-                {
-                    result.XLSFileErrorMessage = "XLS save failed: " + string.Join("; ", xlsResult.Errors);
-                }
+                // Stub XLS result
+                result.LocalXLSSuccess = false;
+                result.NetworkXLSSuccess = false;
+                result.LocalXLSPath = string.Empty;
+                result.NetworkXLSPath = string.Empty;
+                result.Warnings.Add("XLS save not implemented yet: spreadsheet workflow is being replaced by MySQL.");
 
                 _logger.LogInfo("Reporting progress: Saving to database...");
                 messageProgress?.Report("Saving to database...");
@@ -513,8 +512,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 percentProgress?.Report(90);
 
                 // Final success check
-                // Success if Local XLS worked AND Database worked
-                result.Success = result.LocalXLSSuccess && result.DatabaseSuccess;
+                // TODO(SpreadsheetRemoval): Success now depends on DB only (XLS stubbed out).
+                result.Success = result.DatabaseSuccess;
 
                 if (result.Success)
                 {
@@ -560,6 +559,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
         {
+            // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+            await _logger.LogWarningAsync($"{nameof(ResetXLSFilesAsync)} called — spreadsheet workflow not yet implemented.");
+            return new Model_XLSDeleteResult { NetworkError = "Not implemented yet: spreadsheet workflow is being replaced by MySQL." };
+
+            // --- original implementation below (unreachable) ---
             _logger.LogInfo("Resetting XLS files requested.");
             return await _xlsWriter.ClearXLSFilesAsync();
         }

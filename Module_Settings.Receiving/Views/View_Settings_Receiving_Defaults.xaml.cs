@@ -23,7 +23,7 @@ public sealed partial class View_Settings_Receiving_Defaults : Page
             SetSettingsWindow();
             // Log the current values
             Debug.WriteLine($"[Receiving Defaults] DefaultReceivingMode: '{viewModel.DefaultReceivingMode}'");
-            Debug.WriteLine($"[Receiving Defaults] CsvSaveLocation: '{viewModel.CsvSaveLocation}'");
+            Debug.WriteLine($"[Receiving Defaults] CsvSaveLocation (legacy/repurpose): '{viewModel.CsvSaveLocation}'");
         };
     }
 

@@ -175,6 +175,11 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
+            ShowStatus("Not implemented yet: spreadsheet workflow is being replaced by MySQL.", InfoBarSeverity.Warning);
+            await Task.CompletedTask;
+
+            // --- original implementation below (unreachable) ---
             ShowStatus("Exporting to CSV...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.ExportToCSVAsync(

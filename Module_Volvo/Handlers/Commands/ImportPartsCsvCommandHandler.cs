@@ -29,6 +29,11 @@ public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvComman
 
     public async Task<Model_Dao_Result<ImportPartsCsvResult>> Handle(ImportPartsCsvCommand request, CancellationToken cancellationToken)
     {
+        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+        await Task.CompletedTask;
+        return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+
+        // --- original implementation below (unreachable) ---
         try
         {
             if (string.IsNullOrWhiteSpace(request.CsvFilePath))

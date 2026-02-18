@@ -187,7 +187,16 @@ public class Service_Volvo : IService_Volvo
 
             await _logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
 
-            // Get shipment details
+            // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+            await _logger.LogWarningAsync($"GenerateLabelCsvAsync called — spreadsheet workflow not yet implemented.");
+            return new Model_Dao_Result<string>
+            {
+                Success = false,
+                ErrorMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.",
+                Severity = Enum_ErrorSeverity.Warning
+            };
+
+            // --- original implementation below (unreachable) ---
             var shipmentResult = await _shipmentDao.GetByIdAsync(shipmentId);
             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
             {
@@ -246,7 +255,7 @@ public class Service_Volvo : IService_Volvo
             string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
             Directory.CreateDirectory(csvDirectory);
 
-            // Use fixed filename Volvo_Labels.csv (overwrites previous)
+            // Note: Previously generated fixed filename Volvo_Labels.csv (overwrites previous)
             string fileName = "Volvo_Labels.csv";
             string filePath = Path.Combine(csvDirectory, fileName);
 

@@ -256,6 +256,11 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
 
     public async Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportCsvAsync(string csvFilePath)
     {
+        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+        await _logger.LogWarningAsync($"ImportCsvAsync called — spreadsheet workflow not yet implemented.");
+        return Model_Dao_Result_Factory.Failure<(int, int, int)>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+
+        // --- original implementation below (unreachable) ---
         try
         {
             await _logger.LogInfoAsync("Starting CSV import");
@@ -394,6 +399,11 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
 
     public async Task<Model_Dao_Result<string>> ExportCsvAsync(string csvFilePath, bool includeInactive = false)
     {
+        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+        await _logger.LogWarningAsync($"ExportCsvAsync called — spreadsheet workflow not yet implemented.");
+        return Model_Dao_Result_Factory.Failure<string>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+
+        // --- original implementation below (unreachable) ---
         try
         {
             await _logger.LogInfoAsync($"Exporting parts to CSV (includeInactive={includeInactive})");

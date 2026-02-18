@@ -114,7 +114,8 @@ public class Service_Reporting : IService_Reporting
     }
 
     /// <summary>
-    /// Exports data to CSV file matching MiniUPSLabel.csv structure
+    /// [STUB] CSV export pending MySQL implementation.
+    /// Future: Export data to MySQL-backed format (previously CSV matching MiniUPSLabel.csv structure).
     /// </summary>
     /// <param name="data"></param>
     /// <param name="moduleName"></param>
@@ -122,6 +123,11 @@ public class Service_Reporting : IService_Reporting
         List<Model_ReportRow> data,
         string moduleName)
     {
+        // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
+        await _logger.LogWarningAsync($"ExportToCSVAsync called in {nameof(Service_Reporting)} — spreadsheet workflow not yet implemented.");
+        return Model_Dao_Result_Factory.Failure<string>("Not implemented yet: spreadsheet workflow is being replaced by MySQL.");
+
+        // --- original implementation below (unreachable) ---
         try
         {
             _logger.LogInfo($"Exporting {data.Count} records to CSV for {moduleName} module");

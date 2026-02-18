@@ -41,7 +41,7 @@ public interface IService_DunnageXLSWriter
     /// </summary>
     /// <param name="loads">List of loads to export</param>
     /// <param name="allSpecKeys">Union of all spec keys across all types (from GetAllSpecKeysAsync)</param>
-    /// <param name="filename">Optional custom filename (default: DunnageData_{timestamp}.xls)</param>
+    /// <param name="filename">Optional custom filename (default format: DunnageData_{timestamp}.xlsx) [STUB - not implemented]</param>
     /// <returns>XLS write result with local/network paths and success status</returns>
     /// <remarks>
     /// Generates columns: ID, PartID, DunnageType, Quantity, PONumber, ReceivedDate, UserId, Location, LabelNumber, [Dynamic Spec Columns]
@@ -89,7 +89,7 @@ public interface IService_DunnageXLSWriter
     /// <summary>
     /// Clears the contents of all XLS files created by the application from local and network paths
     /// </summary>
-    /// <param name="filenamePattern">Optional filename pattern to match (e.g., "DunnageData_*.xlsx"). If null, clears all XLS files.</param>
+    /// <param name="filenamePattern">Optional filename pattern (e.g., "DunnageData_*.xlsx"). [STUB - not implemented]</param>
     /// <returns>XLS clear result with counts of cleared files and any errors</returns>
     public Task<Model_XLSDeleteResult> ClearXLSFilesAsync(string? filenamePattern = null);
 }

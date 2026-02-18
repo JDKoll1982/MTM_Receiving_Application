@@ -392,6 +392,10 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             }
 
             IsBusy = true;
+            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
+            await Task.CompletedTask;
+
+            // --- original implementation below (unreachable) ---
             StatusMessage = "Importing CSV...";
 
             var result = await _mediator.Send(new ImportPartsCsvCommand
@@ -471,6 +475,10 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             }
 
             IsBusy = true;
+            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
+            await Task.CompletedTask;
+
+            // --- original implementation below (unreachable) ---
             StatusMessage = "Exporting to CSV...";
 
             var result = await _mediator.Send(new ExportPartsCsvQuery

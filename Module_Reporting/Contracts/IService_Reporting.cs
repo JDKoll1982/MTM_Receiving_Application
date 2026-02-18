@@ -59,7 +59,8 @@ public interface IService_Reporting
         DateTime endDate);
 
     /// <summary>
-    /// Exports report data to CSV file matching MiniUPSLabel.csv structure
+    /// [STUB] Exports report data (CSV format pending MySQL implementation).
+    /// Future: Export to MySQL-backed format (previously MiniUPSLabel.csv structure).
     /// </summary>
     /// <param name="data">Filtered report rows</param>
     /// <param name="moduleName">Module name for filename (Receiving, Dunnage, Volvo)</param>

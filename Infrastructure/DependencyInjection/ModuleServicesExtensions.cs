@@ -362,7 +362,6 @@ public static class ModuleServicesExtensions
         // Reporting Settings Pages
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_SettingsOverview>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_FileIO>();
-        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_Csv>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_EmailUx>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_BusinessRules>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_Permissions>();
@@ -408,7 +407,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_SettingsOverview>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_FileIO>();
-        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Csv>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_BusinessRules>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailUx>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Permissions>();

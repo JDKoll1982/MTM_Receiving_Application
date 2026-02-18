@@ -25,7 +25,8 @@ public interface IService_Volvo
     /// <summary>
     /// Generates CSV file for LabelView 2022 label printing
     /// Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
-    /// Saved to: %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_[ID]_[Date].csv
+    /// [STUB] CSV export not implemented - pending MySQL replacement.
+    /// Previously saved to: %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_[ID]_[Date].csv
     /// </summary>
     /// <param name="shipmentId">Shipment ID to generate labels for</param>
     /// <returns>File path where CSV was written</returns>
