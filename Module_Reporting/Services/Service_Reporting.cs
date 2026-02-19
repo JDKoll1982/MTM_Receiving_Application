@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Reporting.Services;
 
 /// <summary>
 /// Service implementation for End-of-Day reporting
-/// Handles data retrieval, PO normalization, CSV export, and email formatting
+/// Handles data retrieval, PO normalization, and email formatting
 /// </summary>
 public class Service_Reporting : IService_Reporting
 {
@@ -111,77 +110,6 @@ public class Service_Reporting : IService_Reporting
 
         // Format as PO-XXXXXX + optional suffix
         return "PO-" + numericPart + suffix;
-    }
-
-    /// <summary>
-    /// [STUB] Data export pending implementation.
-    /// TODO: Implement database export operation.
-    /// </summary>
-    /// <param name="data"></param>
-    /// <param name="moduleName"></param>
-    public async Task<Model_Dao_Result<string>> ExportDataAsync(
-        List<Model_ReportRow> data,
-        string moduleName)
-    {
-        await _logger.LogWarningAsync($"Export operation called in {nameof(Service_Reporting)} - not yet implemented");
-        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database export operation.");
-
-        // --- original implementation below (unreachable) ---
-        try
-        {
-            _logger.LogInfo($"Exporting {data.Count} records to CSV for {moduleName} module");
-
-            // Create CSV content based on module
-            var csv = new StringBuilder();
-
-            switch (moduleName.ToLower())
-            {
-                case "receiving":
-                    csv.AppendLine("PO Number,Part,Description,Qty,Weight,Heat/Lot,Date");
-                    foreach (var row in data)
-                    {
-                        csv.AppendLine($"\"{row.PONumber ?? ""}\",\"{row.PartNumber ?? ""}\",\"{row.PartDescription ?? ""}\",{row.Quantity ?? 0},{row.WeightLbs ?? 0},\"{row.HeatLotNumber ?? ""}\",{row.CreatedDate:yyyy-MM-dd}");
-                    }
-                    break;
-
-                case "dunnage":
-                    csv.AppendLine("Type,Part,Specs,Qty,Date");
-                    foreach (var row in data)
-                    {
-                        csv.AppendLine($"\"{row.DunnageType ?? ""}\",\"{row.PartNumber ?? ""}\",\"{row.SpecsCombined ?? ""}\",{row.Quantity ?? 0},{row.CreatedDate:yyyy-MM-dd}");
-                    }
-                    break;
-
-                case "volvo":
-                    csv.AppendLine("Shipment Number,PO Number,Receiver Number,Status,Date,Part Count");
-                    foreach (var row in data)
-                    {
-                        csv.AppendLine($"{row.ShipmentNumber ?? 0},\"{row.PONumber ?? ""}\",\"{row.ReceiverNumber ?? ""}\",\"{row.Status ?? ""}\",{row.CreatedDate:yyyy-MM-dd},{row.PartCount ?? 0}");
-                    }
-                    break;
-
-                default:
-                    return Model_Dao_Result_Factory.Failure<string>("Unknown module name for CSV export");
-            }
-
-            // Save to file
-            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var fileName = $"EoD_{moduleName}_{timestamp}.csv";
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var mtmFolder = Path.Combine(appDataPath, "MTM_Receiving_Application", "Reports");
-            Directory.CreateDirectory(mtmFolder);
-            var filePath = Path.Combine(mtmFolder, fileName);
-
-            await File.WriteAllTextAsync(filePath, csv.ToString());
-            _logger.LogInfo($"CSV exported successfully to {filePath}");
-
-            return Model_Dao_Result_Factory.Success(filePath);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error exporting CSV: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<string>($"CSV export failed: {ex.Message}", ex);
-        }
     }
 
     /// <summary>

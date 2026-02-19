@@ -404,59 +404,6 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
     private bool CanEdit() => SelectedShipment != null && !IsBusy;
 
-    /// <summary>
-    /// [STUB] Exports history data.
-    /// TODO: Implement database export operation.
-    /// </summary>
-    [RelayCommand]
-    private async Task ExportAsync()
-    {
-        if (IsBusy)
-        {
-            return;
-        }
-
-        try
-        {
-            IsBusy = true;
-            StatusMessage = "Exporting history...";
-
-            var result = await _mediator.Send(new ExportShipmentsQuery
-            {
-                StartDate = StartDate,
-                EndDate = EndDate,
-                StatusFilter = StatusFilter
-            });
-
-            if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
-            {
-                // Save file picker would go here
-                StatusMessage = $"Exported {History.Count} record(s) to database table";
-            }
-            else
-            {
-                await _errorHandler.ShowUserErrorAsync(
-                    result.ErrorMessage ?? "Failed to export history",
-                    "Export Error",
-                    nameof(ExportAsync));
-                StatusMessage = "Export failed";
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorHandler.HandleException(
-                ex,
-                Enum_ErrorSeverity.Medium,
-                nameof(ExportAsync),
-                nameof(ViewModel_Volvo_History));
-            StatusMessage = "Error exporting history";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
     #endregion
 
     #region Property Changed Handlers

@@ -223,8 +223,8 @@ public class Service_Volvo : IService_Volvo
             string labelDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
             Directory.CreateDirectory(labelDirectory);
 
-            // Note: Previously generated fixed filename Volvo_Labels.csv (legacy format, will transition to database table)
-            string fileName = "Volvo_Labels.csv";
+            // Note: Previously generated fixed label export filename (legacy format, transitioned away from spreadsheet export)
+            string fileName = "Volvo_Labels_legacy.dat";
             string filePath = Path.Combine(labelDirectory, fileName);
 
             // Build label table content
@@ -953,68 +953,4 @@ public class Service_Volvo : IService_Volvo
         }
     }
 
-    /// <summary>
-    /// [STUB] Exports shipment history data.
-    /// TODO: Implement database export operation.
-    /// </summary>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    /// <param name="status"></param>
-    public async Task<Model_Dao_Result<string>> ExportHistoryToDataTableAsync(
-        DateTime startDate,
-        DateTime endDate,
-        string status = "all")
-    {
-        try
-        {
-            var historyResult = await GetHistoryAsync(startDate, endDate, status);
-            if (!historyResult.IsSuccess || historyResult.Data == null)
-            {
-                return Model_Dao_Result_Factory.Failure<string>("Failed to retrieve history data");
-            }
-
-            var output = new StringBuilder();
-            output.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
-
-            foreach (var shipment in historyResult.Data)
-            {
-                output.AppendLine($"{shipment.ShipmentNumber}," +
-                              $"{shipment.ShipmentDate:yyyy-MM-dd}," +
-                              $"{EscapeDataField(shipment.PONumber)}," +
-                              $"{EscapeDataField(shipment.ReceiverNumber)}," +
-                              $"{shipment.Status}," +
-                              $"{shipment.EmployeeNumber}," +
-                              $"{EscapeDataField(shipment.Notes)}");
-            }
-
-            return Model_Dao_Result_Factory.Success(output.ToString());
-        }
-        catch (Exception ex)
-        {
-            await _logger.LogErrorAsync(
-                $"Error exporting history: {ex.Message}",
-                ex,
-                nameof(ExportHistoryToDataTableAsync));
-            return Model_Dao_Result_Factory.Failure<string>($"Error exporting history: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Escapes data field values (wraps in quotes if contains comma, quote, or newline)
-    /// </summary>
-    /// <param name="value"></param>
-    private string EscapeDataField(string? value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
-        {
-            return $"\"{value.Replace("\"", "\"\"")}\"";
-        }
-
-        return value;
-    }
 }

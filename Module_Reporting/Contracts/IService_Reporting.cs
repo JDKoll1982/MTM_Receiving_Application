@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Reporting.Contracts;
 
 /// <summary>
 /// Service interface for End-of-Day reporting across all modules
-/// Filters history data by date range, normalizes PO numbers, and exports to CSV/email format
+/// Filters history data by date range, normalizes PO numbers, and formats data for in-app review/email
 /// Reference: EndOfDayEmail.js and AppScript.js from Google Sheets routing label system
 /// </summary>
 public interface IService_Reporting
@@ -57,17 +57,6 @@ public interface IService_Reporting
     public Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
         DateTime startDate,
         DateTime endDate);
-
-    /// <summary>
-    /// [STUB] Exports report data.
-    /// TODO: Implement database export operation.
-    /// </summary>
-    /// <param name="data">Filtered report rows</param>
-    /// <param name="moduleName">Module name for filename (Receiving, Dunnage, Volvo)</param>
-    /// <returns>DAO result with file path of generated CSV</returns>
-    public Task<Model_Dao_Result<string>> ExportDataAsync(
-        List<Model_ReportRow> data,
-        string moduleName);
 
     /// <summary>
     /// Formats report data as email body with alternating row colors grouped by date

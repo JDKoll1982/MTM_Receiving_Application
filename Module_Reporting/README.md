@@ -6,7 +6,7 @@
 
 ## Overview
 
-The End-of-Day Reporting module has been successfully implemented as a cross-cutting module that works across Receiving, Dunnage, Routing, and Volvo modules. The module provides date range filtering, PO number normalization, data grouping, CSV export, and email formatting capabilities.
+The End-of-Day Reporting module has been successfully implemented as a cross-cutting module that works across Receiving, Dunnage, Routing, and Volvo modules. The module provides date range filtering, PO number normalization, in-app data display, and email formatting capabilities.
 
 ## What Was Implemented
 
@@ -57,11 +57,10 @@ Key Features:
    - Empty/null → "No PO"
    - < 5 digits → "Validate PO"
 
-2. **CSV Export** (matching MiniUPSLabel.csv structure):
-   - Module-specific column headers
-   - Proper CSV escaping with quotes
-   - Saved to `%APPDATA%\MTM_Receiving_Application\Reports\`
-   - Timestamped filenames: `EoD_{Module}_{yyyyMMdd_HHmmss}.csv`
+2. **In-App Data Display**:
+   - Module-specific fields rendered directly in reporting views
+   - No spreadsheet export dependency
+   - Data remains available for copy/email workflows
 
 3. **Email Formatting** (matching Google Sheets colorHistory() function):
    - HTML table with proper styling
@@ -79,7 +78,6 @@ Features:
 - Module checkboxes (Receiving, Dunnage, Routing, Volvo)
 - Availability checking (displays record counts, enables/disables checkboxes)
 - Per-module report generation commands
-- CSV export command
 - Email format copy command (copies HTML to clipboard)
 - Observable report data collection
 - Status messages and busy indicators
@@ -91,7 +89,6 @@ Commands Implemented:
 - `GenerateDunnageReportCommand` - Generates Dunnage report
 - `GenerateRoutingReportCommand` - Generates Routing report
 - `GenerateVolvoReportCommand` - Generates Volvo report
-- `ExportToCSVCommand` - Exports current data to CSV file
 - `CopyEmailFormatCommand` - Formats as HTML and copies to clipboard
 
 ### Phase 5: User Interface ✅
@@ -104,7 +101,7 @@ UI Components:
 - **Date Range Section**: Start/End CalendarDatePickers with "Check Availability" button
 - **Module Selection**: 4 columns with checkboxes, record counts, and individual "Generate Report" buttons
 - **Report Display**: Scrollable ListView showing current report data
-- **Action Bar**: CommandBar with Export CSV and Copy Email Format buttons
+- **Action Bar**: CommandBar with Copy Email Format and Check Availability buttons
 
 **Navigation**: `MainWindow.xaml` + `MainWindow.xaml.cs`
 
@@ -182,7 +179,6 @@ MTM_Receiving_Application/
 - [ ] Test "Check Availability" button
 - [ ] Generate reports for each module (Receiving, Dunnage, Routing)
 - [ ] Verify PO number normalization (test cases: "63150", "063150B", "Customer Supplied")
-- [ ] Test CSV export (verify file creation and format)
 - [ ] Test email format copy (verify HTML table structure and alternating colors)
 - [ ] Test date range persistence across module changes
 
@@ -199,13 +195,6 @@ Input           → Expected Output
 ""              → "No PO"
 "1234"          → "Validate PO" (too short)
 ```
-
-**CSV Export Test**:
-
-- Verify file saved to `%APPDATA%\MTM_Receiving_Application\Reports\`
-- Verify filename format: `EoD_Receiving_20260104_153045.csv`
-- Verify column headers match module type
-- Verify proper CSV escaping (quotes around text fields)
 
 **Email Format Test**:
 
@@ -232,12 +221,7 @@ Input           → Expected Output
    - Click "Generate Report" button under the module
    - View report data in the table below
 
-4. **Export to CSV**:
-   - After generating a report, click "Export to CSV" in bottom toolbar
-   - File will be saved to Reports folder with timestamp
-   - Status message shows full file path
-
-5. **Copy Email Format**:
+4. **Copy Email Format**:
    - After generating a report, click "Copy Email Format" in bottom toolbar
    - HTML table is copied to clipboard
    - Paste into email client (e.g., Outlook)
@@ -252,17 +236,12 @@ Input           → Expected Output
 4. Add checkbox and button to `View_Reporting_Main.xaml`
 5. Add properties and command to `ViewModel_Reporting_Main.cs`
 6. Update `CheckAvailabilityAsync()` to include new module
-7. Update CSV export and email formatting to handle new module
+7. Update email formatting to handle new module
 
 **Modifying PO Normalization**:
 
 - Edit `Service_Reporting.NormalizePONumber()` method
 - Ensure it matches Google Sheets algorithm if that's the source of truth
-
-**Changing Export Location**:
-
-- Edit `Service_Reporting.ExportToCSVAsync()` method
-- Update `appDataPath` and `mtmFolder` variables
 
 ## Success Criteria Verification
 
@@ -270,7 +249,7 @@ Based on specification SC-001 through SC-007:
 
 - [X] SC-001: Users can generate reports for all three modules within specified date ranges
 - [X] SC-002: PO normalization handles all specified formats correctly (algorithm implemented)
-- [X] SC-003: CSV export includes correct columns and data for each module
+- [X] SC-003: In-app report display includes correct module columns and data
 - [X] SC-004: Email formatting applies date grouping and alternating colors as specified
 - [ ] SC-005: Routing auto-lookup fills department (requires Routing module implementation)
 - [ ] SC-006: History archival moves today's labels (requires Routing module implementation)

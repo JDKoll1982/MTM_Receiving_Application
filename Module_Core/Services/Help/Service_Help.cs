@@ -427,7 +427,7 @@ public class Service_Help : IService_Help
             Content = "Review and edit past dunnage receiving entries:\n\n" +
                       "**Data Sources:**\n" +
                       "• Session Memory - Unsaved work from current session\n" +
-                      "• Recent Labels - From most recent CSV export\n" +
+                      "• Recent Labels - From most recent saved label dataset\n" +
                       "• Historical Loads - From database by date range\n\n" +
                       "**Date Filtering:**\n" +
                       "• Quick filters: Today, Last 7 days, This week/month/quarter/year\n" +
@@ -474,7 +474,7 @@ public class Service_Help : IService_Help
             Content = "Review and edit past receiving entries:\n\n" +
                       "**Data Sources:**\n" +
                       "• Session Memory - Unsaved work\n" +
-                      "• Recent Labels - From most recent CSV export\n" +
+                      "• Recent Labels - From most recent saved label dataset\n" +
                       "• Historical Loads - From database by date range\n\n" +
                       "**Editing:**\n" +
                       "• Select entries to modify\n" +
@@ -759,7 +759,7 @@ public class Service_Help : IService_Help
 
         // Edit mode data sources
         AddHelpContent(new Model_HelpContent { Key = "Tooltip.Button.LoadSessionMemory", Content = "Load unsaved loads from current session", HelpType = Enum_HelpType.Tip });
-        AddHelpContent(new Model_HelpContent { Key = "Tooltip.Button.LoadRecentCSV", Content = "Load from most recent CSV export", HelpType = Enum_HelpType.Tip });
+        AddHelpContent(new Model_HelpContent { Key = "Tooltip.Button.LoadRecentCSV", Content = "Load from most recent saved label dataset", HelpType = Enum_HelpType.Tip });
         AddHelpContent(new Model_HelpContent { Key = "Tooltip.Button.LoadHistoricalData", Content = "Load historical loads from database", HelpType = Enum_HelpType.Tip });
 
         // Admin operations

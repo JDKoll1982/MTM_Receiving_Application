@@ -19,12 +19,8 @@ flowchart TD
     OpenEdit --> UpdateData[Update header/lines]
     UpdateData --> SaveChanges[Save changes]
     SaveChanges --> Refresh[Refresh history]
-    EditSelected -- No --> ExportCsv{Export CSV?}
-    Refresh --> ExportCsv
-
-    ExportCsv -- Yes --> Export[Export shipment history to CSV]
-    ExportCsv -- No --> Back{Back to shipment entry?}
-    Export --> Back
+    EditSelected -- No --> Back{Back to shipment entry?}
+    Refresh --> Back
 
     Back -- Yes --> GoBack[Back to shipment entry]
     Back -- No --> End([End])
@@ -38,8 +34,7 @@ flowchart TD
 3. Select a shipment to view details.
 4. Click View Details to see header and line items.
 5. Click Edit to change shipment data, then save.
-6. Click Export CSV to download the filtered list.
-7. Use Back to return to the entry screen.
+6. Use Back to return to the entry screen.
 
 ## Required Info for Fixing Incorrect Workflows
 
@@ -49,4 +44,3 @@ flowchart TD
 | Filter | Filter button | GetShipmentHistoryQuery | n/a | ViewModel: FilterAsync | Status options: All, Pending PO, Completed |
 | View details | View Details button | GetShipmentDetailQuery | n/a | ViewModel: ViewDetailAsync | Shows PO, Receiver, Status, Notes, and line counts |
 | Edit shipment | Edit button | UpdateShipmentCommand | ShipmentId > 0; ShipmentDate ≤ now; Parts not empty; Notes ≤ 1000; PONumber ≤ 50; ReceiverNumber ≤ 50; each part: PartNumber required, ReceivedSkidCount > 0 | Validator: UpdateShipmentCommandValidator; ViewModel: EditAsync | Uses VolvoShipmentEditDialog; updates lines via UpdateShipmentCommand |
-| Export | Export CSV button | ExportShipmentsQuery | n/a | ViewModel: ExportAsync | Uses StartDate, EndDate, StatusFilter |

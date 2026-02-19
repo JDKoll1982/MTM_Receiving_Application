@@ -375,18 +375,6 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             "Not Implemented",
             nameof(ImportDataAsync));
     }
-
-
-    [RelayCommand]
-    private async Task ExportDataAsync()
-    {
-        await _logger.LogWarningAsync("Export operation called - not yet implemented");
-        await _errorHandler.ShowUserErrorAsync(
-            "TODO: Implement database export operation.",
-            "Not Implemented",
-            nameof(ExportDataAsync));
-    }
-
     partial void OnShowInactiveChanged(bool value)
     {
         // Refresh when toggle changes

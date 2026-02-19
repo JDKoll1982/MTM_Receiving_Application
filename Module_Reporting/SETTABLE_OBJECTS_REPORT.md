@@ -6,18 +6,7 @@ This report lists **settable objects** (configuration, tunables, and hardcoded v
 
 ## File I/O
 
-| Settable object | Type | Scope (User/System) | Recommended UI control | Description | Recommended permission to set | Current source | Recommendation |
-|---|---:|---|---|---|---|---|---|
-| `Reporting:ExportFolderPath` | string | System | TextBox + FolderPicker | Default export folder (currently `%APPDATA%\\MTM_Receiving_Application\\Reports`). | Admin (Operations) / IT | `Service_Reporting.ExportToCSVAsync` | Move to configuration (appsettings or DB) so locations can be redirected. |
-| `Reporting:FileNameTemplate` | string | System | TextBox | Export file naming pattern (currently `EoD_{moduleName}_{timestamp}.csv`). | Admin (Operations) | `Service_Reporting.ExportToCSVAsync` | Externalize if naming conventions differ by department. |
-| `Reporting:TimestampFormat` | string | System | TextBox | Timestamp format used in filenames (currently `yyyyMMdd_HHmmss`). | Admin (Operations) | `Service_Reporting.ExportToCSVAsync` | Externalize if downstream systems require different format. |
-
-## CSV
-
-| Settable object | Type | Scope (User/System) | Recommended UI control | Description | Recommended permission to set | Current source | Recommendation |
-|---|---:|---|---|---|---|---|---|
-| `Reporting:CsvDateFormat` | string | System | TextBox | Date format written to CSV (currently `yyyy-MM-dd`). | Admin (Operations) | `Service_Reporting.ExportToCSVAsync` | Externalize if spreadsheets/import pipelines require different format. |
-| `Reporting:CsvHeadersByModule` | string | System | DataGrid editor (Module → Header/Columns) | Hardcoded CSV headers and column ordering per module (`receiving`, `dunnage`, `routing`, `volvo`). | Admin (Operations) | `Service_Reporting.ExportToCSVAsync` | Consider module-specific templates/config or reuse a shared CSV exporter service. |
+Spreadsheet export workflow has been removed from Reporting. No CSV export file path, filename template, or CSV formatting settable objects are currently active in `Module_Reporting`.
 
 ## Email / UX
 
@@ -39,5 +28,4 @@ This report lists **settable objects** (configuration, tunables, and hardcoded v
 
 ## Hardcoded values that should not be hardcoded (high priority)
 
-- Export path and naming convention should be configurable.
-- CSV headers/orderings should be configurable per module if reporting consumers change.
+- Keep email table styling and module labels externally configurable when reporting customization is required.

@@ -10,11 +10,11 @@
 
 **Key Features:**
 
-- Volvo part master catalog management (add, edit, deactivate, import/export CSV)
+- Volvo part master catalog management (add, edit, deactivate, import)
 - Shipment entry with discrepancy tracking
 - Barcode label generation (CSV for Bartender)
 - PO requisition email formatting
-- Shipment history with filtering and export
+- Shipment history with filtering and in-app review
 - Pending shipment save/resume workflow
 
 ---
@@ -228,37 +228,7 @@ var result = await _mediator.Send(command);
 
 ## 🔍 Queries (Read Operations)
 
-### 1. ExportPartsCsvQuery
-
-**Purpose:** Export Volvo parts catalog to CSV file.
-
-**Handler:** `ExportPartsCsvQueryHandler`
-
-**Parameters:**
-
-- `IncludeInactive` (bool) - Include inactive parts in the export (default: false)
-
-**Returns:** `Model_Dao_Result<string>` (CSV file path)
-
----
-
-### 2. ExportShipmentsQuery
-
-**Purpose:** Export shipment history to CSV file with filtering.
-
-**Handler:** `ExportShipmentsQueryHandler`
-
-**Parameters:**
-
-- `StartDate` (DateTimeOffset?) - Optional start date filter
-- `EndDate` (DateTimeOffset?) - Optional end date filter
-- `StatusFilter` (string) - Optional status filter ("All", "Pending PO", "Completed", or raw status string)
-
-**Returns:** `Model_Dao_Result<string>` (CSV file path)
-
----
-
-### 3. FormatEmailDataQuery
+### 1. FormatEmailDataQuery
 
 **Purpose:** Generate email data for PO requisition (subject, body, discrepancies).
 
@@ -272,7 +242,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 4. GenerateLabelCsvQuery
+### 2. GenerateLabelCsvQuery
 
 **Purpose:** Generate barcode label CSV for Bartender label printer.
 
@@ -286,7 +256,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 5. GetAllVolvoPartsQuery
+### 3. GetAllVolvoPartsQuery
 
 **Purpose:** Retrieve all Volvo parts for settings grid or dropdown population.
 
@@ -300,7 +270,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 6. GetInitialShipmentDataQuery
+### 4. GetInitialShipmentDataQuery
 
 **Purpose:** Get current date and next available shipment number for new shipment entry.
 
@@ -312,7 +282,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 7. GetPartComponentsQuery
+### 5. GetPartComponentsQuery
 
 **Purpose:** Retrieve components for a parent Volvo part (for multi-part assemblies).
 
@@ -326,7 +296,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 8. GetPendingShipmentQuery
+### 6. GetPendingShipmentQuery
 
 **Purpose:** Find pending shipment for the current user (for resume workflow).
 
@@ -340,7 +310,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 9. GetRecentShipmentsQuery
+### 7. GetRecentShipmentsQuery
 
 **Purpose:** Retrieve recent shipments for dashboard or quick access.
 
@@ -354,7 +324,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 10. GetShipmentDetailQuery
+### 8. GetShipmentDetailQuery
 
 **Purpose:** Retrieve full shipment details including lines for viewing/editing.
 
@@ -368,7 +338,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 11. GetShipmentHistoryQuery
+### 9. GetShipmentHistoryQuery
 
 **Purpose:** Retrieve shipment history with date/status filtering.
 
@@ -384,7 +354,7 @@ var result = await _mediator.Send(command);
 
 ---
 
-### 12. SearchVolvoPartsQuery
+### 10. SearchVolvoPartsQuery
 
 **Purpose:** Search Volvo parts by partial part number match (for autocomplete/dropdown).
 
@@ -403,7 +373,7 @@ var result = await _mediator.Send(command);
 
 ### 1. ViewModel_Volvo_History
 
-**Purpose:** View and manage Volvo shipment history with filtering and export.
+**Purpose:** View and manage Volvo shipment history with filtering and in-app review.
 
 **Base Class:** `ViewModel_Shared_Base`
 
@@ -423,7 +393,6 @@ var result = await _mediator.Send(command);
 - `FilterCommand` - Filter history by date/status
 - `ViewDetailCommand` - View shipment details
 - `EditCommand` - Edit existing shipment
-- `ExportCommand` - Export filtered history to CSV
 
 **Dependencies:**
 

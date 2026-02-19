@@ -169,19 +169,6 @@ await using var connection = new MySqlConnection(Helper_Database_Variables.GetCo
 
 ## 📁 File Paths
 
-### CSV Export Directory
-
-**Hardcoded Location:** `%TEMP%` or user-selected via `FileOpenPicker`  
-**Purpose:** Export destination for parts catalog CSV and shipment history CSV  
-**Read Locations:**
-
-- `ExportPartsCsvQueryHandler` - Uses `FileOpenPicker` for user-selected path
-- `ExportShipmentsQueryHandler` - Uses `FileOpenPicker` for user-selected path
-
-**Recommendation:** Consider adding a default export directory setting in `settings_module_volvo`.
-
----
-
 ### CSV Import Source
 
 **Hardcoded Location:** User-selected via `FileOpenPicker`  

@@ -162,54 +162,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private bool CanGenerateVolvo() => IsVolvoChecked && IsVolvoEnabled && !IsBusy;
 
     /// <summary>
-    /// Exports current report data to database table format
-    /// </summary>
-    [RelayCommand(CanExecute = nameof(CanExport))]
-    private async Task ExportToCSVAsync()
-    {
-        if (IsBusy)
-        {
-            return;
-        }
-
-        try
-        {
-            IsBusy = true;
-            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
-            ShowStatus("Not implemented yet: spreadsheet workflow is being replaced by MySQL.", InfoBarSeverity.Warning);
-            await Task.CompletedTask;
-
-            // --- original implementation below (unreachable) ---
-            ShowStatus("Exporting data...", InfoBarSeverity.Informational);
-
-            var result = await _reportingService.ExportDataAsync(
-                ReportData.ToList(),
-                CurrentModuleName);
-
-            if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
-            {
-                ShowStatus($"Data exported to: {result.Data}", InfoBarSeverity.Success);
-                _logger.LogInfo($"Data exported: {result.Data}");
-            }
-            else
-            {
-                ShowStatus(result.ErrorMessage ?? "Export failed", InfoBarSeverity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error exporting data: {ex.Message}", ex);
-            ShowStatus("Error exporting data", InfoBarSeverity.Error);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    private bool CanExport() => ReportData.Count > 0 && !string.IsNullOrEmpty(CurrentModuleName) && !IsBusy;
-
-    /// <summary>
     /// Formats current report data for email and copies to clipboard
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanCopyEmail))]
@@ -292,7 +244,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 _logger.LogInfo($"Generated {moduleName} report: {ReportData.Count} records");
 
                 // Update command availability
-                ExportToCSVCommand.NotifyCanExecuteChanged();
                 CopyEmailFormatCommand.NotifyCanExecuteChanged();
             }
             else

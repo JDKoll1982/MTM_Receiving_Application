@@ -146,15 +146,4 @@ public interface IService_Volvo
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines);
 
-    /// <summary>
-    /// Exports shipment history to database table format
-    /// </summary>
-    /// <param name="startDate">Start date for filter</param>
-    /// <param name="endDate">End date for filter</param>
-    /// <param name="status">Status filter</param>
-    /// <returns>Data table content as string</returns>
-    public Task<Model_Dao_Result<string>> ExportHistoryToDataTableAsync(
-        DateTime startDate,
-        DateTime endDate,
-        string status = "all");
 }

@@ -396,48 +396,6 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         }
     }
 
-    public async Task<Model_Dao_Result<string>> ExportDataAsync(string filePath, bool includeInactive = false)
-    {
-        await _logger.LogWarningAsync("Export operation called - not yet implemented");
-        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database export operation.");
-
-        // --- original implementation below (unreachable) ---
-        try
-        {
-            await _logger.LogInfoAsync($"Exporting parts to database table (includeInactive={includeInactive})");
-
-            var partsResult = await GetAllPartsAsync(includeInactive);
-            if (!partsResult.IsSuccess)
-            {
-                return Model_Dao_Result_Factory.Failure<string>(partsResult.ErrorMessage);
-            }
-
-            var output = new StringBuilder();
-            output.AppendLine("PartNumber,QuantityPerSkid,Components");
-
-            foreach (var part in partsResult.Data ?? new List<Model_VolvoPart>())
-            {
-                var componentsResult = await GetComponentsAsync(part.PartNumber ?? string.Empty);
-                var componentsStr = "";
-
-                if (componentsResult.IsSuccess && componentsResult.Data?.Any() == true)
-                {
-                    componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
-                }
-
-                output.AppendLine($"{EscapeDataField(part.PartNumber ?? string.Empty)},{part.QuantityPerSkid},{EscapeDataField(componentsStr)}");
-            }
-
-            await _logger.LogInfoAsync($"Export complete: {partsResult.Data?.Count ?? 0} parts");
-            return Model_Dao_Result_Factory.Success(output.ToString());
-        }
-        catch (Exception ex)
-        {
-            await _logger.LogErrorAsync($"Error exporting data: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<string>($"Export failed: {ex.Message}");
-        }
-    }
-
     private string[] ParseDataLine(string line)
     {
         var fields = new List<string>();
@@ -467,19 +425,5 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         return fields.ToArray();
     }
 
-    private string EscapeDataField(string field)
-    {
-        if (field == null)
-        {
-            return "";
-        }
-
-        if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
-        {
-            return "\"" + field.Replace("\"", "\"\"") + "\"";
-        }
-
-        return field;
-    }
 }
 

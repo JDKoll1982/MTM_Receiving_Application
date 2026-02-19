@@ -185,8 +185,6 @@ sp_Volvo_ShipmentLine_Insert, sp_Volvo_ShipmentLine_Update, sp_Volvo_ShipmentLin
 **Query Handlers:**
 
 ```csharp
-✅ ExportPartsCsvQueryHandler            : IRequestHandler<ExportPartsCsvQuery, Model_Dao_Result<string>>
-✅ ExportShipmentsQueryHandler           : IRequestHandler<ExportShipmentsQuery, Model_Dao_Result<string>>
 ✅ FormatEmailDataQueryHandler           : IRequestHandler<FormatEmailDataQuery, Model_Dao_Result<Model_VolvoEmailData>>
 ✅ GenerateLabelCsvQueryHandler          : IRequestHandler<GenerateLabelCsvQuery, Model_Dao_Result<string>>
 ✅ GetAllVolvoPartsQueryHandler          : IRequestHandler<GetAllVolvoPartsQuery, Model_Dao_Result<List<Model_VolvoPart>>>

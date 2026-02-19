@@ -156,8 +156,6 @@ Since Module_Volvo does not use explicit `[Authorize]` attributes on handlers, a
 
 | Query | Required Role | Check Location | Check Method |
 |-------|---------------|----------------|--------------|
-| **ExportPartsCsvQuery** | Volvo.Manager | ViewModel_Volvo_Settings | `CanUserEditParts()` |
-| **ExportShipmentsQuery** | Volvo.Manager | ViewModel_Volvo_History | `CanUserViewHistory()` |
 | **FormatEmailDataQuery** | Volvo.Operator | ViewModel_Volvo_ShipmentEntry | `CanUserManageShipments()` |
 | **GenerateLabelCsvQuery** | Volvo.Operator | ViewModel_Volvo_ShipmentEntry | `CanUserManageShipments()` |
 | **GetAllVolvoPartsQuery** | *(No auth)* | - | Public read |
@@ -363,12 +361,10 @@ public async Task EditPartCommand_WithoutManagerRole_ShouldShowAccessDenied()
 | Edit part | ❌ | ✅ | ✅ |
 | Deactivate part | ❌ | ✅ | ✅ |
 | Import CSV | ❌ | ✅ | ✅ |
-| Export CSV | ❌ | ✅ | ✅ |
 | View components | ❌ | ✅ | ✅ |
 | **History & Reporting** | | | |
 | View own history | ✅ | ✅ | ✅ |
 | View all history | ❌ | ✅ | ✅ |
-| Export history | ❌ | ✅ | ✅ |
 | **Settings** | | | |
 | View settings | ❌ | ✅ | ✅ |
 | Edit email recipients | ❌ | ✅ | ✅ |
@@ -441,12 +437,6 @@ authorize:
     roles: [Volvo.Manager, Volvo.Admin]
     
   # Queries
-  - handler: ExportPartsCsvQueryHandler
-    roles: [Volvo.Manager, Volvo.Admin]
-    
-  - handler: ExportShipmentsQueryHandler
-    roles: [Volvo.Manager, Volvo.Admin]
-    
   - handler: GetPartComponentsQueryHandler
     roles: [Volvo.Manager, Volvo.Admin]
 ```

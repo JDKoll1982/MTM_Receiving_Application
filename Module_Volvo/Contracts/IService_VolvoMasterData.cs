@@ -62,12 +62,4 @@ public interface IService_VolvoMasterData
     /// <returns>Tuple of (New, Updated, Unchanged) counts</returns>
     public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(string filePath);
 
-    /// <summary>
-    /// [STUB] Exports all parts data.
-    /// TODO: Implement database export operation.
-    /// </summary>
-    /// <param name="filePath">Path where export should be saved</param>
-    /// <param name="includeInactive">Include deactivated parts</param>
-    /// <returns>Exported data as string</returns>
-    public Task<Model_Dao_Result<string>> ExportDataAsync(string filePath, bool includeInactive = false);
 }

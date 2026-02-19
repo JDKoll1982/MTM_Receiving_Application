@@ -157,10 +157,6 @@
         <!-- Action Buttons -->
         <CommandBar Grid.Row="4" DefaultLabelPosition="Right" Margin="0,12,0,0">
             <AppBarButton 
-                Icon="Save" 
-                Label="Export Data"
-                Command="{x:Bind ViewModel.ExportToCSVCommand}"/>
-            <AppBarButton 
                 Icon="Copy" 
                 Label="Copy Email Format"
                 Command="{x:Bind ViewModel.CopyEmailFormatCommand}"/>

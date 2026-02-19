@@ -186,7 +186,7 @@ public static class Helper_VolvoShipmentCalculations
             string outputDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
             Directory.CreateDirectory(outputDirectory);
 
-            string fileName = "Volvo_Labels.csv"; // TODO: Transition to database table when implemented
+            string fileName = "Volvo_Labels_legacy.dat"; // Legacy export path retained only in commented reference block
             string filePath = Path.Combine(outputDirectory, fileName);
 
             var fileContent = new StringBuilder();

@@ -36,12 +36,7 @@ flowchart TD
     ImportCsv -- Yes --> PickCsv[Pick CSV file]
     PickCsv --> ImportParts[Import parts]
     ImportParts --> Refresh
-    ImportCsv -- No --> ExportCsv{Export CSV?}
-
-    ExportCsv -- Yes --> PickSave[Pick save location]
-    PickSave --> ExportParts[Export parts CSV]
-    ExportCsv -- No --> End([End])
-    ExportParts --> End
+    ImportCsv -- No --> End([End])
 ```
 
 ## Inconsistencies
@@ -57,7 +52,7 @@ Is there an Activate Part? branch, to activate a deactivated part?
 5. Edit Part to adjust an existing part’s quantity per skid.
 6. Deactivate removes a part from active lists (history remains intact).
 7. View Components shows any component definitions for the selected part.
-8. Import CSV to bulk-add/update parts, Export CSV to download the current list.
+8. Import CSV to bulk-add/update parts.
 
 ## Required Info for Fixing Incorrect Workflows
 
@@ -69,4 +64,3 @@ Is there an Activate Part? branch, to activate a deactivated part?
 | Deactivate | Deactivate button | DeactivateVolvoPartCommand | PartNumber required | Validator: DeactivateVolvoPartCommandValidator | Confirmation dialog message in ViewModel |
 | View components | View Components | GetPartComponentsQuery | n/a | ViewModel: ViewComponentsAsync | Displays list of component part numbers and quantity |
 | Import CSV | Import CSV button | ImportPartsCsvCommand | CsvFilePath required | Validator: ImportPartsCsvCommandValidator | Uses FileOpenPicker; supports .csv |
-| Export CSV | Export CSV button | ExportPartsCsvQuery | n/a | ViewModel: ExportCsvAsync | Suggested file name: volvo_parts_yyyyMMdd.csv |
