@@ -49,7 +49,7 @@ namespace MTM_Waitlist_Application_2._0 {
         /// InitializeComponent
         /// </summary>
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.2.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.3.0")]
         public void InitializeComponent() {
             if (_contentLoaded) {
                 return;
@@ -69,7 +69,7 @@ namespace MTM_Waitlist_Application_2._0 {
         /// </summary>
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.2.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.3.0")]
         public static void Main() {
             MTM_Waitlist_Application_2._0.App app = new MTM_Waitlist_Application_2._0.App();
             app.InitializeComponent();

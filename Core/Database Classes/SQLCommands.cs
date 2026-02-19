@@ -66,7 +66,7 @@ namespace MTM_Waitlist_Application_2._0.Core.Database_Classes
             {
                 if (server == null)
                 {
-                    server = "172.16.1.104";
+                    server = ServerSettings.Default.addressSetting;
                 }
                 if (database == null)
                 {
@@ -74,14 +74,15 @@ namespace MTM_Waitlist_Application_2._0.Core.Database_Classes
                 }
                 if (uid == null)
                 {
-                    uid = WindowsIdentity.GetCurrent().Name.Remove(0, 11).ToUpper();
-    }
+                    uid = "root";
+                }
                 if (password == null)
                 {
-                    password = null;
+                    password = "root";
                 }
 
-                string connectionString = $"SERVER={server};DATABASE={database};UID={uid};PASSWORD={password};";
+                string port = ServerSettings.Default.portSetting;
+                string connectionString = $"SERVER={server};PORT={port};DATABASE={database};UID={uid};PASSWORD={password};";
                 return connectionString;
             }
             catch (Exception ex)
@@ -230,7 +231,7 @@ namespace MTM_Waitlist_Application_2._0.Core.Database_Classes
                 ErrorHandler.ShowError(MethodBase.GetCurrentMethod()!.Name, ex.Message);
             }
         }
-        
+
         public static void AddToWaitlistSetup(PooledData getActiveWaitlistData) // Method to add a task to the waitlist
         {
             try
@@ -278,44 +279,44 @@ namespace MTM_Waitlist_Application_2._0.Core.Database_Classes
                 command.Parameters.AddWithValue("@PartType", getActiveWaitlistData.JobType);
                 command.ExecuteNonQuery();
                 connection.Close();
-                
+
                 connection.Open();
-                
+
                 ObservableCollection<string> data = new ObservableCollection<string>();
-                
+
                 MySqlCommand command2 = new("SELECT * FROM `waitlist_current_jobs` WHERE `work_center` = @workcenter;", connection);
-                
+
                 command2.Parameters.AddWithValue("@workcenter", getActiveWaitlistData.WorkStation);
-                
+
                 using MySqlDataReader reader = command2.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        data.Add(reader.GetString(1));
-                    }
+                while (reader.Read())
+                {
+                    data.Add(reader.GetString(1));
+                }
                 connection.Close();
 
-            if (data.Count == 0)
-            {
-                connection.Open();
-                MySqlCommand command3 = new("INSERT INTO `waitlist_current_jobs` (`work_center`, `work_order`, `part_id`, `operation`) VALUES (@workcenter, @workorder, @partid, @operation);", connection);
-                command3.Parameters.AddWithValue("@workcenter", getActiveWaitlistData.WorkStation);
-                command3.Parameters.AddWithValue("@workorder", getActiveWaitlistData.WorkOrder);
-                command3.Parameters.AddWithValue("@partid", getActiveWaitlistData.PartNumber);
-                command3.Parameters.AddWithValue("@operation", getActiveWaitlistData.Operation);
-                command3.ExecuteNonQuery();
-                connection.Close();
-            }
-            else
-            {
-                connection.Open();
-                MySqlCommand command3 = new("UPDATE `waitlist_current_jobs` SET `work_order`= @workorder, `part_id`= @partid, `operation`= @operation WHERE `work_center` = @workcenter;", connection);
-                command3.Parameters.AddWithValue("@workorder", getActiveWaitlistData.WorkOrder);
-                command3.Parameters.AddWithValue("@partid", getActiveWaitlistData.PartNumber);
-                command3.Parameters.AddWithValue("@operation", getActiveWaitlistData.Operation);
-                command3.Parameters.AddWithValue("@workcenter", getActiveWaitlistData.WorkStation);
-                command3.ExecuteNonQuery();
-                connection.Close();
-            }
+                if (data.Count == 0)
+                {
+                    connection.Open();
+                    MySqlCommand command3 = new("INSERT INTO `waitlist_current_jobs` (`work_center`, `work_order`, `part_id`, `operation`) VALUES (@workcenter, @workorder, @partid, @operation);", connection);
+                    command3.Parameters.AddWithValue("@workcenter", getActiveWaitlistData.WorkStation);
+                    command3.Parameters.AddWithValue("@workorder", getActiveWaitlistData.WorkOrder);
+                    command3.Parameters.AddWithValue("@partid", getActiveWaitlistData.PartNumber);
+                    command3.Parameters.AddWithValue("@operation", getActiveWaitlistData.Operation);
+                    command3.ExecuteNonQuery();
+                    connection.Close();
+                }
+                else
+                {
+                    connection.Open();
+                    MySqlCommand command3 = new("UPDATE `waitlist_current_jobs` SET `work_order`= @workorder, `part_id`= @partid, `operation`= @operation WHERE `work_center` = @workcenter;", connection);
+                    command3.Parameters.AddWithValue("@workorder", getActiveWaitlistData.WorkOrder);
+                    command3.Parameters.AddWithValue("@partid", getActiveWaitlistData.PartNumber);
+                    command3.Parameters.AddWithValue("@operation", getActiveWaitlistData.Operation);
+                    command3.Parameters.AddWithValue("@workcenter", getActiveWaitlistData.WorkStation);
+                    command3.ExecuteNonQuery();
+                    connection.Close();
+                }
 
                 ResetIDsOnStartup.ResetTableId("waitlist_history");
                 ResetIDsOnStartup.ResetTableId("waitlist_active");
@@ -445,7 +446,7 @@ namespace MTM_Waitlist_Application_2._0.Core.Database_Classes
                 // Check if the request contains "- Take To NCM."
                 if (request.Contains("- Take To NCM."))
                 {
-                    MySqlCommand ncmCommand = new (
+                    MySqlCommand ncmCommand = new(
                         "INSERT INTO `waitlist_ncm_report` (`PartID`, `WorkCenter`, `RequestTime`, `MHandler`) " +
                         "VALUES (@PartID, @WorkCenter, @RequestTime, @MHandler);", connection);
                     ncmCommand.Parameters.AddWithValue("@PartID", partid);

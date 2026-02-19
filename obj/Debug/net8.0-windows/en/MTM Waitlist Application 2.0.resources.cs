@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MTM Waitlist Application 2.0")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute(" ")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3470fda1ad43db62da41a529860bdc12b41b184")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1568b00030a67f41404202c437b3f1f96c0f8c4a")]
 [assembly: System.Reflection.AssemblyProductAttribute("MTM Waitlist Application 2.0")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MTM Waitlist Application 2.0")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
