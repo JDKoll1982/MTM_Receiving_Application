@@ -15,13 +15,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_MySQL_Receiving : IService_MySQL_Receiving
     {
         private readonly Dao_ReceivingLoad _receivingLoadDao;
+        private readonly Dao_ReceivingLabelData _receivingLabelDataDao;
         private readonly IService_LoggingUtility _logger;
 
         public Service_MySQL_Receiving(
             Dao_ReceivingLoad receivingLoadDao,
+            Dao_ReceivingLabelData receivingLabelDataDao,
             IService_LoggingUtility logger)
         {
             _receivingLoadDao = receivingLoadDao;
+            _receivingLabelDataDao = receivingLabelDataDao;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -29,6 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public Service_MySQL_Receiving(string connectionString, IService_LoggingUtility logger)
         {
             _receivingLoadDao = new Dao_ReceivingLoad(connectionString);
+            _receivingLabelDataDao = new Dao_ReceivingLabelData(connectionString);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -39,9 +43,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return 0;
             }
 
-            _logger.LogInfo($"Saving {loads.Count} loads to database.");
+            _logger.LogInfo($"Saving {loads.Count} loads to receiving label queue table.");
 
-            var result = await _receivingLoadDao.SaveLoadsAsync(loads);
+            var result = await _receivingLabelDataDao.SaveLoadsAsync(loads);
 
             if (result.IsSuccess)
             {
@@ -112,9 +116,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             else
             {
                 _logger.LogError($"Failed to get receiving history: {result.ErrorMessage}", result.Exception);
-                // Return empty list or throw? Original implementation returned empty list on error (implicitly via empty result)
-                // But here we know it failed.
-                // I'll return empty list to match previous behavior of returning list (even if empty).
+                // TODO: Consider whether to throw an exception or return an empty list. For now, returning empty list to avoid breaking calling code.
                 return new List<Model_ReceivingLoad>();
             }
         }
@@ -139,17 +141,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<bool> TestConnectionAsync()
         {
-            // Delegate to DAO or keep simple check?
-            // DAO doesn't have TestConnection.
-            // I'll keep it simple or add it to DAO.
-            // Since I don't want to modify DAO again right now, I'll just try a simple query via DAO if possible,
-            // or just assume true if DAO is instantiated.
-            // Actually, I can't easily test connection without exposing connection string or adding method to DAO.
-            // I'll add TestConnectionAsync to DAO later if needed.
-            // For now, I'll just return true as a placeholder or try to call GetAllAsync with limit 0?
-            // Or I can just remove this method if it's not in the interface.
-            // Let's check interface.
+            // TODO: Implement actual connection test logic, possibly by trying a simple query via DAO or adding a TestConnection method to DAO.
             return true;
+        }
+
+        public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy)
+        {
+            _logger.LogInfo($"Clearing receiving label queue to history by user: {archivedBy}");
+            var result = await _receivingLabelDataDao.ClearLabelDataToHistoryAsync(archivedBy);
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInfo($"Clear Label Data completed. Rows moved: {result.Data}");
+            }
+            else
+            {
+                _logger.LogError($"Clear Label Data failed: {result.ErrorMessage}", result.Exception);
+            }
+
+            return result;
         }
     }
 }

@@ -57,6 +57,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <returns>True if connection successful, false otherwise</returns>
         public Task<bool> TestConnectionAsync();
+
+        /// <summary>
+        /// Moves active label queue rows to history and clears the queue.
+        /// </summary>
+        /// <param name="archivedBy">User performing the archive action</param>
+        /// <returns>DAO result containing number of rows moved</returns>
+        public Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy);
     }
 }
 

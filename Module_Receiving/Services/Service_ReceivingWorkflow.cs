@@ -217,7 +217,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                             load.HeatLotNumber = "Nothing Entered";
                         }
                     }
-                    
+
                     // Validate heat/lot numbers (only checks max length now)
                     foreach (var load in CurrentSession.Loads)
                     {
@@ -559,13 +559,27 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
         {
-            // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
-            await _logger.LogWarningAsync($"{nameof(ResetXLSFilesAsync)} called — spreadsheet workflow not yet implemented.");
-            return new Model_XLSDeleteResult { NetworkError = "Not implemented yet: spreadsheet workflow is being replaced by MySQL." };
+            var archivedBy = _userSessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
+            _logger.LogInfo($"Clear Label Data requested by {archivedBy}.");
 
-            // --- original implementation below (unreachable) ---
-            _logger.LogInfo("Resetting XLS files requested.");
-            return await _xlsWriter.ClearXLSFilesAsync();
+            var clearResult = await _mysqlReceiving.ClearLabelDataToHistoryAsync(archivedBy);
+            if (clearResult.IsSuccess)
+            {
+                _logger.LogInfo($"Clear Label Data succeeded. Rows moved: {clearResult.Data}");
+                return new Model_XLSDeleteResult
+                {
+                    LocalDeleted = true,
+                    NetworkDeleted = true
+                };
+            }
+
+            _logger.LogWarning($"Clear Label Data failed: {clearResult.ErrorMessage}");
+            return new Model_XLSDeleteResult
+            {
+                LocalDeleted = false,
+                NetworkDeleted = false,
+                NetworkError = clearResult.ErrorMessage
+            };
         }
 
         public async Task PersistSessionAsync()

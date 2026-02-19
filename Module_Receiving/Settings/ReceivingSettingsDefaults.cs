@@ -24,16 +24,16 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.UiText.WorkflowBack] = "Back",
         [ReceivingSettingsKeys.UiText.WorkflowNext] = "Next",
         [ReceivingSettingsKeys.UiText.WorkflowModeSelection] = "Mode Selection",
-        [ReceivingSettingsKeys.UiText.WorkflowResetXls] = "Reset XLS",
+        [ReceivingSettingsKeys.UiText.WorkflowResetXls] = "Clear Label Data",
 
         // Completion
         [ReceivingSettingsKeys.UiText.CompletionSuccessTitle] = "Success!",
         [ReceivingSettingsKeys.UiText.CompletionFailureTitle] = "Save Failed",
         [ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix] = " loads saved successfully.",
         [ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle] = "Save Details:",
-        [ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel] = "Local XLS:",
-        [ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel] = "Network XLS:",
-        [ReceivingSettingsKeys.UiText.CompletionXlsFileLabel] = "XLS File:",
+        [ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel] = "Label Queue:",
+        [ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel] = "Archive Queue:",
+        [ReceivingSettingsKeys.UiText.CompletionXlsFileLabel] = "Label Data:",
         [ReceivingSettingsKeys.UiText.CompletionDatabaseLabel] = "Database:",
         [ReceivingSettingsKeys.UiText.CompletionSaved] = "Saved",
         [ReceivingSettingsKeys.UiText.CompletionFailed] = "Failed",
@@ -56,8 +56,8 @@ public static class ReceivingSettingsDefaults
 
         // Edit mode
         [ReceivingSettingsKeys.UiText.EditModeLoadDataFrom] = "Load Data From:",
-        [ReceivingSettingsKeys.UiText.EditModeCurrentMemory] = "Not Saved to XLS",
-        [ReceivingSettingsKeys.UiText.EditModeCurrentLabels] = "XLS Data",
+        [ReceivingSettingsKeys.UiText.EditModeCurrentMemory] = "Not Saved to Label Data",
+        [ReceivingSettingsKeys.UiText.EditModeCurrentLabels] = "Label Data",
         [ReceivingSettingsKeys.UiText.EditModeHistory] = "History",
         [ReceivingSettingsKeys.UiText.EditModeFilterDate] = "Filter Date:",
         [ReceivingSettingsKeys.UiText.EditModeTo] = "to",
@@ -161,20 +161,20 @@ public static class ReceivingSettingsDefaults
 
         // Workflow save progress defaults
         [ReceivingSettingsKeys.Workflow.SaveProgressInitializing] = "Initializing...",
-        [ReceivingSettingsKeys.Workflow.SaveProgressSavingXls] = "Saving to local and network XLS...",
+        [ReceivingSettingsKeys.Workflow.SaveProgressSavingXls] = "Saving to label queue...",
 
         // Workflow dialogs
-        [ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle] = "Reset XLS Files",
-        [ReceivingSettingsKeys.Workflow.ResetXlsDialogContent] = "Are you sure you want to delete the local and network XLS files? This action cannot be undone.",
-        [ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete] = "Delete",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle] = "Clear Label Data",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogContent] = "Are you sure you want to move all current label data to history and clear the active label queue? This action cannot be undone.",
+        [ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete] = "Clear",
         [ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel] = "Cancel",
         [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogTitle] = "Database Save Failed",
         [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogDeleteAnyway] = "Delete Anyway",
         [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogCancel] = "Cancel",
 
         // Status
-        [ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess] = "XLS files deleted successfully.",
-        [ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed] = "Failed to delete XLS files or files not found.",
+        [ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess] = "Label data cleared successfully. Rows were archived to history.",
+        [ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed] = "Failed to clear label data to history.",
         [ReceivingSettingsKeys.Workflow.StatusWorkflowCleared] = "Workflow cleared. Please select a mode.",
 
         // Dialogs

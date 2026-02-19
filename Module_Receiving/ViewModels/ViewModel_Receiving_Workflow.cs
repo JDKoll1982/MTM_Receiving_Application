@@ -89,7 +89,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _workflowModeSelectionText = "Mode Selection";
 
         [ObservableProperty]
-        private string _workflowResetXlsText = "Reset XLS";
+        private string _workflowResetXlsText = "Clear Label Data";
 
         [ObservableProperty]
         private string _completionSuccessTitleText = "Success!";
@@ -104,13 +104,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _completionSaveDetailsTitleText = "Save Details:";
 
         [ObservableProperty]
-        private string _completionLocalXlsLabelText = "Local XLS:";
+        private string _completionLocalXlsLabelText = "Label Queue:";
 
         [ObservableProperty]
-        private string _completionNetworkXlsLabelText = "Network XLS:";
+        private string _completionNetworkXlsLabelText = "Archive Queue:";
 
         [ObservableProperty]
-        private string _completionXlsFileLabelText = "XLS File:";
+        private string _completionXlsFileLabelText = "Label Data:";
 
         [ObservableProperty]
         private string _completionDatabaseLabelText = "Database:";
@@ -216,7 +216,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 // fall back to existing hardcoded defaults already set in properties
             }
-        }        
+        }
 
         private void OnWorkflowStepChanged(object? sender, EventArgs e)
         {
@@ -419,7 +419,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                // Reset XLS files (data is already in database from Save operation)
+                // Clear active label data by moving it to history.
                 var deleteResult = await _workflowService.ResetXLSFilesAsync();
                 if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
                 {

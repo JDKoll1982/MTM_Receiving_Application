@@ -72,16 +72,13 @@ public static class ModuleServicesExtensions
 
         // DAOs (Singleton - Stateless data access objects)
         services.AddSingleton(_ => new Dao_ReceivingLoad(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ReceivingLabelData(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_ReceivingLine(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_PackageTypePreference(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_QualityHold(mySqlConnectionString));
 
         // Services (Singleton - Stateless business logic)
-        services.AddSingleton<IService_MySQL_Receiving>(sp =>
-        {
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_MySQL_Receiving(mySqlConnectionString, logger);
-        });
+        services.AddSingleton<IService_MySQL_Receiving, Service_MySQL_Receiving>();
         services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
         services.AddSingleton<IService_MySQL_PackagePreferences>(_ =>
             new Service_MySQL_PackagePreferences(mySqlConnectionString));
@@ -191,7 +188,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminTypesView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminPartsView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminInventoryView>();
-        
+
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_Dunnage_AddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddMultipleRowsDialog>();
@@ -239,7 +236,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_History>();
-        
+
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Volvo.Views.VolvoPartAddEditDialog>();
         services.AddTransient<Module_Volvo.Views.VolvoShipmentEditDialog>();
