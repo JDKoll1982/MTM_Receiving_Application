@@ -1,6 +1,6 @@
 # Product Context
 
-**Last Updated:** 2025-01-19
+**Last Updated:** 2026-02-19
 
 ## Why This Project Exists
 
@@ -24,9 +24,10 @@ Manufacturing facilities need efficient receiving operations to:
 
 1. **Receiving Mode Selection** - User chooses receiving workflow type
 2. **Data Entry** - Guided entry with validation against ERP
-3. **Label Generation** - Automatic label creation with proper formatting
+3. **Label Queueing** - Label rows are stored in MySQL active queue for print workflows
 4. **ERP Update** - Real-time synchronization with Infor Visual (read-only)
 5. **Audit Logging** - All operations logged with user, timestamp, machine
+6. **Clear Label Data** - Explicit archive action moves active queue rows to history
 
 ### Key Features
 

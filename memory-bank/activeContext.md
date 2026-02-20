@@ -1,36 +1,44 @@
 # Active Context
 
-**Last Updated:** 2025-01-19
+**Last Updated:** 2026-02-19
 
 ## Current Work Focus
 
-### Module_Core Service Tests (TASK002)
-Service unit tests now cover most Module_Core services. Remaining work centers on integration-only services and remaining helpers/DAOs/defaults.
+### Module_Receiving Spreadsheet-Removal Lifecycle (TASK003)
+Receiving now follows queue/archive behavior in MySQL:
+- Workflow save writes to `receiving_label_data`.
+- **Clear Label Data** moves rows to `receiving_history` and clears queue.
+- Edit/history retrieval maps newly added archive fields.
 
 ## Recent Changes
 
-### Added: Module_Core Service Unit Tests
+### Added/Updated: Receiving Queue and Archive Lifecycle
 
-**Files Created:**
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_DispatcherTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_DispatcherTimerWrapperTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_FocusTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Service_NavigationTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_AuthenticationTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_UserSessionManagerTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_ErrorHandlerTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_LoggingUtilityTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_InforVisualConnectTests.cs`
-- `MTM_Receiving_Application.Tests/Module_Core/Services/Help/Service_HelpTests.cs`
+**Database and stored procedure artifacts:**
+- `Database/Schemas/38_Migration_receiving_label_queue_history_alignment.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_LabelData_Insert.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_LabelData_Update.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_LabelData_ClearToHistory.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_Load_GetAll.sql` (expanded field output)
 
-**Integration Notes Added:**
-- `Service_Dispatcher`, `Service_DispatcherTimerWrapper`, `Service_Focus`
-- `Service_ErrorHandler`, `Service_UserSessionManager`, `Service_InforVisualConnect`
-- `Service_OnStartup_AppLifecycle`
+**Application wiring artifacts:**
+- `Module_Receiving/Data/Dao_ReceivingLabelData.cs`
+- `Module_Receiving/Data/Dao_ReceivingLoad.cs` (read-model parity mapping)
+- `Module_Receiving/Services/Service_MySQL_Receiving.cs`
+- `Module_Receiving/Services/Service_ReceivingWorkflow.cs`
+- `Module_Receiving/Settings/ReceivingSettingsDefaults.cs`
+
+**Validation artifacts:**
+- `Database/00-Test/04-Test-Receiving-LabelData-ClearToHistory.sql`
+- `Database/00-Test/05-Test-Receiving-LabelData-Insert-FieldCoverage.sql`
+- `Database/Scripts/receiving_label_history_reconciliation.sql`
+
+**Governance artifacts:**
+- `.github/instructions/receiving-labeldata-lifecycle.instructions.md`
 
 **Build Status:**
-- Build successful after updates.
+- Non-interactive build validation succeeded after implementation changes.
 
 ## Next Steps
-- Add integration-focused coverage plan for `Service_OnStartup_AppLifecycle` (no unit tests).
-- Continue with Helpers, DAOs, Defaults.
+- Optional: automate execution of focused SQL validation scripts in CI or release checklist.
+- Optional: mirror lifecycle guidance for modules adopting similar queue/archive patterns.

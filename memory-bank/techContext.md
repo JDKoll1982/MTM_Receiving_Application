@@ -1,6 +1,6 @@
 # Technical Context
 
-**Last Updated:** 2025-01-19
+**Last Updated:** 2026-02-19
 
 ## Technology Stack
 
@@ -117,6 +117,19 @@ MTM_Receiving_Application/
 - **No exceptions from DAOs** - Return `Model_Dao_Result` instead
 - **No direct DAO access from ViewModels** - Must go through Services
 - **No runtime binding** - Use `x:Bind` compile-time binding only
+
+### Receiving Lifecycle Constraints (Added 2026-02-19)
+- Workflow save writes to `receiving_label_data` via `sp_Receiving_LabelData_Insert`.
+- Clear action archives queue rows via `sp_Receiving_LabelData_ClearToHistory` (transactional).
+- History/read projection uses expanded columns in `sp_Receiving_Load_GetAll` and DAO mapping.
+
+### Validation Assets
+- `Database/00-Test/04-Test-Receiving-LabelData-ClearToHistory.sql`
+- `Database/00-Test/05-Test-Receiving-LabelData-Insert-FieldCoverage.sql`
+- `Database/Scripts/receiving_label_history_reconciliation.sql`
+
+### Instruction Governance
+- `.github/instructions/receiving-labeldata-lifecycle.instructions.md`
 
 ### Testing Constraints
 - **MediatR 14.0 Delegate Signature** - `RequestHandlerDelegate<TResponse>` requires `CancellationToken` parameter

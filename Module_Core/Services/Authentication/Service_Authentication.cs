@@ -19,6 +19,16 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         private readonly Dao_User _daoUser;
         private readonly IService_ErrorHandler _errorHandler;
         private static readonly Regex _regex = new Regex(@"^\d{4}$");
+        private static readonly List<string> _fallbackDepartments = new()
+        {
+            "Receiving",
+            "Shipping",
+            "Production",
+            "Quality Control",
+            "Maintenance",
+            "Administration",
+            "Management"
+        };
 
         /// <summary>
         /// Constructor with dependency injection.
@@ -334,13 +344,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 var result = await _daoUser.GetActiveDepartmentsAsync();
 
-                if (result.Success && result.Data != null)
+                if (result.Success && result.Data?.Count > 0)
                 {
                     return result.Data;
                 }
 
-                // Return empty list if query fails
-                return new List<string>();
+                return [.. _fallbackDepartments];
             }
             catch (Exception ex)
             {
@@ -349,7 +358,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     await _errorHandler.HandleErrorAsync("Get active departments failed", Enum_ErrorSeverity.Warning, ex, false);
                 }
 
-                return new List<string>();
+                return [.. _fallbackDepartments];
             }
         }
 

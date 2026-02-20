@@ -80,6 +80,14 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
                 // Add "Other" option
                 DepartmentComboBox.Items.Add("Other");
+
+                if (ViewModel.Departments.Count == 0)
+                {
+                    StatusInfoBar.Title = "No Departments Available";
+                    StatusInfoBar.Message = "No department options were returned. You can still use Other to continue.";
+                    StatusInfoBar.Severity = InfoBarSeverity.Warning;
+                    StatusInfoBar.IsOpen = true;
+                }
             }
             catch (Exception ex)
             {

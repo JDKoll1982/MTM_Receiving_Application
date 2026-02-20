@@ -376,46 +376,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_SaveResult> SaveToXLSOnlyAsync()
         {
-            // TODO(SpreadsheetRemoval): Replace stub with MySQL-backed implementation.
-            await _logger.LogWarningAsync($"{nameof(SaveToXLSOnlyAsync)} called — spreadsheet workflow not yet implemented.");
-            var result = new Model_SaveResult
-            {
-                Success = false,
-                Errors = new List<string> { "Not implemented yet: spreadsheet workflow is being replaced by MySQL." }
-            };
-            return result;
+            _logger.LogInfo($"{nameof(SaveToXLSOnlyAsync)} redirected to label queue save.");
+            var result = await SaveToDatabaseOnlyAsync();
 
-            // --- original XLS implementation below (unreachable) ---
-            var validation = _validation.ValidateSession(CurrentSession.Loads);
-            if (!validation.IsValid)
-            {
-                result.Success = false;
-                result.Errors = validation.Errors;
-                return result;
-            }
-
-
-            try
-            {
-                var xlsResult = await _xlsWriter.WriteToXLSAsync(CurrentSession.Loads);
-
-                result.LocalXLSSuccess = true;
-                result.NetworkXLSSuccess = xlsResult.NetworkSuccess;
-                result.NetworkXLSPath = await _xlsWriter.GetNetworkXLSPathAsync();
-
-                if (!xlsResult.NetworkSuccess)
-                {
-                    result.Errors.Add($"Network XLS write failed: {xlsResult.NetworkError}");
-                }
-
-                result.Success = result.NetworkXLSSuccess;
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                result.Errors.Add($"XLS save failed: {ex.Message}");
-                _logger.LogError("XLS save failed", ex);
-            }
+            result.LocalXLSSuccess = result.DatabaseSuccess;
+            result.NetworkXLSSuccess = result.DatabaseSuccess;
+            result.LocalXLSPath = "MySQL.receiving_label_data";
+            result.NetworkXLSPath = "MySQL.receiving_history (archive on clear)";
 
             return result;
         }
@@ -476,20 +443,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                // TODO: File save stubbed out - using database only
-                _logger.LogInfo("Reporting progress: Skipping file save (not implemented)...");
-                messageProgress?.Report("Skipping file save (not implemented)...");
+                _logger.LogInfo("Reporting progress: Preparing label queue save...");
+                messageProgress?.Report("Preparing label queue save...");
                 percentProgress?.Report(30);
 
-                // Stub file result
-                result.LocalXLSSuccess = false;
-                result.NetworkXLSSuccess = false;
-                result.LocalXLSPath = string.Empty;
-                result.NetworkXLSPath = string.Empty;
-                result.Warnings.Add("File save not implemented - TODO: Implement database export operation.");
-
-                _logger.LogInfo("Reporting progress: Saving to database...");
-                messageProgress?.Report("Saving to database...");
+                _logger.LogInfo("Reporting progress: Saving to label queue...");
+                messageProgress?.Report("Saving to label queue...");
                 percentProgress?.Report(60);
 
                 // Save to database
@@ -497,6 +456,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                 result.DatabaseSuccess = dbResult.DatabaseSuccess;
                 result.LoadsSaved = dbResult.LoadsSaved;
+                result.LocalXLSSuccess = dbResult.DatabaseSuccess;
+                result.NetworkXLSSuccess = dbResult.DatabaseSuccess;
+                result.LocalXLSPath = "MySQL.receiving_label_data";
+                result.NetworkXLSPath = "MySQL.receiving_history (archive on clear)";
                 if (!dbResult.Success)
                 {
                     result.Errors.AddRange(dbResult.Errors);
@@ -512,7 +475,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 percentProgress?.Report(90);
 
                 // Final success check
-                // TODO: Success now depends on database only (file generation stubbed)
                 result.Success = result.DatabaseSuccess;
 
                 if (result.Success)

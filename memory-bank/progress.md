@@ -1,8 +1,38 @@
 # Progress Tracking
 
-**Last Updated:** 2025-01-19
+**Last Updated:** 2026-02-19
 
 ## Recent Accomplishments
+
+### 2026-02-19: Module_Receiving Spreadsheet-Removal Lifecycle Complete
+**What was done:**
+- Implemented receiving queue/archive lifecycle in MySQL.
+- Workflow save now targets `receiving_label_data`.
+- `Clear Label Data` now archives to `receiving_history` and clears queue transactionally.
+- Added field parity updates, read-model mapping parity, and focused SQL validation assets.
+
+**Files Added/Updated (high-impact):**
+- `Database/Schemas/38_Migration_receiving_label_queue_history_alignment.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_LabelData_Insert.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_LabelData_Update.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_LabelData_ClearToHistory.sql`
+- `Database/StoredProcedures/Receiving/sp_Receiving_Load_GetAll.sql`
+- `Module_Receiving/Data/Dao_ReceivingLabelData.cs`
+- `Module_Receiving/Data/Dao_ReceivingLoad.cs`
+- `Module_Receiving/Services/Service_MySQL_Receiving.cs`
+- `Module_Receiving/Services/Service_ReceivingWorkflow.cs`
+- `Module_Receiving/Settings/ReceivingSettingsDefaults.cs`
+- `Database/00-Test/04-Test-Receiving-LabelData-ClearToHistory.sql`
+- `Database/00-Test/05-Test-Receiving-LabelData-Insert-FieldCoverage.sql`
+- `Database/Scripts/receiving_label_history_reconciliation.sql`
+
+**Validation:**
+- Non-interactive build checks passed after implementation updates.
+
+**Progress:**
+- Receiving spreadsheet-removal phases 1–5 completed.
+
+## Previous Accomplishments
 
 ### 2025-01-19: Module_Core Service Tests Expanded
 **What was done:**

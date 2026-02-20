@@ -303,7 +303,7 @@ Find potential direct SQL (forbidden):
 
 Find hardcoded connection strings (forbidden):
 ```
-`Server=|172.16.1.104|password=` in `**/*.cs`
+`Server=|localhost|password=` in `**/*.cs`
 ```
 
 Find static DAOs (forbidden):
@@ -566,7 +566,7 @@ Use Serena to ensure architecture follows MTM rules:
 search_for_pattern "Dao_" in Module_**/*Views/*.cs
 
 # Find hardcoded connection strings (forbidden)
-search_for_pattern "Server=|172.16.1.104" in **/*.cs
+search_for_pattern "Server=|localhost" in **/*.cs
 
 # Find direct SQL queries (forbidden)
 search_for_pattern "SELECT|INSERT|UPDATE|DELETE" excluding StoredProcedures in Module_**/*.cs

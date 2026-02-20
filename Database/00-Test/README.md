@@ -20,6 +20,8 @@ This directory contains PowerShell scripts that automatically test all stored pr
 | `01-Generate-SP-TestData.ps1` | Analyzes all SPs and generates mock data + execution order |
 | `02-Test-StoredProcedures.ps1` | Executes all SPs and generates test report |
 | `03-Analyze-SP-Usage.ps1` | Analyzes SP usage in codebase and hardcoded SQL queries |
+| `04-Test-Receiving-LabelData-ClearToHistory.sql` | Focused Receiving lifecycle test for queue → history archive behavior |
+| `05-Test-Receiving-LabelData-Insert-FieldCoverage.sql` | Focused Receiving queue-write field parity test for sp_Receiving_LabelData_Insert |
 
 ### Generated Files
 
@@ -34,6 +36,35 @@ This directory contains PowerShell scripts that automatically test all stored pr
 | `sp-reports/` | Individual detailed reports for each SP | Script 03 |
 
 ## Quick Start
+
+### 0. Run Focused Receiving Queue/History Test
+
+```sql
+-- Run in MySQL client connected to mtm_receiving_application
+SOURCE Database/00-Test/04-Test-Receiving-LabelData-ClearToHistory.sql;
+```
+
+**What it validates:**
+
+- Safety gate prevents running when active queue already has data
+- `sp_Receiving_LabelData_ClearToHistory` returns success status
+- Rows move from `receiving_label_data` to `receiving_history`
+- Queue is emptied after clear
+- Archive metadata (`ArchiveBatchID`, `ArchivedBy`) is stamped
+- Test data is cleaned up at end
+
+### 0b. Run Focused Receiving Queue-Write Field Coverage Test
+
+```sql
+-- Run in MySQL client connected to mtm_receiving_application
+SOURCE Database/00-Test/05-Test-Receiving-LabelData-Insert-FieldCoverage.sql;
+```
+
+**What it validates:**
+
+- `sp_Receiving_LabelData_Insert` writes a full field payload
+- Critical queue fields round-trip correctly (PO, quantity, user, quality hold, weight)
+- Test data is cleaned up at end
 
 ### 1. Generate Mock Data (First Time Setup)
 
@@ -112,7 +143,7 @@ pwsh -File .\02-Test-StoredProcedures.ps1 -UseExecutionOrder
 
 ```powershell
 pwsh -File .\01-Generate-SP-TestData.ps1 `
-    -Server "172.16.1.104" `
+    -Server "localhost" `
     -Port 3306 `
     -Database "mtm_receiving_application" `
     -User "root"
@@ -122,7 +153,7 @@ pwsh -File .\01-Generate-SP-TestData.ps1 `
 
 ```powershell
 pwsh -File .\02-Test-StoredProcedures.ps1 `
-    -Server "172.16.1.104" `
+    -Server "localhost" `
     -Port 3306 `
     -Database "mtm_receiving_application" `
     -User "root" `

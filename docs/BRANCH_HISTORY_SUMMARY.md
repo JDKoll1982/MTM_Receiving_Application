@@ -278,13 +278,13 @@ This document summarises every significant phase of development on the `master` 
 - **SQL query files** for PO and part management — separated from C# code.
 - **`Service_InforVisual`** — read-only SQL Server access with `ApplicationIntent=ReadOnly`.
 - **Null safety improvements** throughout InforVisual service.
-- **Connection strings migrated** from `localhost` to production `172.16.1.104`.
+- **Connection strings migrated** from `localhost` to production `localhost`.
 - **GUI for PO Line Specs Search** — input validation and result display.
 
 ### Key Commits
 - `9d6385eb` feat: Implement Infor Visual database integration with read-only access
 - `97fb3a40` feat: Refactor SQL query handling by implementing Helper_SqlQueryLoader
-- `f56454b2` feat: Update database connection strings from localhost to 172.16.1.104
+- `f56454b2` feat: Update database connection strings from localhost to localhost
 - `260c35f4` Add GUI for PO Line Specs Search
 
 ---

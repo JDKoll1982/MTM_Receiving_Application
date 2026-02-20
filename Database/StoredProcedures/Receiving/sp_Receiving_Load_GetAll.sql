@@ -18,9 +18,16 @@ BEGIN
     SELECT
         LoadID,
         PartID,
+        PartDescription,
         PartType,
         PONumber,
         POLineNumber,
+        POVendor,
+        POStatus,
+        PODueDate,
+        QtyOrdered,
+        UnitOfMeasure,
+        RemainingQuantity,
         LoadNumber,
         WeightQuantity,
         HeatLotNumber,
@@ -28,7 +35,15 @@ BEGIN
         PackageTypeName,
         WeightPerPackage,
         IsNonPOItem,
-        ReceivedDate
+        ReceivedDate,
+        UserID,
+        EmployeeNumber,
+        IsQualityHoldRequired,
+        IsQualityHoldAcknowledged,
+        QualityHoldRestrictionType,
+        ArchivedAt,
+        ArchivedBy,
+        ArchiveBatchID
     FROM receiving_history
     WHERE ReceivedDate >= p_StartDate
       AND ReceivedDate <= p_EndDate

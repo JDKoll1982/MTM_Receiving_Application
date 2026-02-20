@@ -1,6 +1,6 @@
 # MTM Receiving Application - Project Brief
 
-**Last Updated:** 2025-01-19
+**Last Updated:** 2026-02-19
 
 ## Project Overview
 
@@ -49,3 +49,9 @@ Enable efficient receiving workflows for manufacturing operations with:
 - Build succeeds without warnings
 - Follows MTM architecture patterns (documented in copilot-instructions.md)
 - Code is maintainable and well-documented
+
+## Current Milestone
+
+- `Module_Receiving` spreadsheet-removal lifecycle is implemented with MySQL queue/archive flow:
+  - Save path: `receiving_label_data`
+  - Clear path: transactional archive to `receiving_history`

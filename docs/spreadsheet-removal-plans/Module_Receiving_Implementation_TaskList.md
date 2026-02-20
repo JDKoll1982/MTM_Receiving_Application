@@ -62,33 +62,33 @@ Last Updated: 2026-02-18
 - [x] Return moved-count and error details to ViewModel/UI
 
 ### Task 3.3: Read-model parity
-- [ ] Ensure read mappers include added fields for edit/history scenarios
+- [x] Ensure read mappers include added fields for edit/history scenarios
 
 ---
 
 ## Phase 4 — UI / Workflow Integration
 ### Task 4.1: Rename and rebind clear action
 - [x] Rename clear action text to `Clear Label Data`
-- [ ] Wire command to clear-to-history service call (not file deletion)
+- [x] Wire command to clear-to-history service call (not file deletion)
 
 ### Task 4.2: Status/feedback updates
-- [ ] Show queue save status after workflow completion
-- [ ] Show archive transfer result on clear action
+- [x] Show queue save status after workflow completion
+- [x] Show archive transfer result on clear action
 
 ---
 
 ## Phase 5 — Validation and Safeguards
 ### Task 5.1: Integration tests
-- [ ] Test queue write with full field coverage
-- [ ] Test clear-to-history atomic transfer
-- [ ] Test failure rollback (no partial delete)
+- [x] Test queue write with full field coverage
+- [x] Test clear-to-history atomic transfer
+- [x] Test failure rollback (no partial delete)
 
 ### Task 5.2: Data quality checks
-- [ ] Validate no data loss between queue row and archived history row
-- [ ] Validate counts before/after clear operation
+- [x] Validate no data loss between queue row and archived history row
+- [x] Validate counts before/after clear operation
 
 ### Task 5.3: Operational scripts
-- [ ] Add optional reconciliation query/script for queue/history consistency
+- [x] Add optional reconciliation query/script for queue/history consistency
 
 ---
 
@@ -97,5 +97,7 @@ Last Updated: 2026-02-18
 - [x] Phase 1 completed
 - [x] Phase 2 started
 - [x] Phase 3 started
-- [ ] Phase 4 started
-- [ ] Phase 5 started
+- [x] Phase 4 started
+- [x] Phase 4 completed
+- [x] Phase 5 started
+- [x] Phase 5 completed

@@ -1,6 +1,21 @@
 # System Patterns
 
-**Last Updated:** 2025-01-19
+**Last Updated:** 2026-02-19
+
+## Receiving Queue/Archive Pattern (Added: 2026-02-19)
+
+### Lifecycle
+1. Workflow completion writes receiving rows to `receiving_label_data`.
+2. Clear action (`ResetXLSFilesAsync` UI entry) calls `sp_Receiving_LabelData_ClearToHistory`.
+3. Stored procedure inserts rows into `receiving_history`, stamps archive metadata, and deletes active queue rows in one transaction.
+
+### Guardrails
+- Do not write workflow rows directly to `receiving_history`.
+- Keep queue and history business-field parity.
+- Keep read-model mappers resilient to both legacy and expanded result sets.
+
+### Validation Pattern
+- Focused SQL tests in `Database/00-Test` validate queue-write field parity and atomic clear-to-history transfer.
 
 ## Testing Patterns (Added: 2025-01-19)
 
