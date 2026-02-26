@@ -1,14 +1,10 @@
 -- Stored Procedure: sp_Receiving_Load_GetAll
 -- Description: Retrieves all receiving loads within a date range for Edit Mode
--- Parameters:
---   p_StartDate - Start date for retrieval
---   p_EndDate - End date for retrieval
-
-USE mtm_receiving_application;
-
-DROP PROCEDURE IF EXISTS `sp_Receiving_Load_GetAll`;
+-- Schema: Aligned with receiving_label_data column structure
 
 DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `sp_Receiving_Load_GetAll` $$
 
 CREATE PROCEDURE `sp_Receiving_Load_GetAll`(
     IN p_StartDate DATE,
@@ -16,23 +12,24 @@ CREATE PROCEDURE `sp_Receiving_Load_GetAll`(
 )
 BEGIN
     SELECT
-        LoadID,
-        PartID,
-        PartType,
-        PONumber,
-        POLineNumber,
-        LoadNumber,
-        WeightQuantity,
-        HeatLotNumber,
-        PackagesPerLoad,
-        PackageTypeName,
-        WeightPerPackage,
-        IsNonPOItem,
-        ReceivedDate
+        id,
+        load_guid,
+        quantity,
+        part_id,
+        po_number,
+        employee_number,
+        heat,
+        transaction_date,
+        initial_location,
+        coils_on_skid,
+        label_number,
+        vendor_name,
+        part_description,
+        created_at
     FROM receiving_history
-    WHERE ReceivedDate >= p_StartDate
-      AND ReceivedDate <= p_EndDate
-    ORDER BY ReceivedDate DESC, LoadNumber ASC;
+    WHERE transaction_date >= p_StartDate
+      AND transaction_date <= p_EndDate
+    ORDER BY transaction_date DESC, id ASC;
 END$$
 
 DELIMITER ;

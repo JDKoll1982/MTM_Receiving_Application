@@ -1,41 +1,43 @@
--- =============================================
--- Database Schema: Receiving Tables
--- Feature: 003-database-foundation
--- Purpose: Stores receiving load data with package types
--- =============================================
-
+-- ============================================================================
 -- Table: receiving_history
--- Stores individual receiving loads (skids) with all details
+-- Module: Receiving
+-- Purpose: Stores all receiving transactions - mirrors receiving_label_data structure
+--          Also used as the import target for historical Google Sheets data.
+-- Column alignment: matches receiving_label_data exactly, except po_number is
+--          VARCHAR(20) to support formats like 'PO-066914' and 'PO-064489B'.
+-- Migration: Run the migration block below if upgrading from the pre-2026 schema.
+-- ============================================================================
+
+-- ============================================================================
+-- MIGRATION BLOCK (run once when upgrading from old schema)
+-- This renames the old table and creates the new one. Run manually if needed.
+-- ============================================================================
+-- RENAME TABLE receiving_history TO receiving_history_v1_backup;
+-- ============================================================================
+
 CREATE TABLE IF NOT EXISTS receiving_history (
-    LoadID CHAR(36) PRIMARY KEY COMMENT 'GUID (UUID) identifier for the receiving load',
-    PartID VARCHAR(50) NOT NULL COMMENT 'Internal part identifier (FK to parts table)',
-    PartType VARCHAR(50) NOT NULL COMMENT 'Part classification or category',
-    PONumber VARCHAR(20) NULL COMMENT 'Purchase Order number (nullable for non-PO items)',
-    POLineNumber VARCHAR(10) NOT NULL COMMENT 'Purchase Order line number',
-    LoadNumber INT NOT NULL COMMENT 'Sequential load number assigned by receiving',
-    WeightQuantity DECIMAL(10,2) NOT NULL COMMENT 'Total weight for the entire load (units: configured weight unit)',
-    HeatLotNumber VARCHAR(50) NOT NULL COMMENT 'Heat or lot tracking number for traceability',
-    PackagesPerLoad INT NOT NULL COMMENT 'Number of packages contained in this load',
-    PackageTypeName VARCHAR(50) NOT NULL COMMENT 'Human-readable package type name (e.g., pallet, skid, coil)',
-    WeightPerPackage DECIMAL(10,2) NOT NULL COMMENT 'Calculated or recorded weight per package (units: configured weight unit)',
-    IsNonPOItem TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Flag indicating this item was received without a purchase order (1 = non-PO)',
-    ReceivedDate DATETIME NOT NULL COMMENT 'Date and time when the load was received by warehouse',
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp (automatically set)',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto-incrementing unique identifier',
+    load_guid CHAR(36) NULL COMMENT 'GUID identifier for app-generated records; NULL for imported historical records',
+    quantity INT NOT NULL COMMENT 'Quantity of parts received on this label/skid',
+    part_id VARCHAR(50) NOT NULL COMMENT 'Part identifier from Infor Visual',
+    po_number VARCHAR(20) NULL COMMENT 'Purchase order number (VARCHAR to support formats like PO-066914 and PO-064489B)',
+    employee_number INT NOT NULL DEFAULT 0 COMMENT 'Employee ID who processed the receiving',
+    heat VARCHAR(100) COMMENT 'Heat/lot number for material traceability (optional)',
+    transaction_date DATE NOT NULL COMMENT 'Date the receiving transaction occurred',
+    initial_location VARCHAR(50) COMMENT 'Initial warehouse location for received parts (optional)',
+    coils_on_skid INT COMMENT 'Number of coils on the skid (for coil materials, optional)',
+    label_number INT DEFAULT 1 COMMENT 'Sequential label number when splitting quantities (default: 1)',
+    vendor_name VARCHAR(255) COMMENT 'Vendor/supplier name (optional, for reference)',
+    part_description VARCHAR(500) COMMENT 'Part description from Infor Visual (optional, for reference)',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
 
-    -- Table-level constraints for compatibility
-    CONSTRAINT ck_weightquantity CHECK (WeightQuantity > 0),
-    CONSTRAINT ck_packagesperload CHECK (PackagesPerLoad > 0),
-
-    -- Indexes for common queries
-    -- Index to speed lookups by PartID
-    INDEX idx_partid (PartID),
-    -- Index to speed lookups by PONumber (nullable)
-    INDEX idx_ponumber (PONumber),
-    -- Index to support queries filtered/sorted by ReceivedDate
-    INDEX idx_receiveddate (ReceivedDate),
-    -- Composite index for queries that filter by ReceivedDate and PartID together
-    INDEX idx_receiveddate_part (ReceivedDate, PartID)
+    -- Indexes for frequently-queried columns
+    UNIQUE INDEX idx_load_guid (load_guid) COMMENT 'Unique index for app GUID lookups (allows NULLs for imported records)',
+    INDEX idx_part_id (part_id) COMMENT 'Index for part lookup queries',
+    INDEX idx_po_number (po_number) COMMENT 'Index for PO-based queries',
+    INDEX idx_transaction_date (transaction_date) COMMENT 'Index for date range queries',
+    INDEX idx_employee_number (employee_number) COMMENT 'Index for employee activity queries'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Receiving loads (skids) table storing package counts, weights, PO linkage, and traceability metadata';
+COMMENT='Receiving history - stores all receiving transactions matching receiving_label_data structure';
 
--- =============================================
+-- ============================================================================

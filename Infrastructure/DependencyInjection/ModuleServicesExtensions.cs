@@ -192,7 +192,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminTypesView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminPartsView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminInventoryView>();
-        
+
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_Dunnage_AddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddMultipleRowsDialog>();
@@ -240,7 +240,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_History>();
-        
+
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Volvo.Views.VolvoPartAddEditDialog>();
         services.AddTransient<Module_Volvo.Views.VolvoShipmentEditDialog>();

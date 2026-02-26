@@ -65,19 +65,18 @@ public class Dao_ReceivingLoad
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    { "LoadID", load.LoadID.ToString() },
-                    { "PartID", load.PartID },
-                    { "PartType", load.PartType },
-                    { "PONumber", CleanPONumber(load.PoNumber) ?? (object)DBNull.Value },
-                    { "POLineNumber", load.PoLineNumber },
-                    { "LoadNumber", load.LoadNumber },
-                    { "WeightQuantity", load.WeightQuantity },
-                    { "HeatLotNumber", load.HeatLotNumber },
-                    { "PackagesPerLoad", load.PackagesPerLoad },
-                    { "PackageTypeName", load.PackageTypeName },
-                    { "WeightPerPackage", load.WeightPerPackage },
-                    { "IsNonPOItem", load.IsNonPOItem },
-                    { "ReceivedDate", load.ReceivedDate }
+                    { "LoadGuid",        load.LoadID.ToString() },
+                    { "Quantity",        (int)load.WeightQuantity },
+                    { "PartID",          load.PartID },
+                    { "PONumber",        CleanPONumber(load.PoNumber) ?? (object)DBNull.Value },
+                    { "EmployeeNumber",  load.EmployeeNumber },
+                    { "Heat",            string.IsNullOrWhiteSpace(load.HeatLotNumber) ? (object)DBNull.Value : load.HeatLotNumber },
+                    { "TransactionDate", load.ReceivedDate.Date },
+                    { "InitialLocation", (object)DBNull.Value },
+                    { "CoilsOnSkid",     (object)DBNull.Value },
+                    { "LabelNumber",     load.PackagesPerLoad },
+                    { "VendorName",      string.IsNullOrWhiteSpace(load.PoVendor) ? (object)DBNull.Value : load.PoVendor },
+                    { "PartDescription", string.IsNullOrWhiteSpace(load.PartDescription) ? (object)DBNull.Value : load.PartDescription }
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -129,19 +128,18 @@ public class Dao_ReceivingLoad
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    { "LoadID", load.LoadID.ToString() },
-                    { "PartID", load.PartID },
-                    { "PartType", load.PartType },
-                    { "PONumber", CleanPONumber(load.PoNumber) ?? (object)DBNull.Value },
-                    { "POLineNumber", load.PoLineNumber },
-                    { "LoadNumber", load.LoadNumber },
-                    { "WeightQuantity", load.WeightQuantity },
-                    { "HeatLotNumber", load.HeatLotNumber },
-                    { "PackagesPerLoad", load.PackagesPerLoad },
-                    { "PackageTypeName", load.PackageTypeName },
-                    { "WeightPerPackage", load.WeightPerPackage },
-                    { "IsNonPOItem", load.IsNonPOItem },
-                    { "ReceivedDate", load.ReceivedDate }
+                    { "LoadGuid",        load.LoadID.ToString() },
+                    { "Quantity",        (int)load.WeightQuantity },
+                    { "PartID",          load.PartID },
+                    { "PONumber",        CleanPONumber(load.PoNumber) ?? (object)DBNull.Value },
+                    { "EmployeeNumber",  load.EmployeeNumber },
+                    { "Heat",            string.IsNullOrWhiteSpace(load.HeatLotNumber) ? (object)DBNull.Value : load.HeatLotNumber },
+                    { "TransactionDate", load.ReceivedDate.Date },
+                    { "InitialLocation", (object)DBNull.Value },
+                    { "CoilsOnSkid",     (object)DBNull.Value },
+                    { "LabelNumber",     load.PackagesPerLoad },
+                    { "VendorName",      string.IsNullOrWhiteSpace(load.PoVendor) ? (object)DBNull.Value : load.PoVendor },
+                    { "PartDescription", string.IsNullOrWhiteSpace(load.PartDescription) ? (object)DBNull.Value : load.PartDescription }
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -188,7 +186,7 @@ public class Dao_ReceivingLoad
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    { "p_LoadID", load.LoadID.ToString() }
+                    { "LoadGuid", load.LoadID.ToString() }
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -223,9 +221,11 @@ public class Dao_ReceivingLoad
             var loads = new List<Model_ReceivingLoad>();
             var parameters = new Dictionary<string, object>
             {
-                { "PartID", partID },
-                { "StartDate", startDate },
-                { "EndDate", endDate }
+                { "PartID",         partID },
+                { "StartDate",      startDate.Date },
+                { "EndDate",        endDate.Date },
+                { "PONumber",       DBNull.Value },
+                { "EmployeeNumber", DBNull.Value }
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableAsync(
@@ -285,21 +285,19 @@ public class Dao_ReceivingLoad
 
     private Model_ReceivingLoad MapRowToLoad(DataRow row)
     {
+        var loadGuidStr = row["load_guid"] == DBNull.Value ? null : row["load_guid"]?.ToString();
         return new Model_ReceivingLoad
         {
-            LoadID = Guid.Parse(row["LoadID"]?.ToString() ?? Guid.Empty.ToString()),
-            PartID = row["PartID"]?.ToString() ?? string.Empty,
-            PartType = row["PartType"]?.ToString() ?? string.Empty,
-            PoNumber = row["PONumber"] == DBNull.Value ? null : row["PONumber"].ToString(),
-            PoLineNumber = row["POLineNumber"]?.ToString() ?? string.Empty,
-            LoadNumber = Convert.ToInt32(row["LoadNumber"]),
-            WeightQuantity = Convert.ToDecimal(row["WeightQuantity"]),
-            HeatLotNumber = row["HeatLotNumber"]?.ToString() ?? string.Empty,
-            PackagesPerLoad = Convert.ToInt32(row["PackagesPerLoad"]),
-            PackageTypeName = row["PackageTypeName"]?.ToString() ?? string.Empty,
-            WeightPerPackage = Convert.ToDecimal(row["WeightPerPackage"]),
-            IsNonPOItem = Convert.ToBoolean(row["IsNonPOItem"]),
-            ReceivedDate = Convert.ToDateTime(row["ReceivedDate"])
+            LoadID = Guid.TryParse(loadGuidStr, out var guid) ? guid : Guid.NewGuid(),
+            PartID = row["part_id"]?.ToString() ?? string.Empty,
+            WeightQuantity = row["quantity"] == DBNull.Value ? 0 : Convert.ToDecimal(row["quantity"]),
+            PoNumber = row["po_number"] == DBNull.Value ? null : row["po_number"]?.ToString(),
+            EmployeeNumber = row["employee_number"] == DBNull.Value ? 0 : Convert.ToInt32(row["employee_number"]),
+            HeatLotNumber = row["heat"] == DBNull.Value ? string.Empty : row["heat"]?.ToString() ?? string.Empty,
+            ReceivedDate = row["transaction_date"] == DBNull.Value ? DateTime.Today : Convert.ToDateTime(row["transaction_date"]),
+            PackagesPerLoad = row["label_number"] == DBNull.Value ? 1 : Convert.ToInt32(row["label_number"]),
+            PartDescription = row["part_description"] == DBNull.Value ? string.Empty : row["part_description"]?.ToString() ?? string.Empty,
+            PoVendor = row["vendor_name"] == DBNull.Value ? string.Empty : row["vendor_name"]?.ToString() ?? string.Empty
         };
     }
 }
