@@ -1,15 +1,18 @@
 -- ============================================================================
--- Procedure: sp_Receiving_Load_Insert
--- Purpose: Insert a receiving transaction into receiving_history
--- Schema: Aligned with receiving_label_data column structure
+-- Procedure: sp_Receiving_History_Import
+-- Purpose: Import a single receiving history record from an external source
+--          (e.g., Google Sheets CSV). Designed for bulk historical import.
+-- Notes:
+--   - po_number stored as-is (e.g., 'PO-066914') - no stripping
+--   - heat 'NONE' is preserved as-is; callers may convert to NULL if desired
+--   - Returns the new auto-increment id via SELECT
 -- ============================================================================
 
 DELIMITER //
 
-DROP PROCEDURE IF EXISTS `sp_Receiving_Load_Insert` //
+DROP PROCEDURE IF EXISTS `sp_Receiving_History_Import` //
 
-CREATE PROCEDURE `sp_Receiving_Load_Insert`(
-    IN p_LoadGuid CHAR(36),
+CREATE PROCEDURE `sp_Receiving_History_Import`(
     IN p_Quantity INT,
     IN p_PartID VARCHAR(50),
     IN p_PONumber VARCHAR(20),
@@ -25,7 +28,6 @@ CREATE PROCEDURE `sp_Receiving_Load_Insert`(
 BEGIN
     INSERT INTO receiving_history
     (
-        load_guid,
         quantity,
         part_id,
         po_number,
@@ -40,21 +42,22 @@ BEGIN
     )
     VALUES
     (
-        p_LoadGuid,
         p_Quantity,
         p_PartID,
-        p_PONumber,
+        NULLIF(TRIM(p_PONumber), ''),
         p_EmployeeNumber,
-        p_Heat,
+        NULLIF(TRIM(p_Heat), ''),
         p_TransactionDate,
-        p_InitialLocation,
+        NULLIF(TRIM(p_InitialLocation), ''),
         p_CoilsOnSkid,
         IFNULL(p_LabelNumber, 1),
-        p_VendorName,
-        p_PartDescription
+        NULLIF(TRIM(p_VendorName), ''),
+        NULLIF(TRIM(p_PartDescription), '')
     );
 
-    SELECT LAST_INSERT_ID() AS new_id;
+    -- Assign to a session variable so no result-set is returned (avoids
+    -- flooding stdout during bulk imports via mysql.exe batch mode).
+    SELECT LAST_INSERT_ID() INTO @last_import_id;
 END //
 
 DELIMITER ;

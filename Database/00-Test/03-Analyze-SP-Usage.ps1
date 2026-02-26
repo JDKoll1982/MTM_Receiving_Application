@@ -3,7 +3,7 @@
 # Output: 03-usage-report.md, 03-hardcode-report.md, and individual SP reports in sp-reports/
 
 param (
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [int]$Port = 3306,
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
