@@ -160,7 +160,7 @@ await using var connection = new MySqlConnection(Helper_Database_Variables.GetCo
 ```json
 {
   "ConnectionStrings": {
-    "MySQL": "Server=localhost;Database=mtm_receiving;User=root;Password=..."
+    "MySQL": "Server=172.16.1.104;Database=mtm_receiving;User=root;Password=..."
   }
 }
 ```
