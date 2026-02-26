@@ -18,7 +18,16 @@ param(
     [string]$Password = "root",
     [string]$CsvPath = "$PSScriptRoot\..\..\docs\GoogleSheetsVersion\Receiving Data - History 2025.csv",
     [switch]$WhatIf,
-    [switch]$SkipErrors
+    [switch]$SkipErrors,
+    # ---------------------------------------------------------------------------
+    # Infor Visual (SQL Server) enrichment. Defaults match appsettings.json.
+    # Pass -SkipInforVisualLookup to run without querying Infor Visual.
+    # ---------------------------------------------------------------------------
+    [string]$InforVisualServer = "VISUAL",
+    [string]$InforVisualDatabase = "MTMFG",
+    [string]$InforVisualUser = "SHOP2",
+    [string]$InforVisualPassword = "SHOP",
+    [switch]$SkipInforVisualLookup
 )
 
 Set-StrictMode -Version Latest
@@ -101,6 +110,16 @@ function Find-MampMySql {
     if ($inPath) { return $inPath.Source }
 
     return $null
+}
+
+# ---------------------------------------------------------------------------
+# Infor Visual helper
+# ---------------------------------------------------------------------------
+
+# Strips "PO-"/"po-" prefix so the number matches Infor Visual PURCHASE_ORDER.ID
+function Get-CleanPoNumber {
+    param([string]$PoNumber)
+    return ($PoNumber -replace '^[Pp][Oo]-?').Trim()
 }
 
 # ---------------------------------------------------------------------------
@@ -270,6 +289,9 @@ foreach ($row in $records) {
             Heat            = $heat
             TransactionDate = $mySqlDate
             InitialLocation = $location
+            PartDescription = $null    # enriched from Infor Visual
+            VendorName      = $null    # enriched from Infor Visual
+            IsNonPOItem     = [int]0   # 1 when part not in IV and no PO
         })
 }
 
@@ -287,9 +309,119 @@ if ($skippedRows.Count -gt 0) {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Enrich rows from Infor Visual (SQL Server)
+#   Has PO  + found     -> PartDescription + VendorName populated from IV
+#   No PO   + found     -> PartDescription populated from IV
+#   Has PO  + NOT found -> added to $correctionRows (imported; needs review)
+#   No PO   + NOT found -> IsNonPOItem = 1  (expected for non-catalogue parts)
+# ---------------------------------------------------------------------------
+Write-Section "Enriching from Infor Visual"
+
+$correctionRows = [System.Collections.Generic.List[PSCustomObject]]::new()
+$ivEnriched = 0
+$ivNonPO = 0
+
+if ($SkipInforVisualLookup) {
+    Write-Status "IV lookup SKIPPED (-SkipInforVisualLookup specified)." "Yellow"
+}
+elseif ($validRows.Count -eq 0) {
+    Write-Status "No valid rows to enrich." "DarkGray"
+}
+else {
+    $ivConn = $null
+    try {
+        $ivCs = "Server=$InforVisualServer;Database=$InforVisualDatabase;" +
+        "User Id=$InforVisualUser;Password=$InforVisualPassword;" +
+        "TrustServerCertificate=True;ApplicationIntent=ReadOnly;Connect Timeout=10;"
+        Write-Status "Connecting to $InforVisualServer\$InforVisualDatabase..."
+        $ivConn = New-Object System.Data.SqlClient.SqlConnection($ivCs)
+        $ivConn.Open()
+        Write-Status "Connected to Infor Visual." "Green"
+
+        # Reusable parameterised commands (avoids re-parsing SQL per row)
+        $cmdPOPart = $ivConn.CreateCommand()
+        $cmdPOPart.CommandText = @"
+SELECT TOP 1
+    p.DESCRIPTION AS PartDescription,
+    v.NAME        AS VendorName
+FROM       dbo.PURCHASE_ORDER    po
+INNER JOIN dbo.PURC_ORDER_LINE   pol ON po.ID       = pol.PURC_ORDER_ID
+LEFT  JOIN dbo.PART              p   ON pol.PART_ID  = p.ID
+LEFT  JOIN dbo.VENDOR            v   ON po.VENDOR_ID = v.ID
+WHERE po.ID       = @PO
+  AND pol.PART_ID = @Part
+"@
+        $pPO = $cmdPOPart.Parameters.Add("@PO", [System.Data.SqlDbType]::NVarChar, 20)
+        $pPartPO = $cmdPOPart.Parameters.Add("@Part", [System.Data.SqlDbType]::NVarChar, 50)
+
+        $cmdPart = $ivConn.CreateCommand()
+        $cmdPart.CommandText = "SELECT TOP 1 DESCRIPTION AS PartDescription FROM dbo.PART WHERE ID = @Part"
+        $pPartOnly = $cmdPart.Parameters.Add("@Part", [System.Data.SqlDbType]::NVarChar, 50)
+
+        foreach ($row in $validRows) {
+            try {
+                if (![string]::IsNullOrWhiteSpace($row.PONumber)) {
+                    # Strip leading 'PO-' prefix to match Infor Visual PURCHASE_ORDER.ID
+                    $pPO.Value = Get-CleanPoNumber $row.PONumber
+                    $pPartPO.Value = $row.PartID
+                    $rdr = $cmdPOPart.ExecuteReader()
+                    if ($rdr.Read()) {
+                        $row.PartDescription = $rdr["PartDescription"].ToString().Trim()
+                        $row.VendorName = $rdr["VendorName"].ToString().Trim()
+                        $ivEnriched++
+                    }
+                    else {
+                        # PO+Part not in Infor Visual -> flag for correction; still imported
+                        $correctionRows.Add($row)
+                    }
+                    $rdr.Dispose()
+                }
+                else {
+                    # No PO – look up the part directly
+                    $pPartOnly.Value = $row.PartID
+                    $rdr = $cmdPart.ExecuteReader()
+                    if ($rdr.Read()) {
+                        $row.PartDescription = $rdr["PartDescription"].ToString().Trim()
+                        $ivEnriched++
+                    }
+                    else {
+                        # Part not in IV and no PO -> Non-PO item
+                        $row.IsNonPOItem = 1
+                        $ivNonPO++
+                    }
+                    $rdr.Dispose()
+                }
+            }
+            catch {
+                Write-Host "    Warning: IV lookup skipped for '$($row.PartID)': $_" -ForegroundColor Yellow
+            }
+        }
+
+        $cmdPOPart.Dispose()
+        $cmdPart.Dispose()
+    }
+    catch {
+        Write-Host "  WARNING: Could not connect to Infor Visual ($InforVisualServer\$InforVisualDatabase):" -ForegroundColor Yellow
+        Write-Host "  $_"                                                                                    -ForegroundColor Yellow
+        Write-Host "  Continuing without IV enrichment. Use -SkipInforVisualLookup to suppress."            -ForegroundColor Yellow
+    }
+    finally {
+        if ($null -ne $ivConn) { $ivConn.Dispose() }
+    }
+
+    $ivNotFound = $correctionRows.Count
+    Write-Status "IV enriched     : $ivEnriched row(s)" $(if ($ivEnriched -gt 0) { 'Green' } else { 'DarkGray' })
+    if ($ivNonPO -gt 0) { Write-Status "Non-PO flagged  : $ivNonPO row(s) (part not in IV, no PO)"     "Yellow" }
+    if ($ivNotFound -gt 0) { Write-Status "Needs correction: $ivNotFound row(s) (PO+Part not found in IV)" "Red" }
+}
+
 if ($WhatIf) {
     Write-Host ""
     Write-Host "  DRY RUN complete. $($validRows.Count) rows would be imported." -ForegroundColor Green
+    if ($correctionRows.Count -gt 0) {
+        Write-Host "  $($correctionRows.Count) row(s) will be imported but need correction (PO+Part not found in IV)." -ForegroundColor Yellow
+    }
     exit 0
 }
 
@@ -369,8 +501,11 @@ try {
         $heat = Format-MySqlValue $row.Heat
         $txDate = Format-MySqlValue $row.TransactionDate
         $initLoc = Format-MySqlValue $row.InitialLocation
+        $vendor = Format-MySqlValue $row.VendorName
+        $partDesc = Format-MySqlValue $row.PartDescription
+        $isNonPO = [int]$row.IsNonPOItem
 
-        $sw.WriteLine("CALL sp_Receiving_History_Import($qty, $partID, $po, $emp, $heat, $txDate, $initLoc, NULL, 1, NULL, NULL);")
+        $sw.WriteLine("CALL sp_Receiving_History_Import($qty, $partID, $po, $emp, $heat, $txDate, $initLoc, NULL, 1, $vendor, $partDesc, $isNonPO);")
     }
 
     $sw.Flush()
@@ -427,6 +562,18 @@ try {
     Write-Host "  Imported           : $($validRows.Count)" -ForegroundColor Green
     Write-Host "  Elapsed            : $([math]::Round($elapsed.TotalSeconds))s" -ForegroundColor DarkGray
     Write-Host ""
+
+    if ($correctionRows.Count -gt 0) {
+        Write-Host "  CORRECTION REQUIRED — PO + Part combination not found in Infor Visual:" -ForegroundColor Red
+        Write-Host ("  {0,-22} {1,-15} {2,-11} {3}" -f "PartID", "PO Number", "Date", "Emp") -ForegroundColor Red
+        Write-Host "  $('-' * 64)" -ForegroundColor DarkGray
+        foreach ($cr in $correctionRows) {
+            $crPO = if ($null -ne $cr.PONumber) { $cr.PONumber } else { '' }
+            Write-Host ("  {0,-22} {1,-15} {2,-11} {3}" -f $cr.PartID, $crPO, $cr.TransactionDate, $cr.EmployeeNumber) -ForegroundColor Yellow
+        }
+        Write-Host ""
+        Write-Host "  Verify the PO number and Part ID in Infor Visual for each row above, then re-import." -ForegroundColor Yellow
+    }
 }
 finally {
     Remove-Item $tmpSql  -Force -ErrorAction SilentlyContinue
