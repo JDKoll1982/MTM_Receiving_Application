@@ -23,7 +23,8 @@ CREATE PROCEDURE `sp_Receiving_History_Import`(
     IN p_CoilsOnSkid INT,
     IN p_LabelNumber INT,
     IN p_VendorName VARCHAR(255),
-    IN p_PartDescription VARCHAR(500)
+    IN p_PartDescription VARCHAR(500),
+    IN p_IsNonPOItem TINYINT(1)
 )
 BEGIN
     INSERT INTO receiving_history
@@ -38,7 +39,8 @@ BEGIN
         coils_on_skid,
         label_number,
         vendor_name,
-        part_description
+        part_description,
+        is_non_po_item
     )
     VALUES
     (
@@ -52,7 +54,8 @@ BEGIN
         p_CoilsOnSkid,
         IFNULL(p_LabelNumber, 1),
         NULLIF(TRIM(p_VendorName), ''),
-        NULLIF(TRIM(p_PartDescription), '')
+        NULLIF(TRIM(p_PartDescription), ''),
+        IFNULL(p_IsNonPOItem, 0)
     );
 
     -- Assign to a session variable so no result-set is returned (avoids
