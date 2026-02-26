@@ -65,4 +65,14 @@ public class Service_ReceivingSettings : IService_ReceivingSettings
         var template = await GetStringAsync(key, userId);
         return string.Format(CultureInfo.CurrentCulture, template, arg0, arg1);
     }
+
+    public async Task SaveStringAsync(string key, string value, int? userId = null)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+
+        await _settings.SetSettingAsync(Category, key, value, userId);
+    }
 }

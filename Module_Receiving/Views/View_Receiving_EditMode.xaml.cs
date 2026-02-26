@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -32,31 +34,185 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _qualityHoldWarning = qualityHoldWarning;
             this.DataContext = ViewModel;
             this.InitializeComponent();
+
+            // Wire up the column-chooser event from the ViewModel
+            ViewModel.ShowColumnChooserRequested += OnShowColumnChooserRequested;
+
+            // Apply saved column visibility once the control is loaded
+            this.Loaded += async (_, _) => await ApplyColumnVisibilityAsync();
+        }
+
+        // ------------------------------------------------------------------ column visibility
+        private async Task ApplyColumnVisibilityAsync()
+        {
+            // ViewModel already loaded ColumnSettings; just mirror to the DataGrid columns
+            await Task.CompletedTask;
+            SyncColumnVisibilityToGrid();
+        }
+
+        private void SyncColumnVisibilityToGrid()
+        {
+            if (ViewModel.ColumnSettings.Count == 0)
+            {
+                return;
+            }
+
+            var visibilityMap = ViewModel.ColumnSettings
+                .ToDictionary(c => c.Key, c => c.IsVisible);
+
+            foreach (var col in EditModeDataGrid.Columns)
+            {
+                if (col.Tag is string tag && visibilityMap.TryGetValue(tag, out bool visible))
+                {
+                    col.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+        }
+
+        // ------------------------------------------------------------------ column chooser dialog
+        private void ColumnsButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Let the ViewModel fire the event (which routes back here)
+            ViewModel.ShowColumnChooserCommand.Execute(null);
+        }
+
+        private async void OnShowColumnChooserRequested(object? sender, EventArgs e)
+        {
+            await ShowColumnChooserDialogAsync();
+        }
+
+        private async Task ShowColumnChooserDialogAsync()
+        {
+            // Build a CheckBox list from ColumnSettings, skipping always-visible columns
+            var items = ViewModel.ColumnSettings
+                .Where(c => !c.IsAlwaysVisible)
+                .ToList();
+
+            var panel = new StackPanel { Spacing = 6 };
+            var checkBoxes = new List<(CheckBox Box, string Key)>();
+
+            // Select All / Clear All quick buttons
+            var quickRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 8) };
+            var selectAllBtn = new Button { Content = "Select All" };
+            var clearAllBtn = new Button { Content = "Clear All" };
+            quickRow.Children.Add(selectAllBtn);
+            quickRow.Children.Add(clearAllBtn);
+            panel.Children.Add(quickRow);
+
+            foreach (var col in items)
+            {
+                var cb = new CheckBox
+                {
+                    Content = col.Header,
+                    IsChecked = col.IsVisible,
+                    Tag = col.Key,
+                };
+                panel.Children.Add(cb);
+                checkBoxes.Add((cb, col.Key));
+            }
+
+            selectAllBtn.Click += (_, _) => { foreach (var (cb, _) in checkBoxes) cb.IsChecked = true; };
+            clearAllBtn.Click += (_, _) => { foreach (var (cb, _) in checkBoxes) cb.IsChecked = false; };
+
+            var scrollViewer = new ScrollViewer
+            {
+                Content = panel,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            };
+
+            var dialog = new ContentDialog
+            {
+                Title = "Choose visible columns",
+                Content = scrollViewer,
+                PrimaryButtonText = "Apply",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot,
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            // Apply user choices back to ColumnSettings
+            foreach (var (box, key) in checkBoxes)
+            {
+                var colSetting = ViewModel.ColumnSettings.FirstOrDefault(c => c.Key == key);
+                if (colSetting != null)
+                {
+                    colSetting.IsVisible = box.IsChecked == true;
+                }
+            }
+
+            // Persist to settings
+            await ViewModel.SaveColumnVisibilityAsync();
+
+            // Mirror to the DataGrid
+            SyncColumnVisibilityToGrid();
+        }
+
+        // ------------------------------------------------------------------ grid interaction
+        private void EditModeDataGrid_Sorting(object sender, DataGridColumnEventArgs e)
+        {
+            var tag = e.Column.Tag as string;
+            if (string.IsNullOrEmpty(tag))
+            {
+                return;
+            }
+
+            bool ascending;
+            if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            {
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
+                ascending = true;
+            }
+            else
+            {
+                e.Column.SortDirection = DataGridSortDirection.Descending;
+                ascending = false;
+            }
+
+            // Clear sort indicator from all other columns
+            if (sender is DataGrid grid)
+            {
+                foreach (var col in grid.Columns)
+                {
+                    if (col != e.Column)
+                    {
+                        col.SortDirection = null;
+                    }
+                }
+            }
+
+            ViewModel.SortBy(tag, ascending);
+        }
+
+        private void GoToPageTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                ViewModel.GoToPageCommand.Execute(null);
+                e.Handled = true;
+            }
         }
 
         private void EditModeDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
-
-            // Check for quality hold warning when leaving PartID cell
             _ = CheckQualityHoldOnCellChangeAsync(grid);
 
-            // Wait for the move to complete then activate edit mode
             grid?.DispatcherQueue.TryEnqueue(() =>
             {
                 if (grid.CurrentColumn?.IsReadOnly == false)
                 {
-                    Debug.WriteLine($"[EditModeView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
                     grid.BeginEdit();
                 }
             });
         }
 
-        /// <summary>
-        /// Checks for quality hold requirements when user moves away from a cell.
-        /// Displays warning if restricted part (MMFSR/MMCSR) is detected.
-        /// </summary>
-        /// <param name="grid"></param>
         private async Task CheckQualityHoldOnCellChangeAsync(DataGrid? grid)
         {
             if (grid?.SelectedItem is not Model_ReceivingLoad currentLoad)
@@ -66,27 +222,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             var partID = currentLoad.PartID;
 
-            // Skip if empty or if we already checked this exact value
             if (string.IsNullOrWhiteSpace(partID) || partID == _lastCheckedPartID)
             {
                 return;
             }
 
-            // Check if this is a restricted part
             if (_qualityHoldWarning.IsRestrictedPart(partID))
             {
-                _lastCheckedPartID = partID; // Remember we checked this
+                _lastCheckedPartID = partID;
 
-                // Show warning and get user acknowledgment
                 bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
 
                 if (!acknowledged)
                 {
-                    // User cancelled - clear the part ID
                     currentLoad.PartID = string.Empty;
                     _lastCheckedPartID = null;
 
-                    // Re-focus the PartID cell for correction
                     grid.DispatcherQueue.TryEnqueue(() =>
                     {
                         var partIDColumn = grid.Columns.FirstOrDefault(c =>
@@ -112,7 +263,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
             bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
-            Debug.WriteLine($"[EditModeView] KeyDown: Key={e.Key}, Shift={isShiftDown}, OriginalSource={e.OriginalSource}, CurrentColumn={grid.CurrentColumn?.Header}");
+            Debug.WriteLine($"[EditModeView] KeyDown: Key={e.Key}, Shift={isShiftDown}, Col={grid.CurrentColumn?.Header}");
         }
 
         private void EditModeDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
@@ -122,13 +273,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return;
             }
 
-            Debug.WriteLine($"[EditModeView] Tapped: OriginalSource={e.OriginalSource}");
-
-            // Handle selection
             if (grid.SelectedItem == null)
             {
-                Debug.WriteLine("[EditModeView] Tapped: SelectedItem is null (Header or empty space). Selecting first editable cell.");
-                // Header clicked or empty space
                 if (grid.ItemsSource is IList list && list.Count > 0)
                 {
                     grid.SelectedIndex = 0;
@@ -137,45 +283,31 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
             else
             {
-                // Cell clicked - CurrentCellChanged handles the edit mode if cell changes.
-                // But if we tap the SAME cell, CurrentCellChanged might not fire.
-                // So we ensure edit mode here too.
-                Debug.WriteLine("[EditModeView] Tapped: Cell clicked. Enqueuing BeginEdit.");
                 grid.DispatcherQueue.TryEnqueue(() =>
                 {
                     if (grid.CurrentColumn?.IsReadOnly == false)
                     {
-                        Debug.WriteLine($"[EditModeView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
                         grid.BeginEdit();
                     }
                 });
             }
         }
 
-        private void SelectFirstEditableCell(DataGrid grid)
+        private static void SelectFirstEditableCell(DataGrid grid)
         {
-            Debug.WriteLine("[EditModeView] SelectFirstEditableCell: Starting");
             if (grid.ItemsSource is IList items && items.Count > 0)
             {
-                // Find first non-readonly column
-                var firstEditable = grid.Columns.OrderBy(c => c.DisplayIndex).FirstOrDefault(c => !c.IsReadOnly);
+                var firstEditable = grid.Columns
+                    .Where(c => c.Visibility == Visibility.Visible)
+                    .OrderBy(c => c.DisplayIndex)
+                    .FirstOrDefault(c => !c.IsReadOnly);
+
                 if (firstEditable != null)
                 {
-                    Debug.WriteLine($"[EditModeView] SelectFirstEditableCell: Found editable column {firstEditable.Header}. Setting CurrentColumn and calling BeginEdit.");
                     grid.CurrentColumn = firstEditable;
                     grid.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
                     grid.BeginEdit();
-                    Debug.WriteLine($"[EditModeView] SelectFirstEditableCell: BeginEdit called for column {firstEditable.Header}");
                 }
-                else
-                {
-                    Debug.WriteLine("[EditModeView] SelectFirstEditableCell: No editable column found.");
-                }
-            }
-            else
-            {
-                var itemCount = (grid.ItemsSource as IList)?.Count ?? 0;
-                Debug.WriteLine($"[EditModeView] SelectFirstEditableCell: Grid has no items (Count={itemCount})");
             }
         }
     }
