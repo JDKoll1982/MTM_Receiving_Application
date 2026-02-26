@@ -146,9 +146,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
 
                 case Enum_ReceivingWorkflowStep.ManualEntry:
-                    // Manual entry goes directly to saving/review
-                    // Validation happens on save
-                    // Check for quality holds and block if not acknowledged
+                    // Manual entry goes directly to saving.
+                    // Validation happens on save; check for unacknowledged quality holds first.
                     var loadsWithHolds = CurrentSession.Loads.Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged).ToList();
                     if (loadsWithHolds.Count > 0)
                     {
@@ -156,7 +155,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
                     CurrentStep = Enum_ReceivingWorkflowStep.Saving;
-                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
+                    break; // Fall through to PersistSessionAsync so session is saved before the save cycle begins
 
                 case Enum_ReceivingWorkflowStep.EditMode:
                     // Edit mode goes to saving/review
@@ -507,7 +506,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
-            CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
+            CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
             CurrentPONumber = null;
             CurrentPart = null;
             IsNonPOItem = false;

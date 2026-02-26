@@ -29,7 +29,7 @@ SELECT
     id,
     quantity,
     part_id,
-    CAST(po_number AS CHAR) AS po_number,
+    po_number,
     employee_number,
     heat,
     transaction_date,

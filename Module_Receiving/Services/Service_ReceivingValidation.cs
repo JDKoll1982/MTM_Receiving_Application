@@ -16,7 +16,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_ReceivingValidation : IService_ReceivingValidation
     {
         private readonly IService_InforVisual _inforVisualService;
-        private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}$", RegexOptions.IgnoreCase);
+        // Allows optional "PO-" prefix, 1-6 digits, and an optional B/b suffix for blanket POs (e.g. PO-064489B)
+        private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}[Bb]?$", RegexOptions.IgnoreCase);
         private static readonly Regex _qualityHoldRegex = new Regex(@"(MMFSR|MMCSR)", RegexOptions.IgnoreCase);
 
         public Service_ReceivingValidation(IService_InforVisual inforVisualService)
@@ -141,12 +142,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             if (string.IsNullOrWhiteSpace(load.PartID))
             {
-                errors.Add("Part ID is required");
+                errors.Add($"Load {load.LoadNumber}: Part ID is required");
             }
 
             if (string.IsNullOrWhiteSpace(load.PartType))
             {
-                errors.Add("Part Type is required");
+                errors.Add($"Load {load.LoadNumber}: Part Type is required");
             }
 
             if (load.LoadNumber < 1)
@@ -159,9 +160,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 errors.Add($"Load {load.LoadNumber}: Weight/Quantity must be greater than 0");
             }
 
-            if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
+            // Heat/Lot number is optional — SaveAsync defaults blank values to "Nothing Entered" after all
+            // validation passes, so we do not require a value here.
+            if (!string.IsNullOrWhiteSpace(load.HeatLotNumber) && load.HeatLotNumber.Length > 50)
             {
-                errors.Add($"Load {load.LoadNumber}: Heat/Lot number is required");
+                errors.Add($"Load {load.LoadNumber}: Heat/Lot number cannot exceed 50 characters");
             }
 
             if (load.PackagesPerLoad <= 0)

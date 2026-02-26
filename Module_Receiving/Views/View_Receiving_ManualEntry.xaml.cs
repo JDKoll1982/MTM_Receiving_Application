@@ -28,8 +28,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private readonly IService_ReceivingSettings _receivingSettings;
         private string? _lastCheckedPartID;
+        private Guid? _lastCheckedLoadId;
         private List<Model_PartNumberPrefixRule> _paddingRules = new();
         private bool _isPaddingEnabled;
+        private bool _paddingSettingsLoaded;
 
         public View_Receiving_ManualEntry(
             ViewModel_Receiving_ManualEntry viewModel,
@@ -83,6 +85,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                         _paddingRules = new List<Model_PartNumberPrefixRule>();
                     }
                 }
+                _paddingSettingsLoaded = true;
             }
             catch (Exception ex)
             {
@@ -157,8 +160,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             var partID = currentLoad.PartID;
 
-            // Skip if empty or if we already checked this exact value
-            if (string.IsNullOrWhiteSpace(partID) || partID == _lastCheckedPartID)
+            // Skip if empty or if we already checked this exact value on this exact row
+            if (string.IsNullOrWhiteSpace(partID) || (partID == _lastCheckedPartID && currentLoad.LoadID == _lastCheckedLoadId))
             {
                 return;
             }
@@ -167,6 +170,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             if (_qualityHoldWarning.IsRestrictedPart(partID))
             {
                 _lastCheckedPartID = partID; // Remember we checked this
+                _lastCheckedLoadId = currentLoad.LoadID;
 
                 // Show warning and get user acknowledgment
                 bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
@@ -176,6 +180,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     // User cancelled - clear the part ID
                     currentLoad.PartID = string.Empty;
                     _lastCheckedPartID = null;
+                    _lastCheckedLoadId = null;
 
                     // Re-focus the PartID cell for correction
                     grid.DispatcherQueue.TryEnqueue(() =>
@@ -281,19 +286,48 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         /// <summary>
         /// LoadingRow event handler for applying row-level highlighting based on quality holds.
-        /// Fallback method when binding converters are insufficient.
+        /// Subscribes to each load's PropertyChanged so the background stays reactive.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ManualEntryDataGrid_LoadingRow(object? sender, DataGridRowEventArgs e)
         {
-            if (e.Row.DataContext is Model_ReceivingLoad load && load.IsQualityHoldRequired)
+            if (e.Row.DataContext is not Model_ReceivingLoad load)
             {
-                // Apply light red background to highlight quality hold rows
-                e.Row.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                    Windows.UI.Color.FromArgb(255, 255, 230, 230)  // #FFE6E6
-                );
+                return;
             }
+
+            ApplyQualityHoldRowBackground(e.Row, load.IsQualityHoldRequired);
+
+            // Keep the background in sync when IsQualityHoldRequired changes after initial render
+            System.ComponentModel.PropertyChangedEventHandler handler = (s, pe) =>
+            {
+                if (s is not Model_ReceivingLoad changedLoad
+                    || pe.PropertyName != nameof(Model_ReceivingLoad.IsQualityHoldRequired))
+                {
+                    return;
+                }
+
+                ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
+                {
+                    // Guard against recycled rows that now show a different load
+                    if (e.Row.DataContext is Model_ReceivingLoad currentRowLoad
+                        && currentRowLoad.LoadID == changedLoad.LoadID)
+                    {
+                        ApplyQualityHoldRowBackground(e.Row, changedLoad.IsQualityHoldRequired);
+                    }
+                });
+            };
+
+            load.PropertyChanged += handler;
+
+            // Clean up when the row is recycled or unloaded to prevent memory leaks
+            e.Row.Unloaded += (_, _) => load.PropertyChanged -= handler;
+        }
+
+        private static void ApplyQualityHoldRowBackground(DataGridRow row, bool isQualityHoldRequired)
+        {
+            row.Background = isQualityHoldRequired
+                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 230, 230))
+                : null;
         }
 
         /// <summary>
@@ -332,11 +366,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
         }
 
+        // Matches 1-6 digits with an optional B/b suffix (e.g. "064489", "064489B")
+        private static readonly System.Text.RegularExpressions.Regex _poNumberPartRegex =
+            new(@"^(\d{1,6})([Bb]?)$", System.Text.RegularExpressions.RegexOptions.None);
+
         /// <summary>
-        /// Formats PO number to standard format: PO-NNNNNN (6 digits, zero-padded)
-        /// Handles inputs like: "66868", "PO-66868", "po-66868"
+        /// Formats a PO number to canonical form: PO-NNNNNN (6 digits, zero-padded).
+        /// Also handles the B-suffix variant used for blanket POs (e.g. "64489B" → "PO-064489B").
+        /// Mirrors Format-PoNumber in Import-ReceivingHistory.ps1.
         /// </summary>
-        /// <param name="input"></param>
         private static string FormatPONumber(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -345,29 +383,32 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             string trimmed = input.Trim();
+            string numberPart;
 
-            // Check if value starts with "po-" or "PO-" (case insensitive)
+            // Strip recognised prefixes ("PO-" or bare "PO", case-insensitive)
             if (trimmed.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
             {
-                // Extract the number part after "PO-"
-                string numberPart = trimmed.Substring(3);
-
-                // Check if it's all digits
-                if (numberPart.All(char.IsDigit) && numberPart.Length <= 6)
-                {
-                    return $"PO-{numberPart.PadLeft(6, '0')}";
-                }
+                numberPart = trimmed.Substring(3);
             }
-            else if (trimmed.All(char.IsDigit))
+            else if (trimmed.StartsWith("po", StringComparison.OrdinalIgnoreCase) && trimmed.Length > 2)
             {
-                // Just numbers, no prefix
-                if (trimmed.Length <= 6)
-                {
-                    return $"PO-{trimmed.PadLeft(6, '0')}";
-                }
+                numberPart = trimmed.Substring(2);
+            }
+            else
+            {
+                numberPart = trimmed;
             }
 
-            // Return as-is if it doesn't match expected format
+            // Accept digits (1-6) with an optional single B/b suffix
+            var match = _poNumberPartRegex.Match(numberPart);
+            if (match.Success)
+            {
+                string digits = match.Groups[1].Value;
+                string suffix = match.Groups[2].Value.ToUpperInvariant(); // "B" or ""
+                return $"PO-{digits.PadLeft(6, '0')}{suffix}";
+            }
+
+            // Unrecognised format — return as-is
             return trimmed;
         }
 
@@ -414,7 +455,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <param name="input"></param>
         private string ApplyPartNumberPadding(string input)
         {
-            if (!_isPaddingEnabled || _paddingRules.Count == 0)
+            // Guard: if settings haven't finished loading yet, skip formatting to avoid applying
+            // stale defaults. The user can re-commit the cell or Auto-Fill once settings are ready.
+            if (!_paddingSettingsLoaded || !_isPaddingEnabled || _paddingRules.Count == 0)
             {
                 return input;
             }

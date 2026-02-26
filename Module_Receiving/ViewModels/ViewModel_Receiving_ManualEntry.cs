@@ -17,7 +17,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     public partial class ViewModel_Receiving_ManualEntry : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_MySQL_Receiving _mysqlService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
@@ -73,7 +72,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public ViewModel_Receiving_ManualEntry(
             IService_ReceivingWorkflow workflowService,
-            IService_MySQL_Receiving mysqlService,
             IService_ReceivingValidation validationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
@@ -85,7 +83,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             _windowService = windowService;
             _workflowService = workflowService;
-            _mysqlService = mysqlService;
             _validationService = validationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
@@ -124,6 +121,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task AutoFillAsync()
         {
+            if (IsBusy)
+            {
+                return;
+            }
+
             try
             {
                 IsBusy = true;
@@ -131,6 +133,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("Starting Auto-Fill Blank Spaces operation");
 
                 int filledCount = 0;
+
+                if (Loads.Count == 0)
+                {
+                    StatusMessage = "Nothing to fill - no rows present.";
+                    return;
+                }
 
                 // Iterate through all loads in the grid
                 for (int i = 0; i < Loads.Count; i++)
@@ -159,7 +167,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         Model_ReceivingLoad? sourceLoad = null;
                         for (int j = i - 1; j >= 0; j--)
                         {
-                            if (Loads[j].PartID == currentLoad.PartID)
+                            if (string.Equals(Loads[j].PartID, currentLoad.PartID, StringComparison.OrdinalIgnoreCase))
                             {
                                 sourceLoad = Loads[j];
                                 break;
@@ -193,11 +201,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             if (currentLoad.PackagesPerLoad <= 0 && sourceLoad.PackagesPerLoad > 0)
                             {
                                 currentLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
+                                filledCount++;
                             }
 
                             if (string.IsNullOrWhiteSpace(currentLoad.PackageTypeName) && !string.IsNullOrWhiteSpace(sourceLoad.PackageTypeName))
                             {
                                 currentLoad.PackageTypeName = sourceLoad.PackageTypeName;
+                                filledCount++;
                             }
                         }
                     }
@@ -231,8 +241,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
                 }
 
-                StatusMessage = $"Auto-fill complete. Updated {filledCount} fields.";
-                _logger.LogInfo($"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows.");
+                var blankPartIDCount = Loads.Count(l => string.IsNullOrWhiteSpace(l.PartID));
+                StatusMessage = blankPartIDCount > 0
+                    ? $"Auto-fill complete. Updated {filledCount} field(s). ⚠ {blankPartIDCount} row(s) still need a Part ID."
+                    : $"Auto-fill complete. Updated {filledCount} field(s).";
+                _logger.LogInfo($"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows. Rows still missing Part ID: {blankPartIDCount}.");
 
                 // Force UI update if needed (ObservableCollection updates properties automatically if INPC is fired)
                 // Model_ReceivingLoad implements ObservableObject so it should be fine.
@@ -257,6 +270,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task AddMultipleRowsAsync()
         {
+            if (IsBusy)
+            {
+                return;
+            }
+
             // Prompt for number of rows
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
@@ -288,10 +306,24 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 if (int.TryParse(inputTextBox.Text, out int count) && count > 0 && count <= 50)
                 {
-                    _logger.LogInfo($"Adding {count} new rows to manual entry grid");
-                    for (int i = 0; i < count; i++)
+                    int available = MaxManualEntryRows - Loads.Count;
+                    if (available <= 0)
+                    {
+                        _logger.LogWarning("Add Multiple blocked: row limit already reached.");
+                        await _errorHandler.HandleErrorAsync($"Maximum of {MaxManualEntryRows} rows already reached.", Enum_ErrorSeverity.Warning);
+                        return;
+                    }
+
+                    int clampedCount = Math.Min(count, available);
+                    _logger.LogInfo($"Adding {clampedCount} new rows to manual entry grid (requested={count}, available={available})");
+                    for (int i = 0; i < clampedCount; i++)
                     {
                         AddNewLoad();
+                    }
+
+                    if (clampedCount < count)
+                    {
+                        StatusMessage = $"Added {clampedCount} row(s). Row limit of {MaxManualEntryRows} reached.";
                     }
                 }
                 else
@@ -302,38 +334,90 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        public void AddNewLoad()
+        private const int MaxManualEntryRows = 99;
+
+        public bool AddNewLoad()
         {
+            if (Loads.Count >= MaxManualEntryRows)
+            {
+                StatusMessage = $"Maximum of {MaxManualEntryRows} rows reached. Cannot add more.";
+                _logger.LogWarning($"Cannot add row: limit of {MaxManualEntryRows} rows already reached.");
+                return false;
+            }
+
+            // Use Max(existing LoadNumbers) + 1 so row removal + re-add never produces a duplicate label_number.
+            int nextNumber = Loads.Count == 0 ? 1 : Loads.Max(l => l.LoadNumber) + 1;
+
             var newLoad = new Model_ReceivingLoad
             {
                 LoadID = System.Guid.NewGuid(),
                 ReceivedDate = System.DateTime.Now,
-                LoadNumber = Loads.Count + 1,
-                PackageType = Enum_PackageType.Skid,  // Default package type
-                PackageTypeName = nameof(Enum_PackageType.Skid),  // Default package type name
+                LoadNumber = nextNumber,
+                PartType = "Standard",            // Default so validation shows only "Part ID required" when row is blank
+                PackageType = Enum_PackageType.Skid,
+                PackageTypeName = nameof(Enum_PackageType.Skid),
                 EmployeeNumber = _workflowService.CurrentSession.User?.EmployeeNumber ?? 0,
                 UserId = _workflowService.CurrentSession.User?.WindowsUsername ?? string.Empty
             };
             Loads.Add(newLoad);
             _workflowService.CurrentSession.Loads.Add(newLoad);
 
-            // Select the new load
             SelectedLoad = newLoad;
+            return true;
         }
 
         [RelayCommand]
-        private void RemoveRow()
+        private async Task RemoveRowAsync()
         {
-            if (SelectedLoad != null)
+            if (IsBusy)
             {
-                _logger.LogInfo($"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})");
-                _workflowService.CurrentSession.Loads.Remove(SelectedLoad);
-                Loads.Remove(SelectedLoad);
+                _logger.LogWarning("RemoveRow blocked: save in progress");
+                return;
             }
-            else
+
+            if (SelectedLoad == null)
             {
                 _logger.LogWarning("RemoveRow called with no selected load");
+                return;
             }
+
+            // Confirm before destroying a row that already has data entered.
+            if (!string.IsNullOrWhiteSpace(SelectedLoad.PartID))
+            {
+                var xamlRoot = _windowService.GetXamlRoot();
+                if (xamlRoot != null)
+                {
+                    var confirm = new Microsoft.UI.Xaml.Controls.ContentDialog
+                    {
+                        Title = "Remove Row?",
+                        Content = $"Remove Load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})?\nThis cannot be undone.",
+                        PrimaryButtonText = "Remove",
+                        CloseButtonText = "Cancel",
+                        DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                        XamlRoot = xamlRoot
+                    };
+
+                    var dialogResult = await confirm.ShowAsync().AsTask();
+                    if (dialogResult != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                    {
+                        _logger.LogInfo("User cancelled row removal");
+                        return;
+                    }
+                }
+            }
+
+            _logger.LogInfo($"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})");
+            _workflowService.CurrentSession.Loads.Remove(SelectedLoad);
+            Loads.Remove(SelectedLoad);
+
+            // Renumber remaining loads so label_number values in the DB are always sequential (1, 2, 3…)
+            // and never contain gaps or duplicates caused by delete+add cycles.
+            for (int i = 0; i < Loads.Count; i++)
+            {
+                Loads[i].LoadNumber = i + 1;
+            }
+
+            SelectedLoad = Loads.Count > 0 ? Loads[^1] : null;
         }
 
         [RelayCommand]
@@ -349,15 +433,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 IsBusy = true;
                 _logger.LogInfo($"Saving {Loads.Count} loads from manual entry");
 
-                // Set default Heat/Lot if empty
+                if (Loads.Count == 0)
+                {
+                    await _errorHandler.HandleErrorAsync("No loads to save. Please add at least one row.", Enum_ErrorSeverity.Warning);
+                    return;
+                }
+
+                // Check for quality hold requirements up front so UI rows reflect hold state before the
+                // confirmation dialog is shown. HeatLotNumber defaulting is intentionally deferred until
+                // after ALL validation passes so the grid stays visually clean on failure / cancellation.
                 foreach (var load in Loads)
                 {
-                    if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
-                    {
-                        load.HeatLotNumber = "Nothing Entered";
-                    }
-
-                    // Check for quality hold requirement on each load
                     if (!string.IsNullOrWhiteSpace(load.PartID))
                     {
                         var (isRestricted, restrictionType) = await _validationService.IsRestrictedPartAsync(load.PartID);
@@ -391,10 +477,49 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
                 }
 
+                // Validate every row before handing off to the workflow.
+                // This catches missing/invalid fields up front and reports row-specific errors
+                // so the user knows exactly which row to fix rather than getting a generic message.
+                var sessionValidation = _validationService.ValidateSession(Loads.ToList());
+                if (!sessionValidation.IsValid)
+                {
+                    var errorText = sessionValidation.Errors.Count > 0
+                        ? string.Join("\n", sessionValidation.Errors)
+                        : sessionValidation.Message;
+                    await _errorHandler.HandleErrorAsync(errorText, Enum_ErrorSeverity.Warning);
+                    return;
+                }
+
+                // Validate PO number on each row (ValidateSession does not check PO number).
+                var poErrors = new System.Collections.Generic.List<string>();
+                foreach (var load in Loads)
+                {
+                    var poValidation = _validationService.ValidatePONumber(load.PoNumber ?? string.Empty);
+                    if (!poValidation.IsValid)
+                    {
+                        poErrors.Add($"Row {load.LoadNumber}: PO Number — {poValidation.Message}");
+                    }
+                }
+
+                if (poErrors.Count > 0)
+                {
+                    await _errorHandler.HandleErrorAsync(string.Join("\n", poErrors), Enum_ErrorSeverity.Warning);
+                    return;
+                }
+
+                // Only default blank Heat/Lot to "Nothing Entered" once all validation has passed.
+                // Mutating earlier would leave "Nothing Entered" visible in the grid if the user cancels.
+                foreach (var load in Loads)
+                {
+                    if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
+                    {
+                        load.HeatLotNumber = "Nothing Entered";
+                    }
+                }
+
                 // In manual mode, we skip step-by-step validation and go straight to saving
                 // The workflow service will handle the actual save logic
-                var result = await _workflowService.AdvanceToNextStepAsync();
-                
+                var result = await _workflowService.AdvanceToNextStepAsync();                
                 if (!result.Success)
                 {
                     _logger.LogWarning($"Workflow advance failed: {string.Join(", ", result.ValidationErrors)}");
@@ -504,10 +629,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 try
                 {
                     _logger.LogInfo("User confirmed return to mode selection, resetting workflow");
-                    // Reset workflow and return to mode selection
+                    // ResetWorkflowAsync already sets CurrentStep = ModeSelection and fires StepChanged.
+                    // Calling GoToStep afterwards would be redundant and could cause double-navigation.
                     await _workflowService.ResetWorkflowAsync();
-                    _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
-                    // The ReceivingWorkflowViewModel will handle the visibility update through StepChanged event
                 }
                 catch (Exception ex)
                 {
