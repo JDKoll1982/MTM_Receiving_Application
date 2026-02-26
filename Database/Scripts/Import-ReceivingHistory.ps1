@@ -112,19 +112,49 @@ function Find-MampMySql {
     return $null
 }
 
-# ---------------------------------------------------------------------------
-# Infor Visual helper
-# ---------------------------------------------------------------------------
-
-# Strips "PO-"/"po-" prefix so the number matches Infor Visual PURCHASE_ORDER.ID
-function Get-CleanPoNumber {
+# Formats a PO number to the canonical PO-NNNNNN (6-digit zero-padded) form.
+# Mirrors the FormatPONumber() logic in View_Receiving_ManualEntry.xaml.cs and
+# ViewModel_Receiving_POEntry.cs:
+#   "66868"     -> "PO-066868"
+#   "64489B"    -> "PO-064489B"  (numeric + B suffix)
+#   "PO-66868"  -> "PO-066868"
+#   "PO-064489B"-> "PO-064489B"  (alpha suffix preserved as-is)
+#   ""          -> $null
+function Format-PoNumber {
     param([string]$PoNumber)
-    return ($PoNumber -replace '^[Pp][Oo]-?').Trim()
+
+    $trimmed = $PoNumber.Trim()
+    if ($trimmed -eq '') { return $null }
+
+    if ($trimmed -match '^[Pp][Oo]-(.+)$') {
+        $numberPart = $Matches[1]
+        # Pure digits up to 6 chars: zero-pad
+        if ($numberPart -match '^\d{1,6}$') {
+            return 'PO-' + $numberPart.PadLeft(6, '0')
+        }
+        # Digits + B suffix (e.g. PO-64489B): pad the numeric portion, keep B
+        if ($numberPart -match '^(\d{1,6})([Bb])$') {
+            return 'PO-' + $Matches[1].PadLeft(6, '0') + $Matches[2].ToUpper()
+        }
+        # Anything else (longer codes, other suffixes): normalise prefix casing only
+        return 'PO-' + $numberPart
+    }
+
+    # No prefix at all - add PO- if the value is a bare number or number+B
+    if ($trimmed -match '^\d{1,6}$') {
+        return 'PO-' + $trimmed.PadLeft(6, '0')
+    }
+    if ($trimmed -match '^(\d{1,6})([Bb])$') {
+        return 'PO-' + $Matches[1].PadLeft(6, '0') + $Matches[2].ToUpper()
+    }
+
+    # Unrecognised format - return as-is so the record still imports
+    return $trimmed
 }
 
 # ---------------------------------------------------------------------------
 # Validate prerequisites
-# ---------------------------------------------------------------------------
+# ----------------------------------------------------------------------JKO-----
 
 Write-Section "MTM Receiving History Import"
 
@@ -232,10 +262,13 @@ $skippedRows = [System.Collections.Generic.List[PSCustomObject]]::new()
 foreach ($row in $records) {
     $errors = @()
 
-    # Quantity must be a positive integer
-    $qty = 0
-    if (-not [int]::TryParse($row.Quantity, [ref]$qty) -or $qty -le 0) {
+    # Quantity: accept decimals by rounding up to the nearest integer
+    $qtyRaw = 0.0
+    $qty    = 0
+    if (-not [double]::TryParse($row.Quantity, [ref]$qtyRaw) -or $qtyRaw -le 0) {
         $errors += "Invalid quantity: '$($row.Quantity)'"
+    } else {
+        $qty = [int][Math]::Ceiling($qtyRaw)
     }
 
     # MaterialID must not be blank
@@ -274,9 +307,8 @@ foreach ($row in $records) {
     $partID = $row.MaterialID.Trim()
     if ($partID.Length -gt 50) { $partID = $partID.Substring(0, 50) }
 
-    # Normalise PO number: keep as-is (VARCHAR column supports 'PO-XXXXXX')
-    $poNumber = $row.PONumber.Trim()
-    if ($poNumber -eq "") { $poNumber = $null }
+    # Normalise PO number: apply canonical PO-NNNNNN zero-padding (matches app workflow)
+    $poNumber = Format-PoNumber $row.PONumber
 
     $location = $row.InitialLocation.Trim()
     if ($location -eq "") { $location = $null }
@@ -340,6 +372,8 @@ else {
         Write-Status "Connected to Infor Visual." "Green"
 
         # Reusable parameterised commands (avoids re-parsing SQL per row)
+
+        # Primary: full PO line lookup - gets both description and vendor in one shot
         $cmdPOPart = $ivConn.CreateCommand()
         $cmdPOPart.CommandText = @"
 SELECT TOP 1
@@ -352,33 +386,64 @@ LEFT  JOIN dbo.VENDOR            v   ON po.VENDOR_ID = v.ID
 WHERE po.ID       = @PO
   AND pol.PART_ID = @Part
 "@
-        $pPO = $cmdPOPart.Parameters.Add("@PO", [System.Data.SqlDbType]::NVarChar, 20)
+        $pPO     = $cmdPOPart.Parameters.Add("@PO",   [System.Data.SqlDbType]::NVarChar, 20)
         $pPartPO = $cmdPOPart.Parameters.Add("@Part", [System.Data.SqlDbType]::NVarChar, 50)
 
+        # Fallback A: PO header only - vendor even when the exact part line is absent
+        # (covers old/closed POs where the line was purged or the part ID drifted)
+        $cmdPOHeader = $ivConn.CreateCommand()
+        $cmdPOHeader.CommandText = @"
+SELECT TOP 1 v.NAME AS VendorName
+FROM  dbo.PURCHASE_ORDER po
+LEFT  JOIN dbo.VENDOR    v ON po.VENDOR_ID = v.ID
+WHERE po.ID = @PO
+"@
+        $pPOHeader = $cmdPOHeader.Parameters.Add("@PO", [System.Data.SqlDbType]::NVarChar, 20)
+
+        # Fallback B / No-PO path: part description from PART master
         $cmdPart = $ivConn.CreateCommand()
         $cmdPart.CommandText = "SELECT TOP 1 DESCRIPTION AS PartDescription FROM dbo.PART WHERE ID = @Part"
         $pPartOnly = $cmdPart.Parameters.Add("@Part", [System.Data.SqlDbType]::NVarChar, 50)
 
+        $ivFallback = 0   # rows enriched via fallback (partial match)
+
         foreach ($row in $validRows) {
             try {
                 if (![string]::IsNullOrWhiteSpace($row.PONumber)) {
-                    # Strip leading 'PO-' prefix to match Infor Visual PURCHASE_ORDER.ID
-                    $pPO.Value = Get-CleanPoNumber $row.PONumber
+                    # IV stores PO IDs as 'PO-NNNNNN' - pass the formatted number directly
+                    $pPO.Value     = $row.PONumber
                     $pPartPO.Value = $row.PartID
                     $rdr = $cmdPOPart.ExecuteReader()
                     if ($rdr.Read()) {
+                        # Full match: PO line found
                         $row.PartDescription = $rdr["PartDescription"].ToString().Trim()
-                        $row.VendorName = $rdr["VendorName"].ToString().Trim()
+                        $row.VendorName      = $rdr["VendorName"].ToString().Trim()
+                        $rdr.Dispose()
                         $ivEnriched++
                     }
                     else {
-                        # PO+Part not in Infor Visual -> flag for correction; still imported
+                        # PO line not found (old/closed PO or part-ID mismatch) -
+                        # attempt two independent fallbacks before flagging for correction.
+                        $rdr.Dispose()   # must close before opening new readers on same connection
+
+                        # Fallback A: vendor from PO header
+                        $pPOHeader.Value = $row.PONumber
+                        $rdrH = $cmdPOHeader.ExecuteReader()
+                        if ($rdrH.Read()) { $row.VendorName = $rdrH["VendorName"].ToString().Trim() }
+                        $rdrH.Dispose()
+
+                        # Fallback B: description from PART master
+                        $pPartOnly.Value = $row.PartID
+                        $rdrP = $cmdPart.ExecuteReader()
+                        if ($rdrP.Read()) { $row.PartDescription = $rdrP["PartDescription"].ToString().Trim() }
+                        $rdrP.Dispose()
+
+                        if ($row.VendorName -or $row.PartDescription) { $ivFallback++ }
                         $correctionRows.Add($row)
                     }
-                    $rdr.Dispose()
                 }
                 else {
-                    # No PO – look up the part directly
+                    # No PO – look up the part description directly
                     $pPartOnly.Value = $row.PartID
                     $rdr = $cmdPart.ExecuteReader()
                     if ($rdr.Read()) {
@@ -399,6 +464,7 @@ WHERE po.ID       = @PO
         }
 
         $cmdPOPart.Dispose()
+        $cmdPOHeader.Dispose()
         $cmdPart.Dispose()
     }
     catch {
@@ -411,16 +477,20 @@ WHERE po.ID       = @PO
     }
 
     $ivNotFound = $correctionRows.Count
-    Write-Status "IV enriched     : $ivEnriched row(s)" $(if ($ivEnriched -gt 0) { 'Green' } else { 'DarkGray' })
-    if ($ivNonPO -gt 0) { Write-Status "Non-PO flagged  : $ivNonPO row(s) (part not in IV, no PO)"     "Yellow" }
-    if ($ivNotFound -gt 0) { Write-Status "Needs correction: $ivNotFound row(s) (PO+Part not found in IV)" "Red" }
+    Write-Status "IV enriched     : $ivEnriched row(s) (full PO line match)"       $(if ($ivEnriched -gt 0)   { 'Green' }    else { 'DarkGray' })
+    if ($ivFallback  -gt 0) { Write-Status "IV fallback     : $ivFallback row(s) (partial - PO header / PART master)" "Cyan" }
+    if ($ivNonPO     -gt 0) { Write-Status "Non-PO flagged  : $ivNonPO row(s) (part not in IV, no PO)"              "Yellow" }
+    if ($ivNotFound  -gt 0) { Write-Status "Needs correction: $ivNotFound row(s) (PO line not in IV - partially enriched where possible)" "Red" }
 }
 
 if ($WhatIf) {
     Write-Host ""
     Write-Host "  DRY RUN complete. $($validRows.Count) rows would be imported." -ForegroundColor Green
     if ($correctionRows.Count -gt 0) {
-        Write-Host "  $($correctionRows.Count) row(s) will be imported but need correction (PO+Part not found in IV)." -ForegroundColor Yellow
+        Write-Host "  $($correctionRows.Count) row(s) will be imported but need correction (PO line not found in IV)." -ForegroundColor Yellow
+    }
+    if ($ivFallback -gt 0) {
+        Write-Host "  $ivFallback row(s) partially enriched via PO header / PART master (PO line not found)." -ForegroundColor Cyan
     }
     exit 0
 }

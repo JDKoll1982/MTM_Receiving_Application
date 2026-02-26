@@ -323,7 +323,7 @@ mkdir .serena/memories
     "EnableDiagnostics": true
   },
   "InforVisual": {
-    "UseMockData": true
+    "UseMockData": false
   }
 }
 ```

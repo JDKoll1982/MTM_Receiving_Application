@@ -1,40 +1,41 @@
 -- Stored Procedure: sp_Receiving_Load_Update
--- Description: Updates an existing receiving load record by GUID
--- Schema: Aligned with receiving_label_data column structure
+-- Description: Updates an existing receiving load record by GUID.
+--              Parameter names match Dao_ReceivingLoad.UpdateLoadsAsync exactly
+--              (the DAO helper auto-prepends p_ to each key).
+--              Parameters for fields not stored in receiving_history
+--              (PartType, POLineNumber, PackagesPerLoad, PackageTypeName,
+--              WeightPerPackage) are accepted but not used in the UPDATE.
 
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_Load_Update` $$
 
 CREATE PROCEDURE `sp_Receiving_Load_Update`(
-    IN p_LoadGuid CHAR(36),
-    IN p_Quantity INT,
-    IN p_PartID VARCHAR(50),
-    IN p_PONumber VARCHAR(20),
-    IN p_EmployeeNumber INT,
-    IN p_Heat VARCHAR(100),
-    IN p_TransactionDate DATE,
-    IN p_InitialLocation VARCHAR(50),
-    IN p_CoilsOnSkid INT,
-    IN p_LabelNumber INT,
-    IN p_VendorName VARCHAR(255),
-    IN p_PartDescription VARCHAR(500)
+    IN p_LoadID           CHAR(36),
+    IN p_PartID           VARCHAR(50),
+    IN p_PartType         VARCHAR(100),
+    IN p_PONumber         VARCHAR(20),
+    IN p_POLineNumber     VARCHAR(50),
+    IN p_LoadNumber       INT,
+    IN p_WeightQuantity   DECIMAL(18,4),
+    IN p_HeatLotNumber    VARCHAR(100),
+    IN p_PackagesPerLoad  INT,
+    IN p_PackageTypeName  VARCHAR(100),
+    IN p_WeightPerPackage DECIMAL(18,4),
+    IN p_IsNonPOItem      TINYINT(1),
+    IN p_ReceivedDate     DATETIME
 )
 BEGIN
     UPDATE receiving_history
     SET
-        quantity         = p_Quantity,
         part_id          = p_PartID,
         po_number        = p_PONumber,
-        employee_number  = p_EmployeeNumber,
-        heat             = p_Heat,
-        transaction_date = p_TransactionDate,
-        initial_location = p_InitialLocation,
-        coils_on_skid    = p_CoilsOnSkid,
-        label_number     = IFNULL(p_LabelNumber, 1),
-        vendor_name      = p_VendorName,
-        part_description = p_PartDescription
-    WHERE load_guid = p_LoadGuid;
+        quantity         = ROUND(p_WeightQuantity, 0),
+        heat             = p_HeatLotNumber,
+        transaction_date = DATE(p_ReceivedDate),
+        label_number     = IFNULL(p_LoadNumber, 1),
+        is_non_po_item   = IFNULL(p_IsNonPOItem, 0)
+    WHERE load_guid = p_LoadID;
 END$$
 
 DELIMITER ;

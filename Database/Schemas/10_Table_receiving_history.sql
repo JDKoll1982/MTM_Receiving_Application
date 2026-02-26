@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS receiving_history (
     label_number INT DEFAULT 1 COMMENT 'Sequential label number when splitting quantities (default: 1)',
     vendor_name VARCHAR(255) COMMENT 'Vendor/supplier name (optional, for reference)',
     part_description VARCHAR(500) COMMENT 'Part description from Infor Visual (optional, for reference)',
+    is_non_po_item TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Non-PO item flag: 1 when part not found in Infor Visual and no PO number',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
 
     -- Indexes for frequently-queried columns
