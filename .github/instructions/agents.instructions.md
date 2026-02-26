@@ -299,7 +299,7 @@ tools: ['github/get_file_contents', 'github/search_repositories']  # Specific to
 tools: ['playwright/*']  # All Playwright tools
 tools: ['playwright/navigate', 'playwright/screenshot']  # Specific tools
 ```
-- Configured to access localhost only
+- Configured to access 172.16.1.104 only
 - Useful for browser automation and testing
 
 ### Tool Selection Best Practices

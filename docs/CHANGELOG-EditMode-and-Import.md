@@ -62,7 +62,7 @@ These rows should be reviewed — the most likely causes are a typo in the PO nu
 A new migration script adds the `is_non_po_item` column to the `receiving_history` table. Run this **once** before using the updated import script:
 
 ```
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database/Scripts/Migrate-AddIsNonPOItem.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Database/Scripts/Migrate-AddIsNonPOItem.sql
 ```
 
 The script is safe to re-run — it checks whether the column already exists before altering the table.
