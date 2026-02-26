@@ -72,6 +72,13 @@ public static class ReceivingSettingsKeys
         public const string EditModeColumnPkgsPerLoad = "Receiving.UiText.EditMode.Column.PkgsPerLoad";
         public const string EditModeColumnWtPerPkg = "Receiving.UiText.EditMode.Column.WtPerPkg";
 
+        // Column visibility, search, sort, and page-size preferences (persisted per user)
+        public const string EditModeColumnVisibility = "Receiving.UiText.EditMode.ColumnVisibility";
+        public const string EditModeSearchByColumn = "Receiving.UiText.EditMode.SearchByColumn";
+        public const string EditModeSortColumn = "Receiving.UiText.EditMode.SortColumn";
+        public const string EditModeSortAscending = "Receiving.UiText.EditMode.SortAscending";
+        public const string EditModePageSize = "Receiving.UiText.EditMode.PageSize";
+
         public const string PoEntryPurchaseOrderNumber = "Receiving.UiText.PoEntry.PurchaseOrderNumber";
         public const string PoEntryStatusLabel = "Receiving.UiText.PoEntry.StatusLabel";
         public const string PoEntryLoadPo = "Receiving.UiText.PoEntry.LoadPo";

@@ -78,6 +78,14 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.UiText.EditModeColumnPkgsPerLoad] = "Pkgs/Load",
         [ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg] = "Wt/Pkg",
 
+        // Default visible columns (comma-separated keys), search-by, sort, and page-size
+        [ReceivingSettingsKeys.UiText.EditModeColumnVisibility] =
+            "LoadNumber,ReceivedDate,PartID,PONumber,WeightQuantity,HeatLotNumber,PackagesPerLoad,PackageType,WeightPerPackage",
+        [ReceivingSettingsKeys.UiText.EditModeSearchByColumn] = "All Fields",
+        [ReceivingSettingsKeys.UiText.EditModeSortColumn] = "",
+        [ReceivingSettingsKeys.UiText.EditModeSortAscending] = "true",
+        [ReceivingSettingsKeys.UiText.EditModePageSize] = "20",
+
         // PO entry
         [ReceivingSettingsKeys.UiText.PoEntryPurchaseOrderNumber] = "Purchase Order Number",
         [ReceivingSettingsKeys.UiText.PoEntryStatusLabel] = "Status:",

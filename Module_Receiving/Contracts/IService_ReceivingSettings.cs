@@ -16,4 +16,7 @@ public interface IService_ReceivingSettings
     Task<string> FormatAsync(string key, object? arg0, int? userId = null);
 
     Task<string> FormatAsync(string key, object? arg0, object? arg1, int? userId = null);
+
+    /// <summary>Persists a string value for the given key in the current user scope.</summary>
+    Task SaveStringAsync(string key, string value, int? userId = null);
 }
