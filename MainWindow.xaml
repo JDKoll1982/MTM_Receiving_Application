@@ -147,6 +147,11 @@
                         <FontIcon Glyph="&#xE9F9;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="Ship/Rec Tools" Tag="ShipRecToolsPage" Margin="0,0,0,4">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE90F;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
 
             </NavigationView.MenuItems>
 

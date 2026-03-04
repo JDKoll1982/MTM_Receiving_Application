@@ -28,6 +28,9 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Services.Startup;
 using MTM_Receiving_Application.Module_Core.Services;
 using MTM_Receiving_Application.Module_Core.Services.UI;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
+using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
 namespace MTM_Receiving_Application.Infrastructure.DependencyInjection;
 
@@ -53,6 +56,7 @@ public static class ModuleServicesExtensions
         services.AddReportingModule(configuration);
         services.AddSettingsModule(configuration);
         services.AddSharedModule(configuration);
+        services.AddShipRecToolsModule(configuration);
 
         return services;
     }
@@ -476,6 +480,40 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Shared.Views.View_Shared_SharedTerminalLoginDialog>();
         services.AddTransient<Module_Shared.Views.View_Shared_NewUserSetupDialog>();
         services.AddTransient<Module_Shared.Views.View_Shared_IconSelectorWindow>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers ShipRec Tools module services, DAOs, ViewModels, and Views.
+    /// Uses the InforVisual connection string for read-only Infor Visual queries.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <exception cref="InvalidOperationException">Thrown when InforVisual connection string is missing.</exception>
+    private static IServiceCollection AddShipRecToolsModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+
+        // Services (Singleton)
+        services.AddSingleton<IService_ShipRecTools_Navigation, Service_ShipRecTools_Navigation>();
+        services.AddSingleton<IService_Tool_OutsideServiceHistory>(sp =>
+        {
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_OutsideServiceHistory(inforVisual, logger);
+        });
+
+        // ViewModels (Transient - Per-navigation instances)
+        services.AddTransient<ViewModel_ShipRecTools_Main>();
+        services.AddTransient<ViewModel_ShipRecTools_ToolSelection>();
+        services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
+
+        // Views (Transient - Per-navigation instances)
+        services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
 
         return services;
     }

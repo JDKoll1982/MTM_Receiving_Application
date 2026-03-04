@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.InforVisual"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter"/>
+        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter"/>
+    </Page.Resources>
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,20">
+            <TextBlock
+                Text="Outside Service Provider History"
+                Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock
+                Text="Search Infor Visual for dispatch history by part number (read-only)."
+                Style="{StaticResource BodyTextBlockStyle}"
+                Opacity="0.7"/>
+        </StackPanel>
+
+        <!-- Search Row -->
+        <StackPanel
+            Grid.Row="1"
+            Orientation="Horizontal"
+            Spacing="10"
+            Margin="0,0,0,16">
+            <TextBlock
+                Text="Part Number:"
+                VerticalAlignment="Center"
+                Style="{StaticResource BodyStrongTextBlockStyle}"/>
+            <TextBox
+                Text="{x:Bind ViewModel.PartNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Width="220"
+                PlaceholderText="e.g. 12345-A"
+                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+            <Button
+                Content="Search"
+                Command="{x:Bind ViewModel.SearchCommand}"
+                Style="{StaticResource AccentButtonStyle}"
+                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+            <Button
+                Content="Clear"
+                Command="{x:Bind ViewModel.ClearCommand}"
+                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+            <ProgressRing
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                Width="28"
+                Height="28"
+                VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Status InfoBar -->
+        <InfoBar
+            Grid.Row="2"
+            IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
+            Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
+            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+            IsClosable="True"
+            Margin="0,0,0,12"/>
+
+        <!-- Results Grid -->
+        <ListView
+            Grid.Row="3"
+            ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
+            SelectionMode="Single">
+            <ListView.Header>
+                <Grid Padding="12,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Vendor ID"       Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="1" Text="Vendor Name"     Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="2" Text="City"            Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="3" Text="ST"              Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="4" Text="Dispatch ID"     Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="5" Text="Dispatch Date"   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="6" Text="Qty Sent"        Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="7" Text="Status"          Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
+                </Grid>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:Model_OutsideServiceHistory">
+                    <Grid Padding="12,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{x:Bind VendorID}"                                                    TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind VendorName}"                                                  TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="2" Text="{x:Bind VendorCity}"                                                  TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="3" Text="{x:Bind VendorState}"/>
+                        <TextBlock Grid.Column="4" Text="{x:Bind DispatchID}"                                                  TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="5" Text="{x:Bind DispatchDate}"/>
+                        <TextBlock Grid.Column="6" Text="{x:Bind QuantitySent}"/>
+                        <TextBlock Grid.Column="7" Text="{x:Bind DispatchStatus}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

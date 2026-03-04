@@ -2,6 +2,7 @@
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using Model_OutsideServiceHistory = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_OutsideServiceHistory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -337,6 +338,27 @@ public class Service_InforVisualConnect : IService_InforVisual
         };
 
         return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(mockPart);
+    }
+
+    #endregion
+
+    #region Outside Service Operations
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByPartAsync(string partNumber)
+    {
+        if (string.IsNullOrWhiteSpace(partNumber))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>("Part number cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning empty outside service history for part: {partNumber}");
+            return Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>());
+        }
+
+        return await _dao.GetOutsideServiceHistoryByPartAsync(partNumber);
     }
 
     #endregion

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using Model_OutsideServiceHistory = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_OutsideServiceHistory;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 {
@@ -50,6 +52,14 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <returns>True if connection successful, false otherwise</returns>
         public Task<bool> TestConnectionAsync();
+
+        /// <summary>
+        /// Retrieves outside service dispatch history for a specific part number.
+        /// Queries SERVICE_DISP_LINE joined to SERVICE_DISPATCH and VENDOR.
+        /// </summary>
+        /// <param name="partNumber">The part ID to search for in SERVICE_DISP_LINE.</param>
+        /// <returns>Result containing a list of dispatch records, sorted newest first.</returns>
+        public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByPartAsync(string partNumber);
     }
 }
 

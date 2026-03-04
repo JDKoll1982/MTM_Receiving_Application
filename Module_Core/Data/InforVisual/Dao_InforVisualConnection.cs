@@ -246,5 +246,58 @@ public class Dao_InforVisualConnection
     }
 
     #endregion
+
+    #region Outside Service Queries
+
+    /// <summary>
+    /// Retrieves service dispatch history for a given part number.
+    /// Uses: 05_GetOutsideServiceHistoryByPart.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="partNumber">The part ID to search for in SERVICE_DISP_LINE.</param>
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByPartAsync(string partNumber)
+    {
+        try
+        {
+            _logger?.LogInfo($"Querying outside service history for part: {partNumber}");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("05_GetOutsideServiceHistoryByPart.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PartNumber", partNumber);
+
+            var records = new List<Model_OutsideServiceHistory>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                records.Add(new Model_OutsideServiceHistory
+                {
+                    VendorID = reader["VendorID"].ToString() ?? string.Empty,
+                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                    VendorCity = reader["VendorCity"] as string,
+                    VendorState = reader["VendorState"] as string,
+                    DispatchID = reader["DispatchID"] as string,
+                    DispatchDate = reader["DispatchDate"] as DateTime?,
+                    PartNumber = reader["PartNumber"] as string,
+                    QuantitySent = reader["QuantitySent"] != DBNull.Value ? Convert.ToDecimal(reader["QuantitySent"]) : null,
+                    DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim()
+                });
+            }
+
+            _logger?.LogInfo($"Retrieved {records.Count} outside service records for part {partNumber}");
+            return Model_Dao_Result_Factory.Success(records);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying outside service history for part {partNumber}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
+                $"Error querying outside service history: {ex.Message}", ex);
+        }
+    }
+
+    #endregion
 }
 

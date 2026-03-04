@@ -166,6 +166,9 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "End of Day Reports";
                         ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
                         break;
+                    case "ShipRecToolsPage":
+                        NavigateWithDI(typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main));
+                        break;
                 }
             }
         }
@@ -529,8 +532,35 @@ namespace MTM_Receiving_Application
                     _currentPropertyChangedHandler = null;
                 }
 
+                // If navigated to ShipRecToolsView, set static title
+                if (page is Module_ShipRec_Tools.Views.View_ShipRecTools_Main shipRecView)
+                {
+                    var viewModel = shipRecView.ViewModel;
+                    if (viewModel != null)
+                    {
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            PageTitleTextBlock.Text = viewModel.CurrentToolTitle;
+                        });
+
+                        _currentPropertyChangedHandler = (s, propArgs) =>
+                        {
+                            if (propArgs.PropertyName == nameof(viewModel.CurrentToolTitle))
+                            {
+                                DispatcherQueue.TryEnqueue(() =>
+                                {
+                                    PageTitleTextBlock.Text = viewModel.CurrentToolTitle;
+                                });
+                            }
+                        };
+
+                        viewModel.PropertyChanged += _currentPropertyChangedHandler;
+                        _currentWorkflowViewModel = viewModel;
+                    }
+                }
+
                 // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes
-                if (page is Module_Receiving.Views.View_Receiving_Workflow receivingView)
+                else if (page is Module_Receiving.Views.View_Receiving_Workflow receivingView)
                 {
                     var viewModel = receivingView.ViewModel;
                     if (viewModel != null)
