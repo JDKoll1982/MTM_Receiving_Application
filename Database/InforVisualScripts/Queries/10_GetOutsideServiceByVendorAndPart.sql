@@ -22,9 +22,9 @@ SELECT DISTINCT
     sdl.QTY          AS QuantitySent,
     sd.STATUS        AS DispatchStatus
 FROM
-    SERVICE_DISP_LINE sdl
-    INNER JOIN SERVICE_DISPATCH sd  ON sdl.DISPATCH_ID = sd.ID
-    INNER JOIN VENDOR            v  ON sd.VENDOR_ID    = v.ID
+    dbo.SERVICE_DISP_LINE sdl
+    INNER JOIN dbo.SERVICE_DISPATCH sd  ON sdl.DISPATCH_ID = sd.ID
+    INNER JOIN dbo.VENDOR            v  ON sd.VENDOR_ID    = v.ID
 WHERE
     sd.VENDOR_ID  = @VendorID
     AND sdl.PART_ID = @PartNumber

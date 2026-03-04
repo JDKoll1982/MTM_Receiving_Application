@@ -14,8 +14,8 @@ SELECT
     COUNT(sd.ID)                    AS DispatchCount,
     MAX(sd.CREATE_DATE)             AS LastDispatchDate
 FROM
-    SERVICE_DISP_LINE sdl
-    INNER JOIN SERVICE_DISPATCH sd ON sdl.DISPATCH_ID = sd.ID
+    dbo.SERVICE_DISP_LINE sdl
+    INNER JOIN dbo.SERVICE_DISPATCH sd ON sdl.DISPATCH_ID = sd.ID
 WHERE
     sd.VENDOR_ID = @VendorID
 GROUP BY
