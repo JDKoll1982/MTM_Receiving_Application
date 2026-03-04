@@ -294,7 +294,7 @@ mkdir .serena/memories
     "InforVisual": "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;"
   },
   "InforVisual": {
-    "UseMockData": false,
+    "UseMockData": true,
     "ConnectionTimeout": 30
   },
   "Session": {
@@ -323,7 +323,7 @@ mkdir .serena/memories
     "EnableDiagnostics": true
   },
   "InforVisual": {
-    "UseMockData": false
+    "UseMockData": true
   }
 }
 ```

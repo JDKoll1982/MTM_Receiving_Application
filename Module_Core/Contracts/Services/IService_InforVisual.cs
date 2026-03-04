@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using Model_OutsideServiceHistory = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_OutsideServiceHistory;
+using Model_InforVisualPO = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPO;
+using Model_InforVisualPart = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPart;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 {
@@ -60,6 +62,43 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="partNumber">The part ID to search for in SERVICE_DISP_LINE.</param>
         /// <returns>Result containing a list of dispatch records, sorted newest first.</returns>
         public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByPartAsync(string partNumber);
+
+        /// <summary>
+        /// Retrieves outside service dispatch history for a specific vendor ID.
+        /// Queries SERVICE_DISP_LINE joined to SERVICE_DISPATCH and VENDOR.
+        /// </summary>
+        /// <param name="vendorId">The vendor ID to filter dispatch records by.</param>
+        /// <returns>Result containing a list of dispatch records, sorted newest first.</returns>
+        public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAsync(string vendorId);
+
+        /// <summary>
+        /// Fuzzy-searches parts by ID using a LIKE '%term%' query against Infor Visual.
+        /// Returns up to 50 candidates for display in a selection picker.
+        /// </summary>
+        /// <param name="term">Partial part ID entered by the user.</param>
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term);
+
+        /// <summary>
+        /// Fuzzy-searches vendors by name using a LIKE '%term%' query against Infor Visual.
+        /// Returns up to 50 candidates for display in a selection picker.
+        /// </summary>
+        /// <param name="term">Partial vendor name entered by the user.</param>
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(string term);
+
+        /// <summary>
+        /// Returns all distinct part numbers serviced by a specific vendor,
+        /// along with dispatch count and last dispatch date.
+        /// Used to populate the part selection picker after vendor confirmation.
+        /// </summary>
+        /// <param name="vendorId">The vendor ID to query parts for.</param>
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId);
+
+        /// <summary>
+        /// Retrieves outside service dispatch history filtered by both vendor ID and part number.
+        /// </summary>
+        /// <param name="vendorId">The vendor ID to filter by.</param>
+        /// <param name="partNumber">The part number to filter by.</param>
+        public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAndPartAsync(string vendorId, string partNumber);
     }
 }
 

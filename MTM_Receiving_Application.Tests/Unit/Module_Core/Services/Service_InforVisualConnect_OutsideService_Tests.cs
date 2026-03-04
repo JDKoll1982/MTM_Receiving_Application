@@ -41,10 +41,10 @@ public class Service_InforVisualConnect_OutsideService_Tests
         result.ErrorMessage.Should().Contain("Part number cannot be empty");
     }
 
-    // ─── Mock-data mode (no DAO call, returns empty success) ───────────────
+    // ─── Mock-data mode (no DAO call, returns sample records) ───────────────
 
     [Fact]
-    public async Task GetOutsideServiceHistoryByPartAsync_MockDataMode_ReturnsEmptySuccess()
+    public async Task GetOutsideServiceHistoryByPartAsync_MockDataMode_ReturnsSampleRecords()
     {
         var service = new Service_InforVisualConnect(_fakeDao, useMockData: true, _mockLogger.Object);
 
@@ -52,7 +52,8 @@ public class Service_InforVisualConnect_OutsideService_Tests
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data.Should().BeEmpty();
+        result.Data.Should().NotBeEmpty();
+        result.Data.Should().AllSatisfy(r => r.PartNumber.Should().Be("PART-001"));
     }
 
     [Fact]

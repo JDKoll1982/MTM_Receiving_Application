@@ -5,14 +5,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
-    xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.InforVisual"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
 
     <Page.Resources>
         <converters:Converter_InverseBool x:Key="InverseBoolConverter"/>
         <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter"/>
+        <converters:Converter_DateTimeToString x:Key="DateTimeToStringConverter"/>
     </Page.Resources>
 
     <Grid Padding="24">
@@ -37,32 +37,53 @@
         <!-- Search Row -->
         <StackPanel
             Grid.Row="1"
-            Orientation="Horizontal"
             Spacing="10"
             Margin="0,0,0,16">
-            <TextBlock
-                Text="Part Number:"
-                VerticalAlignment="Center"
-                Style="{StaticResource BodyStrongTextBlockStyle}"/>
-            <TextBox
-                Text="{x:Bind ViewModel.PartNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                Width="220"
-                PlaceholderText="e.g. 12345-A"
-                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
-            <Button
-                Content="Search"
-                Command="{x:Bind ViewModel.SearchCommand}"
-                Style="{StaticResource AccentButtonStyle}"
-                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
-            <Button
-                Content="Clear"
-                Command="{x:Bind ViewModel.ClearCommand}"
-                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
-            <ProgressRing
-                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                Width="28"
-                Height="28"
-                VerticalAlignment="Center"/>
+
+            <!-- Mode toggle: Part Number ↔ Vendor Name -->
+            <StackPanel Orientation="Horizontal" Spacing="0">
+                <ToggleButton
+                    Content="Part Number"
+                    IsChecked="{x:Bind ViewModel.IsSearchByPart, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.SetSearchByPartCommand}"
+                    CornerRadius="4,0,0,4"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+                <ToggleButton
+                    Content="Vendor Name"
+                    IsChecked="{x:Bind ViewModel.IsSearchByVendor, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.SetSearchByVendorCommand}"
+                    CornerRadius="0,4,4,0"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+            </StackPanel>
+
+            <!-- Query field + action buttons -->
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock
+                    Text="{x:Bind ViewModel.SearchLabel, Mode=OneWay}"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <TextBox
+                    x:Name="SearchBox"
+                    Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Width="240"
+                    PlaceholderText="{x:Bind ViewModel.SearchPlaceholder, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                    KeyDown="SearchBox_KeyDown"/>
+                <Button
+                    Content="Search"
+                    Command="{x:Bind ViewModel.SearchCommand}"
+                    Style="{StaticResource AccentButtonStyle}"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+                <Button
+                    Content="Clear"
+                    Command="{x:Bind ViewModel.ClearCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+                <ProgressRing
+                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                    Width="28"
+                    Height="28"
+                    VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
 
         <!-- Status InfoBar -->
@@ -75,56 +96,65 @@
             Margin="0,0,0,12"/>
 
         <!-- Results Grid -->
-        <ListView
-            Grid.Row="3"
-            ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
-            SelectionMode="Single">
-            <ListView.Header>
-                <Grid Padding="12,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="130"/>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="60"/>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition Width="110"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="80"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Vendor ID"       Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="1" Text="Vendor Name"     Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="2" Text="City"            Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="3" Text="ST"              Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="4" Text="Dispatch ID"     Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="5" Text="Dispatch Date"   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="6" Text="Qty Sent"        Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                    <TextBlock Grid.Column="7" Text="Status"          Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold"/>
-                </Grid>
-            </ListView.Header>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Model_OutsideServiceHistory">
-                    <Grid Padding="12,6">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="110"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{x:Bind VendorID}"                                                    TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind VendorName}"                                                  TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="2" Text="{x:Bind VendorCity}"                                                  TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="3" Text="{x:Bind VendorState}"/>
-                        <TextBlock Grid.Column="4" Text="{x:Bind DispatchID}"                                                  TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="5" Text="{x:Bind DispatchDate}"/>
-                        <TextBlock Grid.Column="6" Text="{x:Bind QuantitySent}"/>
-                        <TextBlock Grid.Column="7" Text="{x:Bind DispatchStatus}"/>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <Border Grid.Row="3"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16">
+            <controls:DataGrid
+                ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
+                AutoGenerateColumns="False"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="Column"
+                CanUserSortColumns="True"
+                SelectionMode="Single"
+                IsReadOnly="True"
+                AutomationProperties.Name="Outside Service History Results">
+                <controls:DataGrid.CellStyle>
+                    <Style TargetType="controls:DataGridCell">
+                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    </Style>
+                </controls:DataGrid.CellStyle>
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Header="Part Number"
+                                                Binding="{Binding PartNumber}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Vendor ID"
+                                                Binding="{Binding VendorID}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Vendor Name"
+                                                Binding="{Binding VendorName}"
+                                                IsReadOnly="True"
+                                                Width="*"/>
+                    <controls:DataGridTextColumn Header="City"
+                                                Binding="{Binding VendorCity}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="ST"
+                                                Binding="{Binding VendorState}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Dispatch ID"
+                                                Binding="{Binding DispatchID}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Dispatch Date"
+                                                Binding="{Binding DispatchDate, Converter={StaticResource DateTimeToStringConverter}}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Qty Sent"
+                                                Binding="{Binding QuantitySent}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Status"
+                                                Binding="{Binding DispatchStatus}"
+                                                IsReadOnly="True"
+                                                Width="Auto"/>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
+        </Border>
     </Grid>
 </Page>

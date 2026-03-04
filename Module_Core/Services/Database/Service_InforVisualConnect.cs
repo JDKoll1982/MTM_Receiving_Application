@@ -1,12 +1,14 @@
-﻿using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using Model_OutsideServiceHistory = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_OutsideServiceHistory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Model_InforVisualPO = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPO;
+using Model_InforVisualPart = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPart;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Database;
 
@@ -340,6 +342,120 @@ public class Service_InforVisualConnect : IService_InforVisual
         return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(mockPart);
     }
 
+    private Model_Dao_Result<List<Model_OutsideServiceHistory>> CreateMockOutsideServiceHistory(string partNumber)
+    {
+        var records = new List<Model_OutsideServiceHistory>
+        {
+            new Model_OutsideServiceHistory
+            {
+                VendorID       = "MOCK-VENDOR-001",
+                VendorName     = "Acme Heat Treating Co.",
+                VendorCity     = "Detroit",
+                VendorState    = "MI",
+                DispatchID     = "SD-001234",
+                DispatchDate   = DateTime.Today.AddMonths(-1),
+                PartNumber     = partNumber,
+                QuantitySent   = 25,
+                DispatchStatus = "Closed"
+            },
+            new Model_OutsideServiceHistory
+            {
+                VendorID       = "MOCK-VENDOR-002",
+                VendorName     = "Precision Plating Inc.",
+                VendorCity     = "Grand Rapids",
+                VendorState    = "MI",
+                DispatchID     = "SD-001189",
+                DispatchDate   = DateTime.Today.AddMonths(-3),
+                PartNumber     = partNumber,
+                QuantitySent   = 50,
+                DispatchStatus = "Closed"
+            },
+            new Model_OutsideServiceHistory
+            {
+                VendorID       = "MOCK-VENDOR-001",
+                VendorName     = "Acme Heat Treating Co.",
+                VendorCity     = "Detroit",
+                VendorState    = "MI",
+                DispatchID     = "SD-001302",
+                DispatchDate   = DateTime.Today.AddDays(-7),
+                PartNumber     = partNumber,
+                QuantitySent   = 10,
+                DispatchStatus = "Open"
+            }
+        };
+
+        return Model_Dao_Result_Factory.Success(records);
+    }
+
+    private Model_Dao_Result<List<Model_OutsideServiceHistory>> CreateMockOutsideServiceHistoryByVendor(string vendorId)
+    {
+        var records = new List<Model_OutsideServiceHistory>
+        {
+            new Model_OutsideServiceHistory
+            {
+                VendorID       = vendorId,
+                VendorName     = "Mock Vendor Corp.",
+                VendorCity     = "Detroit",
+                VendorState    = "MI",
+                DispatchID     = "SD-002100",
+                DispatchDate   = DateTime.Today.AddMonths(-2),
+                PartNumber     = "MOCK-PART-A",
+                QuantitySent   = 30,
+                DispatchStatus = "Closed"
+            },
+            new Model_OutsideServiceHistory
+            {
+                VendorID       = vendorId,
+                VendorName     = "Mock Vendor Corp.",
+                VendorCity     = "Detroit",
+                VendorState    = "MI",
+                DispatchID     = "SD-002250",
+                DispatchDate   = DateTime.Today.AddDays(-14),
+                PartNumber     = "MOCK-PART-B",
+                QuantitySent   = 15,
+                DispatchStatus = "Open"
+            }
+        };
+
+        return Model_Dao_Result_Factory.Success(records);
+    }
+
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyParts(string term)
+    {
+        var results = new List<Model_FuzzySearchResult>
+        {
+            new Model_FuzzySearchResult { Key = $"21-{term.ToUpper()}-001", Label = $"21-{term.ToUpper()}-001", Detail = "Mock Part — Heat Treated Rod Assembly" },
+            new Model_FuzzySearchResult { Key = $"21-{term.ToUpper()}-002", Label = $"21-{term.ToUpper()}-002", Detail = "Mock Part — Plated Bracket" },
+            new Model_FuzzySearchResult { Key = $"MMC-{term.ToUpper()}",    Label = $"MMC-{term.ToUpper()}",    Detail = "Mock Part — Machined Component" }
+        };
+
+        return Model_Dao_Result_Factory.Success(results);
+    }
+
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyVendors(string term)
+    {
+        var results = new List<Model_FuzzySearchResult>
+        {
+            new Model_FuzzySearchResult { Key = "MOCK-V001", Label = $"Acme {term} Co.",          Detail = "Detroit, MI" },
+            new Model_FuzzySearchResult { Key = "MOCK-V002", Label = $"Precision {term} Inc.",    Detail = "Grand Rapids, MI" },
+            new Model_FuzzySearchResult { Key = "MOCK-V003", Label = $"Allied {term} Solutions",  Detail = "Toledo, OH" }
+        };
+
+        return Model_Dao_Result_Factory.Success(results);
+    }
+
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string vendorId)
+    {
+        var results = new List<Model_FuzzySearchResult>
+        {
+            new Model_FuzzySearchResult { Key = "MOCK-PART-A", Label = "MOCK-PART-A", Detail = "3 dispatch(es) — last 01/15/2025" },
+            new Model_FuzzySearchResult { Key = "MOCK-PART-B", Label = "MOCK-PART-B", Detail = "1 dispatch(es) — last 03/20/2025" },
+            new Model_FuzzySearchResult { Key = "MOCK-PART-C", Label = "MOCK-PART-C", Detail = "5 dispatch(es) — last 04/01/2025" }
+        };
+
+        return Model_Dao_Result_Factory.Success(results);
+    }
+
     #endregion
 
     #region Outside Service Operations
@@ -354,11 +470,103 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         if (_useMockData)
         {
-            _logger?.LogInfo($"[MOCK DATA MODE] Returning empty outside service history for part: {partNumber}");
-            return Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>());
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock outside service history for part: {partNumber}");
+            return CreateMockOutsideServiceHistory(partNumber);
         }
 
         return await _dao.GetOutsideServiceHistoryByPartAsync(partNumber);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAsync(string vendorId)
+    {
+        if (string.IsNullOrWhiteSpace(vendorId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>("Vendor ID cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock outside service history for vendor: {vendorId}");
+            return CreateMockOutsideServiceHistoryByVendor(vendorId);
+        }
+
+        return await _dao.GetOutsideServiceHistoryByVendorAsync(vendorId);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Search term cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock fuzzy part results for: {term}");
+            return CreateMockFuzzyParts(term);
+        }
+
+        return await _dao.FuzzySearchPartsByIdAsync(term);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(string term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Search term cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock fuzzy vendor results for: {term}");
+            return CreateMockFuzzyVendors(term);
+        }
+
+        return await _dao.FuzzySearchVendorsByNameAsync(term);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId)
+    {
+        if (string.IsNullOrWhiteSpace(vendorId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Vendor ID cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock parts for vendor: {vendorId}");
+            return CreateMockPartsByVendor(vendorId);
+        }
+
+        return await _dao.GetPartsByVendorAsync(vendorId);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAndPartAsync(
+        string vendorId,
+        string partNumber)
+    {
+        if (string.IsNullOrWhiteSpace(vendorId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>("Vendor ID cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(partNumber))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>("Part number cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock history for vendor {vendorId}, part {partNumber}");
+            return CreateMockOutsideServiceHistory(partNumber);
+        }
+
+        return await _dao.GetOutsideServiceHistoryByVendorAndPartAsync(vendorId, partNumber);
     }
 
     #endregion

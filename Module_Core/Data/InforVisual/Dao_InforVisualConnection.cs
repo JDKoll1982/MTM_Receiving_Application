@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -298,6 +298,261 @@ public class Dao_InforVisualConnection
         }
     }
 
+    /// <summary>
+    /// Fuzzy search for parts whose ID contains <paramref name="term"/> (LIKE '%term%').
+    /// Uses: 06_FuzzySearchPartsByID.sql
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsByIdAsync(
+        string term,
+        int maxResults = 50)
+    {
+        try
+        {
+            _logger?.LogInfo($"Fuzzy-searching parts by ID: '{term}' (max {maxResults})");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("06_FuzzySearchPartsByID.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Term", $"%{term}%");
+            command.Parameters.AddWithValue("@MaxResults", maxResults);
+
+            var results = new List<Model_FuzzySearchResult>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var partNumber = reader["PartNumber"].ToString() ?? string.Empty;
+                var description = reader["Description"].ToString() ?? string.Empty;
+                results.Add(new Model_FuzzySearchResult
+                {
+                    Key = partNumber,
+                    Label = partNumber,
+                    Detail = description
+                });
+            }
+
+            _logger?.LogInfo($"Fuzzy part search found {results.Count} results for '{term}'");
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error fuzzy-searching parts: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                $"Error searching parts: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Fuzzy search for vendors whose NAME contains <paramref name="term"/> (LIKE '%term%').
+    /// Uses: 07_FuzzySearchVendorsByName.sql
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsByNameAsync(
+        string term,
+        int maxResults = 50)
+    {
+        try
+        {
+            _logger?.LogInfo($"Fuzzy-searching vendors by name: '{term}' (max {maxResults})");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("07_FuzzySearchVendorsByName.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Term", $"%{term}%");
+            command.Parameters.AddWithValue("@MaxResults", maxResults);
+
+            var results = new List<Model_FuzzySearchResult>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var vendorId = reader["VendorID"].ToString() ?? string.Empty;
+                var vendorName = reader["VendorName"].ToString() ?? string.Empty;
+                var city = reader["VendorCity"] as string;
+                var state = reader["VendorState"] as string;
+                var detail = (city, state) switch
+                {
+                    ({ } c, { } s) when !string.IsNullOrWhiteSpace(c) => $"{c}, {s}",
+                    ({ } c, _) when !string.IsNullOrWhiteSpace(c) => c,
+                    _ => null
+                };
+
+                results.Add(new Model_FuzzySearchResult
+                {
+                    Key = vendorId,
+                    Label = vendorName,
+                    Detail = detail
+                });
+            }
+
+            _logger?.LogInfo($"Fuzzy vendor search found {results.Count} results for '{term}'");
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error fuzzy-searching vendors: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                $"Error searching vendors: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Retrieves service dispatch history for a given vendor ID.
+    /// Uses: 08_GetOutsideServiceHistoryByVendor.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAsync(string vendorId)
+    {
+        try
+        {
+            _logger?.LogInfo($"Querying outside service history for vendor: {vendorId}");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("08_GetOutsideServiceHistoryByVendor.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@VendorID", vendorId);
+
+            var records = new List<Model_OutsideServiceHistory>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                records.Add(new Model_OutsideServiceHistory
+                {
+                    VendorID = reader["VendorID"].ToString() ?? string.Empty,
+                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                    VendorCity = reader["VendorCity"] as string,
+                    VendorState = reader["VendorState"] as string,
+                    DispatchID = reader["DispatchID"] as string,
+                    DispatchDate = reader["DispatchDate"] as DateTime?,
+                    PartNumber = reader["PartNumber"] as string,
+                    QuantitySent = reader["QuantitySent"] != DBNull.Value ? Convert.ToDecimal(reader["QuantitySent"]) : null,
+                    DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim()
+                });
+            }
+
+            _logger?.LogInfo($"Retrieved {records.Count} outside service records for vendor {vendorId}");
+            return Model_Dao_Result_Factory.Success(records);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying outside service history for vendor {vendorId}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
+                $"Error querying outside service history by vendor: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Returns all distinct part numbers serviced by a specific vendor,
+    /// along with dispatch count and last dispatch date.
+    /// Used to populate the part selection picker after vendor confirmation.
+    /// Uses: 09_GetDistinctPartsByVendor.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="vendorId">The vendor ID to query parts for.</param>
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId)
+    {
+        try
+        {
+            _logger?.LogInfo($"Querying distinct parts for vendor: {vendorId}");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("09_GetDistinctPartsByVendor.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@VendorID", vendorId);
+
+            var results = new List<Model_FuzzySearchResult>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var partNumber = reader["PartNumber"].ToString() ?? string.Empty;
+                var count = Convert.ToInt32(reader["DispatchCount"]);
+                var lastDate = reader["LastDispatchDate"] as DateTime?;
+                var detail = lastDate.HasValue
+                    ? $"{count} dispatch(es) — last {lastDate.Value:MM/dd/yyyy}"
+                    : $"{count} dispatch(es)";
+
+                results.Add(new Model_FuzzySearchResult
+                {
+                    Key = partNumber,
+                    Label = partNumber,
+                    Detail = detail
+                });
+            }
+
+            _logger?.LogInfo($"Retrieved {results.Count} distinct parts for vendor {vendorId}");
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying parts for vendor {vendorId}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                $"Error querying parts for vendor: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Retrieves service dispatch history filtered by both vendor ID and part number.
+    /// Uses: 10_GetOutsideServiceByVendorAndPart.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="vendorId">The vendor ID to filter by.</param>
+    /// <param name="partNumber">The part number to filter by.</param>
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAndPartAsync(
+        string vendorId,
+        string partNumber)
+    {
+        try
+        {
+            _logger?.LogInfo($"Querying outside service history for vendor {vendorId}, part {partNumber}");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("10_GetOutsideServiceByVendorAndPart.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@VendorID", vendorId);
+            command.Parameters.AddWithValue("@PartNumber", partNumber);
+
+            var records = new List<Model_OutsideServiceHistory>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                records.Add(new Model_OutsideServiceHistory
+                {
+                    VendorID = reader["VendorID"].ToString() ?? string.Empty,
+                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                    VendorCity = reader["VendorCity"] as string,
+                    VendorState = reader["VendorState"] as string,
+                    DispatchID = reader["DispatchID"] as string,
+                    DispatchDate = reader["DispatchDate"] as DateTime?,
+                    PartNumber = reader["PartNumber"] as string,
+                    QuantitySent = reader["QuantitySent"] != DBNull.Value ? Convert.ToDecimal(reader["QuantitySent"]) : null,
+                    DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim()
+                });
+            }
+
+            _logger?.LogInfo($"Retrieved {records.Count} records for vendor {vendorId}, part {partNumber}");
+            return Model_Dao_Result_Factory.Success(records);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying outside service history for vendor {vendorId}, part {partNumber}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
+                $"Error querying outside service history by vendor and part: {ex.Message}", ex);
+        }
+    }
+
     #endregion
 }
+
 
