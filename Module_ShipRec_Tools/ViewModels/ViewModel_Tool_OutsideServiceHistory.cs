@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -48,6 +49,10 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     [ObservableProperty]
     private ObservableCollection<Model_OutsideServiceHistory> _results = new();
 
+    private List<Model_OutsideServiceHistory> _allResults = new();
+    private string _sortPropertyName = string.Empty;
+    private bool _sortAscending = true;
+
     // ─── Fuzzy Picker Bridge ────────────────────────────────────────────────
 
     /// <summary>
@@ -56,6 +61,12 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     /// Parameters: (candidates, dialogTitle) → selected item, or null if cancelled.
     /// </summary>
     public Func<IReadOnlyList<Model_FuzzySearchResult>, string, Task<Model_FuzzySearchResult?>>? ShowFuzzyPickerAsync { get; set; }
+
+    /// <summary>
+    /// Set by the view's code-behind so the ViewModel can request column sort indicators to reset
+    /// whenever new results are loaded or the search is cleared.
+    /// </summary>
+    public Action? ResetSortIndicators { get; set; }
 
     // ─── Constructor ────────────────────────────────────────────────────────
 
@@ -190,8 +201,12 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             return;
         }
 
+        _allResults = new List<Model_OutsideServiceHistory>(historyResult.Data);
+        _sortPropertyName = string.Empty;
+        _sortAscending = true;
+        ResetSortIndicators?.Invoke();
         Results.Clear();
-        foreach (var item in historyResult.Data)
+        foreach (var item in _allResults)
         {
             Results.Add(item);
         }
@@ -264,8 +279,12 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             return;
         }
 
+        _allResults = new List<Model_OutsideServiceHistory>(historyResult.Data);
+        _sortPropertyName = string.Empty;
+        _sortAscending = true;
+        ResetSortIndicators?.Invoke();
         Results.Clear();
-        foreach (var item in historyResult.Data)
+        foreach (var item in _allResults)
         {
             Results.Add(item);
         }
@@ -282,8 +301,62 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     private void Clear()
     {
         SearchTerm = string.Empty;
+        _allResults.Clear();
+        _sortPropertyName = string.Empty;
+        _sortAscending = true;
+        ResetSortIndicators?.Invoke();
         Results.Clear();
         ShowStatus($"Enter a {(IsSearchByPartMode ? "part number" : "vendor name")} to search.");
+    }
+
+    // ─── Sorting ──────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sorts <see cref="Results"/> by the named property, toggling direction on repeated calls.
+    /// Returns <see langword="true"/> if now sorted ascending, <see langword="false"/> if descending.
+    /// </summary>
+    public bool SortBy(string propertyName)
+    {
+        if (_sortPropertyName == propertyName)
+        {
+            _sortAscending = !_sortAscending;
+        }
+        else
+        {
+            _sortPropertyName = propertyName;
+            _sortAscending = true;
+        }
+
+        ApplySort();
+        return _sortAscending;
+    }
+
+    private void ApplySort()
+    {
+        if (_allResults.Count == 0 || string.IsNullOrEmpty(_sortPropertyName))
+        {
+            return;
+        }
+
+        IEnumerable<Model_OutsideServiceHistory> sorted = _sortPropertyName switch
+        {
+            nameof(Model_OutsideServiceHistory.PartNumber)     => _sortAscending ? _allResults.OrderBy(r => r.PartNumber)     : _allResults.OrderByDescending(r => r.PartNumber),
+            nameof(Model_OutsideServiceHistory.VendorID)       => _sortAscending ? _allResults.OrderBy(r => r.VendorID)       : _allResults.OrderByDescending(r => r.VendorID),
+            nameof(Model_OutsideServiceHistory.VendorName)     => _sortAscending ? _allResults.OrderBy(r => r.VendorName)     : _allResults.OrderByDescending(r => r.VendorName),
+            nameof(Model_OutsideServiceHistory.VendorCity)     => _sortAscending ? _allResults.OrderBy(r => r.VendorCity)     : _allResults.OrderByDescending(r => r.VendorCity),
+            nameof(Model_OutsideServiceHistory.VendorState)    => _sortAscending ? _allResults.OrderBy(r => r.VendorState)    : _allResults.OrderByDescending(r => r.VendorState),
+            nameof(Model_OutsideServiceHistory.DispatchID)     => _sortAscending ? _allResults.OrderBy(r => r.DispatchID)     : _allResults.OrderByDescending(r => r.DispatchID),
+            nameof(Model_OutsideServiceHistory.DispatchDate)   => _sortAscending ? _allResults.OrderBy(r => r.DispatchDate)   : _allResults.OrderByDescending(r => r.DispatchDate),
+            nameof(Model_OutsideServiceHistory.QuantitySent)   => _sortAscending ? _allResults.OrderBy(r => r.QuantitySent)   : _allResults.OrderByDescending(r => r.QuantitySent),
+            nameof(Model_OutsideServiceHistory.DispatchStatus) => _sortAscending ? _allResults.OrderBy(r => r.DispatchStatus) : _allResults.OrderByDescending(r => r.DispatchStatus),
+            _ => _allResults
+        };
+
+        Results.Clear();
+        foreach (var item in sorted)
+        {
+            Results.Add(item);
+        }
     }
 }
 

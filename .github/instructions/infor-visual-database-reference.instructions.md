@@ -2,8 +2,8 @@
 applyTo: "**"
 description: >
   Infor Visual (MTMFG) SQL Server database reference files — what each CSV file contains,
-  how to use them when generating SQL queries or C# models, and the complete file inventory
-  including recommended files not yet generated.
+  how to use them when generating SQL queries or C# models, and the complete verified file
+  inventory with known limitations (encrypted definitions, missing headers, V_ naming).
 ---
 
 # Infor Visual Database Reference Files
@@ -25,7 +25,7 @@ an Infor Visual table, or a DAO that joins multiple Visual tables.
 - Always verify column names against the CSV files before generating code; Infor Visual
   column names are case-insensitive but must be spelled exactly.
 - Prefer filtering on **indexed** columns (see `MTMFG_Schema_Indexes.csv` when available).
-- Tables prefixed `V_` are SQL Server **views**, not base tables (see Views section below).
+- Tables prefixed `V_` are SQL Server **base tables**, not views. The `V_` prefix is an Infor Visual domain naming convention (verified 2026-03-06: `V_ACCOUNT` and similar appear in `sys.tables`, not `sys.views`). The only actual SQL Server views in MTMFG are `CR_PART_LOCATION` and `SYSUSERAUTH` — see `MTMFG_Schema_Views.csv`.
 
 ---
 
@@ -112,71 +112,93 @@ So any DAO method that fetches a single operation must supply all six columns.
 
 ---
 
-## Recommended Additional Files (Not Yet Generated)
+## Additional Reference Files
 
-See `ADDITIONAL_CSV_RECOMMENDATIONS.md` in this folder for the full list with SSMS SQL queries.
-Summary of what each will provide once generated:
+All files below have been generated (2026-03-06). See `ADDITIONAL_CSV_RECOMMENDATIONS.md` for
+the SSMS queries used to produce each one.
 
-### `MTMFG_Schema_ColumnDetails.csv` ★★★ HIGH PRIORITY
+> **Note:** These files were exported using SSMS "Results to File" and do **not** include a
+> header row. Column order is documented under each file below.
 
-Adds `MAX_CHAR_LENGTH`, `NUMERIC_PRECISION`, `NUMERIC_SCALE`, `IS_IDENTITY`, `IS_COMPUTED`
-to every column. **Required before generating C# model properties for decimal or string columns.**
+### `MTMFG_Schema_ColumnDetails.csv` ★★★
+
+**Columns (no header row):** `TABLE_NAME`, `COLUMN_ORDER`, `COLUMN_NAME`, `DATA_TYPE`,
+`MAX_CHAR_LENGTH`, `NUMERIC_PRECISION`, `NUMERIC_SCALE`, `IS_NULLABLE`, `IS_IDENTITY`,
+`IS_COMPUTED` — ~14,775 rows
 
 Use when:
 - Generating `decimal(18,4)` vs `decimal(10,2)` stored procedure parameters.
 - Setting `[MaxLength]` annotations on C# string properties.
-- Skipping identity columns from INSERT parameter lists (MySQL DAOs).
+- Skipping identity columns (`IS_IDENTITY=YES`) from INSERT parameter lists (MySQL DAOs).
 
 ---
 
-### `MTMFG_Schema_Views.csv` ★★★ HIGH PRIORITY
+### `MTMFG_Schema_Views.csv` ★★★
 
-All `V_` prefix objects in the Tables CSV are views. Their column definitions differ from base
-tables and the Tables CSV includes them mixed in with real tables.
+**Verified 2026-03-06:** MTMFG has only **2 actual SQL Server views**: `CR_PART_LOCATION` and
+`SYSUSERAUTH`.
 
-Use when:
-- Writing SELECT queries against any `V_` object (V_ACCOUNT, V_CONTRACT, V_SRVC_ORDER, etc.).
-- Verifying that a column available on a view actually exists on that view.
+> ⚠️ **CORRECTION — `V_` tables are base tables, not views.** Objects such as `V_ACCOUNT`,
+> `V_CONTRACT`, and `V_SRVC_ORDER` appear in `sys.tables` (not `sys.views`). They are standard
+> SQL Server base tables; the `V_` prefix is an Infor Visual domain naming convention, not a
+> view indicator. Use `MTMFG_Schema_Tables.csv` and `MTMFG_Schema_ColumnDetails.csv` for all
+> `V_` prefixed tables.
+
+**Columns (no header row):** `VIEW_SCHEMA`, `VIEW_NAME`, `COLUMN_ORDER`, `COLUMN_NAME`,
+`DATA_TYPE`, `MAX_CHAR_LENGTH`, `NUMERIC_PRECISION`, `NUMERIC_SCALE`, `IS_NULLABLE`
+
+Use when: Querying `CR_PART_LOCATION` (part/warehouse location data) or `SYSUSERAUTH`.
 
 ---
 
 ### `MTMFG_Schema_Indexes.csv` ★★
 
+**Columns (no header row):** `TABLE_NAME`, `INDEX_NAME`, `INDEX_TYPE`, `IS_UNIQUE`,
+`IS_PRIMARY_KEY`, `COLUMN_NAME`, `KEY_ORDINAL`, `IS_INCLUDED`
+
 Use when:
 - Writing WHERE clauses on large tables — filter on indexed columns first.
 - Choosing between equivalent join paths — prefer the one using an indexed FK column.
-- Tables known to be large (see RowCounts CSV): `INVENTORY_TRANS`, `LABOR_TICKET`,
-  `CUSTOMER_ORDER`, `PURCHASE_ORDER`, `RECEIVER_LINE`.
+- Tables known to be large (see RowCounts CSV): `CUST_BOOK_DEL` (~4.8M rows),
+  `WIP_ISSUE_DETAIL` (~3.9M), `INVENTORY_TRANS` (~3.5M), `LABOR_TICKET`, `CUSTOMER_ORDER`,
+  `PURCHASE_ORDER`, `RECEIVER_LINE`.
 
 ---
 
 ### `MTMFG_Schema_TableRowCounts.csv` ★★
 
+**Columns (no header row):** `TABLE_NAME`, `APPROX_ROW_COUNT` — ordered largest-first.
+
+Top tables: `CUST_BOOK_DEL` (~4.8M), `WIP_ISSUE_DETAIL` (~3.9M), `INVENTORY_TRANS` (~3.5M).
+
 Use when:
-- Deciding whether a full-table query is safe or whether a TOP/WHERE is mandatory.
+- Deciding whether a full-table query is safe or whether a TOP/WHERE clause is mandatory.
 - Documenting expected query performance in DAO method XML comments.
 
 ---
 
 ### `MTMFG_Schema_Triggers.csv` ★★
 
+**Columns (no header row):** `TABLE_NAME`, `TRIGGER_NAME`, `TRIGGER_TYPE`, `IS_DISABLED`,
+`IS_INSTEAD_OF`, `TRIGGER_EVENTS` — 331 rows
+
 Use when:
-- Explaining to the user why a Visual record appears to change fields automatically after an
-  ERP action (trigger side-effects).
-- Documenting that certain tables should not be queried mid-transaction from the ERP side.
+- Explaining why a Visual record changes automatically after an ERP action (trigger side-effects).
+- Identifying tables with heavy trigger activity that should not be queried mid-transaction.
 
 ---
 
-### `MTMFG_Schema_StoredProcedures.csv` ★
+### `MTMFG_Schema_StoredProcedures.csv` — ⛔ Not applicable
 
-Use when:
-- Checking whether Infor Visual already exposes a data operation as a stored procedure before
-  building raw SELECT logic.
-- Generating parameter lists for any Visual SP that may be called in the future.
+**Verified 2026-03-06:** MTMFG has no stored procedures and no user-defined functions in SQL
+Server (`sys.procedures` and all UDF object types return 0 rows). Infor Visual implements all
+business logic in the application tier. This file will never have data — skip it entirely.
 
 ---
 
 ### `MTMFG_Schema_UniqueConstraints.csv` ★
+
+**Columns (no header row):** `TABLE_NAME`, `CONSTRAINT_NAME`, `COLUMN_NAME`, `KEY_ORDINAL`
 
 Use when:
 - Writing lookup queries by business key (e.g., `PART.ID`, `VENDOR.ID`, `CUSTOMER.ID`) —
@@ -186,27 +208,37 @@ Use when:
 
 ### `MTMFG_Schema_DefaultConstraints.csv` ★
 
-Use when:
-- Building test fixture data for integration tests — columns with defaults can be omitted.
-- Documenting expected default values in model XML comments.
+**Columns (no header row):** `TABLE_NAME`, `COLUMN_NAME`, `CONSTRAINT_NAME`,
+`DEFAULT_EXPRESSION` — 1,412 rows
+
+> ⚠️ **Limitation:** `DEFAULT_EXPRESSION` is NULL for all rows. Infor Visual stores default
+> constraint definitions with encryption, making them inaccessible via
+> `sys.default_constraints.definition`. The file confirms *which* columns have defaults but
+> not *what* the default values are.
+
+Use when: Knowing which columns have defaults (safe to omit from INSERT test fixture data).
 
 ---
 
 ### `MTMFG_Schema_CheckConstraints.csv` ★
 
-Use when:
-- Generating enum types for `nchar` flag columns — check constraints reveal the allowed values.
-- Example: a check constraint `IN ('Y','N')` on `BACKORDER_FLAG` → map to `bool` with
-  `'Y' = true`.
+**Columns (no header row):** `TABLE_NAME`, `CONSTRAINT_NAME`, `CHECK_DEFINITION` — 117 rows
+
+> ⚠️ **Limitation:** `CHECK_DEFINITION` is NULL for all rows. Infor Visual stores check
+> constraint definitions with encryption, making them inaccessible via
+> `sys.check_constraints.definition`. The file confirms *which* tables have check constraints
+> but cannot reveal allowed values for enum mapping.
+
+Use when: Knowing which tables enforce check constraints — but do not rely on this file to
+derive enum values or flag domains.
 
 ---
 
-### `MTMFG_Schema_ExtendedProperties.csv` ★
+### `MTMFG_Schema_ExtendedProperties.csv` — ⛔ Not applicable
 
-Use when:
-- The column name is ambiguous (e.g., `ACT_LABOR_COST` vs `EST_LABOR_COST`) — the
-  MS_Description will clarify the business meaning.
-- Writing XML `<summary>` doc comments on C# model properties.
+**Verified 2026-03-06:** MTMFG has no `MS_Description` extended properties on any tables or
+columns (`sys.extended_properties` returns 0 rows for `ep.class = 1`). This file will never
+have data — skip it entirely.
 
 ---
 
@@ -274,14 +306,14 @@ WHERE WORKORDER_TYPE      = @type
 | `MTMFG_Schema_Tables.csv` | ✅ Generated | Core |
 | `MTMFG_Schema_FKs.csv` | ✅ Generated | Core |
 | `MTMFG_Schema_PKs.csv` | ✅ Generated | Core |
-| `MTMFG_Schema_ColumnDetails.csv` | ⬜ Not yet generated | ★★★ |
-| `MTMFG_Schema_Views.csv` | ⬜ Not yet generated | ★★★ |
-| `MTMFG_Schema_Indexes.csv` | ⬜ Not yet generated | ★★ |
-| `MTMFG_Schema_TableRowCounts.csv` | ⬜ Not yet generated | ★★ |
-| `MTMFG_Schema_Triggers.csv` | ⬜ Not yet generated | ★★ |
-| `MTMFG_Schema_StoredProcedures.csv` | ⬜ Not yet generated | ★ |
-| `MTMFG_Schema_UniqueConstraints.csv` | ⬜ Not yet generated | ★ |
-| `MTMFG_Schema_DefaultConstraints.csv` | ⬜ Not yet generated | ★ |
-| `MTMFG_Schema_CheckConstraints.csv` | ⬜ Not yet generated | ★ |
-| `MTMFG_Schema_ExtendedProperties.csv` | ⬜ Not yet generated | ★ |
+| `MTMFG_Schema_ColumnDetails.csv` | ✅ Generated — no header row, ~14,775 rows | ★★★ |
+| `MTMFG_Schema_Views.csv` | ✅ Generated — 2 views only; V_ tables are base tables, not views | ★★★ |
+| `MTMFG_Schema_Indexes.csv` | ✅ Generated — no header row | ★★ |
+| `MTMFG_Schema_TableRowCounts.csv` | ✅ Generated — no header row | ★★ |
+| `MTMFG_Schema_Triggers.csv` | ✅ Generated — no header row, 331 rows | ★★ |
+| `MTMFG_Schema_StoredProcedures.csv` | ⛔ Not applicable — MTMFG has no SPs or UDFs | N/A |
+| `MTMFG_Schema_UniqueConstraints.csv` | ✅ Generated — no header row | ★ |
+| `MTMFG_Schema_DefaultConstraints.csv` | ✅ Generated — DEFAULT_EXPRESSION all NULL (encrypted) | ★ |
+| `MTMFG_Schema_CheckConstraints.csv` | ✅ Generated — CHECK_DEFINITION all NULL (encrypted) | ★ |
+| `MTMFG_Schema_ExtendedProperties.csv` | ⛔ Not applicable — no MS_Description properties | N/A |
 | `ADDITIONAL_CSV_RECOMMENDATIONS.md` | ✅ Created | Reference |

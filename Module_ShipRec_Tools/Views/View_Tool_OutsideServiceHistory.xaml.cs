@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -26,6 +27,7 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
         this.InitializeComponent();
 
         ViewModel.ShowFuzzyPickerAsync = ShowFuzzyPickerDialogAsync;
+        ViewModel.ResetSortIndicators = ResetAllColumnSortDirections;
     }
 
     // ─── Fuzzy Picker Delegate ───────────────────────────────────────────────
@@ -53,6 +55,38 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
         if (e.Key == Windows.System.VirtualKey.Enter && ViewModel.SearchCommand.CanExecute(null))
         {
             ViewModel.SearchCommand.Execute(null);
+        }
+    }
+
+    // ─── Column Sorting ─────────────────────────────────────────────────
+
+    private void ResultsGrid_Sorting(object sender, DataGridColumnEventArgs e)
+    {
+        var propertyName = e.Column.SortMemberPath;
+        if (string.IsNullOrEmpty(propertyName))
+        {
+            return;
+        }
+
+        bool ascending = ViewModel.SortBy(propertyName);
+
+        foreach (var col in ResultsGrid.Columns)
+        {
+            col.SortDirection = null;
+        }
+
+        e.Column.SortDirection = ascending
+            ? DataGridSortDirection.Ascending
+            : DataGridSortDirection.Descending;
+
+        e.Handled = true;
+    }
+
+    private void ResetAllColumnSortDirections()
+    {
+        foreach (var col in ResultsGrid.Columns)
+        {
+            col.SortDirection = null;
         }
     }
 }

@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.sql"
+applyTo: "Database/StoredProcedures/**/*.sql,Database/Schemas/**/*.sql,Database/Scripts/**/*.sql,Database/00-Test/**/*.sql,Database/01-Deploy/**/*.sql"
 ---
 
 # SQL Development

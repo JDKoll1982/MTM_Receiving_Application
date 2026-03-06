@@ -103,11 +103,13 @@
                 CornerRadius="8"
                 Padding="16">
             <controls:DataGrid
+                x:Name="ResultsGrid"
                 ItemsSource="{x:Bind ViewModel.Results, Mode=OneWay}"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
                 CanUserSortColumns="True"
+                Sorting="ResultsGrid_Sorting"
                 SelectionMode="Single"
                 IsReadOnly="True"
                 AutomationProperties.Name="Outside Service History Results">
@@ -119,38 +121,47 @@
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="Part Number"
                                                 Binding="{Binding PartNumber}"
+                                                SortMemberPath="PartNumber"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="Vendor ID"
                                                 Binding="{Binding VendorID}"
+                                                SortMemberPath="VendorID"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="Vendor Name"
                                                 Binding="{Binding VendorName}"
+                                                SortMemberPath="VendorName"
                                                 IsReadOnly="True"
                                                 Width="*"/>
                     <controls:DataGridTextColumn Header="City"
                                                 Binding="{Binding VendorCity}"
+                                                SortMemberPath="VendorCity"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="ST"
                                                 Binding="{Binding VendorState}"
+                                                SortMemberPath="VendorState"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="Dispatch ID"
                                                 Binding="{Binding DispatchID}"
+                                                SortMemberPath="DispatchID"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="Dispatch Date"
                                                 Binding="{Binding DispatchDate, Converter={StaticResource DateTimeToStringConverter}}"
+                                                SortMemberPath="DispatchDate"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="Qty Sent"
                                                 Binding="{Binding QuantitySent}"
+                                                SortMemberPath="QuantitySent"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                     <controls:DataGridTextColumn Header="Status"
                                                 Binding="{Binding DispatchStatus}"
+                                                SortMemberPath="DispatchStatus"
                                                 IsReadOnly="True"
                                                 Width="Auto"/>
                 </controls:DataGrid.Columns>

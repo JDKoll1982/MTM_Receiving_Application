@@ -21,6 +21,8 @@ Use any of the following instruction files relevant to the current task, user's 
 #file:self-explanatory-code-commenting.instructions.md'
 #file:shell.instructions.md'
 #file:sql-sp-generation.instructions.md'
+#file:infor-visual-database-reference.instructions.md'
+#file:infor-visual-query-authoring.instructions.md'
 #file:taming-copilot.instructions.md'
 #file:testing-strategy.instructions.md'
 #file:update-docs-on-code-change.instructions.md' 

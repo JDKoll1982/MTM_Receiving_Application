@@ -31,7 +31,7 @@ Manufacturing receiving operations desktop application for streamlined label gen
 5. **XAML Bindings:** Use `x:Bind` with explicit `Mode` (OneWay/TwoWay/OneTime)
 6. **Async Methods:** All must end with `Async` suffix
 7. **Error Handling:** DAOs return errors, Services handle them, ViewModels display them
-8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY
+8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY (`V_` prefix tables are base tables, not views)
 
 ### Important - Follow These Guidelines
 
@@ -73,7 +73,9 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 - `.github/instructions/security-and-owask.instructions.md` - Security best practices
 
 **Database & SQL:**
-- `.github/instructions/sql-sp-generation.instructions.md` - Stored procedure generation guidelines
+- `.github/instructions/sql-sp-generation.instructions.md` - MySQL stored procedure generation guidelines
+- `.github/instructions/infor-visual-database-reference.instructions.md` - Infor Visual (MTMFG) schema CSV reference files
+- `.github/instructions/infor-visual-query-authoring.instructions.md` - Writing new SQL SELECT queries against MTMFG
 
 **Performance & Optimization:**
 - `.github/instructions/performance-optimization.instructions.md` - Performance tuning guidance

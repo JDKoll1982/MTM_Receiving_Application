@@ -83,35 +83,12 @@ ORDER BY v.name, c.column_id;
 
 ---
 
-### 3. `MTMFG_Schema_StoredProcedures.csv`
+### 3. `MTMFG_Schema_StoredProcedures.csv` — ⛔ SKIP: Not applicable
 
-**Why:** Even though this application only calls stored procedures that live in the **MySQL**
-database, it is useful to know what Infor Visual SPs exist. This prevents accidental duplication
-of logic that already exists in the ERP, and serves as a reference if a future feature needs to
-call a Visual-side SP.
-
-**SSMS Query:**
-
-```sql
-SELECT
-    SCHEMA_NAME(p.schema_id)                            AS SCHEMA_NAME,
-    p.name                                              AS PROCEDURE_NAME,
-    pm.parameter_id                                     AS PARAM_ORDER,
-    pm.name                                             AS PARAMETER_NAME,
-    ty.name                                             AS DATA_TYPE,
-    CASE
-        WHEN ty.name IN ('nvarchar','nchar') AND pm.max_length = -1 THEN 'MAX'
-        WHEN ty.name IN ('nvarchar','nchar')                         THEN CAST(pm.max_length / 2 AS VARCHAR)
-        ELSE NULL
-    END                                                 AS MAX_CHAR_LENGTH,
-    pm.precision                                        AS NUMERIC_PRECISION,
-    pm.scale                                            AS NUMERIC_SCALE,
-    CASE pm.is_output WHEN 1 THEN 'YES' ELSE 'NO' END   AS IS_OUTPUT
-FROM sys.procedures   p
-LEFT JOIN sys.parameters pm ON p.object_id = pm.object_id
-LEFT JOIN sys.types   ty   ON pm.user_type_id = ty.user_type_id
-ORDER BY p.name, pm.parameter_id;
-```
+**Verified (2026-03-06):** MTMFG has **no user-defined stored procedures and no user-defined
+functions** in SQL Server. Both `sys.procedures` and `sys.objects WHERE type IN ('P','FN','IF','TF')`
+return 0 rows. Infor Visual implements all business logic in the application tier, not the database
+tier. **Do not generate this file — it will always be empty.**
 
 ---
 
@@ -204,11 +181,12 @@ SELECT
     tr.type_desc                                            AS TRIGGER_TYPE,
     CASE tr.is_disabled         WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_DISABLED,
     CASE tr.is_instead_of_trigger WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_INSTEAD_OF,
-    (
-        SELECT STRING_AGG(te.type_desc, ', ')
+    STUFF((
+        SELECT ', ' + te.type_desc
         FROM sys.trigger_events te
         WHERE te.object_id = tr.object_id
-    )                                                       AS TRIGGER_EVENTS
+        FOR XML PATH(''), TYPE
+    ).value('.', 'NVARCHAR(MAX)'), 1, 2, '')                AS TRIGGER_EVENTS
 FROM sys.triggers tr
 WHERE tr.parent_class = 1   -- table triggers only
 ORDER BY OBJECT_NAME(tr.parent_id), tr.name;
@@ -258,29 +236,11 @@ ORDER BY t.name, cc.name;
 
 ---
 
-### 10. `MTMFG_Schema_ExtendedProperties.csv`
+### 10. `MTMFG_Schema_ExtendedProperties.csv` — ⛔ SKIP: Not applicable
 
-**Why:** Infor Visual ships with `MS_Description` extended properties on many tables and columns.
-These are effectively the official ERP documentation baked into the schema. Copilot can use these
-descriptions to infer the business meaning of cryptically named columns (e.g., `BACKORDER_FLAG`,
-`ACT_MATERIAL_COST`).
-
-**SSMS Query:**
-
-```sql
-SELECT
-    OBJECT_NAME(ep.major_id)    AS TABLE_OR_VIEW_NAME,
-    c.name                      AS COLUMN_NAME,
-    CAST(ep.value AS NVARCHAR(MAX)) AS DESCRIPTION
-FROM sys.extended_properties ep
-JOIN sys.columns c ON ep.major_id = c.object_id AND ep.minor_id = c.column_id
-WHERE ep.name = 'MS_Description'
-  AND ep.class = 1
-ORDER BY OBJECT_NAME(ep.major_id), c.name;
-```
-
-> **Note:** If the result set is empty, Infor Visual was installed without descriptions for your
-> version. Skip this file.
+**Verified (2026-03-06):** MTMFG has **no `MS_Description` extended properties** on any tables
+or columns. `sys.extended_properties` returns 0 rows for `ep.class = 1`. This MTMFG installation
+was not configured with schema descriptions. **Do not generate this file — it will always be empty.**
 
 ---
 
@@ -308,8 +268,8 @@ ORDER BY OBJECT_NAME(ep.major_id), c.name;
 | ★★ | `MTMFG_Schema_Indexes.csv` | Query performance guidance |
 | ★★ | `MTMFG_Schema_TableRowCounts.csv` | Query strategy decisions |
 | ★★ | `MTMFG_Schema_Triggers.csv` | Understand ERP side-effect behaviour |
-| ★ | `MTMFG_Schema_StoredProcedures.csv` | Reference — avoid logic duplication |
+| ⛔ | `MTMFG_Schema_StoredProcedures.csv` | Not applicable — no SPs or UDFs in MTMFG |
 | ★ | `MTMFG_Schema_UniqueConstraints.csv` | Natural key / lookup guidance |
 | ★ | `MTMFG_Schema_DefaultConstraints.csv` | Fixture data / model defaults |
 | ★ | `MTMFG_Schema_CheckConstraints.csv` | Enum / validation mapping |
-| ★ | `MTMFG_Schema_ExtendedProperties.csv` | Column business descriptions |
+| ⛔ | `MTMFG_Schema_ExtendedProperties.csv` | Not applicable — no MS_Description properties in MTMFG |
