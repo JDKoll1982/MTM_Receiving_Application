@@ -10,7 +10,7 @@
 DECLARE @VendorID nvarchar(12) = 'VENDOR-001';
 
 SELECT
-    sdl.PART_ID                     AS PartNumber,
+    sdl.SERVICE_PART_ID             AS PartNumber,
     COUNT(sd.ID)                    AS DispatchCount,
     MAX(sd.CREATE_DATE)             AS LastDispatchDate
 FROM
@@ -19,6 +19,6 @@ FROM
 WHERE
     sd.VENDOR_ID = @VendorID
 GROUP BY
-    sdl.PART_ID
+    sdl.SERVICE_PART_ID
 ORDER BY
-    sdl.PART_ID;
+    sdl.SERVICE_PART_ID;

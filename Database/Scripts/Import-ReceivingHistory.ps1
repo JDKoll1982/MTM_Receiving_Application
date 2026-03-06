@@ -6,12 +6,12 @@
 #
 # Usage:
 #   .\Import-ReceivingHistory.ps1 -WhatIf          # dry run
-#   .\Import-ReceivingHistory.ps1                  # live import to localhost MAMP
+#   .\Import-ReceivingHistory.ps1                  # live import to 172.16.1.104 MAMP
 #   .\Import-ReceivingHistory.ps1 -Server 10.0.0.1 # remote server
 # ============================================================================
 
 param(
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
