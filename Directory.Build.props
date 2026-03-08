@@ -2,5 +2,7 @@
     <PropertyGroup>
         <!-- Default to x64 platform for WinUI 3 projects when not explicitly specified -->
         <Platform Condition="'$(Platform)' == ''">x64</Platform>
+        <!-- Exclude the MTM Receiving Manager reference directory from all SDK glob discovery -->
+        <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildThisFileDirectory)MTM Receiving Manager\**\*</DefaultItemExcludes>
     </PropertyGroup>
 </Project>
