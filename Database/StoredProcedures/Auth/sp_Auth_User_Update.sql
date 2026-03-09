@@ -23,7 +23,7 @@ CREATE PROCEDURE `sp_Auth_User_Update`(
     IN p_updated_by         VARCHAR(50),
     OUT p_error_message     VARCHAR(500)
 )
-BEGIN
+sp: BEGIN
     DECLARE v_existing_count INT DEFAULT 0;
     DECLARE v_workstation    VARCHAR(50) DEFAULT 'SETTINGS_UI';
 

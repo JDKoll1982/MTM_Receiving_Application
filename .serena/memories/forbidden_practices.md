@@ -142,7 +142,7 @@ services.AddSingleton(sp => new Dao_NewEntity(connectionString));
 
 ```csharp
 // FORBIDDEN
-private const string ConnectionString = "Server=172.16.1.104...";
+private const string ConnectionString = "Server=localhost...";
 
 // REQUIRED
 private readonly string _connectionString;

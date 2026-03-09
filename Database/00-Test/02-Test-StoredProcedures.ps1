@@ -4,7 +4,7 @@
 # Configuration: 01-mock-data.json (parameter values), 01-order.json (execution sequence)
 
 param (
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [int]$Port = 3306,  # MAMP default is 3306, MAMP PRO uses 8889
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",

@@ -93,7 +93,7 @@
 
                         <!-- Transaction type -->
                         <ComboBox Grid.Column="1"
-                                  SelectedItem="{x:Bind TransactionType, Mode=TwoWay}"
+                                  SelectedIndex="{x:Bind TransactionTypeIndex, Mode=TwoWay}"
                                   MinWidth="110">
                             <x:String>Transfer</x:String>
                             <x:String>NewTransaction</x:String>

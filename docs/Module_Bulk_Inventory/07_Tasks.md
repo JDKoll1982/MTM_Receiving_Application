@@ -97,7 +97,7 @@
 
 # Tasks: Module_Bulk_Inventory
 
-**Last Updated:** 2026-03-08 (rev 12 — T000–T028 complete; solution builds clean; T029–T032 not started)
+**Last Updated:** 2026-03-09 (rev 13 — runtime crash fixes: SharedPaths XAML converter, model INPC, ComboBox enum binding)
 
 ---
 

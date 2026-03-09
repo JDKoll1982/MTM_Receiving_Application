@@ -6,12 +6,12 @@
 #
 # Usage:
 #   .\Import-ReceivingHistory.ps1 -WhatIf          # dry run
-#   .\Import-ReceivingHistory.ps1                  # live import to 172.16.1.104 MAMP
+#   .\Import-ReceivingHistory.ps1                  # live import to localhost MAMP
 #   .\Import-ReceivingHistory.ps1 -Server 10.0.0.1 # remote server
 # ============================================================================
 
 param(
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -264,10 +264,11 @@ foreach ($row in $records) {
 
     # Quantity: accept decimals by rounding up to the nearest integer
     $qtyRaw = 0.0
-    $qty    = 0
+    $qty = 0
     if (-not [double]::TryParse($row.Quantity, [ref]$qtyRaw) -or $qtyRaw -le 0) {
         $errors += "Invalid quantity: '$($row.Quantity)'"
-    } else {
+    }
+    else {
         $qty = [int][Math]::Ceiling($qtyRaw)
     }
 
@@ -386,7 +387,7 @@ LEFT  JOIN dbo.VENDOR            v   ON po.VENDOR_ID = v.ID
 WHERE po.ID       = @PO
   AND pol.PART_ID = @Part
 "@
-        $pPO     = $cmdPOPart.Parameters.Add("@PO",   [System.Data.SqlDbType]::NVarChar, 20)
+        $pPO = $cmdPOPart.Parameters.Add("@PO", [System.Data.SqlDbType]::NVarChar, 20)
         $pPartPO = $cmdPOPart.Parameters.Add("@Part", [System.Data.SqlDbType]::NVarChar, 50)
 
         # Fallback A: PO header only - vendor even when the exact part line is absent
@@ -411,13 +412,13 @@ WHERE po.ID = @PO
             try {
                 if (![string]::IsNullOrWhiteSpace($row.PONumber)) {
                     # IV stores PO IDs as 'PO-NNNNNN' - pass the formatted number directly
-                    $pPO.Value     = $row.PONumber
+                    $pPO.Value = $row.PONumber
                     $pPartPO.Value = $row.PartID
                     $rdr = $cmdPOPart.ExecuteReader()
                     if ($rdr.Read()) {
                         # Full match: PO line found
                         $row.PartDescription = $rdr["PartDescription"].ToString().Trim()
-                        $row.VendorName      = $rdr["VendorName"].ToString().Trim()
+                        $row.VendorName = $rdr["VendorName"].ToString().Trim()
                         $rdr.Dispose()
                         $ivEnriched++
                     }
@@ -477,10 +478,10 @@ WHERE po.ID = @PO
     }
 
     $ivNotFound = $correctionRows.Count
-    Write-Status "IV enriched     : $ivEnriched row(s) (full PO line match)"       $(if ($ivEnriched -gt 0)   { 'Green' }    else { 'DarkGray' })
-    if ($ivFallback  -gt 0) { Write-Status "IV fallback     : $ivFallback row(s) (partial - PO header / PART master)" "Cyan" }
-    if ($ivNonPO     -gt 0) { Write-Status "Non-PO flagged  : $ivNonPO row(s) (part not in IV, no PO)"              "Yellow" }
-    if ($ivNotFound  -gt 0) { Write-Status "Needs correction: $ivNotFound row(s) (PO line not in IV - partially enriched where possible)" "Red" }
+    Write-Status "IV enriched     : $ivEnriched row(s) (full PO line match)"       $(if ($ivEnriched -gt 0) { 'Green' }    else { 'DarkGray' })
+    if ($ivFallback -gt 0) { Write-Status "IV fallback     : $ivFallback row(s) (partial - PO header / PART master)" "Cyan" }
+    if ($ivNonPO -gt 0) { Write-Status "Non-PO flagged  : $ivNonPO row(s) (part not in IV, no PO)"              "Yellow" }
+    if ($ivNotFound -gt 0) { Write-Status "Needs correction: $ivNotFound row(s) (PO line not in IV - partially enriched where possible)" "Red" }
 }
 
 if ($WhatIf) {

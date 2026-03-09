@@ -12,6 +12,7 @@ using MTM_Receiving_Application.Module_Bulk_Inventory.Models;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
@@ -27,6 +28,11 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     private readonly IService_BulkInventory_FuzzySearch _fuzzySearch;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_InforVisual _inforVisual;
+    private readonly IService_SettingsCoreFacade _settings;
+
+    private const string SettingsCategory = "BulkInventory";
+    private const string KeyWarehouseCode = "BulkInventory.Defaults.WarehouseCode";
+    private const string FallbackWarehouseCode = "002";
 
     // ── XamlRoot needed to host ContentDialogs ──────────────────────────────
     /// <summary>
@@ -68,6 +74,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
         IService_BulkInventory_FuzzySearch fuzzySearch,
         IService_UserSessionManager sessionManager,
         IService_InforVisual inforVisual,
+        IService_SettingsCoreFacade settings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService)
@@ -77,6 +84,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
         _fuzzySearch = fuzzySearch;
         _sessionManager = sessionManager;
         _inforVisual = inforVisual;
+        _settings = settings;
     }
 
     // ── Row management ────────────────────────────────────────────────────────
@@ -114,11 +122,18 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     [RelayCommand]
     private async Task AddRowAsync()
     {
+        var warehouseSetting = await _settings.GetSettingAsync(SettingsCategory, KeyWarehouseCode);
+        var warehouseCode = warehouseSetting.IsSuccess
+            && warehouseSetting.Data?.Value is { Length: > 0 } v
+            ? v
+            : FallbackWarehouseCode;
+
         var row = new Model_BulkInventoryTransaction
         {
             Status = Enum_BulkInventoryStatus.Pending,
             TransactionType = Enum_BulkInventoryTransactionType.Transfer,
             Quantity = 1,
+            ToWarehouse = warehouseCode,
             CreatedAt = DateTime.Now,
             CreatedByUser = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "SYSTEM"
         };

@@ -14,13 +14,13 @@ DECLARE @WarehouseCode nvarchar(10) = '002';
 DECLARE @MaxResults    int          = 50;
 
 SELECT TOP (@MaxResults)
-    l.LOCATION_ID   AS LocationId,
+    l.ID            AS LocationId,
     l.WAREHOUSE_ID  AS WarehouseCode,
     l.DESCRIPTION   AS Description
 FROM
-    dbo.V_LOCATION l
+    dbo.LOCATION l
 WHERE
     l.WAREHOUSE_ID = @WarehouseCode
-    AND l.LOCATION_ID LIKE @Term
+    AND l.ID LIKE @Term
 ORDER BY
-    l.LOCATION_ID;
+    l.ID;

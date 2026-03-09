@@ -1,4 +1,5 @@
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Enums;
 
 namespace MTM_Receiving_Application.Module_Bulk_Inventory.Models;
@@ -6,8 +7,11 @@ namespace MTM_Receiving_Application.Module_Bulk_Inventory.Models;
 /// <summary>
 /// Represents one row in the bulk_inventory_transactions MySQL table.
 /// Maps 1-to-1 with the schema created by T004.
+/// Implements <see cref="ObservableObject"/> so that x:Bind DataTemplate bindings
+/// (Mode=TwoWay / OneWay) propagate correctly when fields are updated programmatically
+/// by the validation or push-automation layers.
 /// </summary>
-public class Model_BulkInventoryTransaction
+public partial class Model_BulkInventoryTransaction : ObservableObject
 {
     public int Id { get; set; }
 
@@ -20,23 +24,43 @@ public class Model_BulkInventoryTransaction
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Enum_BulkInventoryTransactionType TransactionType { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TransactionTypeIndex))]
+    private Enum_BulkInventoryTransactionType _transactionType;
 
-    public string PartId { get; set; } = string.Empty;
+    /// <summary>
+    /// Zero-based index for ComboBox binding: 0 = Transfer, 1 = NewTransaction.
+    /// Avoids enum-to-string type mismatch in TwoWay x:Bind on SelectedItem.
+    /// </summary>
+    public int TransactionTypeIndex
+    {
+        get => TransactionType == Enum_BulkInventoryTransactionType.Transfer ? 0 : 1;
+        set => TransactionType = value == 0
+            ? Enum_BulkInventoryTransactionType.Transfer
+            : Enum_BulkInventoryTransactionType.NewTransaction;
+    }
+
+    [ObservableProperty]
+    private string _partId = string.Empty;
 
     /// <summary>Warehouse code for the source location (Transfer mode only).</summary>
-    public string? FromWarehouse { get; set; }
+    [ObservableProperty]
+    private string? _fromWarehouse;
 
     /// <summary>Location code for the source (Transfer mode only).</summary>
-    public string? FromLocation { get; set; }
+    [ObservableProperty]
+    private string? _fromLocation;
 
     /// <summary>Warehouse code for the destination.</summary>
-    public string ToWarehouse { get; set; } = string.Empty;
+    [ObservableProperty]
+    private string _toWarehouse = string.Empty;
 
     /// <summary>Location code for the destination.</summary>
-    public string ToLocation { get; set; } = string.Empty;
+    [ObservableProperty]
+    private string _toLocation = string.Empty;
 
-    public decimal Quantity { get; set; }
+    [ObservableProperty]
+    private decimal _quantity;
 
     /// <summary>Work order number in Visual format — e.g. WO-123456 (NewTransaction mode only).</summary>
     public string? WorkOrder { get; set; }
@@ -44,16 +68,19 @@ public class Model_BulkInventoryTransaction
     /// <summary>Lot number (NewTransaction mode only; defaults to "1").</summary>
     public string? LotNo { get; set; }
 
-    public Enum_BulkInventoryStatus Status { get; set; } = Enum_BulkInventoryStatus.Pending;
+    [ObservableProperty]
+    private Enum_BulkInventoryStatus _status = Enum_BulkInventoryStatus.Pending;
 
     /// <summary>Set when <see cref="Status"/> is <see cref="Enum_BulkInventoryStatus.Failed"/>.</summary>
-    public string? ErrorMessage { get; set; }
+    [ObservableProperty]
+    private string? _errorMessage;
 
     /// <summary>
     /// Optional inline warning surfaced by ValidateAllCommand (does not block UI entry).
     /// Not persisted to the database.
     /// </summary>
-    public string? ValidationMessage { get; set; }
+    [ObservableProperty]
+    private string? _validationMessage;
 
     /// <summary>
     /// UI-only flag: the user has checked this failed row for re-push in the Summary view.
@@ -61,3 +88,4 @@ public class Model_BulkInventoryTransaction
     /// </summary>
     public bool IsSelectedForRepush { get; set; }
 }
+

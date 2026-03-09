@@ -21,7 +21,7 @@ public class Service_InforVisualConnect_OutsideService_Tests
     public Service_InforVisualConnect_OutsideService_Tests()
     {
         // Constructor only stores the connection string; no connection is opened until a query runs.
-        _fakeDao = new Dao_InforVisualConnection("Server=172.16.1.104;Database=FAKE;");
+        _fakeDao = new Dao_InforVisualConnection("Server=localhost;Database=FAKE;");
         _mockLogger = new Mock<IService_LoggingUtility>();
     }
 
