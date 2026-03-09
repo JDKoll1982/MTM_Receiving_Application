@@ -3,7 +3,7 @@
 # Output: 01-mock-data.json and 01-order.json
 
 param (
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [int]$Port = 3306,
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
