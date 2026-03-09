@@ -51,6 +51,19 @@ flowchart TB
     %% ═══════════════════════════════════════
     GR --> DE[/"Data entry grid<br/>ObservableCollection — editable inline<br/>Add · Delete · Clear All available"/]
 
+    %% ── Fuzzy Search Picker ────────────────
+    DE --> FSP_TRIG{"User clicks 🔍 button<br/>or presses F2 in cell<br/>Part ID · From Location · To Location?"}
+    FSP_TRIG -- "Not triggered" --> VAL
+    FSP_TRIG -- "Part ID cell" --> FSP_P["FuzzySearchPartsAsync&#40;term&#41;<br/>Query MTMFG: PART.ID / DESCRIPTION LIKE '%term%'"]
+    FSP_TRIG -- "From Location cell" --> FSP_L["FuzzySearchLocationsAsync&#40;term, warehouseCode&#41;<br/>Query MTMFG: LOCATION LIKE '%term%' WHERE WAREHOUSE_ID=warehouseCode"]
+    FSP_TRIG -- "To Location cell" --> FSP_L
+    FSP_P --> FSP_DLG["Dialog_FuzzySearchPicker.ShowAsync&#40;results&#41;<br/>Built-in filter box pre-filled with typed term"]
+    FSP_L --> FSP_DLG
+    FSP_DLG --> FSP_RES{"ContentDialogResult?"}
+    FSP_RES -- "Primary &#40;Select&#41;" --> FSP_WB["Write SelectedResult.Key<br/>back to row.PartId / FromLocation / ToLocation"]
+    FSP_RES -- "Secondary &#40;Cancel&#41;" --> DE
+    FSP_WB --> DE
+
     DE --> VAL["Validate All button"]
     VAL --> VQ["Query Infor Visual SQL Server<br/>PART table · location existence check"]
     VQ --> VW{"Warnings<br/>found?"}
@@ -275,6 +288,7 @@ flowchart TB
 | **Crash recovery / stale `InProgress` records** | ✅ Resolved | On app startup query `bulk_inventory_transactions` for `InProgress` records older than 5 min; mark as `Failed`, show "Interrupted Batch" banner with re-push option. Diagram A §0 updated. |
 | **Window not found — retry restart point** | ✅ Resolved | Kill all VMINVENT.exe processes (window did not exist — no fields to clear), re-launch Visual, navigate to module window, retry row from field-fill step 1. Max 2 retries; 3rd failure → row `Failed`. Diagram B window-not-found sub-flow updated. |
 | **Delete row during active push** | ✅ Resolved | Full-screen overlay blocks all app mouse and keyboard input during automation — mechanically impossible for the user to delete a row mid-push. No additional code guard required. |
+| **Fuzzy search picker for Part ID / Location** | ✅ Resolved | When the user activates the 🔍 button (or presses F2) on the Part ID, From Location, or To Location cell, `Dialog_FuzzySearchPicker` opens pre-populated from a LIKE-based Infor Visual SQL Server query. `SelectedResult.Key` is written back to the row on confirm. Diagram A §2 FSP sub-flow added. See `02_Suggestions.md §2.6`. |
 
 ## Orange nodes — partially specified
 

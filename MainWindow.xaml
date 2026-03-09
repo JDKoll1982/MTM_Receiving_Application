@@ -142,6 +142,19 @@
                         <FontIcon Glyph="&#xE7C1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+
+            </NavigationView.MenuItems>
+
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem x:Name="BulkInventoryNavItem"
+                                    Content="Bulk Inventory"
+                                    Tag="BulkInventoryPage"
+                                    Margin="0,0,0,4"
+                                    Visibility="Collapsed">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8B7;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Content="End of Day Reports" Tag="ReportingMainPage" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE9F9;" />
@@ -152,10 +165,10 @@
                         <FontIcon Glyph="&#xE90F;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-
-            </NavigationView.MenuItems>
+            </NavigationView.FooterMenuItems>
 
             <Frame x:Name="ContentFrame" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  />
         </NavigationView>
     </Grid>
 </Window>
+

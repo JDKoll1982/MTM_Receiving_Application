@@ -28,6 +28,11 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Services.Startup;
 using MTM_Receiving_Application.Module_Core.Services;
 using MTM_Receiving_Application.Module_Core.Services.UI;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Contracts.Services;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Data;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Services;
+using MTM_Receiving_Application.Module_Bulk_Inventory.ViewModels;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Views;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
@@ -57,6 +62,7 @@ public static class ModuleServicesExtensions
         services.AddSettingsModule(configuration);
         services.AddSharedModule(configuration);
         services.AddShipRecToolsModule(configuration);
+        services.AddBulkInventoryModule(configuration);
 
         return services;
     }
@@ -514,6 +520,40 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers Bulk Inventory module services, DAOs, and ViewModels.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <param name="configuration">The application configuration.</param>
+    private static IServiceCollection AddBulkInventoryModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException("MySql connection string not found");
+
+        // DAO (Singleton — stateless, reusable)
+        services.AddSingleton(sp => new Dao_BulkInventoryTransaction(mySqlConnectionString));
+
+        // Services (Singleton)
+        services.AddSingleton<IService_MySQL_BulkInventory, Service_MySQL_BulkInventory>();
+        services.AddSingleton<IService_VisualInventoryAutomation, Service_VisualInventoryAutomation>();
+        services.AddSingleton<IService_BulkInventory_FuzzySearch, Service_BulkInventory_FuzzySearch>();
+
+        // ViewModels (Transient — new instance per navigation)
+        services.AddTransient<ViewModel_BulkInventory_DataEntry>();
+        services.AddTransient<ViewModel_BulkInventory_Push>();
+        services.AddTransient<ViewModel_BulkInventory_Summary>();
+
+        // Views (Transient)
+        services.AddTransient<View_BulkInventory_DataEntry>();
+        services.AddTransient<View_BulkInventory_Push>();
+        services.AddTransient<View_BulkInventory_Summary>();
+        services.AddTransient<View_BulkInventory_Host>();
 
         return services;
     }

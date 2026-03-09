@@ -11,6 +11,7 @@ using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Help;
 using MTM_Receiving_Application.Module_Core.Services.UI;
+using MTM_Receiving_Application.Module_Core.Services.VisualAutomation;
 
 namespace MTM_Receiving_Application.Infrastructure.DependencyInjection;
 
@@ -64,6 +65,10 @@ public static class CoreServiceExtensions
 
         // Infor Visual Integration
         RegisterInforVisualServices(services, configuration);
+
+        // Visual Automation
+        services.AddSingleton<IService_VisualCredentialValidator, Service_VisualCredentialValidator>();
+        services.AddSingleton<IService_UIAutomation, Service_UIAutomation>();
 
         return services;
     }

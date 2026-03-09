@@ -97,7 +97,43 @@
 
 # Tasks: Module_Bulk_Inventory
 
-**Last Updated:** 2026-03-08 (rev 2 — Phase 0 added)
+**Last Updated:** 2026-03-08 (rev 12 — T000–T028 complete; solution builds clean; T029–T032 not started)
+
+---
+
+## 📊 Current Status Report — 2026-03-08 (rev 12)
+
+> **Solution builds clean.** All files for Phases 0–8 are on disk and compiling.
+> Phase 9–10 tasks are ready to start.
+
+### ✅ Complete and building (T000–T028)
+
+All infrastructure, database, settings, model, DAO, service, ViewModel, View, and DI wiring tasks are done.
+The solution builds with zero errors.
+
+**Additional fixes applied in rev 12 (all pre-existing compile errors):**
+- `ViewModel_BulkInventory_DataEntry.cs` — added `using Microsoft.UI.Xaml.Controls` (resolved `ContentDialogResult` and `InfoBarSeverity`), added `<param>` doc tags on `DeleteRowAsync`, `OpenPartSearchAsync`, `OpenLocationSearchAsync`, and added `HasInterruptedRows` stub property (T022)
+- `ViewModel_BulkInventory_Push.cs` — added `<param name="rows">` doc tag on `StartPushAsync` (T023)
+- `ViewModel_BulkInventory_Summary.cs` — added `<param name="completedRows">` doc tag on `LoadResults` (T024)
+- `View_BulkInventory_Push.xaml` — Skip Row button now uses `Click="SkipRow_Click"` instead of wrong `StartPushCommand` binding (T026)
+- `View_BulkInventory_Push.xaml.cs` — added `SkipRow_Click` handler (T026)
+- `View_BulkInventory_Summary.xaml` — added `Page.Resources` with `CountToVisibilityConverter`, `InverseBoolConverter`, `InfoBarSeverityConverter`; fixed `IsStatusBarOpen` → `IsStatusOpen` (T027)
+- `View_BulkInventory_DataEntry.xaml` — added `UserControl.Resources` with `InverseBoolConverter` and `DecimalToDoubleConverter`; removed invalid `{x:Bind ViewModel.CanPushBatch}` binding on Push Batch button (Command binding handles enable state) (T025/T028)
+- `View_BulkInventory_Host.xaml.cs` — `ShowDataEntry()` now passes ViewModel via constructor `new View_BulkInventory_DataEntry(vm)` instead of object initializer (T028)
+- `Module_Core/Converters/Converter_DecimalToDouble.cs` — new converter for `NumberBox.Value` ↔ `decimal` binding
+- `Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml` — removed unsupported `SortMemberPath` attributes; added `Tag` to all columns
+- `Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml.cs` — changed `e.Column.SortMemberPath` to `e.Column.Tag as string`; removed `e.Handled = true` (not available on `DataGridColumnEventArgs`)
+
+### 🔲 Not started (T029–T032)
+
+| Task | Summary |
+|------|---------|
+| T029 | Credential guard — bind `BulkInventoryNavItem.Visibility` to `VisualUsername` at startup/login |
+| T030 | Crash recovery — reset stale `InProgress` rows to `Pending` on app startup |
+| T031 | `ValidateAllCommand` implementation — Infor Visual PART + location LIKE queries |
+| T032 | F5 / F6 / Escape keyboard shortcuts + legend strip |
+
+---
 **Input docs:** `docs/Module_Bulk_Inventory/` — all files 01 through 06
 **Status key:** `[ ]` not started · `[~]` in progress · `[x]` complete
 
@@ -211,6 +247,8 @@
 |------|---------|------|
 | `Module_Bulk_Inventory/Contracts/Services/IService_MySQL_BulkInventory.cs` | MySQL service interface (insert, update status, get by user, delete) | T017 |
 | `Module_Bulk_Inventory/Services/Service_MySQL_BulkInventory.cs` | MySQL service implementation wrapping `Dao_BulkInventoryTransaction` | T018 |
+| `Module_Bulk_Inventory/Contracts/Services/IService_BulkInventory_FuzzySearch.cs` | Fuzzy search interface: `SearchPartsAsync` + `SearchLocationsAsync` against Infor Visual | T022 |
+| `Module_Bulk_Inventory/Services/Service_BulkInventory_FuzzySearch.cs` | Implements `IService_BulkInventory_FuzzySearch` using read-only SQL Server LIKE queries | T022 |
 | `Module_Bulk_Inventory/Services/Service_VisualInventoryAutomation.cs` | Visual UI automation: Transfer fill sequence (T019) + New Transaction fill sequence (T020) | T019, T020 |
 
 #### ViewModels
@@ -273,7 +311,7 @@ T000 and T000a are independent; T000b depends on T000a; T000c depends on T000b.
 
 ---
 
-- [ ] **T000 [P] — Create four missing Auth stored procedures**
+- [x] **T000 [P] — Create four missing Auth stored procedures**
 
   > **References:** `Module_Core/Data/Authentication/Dao_User.cs` — existing SP naming pattern
 
@@ -301,7 +339,7 @@ T000 and T000a are independent; T000b depends on T000a; T000c depends on T000b.
 
 ---
 
-- [ ] **T000a [P] — Extend `Dao_User` with four new methods**
+- [x] **T000a [P] — Extend `Dao_User` with four new methods**
 
   > **References:** `Module_Core/Data/Authentication/Dao_User.cs` existing pattern ·
   > `Module_Core/Models/Systems/Model_User.cs` (`VisualUsername`, `VisualPassword` fields)
@@ -336,7 +374,7 @@ T000 and T000a are independent; T000b depends on T000a; T000c depends on T000b.
 
 ---
 
-- [ ] **T000b — Build `ViewModel_Settings_Users` — user list + add/edit/deactivate**
+- [x] **T000b — Build `ViewModel_Settings_Users` — user list + add/edit/deactivate**
 
   > **References:** `Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs` (stub to replace) ·
   > `Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs` (pattern to follow) ·
@@ -383,7 +421,7 @@ T000 and T000a are independent; T000b depends on T000a; T000c depends on T000b.
 
 ---
 
-- [ ] **T000c — Build `View_Settings_Users.xaml` — full user management UI**
+- [x] **T000c — Build `View_Settings_Users.xaml` — full user management UI**
 
   > **References:** `Module_Settings.Core/Views/View_Settings_SharedPaths.xaml` (layout pattern) ·
   > `Module_Settings.Core/Views/View_Settings_Users.xaml` (stub to replace)
@@ -454,7 +492,7 @@ They have no dependencies on each other and can be done in any order.
 
 ---
 
-- [ ] **T001 [P] — Fix cross-module model references in `Service_InforVisualConnect.cs`**
+- [x] **T001 [P] — Fix cross-module model references in `Service_InforVisualConnect.cs`**
 
   > **References:** `03_PreRequisites.md §P1.4`
 
@@ -477,7 +515,7 @@ They have no dependencies on each other and can be done in any order.
 
 ---
 
-- [ ] **T002 [P] — Add Visual exe path, default warehouse code, and default lot no to settings manifest**
+- [x] **T002 [P] — Add Visual exe path, default warehouse code, and default lot no to settings manifest**
 
   > **References:** `03_PreRequisites.md §P1.5` · `01_Assumptions.md §7.1 Correction`
 
@@ -500,7 +538,7 @@ They have no dependencies on each other and can be done in any order.
 
 ---
 
-- [ ] **T003 — Extend `View_Settings_SharedPaths` with Visual path, warehouse code, and lot no controls**
+- [x] **T003 — Extend `View_Settings_SharedPaths` with Visual path, warehouse code, and lot no controls**
 
   > **References:** `03_PreRequisites.md §P1.5` · `01_Assumptions.md §2.5 Correction` ·
   > `01_Assumptions.md §7.1 Correction`
@@ -534,7 +572,7 @@ T005–T008 themselves can be written in parallel.
 
 ---
 
-- [ ] **T004 — Create `bulk_inventory_transactions` MySQL table schema**
+- [x] **T004 — Create `bulk_inventory_transactions` MySQL table schema**
 
   > **References:** `03_PreRequisites.md §P1.3` · `01_Assumptions.md §5.1–5.3`
 
@@ -550,7 +588,7 @@ T005–T008 themselves can be written in parallel.
 
 ---
 
-- [ ] **T005 [P] — Create `sp_BulkInventory_Transaction_Insert.sql`**
+- [x] **T005 [P] — Create `sp_BulkInventory_Transaction_Insert.sql`**
 
   > **References:** `03_PreRequisites.md §P2.1` · `01_Assumptions.md §5.2`
 
@@ -569,7 +607,7 @@ T005–T008 themselves can be written in parallel.
 
 ---
 
-- [ ] **T006 [P] — Create `sp_BulkInventory_Transaction_UpdateStatus.sql`**
+- [x] **T006 [P] — Create `sp_BulkInventory_Transaction_UpdateStatus.sql`**
 
   > **References:** `03_PreRequisites.md §P2.1` · `06_WorkflowDiagram.md — Diagram B UPDS/UPDF nodes`
 
@@ -584,7 +622,7 @@ T005–T008 themselves can be written in parallel.
 
 ---
 
-- [ ] **T007 [P] — Create `sp_BulkInventory_Transaction_GetByUser.sql`**
+- [x] **T007 [P] — Create `sp_BulkInventory_Transaction_GetByUser.sql`**
 
   > **References:** `03_PreRequisites.md §P2.1` · `06_WorkflowDiagram.md — Diagram A §0 crash recovery`
 
@@ -601,7 +639,7 @@ T005–T008 themselves can be written in parallel.
 
 ---
 
-- [ ] **T008 [P] — Create `sp_BulkInventory_Transaction_DeleteById.sql`**
+- [x] **T008 [P] — Create `sp_BulkInventory_Transaction_DeleteById.sql`**
 
   > **References:** `03_PreRequisites.md §P2.1` · `02_Suggestions.md §2.1`
 
@@ -625,7 +663,7 @@ T011 depends on T010.
 
 ---
 
-- [ ] **T009 [P] — Create `IService_VisualCredentialValidator` and its implementation**
+- [x] **T009 [P] — Create `IService_VisualCredentialValidator` and its implementation**
 
   > **References:** `03_PreRequisites.md §P1.1` · `01_Assumptions.md §2.2–2.3` ·
   > `02_Suggestions.md §1.3` · `06_WorkflowDiagram.md — Diagram A §CG node`
@@ -660,7 +698,7 @@ T011 depends on T010.
 
 ---
 
-- [ ] **T010 [P] — Create `IService_UIAutomation` interface in Module_Core**
+- [x] **T010 [P] — Create `IService_UIAutomation` interface in Module_Core**
 
   > **References:** `03_PreRequisites.md §P1.2` · `02_Suggestions.md §1.2` ·
   > `05_LegacyPitfalls.md PF-01, PF-03, PF-04, PF-07` ·
@@ -682,7 +720,7 @@ T011 depends on T010.
 
 ---
 
-- [ ] **T011 — Create `Service_UIAutomation` implementation and register both services**
+- [x] **T011 — Create `Service_UIAutomation` implementation and register both services**
 
   > **References:** `03_PreRequisites.md §P1.2` · `05_LegacyPitfalls.md PF-03, PF-04, PF-07, PF-09` ·
   > `02_Suggestions.md §1.1`
@@ -722,7 +760,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T012 [P] — Restructure `MainWindow.xaml` NavigationView**
+- [x] **T012 [P] — Restructure `MainWindow.xaml` NavigationView**
 
   > **References:** `03_PreRequisites.md §P2.3` · `04_ResearchReferences.md §2.2`
 
@@ -742,7 +780,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T013 — Add `BulkInventoryPage` case to `NavView_SelectionChanged` in `MainWindow.xaml.cs`**
+- [x] **T013 — Add `BulkInventoryPage` case to `NavView_SelectionChanged` in `MainWindow.xaml.cs`**
 
   > **References:** `03_PreRequisites.md §P2.4` · `04_ResearchReferences.md §2.2`
 
@@ -760,7 +798,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T014 — Add `Module_Bulk_Inventory` DI registration stub**
+- [x] **T014 — Add `Module_Bulk_Inventory` DI registration stub**
 
   > **References:** `03_PreRequisites.md §P2.2`
 
@@ -780,7 +818,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T015 [P] — Create `Model_BulkInventoryTransaction`**
+- [x] **T015 [P] — Create `Model_BulkInventoryTransaction`**
 
   > **References:** `01_Assumptions.md §3.2, §5.1` · `02_Suggestions.md §2.2` ·
   > `06_WorkflowDiagram.md — Diagram B row status notes`
@@ -810,7 +848,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T016 — Create `Dao_BulkInventoryTransaction`**
+- [x] **T016 — Create `Dao_BulkInventoryTransaction`**
 
   > **References:** `01_Assumptions.md §5.4` · `03_PreRequisites.md §P2.1` ·
   > `04_ResearchReferences.md §2.2 (Module_Receiving/Data/ pattern)`
@@ -839,7 +877,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T017 [P] — Create `IService_MySQL_BulkInventory` interface**
+- [x] **T017 [P] — Create `IService_MySQL_BulkInventory` interface**
 
   > **References:** `01_Assumptions.md §5.4` · `06_WorkflowDiagram.md — Diagram B AUD/UPDS/UPDF nodes`
 
@@ -855,7 +893,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T018 — Create `Service_MySQL_BulkInventory` implementation**
+- [x] **T018 — Create `Service_MySQL_BulkInventory` implementation**
 
   > **References:** `01_Assumptions.md §5.4` · `06_WorkflowDiagram.md — Diagram B AUD/UPDS/UPDF`
 
@@ -872,7 +910,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T019 — Create `Service_VisualInventoryAutomation` — Transfer fill sequence**
+- [x] **T019 — Create `Service_VisualInventoryAutomation` — Transfer fill sequence**
 
   > **References:** `04_ResearchReferences.md §1.2, §1.4, §1.6` ·
   > `06_WorkflowDiagram.md — Diagram C (all nodes)` ·
@@ -928,7 +966,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T020 — Extend `Service_VisualInventoryAutomation` — New Transaction fill sequence**
+- [x] **T020 — Extend `Service_VisualInventoryAutomation` — New Transaction fill sequence**
 
   > **References:** `04_ResearchReferences.md §1.2, §1.5` ·
   > `06_WorkflowDiagram.md — Diagram D (all nodes)` ·
@@ -962,7 +1000,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T021 — Wire all Bulk Inventory services into DI (`AddBulkInventoryModule`)**
+- [x] **T021 — Wire all Bulk Inventory services into DI (`AddBulkInventoryModule`)**
 
   > **References:** `03_PreRequisites.md §P2.2` · `01_Assumptions.md §5.3, §5.4`
 
@@ -994,21 +1032,27 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T022 [P] — Create `ViewModel_BulkInventory_DataEntry`**
+- [x] **T022 [P] — Create `ViewModel_BulkInventory_DataEntry`**
 
-  > **References:** `02_Suggestions.md §2.1, §2.1a, §2.2, §2.3, §2.4` ·
-  > `01_Assumptions.md §3.1–3.6` · `06_WorkflowDiagram.md — Diagram A §2`
+  > **References:** `02_Suggestions.md §2.1, §2.1a, §2.2, §2.3, §2.4, §2.6` ·
+  > `01_Assumptions.md §3.1–3.6` · `06_WorkflowDiagram.md — Diagram A §2` ·
+  > `Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs` (picker API)
 
   *Depends on T018 (service), T015 (model).*
 
   Create `Module_Bulk_Inventory/ViewModels/ViewModel_BulkInventory_DataEntry.cs` as a `partial`
   class inheriting `ViewModel_Shared_Base`.  Constructor injects `IService_MySQL_BulkInventory`,
-  `IService_ErrorHandler`, `IService_LoggingUtility`.
+  `IService_BulkInventory_FuzzySearch`, `IService_ErrorHandler`, `IService_LoggingUtility`.
+
+  The view sets `ViewModel.XamlRoot` immediately after instantiation (needed to host
+  `Dialog_FuzzySearchPicker`).  The ViewModel exposes `XamlRoot` as a settable property of
+  type `XamlRoot?`.
 
   Observable properties:
   - `ObservableCollection<Model_BulkInventoryTransaction> Rows`
   - `bool HasValidationWarnings` (computed from `Rows`)
   - `bool CanPushBatch` → `!IsBusy && !HasValidationWarnings && Rows.Any()`
+  - `XamlRoot? XamlRoot` — set by the View on load; required to host ContentDialogs
 
   Commands (all `[RelayCommand]`):
   - `AddRowCommand` — appends a blank `Pending` row, persists via `InsertAsync`
@@ -1018,13 +1062,37 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
     existence); surfaces warnings inline on the row's `ValidationMessage` property (no dialog).
     Updates `HasValidationWarnings` after completion.
   - `PushBatchCommand` — disabled while `HasValidationWarnings` is true; navigate to Push view
+  - `OpenPartSearchCommand(Model_BulkInventoryTransaction row)` — calls
+    `IService_BulkInventory_FuzzySearch.SearchPartsAsync(row.PartId)`, opens
+    `Dialog_FuzzySearchPicker` (title: `"Select Part"`, subtitle: `"Matching parts for '{term}':"`);
+    on `ContentDialogResult.Primary` writes `SelectedResult.Key` → `row.PartId`.
+  - `OpenLocationSearchCommand((Model_BulkInventoryTransaction Row, string Field) args)` — calls
+    `IService_BulkInventory_FuzzySearch.SearchLocationsAsync(term, warehouseCode)`, opens
+    `Dialog_FuzzySearchPicker` (title: `"Select Location"`);
+    on `ContentDialogResult.Primary` writes `SelectedResult.Key` → `row.FromLocation` or
+    `row.ToLocation` depending on `args.Field` (`"FromLocation"` / `"ToLocation"`).
+
+  **New service contract (also created in this task):**
+  Create `Module_Bulk_Inventory/Contracts/Services/IService_BulkInventory_FuzzySearch.cs`:
+  ```csharp
+  public interface IService_BulkInventory_FuzzySearch
+  {
+      Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchPartsAsync(string term);
+      Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchLocationsAsync(string term, string warehouseCode);
+  }
+  ```
+  Implement in `Module_Bulk_Inventory/Services/Service_BulkInventory_FuzzySearch.cs`,
+  injecting `IService_InforVisualConnect` (or an equivalent read-only SQL Server helper) for
+  the underlying `PART` and `LOCATION` LIKE queries.
 
   **Files touched:**
   - `Module_Bulk_Inventory/ViewModels/ViewModel_BulkInventory_DataEntry.cs` ← new
+  - `Module_Bulk_Inventory/Contracts/Services/IService_BulkInventory_FuzzySearch.cs` ← new
+  - `Module_Bulk_Inventory/Services/Service_BulkInventory_FuzzySearch.cs` ← new
 
 ---
 
-- [ ] **T023 — Create `ViewModel_BulkInventory_Push`**
+- [x] **T023 — Create `ViewModel_BulkInventory_Push`**
 
   > **References:** `02_Suggestions.md §3.4, §3.6` · `06_WorkflowDiagram.md — Diagram A §3,
   > Diagram B (all nodes)` · `01_Assumptions.md §1.3 Correction`
@@ -1058,7 +1126,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T024 [P] — Create `ViewModel_BulkInventory_Summary`**
+- [x] **T024 [P] — Create `ViewModel_BulkInventory_Summary`**
 
   > **References:** `02_Suggestions.md §2.5` · `06_WorkflowDiagram.md — Diagram B §5`
 
@@ -1084,9 +1152,10 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T025 [P] — Create `View_BulkInventory_DataEntry.xaml`**
+- [x] **T025 [P] — Create `View_BulkInventory_DataEntry.xaml`**
 
-  > **References:** `02_Suggestions.md §2.1, §2.4` · `01_Assumptions.md §4.2`
+  > **References:** `02_Suggestions.md §2.1, §2.4, §2.6` · `01_Assumptions.md §4.2` ·
+  > `06_WorkflowDiagram.md — Diagram A §2 FSP sub-flow`
 
   *Depends on T022.*
 
@@ -1096,8 +1165,34 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
     (read-only inline warning).
   - Toolbar: **Add Row**, **Delete Row**, **Clear All**, **Validate All**, **Push Batch** buttons.
   - `Push Batch` button `IsEnabled="{x:Bind ViewModel.CanPushBatch, Mode=OneWay}"`.
-  - Keyboard legend strip at the bottom of the view listing: F5 = Push, F6 = Skip, Escape =
-    Cancel (per `02_Suggestions.md §2.4`).
+
+  **Fuzzy Search Picker cell templates** (see `02_Suggestions.md §2.6`):
+
+  The **Part ID**, **From Location**, and **To Location** columns must each render a custom
+  `DataGridTemplateColumn` containing:
+  - A `TextBox` for direct text entry (bound `TwoWay` to the corresponding row property).
+  - A small `Button` with a 🔍 `FontIcon` docked to the right edge of the cell.
+  - The button `Command` is bound to `ViewModel.OpenPartSearchCommand` (for Part ID) or
+    `ViewModel.OpenLocationSearchCommand` (for From/To Location) using `x:Bind` on the Page
+    level, with the row item passed as `CommandParameter`.
+  - For location columns, the `CommandParameter` is a tuple `(row, "FromLocation")` or
+    `(row, "ToLocation")` as required by `OpenLocationSearchCommand`.
+  - The 🔍 button is **always visible** (not hover-only) to aid discoverability.
+
+  **Code-behind:**
+  In `View_BulkInventory_DataEntry.xaml.cs`, after the ViewModel is set, assign `XamlRoot`:
+  ```csharp
+  protected override void OnNavigatedTo(NavigationEventArgs e)
+  {
+      base.OnNavigatedTo(e);
+      ViewModel.XamlRoot = this.XamlRoot;
+  }
+  ```
+  Also wire `F2` in the `KeyDown` handler to open the fuzzy picker for the currently active
+  cell (call the appropriate ViewModel command for the focused column).
+
+  - Keyboard legend strip at the bottom of the view listing: F2 = Search, F5 = Push, F6 = Skip,
+    Escape = Cancel (per `02_Suggestions.md §2.4` and `§2.6`).
   - All bindings use `x:Bind` with explicit `Mode`.
 
   **Files touched:**
@@ -1106,7 +1201,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T026 — Create `View_BulkInventory_Push.xaml` with full-screen overlay**
+- [x] **T026 — Create `View_BulkInventory_Push.xaml` with full-screen overlay**
 
   > **References:** `02_Suggestions.md §3.6` · `06_WorkflowDiagram.md — Diagram B OVS node`
 
@@ -1132,7 +1227,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T027 [P] — Create `View_BulkInventory_Summary.xaml`**
+- [x] **T027 [P] — Create `View_BulkInventory_Summary.xaml`**
 
   > **References:** `02_Suggestions.md §2.5` · `06_WorkflowDiagram.md — Diagram B §5 SUM node`
 
@@ -1150,7 +1245,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T028 — Create `View_BulkInventory_Host.xaml` page container**
+- [x] **T028 — Create `View_BulkInventory_Host.xaml` page container**
 
   > **References:** `01_Assumptions.md §4.1` · `04_ResearchReferences.md §2.2 (Module_ShipRec_Tools pattern)`
 
@@ -1173,7 +1268,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T029 — Wire credential guard to `BulkInventoryNavItem` visibility at startup / login**
+- [x] **T029 — Wire credential guard to `BulkInventoryNavItem` visibility at startup / login**
 
   > **References:** `03_PreRequisites.md §P1.1` · `01_Assumptions.md §2.2–2.3` ·
   > `06_WorkflowDiagram.md — Diagram A §CG node`
@@ -1192,7 +1287,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T030 — Add crash recovery check for stale `InProgress` records on app startup**
+- [x] **T030 — Add crash recovery check for stale `InProgress` records on app startup**
 
   > **References:** `06_WorkflowDiagram.md — Diagram A §0 (SIR/BNR nodes)` ·
   > `01_Assumptions.md §3.1`
@@ -1218,7 +1313,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T031 — Implement `ValidateAllCommand` — Infor Visual SQL Server PART + location check**
+- [x] **T031 — Implement `ValidateAllCommand` — Infor Visual SQL Server PART + location check**
 
   > **References:** `02_Suggestions.md §2.3` · `01_Assumptions.md §3.6` ·
   > `04_ResearchReferences.md §2.2 (Module_Core/Data/InforVisual/ pattern)` ·
@@ -1245,7 +1340,7 @@ Must be complete before the Bulk Inventory nav item can be wired to the credenti
 
 ---
 
-- [ ] **T032 — Wire F5 / F6 / Escape keyboard shortcuts and add legend strip**
+- [x] **T032 — Wire F5 / F6 / Escape keyboard shortcuts and add legend strip**
 
   > **References:** `02_Suggestions.md §2.4`
 

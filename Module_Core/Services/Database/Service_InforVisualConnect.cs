@@ -2,13 +2,10 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Model_InforVisualPO = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPO;
-using Model_InforVisualPart = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPart;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Database;
 
@@ -247,7 +244,7 @@ public class Service_InforVisualConnect : IService_InforVisual
     /// Converts flat DAO PO lines to hierarchical service model
     /// </summary>
     /// <param name="poLines"></param>
-    private Model_InforVisualPO ConvertToServiceModel(List<Models.InforVisual.Model_InforVisualPO> poLines)
+    private Model_InforVisualPO ConvertToServiceModel(List<Model_InforVisualPOLine> poLines)
     {
         var firstLine = poLines[0];
 
@@ -273,7 +270,7 @@ public class Service_InforVisualConnect : IService_InforVisual
     /// Converts DAO part model to service model
     /// </summary>
     /// <param name="daoPart"></param>
-    private Model_InforVisualPart ConvertPartToServiceModel(Models.InforVisual.Model_InforVisualPart daoPart)
+    private Model_InforVisualPart ConvertPartToServiceModel(Model_InforVisualPartInfo daoPart)
     {
         return new Model_InforVisualPart
         {
@@ -567,6 +564,67 @@ public class Service_InforVisualConnect : IService_InforVisual
         }
 
         return await _dao.GetOutsideServiceHistoryByVendorAndPartAsync(vendorId, partNumber);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(string term, string warehouseCode)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Search term cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(warehouseCode))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Warehouse code cannot be empty");
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock location results for term '{term}' in warehouse '{warehouseCode}'");
+            return CreateMockFuzzyLocations(term, warehouseCode);
+        }
+
+        return await _dao.FuzzySearchLocationsByWarehouseAsync(term, warehouseCode);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<bool>> PartExistsAsync(string partId)
+    {
+        if (string.IsNullOrWhiteSpace(partId))
+            return Model_Dao_Result_Factory.Failure<bool>("Part ID cannot be empty");
+
+        if (_useMockData)
+            return Model_Dao_Result_Factory.Success(true);
+
+        return await _dao.PartExistsAsync(partId);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<bool>> LocationExistsAsync(string locationId, string warehouseCode)
+    {
+        if (string.IsNullOrWhiteSpace(locationId))
+            return Model_Dao_Result_Factory.Failure<bool>("Location ID cannot be empty");
+
+        if (string.IsNullOrWhiteSpace(warehouseCode))
+            return Model_Dao_Result_Factory.Failure<bool>("Warehouse code cannot be empty");
+
+        if (_useMockData)
+            return Model_Dao_Result_Factory.Success(true);
+
+        return await _dao.LocationExistsAsync(locationId, warehouseCode);
+    }
+
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyLocations(string term, string warehouseCode)
+    {
+        var results = new List<Model_FuzzySearchResult>
+        {
+            new Model_FuzzySearchResult { Key = $"A-{term.ToUpper()}-01", Label = $"A-{term.ToUpper()}-01", Detail = $"Warehouse {warehouseCode} — Aisle A" },
+            new Model_FuzzySearchResult { Key = $"B-{term.ToUpper()}-02", Label = $"B-{term.ToUpper()}-02", Detail = $"Warehouse {warehouseCode} — Aisle B" },
+            new Model_FuzzySearchResult { Key = $"C-{term.ToUpper()}-03", Label = $"C-{term.ToUpper()}-03", Detail = $"Warehouse {warehouseCode} — Aisle C" }
+        };
+
+        return Model_Dao_Result_Factory.Success(results);
     }
 
     #endregion

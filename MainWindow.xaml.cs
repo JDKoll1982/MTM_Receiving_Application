@@ -4,6 +4,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using System;
+using System.Collections.Generic;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Input;
 using Windows.Graphics;
@@ -21,6 +22,7 @@ namespace MTM_Receiving_Application
         private readonly IService_LoggingUtility _logger;
         private readonly IService_SettingsWindowHost _settingsWindowHost;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IService_VisualCredentialValidator _credentialValidator;
         private bool _hasNavigatedOnStartup = false;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
@@ -35,7 +37,8 @@ namespace MTM_Receiving_Application
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_SettingsWindowHost settingsWindowHost,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IService_VisualCredentialValidator credentialValidator)
         {
             InitializeComponent();
             ViewModel = viewModel;
@@ -43,6 +46,7 @@ namespace MTM_Receiving_Application
             _logger = logger;
             _settingsWindowHost = settingsWindowHost;
             _serviceProvider = serviceProvider;
+            _credentialValidator = credentialValidator;
 
             // Configure Frame to use DI for view activation
             ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
@@ -135,42 +139,42 @@ namespace MTM_Receiving_Application
             NavView.IsPaneOpen = !NavView.IsPaneOpen;
         }
 
+        private static readonly Dictionary<string, (Type PageType, string Title)> _navRoutes = new()
+        {
+            ["ReceivingWorkflowView"] = (typeof(Module_Receiving.Views.View_Receiving_Workflow),       string.Empty),
+            ["DunnageLabelPage"]      = (typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),       string.Empty),
+            ["VolvoShipmentEntry"]    = (typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry),          "Volvo Dunnage Requisition"),
+            ["VolvoHistory"]          = (typeof(Module_Volvo.Views.View_Volvo_History),                "Volvo Shipment History"),
+            ["ReportingMainPage"]     = (typeof(Module_Reporting.Views.View_Reporting_Main),           "End of Day Reports"),
+            ["ShipRecToolsPage"]      = (typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main),    string.Empty),
+            ["BulkInventoryPage"]     = (typeof(Module_Bulk_Inventory.Views.View_BulkInventory_Host), "Bulk Inventory"),
+        };
+
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.IsSettingsSelected)
             {
                 _settingsWindowHost.ShowSettingsWindow();
+                return;
             }
-            else if (args.SelectedItem is NavigationViewItem item)
+
+            if (args.SelectedItem is not NavigationViewItem item)
             {
-                var tag = item.Tag?.ToString();
-                switch (tag)
-                {
-                    case "ReceivingWorkflowView":
-                        // Title will be set by ContentFrame_Navigated
-                        NavigateWithDI(typeof(Module_Receiving.Views.View_Receiving_Workflow));
-                        break;
-                    case "DunnageLabelPage":
-                        // Title will be set by ContentFrame_Navigated
-                        ContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView));
-                        break;
-                    case "VolvoShipmentEntry":
-                        PageTitleTextBlock.Text = "Volvo Dunnage Requisition";
-                        ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry));
-                        break;
-                    case "VolvoHistory":
-                        PageTitleTextBlock.Text = "Volvo Shipment History";
-                        ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_History));
-                        break;
-                    case "ReportingMainPage":
-                        PageTitleTextBlock.Text = "End of Day Reports";
-                        ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
-                        break;
-                    case "ShipRecToolsPage":
-                        NavigateWithDI(typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main));
-                        break;
-                }
+                return;
             }
+
+            var tag = item.Tag?.ToString();
+            if (tag is null || !_navRoutes.TryGetValue(tag, out var route))
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(route.Title))
+            {
+                PageTitleTextBlock.Text = route.Title;
+            }
+
+            NavigateWithDI(route.PageType);
         }
 
         private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -281,6 +285,26 @@ namespace MTM_Receiving_Application
                 UserDisplayTextBlock.Text = user.DisplayName;
                 UserPicture.DisplayName = user.DisplayName;
             }
+        }
+
+        /// <summary>
+        /// Shows or hides the Bulk Inventory nav item based on whether the current user's
+        /// Visual credentials pass the credential guard (blocks SHOP2, MTMDC).
+        /// Call this after session creation and after any credential update.
+        /// </summary>
+        public void UpdateBulkInventoryNavVisibility()
+        {
+            var visualUsername = _sessionManager.CurrentSession?.User?.VisualUsername ?? string.Empty;
+            var allowed = !string.IsNullOrWhiteSpace(visualUsername)
+                          && _credentialValidator.IsAllowed(visualUsername);
+
+            BulkInventoryNavItem.Visibility = allowed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            _logger.LogInfo(
+                $"BulkInventoryNavItem visibility set to {BulkInventoryNavItem.Visibility} "
+                + $"for VisualUsername '{visualUsername}'");
         }
 
         /// <summary>

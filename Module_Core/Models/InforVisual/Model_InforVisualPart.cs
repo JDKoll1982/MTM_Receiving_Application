@@ -1,53 +1,33 @@
-using System;
-using CommunityToolkit.Mvvm.ComponentModel;
-using MTM_Receiving_Application.Module_Core.Defaults;
-
-namespace MTM_Receiving_Application.Module_Core.Models.InforVisual;
-
-public partial class Model_InforVisualPart : ObservableObject
+namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
 {
-    /// <summary>Part Number (unique identifier)</summary>
-    [ObservableProperty]
-    private string _partNumber = string.Empty;
+    /// <summary>
+    /// Represents a part/line item on a purchase order from Infor Visual.
+    /// Read-only data from external system.
+    /// </summary>
+    public class Model_InforVisualPart
+    {
+        public string PartID { get; set; } = string.Empty;
 
-    /// <summary>Part Description</summary>
-    [ObservableProperty]
-    private string _description = string.Empty;
+        public string POLineNumber { get; set; } = string.Empty;
 
-    /// <summary>Part Type (PURCHASED, MANUFACTURED, etc.)</summary>
-    [ObservableProperty]
-    private string _partType = string.Empty;
+        public string PartType { get; set; } = string.Empty;
 
-    /// <summary>Standard Unit Cost</summary>
-    [ObservableProperty]
-    private decimal _unitCost;
+        public decimal QtyOrdered { get; set; }
 
-    /// <summary>Primary Unit of Measure</summary>
-    [ObservableProperty]
-    private string _primaryUom = InforVisualDefaults.DefaultUom;
+        public string UnitOfMeasure { get; set; } = "EA";
 
-    /// <summary>On-Hand Quantity at Warehouse 002</summary>
-    [ObservableProperty]
-    private decimal _onHandQty;
+        public string Description { get; set; } = string.Empty;
 
-    /// <summary>Allocated Quantity (reserved for orders)</summary>
-    [ObservableProperty]
-    private decimal _allocatedQty;
+        /// <summary>
+        /// Remaining quantity available to receive (Ordered - Received).
+        /// Whole number only (no decimals).
+        /// </summary>
+        public int RemainingQuantity { get; set; }
 
-    /// <summary>Available Quantity (OnHandQty - AllocatedQty)</summary>
-    [ObservableProperty]
-    private decimal _availableQty;
-
-    /// <summary>Default Warehouse/Site</summary>
-    [ObservableProperty]
-    private string _defaultSite = InforVisualDefaults.DefaultSiteId;
-
-    /// <summary>Part Status (ACTIVE, OBSOLETE, etc.)</summary>
-    [ObservableProperty]
-    private string _partStatus = InforVisualDefaults.DefaultPartStatus;
-
-    /// <summary>Product Line/Category</summary>
-    [ObservableProperty]
-    private string _productLine = string.Empty;
+        /// <summary>
+        /// Display text for UI showing part ID, description, and line number.
+        /// </summary>
+        public string DisplayText =>
+            $"{PartID} - {Description} (Line {POLineNumber})";
+    }
 }
-

@@ -60,7 +60,7 @@ public class Dao_InforVisualConnection
     /// Uses: 01_GetPOWithParts.sql
     /// </summary>
     /// <param name="poNumber"></param>
-    public async Task<Model_Dao_Result<List<Model_InforVisualPO>>> GetPOWithPartsAsync(string poNumber)
+    public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetPOWithPartsAsync(string poNumber)
     {
         try
         {
@@ -73,12 +73,12 @@ public class Dao_InforVisualConnection
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
-            var poLines = new List<Model_InforVisualPO>();
+            var poLines = new List<Model_InforVisualPOLine>();
             await using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                poLines.Add(new Model_InforVisualPO
+                poLines.Add(new Model_InforVisualPOLine
                 {
                     PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
                     PoLine = Convert.ToInt32(reader["PoLine"]),
@@ -102,7 +102,7 @@ public class Dao_InforVisualConnection
         catch (Exception ex)
         {
             _logger?.LogError($"Error retrieving PO {poNumber}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPO>>(
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>(
                 $"Error retrieving PO {poNumber}: {ex.Message}", ex);
         }
     }
@@ -147,7 +147,7 @@ public class Dao_InforVisualConnection
     /// Uses: 03_GetPartByNumber.sql
     /// </summary>
     /// <param name="partNumber"></param>
-    public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByNumberAsync(string partNumber)
+    public async Task<Model_Dao_Result<Model_InforVisualPartInfo?>> GetPartByNumberAsync(string partNumber)
     {
         try
         {
@@ -164,7 +164,7 @@ public class Dao_InforVisualConnection
 
             if (await reader.ReadAsync())
             {
-                var part = new Model_InforVisualPart
+                var part = new Model_InforVisualPartInfo
                 {
                     PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
                     Description = reader["Description"].ToString() ?? string.Empty,
@@ -178,16 +178,16 @@ public class Dao_InforVisualConnection
                     ProductLine = reader["ProductLine"].ToString() ?? string.Empty
                 };
                 _logger?.LogInfo($"Found part: {partNumber}");
-                return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(part);
+                return Model_Dao_Result_Factory.Success<Model_InforVisualPartInfo?>(part);
             }
 
             _logger?.LogWarning($"Part not found: {partNumber}");
-            return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(null);
+            return Model_Dao_Result_Factory.Success<Model_InforVisualPartInfo?>(null);
         }
         catch (Exception ex)
         {
             _logger?.LogError($"Error retrieving part {partNumber}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>(
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPartInfo?>(
                 $"Error retrieving part {partNumber}: {ex.Message}", ex);
         }
     }
@@ -198,7 +198,7 @@ public class Dao_InforVisualConnection
     /// </summary>
     /// <param name="searchTerm"></param>
     /// <param name="maxResults"></param>
-    public async Task<Model_Dao_Result<List<Model_InforVisualPart>>> SearchPartsByDescriptionAsync(
+    public async Task<Model_Dao_Result<List<Model_InforVisualPartInfo>>> SearchPartsByDescriptionAsync(
         string searchTerm,
         int maxResults = 50)
     {
@@ -214,12 +214,12 @@ public class Dao_InforVisualConnection
             command.Parameters.AddWithValue("@SearchTerm", searchTerm);
             command.Parameters.AddWithValue("@MaxResults", maxResults);
 
-            var parts = new List<Model_InforVisualPart>();
+            var parts = new List<Model_InforVisualPartInfo>();
             await using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                parts.Add(new Model_InforVisualPart
+                parts.Add(new Model_InforVisualPartInfo
                 {
                     PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
                     Description = reader["Description"].ToString() ?? string.Empty,
@@ -240,7 +240,7 @@ public class Dao_InforVisualConnection
         catch (Exception ex)
         {
             _logger?.LogError($"Error searching parts: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPart>>(
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPartInfo>>(
                 $"Error searching parts: {ex.Message}", ex);
         }
     }
@@ -549,6 +549,123 @@ public class Dao_InforVisualConnection
             _logger?.LogError($"Error querying outside service history for vendor {vendorId}, part {partNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
                 $"Error querying outside service history by vendor and part: {ex.Message}", ex);
+        }
+    }
+
+    #endregion
+
+    #region Location Queries
+
+    /// <summary>
+    /// Fuzzy search for warehouse locations whose ID contains <paramref name="term"/> (LIKE '%term%'),
+    /// scoped to <paramref name="warehouseCode"/>.
+    /// Uses: 11_FuzzySearchLocationsByWarehouse.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="term">Partial location ID entered by the user.</param>
+    /// <param name="warehouseCode">Warehouse to restrict results to (e.g. "002").</param>
+    /// <param name="maxResults">Maximum rows to return.</param>
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsByWarehouseAsync(
+        string term,
+        string warehouseCode,
+        int maxResults = 50)
+    {
+        try
+        {
+            _logger?.LogInfo($"Fuzzy-searching locations in warehouse '{warehouseCode}' for term '{term}' (max {maxResults})");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("11_FuzzySearchLocationsByWarehouse.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Term", $"%{term}%");
+            command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
+            command.Parameters.AddWithValue("@MaxResults", maxResults);
+
+            var results = new List<Model_FuzzySearchResult>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var locationId = reader["LocationId"].ToString() ?? string.Empty;
+                var description = reader["Description"] as string;
+                results.Add(new Model_FuzzySearchResult
+                {
+                    Key = locationId,
+                    Label = locationId,
+                    Detail = description
+                });
+            }
+
+            _logger?.LogInfo($"Fuzzy location search found {results.Count} results for '{term}' in warehouse '{warehouseCode}'");
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error fuzzy-searching locations: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                $"Error searching locations: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when a <c>PART</c> row with <c>ID = <paramref name="partId"/></c>
+    /// exists in Infor Visual.
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="partId">Exact part ID to check.</param>
+    public async Task<Model_Dao_Result<bool>> PartExistsAsync(string partId)
+    {
+        try
+        {
+            const string sql = "SELECT COUNT(1) FROM PART WHERE ID = @PartId";
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@PartId", partId);
+
+            var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+            return Model_Dao_Result_Factory.Success(count > 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error checking part existence for '{partId}': {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>($"Error checking part existence: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when a <c>LOCATION</c> row with
+    /// <c>ID = <paramref name="locationId"/></c> and
+    /// <c>WAREHOUSE_ID = <paramref name="warehouseCode"/></c> exists in Infor Visual.
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="locationId">Exact location ID to check.</param>
+    /// <param name="warehouseCode">Warehouse code that must match (e.g. "002").</param>
+    public async Task<Model_Dao_Result<bool>> LocationExistsAsync(string locationId, string warehouseCode)
+    {
+        try
+        {
+            const string sql =
+                "SELECT COUNT(1) FROM LOCATION WHERE ID = @LocationId AND WAREHOUSE_ID = @WarehouseCode";
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@LocationId", locationId);
+            command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
+
+            var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+            return Model_Dao_Result_Factory.Success(count > 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error checking location existence for '{locationId}' in warehouse '{warehouseCode}': {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>($"Error checking location existence: {ex.Message}", ex);
         }
     }
 

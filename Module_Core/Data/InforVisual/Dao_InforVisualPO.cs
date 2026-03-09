@@ -48,7 +48,7 @@ public class Dao_InforVisualPO
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_InforVisualPO>>> GetByPoNumberAsync(string poNumber)
+    public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetByPoNumberAsync(string poNumber)
     {
         try
         {
@@ -61,11 +61,11 @@ public class Dao_InforVisualPO
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
-            var list = new List<Model_InforVisualPO>();
+            var list = new List<Model_InforVisualPOLine>();
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                list.Add(new Model_InforVisualPO
+                list.Add(new Model_InforVisualPOLine
                 {
                     PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
                     PoLine = Convert.ToInt32(reader["PoLine"]),
@@ -89,7 +89,7 @@ public class Dao_InforVisualPO
         catch (Exception ex)
         {
             _logger?.LogError($"Error retrieving PO {poNumber}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPO>>(
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>(
                 $"Error retrieving PO {poNumber}: {ex.Message}",
                 ex);
         }

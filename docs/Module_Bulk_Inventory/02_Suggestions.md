@@ -117,6 +117,112 @@ individual Failed rows before closing.
 
 When re-pushing Failed rows, **consolidation is skipped** — each selected row is pushed as-is in its current (failed) state without re-grouping with other rows.
 
+### 2.6  Fuzzy Search Picker for Part ID and Location Fields
+
+When a user enters a value in the **Part ID**, **From Location**, or **To Location** cell of the
+data entry grid, the existing `Dialog_FuzzySearchPicker` (from `Module_Core/Dialogs/`) must open
+pre-populated with matching Infor Visual results.
+
+**Reason:** Part IDs and location codes in MTMFG are not human-memorable and typos cause silent
+Visual failures.  The picker surfaces matching candidates from the read-only SQL Server database
+before any automation runs, eliminating a large class of `Row → Failed` outcomes.
+
+#### Interaction Pattern
+
+Each of the three columns (**Part ID**, **From Location**, **To Location**) renders a small
+**🔍 search icon button** visible at the right edge of the cell.  The button is always visible
+(not hover-only) to aid discoverability.  The cell also accepts typed values directly for power
+users who know the exact code.
+
+1. **User clicks the 🔍 button** (or presses `F2` while the cell is active).
+2. The ViewModel command reads the cell's current typed text as an initial filter term.
+3. A LIKE-based query is executed against Infor Visual SQL Server.
+4. `Dialog_FuzzySearchPicker` opens pre-populated with the results and the typed value already
+   applied as the filter (the built-in search box inside the dialog is pre-filled).
+5. The user browses or refines the filter, then double-taps or clicks **Select**.
+6. On `ContentDialogResult.Primary`, `dialog.SelectedResult!.Key` is written back into the
+   corresponding property on `Model_BulkInventoryTransaction` for that row.
+
+#### Part ID Search
+
+- Query Infor Visual SQL Server:
+  ```sql
+  SELECT ID, DESCRIPTION FROM PART
+  WHERE ID LIKE '%{term}%' OR DESCRIPTION LIKE '%{term}%'
+  ORDER BY ID
+  ```
+- Map to `Model_FuzzySearchResult { Key = PART.ID, Label = PART.ID, Detail = PART.DESCRIPTION }`.
+- Open picker: title `"Select Part"`, subtitle `"Matching parts for '{term}':"`.
+
+#### Location Search (From Location / To Location)
+
+- Query Infor Visual SQL Server, filtered to the configured default warehouse (setting key
+  `BulkInventory.Defaults.WarehouseCode`):
+  ```sql
+  SELECT DISTINCT LOCATION FROM LOCATION
+  WHERE WAREHOUSE_ID = '{warehouseCode}'
+    AND LOCATION LIKE '%{term}%'
+  ORDER BY LOCATION
+  ```
+- Map to `Model_FuzzySearchResult { Key = LOCATION, Label = LOCATION, Detail = WAREHOUSE_ID }`.
+- Open picker: title `"Select Location"`, subtitle `"Locations matching '{term}' in warehouse {warehouseCode}:"`.
+
+#### ViewModel Commands (added in T022)
+
+```csharp
+[RelayCommand]
+private async Task OpenPartSearchAsync(Model_BulkInventoryTransaction row)
+{
+    var results = await _inforVisualService.FuzzySearchPartsAsync(row.PartId ?? string.Empty);
+    if (!results.IsSuccess) return;
+
+    var dialog = new Dialog_FuzzySearchPicker(
+        results.Data,
+        "Select Part",
+        $"Matching parts for '{row.PartId}':")
+    { XamlRoot = _xamlRoot };
+
+    if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+        row.PartId = dialog.SelectedResult!.Key;
+}
+
+[RelayCommand]
+private async Task OpenLocationSearchAsync((Model_BulkInventoryTransaction Row, string Field) args)
+{
+    var term = args.Field == "FromLocation" ? args.Row.FromLocation : args.Row.ToLocation;
+    var warehouseCode = await _settingsService.GetStringAsync("BulkInventory.Defaults.WarehouseCode");
+    var results = await _inforVisualService.FuzzySearchLocationsAsync(term ?? string.Empty, warehouseCode);
+    if (!results.IsSuccess) return;
+
+    var dialog = new Dialog_FuzzySearchPicker(
+        results.Data,
+        "Select Location",
+        $"Locations matching '{term}' in warehouse {warehouseCode}:")
+    { XamlRoot = _xamlRoot };
+
+    if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+    {
+        if (args.Field == "FromLocation")
+            args.Row.FromLocation = dialog.SelectedResult!.Key;
+        else
+            args.Row.ToLocation = dialog.SelectedResult!.Key;
+    }
+}
+```
+
+#### Service Dependencies
+
+Both commands require:
+- **Existing:** `FuzzySearchPartsAsync(string term)` — already modelled in `Module_ShipRec_Tools`;
+  add an equivalent to the Infor Visual service consumed by `Module_Bulk_Inventory`.
+- **New:** `FuzzySearchLocationsAsync(string term, string warehouseCode)` — new method on the
+  same service, querying the `LOCATION` table.  The Infor Visual SQL Server connection string
+  (`ApplicationIntent=ReadOnly`) must be used.
+
+The concrete service is added to `Module_Bulk_Inventory/Contracts/Services/` and injected into
+`ViewModel_BulkInventory_DataEntry` via its constructor — **not** called directly by the ViewModel.
+The ViewModel never touches `Helper_Database_*` classes.
+
 ---
 
 ## 3 — Error Handling & Recovery

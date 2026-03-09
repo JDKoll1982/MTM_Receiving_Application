@@ -13,7 +13,7 @@
 
         <StackPanel Spacing="4">
             <TextBlock Text="Shared Paths" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="Define shared locations for reports, exports, and workflow artifacts."
+            <TextBlock Text="Configure shared locations and default values used across application modules."
                        Style="{StaticResource BodyTextBlockStyle}" />
         </StackPanel>
 
@@ -23,10 +23,69 @@
                  Severity="Informational"
                  Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
 
-        <StackPanel Grid.Row="2" Spacing="8">
-            <TextBlock Text="Overview" Style="{StaticResource SubtitleTextBlockStyle}" />
-            <TextBlock Text="Shared path defaults ensure consistent storage locations across workstations."
-                       Style="{StaticResource BodyTextBlockStyle}" />
-        </StackPanel>
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="24">
+
+                <!-- Export Paths section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Export Paths" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Export Root Path" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="Root directory for all application exports and reports."
+                                   Style="{StaticResource CaptionTextBlockStyle}" />
+                        <TextBox Text="{x:Bind ViewModel.ExportRootPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 PlaceholderText="e.g. C:/MTM/Exports"
+                                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Infor Visual section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Infor Visual" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Infor Visual Executable Root Path" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="UNC or local path to the Infor Visual executable root (e.g. \\\\visual\\visual908$\\VMFG)."
+                                   Style="{StaticResource CaptionTextBlockStyle}" />
+                        <TextBox Text="{x:Bind ViewModel.InforVisualExePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 PlaceholderText="\\\\visual\\visual908$\\VMFG"
+                                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Bulk Inventory Defaults section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Bulk Inventory Defaults" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Default Warehouse Code" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="Warehouse code pre-filled on new bulk inventory transactions."
+                                   Style="{StaticResource CaptionTextBlockStyle}" />
+                        <TextBox Text="{x:Bind ViewModel.DefaultWarehouseCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 PlaceholderText="e.g. 002"
+                                 MaxLength="10"
+                                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Default Lot Number" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="Lot number pre-filled on new bulk inventory transactions."
+                                   Style="{StaticResource CaptionTextBlockStyle}" />
+                        <TextBox Text="{x:Bind ViewModel.DefaultLotNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 PlaceholderText="e.g. 1"
+                                 MaxLength="20"
+                                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Save button -->
+                <Button Content="Save"
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                        Style="{StaticResource AccentButtonStyle}" />
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

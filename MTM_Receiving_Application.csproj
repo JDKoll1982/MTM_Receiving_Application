@@ -18,11 +18,14 @@
         <Nullable>enable</Nullable>
         <WindowsPackageType>None</WindowsPackageType>
         <UseRidGraph>true</UseRidGraph>
-        
+
         <!-- Warning Suppressions (Global) -->
-        <!-- TODO: Consider suppressing warnings at specific usage sites with #pragma instead of globally -->
-        <!-- RCS1060: Disabled condition in pattern matching - Required for C# guard clauses (e.g., 'is not null') -->
-        <!-- CS8012: Missing assembly reference warning - Expected in self-contained deployment model -->
+        <!-- TODO: Consider suppressing warnings at specific usage sites with #pragma instead of
+        globally -->
+        <!-- RCS1060: Disabled condition in pattern matching - Required for C# guard clauses (e.g.,
+        'is not null') -->
+        <!-- CS8012: Missing assembly reference warning - Expected in self-contained deployment
+        model -->
         <!-- CS1591: Missing XML documentation - Suppressed in Release build configuration -->
         <NoWarn>RCS1060;CS8012</NoWarn>
         <!-- Compilation Performance Optimizations -->
@@ -142,8 +145,14 @@
     Tools extension to be activated for this project even if the Windows App SDK Nuget
     package has not yet been restored.
   -->
-    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ItemGroup
+        Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <ProjectCapability Include="Msix" />
+    </ItemGroup>
+    <!-- Windows Desktop App runtime — enables System.Windows.Forms.SendKeys and
+         System.Windows.Automation without pulling in WPF XAML targets (MC6000). -->
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
@@ -234,15 +243,17 @@
         - JSON serialization (System.Text.Json)
         - COM interop components
         -->
-        
+
         <!-- ReadyToRun: Disabled - causes COM interop crashes in WinUI 3 -->
         <PublishReadyToRun>False</PublishReadyToRun>
-        
+
         <!-- Trimming: Disabled - breaks XAML binding, DI, and JSON serialization -->
-        <!-- TODO: Future optimization - test with TrimMode=partial and DynamicallyAccessedMembers attributes -->
+        <!-- TODO: Future optimization - test with TrimMode=partial and DynamicallyAccessedMembers
+        attributes -->
         <PublishTrimmed>False</PublishTrimmed>
-        
-        <!-- Trim Analysis: Enabled warnings suppressed - re-enable when implementing partial trimming -->
+
+        <!-- Trim Analysis: Enabled warnings suppressed - re-enable when implementing partial
+        trimming -->
         <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
         <!-- Disable single-file publishing -->
         <PublishSingleFile>false</PublishSingleFile>
@@ -270,9 +281,9 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <PRIResource Remove="Properties\**" />
+        <PRIResource Remove="Properties\**" />
     </ItemGroup>
     <ItemGroup>
-      <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
+        <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
     </ItemGroup>
 </Project>

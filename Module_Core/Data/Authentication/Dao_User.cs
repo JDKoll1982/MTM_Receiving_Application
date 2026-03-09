@@ -430,5 +430,171 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 return null;
             }
         }
+
+        // ====================================================================
+        // User Management Methods (Settings ▸ Users)
+        // ====================================================================
+
+        /// <summary>
+        /// Returns all users ordered by full_name — used by the Settings Users list.
+        /// </summary>
+        public virtual async Task<Model_Dao_Result<List<Model_User>>> GetAllAsync()
+        {
+            return await Helper_Database_StoredProcedure.ExecuteListAsync(
+                _connectionString,
+                "sp_Auth_User_GetAll",
+                MapReaderToUser
+            );
+        }
+
+        /// <summary>
+        /// Full record update — used by the edit form Save button.
+        /// </summary>
+        /// <param name="user">User record with all editable fields populated.</param>
+        /// <param name="updatedBy">Windows username of the admin making the change.</param>
+        public virtual async Task<Model_Dao_Result> UpdateAsync(Model_User user, string updatedBy)
+        {
+            try
+            {
+                await using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                await using var command = new MySqlCommand("sp_Auth_User_Update", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@p_employee_number", user.EmployeeNumber);
+                command.Parameters.AddWithValue("@p_full_name", user.FullName);
+                command.Parameters.AddWithValue("@p_pin", user.Pin);
+                command.Parameters.AddWithValue("@p_department", user.Department);
+                command.Parameters.AddWithValue("@p_shift", user.Shift);
+                command.Parameters.AddWithValue("@p_is_active", user.IsActive ? 1 : 0);
+                command.Parameters.AddWithValue("@p_visual_username", user.VisualUsername ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_visual_password", user.VisualPassword ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_updated_by", updatedBy);
+
+                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(errorMessageParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                var errorMessage = errorMessageParam.Value?.ToString();
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return Model_Dao_Result_Factory.Failure(errorMessage);
+                }
+
+                return Model_Dao_Result_Factory.Success();
+            }
+            catch (MySqlException ex)
+            {
+                return Model_Dao_Result_Factory.Failure($"Database error: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                return Model_Dao_Result_Factory.Failure($"Unexpected error: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Credential-only update — used by the inline Visual credentials section.
+        /// </summary>
+        /// <param name="employeeNumber">Target employee's ID.</param>
+        /// <param name="visualUsername">New Visual username (null clears the field).</param>
+        /// <param name="visualPassword">New Visual password (null clears the field).</param>
+        /// <param name="updatedBy">Windows username of the admin making the change.</param>
+        public virtual async Task<Model_Dao_Result> UpdateVisualCredentialsAsync(
+            int employeeNumber, string? visualUsername, string? visualPassword, string updatedBy)
+        {
+            try
+            {
+                await using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                await using var command = new MySqlCommand("sp_Auth_User_UpdateVisualCredentials", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@p_employee_number", employeeNumber);
+                command.Parameters.AddWithValue("@p_visual_username", visualUsername ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_visual_password", visualPassword ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_updated_by", updatedBy);
+
+                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(errorMessageParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                var errorMessage = errorMessageParam.Value?.ToString();
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return Model_Dao_Result_Factory.Failure(errorMessage);
+                }
+
+                return Model_Dao_Result_Factory.Success();
+            }
+            catch (MySqlException ex)
+            {
+                return Model_Dao_Result_Factory.Failure($"Database error: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                return Model_Dao_Result_Factory.Failure($"Unexpected error: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Soft-delete — sets is_active = false.  Used by the Deactivate button.
+        /// </summary>
+        /// <param name="employeeNumber">Employee to deactivate.</param>
+        /// <param name="updatedBy">Windows username of the admin performing the action.</param>
+        public virtual async Task<Model_Dao_Result> DeactivateAsync(int employeeNumber, string updatedBy)
+        {
+            try
+            {
+                await using var connection = new MySqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                await using var command = new MySqlCommand("sp_Auth_User_Deactivate", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@p_employee_number", employeeNumber);
+                command.Parameters.AddWithValue("@p_updated_by", updatedBy);
+
+                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(errorMessageParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                var errorMessage = errorMessageParam.Value?.ToString();
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return Model_Dao_Result_Factory.Failure(errorMessage);
+                }
+
+                return Model_Dao_Result_Factory.Success();
+            }
+            catch (MySqlException ex)
+            {
+                return Model_Dao_Result_Factory.Failure($"Database error: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                return Model_Dao_Result_Factory.Failure($"Unexpected error: {ex.Message}", ex);
+            }
+        }
     }
 }

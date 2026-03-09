@@ -62,7 +62,7 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
 
     private void ResultsGrid_Sorting(object sender, DataGridColumnEventArgs e)
     {
-        var propertyName = e.Column.SortMemberPath;
+        var propertyName = e.Column.Tag as string;
         if (string.IsNullOrEmpty(propertyName))
         {
             return;
@@ -78,8 +78,6 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
         e.Column.SortDirection = ascending
             ? DataGridSortDirection.Ascending
             : DataGridSortDirection.Descending;
-
-        e.Handled = true;
     }
 
     private void ResetAllColumnSortDirections()

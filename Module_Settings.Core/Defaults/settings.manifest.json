@@ -2531,6 +2531,39 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
+    },
+    {
+      "category": "System",
+      "key": "Core.SharedPaths.InforVisualExePath",
+      "displayName": "Infor Visual Executable Root Path",
+      "defaultValue": "\\\\visual\\visual908$\\VMFG",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path"
+    },
+    {
+      "category": "BulkInventory",
+      "key": "BulkInventory.Defaults.WarehouseCode",
+      "displayName": "Default Warehouse Code",
+      "defaultValue": "002",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "BulkInventory",
+      "key": "BulkInventory.Defaults.LotNo",
+      "displayName": "Default Lot Number",
+      "defaultValue": "1",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
     }
   ]
 }

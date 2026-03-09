@@ -48,7 +48,7 @@ public class Dao_InforVisualPart
         }
     }
 
-    public async Task<Model_Dao_Result<Model_InforVisualPart>> GetByPartNumberAsync(string partNumber)
+    public async Task<Model_Dao_Result<Model_InforVisualPartInfo>> GetByPartNumberAsync(string partNumber)
     {
         try
         {
@@ -64,7 +64,7 @@ public class Dao_InforVisualPart
             await using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                var part = new Model_InforVisualPart
+                var part = new Model_InforVisualPartInfo
                 {
                     PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
                     Description = reader["Description"].ToString() ?? string.Empty,
@@ -83,18 +83,18 @@ public class Dao_InforVisualPart
             }
 
             _logger?.LogWarning($"Part not found: {partNumber}");
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart>("Part not found");
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPartInfo>("Part not found");
         }
         catch (Exception ex)
         {
             _logger?.LogError($"Error retrieving part {partNumber}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart>(
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPartInfo>(
                 $"Error retrieving part {partNumber}: {ex.Message}",
                 ex);
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_InforVisualPart>>> SearchPartsByDescriptionAsync(
+    public async Task<Model_Dao_Result<List<Model_InforVisualPartInfo>>> SearchPartsByDescriptionAsync(
         string searchTerm,
         int maxResults = 50)
     {
@@ -110,11 +110,11 @@ public class Dao_InforVisualPart
             command.Parameters.AddWithValue("@SearchTerm", searchTerm);
             command.Parameters.AddWithValue("@MaxResults", maxResults);
 
-            var list = new List<Model_InforVisualPart>();
+            var list = new List<Model_InforVisualPartInfo>();
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                list.Add(new Model_InforVisualPart
+                list.Add(new Model_InforVisualPartInfo
                 {
                     PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
                     Description = reader["Description"].ToString() ?? string.Empty,
@@ -136,7 +136,7 @@ public class Dao_InforVisualPart
         catch (Exception ex)
         {
             _logger?.LogError($"Error searching parts: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPart>>(
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPartInfo>>(
                 $"Error searching parts: {ex.Message}",
                 ex);
         }

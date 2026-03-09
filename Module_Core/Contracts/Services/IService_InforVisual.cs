@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using Model_InforVisualPO = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPO;
-using Model_InforVisualPart = MTM_Receiving_Application.Module_Receiving.Models.Model_InforVisualPart;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 {
@@ -99,6 +96,35 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="vendorId">The vendor ID to filter by.</param>
         /// <param name="partNumber">The part number to filter by.</param>
         public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAndPartAsync(string vendorId, string partNumber);
+
+        /// <summary>
+        /// Fuzzy-searches warehouse locations whose ID contains <paramref name="term"/>,
+        /// scoped to <paramref name="warehouseCode"/>.
+        /// Returns up to 50 candidates for display in a selection picker.
+        /// </summary>
+        /// <param name="term">Partial location ID entered by the user.</param>
+        /// <param name="warehouseCode">Warehouse code to scope results (e.g. "002").</param>
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(string term, string warehouseCode);
+
+        // ── Exact-match validation (Bulk Inventory T031) ───────────────────────
+
+        /// <summary>
+        /// Returns <see langword="true"/> when a <c>PART</c> row with
+        /// <c>ID = <paramref name="partId"/></c> exists in Infor Visual.
+        /// Used by <c>ValidateAllCommand</c> in the Bulk Inventory module.
+        /// </summary>
+        /// <param name="partId">Exact part ID to check.</param>
+        public Task<Model_Dao_Result<bool>> PartExistsAsync(string partId);
+
+        /// <summary>
+        /// Returns <see langword="true"/> when a <c>LOCATION</c> row with
+        /// <c>ID = <paramref name="locationId"/></c> and
+        /// <c>WAREHOUSE_ID = <paramref name="warehouseCode"/></c> exists in Infor Visual.
+        /// Used by <c>ValidateAllCommand</c> in the Bulk Inventory module.
+        /// </summary>
+        /// <param name="locationId">Exact location ID to check.</param>
+        /// <param name="warehouseCode">Warehouse code that must match (e.g. "002").</param>
+        public Task<Model_Dao_Result<bool>> LocationExistsAsync(string locationId, string warehouseCode);
     }
 }
 

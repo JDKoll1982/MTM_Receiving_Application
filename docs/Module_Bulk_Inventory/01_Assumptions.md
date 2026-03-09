@@ -62,11 +62,13 @@ implementation begins.
 | 3.4 | Warehouse code is **always "002"** for both From and To warehouse.  This matches the legacy app's hardcoded behaviour.  If the business ever needs a different warehouse, it would be a settings field. |
 | 3.5 | The `Lot No` field in the New Transaction mode is always **"1"** (hardcoded in the legacy app as `"4116" = "1"`).  Same assumption applies here unless corrected. |
 | 3.6 | Part ID lookup from Infor Visual (via `Service_InforVisualConnect`) is used to validate the entered Part ID exists before the row is submitted.  If the part is not found, the user sees a warning but can override and continue. |
+| 3.7 | When the user activates the **Part ID**, **From Location**, or **To Location** cell in the data entry grid (by pressing F2 or clicking the 🔍 button rendered in the cell), `Dialog_FuzzySearchPicker` opens pre-populated with results from a LIKE-based Infor Visual SQL Server query.  On selection, the chosen `SelectedResult.Key` is written directly into the row.  This applies to **both** location fields; the query is filtered to the currently configured default warehouse code (`BulkInventory.Defaults.WarehouseCode`).  The picker is additive — the user can still type a value directly without going through the picker. |
 
 | # | Correction |
 |---|---|
 | 3.2 | Work Order field format confirmed as `WO-######` (e.g. `WO-123456`). |
 | 3.3 | Push to visual will first consolidate all like PartIDs and Locations by adding up the quantites to lessen the amount of rows, then will start by pushing each row to visual individualy. "Push to Visual" → review result → Next row.  A "Skip" action moves the row to Skipped status without pushing.  Also a Delete action should exist to remove the row both during the push as well as during data entry incase the transfer was changed or no longer needed. |
+| 3.7 | The fuzzy search service interface `IService_BulkInventory_FuzzySearch` exposes `SearchPartsAsync(string term)` and `SearchLocationsAsync(string term, string warehouseCode)`.  Both return `Model_Dao_Result<List<Model_FuzzySearchResult>>`.  The implementation uses the read-only `ApplicationIntent=ReadOnly` SQL Server connection already available via `IService_InforVisualConnect`. |
 
 ---
 
