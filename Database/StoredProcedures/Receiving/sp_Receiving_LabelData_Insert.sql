@@ -39,10 +39,12 @@ CREATE PROCEDURE `sp_Receiving_LabelData_Insert`(
     IN p_is_non_po_item TINYINT(1),
     IN p_is_quality_hold_required TINYINT(1),
     IN p_is_quality_hold_acknowledged TINYINT(1),
-    IN p_quality_hold_restriction_type VARCHAR(255)
+    IN p_quality_hold_restriction_type VARCHAR(255),
+    IN p_part_skid_sequence INT,
+    IN p_part_skid_total INT
 )
 BEGIN
-    INSERT INTO receiving_label_data
+    INSERT IGNORE INTO receiving_label_data
     (
         load_id,
         load_number,
@@ -74,7 +76,9 @@ BEGIN
         is_non_po_item,
         is_quality_hold_required,
         is_quality_hold_acknowledged,
-        quality_hold_restriction_type
+        quality_hold_restriction_type,
+        part_skid_sequence,
+        part_skid_total
     )
     VALUES
     (
@@ -108,7 +112,9 @@ BEGIN
         p_is_non_po_item,
         p_is_quality_hold_required,
         p_is_quality_hold_acknowledged,
-        p_quality_hold_restriction_type
+        p_quality_hold_restriction_type,
+        p_part_skid_sequence,
+        p_part_skid_total
     );
 END$$
 

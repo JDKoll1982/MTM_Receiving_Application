@@ -61,8 +61,22 @@ public class Dao_ReceivingLoad
         {
             int savedCount = 0;
 
+            // Pre-compute per-part skid totals and sequences for the "N of M" label counter.
+            var partTotals = loads
+                .GroupBy(l => l.PartID, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
+            var partSequenceCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var load in loads)
             {
+                if (!partSequenceCounters.ContainsKey(load.PartID))
+                {
+                    partSequenceCounters[load.PartID] = 0;
+                }
+                partSequenceCounters[load.PartID]++;
+                int skidSequence = partSequenceCounters[load.PartID];
+                int skidTotal = partTotals[load.PartID];
+
                 var roundedQuantity = Convert.ToInt32(Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero));
                 var cleanedPoNumber = CleanPONumber(load.PoNumber);
                 object poNumber = cleanedPoNumber is null ? DBNull.Value : cleanedPoNumber;
@@ -106,7 +120,9 @@ public class Dao_ReceivingLoad
                     { "is_non_po_item", load.IsNonPOItem },
                     { "is_quality_hold_required", load.IsQualityHoldRequired },
                     { "is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged },
-                    { "quality_hold_restriction_type", qualityHoldRestrictionType }
+                    { "quality_hold_restriction_type", qualityHoldRestrictionType },
+                    { "part_skid_sequence", skidSequence },
+                    { "part_skid_total", skidTotal }
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(

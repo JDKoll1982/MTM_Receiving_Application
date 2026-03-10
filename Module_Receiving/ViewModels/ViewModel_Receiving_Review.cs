@@ -303,23 +303,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
-                // Save current session to XLS before clearing
-                IsBusy = true;
-                StatusMessage = "Saving to XLS...";
-                var saveResult = await _workflowService.SaveToXLSOnlyAsync();
-
-                if (!saveResult.Success)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        $"Failed to save CSV backup: {string.Join(", ", saveResult.Errors)}",
-                        Enum_ErrorSeverity.Warning,
-                        null,
-                        true);
-                    IsBusy = false;
-                    return;
-                }
-                IsBusy = false;
-
                 // Clear transient workflow data FIRST (before navigation)
                 ClearTransientWorkflowData();
 

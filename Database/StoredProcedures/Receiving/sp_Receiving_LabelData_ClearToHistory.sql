@@ -60,7 +60,9 @@ BEGIN
             coils_on_skid,
             label_number,
             vendor_name,
-            is_non_po_item
+            is_non_po_item,
+            part_skid_sequence,
+            part_skid_total
         )
         SELECT
             COALESCE(rld.load_id, UUID())                              AS load_guid,
@@ -75,7 +77,9 @@ BEGIN
             rld.coils_on_skid                                          AS coils_on_skid,
             COALESCE(rld.label_number, 1)                              AS label_number,
             COALESCE(rld.po_vendor, rld.vendor_name)                   AS vendor_name,
-            COALESCE(rld.is_non_po_item, 0)                            AS is_non_po_item
+            COALESCE(rld.is_non_po_item, 0)                            AS is_non_po_item,
+            rld.part_skid_sequence                                     AS part_skid_sequence,
+            rld.part_skid_total                                        AS part_skid_total
         FROM receiving_label_data rld
         ON DUPLICATE KEY UPDATE
             quantity         = VALUES(quantity),
@@ -89,7 +93,9 @@ BEGIN
             coils_on_skid    = VALUES(coils_on_skid),
             label_number     = VALUES(label_number),
             vendor_name      = VALUES(vendor_name),
-            is_non_po_item   = VALUES(is_non_po_item);
+            is_non_po_item   = VALUES(is_non_po_item),
+            part_skid_sequence = VALUES(part_skid_sequence),
+            part_skid_total  = VALUES(part_skid_total);
 
         DELETE FROM receiving_label_data;
 
