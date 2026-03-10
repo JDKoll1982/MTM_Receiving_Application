@@ -33,6 +33,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     private const string SettingsCategory = "BulkInventory";
     private const string KeyWarehouseCode = "BulkInventory.Defaults.WarehouseCode";
     private const string FallbackWarehouseCode = "002";
+    private const int InitialRowCount = 50;
 
     // ── XamlRoot needed to host ContentDialogs ──────────────────────────────
     /// <summary>
@@ -59,8 +60,13 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     private bool _hasValidationWarnings;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(PushBatchCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ClearAllCommand))]
     private bool _hasRows;
+
+    /// <summary>True when at least one row contains a Part ID. Controls whether Push Batch is enabled.</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PushBatchCommand))]
+    private bool _hasDataRows;
 
     /// <summary>
     /// Set to <see langword="true"/> when stale InProgress rows from a previous session are
@@ -98,61 +104,53 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     public async Task LoadPendingRowsAsync()
     {
         var username = _sessionManager.CurrentSession?.User?.WindowsUsername;
-        if (string.IsNullOrWhiteSpace(username))
-            return;
-
-        var result = await _bulkService.GetByUserAsync(username);
-        if (!result.IsSuccess || result.Data is null)
-            return;
 
         Rows.Clear();
-        foreach (var row in result.Data
-                     .Where(r => r.Status == Enum_BulkInventoryStatus.Pending
-                              || r.Status == Enum_BulkInventoryStatus.Failed))
+
+        if (!string.IsNullOrWhiteSpace(username))
         {
-            Rows.Add(row);
+            var result = await _bulkService.GetByUserAsync(username);
+            if (result.IsSuccess && result.Data is not null)
+            {
+                foreach (var row in result.Data
+                             .Where(r => r.Status == Enum_BulkInventoryStatus.Pending
+                                      || r.Status == Enum_BulkInventoryStatus.Failed))
+                {
+                    Rows.Add(row);
+                }
+
+                HasInterruptedRows = result.Data.Any(r => r.Status == Enum_BulkInventoryStatus.Failed);
+            }
         }
 
-        HasRows = Rows.Count > 0;
-        HasInterruptedRows = result.Data.Any(r => r.Status == Enum_BulkInventoryStatus.Failed);
-        RefreshValidationWarnings();
+        // Pad with blank in-memory rows so the grid always starts with InitialRowCount rows.
+        var warehouseCode = await GetWarehouseCodeAsync();
+        while (Rows.Count < InitialRowCount)
+            Rows.Add(CreateBlankRow(warehouseCode));
+
+        HasRows = true;
+        RefreshState();
     }
 
-    /// <summary>Appends a blank Pending row and persists it to MySQL.</summary>
-    [RelayCommand]
-    private async Task AddRowAsync()
-    {
-        var warehouseSetting = await _settings.GetSettingAsync(SettingsCategory, KeyWarehouseCode);
-        var warehouseCode = warehouseSetting.IsSuccess
-            && warehouseSetting.Data?.Value is { Length: > 0 } v
-            ? v
-            : FallbackWarehouseCode;
-
-        var row = new Model_BulkInventoryTransaction
+    private static Model_BulkInventoryTransaction CreateBlankRow(string warehouseCode) =>
+        new()
         {
             Status = Enum_BulkInventoryStatus.Pending,
             TransactionType = Enum_BulkInventoryTransactionType.Transfer,
             Quantity = 1,
             ToWarehouse = warehouseCode,
-            CreatedAt = DateTime.Now,
-            CreatedByUser = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "SYSTEM"
         };
 
-        var result = await _bulkService.StartRowAsync(row);
-        if (!result.IsSuccess)
-        {
-            await _errorHandler.ShowUserErrorAsync(result.ErrorMessage, "Add Row Error", nameof(AddRowAsync));
-            return;
-        }
-
-        row.Id = result.Data;
-        Rows.Add(row);
+    /// <summary>Appends a blank in-memory row (not persisted to MySQL until push time).</summary>
+    [RelayCommand]
+    private async Task AddRowAsync()
+    {
+        var warehouseCode = await GetWarehouseCodeAsync();
+        Rows.Add(CreateBlankRow(warehouseCode));
         HasRows = true;
-        RefreshValidationWarnings();
     }
 
-    /// <summary>Deletes a single row from MySQL and removes it from the grid.</summary>
-    /// <param name="row">The row to delete.</param>
+    /// <summary>Removes a row. If it has been saved to MySQL (Id > 0) it is deleted there first.</summary>
     [RelayCommand]
     private async Task DeleteRowAsync(Model_BulkInventoryTransaction row)
     {
@@ -168,7 +166,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
 
         Rows.Remove(row);
         HasRows = Rows.Count > 0;
-        RefreshValidationWarnings();
+        RefreshState();
     }
 
     private bool CanClearAll() => HasRows && !IsBusy;
@@ -204,8 +202,14 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             }
 
             Rows.Clear();
-            HasRows = false;
             HasValidationWarnings = false;
+
+            var warehouseCode = await GetWarehouseCodeAsync();
+            while (Rows.Count < InitialRowCount)
+                Rows.Add(CreateBlankRow(warehouseCode));
+
+            HasRows = true;
+            RefreshState();
             ShowStatus("All rows cleared.", InfoBarSeverity.Informational);
         }
         catch (Exception ex)
@@ -225,106 +229,146 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     [RelayCommand]
     private void SkipCurrentRow() { }
 
-    // ── Validation ────────────────────────────────────────────────────────────
+    // ── Per-cell validation ───────────────────────────────────────────────────
 
     /// <summary>
-    /// Validates all Pending rows against Infor Visual using exact-match queries.
-    /// Checks: required fields, PART existence, FromLocation and ToLocation existence.
-    /// Surfaces warnings inline on each row; updates <see cref="HasValidationWarnings"/>.
+    /// Called by the View's LostFocus handlers when the user leaves a Part ID or Location cell.
+    /// Performs an exact-match lookup first; if not found, opens the FuzzySearch picker;
+    /// if fuzzy search also returns nothing, sets an inline validation message on the row.
     /// </summary>
-    [RelayCommand]
-    private async Task ValidateAllAsync()
+    /// <param name="row">Row whose field is being validated.</param>
+    /// <param name="field">One of: "PartId", "FromLocation", "ToLocation".</param>
+    public async Task ValidateFieldAsync(Model_BulkInventoryTransaction row, string field)
     {
-        if (IsBusy)
+        if (IsBusy || XamlRoot is null)
             return;
 
-        try
+        var value = field switch
         {
-            IsBusy = true;
-            ShowStatus("Validating rows…", InfoBarSeverity.Informational);
+            "PartId" => row.PartId ?? string.Empty,
+            "FromLocation" => row.FromLocation ?? string.Empty,
+            "ToLocation" => row.ToLocation ?? string.Empty,
+            _ => string.Empty
+        };
 
-            const string warehouseCode = "002";
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            row.ValidationMessage = null;
+            RefreshState();
+            return;
+        }
 
-            foreach (var row in Rows)
+        var warehouseCode = await GetWarehouseCodeAsync();
+
+        if (field == "PartId")
+        {
+            var exactCheck = await _inforVisual.PartExistsAsync(value);
+            if (exactCheck.IsSuccess && exactCheck.Data)
             {
                 row.ValidationMessage = null;
-
-                if (string.IsNullOrWhiteSpace(row.PartId))
-                {
-                    row.ValidationMessage = "Part ID is required.";
-                    continue;
-                }
-
-                if (row.Quantity <= 0)
-                {
-                    row.ValidationMessage = "Quantity must be greater than zero.";
-                    continue;
-                }
-
-                if (row.TransactionType == Enum_BulkInventoryTransactionType.Transfer
-                    && string.IsNullOrWhiteSpace(row.ToLocation))
-                {
-                    row.ValidationMessage = "To Location is required for Transfer transactions.";
-                    continue;
-                }
-
-                // Exact-match PART check against Infor Visual.
-                var partCheck = await _inforVisual.PartExistsAsync(row.PartId);
-                if (!partCheck.IsSuccess || !partCheck.Data)
-                {
-                    row.ValidationMessage = $"Part '{row.PartId}' not found in Infor Visual.";
-                    continue;
-                }
-
-                // Exact-match location checks.
-                if (!string.IsNullOrWhiteSpace(row.FromLocation))
-                {
-                    var locCheck = await _inforVisual.LocationExistsAsync(row.FromLocation, warehouseCode);
-                    if (!locCheck.IsSuccess || !locCheck.Data)
-                    {
-                        row.ValidationMessage = $"From Location '{row.FromLocation}' not found in warehouse {warehouseCode}.";
-                        continue;
-                    }
-                }
-
-                if (!string.IsNullOrWhiteSpace(row.ToLocation))
-                {
-                    var locCheck = await _inforVisual.LocationExistsAsync(row.ToLocation, warehouseCode);
-                    if (!locCheck.IsSuccess || !locCheck.Data)
-                    {
-                        row.ValidationMessage = $"To Location '{row.ToLocation}' not found in warehouse {warehouseCode}.";
-                        continue;
-                    }
-                }
+                RefreshState();
+                return;
             }
 
-            RefreshValidationWarnings();
+            var searchResult = await _fuzzySearch.SearchPartsAsync(value);
+            if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+            {
+                row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
+                RefreshState();
+                return;
+            }
 
-            var warnCount = Rows.Count(r => !string.IsNullOrEmpty(r.ValidationMessage));
-            if (warnCount > 0)
-                ShowStatus($"Validation complete — {warnCount} warning(s).", InfoBarSeverity.Warning);
+            var dialog = new Dialog_FuzzySearchPicker(
+                searchResult.Data,
+                "Part Not Found – Select a Match",
+                subtitle: $"'{value}' was not found. Select the correct part or Cancel.")
+            {
+                XamlRoot = XamlRoot
+            };
+
+            var outcome = await dialog.ShowAsync();
+            if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
+            {
+                row.PartId = dialog.SelectedResult.Key;
+                row.ValidationMessage = null;
+            }
             else
-                ShowStatus("All rows valid.", InfoBarSeverity.Success);
+            {
+                row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
+            }
         }
-        catch (Exception ex)
+        else
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(ValidateAllAsync), nameof(ViewModel_BulkInventory_DataEntry));
+            var exactCheck = await _inforVisual.LocationExistsAsync(value, warehouseCode);
+            if (exactCheck.IsSuccess && exactCheck.Data)
+            {
+                row.ValidationMessage = null;
+                RefreshState();
+                return;
+            }
+
+            var searchResult = await _fuzzySearch.SearchLocationsAsync(value, warehouseCode);
+            if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+            {
+                row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
+                RefreshState();
+                return;
+            }
+
+            var dialog = new Dialog_FuzzySearchPicker(
+                searchResult.Data,
+                "Location Not Found – Select a Match",
+                subtitle: $"'{value}' was not found. Select the correct location or Cancel.")
+            {
+                XamlRoot = XamlRoot
+            };
+
+            var outcome = await dialog.ShowAsync();
+            if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
+            {
+                if (field == "FromLocation")
+                    row.FromLocation = dialog.SelectedResult.Key;
+                else
+                    row.ToLocation = dialog.SelectedResult.Key;
+
+                row.ValidationMessage = null;
+            }
+            else
+            {
+                row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
+            }
         }
-        finally
-        {
-            IsBusy = false;
-        }
+
+        RefreshState();
     }
 
     // ── Navigation ────────────────────────────────────────────────────────────
 
-    private bool CanPushBatch() => HasRows && !HasValidationWarnings && !IsBusy;
+    private bool CanPushBatch() => HasDataRows && !HasValidationWarnings && !IsBusy;
 
-    /// <summary>Raises <see cref="RequestNavigateToPush"/> so the Host navigates to the Push view.</summary>
+    /// <summary>
+    /// Saves any in-memory-only rows to MySQL then raises <see cref="RequestNavigateToPush"/>
+    /// with only the rows that contain data (blank rows are excluded).
+    /// </summary>
     [RelayCommand(CanExecute = nameof(CanPushBatch))]
-    private void PushBatch()
+    private async Task PushBatchAsync()
     {
-        RequestNavigateToPush?.Invoke(Rows);
+        var dataRows = Rows.Where(IsRowWithData).ToList();
+        if (dataRows.Count == 0)
+        {
+            ShowStatus("No data rows to push.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        // Persist any in-memory-only rows to MySQL before handing off to the Push view.
+        foreach (var row in dataRows.Where(r => r.Id == 0))
+        {
+            var saveResult = await _bulkService.StartRowAsync(row);
+            if (saveResult.IsSuccess)
+                row.Id = saveResult.Data;
+        }
+
+        RequestNavigateToPush?.Invoke(new ObservableCollection<Model_BulkInventoryTransaction>(dataRows));
     }
 
     // ── Fuzzy-search pickers ──────────────────────────────────────────────────
@@ -357,7 +401,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
         if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
         {
             row.PartId = dialog.SelectedResult.Key;
-            RefreshValidationWarnings();
+            RefreshState();
         }
     }
 
@@ -374,7 +418,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
 
         var currentValue = args.Field == "FromLocation" ? args.Row.FromLocation : args.Row.ToLocation;
         var term = string.IsNullOrWhiteSpace(currentValue) ? " " : currentValue;
-        const string warehouseCode = "002";
+        var warehouseCode = await GetWarehouseCodeAsync();
 
         var searchResult = await _fuzzySearch.SearchLocationsAsync(term.Trim(), warehouseCode);
         if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
@@ -398,15 +442,27 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             else
                 args.Row.ToLocation = dialog.SelectedResult.Key;
 
-            RefreshValidationWarnings();
+            RefreshState();
         }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private void RefreshValidationWarnings()
+    private async Task<string> GetWarehouseCodeAsync()
     {
-        HasValidationWarnings = Rows.Any(r => !string.IsNullOrEmpty(r.ValidationMessage));
+        var setting = await _settings.GetSettingAsync(SettingsCategory, KeyWarehouseCode);
+        return setting.IsSuccess && setting.Data?.Value is { Length: > 0 } v
+            ? v
+            : FallbackWarehouseCode;
+    }
+
+    private static bool IsRowWithData(Model_BulkInventoryTransaction row)
+        => !string.IsNullOrWhiteSpace(row.PartId);
+
+    private void RefreshState()
+    {
+        HasDataRows = Rows.Any(IsRowWithData);
+        HasValidationWarnings = Rows.Any(r => IsRowWithData(r) && !string.IsNullOrEmpty(r.ValidationMessage));
     }
 }
 

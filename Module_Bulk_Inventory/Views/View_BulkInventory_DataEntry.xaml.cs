@@ -1,4 +1,5 @@
 using System;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -54,6 +55,23 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
         {
             ViewModel.DeleteRowCommand.Execute(row);
         }
+    }
+
+    /// <summary>
+    /// Fires after the user commits an edit in any cell.
+    /// Triggers per-cell validation (exact-match + fuzzy fallback) for Part ID and Location columns.
+    /// </summary>
+    private async void BulkInventoryDataGrid_CellEditEnded(object sender, DataGridCellEditEndedEventArgs e)
+    {
+        if (e.EditAction != DataGridEditAction.Commit)
+            return;
+
+        if (e.Row.DataContext is not Model_BulkInventoryTransaction row)
+            return;
+
+        var tag = e.Column.Tag as string;
+        if (tag is "PartId" or "FromLocation" or "ToLocation")
+            await ViewModel.ValidateFieldAsync(row, tag);
     }
 
     /// <summary>
