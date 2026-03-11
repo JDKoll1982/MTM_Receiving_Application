@@ -232,7 +232,8 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     // ── Per-cell validation ───────────────────────────────────────────────────
 
     /// <summary>
-    /// Called by the View's LostFocus handlers when the user leaves a Part ID or Location cell.
+    /// Called by the View's <c>CellEditEnded</c> handler when the user commits an edit
+    /// in a Part ID or Location cell.
     /// Performs an exact-match lookup first; if not found, opens the FuzzySearch picker;
     /// if fuzzy search also returns nothing, sets an inline validation message on the row.
     /// </summary>
@@ -240,8 +241,17 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     /// <param name="field">One of: "PartId", "FromLocation", "ToLocation".</param>
     public async Task ValidateFieldAsync(Model_BulkInventoryTransaction row, string field)
     {
-        if (IsBusy || XamlRoot is null)
+        if (IsBusy)
+        {
+            _logger.LogWarning($"ValidateFieldAsync: Skipped — IsBusy is true (field={field}).");
             return;
+        }
+
+        if (XamlRoot is null)
+        {
+            _logger.LogWarning($"ValidateFieldAsync: Skipped — XamlRoot is null (field={field}). Dialog cannot be shown.");
+            return;
+        }
 
         var value = field switch
         {
@@ -258,88 +268,174 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             return;
         }
 
-        var warehouseCode = await GetWarehouseCodeAsync();
+        _logger.LogInfo($"ValidateFieldAsync: Validating field='{field}', value='{value}', rowId={row.Id}.");
 
-        if (field == "PartId")
+        try
         {
-            var exactCheck = await _inforVisual.PartExistsAsync(value);
-            if (exactCheck.IsSuccess && exactCheck.Data)
-            {
-                row.ValidationMessage = null;
-                RefreshState();
-                return;
-            }
+            var warehouseCode = await GetWarehouseCodeAsync();
 
-            var searchResult = await _fuzzySearch.SearchPartsAsync(value);
-            if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+            if (field == "PartId")
             {
-                row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
-                RefreshState();
-                return;
-            }
+                var exactCheck = await _inforVisual.PartExistsAsync(value);
+                if (exactCheck.IsSuccess && exactCheck.Data)
+                {
+                    _logger.LogInfo($"ValidateFieldAsync: Part '{value}' found via exact match.");
+                    row.ValidationMessage = null;
+                    RefreshState();
+                    return;
+                }
 
-            var dialog = new Dialog_FuzzySearchPicker(
-                searchResult.Data,
-                "Part Not Found – Select a Match",
-                subtitle: $"'{value}' was not found. Select the correct part or Cancel.")
-            {
-                XamlRoot = XamlRoot
-            };
+                _logger.LogInfo($"ValidateFieldAsync: Part '{value}' not found via exact match — running fuzzy search.");
+                var searchResult = await _fuzzySearch.SearchPartsAsync(value);
+                if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+                {
+                    _logger.LogWarning($"ValidateFieldAsync: No fuzzy matches for Part '{value}'.");
+                    row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
+                    RefreshState();
+                    return;
+                }
 
-            var outcome = await dialog.ShowAsync();
-            if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
-            {
-                row.PartId = dialog.SelectedResult.Key;
-                row.ValidationMessage = null;
+                var dialog = new Dialog_FuzzySearchPicker(
+                    searchResult.Data,
+                    "Part Not Found – Select a Match",
+                    subtitle: $"'{value}' was not found. Select the correct part or Cancel.")
+                {
+                    XamlRoot = XamlRoot
+                };
+
+                var outcome = await dialog.ShowAsync();
+                if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
+                {
+                    _logger.LogInfo($"ValidateFieldAsync: User selected Part '{dialog.SelectedResult.Key}' via fuzzy picker.");
+                    row.PartId = dialog.SelectedResult.Key;
+                    row.ValidationMessage = null;
+                }
+                else
+                {
+                    _logger.LogWarning($"ValidateFieldAsync: User dismissed fuzzy picker — Part '{value}' marked invalid.");
+                    row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
+                }
             }
             else
             {
-                row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
+                var exactCheck = await _inforVisual.LocationExistsAsync(value, warehouseCode);
+                if (exactCheck.IsSuccess && exactCheck.Data)
+                {
+                    _logger.LogInfo($"ValidateFieldAsync: Location '{value}' found via exact match.");
+                    row.ValidationMessage = null;
+                    RefreshState();
+                    return;
+                }
+
+                _logger.LogInfo($"ValidateFieldAsync: Location '{value}' not found via exact match — running fuzzy search.");
+                var searchResult = await _fuzzySearch.SearchLocationsAsync(value, warehouseCode);
+                if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+                {
+                    _logger.LogWarning($"ValidateFieldAsync: No fuzzy matches for Location '{value}' in warehouse '{warehouseCode}'.");
+                    row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
+                    RefreshState();
+                    return;
+                }
+
+                var dialog = new Dialog_FuzzySearchPicker(
+                    searchResult.Data,
+                    "Location Not Found – Select a Match",
+                    subtitle: $"'{value}' was not found. Select the correct location or Cancel.")
+                {
+                    XamlRoot = XamlRoot
+                };
+
+                var outcome = await dialog.ShowAsync();
+                if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
+                {
+                    _logger.LogInfo($"ValidateFieldAsync: User selected Location '{dialog.SelectedResult.Key}' via fuzzy picker.");
+                    if (field == "FromLocation")
+                        row.FromLocation = dialog.SelectedResult.Key;
+                    else
+                        row.ToLocation = dialog.SelectedResult.Key;
+
+                    row.ValidationMessage = null;
+                }
+                else
+                {
+                    _logger.LogWarning($"ValidateFieldAsync: User dismissed fuzzy picker — Location '{value}' marked invalid.");
+                    row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
+                }
             }
         }
-        else
+        catch (Exception ex)
         {
-            var exactCheck = await _inforVisual.LocationExistsAsync(value, warehouseCode);
-            if (exactCheck.IsSuccess && exactCheck.Data)
-            {
-                row.ValidationMessage = null;
-                RefreshState();
-                return;
-            }
-
-            var searchResult = await _fuzzySearch.SearchLocationsAsync(value, warehouseCode);
-            if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
-            {
-                row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
-                RefreshState();
-                return;
-            }
-
-            var dialog = new Dialog_FuzzySearchPicker(
-                searchResult.Data,
-                "Location Not Found – Select a Match",
-                subtitle: $"'{value}' was not found. Select the correct location or Cancel.")
-            {
-                XamlRoot = XamlRoot
-            };
-
-            var outcome = await dialog.ShowAsync();
-            if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
-            {
-                if (field == "FromLocation")
-                    row.FromLocation = dialog.SelectedResult.Key;
-                else
-                    row.ToLocation = dialog.SelectedResult.Key;
-
-                row.ValidationMessage = null;
-            }
-            else
-            {
-                row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
-            }
+            _logger.LogError($"ValidateFieldAsync: Exception while validating field='{field}', value='{value}': {ex.Message}");
+            row.ValidationMessage = $"Validation error: {ex.Message}";
         }
 
         RefreshState();
+    }
+
+    // ── Cell-leave auto-save / remove ─────────────────────────────────────────
+
+    /// <summary>
+    /// Called by the View whenever the user commits a cell edit (any column).
+    /// <list type="bullet">
+    ///   <item>Row has data and <c>Id == 0</c> → INSERT to MySQL, stores the new Id on the row.</item>
+    ///   <item>Row has data and <c>Id  &gt; 0</c> → UPDATE the existing MySQL row with current field values.</item>
+    ///   <item>Row has no data (empty PartId) and <c>Id &gt; 0</c> → DELETE from MySQL, resets <c>Id</c> to 0.</item>
+    ///   <item>Row has no data and <c>Id == 0</c> → no-op (blank in-memory row stays blank).</item>
+    /// </list>
+    /// </summary>
+    /// <param name="row">The row that just had a cell committed.</param>
+    public async Task SaveOrRemoveRowAsync(Model_BulkInventoryTransaction row)
+    {
+        if (IsBusy)
+            return;
+
+        try
+        {
+            if (IsRowWithData(row))
+            {
+                if (row.Id == 0)
+                {
+                    row.CreatedByUser = _sessionManager.CurrentSession?.User?.WindowsUsername ?? string.Empty;
+                    var insertResult = await _bulkService.StartRowAsync(row);
+                    if (insertResult.IsSuccess)
+                    {
+                        row.Id = insertResult.Data;
+                        _logger.LogInfo($"DataEntry: Auto-saved new row — PartId='{row.PartId}', Id={row.Id}.");
+                    }
+                    else
+                    {
+                        _logger.LogError($"DataEntry: Auto-save INSERT failed — {insertResult.ErrorMessage}");
+                    }
+                }
+                else
+                {
+                    var updateResult = await _bulkService.UpdateRowAsync(row);
+                    if (!updateResult.IsSuccess)
+                        _logger.LogError($"DataEntry: Auto-save UPDATE failed for Id={row.Id} — {updateResult.ErrorMessage}");
+                }
+            }
+            else if (row.Id > 0)
+            {
+                var deleteResult = await _bulkService.DeleteByIdAsync(row.Id);
+                if (deleteResult.IsSuccess)
+                {
+                    _logger.LogInfo($"DataEntry: Auto-removed cleared row Id={row.Id}.");
+                    row.Id = 0;
+                }
+                else
+                {
+                    _logger.LogError($"DataEntry: Auto-remove DELETE failed for Id={row.Id} — {deleteResult.ErrorMessage}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"DataEntry: Exception in SaveOrRemoveRowAsync — {ex.Message}");
+        }
+        finally
+        {
+            RefreshState();
+        }
     }
 
     // ── Navigation ────────────────────────────────────────────────────────────

@@ -22,6 +22,14 @@ public interface IService_MySQL_BulkInventory
     /// <param name="row">The transaction to persist.</param>
     Task<Model_Dao_Result<int>> StartRowAsync(Model_BulkInventoryTransaction row);
 
+    /// <summary>
+    /// Updates the editable fields (PartId, locations, quantity, type, work order, lot) of
+    /// an existing Pending row. Called on cell-leave auto-save when the row has already been
+    /// inserted (<c>row.Id &gt; 0</c>).
+    /// </summary>
+    /// <param name="row">Row containing the updated values; must have a valid <c>Id</c>.</param>
+    Task<Model_Dao_Result> UpdateRowAsync(Model_BulkInventoryTransaction row);
+
     // ── Automation pipeline ───────────────────────────────────────────────────
 
     /// <summary>

@@ -59,6 +59,43 @@ public class Dao_BulkInventoryTransaction
         }
     }
 
+    // ── Update (editable fields) ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Updates the editable fields of an existing Pending row.
+    /// Only rows in <c>Pending</c> status are updated (the SP WHERE clause enforces this).
+    /// </summary>
+    /// <param name="row">Row with updated values; must have a valid positive <c>Id</c>.</param>
+    public async Task<Model_Dao_Result> UpdateAsync(Model_BulkInventoryTransaction row)
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "p_id",               row.Id },
+                { "p_transaction_type", row.TransactionType.ToString() },
+                { "p_part_id",          row.PartId },
+                { "p_from_warehouse",   (object?)row.FromWarehouse  ?? DBNull.Value },
+                { "p_from_location",    (object?)row.FromLocation   ?? DBNull.Value },
+                { "p_to_warehouse",     row.ToWarehouse },
+                { "p_to_location",      row.ToLocation },
+                { "p_quantity",         row.Quantity },
+                { "p_work_order",       (object?)row.WorkOrder      ?? DBNull.Value },
+                { "p_lot_no",           (object?)row.LotNo          ?? DBNull.Value }
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_BulkInventory_Transaction_Update",
+                parameters);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure(
+                $"Error updating bulk inventory transaction: {ex.Message}", ex);
+        }
+    }
+
     // ── Update Status ─────────────────────────────────────────────────────────
 
     /// <summary>Updates the <c>status</c> and optional <c>error_message</c> for a row by id.</summary>

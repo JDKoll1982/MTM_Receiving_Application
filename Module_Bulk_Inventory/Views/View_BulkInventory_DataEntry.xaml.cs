@@ -59,7 +59,10 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
 
     /// <summary>
     /// Fires after the user commits an edit in any cell.
-    /// Triggers per-cell validation (exact-match + fuzzy fallback) for Part ID and Location columns.
+    /// <list type="bullet">
+    ///   <item>Triggers per-cell validation (exact-match + fuzzy fallback) for Part ID and Location columns.</item>
+    ///   <item>Auto-saves the row to MySQL: inserts new rows, updates existing ones, removes cleared rows.</item>
+    /// </list>
     /// </summary>
     private async void BulkInventoryDataGrid_CellEditEnded(object sender, DataGridCellEditEndedEventArgs e)
     {
@@ -70,8 +73,13 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
             return;
 
         var tag = e.Column.Tag as string;
+
+        // Validate Part ID and Location fields first so the row is corrected before saving.
         if (tag is "PartId" or "FromLocation" or "ToLocation")
             await ViewModel.ValidateFieldAsync(row, tag);
+
+        // Persist the row (insert / update / delete) based on current data state.
+        await ViewModel.SaveOrRemoveRowAsync(row);
     }
 
     /// <summary>

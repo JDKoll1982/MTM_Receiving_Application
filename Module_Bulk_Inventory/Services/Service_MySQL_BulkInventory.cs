@@ -40,6 +40,17 @@ public class Service_MySQL_BulkInventory : IService_MySQL_BulkInventory
         return result;
     }
 
+    public async Task<Model_Dao_Result> UpdateRowAsync(Model_BulkInventoryTransaction row)
+    {
+        _logger.LogInfo($"BulkInventory: Updating row Id={row.Id} — PartId={row.PartId}, Type={row.TransactionType}");
+        var result = await _dao.UpdateAsync(row);
+        if (!result.IsSuccess)
+        {
+            _logger.LogError($"BulkInventory: Update failed for Id={row.Id} — {result.ErrorMessage}");
+        }
+        return result;
+    }
+
     // ── Automation pipeline ───────────────────────────────────────────────────
 
     public async Task<Model_Dao_Result> WriteAuditAsync(int id)
