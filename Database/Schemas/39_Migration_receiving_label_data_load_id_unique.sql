@@ -51,9 +51,25 @@ DELIMITER ;
 CALL mig39_drop_idx();
 DROP PROCEDURE IF EXISTS mig39_drop_idx;
 
--- Step 3: Add the UNIQUE constraint.
-ALTER TABLE receiving_label_data
-    ADD CONSTRAINT uq_receiving_label_data_load_id UNIQUE (load_id);
+-- Step 3: Add the UNIQUE constraint (idempotent).
+DROP PROCEDURE IF EXISTS mig39_add_unique;
+DELIMITER $$
+CREATE PROCEDURE mig39_add_unique()
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.statistics
+        WHERE table_schema = DATABASE()
+          AND table_name   = 'receiving_label_data'
+          AND index_name   = 'uq_receiving_label_data_load_id'
+    ) THEN
+        ALTER TABLE receiving_label_data
+            ADD CONSTRAINT uq_receiving_label_data_load_id UNIQUE (load_id);
+    END IF;
+END$$
+DELIMITER ;
+CALL mig39_add_unique();
+DROP PROCEDURE IF EXISTS mig39_add_unique;
 
 -- ============================================================================
 -- Migration 39b: Add skid-counter columns to receiving_label_data
