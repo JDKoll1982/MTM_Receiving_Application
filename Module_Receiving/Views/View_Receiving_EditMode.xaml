@@ -39,14 +39,6 @@
                 <TextBlock Text="{x:Bind ViewModel.EditModeLoadDataFromText, Mode=OneWay}"
                            VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
 
-                <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadSessionMemory'), Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE8A7;"/>
-                        <TextBlock Text="{x:Bind ViewModel.EditModeCurrentMemoryText, Mode=OneWay}"/>
-                    </StackPanel>
-                </Button>
-
                 <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadRecentCSV'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">

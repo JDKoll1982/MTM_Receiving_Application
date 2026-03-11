@@ -214,4 +214,210 @@ public class Dao_ReceivingLabelData
             return Model_Dao_Result_Factory.Failure<int>($"Failed to clear label data to history: {ex.Message}", ex);
         }
     }
+
+    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetCurrentLabelDataAsync()
+    {
+        try
+        {
+            var loads = new List<Model_ReceivingLoad>();
+
+            var result = await Helper_Database_StoredProcedure.ExecuteDataTableAsync(
+                _connectionString,
+                "sp_Receiving_LabelData_GetAll",
+                new Dictionary<string, object>()
+            );
+
+            if (result.IsSuccess && result.Data != null)
+            {
+                foreach (DataRow row in result.Data.Rows)
+                {
+                    loads.Add(MapRowToLoad(row));
+                }
+                return Model_Dao_Result_Factory.Success(loads);
+            }
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage ?? "Failed to retrieve current label data");
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving current label data: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<Model_Dao_Result<int>> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads)
+    {
+        if (loads == null || loads.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Success<int>(0);
+        }
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        try
+        {
+            int updatedCount = 0;
+            foreach (var load in loads)
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    { "p_load_id",                          load.LoadID.ToString()                              },
+                    { "p_load_number",                      load.LoadNumber                                     },
+                    { "p_quantity",                         (int)load.WeightQuantity                            },
+                    { "p_weight_quantity",                  load.WeightQuantity                                 },
+                    { "p_part_id",                          load.PartID                                         },
+                    { "p_part_description",                 load.PartDescription                                },
+                    { "p_part_type",                        load.PartType                                       },
+                    { "p_po_number",                        (object?)load.PoNumber ?? DBNull.Value              },
+                    { "p_po_line_number",                   load.PoLineNumber                                   },
+                    { "p_po_vendor",                        load.PoVendor                                       },
+                    { "p_po_status",                        load.PoStatus                                       },
+                    { "p_po_due_date",                      (object?)load.PoDueDate ?? DBNull.Value             },
+                    { "p_qty_ordered",                      load.QtyOrdered                                     },
+                    { "p_unit_of_measure",                  load.UnitOfMeasure                                  },
+                    { "p_remaining_quantity",               load.RemainingQuantity                              },
+                    { "p_employee_number",                  load.EmployeeNumber                                 },
+                    { "p_user_id",                          (object?)load.UserId ?? DBNull.Value                },
+                    { "p_heat",                             load.HeatLotNumber                                  },
+                    { "p_received_date",                    load.ReceivedDate                                   },
+                    { "p_transaction_date",                 load.ReceivedDate.Date                              },
+                    { "p_initial_location",                 string.Empty                                        },
+                    { "p_packages_per_load",                load.PackagesPerLoad                                },
+                    { "p_package_type_name",                load.PackageTypeName                                },
+                    { "p_weight_per_package",               load.WeightPerPackage                               },
+                    { "p_coils_on_skid",                    0                                                   },
+                    { "p_label_number",                     load.LoadNumber                                     },
+                    { "p_vendor_name",                      load.PoVendor                                       },
+                    { "p_is_non_po_item",                   load.IsNonPOItem ? 1 : 0                            },
+                    { "p_is_quality_hold_required",         load.IsQualityHoldRequired ? 1 : 0                 },
+                    { "p_is_quality_hold_acknowledged",     load.IsQualityHoldAcknowledged ? 1 : 0             },
+                    { "p_quality_hold_restriction_type",    load.QualityHoldRestrictionType                    },
+                };
+
+                var execResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                    connection, transaction, "sp_Receiving_LabelData_Update", parameters);
+
+                if (!execResult.Success)
+                {
+                    throw new InvalidOperationException(execResult.ErrorMessage, execResult.Exception);
+                }
+
+                updatedCount++;
+            }
+
+            await transaction.CommitAsync();
+            return Model_Dao_Result_Factory.Success<int>(updatedCount);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return Model_Dao_Result_Factory.Failure<int>($"Failed to update label data: {ex.Message}", ex);
+        }
+    }
+
+    private static Model_ReceivingLoad MapRowToLoad(DataRow row)
+    {
+        return new Model_ReceivingLoad
+        {
+            LoadID = ReadGuid(row, "LoadID"),
+            PartID = ReadString(row, "PartID"),
+            PartDescription = ReadString(row, "PartDescription"),
+            PartType = ReadString(row, "PartType"),
+            PoNumber = ReadNullableString(row, "PONumber"),
+            PoLineNumber = ReadString(row, "POLineNumber"),
+            PoVendor = ReadString(row, "POVendor"),
+            PoStatus = ReadString(row, "POStatus"),
+            PoDueDate = ReadNullableDateTime(row, "PODueDate"),
+            QtyOrdered = ReadDecimal(row, "QtyOrdered"),
+            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "UnitOfMeasure")) ? "EA" : ReadString(row, "UnitOfMeasure"),
+            RemainingQuantity = ReadInt(row, "RemainingQuantity"),
+            LoadNumber = ReadInt(row, "LoadNumber"),
+            WeightQuantity = ReadDecimal(row, "WeightQuantity"),
+            HeatLotNumber = ReadString(row, "HeatLotNumber"),
+            PackagesPerLoad = ReadInt(row, "PackagesPerLoad"),
+            PackageTypeName = ReadString(row, "PackageTypeName"),
+            WeightPerPackage = ReadDecimal(row, "WeightPerPackage"),
+            IsNonPOItem = ReadBool(row, "IsNonPOItem"),
+            ReceivedDate = ReadDateTime(row, "ReceivedDate"),
+            UserId = ReadNullableString(row, "UserID"),
+            EmployeeNumber = ReadInt(row, "EmployeeNumber"),
+            IsQualityHoldRequired = ReadBool(row, "IsQualityHoldRequired"),
+            IsQualityHoldAcknowledged = ReadBool(row, "IsQualityHoldAcknowledged"),
+            QualityHoldRestrictionType = ReadString(row, "QualityHoldRestrictionType")
+        };
+    }
+
+    private static bool HasColumn(DataRow row, string columnName) =>
+        row.Table.Columns.Contains(columnName);
+
+    private static Guid ReadGuid(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return Guid.NewGuid();
+        }
+        return Guid.TryParse(row[columnName]?.ToString(), out var guid) ? guid : Guid.NewGuid();
+    }
+
+    private static string ReadString(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return string.Empty;
+        }
+        return row[columnName]?.ToString() ?? string.Empty;
+    }
+
+    private static string? ReadNullableString(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return null;
+        }
+        return row[columnName]?.ToString();
+    }
+
+    private static int ReadInt(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return 0;
+        }
+        return Convert.ToInt32(row[columnName]);
+    }
+
+    private static decimal ReadDecimal(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return 0;
+        }
+        return Convert.ToDecimal(row[columnName]);
+    }
+
+    private static bool ReadBool(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return false;
+        }
+        return Convert.ToBoolean(row[columnName]);
+    }
+
+    private static DateTime ReadDateTime(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return DateTime.Now;
+        }
+        return Convert.ToDateTime(row[columnName]);
+    }
+
+    private static DateTime? ReadNullableDateTime(DataRow row, string columnName)
+    {
+        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        {
+            return null;
+        }
+        return Convert.ToDateTime(row[columnName]);
+    }
 }

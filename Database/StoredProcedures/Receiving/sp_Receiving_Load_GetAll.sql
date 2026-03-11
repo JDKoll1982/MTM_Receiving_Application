@@ -47,6 +47,8 @@ BEGIN
     FROM receiving_history
     WHERE transaction_date >= p_StartDate
       AND transaction_date <= p_EndDate
+      AND part_id IS NOT NULL
+      AND part_id != ''
     ORDER BY transaction_date DESC, label_number ASC;
 END$$
 

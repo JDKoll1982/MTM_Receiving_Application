@@ -64,6 +64,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="archivedBy">User performing the archive action</param>
         /// <returns>DAO result containing number of rows moved</returns>
         public Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy);
+
+        /// <summary>
+        /// Retrieves all rows from the active label queue (receiving_label_data).
+        /// Used by Edit Mode "Current Labels" to load today's pending labels.
+        /// </summary>
+        /// <returns>DAO result containing list of current label loads</returns>
+        public Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetCurrentLabelDataAsync();
+
+        /// <summary>
+        /// Updates rows in the active receiving_label_data print queue.
+        /// Used by Edit Mode when saving edits to Current Labels records.
+        /// </summary>
+        public Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads);
     }
 }
 

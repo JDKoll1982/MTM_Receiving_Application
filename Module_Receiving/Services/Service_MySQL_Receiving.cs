@@ -161,5 +161,42 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             return result;
         }
+
+        public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetCurrentLabelDataAsync()
+        {
+            _logger.LogInfo("Loading current label data from receiving_label_data queue");
+            var result = await _receivingLabelDataDao.GetCurrentLabelDataAsync();
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInfo($"Loaded {result.Data?.Count ?? 0} rows from current label queue");
+            }
+            else
+            {
+                _logger.LogError($"Failed to load current label data: {result.ErrorMessage}", result.Exception);
+            }
+
+            return result;
+        }
+
+        public async Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads)
+        {
+            if (loads == null)
+            {
+                return 0;
+            }
+
+            _logger.LogInfo($"Updating {loads.Count} rows in receiving_label_data");
+            var result = await _receivingLabelDataDao.UpdateCurrentLabelDataAsync(loads);
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInfo($"Successfully updated {result.Data} label data rows");
+                return result.Data;
+            }
+
+            _logger.LogError($"Failed to update label data: {result.ErrorMessage}", result.Exception);
+            throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+        }
     }
 }

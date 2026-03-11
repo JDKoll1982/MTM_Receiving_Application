@@ -122,39 +122,34 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
 
         _logger.LogInfo($"Push: Consolidated to {consolidated.Count} unique row(s). Starting automation loop.");
 
+        _cts?.Dispose();
         _cts = new CancellationTokenSource();
         IsAutomationRunning = true;
         TotalCount = consolidated.Count;
         ProcessedCount = 0;
 
+        // Capture the UI dispatcher before leaving the UI thread.
+        var uiDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
         // ── Row loop ──────────────────────────────────────────────────────────
-        // NOTE: Task.Run does NOT receive the CancellationToken as its own cancellation
-        // token — that would let the OS cancel the Task before the loop finishes gracefully
-        // and would throw an unhandled OperationCanceledException here.
-        // Cancellation is checked manually inside the loop instead.
-        try
+        // Do NOT pass _cts.Token to Task.Run — that would throw TaskCanceledException
+        // if the token is already cancelled before the task starts.
+        // Cancellation is checked inside the loop instead.
+        await Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            try
             {
                 foreach (var row in consolidated)
                 {
                     if (_cts.Token.IsCancellationRequested)
                     {
-                        _logger.LogInfo($"Push: Cancellation requested — skipping row PartId='{row.PartId}'.");
                         row.Status = Enum_BulkInventoryStatus.Skipped;
                         continue;
                     }
 
                     // Audit the row as InProgress before sending any keystrokes.
                     if (row.Id > 0)
-                    {
-                        _logger.LogInfo($"Push: Writing InProgress audit for row Id={row.Id}, PartId='{row.PartId}'.");
                         await _bulkService.WriteAuditAsync(row.Id);
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"Push: Row PartId='{row.PartId}' has Id=0 — no DB audit written.");
-                    }
 
                     // F6 skip check before executing.
                     if (_skipCurrentRow)
@@ -165,12 +160,10 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
                             await _bulkService.CompleteRowAsync(row.Id, Enum_BulkInventoryStatus.Skipped);
                         ProcessedCount++;
                         UpdateOverlayMessage(row, "Skipped (F6)");
-                        _logger.LogInfo($"Push: Row Id={row.Id} PartId='{row.PartId}' skipped via F6.");
                         continue;
                     }
 
                     UpdateOverlayMessage(row, "Processing…");
-                    _logger.LogInfo($"Push: Processing [{ProcessedCount + 1}/{TotalCount}] Id={row.Id} PartId='{row.PartId}' Type={row.TransactionType}.");
 
                     try
                     {
@@ -182,51 +175,37 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
                     catch (OperationCanceledException)
                     {
                         row.Status = Enum_BulkInventoryStatus.Skipped;
-                        _logger.LogInfo($"Push: Row Id={row.Id} PartId='{row.PartId}' cancelled during automation.");
                     }
                     catch (Exception ex)
                     {
                         row.Status = Enum_BulkInventoryStatus.Failed;
                         row.ErrorMessage = ex.Message;
-                        _logger.LogError($"Push: Unhandled automation error on row Id={row.Id} PartId='{row.PartId}': {ex.Message}");
+                        _logger.LogError($"Unhandled error on row: {ex.Message}");
                     }
 
                     if (row.Id > 0)
-                    {
-                        _logger.LogInfo($"Push: Completing row Id={row.Id} with status={row.Status}.");
                         await _bulkService.CompleteRowAsync(row.Id, row.Status, row.ErrorMessage);
-                    }
 
                     ProcessedCount++;
                     UpdateOverlayMessage(row, row.Status.ToString());
 
-                    _logger.LogInfo($"Push: Row Id={row.Id} PartId='{row.PartId}' finished with status={row.Status}.");
-
                     if (_cts.Token.IsCancellationRequested)
                         break;
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Push loop failed unexpectedly: {ex.Message}");
+            }
 
-                _logger.LogInfo("Push: Automation loop completed.");
-                // Do NOT update IsAutomationRunning or invoke navigation here —
-                // both are UI operations and must run on the UI thread (after this
-                // Task.Run awaitable returns below).
+            // Navigate to Summary on the UI thread — ContentFrame.Content must be set there.
+            var completedRows = rows.ToList();
+            uiDispatcher?.TryEnqueue(() =>
+            {
+                IsAutomationRunning = false;
+                RequestNavigateToSummary?.Invoke(completedRows);
             });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Push: Unexpected error in automation Task.Run: {ex.Message}");
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Critical, nameof(StartPushAsync), nameof(ViewModel_BulkInventory_Push));
-        }
-        finally
-        {
-            // Back on the UI thread — safe to mutate bound properties and navigate.
-            IsAutomationRunning = false;
-            _logger.LogInfo("Push: IsAutomationRunning set to false (UI thread).");
-        }
-
-        // Also on the UI thread — tells the Host to swap to the Summary view.
-        _logger.LogInfo("Push: Invoking RequestNavigateToSummary.");
-        RequestNavigateToSummary?.Invoke(rows.ToList());
+        });
     }
 
     /// <summary>Cancels the in-progress automation loop.</summary>

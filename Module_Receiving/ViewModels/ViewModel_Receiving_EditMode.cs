@@ -796,31 +796,58 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Loads data from current label XLS files.
+        /// Loads data from the active label print queue (receiving_label_data table).
         /// </summary>
         [RelayCommand]
         private async Task LoadFromCurrentLabelsAsync()
         {
             try
             {
-                _logger.LogInfo("User initiated Current Labels (XLS) load");
+                _logger.LogInfo("User initiated Current Labels (DB) load");
                 IsBusy = true;
-                StatusMessage = "Checking for existing label files...";
+                StatusMessage = "Loading current label queue from database...";
 
-                if (await TryLoadFromDefaultXlsAsync())
+                var result = await _mysqlService.GetCurrentLabelDataAsync();
+
+                if (!result.IsSuccess)
                 {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "Load Failed",
+                        result.ErrorMessage ?? "Failed to load current label data from database.",
+                        Enum_ErrorSeverity.Warning);
                     return;
                 }
 
-                await _errorHandler.ShowErrorDialogAsync(
-                    "No Labels Found",
-                    "Could not find any current label files in the default locations.",
-                    Enum_ErrorSeverity.Warning);
+                var loadedData = result.Data ?? new System.Collections.Generic.List<Model_ReceivingLoad>();
+
+                if (loadedData.Count == 0)
+                {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "No Labels Found",
+                        "The current label queue is empty. No labels have been printed today.",
+                        Enum_ErrorSeverity.Warning);
+                    return;
+                }
+
+                _deletedLoads.Clear();
+                _allLoads.Clear();
+                foreach (var load in loadedData)
+                {
+                    _allLoads.Add(load);
+                }
+                StatusMessage = $"Loaded {_allLoads.Count} loads from current label queue";
+                _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from current label queue");
+                CurrentDataSource = Enum_DataSourceType.CurrentLabels;
+
+                FilterStartDate = DateTimeOffset.Now.AddYears(-1);
+                FilterEndDate = DateTimeOffset.Now;
+
+                FilterAndPaginate();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to load from labels: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Failed to load data from label file", Enum_ErrorSeverity.Error, ex);
+                _logger.LogError($"Failed to load from label queue: {ex.Message}");
+                await _errorHandler.HandleErrorAsync("Failed to load data from label queue", Enum_ErrorSeverity.Error, ex);
             }
             finally
             {
@@ -1065,7 +1092,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
                 }
 
-                var validationErrors = ValidateLoads(_filteredLoads);
+                var validationErrors = ValidateLoads(_filteredLoads, CurrentDataSource);
                 if (validationErrors.Count > 0)
                 {
                     var errorMessage = string.Join("\n", validationErrors);
@@ -1085,16 +1112,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         break;
 
                     case Enum_DataSourceType.CurrentLabels:
-                        if (string.IsNullOrEmpty(_currentXlsPath))
+                        // Current Labels are loaded from the DB queue (receiving_label_data).
+                        // Each modified row is updated via sp_Receiving_LabelData_Update.
+                        _logger.LogInfo("Updating current label queue records");
+                        int labelUpdated = 0;
+                        if (_filteredLoads.Count > 0)
                         {
-                            await _errorHandler.HandleErrorAsync("No label file path available for saving.", Enum_ErrorSeverity.Error);
-                            return;
+                            labelUpdated = await _mysqlService.UpdateCurrentLabelDataAsync(_filteredLoads);
                         }
-
-                        _logger.LogInfo($"Overwriting label file: {_currentXlsPath}");
-                        await _xlsWriter.WriteToFileAsync(_currentXlsPath, _allLoads, append: false);
-                        StatusMessage = "Label file updated successfully";
-                        await _errorHandler.ShowErrorDialogAsync("Success", "Label file updated successfully.", Enum_ErrorSeverity.Info);
+                        StatusMessage = $"Label queue updated ({labelUpdated} updated)";
+                        await _errorHandler.ShowErrorDialogAsync("Success", $"{labelUpdated} label record(s) updated successfully.", Enum_ErrorSeverity.Info);
                         break;
 
                     case Enum_DataSourceType.History:
@@ -1187,8 +1214,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <summary>
         /// Validates the list of loads before saving.
         /// </summary>
-        /// <param name="loadsToValidate"></param>
-        private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate)
+        private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate, Enum_DataSourceType dataSource = Enum_DataSourceType.Memory)
         {
             var errors = new System.Collections.Generic.List<string>();
 
@@ -1198,9 +1224,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return errors;
             }
 
+            // History and CurrentLabels records may legitimately have blank PartID (non-PO items)
+            // or zero PackagesPerLoad (legacy data entered before this field was added).
+            bool isEditingStoredRecords = dataSource == Enum_DataSourceType.History
+                || dataSource == Enum_DataSourceType.CurrentLabels;
+
             foreach (var load in loadsToValidate)
             {
-                if (string.IsNullOrWhiteSpace(load.PartID))
+                if (!isEditingStoredRecords && string.IsNullOrWhiteSpace(load.PartID))
                 {
                     errors.Add($"Load #{load.LoadNumber}: Part ID is required");
                 }
@@ -1210,7 +1241,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     errors.Add($"Load #{load.LoadNumber}: Weight/Quantity must be greater than zero");
                 }
 
-                if (load.PackagesPerLoad <= 0)
+                if (!isEditingStoredRecords && load.PackagesPerLoad <= 0)
                 {
                     errors.Add($"Load #{load.LoadNumber}: Packages per load must be greater than zero");
                 }
