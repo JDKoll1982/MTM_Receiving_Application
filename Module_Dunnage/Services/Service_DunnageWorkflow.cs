@@ -16,7 +16,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
     public class Service_DunnageWorkflow : IService_DunnageWorkflow
     {
         private readonly IService_MySQL_Dunnage _dunnageService;
-        private readonly IService_DunnageXLSWriter _xlsWriter;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ErrorHandler _errorHandler;
@@ -30,14 +29,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public Service_DunnageWorkflow(
             IService_MySQL_Dunnage dunnageService,
-            IService_DunnageXLSWriter xlsWriter,
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_ErrorHandler errorHandler,
             IService_ViewModelRegistry viewModelRegistry)
         {
             _dunnageService = dunnageService;
-            _xlsWriter = xlsWriter;
             _sessionManager = sessionManager;
             _logger = logger;
             _errorHandler = errorHandler;
@@ -143,41 +140,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<Model_SaveResult> SaveToXLSOnlyAsync()
-        {
-            try
-            {
-                var loads = new System.Collections.Generic.List<Model_DunnageLoad>(CurrentSession.Loads);
-
-                // If no loads in list, try to create one from current session state
-                if (loads.Count == 0)
-                {
-                    if (CurrentSession.SelectedPart != null && CurrentSession.Quantity > 0)
-                    {
-                        var load = CreateLoadFromCurrentSession();
-                        loads.Add(load);
-                    }
-                    else
-                    {
-                        return new Model_SaveResult { IsSuccess = false, ErrorMessage = "No data to save." };
-                    }
-                }
-
-                var xlsResult = await _xlsWriter.WriteToXLSAsync(loads);
-
-                return new Model_SaveResult
-                {
-                    IsSuccess = xlsResult.LocalSuccess,
-                    CSVExportResult = xlsResult
-                };
-            }
-            catch (Exception ex)
-            {
-                await _errorHandler.HandleErrorAsync("Error saving CSV", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_SaveResult { IsSuccess = false, ErrorMessage = ex.Message };
-            }
-        }
-
         public async Task<Model_SaveResult> SaveToDatabaseOnlyAsync()
         {
             try
@@ -215,25 +177,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public async Task<Model_SaveResult> SaveSessionAsync()
         {
-            try
-            {
-                // Save to DB
-                var dbResult = await SaveToDatabaseOnlyAsync();
-                if (!dbResult.IsSuccess)
-                {
-                    return dbResult;
-                }
-
-                // Export to XLS
-                var xlsResult = await SaveToXLSOnlyAsync();
-
-                return xlsResult;
-            }
-            catch (Exception ex)
-            {
-                await _errorHandler.HandleErrorAsync("Error saving session", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_SaveResult { IsSuccess = false, ErrorMessage = ex.Message };
-            }
+            return await SaveToDatabaseOnlyAsync();
         }
 
         public void ClearSession()
@@ -243,9 +187,26 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StatusMessageRaised?.Invoke(this, "Session cleared");
         }
 
-        public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
+        public async Task<Model_Dao_Result<int>> ClearLabelDataAsync()
         {
-            return await _xlsWriter.ClearXLSFilesAsync();
+            try
+            {
+                var result = await _dunnageService.ClearLabelDataAsync();
+                if (result.IsSuccess)
+                {
+                    StatusMessageRaised?.Invoke(this, $"Label data cleared — {result.Data} row(s) archived");
+                }
+                else
+                {
+                    StatusMessageRaised?.Invoke(this, $"Clear Label Data failed: {result.ErrorMessage}");
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _errorHandler.HandleErrorAsync("Error clearing label data", Enum_ErrorSeverity.Error, ex, true);
+                return Model_Dao_Result_Factory.Failure<int>($"Error clearing label data: {ex.Message}");
+            }
         }
 
         public void AddCurrentLoadToSession()

@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_EditModeView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,7 +15,7 @@
         <converters:Converter_DecimalToString x:Key="DecimalToStringConverter"/>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Padding="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -23,28 +23,27 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Toolbar - T154: 3 data source buttons -->
+        <!-- ============================================================ Row 0: Main Toolbar -->
         <Grid Grid.Row="0" Margin="0,0,0,12">
-            <!-- Main Toolbar Area -->
-            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <!-- Load Data Section - T154 -->
-                <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
-                
-                <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadSessionMemory'), Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE81D;"/>
-                        <TextBlock Text="Current Memory"/>
-                    </StackPanel>
-                </Button>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
 
-                <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadRecentCSV'), Mode=OneWay}">
+                <!-- Load Data Section -->
+                <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
+
+                <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}"
+                        ToolTipService.ToolTip="Load active label queue from the database">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8E5;"/>
                         <TextBlock Text="Current Labels"/>
                     </StackPanel>
                 </Button>
-                
-                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadHistoricalData'), Mode=OneWay}">
+
+                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadHistoricalData'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74C;"/>
                         <TextBlock Text="History"/>
@@ -52,22 +51,48 @@
                 </Button>
 
                 <!-- Separator -->
-                <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
+                <Rectangle Width="1" Height="24"
+                           Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
 
-                <!-- Edit Actions Section -->
+                <!-- Edit Actions -->
                 <Button Command="{x:Bind ViewModel.SelectAllCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8B3;"/>
                         <TextBlock Text="Select All"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{x:Bind ViewModel.RemoveSelectedRowsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveSelectedRows'), Mode=OneWay}">
+
+                <Button Command="{x:Bind ViewModel.RemoveSelectedRowsCommand}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveSelectedRows'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
                         <TextBlock Text="Remove Selected"/>
                     </StackPanel>
                 </Button>
+
+                <!-- Separator -->
+                <Rectangle Width="1" Height="24"
+                           Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
+
+                <!-- Column Chooser -->
+                <Button x:Name="ColumnsButton"
+                        ToolTipService.ToolTip="Choose visible columns"
+                        Click="ColumnsButton_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE71D;"/>
+                        <TextBlock Text="Columns"/>
+                    </StackPanel>
+                </Button>
+
             </StackPanel>
+
+            <!-- Help button (right-aligned) -->
+            <Button Grid.Column="1"
+                    Command="{x:Bind ViewModel.ShowHelpCommand}"
+                    ToolTipService.ToolTip="Help"
+                    VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE897;"/>
+            </Button>
         </Grid>
 
         <!-- Date Filter Toolbar - T164: Dynamic button text -->
@@ -86,19 +111,19 @@
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
                 <!-- T158, T159, T160, T161, T162, T163, T164: Date filter buttons with dynamic text -->
-                <Button Content="{x:Bind ViewModel.LastWeekButtonText, Mode=OneTime}" 
+                <Button Content="{x:Bind ViewModel.LastWeekButtonText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.SetFilterLastWeekCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterLastWeek'), Mode=OneWay}"/>
-                <Button Content="{x:Bind ViewModel.TodayButtonText, Mode=OneTime}" 
+                <Button Content="{x:Bind ViewModel.TodayButtonText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.SetFilterTodayCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}"/>
-                <Button Content="{x:Bind ViewModel.ThisWeekButtonText, Mode=OneTime}" 
+                <Button Content="{x:Bind ViewModel.ThisWeekButtonText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}"/>
-                <Button Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneTime}" 
+                <Button Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.SetFilterThisMonthCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisMonth'), Mode=OneWay}"/>
-                <Button Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneTime}" 
+                <Button Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisQuarter'), Mode=OneWay}"/>
                 <Button Content="Show All" 
@@ -181,6 +206,19 @@
                 <Button Content="Save Changes" Command="{x:Bind ViewModel.SaveAllCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveChanges'), Mode=OneWay}"/>
             </StackPanel>
         </Grid>
-    </Grid>
-</UserControl>
+
+            <!-- ============================================================ IsBusy Overlay -->
+            <Grid Grid.RowSpan="4" Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}">
+                <Rectangle Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.7"/>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                    <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                  Width="48" Height="48"/>
+                    <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                               HorizontalAlignment="Center"
+                               FontSize="14"/>
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+    </UserControl>
 

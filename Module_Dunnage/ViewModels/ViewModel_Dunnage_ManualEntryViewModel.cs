@@ -10,7 +10,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -22,14 +21,12 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
-    private readonly IService_DunnageXLSWriter _xlsWriter;
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
 
     public ViewModel_Dunnage_ManualEntry(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
-        IService_DunnageXLSWriter xlsWriter,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -38,7 +35,6 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
-        _xlsWriter = xlsWriter;
         _windowService = windowService;
         _helpService = helpService;
     }
@@ -426,18 +422,6 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
                 return;
             }
 
-            // Export to CSV
-            var xlsResult = await _xlsWriter.WriteToXLSAsync(Loads.ToList());
-
-            if (!xlsResult.LocalSuccess)
-            {
-                await _errorHandler.HandleErrorAsync(
-                    xlsResult.ErrorMessage ?? "XLS export failed",
-                    Enum_ErrorSeverity.Warning,
-                    null,
-                    true);
-            }
-
             StatusMessage = $"Successfully saved {Loads.Count} loads";
             _logger.LogInfo($"Saved {Loads.Count} loads", "ManualEntry");
 
@@ -461,7 +445,14 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>\n    /// Shows contextual help for manual entry\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.ManualEntry\");\n    }
+    /// <summary>
+    /// Shows contextual help for manual entry.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.ManualEntry");
+    }
 
     #endregion
 

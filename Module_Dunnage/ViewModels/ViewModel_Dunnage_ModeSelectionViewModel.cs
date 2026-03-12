@@ -189,7 +189,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
     {
         try
         {
-            // Clear current session data (in-memory only, not database or CSV)
+            // Clear current session data (in-memory only, not persisted to database)
             if (_workflowService.CurrentSession != null)
             {
                 _workflowService.CurrentSession.Loads?.Clear();

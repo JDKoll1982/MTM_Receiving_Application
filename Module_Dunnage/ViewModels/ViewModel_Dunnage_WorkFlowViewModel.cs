@@ -146,7 +146,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private async Task ResetXLSAsync()
+    private async Task ClearLabelDataAsync()
     {
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot == null)
@@ -158,9 +158,9 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
 
         var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
         {
-            Title = "Reset XLS Files",
-            Content = "Are you sure you want to delete the local and network XLS files? This action cannot be undone.",
-            PrimaryButtonText = "Delete",
+            Title = "Clear Label Data",
+            Content = "Are you sure you want to archive and clear the active label queue? All queued rows will be moved to history. This action cannot be undone.",
+            PrimaryButtonText = "Clear Label Data",
             CloseButtonText = "Cancel",
             DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
             XamlRoot = xamlRoot
@@ -169,39 +169,20 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
         var result = await dialog.ShowAsync();
         if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
         {
-            // Try to save to DB first
-            var saveResult = await _workflowService.SaveToDatabaseOnlyAsync();
-            if (!saveResult.IsSuccess)
+            IsBusy = true;
+            try
             {
-                var warnDialog = new Microsoft.UI.Xaml.Controls.ContentDialog
-                {
-                    Title = "Database Save Failed",
-                    Content = $"Failed to save to database: {saveResult.ErrorMessage}\n\nDo you want to proceed with deleting XLS files anyway?",
-                    PrimaryButtonText = "Delete Anyway",
-                    CloseButtonText = "Cancel",
-                    DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                    XamlRoot = xamlRoot
-                };
-
-                var warnResult = await warnDialog.ShowAsync();
-                if (warnResult != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-                {
-                    return;
-                }
+                var clearResult = await _workflowService.ClearLabelDataAsync();
+                StatusMessage = clearResult.IsSuccess
+                    ? $"Label data cleared — {clearResult.Data} row(s) archived to history."
+                    : $"Clear Label Data failed: {clearResult.ErrorMessage}";
             }
-
-            var deleteResult = await _workflowService.ResetXLSFilesAsync();
-            if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
+            finally
             {
-                StatusMessage = "XLS files deleted successfully.";
-            }
-            else
-            {
-                StatusMessage = "Failed to delete XLS files or files not found.";
+                IsBusy = false;
             }
         }
     }
-
     #endregion
 
     #region Commands

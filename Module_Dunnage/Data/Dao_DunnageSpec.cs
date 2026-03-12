@@ -153,7 +153,7 @@ public class Dao_DunnageSpec
     }
 
     /// <summary>
-    /// Get union of all unique spec keys across all types (for dynamic CSV columns)
+    /// Get union of all unique spec keys across all types (for dynamic spec columns)
     /// </summary>
     /// <returns>List of distinct spec keys ordered alphabetically</returns>
     public virtual async Task<Model_Dao_Result<List<string>>> GetAllSpecKeysAsync()

@@ -156,6 +156,7 @@ public static class ModuleServicesExtensions
 
         // DAOs (Singleton - Stateless data access)
         services.AddSingleton(_ => new Dao_DunnageLoad(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_DunnageLabelData(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageType(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnagePart(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageSpec(mySqlConnectionString));

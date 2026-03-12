@@ -1,4 +1,4 @@
-﻿namespace Visual_Inventory_Assistant.Classes;
+namespace Visual_Inventory_Assistant.Classes;
 
 using MySql.Data.MySqlClient;
 using System;
@@ -12,8 +12,8 @@ internal class SearchDao
     {
         try
         {
-            if (string.IsNullOrEmpty(server)) server = "172.16.1.104";
-            //server = "172.16.1.104";
+            if (string.IsNullOrEmpty(server)) server = "localhost";
+            //server = "localhost";
             if (string.IsNullOrEmpty(database)) database = "easy_inventory";
 
             if (string.IsNullOrEmpty(uid)) uid = "EasyInventory";

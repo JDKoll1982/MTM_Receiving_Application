@@ -20,13 +20,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
-    private readonly IService_MySQL_Dunnage _dunnageService; private readonly IService_Help _helpService; private readonly IService_DunnageXLSWriter _xlsWriter;
+    private readonly IService_MySQL_Dunnage _dunnageService;
+    private readonly IService_Help _helpService;
     private readonly IService_Window _windowService;
 
     public ViewModel_Dunnage_Review(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
-        IService_DunnageXLSWriter xlsWriter,
         IService_Help helpService,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
@@ -35,7 +35,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
-        _xlsWriter = xlsWriter;
         _helpService = helpService;
         _windowService = windowService;
 
@@ -190,23 +189,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
                 return;
             }
 
-            // Save current session to XLS before clearing
-            IsBusy = true;
-            StatusMessage = "Saving to XLS...";
-            var saveResult = await _workflowService.SaveToXLSOnlyAsync();
-
-            if (!saveResult.IsSuccess)
-            {
-                await _errorHandler.HandleErrorAsync(
-                    $"Failed to save XLS backup: {saveResult.ErrorMessage}",
-                    Enum_ErrorSeverity.Warning,
-                    null,
-                    true);
-                IsBusy = false;
-                return;
-            }
-            IsBusy = false;
-
             // Clear transient workflow data to prepare for new entry
             ClearTransientWorkflowData();
 
@@ -333,28 +315,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             }
 
             await _logger.LogInfoAsync($"Successfully saved {LoadCount} loads to database");
-            StatusMessage = "Exporting to XLS...";
 
-            // Export to XLS
-            var xlsResult = await _xlsWriter.WriteToXLSAsync(SessionLoads.ToList());
-
-            if (!xlsResult.LocalSuccess)
-            {
-                await _logger.LogWarningAsync($"XLS export failed for {LoadCount} loads: {xlsResult.ErrorMessage}");
-                await _errorHandler.HandleErrorAsync(
-                    xlsResult.ErrorMessage ?? "XLS export failed",
-                    Enum_ErrorSeverity.Warning,
-                    null,
-                    true);
-                // Continue anyway - database save was successful
-            }
-            else
-            {
-                await _logger.LogInfoAsync($"Successfully exported {LoadCount} loads to XLS");
-            }
-
-            // Show success message
-            SuccessMessage = $"Successfully saved {LoadCount} load(s) to database and exported to XLS";
+            SuccessMessage = $"Successfully saved {LoadCount} load(s) to database";
             IsSuccessMessageVisible = true;
 
             await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");

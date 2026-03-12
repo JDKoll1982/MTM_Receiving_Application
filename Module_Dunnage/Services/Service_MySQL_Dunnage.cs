@@ -17,6 +17,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly IService_LoggingUtility _logger;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly Dao_DunnageLoad _daoDunnageLoad;
+        private readonly Dao_DunnageLabelData _daoDunnageLabelData;
         private readonly Dao_DunnageType _daoDunnageType;
         private readonly Dao_DunnagePart _daoDunnagePart;
         private readonly Dao_DunnageSpec _daoDunnageSpec;
@@ -31,6 +32,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             IService_LoggingUtility logger,
             IService_UserSessionManager sessionManager,
             Dao_DunnageLoad daoDunnageLoad,
+            Dao_DunnageLabelData daoDunnageLabelData,
             Dao_DunnageType daoDunnageType,
             Dao_DunnagePart daoDunnagePart,
             Dao_DunnageSpec daoDunnageSpec,
@@ -42,6 +44,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _logger = logger;
             _sessionManager = sessionManager;
             _daoDunnageLoad = daoDunnageLoad;
+            _daoDunnageLabelData = daoDunnageLabelData;
             _daoDunnageType = daoDunnageType;
             _daoDunnagePart = daoDunnagePart;
             _daoDunnageSpec = daoDunnageSpec;
@@ -463,24 +466,55 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     return Model_Dao_Result_Factory.Success();
                 }
 
-                await _logger.LogInfoAsync($"Saving batch of {loads.Count} dunnage loads by user: {CurrentUser}");
-                var result = await _daoDunnageLoad.InsertBatchAsync(loads, CurrentUser);
+                await _logger.LogInfoAsync($"Saving batch of {loads.Count} dunnage loads to active queue by user: {CurrentUser}");
+                var result = await _daoDunnageLabelData.InsertBatchAsync(loads, CurrentUser);
                 if (result.IsSuccess)
                 {
                     var totalQuantity = loads.Sum(l => l.Quantity);
-                    await _logger.LogInfoAsync($"Successfully saved {loads.Count} dunnage loads (Total Quantity: {totalQuantity})");
+                    await _logger.LogInfoAsync($"Successfully queued {result.Data} of {loads.Count} dunnage loads (Total Quantity: {totalQuantity})");
                 }
                 else
                 {
-                    await _logger.LogErrorAsync($"Failed to save {loads.Count} dunnage loads: {result.ErrorMessage}");
+                    await _logger.LogErrorAsync($"Failed to queue dunnage loads: {result.ErrorMessage}");
                 }
-                return result;
+
+                return result.IsSuccess
+                    ? Model_Dao_Result_Factory.Success()
+                    : Model_Dao_Result_Factory.Failure(result.ErrorMessage ?? "Failed to save loads");
             }
             catch (Exception ex)
             {
                 await _logger.LogErrorAsync($"Exception in SaveLoadsAsync for {loads?.Count ?? 0} loads: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(SaveLoadsAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error saving loads: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Atomically moves all rows from <c>dunnage_label_data</c> to <c>dunnage_history</c> and
+        /// clears the active queue. Returns the number of rows moved.
+        /// </summary>
+        public async Task<Model_Dao_Result<int>> ClearLabelDataAsync()
+        {
+            try
+            {
+                await _logger.LogInfoAsync($"Clearing dunnage label data to history by user: {CurrentUser}");
+                var result = await _daoDunnageLabelData.ClearToHistoryAsync(CurrentUser);
+                if (result.IsSuccess)
+                {
+                    await _logger.LogInfoAsync($"Successfully archived {result.Data} dunnage label row(s) to history");
+                }
+                else
+                {
+                    await _logger.LogErrorAsync($"Failed to clear dunnage label data: {result.ErrorMessage}");
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync($"Exception in ClearLabelDataAsync: {ex.Message}");
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(ClearLabelDataAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<int>($"Error clearing label data: {ex.Message}");
             }
         }
 

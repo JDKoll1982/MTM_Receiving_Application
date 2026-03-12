@@ -11,7 +11,6 @@ using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -23,7 +22,6 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
-    private readonly IService_DunnageXLSWriter _xlsWriter;
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
@@ -33,7 +31,6 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     public ViewModel_Dunnage_EditMode(
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
-        IService_DunnageXLSWriter xlsWriter,
         IService_DunnageWorkflow workflowService,
         IService_Window windowService,
         IService_Help helpService,
@@ -43,7 +40,6 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     {
         _dunnageService = dunnageService;
         _paginationService = paginationService;
-        _xlsWriter = xlsWriter;
         _workflowService = workflowService;
         _windowService = windowService;
         _helpService = helpService;
@@ -186,9 +182,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     }
 
     /// <summary>
-    /// T152: Load data from most recent XLS export (Current Labels)
-    /// T153: XLS parsing error handling with line number reporting
-    /// T155: Error handling for missing XLS file
+    /// Load current label queue from the active <c>dunnage_label_data</c> database table.
     /// </summary>
     [RelayCommand]
     private async Task LoadFromCurrentLabelsAsync()
@@ -198,9 +192,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading label data...";
 
-            // TODO: Implement database read operation
-            await _logger.LogWarningAsync("LoadFromCurrentLabelsAsync called — spreadsheet workflow not yet implemented.", "EditMode");
-            StatusMessage = "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
+            // TODO: Implement database read from dunnage_label_data queue
+            await _logger.LogWarningAsync("LoadFromCurrentLabelsAsync called — database read not yet implemented.", "EditMode");
+            StatusMessage = "Loading current labels from database is not yet implemented.";
             _allLoads = new List<Model_DunnageLoad>();
             IsBusy = false;
             return;
@@ -271,7 +265,14 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>\n    /// Shows contextual help for edit mode\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.EditMode\");\n    }
+    /// <summary>
+    /// Shows contextual help for edit mode.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.EditMode");
+    }
 
     /// <summary>
     /// T158: Set filter to last 7 days (today - 7 days to today)
@@ -510,18 +511,6 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             {
                 await _errorHandler.HandleDaoErrorAsync(saveResult, "SaveAllAsync", true);
                 return;
-            }
-
-            // Export to XLS
-            var xlsResult = await _xlsWriter.WriteToXLSAsync(_allLoads);
-
-            if (!xlsResult.LocalSuccess)
-            {
-                await _errorHandler.HandleErrorAsync(
-                    xlsResult.ErrorMessage ?? "XLS export failed",
-                    Enum_ErrorSeverity.Warning,
-                    null,
-                    true);
             }
 
             StatusMessage = $"Successfully saved {_allLoads.Count} loads";
