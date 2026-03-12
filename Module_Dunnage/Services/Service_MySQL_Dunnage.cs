@@ -107,9 +107,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     return Model_Dao_Result_Factory.Success();
                 }
 
-                if (result.ErrorMessage.Contains("Duplicate entry"))
+                if (result.ErrorMessage.Contains("Duplicate entry") || result.ErrorMessage.Contains("Dunnage type name already exists"))
                 {
-                    await _logger.LogWarningAsync($"Failed to insert dunnage type '{type.TypeName}': Duplicate entry");
+                    await _logger.LogWarningAsync($"Failed to insert dunnage type '{type.TypeName}': name already in use");
                     return Model_Dao_Result_Factory.Failure($"The dunnage type name '{type.TypeName}' is already in use.");
                 }
 
@@ -131,9 +131,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync($"Updating dunnage type ID {type.Id}: {type.TypeName} (Icon: {type.Icon}) by user: {CurrentUser}");
                 var result = await _daoDunnageType.UpdateAsync(type.Id, type.TypeName, type.Icon, CurrentUser);
 
-                if (!result.IsSuccess && result.ErrorMessage.Contains("Duplicate entry"))
+                if (!result.IsSuccess && (result.ErrorMessage.Contains("Duplicate entry") || result.ErrorMessage.Contains("Dunnage type name already exists")))
                 {
-                    await _logger.LogWarningAsync($"Failed to update dunnage type ID {type.Id}: Duplicate entry for '{type.TypeName}'");
+                    await _logger.LogWarningAsync($"Failed to update dunnage type ID {type.Id}: name already in use for '{type.TypeName}'");
                     return Model_Dao_Result_Factory.Failure($"The dunnage type name '{type.TypeName}' is already in use.");
                 }
 
@@ -487,6 +487,23 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogErrorAsync($"Exception in SaveLoadsAsync for {loads?.Count ?? 0} loads: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(SaveLoadsAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error saving loads: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Returns all rows currently in the <c>dunnage_label_data</c> active queue.
+        /// Used by Edit Mode to display labels that have been saved but not yet archived.
+        /// </summary>
+        public async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetActiveLabelDataAsync()
+        {
+            try
+            {
+                return await _daoDunnageLabelData.GetActiveLabelDataAsync();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetActiveLabelDataAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<List<Model_DunnageLoad>>($"Error retrieving active label data: {ex.Message}");
             }
         }
 

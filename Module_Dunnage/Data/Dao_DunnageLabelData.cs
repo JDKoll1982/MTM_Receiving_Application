@@ -4,6 +4,7 @@ using System.Data;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
@@ -164,6 +165,19 @@ public class Dao_DunnageLabelData
     }
 
     /// <summary>
+    /// Returns all rows currently in the <c>dunnage_label_data</c> active queue,
+    /// ordered by received_date ascending.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetActiveLabelDataAsync()
+    {
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
+            _connectionString,
+            "sp_Dunnage_LabelData_GetAll",
+            MapFromReader
+        );
+    }
+
+    /// <summary>
     /// Serializes the dynamic spec values from a load into a JSON string for <c>specs_json</c>.
     /// Prefers <see cref="Model_DunnageLoad.SpecValues"/> then falls back to <see cref="Model_DunnageLoad.Specs"/>.
     /// Returns <c>null</c> if both are empty.
@@ -177,5 +191,49 @@ public class Dao_DunnageLabelData
         }
 
         return JsonSerializer.Serialize(specs);
+    }
+
+    private static Model_DunnageLoad MapFromReader(IDataReader reader)
+    {
+        return new Model_DunnageLoad
+        {
+            LoadUuid = Guid.Parse(reader.GetString(reader.GetOrdinal("load_uuid"))),
+            PartId = reader.GetString(reader.GetOrdinal("part_id")),
+            TypeId = reader.IsDBNull(reader.GetOrdinal("dunnage_type_id")) ? null : reader.GetInt32(reader.GetOrdinal("dunnage_type_id")),
+            TypeName = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("dunnage_type_name")),
+            DunnageType = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("dunnage_type_name")),
+            TypeIcon = reader.IsDBNull(reader.GetOrdinal("dunnage_type_icon")) ? "Help" : reader.GetString(reader.GetOrdinal("dunnage_type_icon")),
+            Quantity = reader.GetDecimal(reader.GetOrdinal("quantity")),
+            PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? string.Empty : reader.GetString(reader.GetOrdinal("po_number")),
+            ReceivedDate = reader.GetDateTime(reader.GetOrdinal("received_date")),
+            CreatedBy = reader.GetString(reader.GetOrdinal("user_id")),
+            Location = reader.IsDBNull(reader.GetOrdinal("location")) ? null : reader.GetString(reader.GetOrdinal("location")),
+            LabelNumber = reader.IsDBNull(reader.GetOrdinal("label_number")) ? null : reader.GetString(reader.GetOrdinal("label_number")),
+            SpecValues = DeserializeSpecValues(reader)
+        };
+    }
+
+    private static Dictionary<string, object>? DeserializeSpecValues(IDataReader reader)
+    {
+        var ordinal = reader.GetOrdinal("specs_json");
+        if (reader.IsDBNull(ordinal))
+        {
+            return null;
+        }
+
+        var json = reader.GetString(ordinal);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

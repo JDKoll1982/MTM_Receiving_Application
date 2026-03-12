@@ -7,8 +7,10 @@ CREATE PROCEDURE `sp_Dunnage_Parts_Search`(
     IN p_type_id INT
 )
 BEGIN
-    -- Search by part_id or within JSON spec values
-    -- If p_type_id is NULL or 0, search all types
+    -- Search by part_id or within JSON spec values.
+    -- Both part_id and JSON spec values are lower-cased before comparison
+    -- so that searches are case-insensitive on MySQL 5.7 (no JSON_TABLE).
+    -- If p_type_id is NULL or 0, search all types.
 
     SELECT
         p.id,
@@ -24,11 +26,11 @@ BEGIN
     JOIN dunnage_types t ON p.type_id = t.id
     WHERE (p_type_id IS NULL OR p_type_id = 0 OR p.type_id = p_type_id)
     AND (
-        p.part_id LIKE CONCAT('%', p_search_text, '%')
-        OR JSON_SEARCH(p.spec_values, 'one', CONCAT('%', p_search_text, '%')) IS NOT NULL
+        LOWER(p.part_id) LIKE LOWER(CONCAT('%', p_search_text, '%'))
+        OR JSON_SEARCH(LOWER(p.spec_values), 'one', LOWER(CONCAT('%', p_search_text, '%'))) IS NOT NULL
     )
     ORDER BY p.part_id
-    LIMIT 100; -- Limit results for performance
+    LIMIT 100;
 END$$
 
 DELIMITER ;

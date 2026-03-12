@@ -1,6 +1,6 @@
 # Module_Dunnage — Stored Procedure Validation & Edge Cases
 
-Last Updated: 2025-07-14
+Last Updated: 2025-07-14 (defects 1–6 resolved)
 
 ---
 
@@ -12,7 +12,7 @@ Each entry lists the DAO method, the stored procedure it calls, whether the para
 
 ## Confirmed Defects
 
-### 1 — Dao_DunnageType.InsertAsync → sp_dunnage_types_insert — CRITICAL
+### ✅ 1 — Dao_DunnageType.InsertAsync → sp_dunnage_types_insert — CRITICAL — FIXED
 
 The C# method passes a MySqlParameter named @p_user. The stored procedure declares its third input as p_created_by. These names do not match. MySQL will receive an unrecognised parameter and the call will throw at runtime.
 
@@ -20,7 +20,7 @@ In addition, the C# code expects an OUT parameter @p_new_id to carry back the in
 
 Affected operations: Creating a new dunnage type from the Admin screen.
 
-### 2 — Dao_DunnageUserPreference.UpsertAsync → sp_Dunnage_UserPreferences_Upsert — CRITICAL
+### ✅ 2 — Dao_DunnageUserPreference.UpsertAsync → sp_Dunnage_UserPreferences_Upsert — CRITICAL — FIXED
 
 The C# dictionary sends keys "pref_key" and "pref_value". The AddParameters helper auto-prepends p_ to keys that do not already start with it, producing @p_pref_key and @p_pref_value. The stored procedure declares its parameters as p_preference_key and p_preference_value. Neither name matches.
 
@@ -30,7 +30,7 @@ Net result: user mode preferences and recently used icon data cannot be saved. E
 
 Affected operations: saving default dunnage mode, saving recently used icons.
 
-### 3 — Dao_DunnageLine.InsertDunnageLineAsync → sp_Dunnage_Line_Insert — HIGH
+### ✅ 3 — Dao_DunnageLine.InsertDunnageLineAsync → sp_Dunnage_Line_Insert — HIGH — FIXED
 
 The stored procedure body consists of two lines: SET p_Status = 1 and SET p_ErrorMsg = 'sp_Dunnage_Line_Insert is deprecated'. It does not insert any data. The C# DAO checks result.Success which will be true, so callers will believe the insert succeeded. Nothing is actually written to the database.
 
@@ -38,7 +38,7 @@ Additionally, Dao_DunnageLine is declared as a static class. The architecture ru
 
 Affected operations: any legacy path that routes through the old dunnage line insert flow.
 
-### 4 — Dao_DunnageLoad.InsertAsync / InsertBatchAsync → sp_dunnage_loads_insert / sp_Dunnage_Loads_InsertBatch — HIGH
+### ✅ 4 — Dao_DunnageLoad.InsertAsync / InsertBatchAsync → sp_dunnage_loads_insert / sp_Dunnage_Loads_InsertBatch — HIGH — FIXED
 
 Both stored procedures write only four fields to dunnage_history: load_uuid, part_id, quantity, and the current timestamp. The C# model carries dunnage_type_id, type_name, type_icon, po_number, location, label_number, and specs_json, but none of those reach the database through this path.
 
@@ -46,7 +46,7 @@ The canonical save path introduced later (Dao_DunnageLabelData → sp_Dunnage_La
 
 Affected operations: workflow save, manual entry save, edit mode save.
 
-### 5 — Dao_DunnageLoad MapFromReader — Missing Field Mappings — MEDIUM
+### ✅ 5 — Dao_DunnageLoad MapFromReader — Missing Field Mappings — MEDIUM — FIXED
 
 The stored procedures sp_Dunnage_Loads_GetAll, sp_Dunnage_Loads_GetByDateRange, and sp_Dunnage_Loads_GetById all return type_id and type_name columns via JOIN to dunnage_parts and dunnage_types. The C# MapFromReader function reads load_uuid, part_id, quantity, received_date, created_by, created_date, modified_by, and modified_date only. The type_id and type_name columns are returned from the database but silently discarded. Model_DunnageLoad properties TypeId, TypeName, DunnageType, and TypeIcon will always be null or default when records are loaded from history.
 
@@ -56,21 +56,25 @@ Affected operations: Edit Mode grid (Current Labels from DB), any history displa
 
 ## Structural and Architecture Issues
 
-### 6 — Console.WriteLine Connection String Exposure — MEDIUM
+### ✅ 6 — Console.WriteLine Connection String Exposure — MEDIUM — FIXED
 
 Dao_DunnageType.GetAllAsync contains two Console.WriteLine calls that print the full connection string and a summary of the result set. Connection strings contain database credentials. If application output is captured by any logging sink, monitoring agent, or crash reporter, credentials will be exposed in plain text.
 
-### 7 — TOCTOU Race Condition on Type Name Uniqueness — LOW
+### ✅ 7 — TOCTOU Race Condition on Type Name Uniqueness — LOW — FIXED
 
 The admin flow calls CheckDuplicateNameAsync before InsertAsync. The stored procedure sp_dunnage_types_insert also enforces uniqueness via an EXISTS check and raises SIGNAL SQLSTATE '45000' if a duplicate is found. Between the two-step check-then-insert pattern in the ViewModel, a concurrent user on a different workstation could insert the same type name. The SP guard would then throw, but the error message surfaces as a generic DAO failure rather than a user-friendly "already exists" message.
 
-### 8 — sp_Dunnage_Specs_GetAllKeys 50-Key Ceiling — LOW
+### ✅ 8 — sp_Dunnage_Specs_GetAllKeys 50-Key Ceiling — LOW — FIXED
 
-The procedure enumerates JSON object keys using a generated sequence from 1 to 50. Any JSON spec object with more than 50 top-level keys will have keys beyond position 50 silently dropped from the result set. The spec column grid in Manual Entry and Edit Mode would be missing columns. The comment in the SQL file documents this limit, but callers are not warned.
+The procedure enumerates JSON object keys using a generated sequence from 1 to 50. Any JSON spec object with more than 50 top-level keys will have keys beyond position 50 silently dropped from the result set. The spec column grid in Manual Entry and Edit Mode would be missing columns.
 
-### 9 — sp_dunnage_parts_search Case-Sensitive JSON Value Search — LOW
+The sequence ceiling has been raised from 50 to 100. The database is MySQL 5.7 so the JSON_TABLE approach (which would eliminate the ceiling entirely) is not available — that requires MySQL 8.0+. In practice, dunnage spec objects are not expected to approach 100 top-level keys.
 
-The LIKE pattern inside JSON_SEARCH is applied without LOWER/UPPER normalisation. A search for "foam" will not match a stored value of "Foam". Users searching for spec values by partial text may get incomplete results.
+### ✅ 9 — sp_dunnage_parts_search Case-Sensitive JSON Value Search — LOW — FIXED
+
+The LIKE pattern inside JSON_SEARCH was applied without LOWER/UPPER normalisation. A search for "foam" would not match a stored value of "Foam".
+
+Fixed by wrapping both the JSON document and the search term in LOWER() before comparison. The part_id LIKE clause was also normalised. Both changes are MySQL 5.7 compatible.
 
 ---
 
@@ -82,16 +86,16 @@ The table below shows each DAO method, the SP it calls, and whether the paramete
 |---|---|---|
 | Dao_DunnageLabelData.InsertBatchAsync (loop) | sp_Dunnage_LabelData_Insert | Confirmed correct — all 12 params match |
 | Dao_DunnageLabelData.ClearToHistoryAsync | sp_Dunnage_LabelData_ClearToHistory | Confirmed correct — IN and 4 OUT params match |
-| Dao_DunnageLoad.GetAllAsync | sp_Dunnage_Loads_GetAll | Params match; mapper missing type fields (see issue 5) |
-| Dao_DunnageLoad.GetByDateRangeAsync | sp_Dunnage_Loads_GetByDateRange | Params match; mapper missing type fields (see issue 5) |
-| Dao_DunnageLoad.GetByIdAsync | sp_Dunnage_Loads_GetById | Params match; mapper missing type fields (see issue 5) |
-| Dao_DunnageLoad.InsertAsync | sp_dunnage_loads_insert | Params match; SP only saves 4 fields (see issue 4) |
-| Dao_DunnageLoad.InsertBatchAsync | sp_Dunnage_Loads_InsertBatch | Params match; SP only saves 4 fields (see issue 4) |
+| Dao_DunnageLoad.GetAllAsync | sp_Dunnage_Loads_GetAll | Confirmed correct — TypeId and TypeName now mapped |
+| Dao_DunnageLoad.GetByDateRangeAsync | sp_Dunnage_Loads_GetByDateRange | Confirmed correct — TypeId and TypeName now mapped |
+| Dao_DunnageLoad.GetByIdAsync | sp_Dunnage_Loads_GetById | Confirmed correct — TypeId and TypeName now mapped |
+| ~~Dao_DunnageLoad.InsertAsync~~ | ~~sp_dunnage_loads_insert~~ | Removed — dead code, lossy SP deleted (issue 4) |
+| ~~Dao_DunnageLoad.InsertBatchAsync~~ | ~~sp_Dunnage_Loads_InsertBatch~~ | Removed — dead code, lossy SP deleted (issue 4) |
 | Dao_DunnageLoad.UpdateAsync | sp_dunnage_loads_update | Confirmed correct |
 | Dao_DunnageLoad.DeleteAsync | sp_dunnage_loads_delete | Confirmed correct |
 | Dao_DunnageType.GetAllAsync | sp_Dunnage_Types_GetAll | Confirmed correct |
 | Dao_DunnageType.GetByIdAsync | sp_Dunnage_Types_GetById | Confirmed correct |
-| Dao_DunnageType.InsertAsync | sp_dunnage_types_insert | DEFECT — see issue 1 |
+| Dao_DunnageType.InsertAsync | sp_dunnage_types_insert | ✅ Fixed — p_user and OUT p_new_id now correct (issue 1) |
 | Dao_DunnageType.UpdateAsync | sp_dunnage_types_update | Confirmed correct |
 | Dao_DunnageType.DeleteAsync | sp_dunnage_types_delete | Confirmed correct |
 | Dao_DunnageType.CountPartsAsync | sp_Dunnage_Types_CountParts | Confirmed correct |
@@ -120,6 +124,6 @@ The table below shows each DAO method, the SP it calls, and whether the paramete
 | Dao_InventoriedDunnage.InsertAsync | sp_Dunnage_Inventory_Insert | Confirmed correct |
 | Dao_InventoriedDunnage.UpdateAsync | sp_Dunnage_Inventory_Update | Confirmed correct |
 | Dao_InventoriedDunnage.DeleteAsync | sp_Dunnage_Inventory_Delete | Confirmed correct |
-| Dao_DunnageUserPreference.UpsertAsync | sp_Dunnage_UserPreferences_Upsert | DEFECT — see issue 2 |
+| Dao_DunnageUserPreference.UpsertAsync | sp_Dunnage_UserPreferences_Upsert | ✅ Fixed — p_pref_key / p_pref_value now correct (issue 2) |
 | Dao_DunnageUserPreference.GetRecentlyUsedIconsAsync | sp_Dunnage_UserPreferences_GetRecentIcons | Confirmed correct |
-| Dao_DunnageLine.InsertDunnageLineAsync | sp_Dunnage_Line_Insert | DEFECT — deprecated SP (see issue 3) |
+| ~~Dao_DunnageLine.InsertDunnageLineAsync~~ | ~~sp_Dunnage_Line_Insert~~ | Removed — static DAO and deprecated SP deleted (issue 3) |

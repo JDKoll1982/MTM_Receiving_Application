@@ -194,13 +194,6 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
     }
 
-    [RelayCommand]
-    private async Task AddLineAsync()
-    {
-        // TODO: Implement when ready
-        await Task.CompletedTask;
-    }
-
     #endregion
 }
 

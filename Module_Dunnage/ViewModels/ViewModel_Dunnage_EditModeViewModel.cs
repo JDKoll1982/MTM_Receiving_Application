@@ -190,20 +190,34 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading label data...";
+            StatusMessage = "Loading active label data...";
 
-            // TODO: Implement database read from dunnage_label_data queue
-            await _logger.LogWarningAsync("LoadFromCurrentLabelsAsync called — database read not yet implemented.", "EditMode");
-            StatusMessage = "Loading current labels from database is not yet implemented.";
-            _allLoads = new List<Model_DunnageLoad>();
-            IsBusy = false;
-            return;
+            var result = await _dunnageService.GetActiveLabelDataAsync();
 
+            if (!result.Success)
+            {
+                await _errorHandler.HandleDaoErrorAsync(result, "LoadFromCurrentLabelsAsync", true);
+                return;
+            }
+
+            _allLoads = result.Data ?? new List<Model_DunnageLoad>();
+            TotalRecords = _allLoads.Count;
+
+            _paginationService.SetSource(_allLoads);
+            TotalPages = _paginationService.TotalPages;
+            CurrentPage = _paginationService.CurrentPage;
+
+            LoadPage(1);
+
+            CanNavigate = TotalPages > 1;
+            StatusMessage = $"Loaded {TotalRecords} active label(s)";
+
+            _logger.LogInfo($"Loaded {TotalRecords} active labels from dunnage_label_data queue", "EditMode");
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error loading label data",
+                "Error loading active label data",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
