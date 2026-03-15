@@ -1,6 +1,6 @@
 # Module_Dunnage — Open TODOs v2.0
 
-Last Updated: 2026-03-13
+Last Updated: 2026-03-15
 
 ---
 
@@ -14,13 +14,13 @@ Last Updated: 2026-03-13
 | WF-01 | Workflow Session Not Cleared on Partial Cancel | MEDIUM | No | ✅ Fixed |
 | WF-02 | DetailsEntry Step Has No Validation Before Advancing | MEDIUM | No | ✅ Fixed |
 | WF-03 | No Confirmation Before Archiving Active Print Queue | HIGH | No | ✅ Already Resolved |
-| UX-01 | Edit Mode Date Filter Buttons Trigger Concurrent DB Calls | LOW | No | ⬜ Open |
-| UX-02 | Two Overlapping Sets of Date Setter Commands | LOW | No | ⬜ Open |
-| UX-03 | Review Step Single-View Has No "N of Total" Label | LOW | No | ⬜ Open |
-| ARCH-01 | ViewModel_Dunnage_Review Leaks StepChanged Event Subscription | MEDIUM | No | ⬜ Open |
-| ARCH-02 | Model_DunnageSession Uses Manual INotifyPropertyChanged | LOW | No | ⬜ Open |
-| ARCH-03 | Service_DunnageWorkflow Has a using for Module_Dunnage.Data | MEDIUM | No | ⬜ Open |
-| SEC-01 | Workflow Singleton Holds Previous User Session Loads | LOW | No | ⬜ Open |
+| UX-01 | Edit Mode Date Filter Buttons Trigger Concurrent DB Calls | LOW | No | ✅ Fixed |
+| UX-02 | Two Overlapping Sets of Date Setter Commands | LOW | No | ✅ Fixed |
+| UX-03 | Review Step Single-View Has No "N of Total" Label | LOW | No | ✅ Already Resolved |
+| ARCH-01 | ViewModel_Dunnage_Review Leaks StepChanged Event Subscription | MEDIUM | No | ✅ Fixed |
+| ARCH-02 | Model_DunnageSession Uses Manual INotifyPropertyChanged | LOW | No | ✅ Fixed |
+| ARCH-03 | Service_DunnageWorkflow Has a using for Module_Dunnage.Data | MEDIUM | No | ✅ Fixed |
+| SEC-01 | Workflow Singleton Holds Previous User Session Loads | LOW | No | ✅ Fixed |
 | PERF-01 | ManualEntry Loads All Parts at Startup Instead of On Type Select | MEDIUM | No | ⬜ Open |
 
 ---

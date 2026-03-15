@@ -1,6 +1,6 @@
 # Module_Dunnage — Stored Procedure & Edge Case Audit v2.0
 
-Last Updated: 2026-03-13
+Last Updated: 2026-03-15
 
 ---
 
@@ -19,18 +19,18 @@ Last Updated: 2026-03-13
 | WF-01 | Workflow Session Not Cleared on Cancel From Review Step | MEDIUM | ✅ Fixed |
 | WF-02 | AdvanceToNextStepAsync Does Not Validate DetailsEntry Fields | MEDIUM | ✅ Fixed |
 | WF-03 | No Confirmation Dialog Before Clearing Label Queue | HIGH | ✅ Already Resolved |
-| WF-04 | StartWorkflowAsync Returns Task but Is Never Awaited | LOW | ⬜ Open |
-| UX-01 | Edit Mode Date Filters Trigger Independent DB Calls Without Debounce | LOW | ⬜ Open |
-| UX-02 | Duplicate Date Range Setter Commands | LOW | ⬜ Open |
-| UX-03 | StatusMessage Not Reset After Successful Load | LOW | ⬜ Open |
-| UX-04 | Review Step Single-View Shows No Total Page Indicator | LOW | ⬜ Open |
-| UX-05 | IsBusy Not Set During LoadSessionLoads in Review ViewModel | LOW | ⬜ Open |
-| ARCH-01 | Model_DunnageSession Uses Manual INotifyPropertyChanged | LOW | ⬜ Open |
-| ARCH-02 | Service_DunnageWorkflow Directly References Dao_DunnagePart Namespace | MEDIUM | ⬜ Open |
-| ARCH-03 | ViewModel_Dunnage_Review Leaks StepChanged Event Subscription | MEDIUM | ⬜ Open |
+| WF-04 | StartWorkflowAsync Returns Task but Is Never Awaited | LOW | ✅ Non-issue — sole caller awaits; body is synchronous by design |
+| UX-01 | Edit Mode Date Filters Trigger Independent DB Calls Without Debounce | LOW | ✅ Fixed |
+| UX-02 | Duplicate Date Range Setter Commands | LOW | ✅ Fixed |
+| UX-03 | StatusMessage Not Reset After Successful Load | LOW | ✅ Fixed |
+| UX-04 | Review Step Single-View Shows No Total Page Indicator | LOW | ✅ Already Resolved |
+| UX-05 | IsBusy Not Set During LoadSessionLoads in Review ViewModel | LOW | ✅ Fixed |
+| ARCH-01 | Model_DunnageSession Uses Manual INotifyPropertyChanged | LOW | ✅ Fixed |
+| ARCH-02 | Service_DunnageWorkflow Directly References Dao_DunnagePart Namespace | MEDIUM | ✅ Fixed |
+| ARCH-03 | ViewModel_Dunnage_Review Leaks StepChanged Event Subscription | MEDIUM | ✅ Fixed |
 | ARCH-04 | Service_MySQL_Dunnage UpdateLoadAsync / DeleteLoadAsync Are Stubs | HIGH | ✅ Fixed |
 | ARCH-05 | Dao_DunnageCustomField Registered in DI But No Interface Defined | LOW | ⬜ Open |
-| SEC-01 | Model_DunnageSession Stores Full Load List for Session Lifetime | LOW | ⬜ Open |
+| SEC-01 | Model_DunnageSession Stores Full Load List for Session Lifetime | LOW | ✅ Fixed |
 | PERF-01 | ManualEntry InitializeAsync Loads All Parts on Startup | MEDIUM | ⬜ Open |
 | PERF-02 | InventoriedDunnage.CheckAsync Returns Single Row Per Call | LOW | ⬜ Open |
 

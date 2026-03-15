@@ -294,6 +294,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetFilterLastWeekAsync()
     {
+        if (IsBusy)
+            return;
         ToDate = DateTime.Now.Date;
         FromDate = DateTime.Now.Date.AddDays(-7);
         await LoadFromHistoryAsync();
@@ -305,6 +307,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetFilterTodayAsync()
     {
+        if (IsBusy)
+            return;
         FromDate = DateTime.Now.Date;
         ToDate = DateTime.Now.Date;
         await LoadFromHistoryAsync();
@@ -316,6 +320,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetFilterThisWeekAsync()
     {
+        if (IsBusy)
+            return;
         var today = DateTime.Now.Date;
         var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
         if (startOfWeek > today) // If today is Sunday
@@ -333,6 +339,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetFilterThisMonthAsync()
     {
+        if (IsBusy)
+            return;
         var today = DateTime.Now.Date;
         FromDate = new DateTime(today.Year, today.Month, 1);
         ToDate = today;
@@ -345,6 +353,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetFilterThisQuarterAsync()
     {
+        if (IsBusy)
+            return;
         var today = DateTime.Now.Date;
         var quarter = (today.Month - 1) / 3 + 1;
         var startMonth = (quarter - 1) * 3 + 1;
@@ -359,30 +369,11 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetFilterShowAllAsync()
     {
+        if (IsBusy)
+            return;
         FromDate = DateTime.Now.Date.AddYears(-1);
         ToDate = DateTime.Now.Date;
         await LoadFromHistoryAsync();
-    }
-
-    [RelayCommand]
-    private void SetDateRangeToday()
-    {
-        FromDate = DateTime.Now.Date;
-        ToDate = DateTime.Now.Date;
-    }
-
-    [RelayCommand]
-    private void SetDateRangeLastWeek()
-    {
-        ToDate = DateTime.Now.Date;
-        FromDate = DateTime.Now.Date.AddDays(-7);
-    }
-
-    [RelayCommand]
-    private void SetDateRangeLastMonth()
-    {
-        ToDate = DateTime.Now.Date;
-        FromDate = DateTime.Now.Date.AddMonths(-1);
     }
 
     #endregion

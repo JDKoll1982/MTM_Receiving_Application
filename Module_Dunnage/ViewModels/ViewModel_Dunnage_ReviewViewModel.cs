@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Review & Save
 /// </summary>
-public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposable
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -96,6 +96,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     {
         try
         {
+            IsBusy = true;
             SessionLoads.Clear();
 
             var loads = _workflowService.CurrentSession.Loads;
@@ -120,6 +121,10 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         catch (Exception ex)
         {
             _logger.LogError($"Error loading session loads: {ex.Message}", ex, "Review");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -318,6 +323,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
 
             SuccessMessage = $"Successfully saved {LoadCount} load(s) to database";
             IsSuccessMessageVisible = true;
+            StatusMessage = string.Empty;
 
             await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");
 
@@ -390,6 +396,14 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
-}
 
+    #region IDisposable
+
+    public void Dispose()
+    {
+        _workflowService.StepChanged -= OnWorkflowStepChanged;
+    }
+
+    #endregion
+}
 

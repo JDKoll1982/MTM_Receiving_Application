@@ -7,7 +7,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 
@@ -39,6 +38,15 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _logger = logger;
             _errorHandler = errorHandler;
             _viewModelRegistry = viewModelRegistry;
+
+            // Clear any stale session data when the user's session times out,
+            // so a subsequent login cannot see a prior user's workflow loads.
+            _sessionManager.SessionTimedOut += OnSessionTimedOut;
+        }
+
+        private void OnSessionTimedOut(object? sender, object e)
+        {
+            ClearSession();
         }
 
         public Task<bool> StartWorkflowAsync()
@@ -116,7 +124,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         break;
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
-                        // Add current load to session before advancing to Review
+                        if (string.IsNullOrWhiteSpace(CurrentSession.PONumber))
+                        {
+                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Please enter a PO Number before continuing." });
+                        }
                         AddCurrentLoadToSession();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
@@ -136,6 +147,17 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public void GoToStep(Enum_DunnageWorkflowStep step)
         {
+            // If navigating to TypeSelection from a mid-workflow step (not normal back-navigation)
+            // clear accumulated session loads so stale data from a previous run is not shown at Review.
+            if (step == Enum_DunnageWorkflowStep.TypeSelection
+                && CurrentStep != Enum_DunnageWorkflowStep.ModeSelection
+                && CurrentStep != Enum_DunnageWorkflowStep.PartSelection
+                && CurrentStep != Enum_DunnageWorkflowStep.QuantityEntry
+                && CurrentStep != Enum_DunnageWorkflowStep.DetailsEntry)
+            {
+                ClearSession();
+            }
+
             CurrentStep = step;
             StepChanged?.Invoke(this, EventArgs.Empty);
         }

@@ -53,41 +53,41 @@ public class Dao_DunnageLabelData
                 };
 
                 command.Parameters.Add(new MySqlParameter("p_load_uuid", MySqlDbType.VarChar, 36)
-                    { Value = load.LoadUuid.ToString() });
+                { Value = load.LoadUuid.ToString() });
 
                 command.Parameters.Add(new MySqlParameter("p_part_id", MySqlDbType.VarChar, 50)
-                    { Value = load.PartId });
+                { Value = load.PartId });
 
                 command.Parameters.Add(new MySqlParameter("p_dunnage_type_id", MySqlDbType.Int32)
-                    { Value = load.TypeId.HasValue ? (object)load.TypeId.Value : DBNull.Value });
+                { Value = load.TypeId.HasValue ? (object)load.TypeId.Value : DBNull.Value });
 
                 command.Parameters.Add(new MySqlParameter("p_dunnage_type_name", MySqlDbType.VarChar, 100)
-                    { Value = string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName });
+                { Value = string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName });
 
                 command.Parameters.Add(new MySqlParameter("p_dunnage_type_icon", MySqlDbType.VarChar, 100)
-                    { Value = string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon });
+                { Value = string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon });
 
                 command.Parameters.Add(new MySqlParameter("p_quantity", MySqlDbType.Decimal)
-                    { Value = load.Quantity, Precision = 10, Scale = 2 });
+                { Value = load.Quantity, Precision = 10, Scale = 2 });
 
                 command.Parameters.Add(new MySqlParameter("p_po_number", MySqlDbType.VarChar, 50)
-                    { Value = string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber });
+                { Value = string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber });
 
                 command.Parameters.Add(new MySqlParameter("p_received_date", MySqlDbType.DateTime)
-                    { Value = load.ReceivedDate });
+                { Value = load.ReceivedDate });
 
                 command.Parameters.Add(new MySqlParameter("p_user_id", MySqlDbType.VarChar, 100)
-                    { Value = user });
+                { Value = user });
 
                 command.Parameters.Add(new MySqlParameter("p_location", MySqlDbType.VarChar, 100)
-                    { Value = string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location });
+                { Value = string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location });
 
                 command.Parameters.Add(new MySqlParameter("p_label_number", MySqlDbType.VarChar, 50)
-                    { Value = string.IsNullOrWhiteSpace(load.LabelNumber) ? DBNull.Value : (object)load.LabelNumber });
+                { Value = string.IsNullOrWhiteSpace(load.LabelNumber) ? DBNull.Value : (object)load.LabelNumber });
 
                 var specsJson = BuildSpecsJson(load);
                 command.Parameters.Add(new MySqlParameter("p_specs_json", MySqlDbType.JSON)
-                    { Value = specsJson is null ? DBNull.Value : (object)specsJson });
+                { Value = specsJson is null ? DBNull.Value : (object)specsJson });
 
                 await command.ExecuteNonQueryAsync();
                 savedCount++;
@@ -231,8 +231,9 @@ public class Dao_DunnageLabelData
         {
             return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         }
-        catch
+        catch (JsonException ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[Dao_DunnageLabelData] Failed to deserialize specs_json: {ex.Message}");
             return null;
         }
     }

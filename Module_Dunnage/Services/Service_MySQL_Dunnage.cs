@@ -580,12 +580,35 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public async Task<Model_Dao_Result> UpdateLoadAsync(Model_DunnageLoad load)
         {
-            return Model_Dao_Result_Factory.Failure("Update load not implemented in DAO yet.");
+            try
+            {
+                await _logger.LogInfoAsync($"Updating dunnage load {load.LoadUuid} (Quantity: {load.Quantity}) by user: {CurrentUser}");
+                return await _daoDunnageLoad.UpdateAsync(load.LoadUuid, load.Quantity, CurrentUser);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(UpdateLoadAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error updating load: {ex.Message}");
+            }
         }
 
         public async Task<Model_Dao_Result> DeleteLoadAsync(string loadUuid)
         {
-            return Model_Dao_Result_Factory.Failure("Delete load not implemented in DAO yet.");
+            try
+            {
+                if (!Guid.TryParse(loadUuid, out var guid))
+                {
+                    return Model_Dao_Result_Factory.Failure("Invalid load UUID format.");
+                }
+
+                await _logger.LogInfoAsync($"Deleting dunnage load {loadUuid} by user: {CurrentUser}");
+                return await _daoDunnageLoad.DeleteAsync(guid);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(DeleteLoadAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error deleting load: {ex.Message}");
+            }
         }
 
         // ==================== Inventory Operations ====================
