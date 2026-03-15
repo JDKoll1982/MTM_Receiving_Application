@@ -60,7 +60,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item);
         public Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId);
         public Task<Model_Dao_Result> UpdateInventoriedPartAsync(Model_InventoriedDunnage item);
-        
+
         // Overloads for ViewModel compatibility
         public Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync();
         public Task<Model_Dao_Result> UpdateInventoriedPartAsync(int id, string inventoryMethod, string notes, string username);
@@ -88,6 +88,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         public Task<Model_Dao_Result> UpsertUserPreferenceAsync(string key, string value);
         public Task<Model_Dao_Result<List<Model_IconDefinition>>> GetRecentlyUsedIconsAsync(int count);
+
+        // ==================== Non-PO Entry Operations (3 methods) ====================
+
+        public Task<Model_Dao_Result<List<Model_DunnageNonPOEntry>>> GetNonPOEntriesAsync();
+        public Task<Model_Dao_Result> SaveNonPOEntryAsync(string value, string createdBy);
+        public Task<Model_Dao_Result> DeleteNonPOEntryAsync(int id);
     }
 }
 

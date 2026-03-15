@@ -105,12 +105,35 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private async void OnSaveAndReviewClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        // Show confirmation dialog
+        // If no PO entered, give the user a chance to supply a non-PO reference
+        // before we advance. The dialog also persists commonly-used reasons.
+        if (string.IsNullOrWhiteSpace(_workflowService.CurrentSession.PONumber))
+        {
+            var nonPoDialog = new View_Dunnage_Dialog_NonPOEntry
+            {
+                XamlRoot = this.XamlRoot
+            };
+            await nonPoDialog.ShowAsync();
+
+            if (nonPoDialog.Result is null)
+            {
+                // User cancelled — remain on DetailsEntry so they can fill PO or reconsider
+                return;
+            }
+
+            // Apply the chosen reference so AddCurrentLoadToSession picks it up
+            _workflowService.CurrentSession.PONumber = nonPoDialog.Result;
+
+            // Mirror back to the ViewModel so the PO Number TextBox shows the chosen reference.
+            // Without this the field stays visually empty even though the session has the value.
+            DetailsEntryView.ViewModel.PoNumber = nonPoDialog.Result;
+        }
+
         var confirmDialog = new ContentDialog
         {
-            Title = "Save and Review",
+            Title = "Review",
             Content = "Are you ready to save this load and proceed to review?\n\nYou will be able to add more loads from the review screen.",
-            PrimaryButtonText = "Save & Review",
+            PrimaryButtonText = "Review",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = this.XamlRoot
@@ -120,12 +143,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
         if (confirmResult == ContentDialogResult.Primary)
         {
-            // User confirmed, proceed to next step
             var result = await _workflowService.AdvanceToNextStepAsync();
 
             if (!result.IsSuccess)
             {
-                // Show error message
                 var errorDialog = new ContentDialog
                 {
                     Title = "Cannot Proceed",

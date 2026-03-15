@@ -163,6 +163,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_InventoriedDunnage(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageCustomField(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageUserPreference(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_DunnageNonPOEntry(mySqlConnectionString));
 
         // Services
         services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
@@ -204,6 +205,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_Dunnage_AddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddMultipleRowsDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_NonPOEntry>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog>();
 

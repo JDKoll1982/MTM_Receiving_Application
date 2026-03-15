@@ -124,10 +124,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         break;
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
-                        if (string.IsNullOrWhiteSpace(CurrentSession.PONumber))
-                        {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Please enter a PO Number before continuing." });
-                        }
                         AddCurrentLoadToSession();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;

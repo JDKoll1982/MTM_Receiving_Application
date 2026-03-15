@@ -280,6 +280,10 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 
     partial void OnPoNumberChanged(string value)
     {
+        // Keep the workflow session in sync so AdvanceToNextStepAsync always
+        // reads the value the user has typed, not a stale empty string.
+        _workflowService.CurrentSession.PONumber = value;
+
         if (string.IsNullOrWhiteSpace(value))
         {
             InventoryMethod = "Adjust In";
@@ -290,6 +294,11 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         }
 
         UpdateInventoryMessage();
+    }
+
+    partial void OnLocationChanged(string value)
+    {
+        _workflowService.CurrentSession.Location = value;
     }
 
     private void UpdateInventoryMessage()

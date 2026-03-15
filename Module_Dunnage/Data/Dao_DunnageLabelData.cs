@@ -197,7 +197,8 @@ public class Dao_DunnageLabelData
     {
         return new Model_DunnageLoad
         {
-            LoadUuid = Guid.Parse(reader.GetString(reader.GetOrdinal("load_uuid"))),
+            // GetValue().ToString() handles both string and Guid returns from the connector.
+            LoadUuid = Guid.Parse(reader.GetValue(reader.GetOrdinal("load_uuid")).ToString()!),
             PartId = reader.GetString(reader.GetOrdinal("part_id")),
             TypeId = reader.IsDBNull(reader.GetOrdinal("dunnage_type_id")) ? null : reader.GetInt32(reader.GetOrdinal("dunnage_type_id")),
             TypeName = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("dunnage_type_name")),

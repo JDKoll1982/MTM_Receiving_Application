@@ -24,6 +24,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly Dao_InventoriedDunnage _daoInventoriedDunnage;
         private readonly Dao_DunnageCustomField _daoCustomField;
         private readonly Dao_DunnageUserPreference _daoUserPreference;
+        private readonly Dao_DunnageNonPOEntry _daoNonPOEntry;
 
         private string CurrentUser => _sessionManager.CurrentSession?.User?.WindowsUsername ?? "System";
 
@@ -38,7 +39,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             Dao_DunnageSpec daoDunnageSpec,
             Dao_InventoriedDunnage daoInventoriedDunnage,
             Dao_DunnageCustomField daoCustomField,
-            Dao_DunnageUserPreference daoUserPreference)
+            Dao_DunnageUserPreference daoUserPreference,
+            Dao_DunnageNonPOEntry daoNonPOEntry)
         {
             _errorHandler = errorHandler;
             _logger = logger;
@@ -51,6 +53,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _daoInventoriedDunnage = daoInventoriedDunnage;
             _daoCustomField = daoCustomField;
             _daoUserPreference = daoUserPreference;
+            _daoNonPOEntry = daoNonPOEntry;
         }
 
         // ==================== Type Operations ====================
@@ -857,6 +860,47 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetRecentlyUsedIconsAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure<List<Model_IconDefinition>>($"Error retrieving recent icons: {ex.Message}");
+            }
+        }
+
+        // ==================== Non-PO Entry Operations ====================
+
+        public async Task<Model_Dao_Result<List<Model_DunnageNonPOEntry>>> GetNonPOEntriesAsync()
+        {
+            try
+            {
+                return await _daoNonPOEntry.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetNonPOEntriesAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<List<Model_DunnageNonPOEntry>>($"Error retrieving non-PO entries: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result> SaveNonPOEntryAsync(string value, string createdBy)
+        {
+            try
+            {
+                return await _daoNonPOEntry.UpsertAsync(value, createdBy);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(SaveNonPOEntryAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error saving non-PO entry: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result> DeleteNonPOEntryAsync(int id)
+        {
+            try
+            {
+                return await _daoNonPOEntry.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(DeleteNonPOEntryAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error deleting non-PO entry: {ex.Message}");
             }
         }
 

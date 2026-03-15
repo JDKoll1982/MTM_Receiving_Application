@@ -1,0 +1,77 @@
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_Dialog_NonPOEntry"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
+    mc:Ignorable="d"
+    Title="No PO Number — Non-PO Dunnage"
+    PrimaryButtonText="Use This Reference"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OnConfirmClick">
+
+    <StackPanel Width="400" Spacing="16">
+
+        <!-- Explanation -->
+        <TextBlock
+            Text="No PO number was entered. Enter a reference reason below, or pick a saved one. The reference will be stored with this load."
+            TextWrapping="WrapWholeWords"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource BodyTextBlockStyle}"/>
+
+        <!-- Free-form text entry -->
+        <TextBox x:Name="ReferenceTextBox"
+                 Header="Reference / Reason"
+                 PlaceholderText="e.g. Stock Replenishment, Return Dunnage, Internal Use"
+                 MaxLength="100"
+                 TextChanged="OnReferenceTextChanged"/>
+
+        <!-- Saved entries list -->
+        <StackPanel x:Name="SavedEntriesPanel" Spacing="8" Visibility="Collapsed">
+            <TextBlock Text="— Previously Saved Entries —"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+            <ListView x:Name="SavedEntriesList"
+                      MaxHeight="220"
+                      SelectionMode="Single"
+                      SelectionChanged="OnSavedEntrySelected"
+                      ItemsSource="{x:Bind SavedEntries}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_DunnageNonPOEntry">
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="{x:Bind Value}"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis"/>
+
+                            <Button Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Width="28" Height="28"
+                                    Padding="0"
+                                    ToolTipService.ToolTip="Remove saved entry"
+                                    Tag="{x:Bind}"
+                                    Click="OnDeleteEntryClick">
+                                <FontIcon Glyph="&#xE74D;" FontSize="12"/>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <!-- Save checkbox -->
+        <CheckBox x:Name="SaveForNextTimeCheckBox"
+                  Content="Save this entry for next time"
+                  IsChecked="True"/>
+
+    </StackPanel>
+</ContentDialog>
