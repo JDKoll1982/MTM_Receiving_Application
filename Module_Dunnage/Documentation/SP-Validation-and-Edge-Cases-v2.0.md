@@ -1,6 +1,38 @@
 # Module_Dunnage — Stored Procedure & Edge Case Audit v2.0
 
-Last Updated: 2025-07-14
+Last Updated: 2026-03-13
+
+---
+
+## Progress Checklist
+
+| ID | Title | Severity | Status |
+|---|---|---|---|
+| DB-SP-01 | sp_Dunnage_Specs_GetAllKeys Ceiling Now 100 (MySQL 5.7) | LOW | ⬜ Open |
+| DB-SP-02 | sp_Dunnage_LabelData_GetAll Has No GetByUser Variant | LOW | ⬜ Open |
+| DB-SP-03 | dunnage_label_data Has No Index on user_id or received_date | MEDIUM | ⬜ Open |
+| DB-SP-04 | sp_Dunnage_Parts_Search LIMIT 100 Silently Truncates Results | LOW | ⬜ Open |
+| DB-SP-05 | No Stored Procedure Wiring for UpdateLoadAsync / DeleteLoadAsync | HIGH | ✅ Fixed |
+| DB-DAO-01 | Dao_DunnageCustomField Has No Service Interface or UI Surface | MEDIUM | ⬜ Open |
+| DB-DAO-02 | DeserializeSpecValues Silently Swallows JSON Errors | LOW | ✅ Fixed |
+| DB-DAO-03 | Dao_DunnageLoad.GetAllAsync Not Used in Service or ViewModel | LOW | ⬜ Open |
+| WF-01 | Workflow Session Not Cleared on Cancel From Review Step | MEDIUM | ✅ Fixed |
+| WF-02 | AdvanceToNextStepAsync Does Not Validate DetailsEntry Fields | MEDIUM | ✅ Fixed |
+| WF-03 | No Confirmation Dialog Before Clearing Label Queue | HIGH | ✅ Already Resolved |
+| WF-04 | StartWorkflowAsync Returns Task but Is Never Awaited | LOW | ⬜ Open |
+| UX-01 | Edit Mode Date Filters Trigger Independent DB Calls Without Debounce | LOW | ⬜ Open |
+| UX-02 | Duplicate Date Range Setter Commands | LOW | ⬜ Open |
+| UX-03 | StatusMessage Not Reset After Successful Load | LOW | ⬜ Open |
+| UX-04 | Review Step Single-View Shows No Total Page Indicator | LOW | ⬜ Open |
+| UX-05 | IsBusy Not Set During LoadSessionLoads in Review ViewModel | LOW | ⬜ Open |
+| ARCH-01 | Model_DunnageSession Uses Manual INotifyPropertyChanged | LOW | ⬜ Open |
+| ARCH-02 | Service_DunnageWorkflow Directly References Dao_DunnagePart Namespace | MEDIUM | ⬜ Open |
+| ARCH-03 | ViewModel_Dunnage_Review Leaks StepChanged Event Subscription | MEDIUM | ⬜ Open |
+| ARCH-04 | Service_MySQL_Dunnage UpdateLoadAsync / DeleteLoadAsync Are Stubs | HIGH | ✅ Fixed |
+| ARCH-05 | Dao_DunnageCustomField Registered in DI But No Interface Defined | LOW | ⬜ Open |
+| SEC-01 | Model_DunnageSession Stores Full Load List for Session Lifetime | LOW | ⬜ Open |
+| PERF-01 | ManualEntry InitializeAsync Loads All Parts on Startup | MEDIUM | ⬜ Open |
+| PERF-02 | InventoriedDunnage.CheckAsync Returns Single Row Per Call | LOW | ⬜ Open |
 
 ---
 

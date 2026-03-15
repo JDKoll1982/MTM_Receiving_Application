@@ -1,6 +1,27 @@
 # Module_Dunnage — Open TODOs v2.0
 
-Last Updated: 2025-07-14 (DB-02 expanded with user stories, mockups, workflow diagrams)
+Last Updated: 2026-03-13
+
+---
+
+## Progress Checklist
+
+| ID | Title | Severity | Blocking | Status |
+|---|---|---|---|---|
+| DB-01 | Service UpdateLoadAsync / DeleteLoadAsync Are Dead Stubs | HIGH | Yes | ✅ Fixed |
+| DB-02 | Dao_DunnageCustomField Has No Service, Interface, or UI | MEDIUM | No | ⬜ Open |
+| DB-03 | sp_Dunnage_LabelData_GetAll Missing Index | LOW | No | ⬜ Open |
+| WF-01 | Workflow Session Not Cleared on Partial Cancel | MEDIUM | No | ✅ Fixed |
+| WF-02 | DetailsEntry Step Has No Validation Before Advancing | MEDIUM | No | ✅ Fixed |
+| WF-03 | No Confirmation Before Archiving Active Print Queue | HIGH | No | ✅ Already Resolved |
+| UX-01 | Edit Mode Date Filter Buttons Trigger Concurrent DB Calls | LOW | No | ⬜ Open |
+| UX-02 | Two Overlapping Sets of Date Setter Commands | LOW | No | ⬜ Open |
+| UX-03 | Review Step Single-View Has No "N of Total" Label | LOW | No | ⬜ Open |
+| ARCH-01 | ViewModel_Dunnage_Review Leaks StepChanged Event Subscription | MEDIUM | No | ⬜ Open |
+| ARCH-02 | Model_DunnageSession Uses Manual INotifyPropertyChanged | LOW | No | ⬜ Open |
+| ARCH-03 | Service_DunnageWorkflow Has a using for Module_Dunnage.Data | MEDIUM | No | ⬜ Open |
+| SEC-01 | Workflow Singleton Holds Previous User Session Loads | LOW | No | ⬜ Open |
+| PERF-01 | ManualEntry Loads All Parts at Startup Instead of On Type Select | MEDIUM | No | ⬜ Open |
 
 ---
 
