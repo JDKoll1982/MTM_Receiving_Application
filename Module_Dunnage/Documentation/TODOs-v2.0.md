@@ -336,8 +336,6 @@ flowchart LR
 8. Pass captured custom field values through `Model_DunnageLoad` (extend model or use `SpecValues` dictionary as interim) into `InsertBatchAsync`.
 9. Register `ViewModel_Dunnage_AdminCustomFields` and its view as Transient in `ModuleServicesExtensions.cs`.
 
-
-
 ### DB-03 — sp_Dunnage_LabelData_GetAll Missing Index Warning
 
 **Files:** `Database\StoredProcedures\Dunnage\sp_Dunnage_LabelData_GetAll.sql`

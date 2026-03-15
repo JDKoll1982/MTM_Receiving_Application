@@ -1,35 +1,3 @@
-/*
-sp_Dunnage_Specs_GetAllKeys
-------------------------------------------------------------
-Description:
-    Retrieves a sorted list of distinct JSON object keys found in
-    the `spec_value` (JSON) column of the `dunnage_specs` table.
-
-    Temporarily materializes keys into a temp table using a UNION-ALL
-    numbers generator, filters out NULL/empty keys, orders them, and
-    returns the result set. The numbers generator covers positions 1..100
-    (raised from the original 50). Requires MySQL 5.7+ (no JSON_TABLE).
-
-Usage:
-    CALL sp_Dunnage_Specs_GetAllKeys();
-
-Parameters:
-    None.
-
-Result set:
-    - SpecKey (VARCHAR) : distinct JSON object key names present
-        across all non-NULL JSON objects in dunnage_specs.spec_value,
-        ordered alphabetically.
-
-Notes:
-    - The sequence ceiling is 100. Spec objects with more than 100
-      top-level keys will have the surplus keys silently omitted.
-      In practice, dunnage spec objects are expected to have far fewer
-      keys than this limit.
-    - Only top-level object keys are extracted; nested keys are not.
-    - MySQL 8.0+ users may replace this with a JSON_TABLE approach
-      to remove the ceiling entirely.
-*/
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `sp_Dunnage_Specs_GetAllKeys` $$
