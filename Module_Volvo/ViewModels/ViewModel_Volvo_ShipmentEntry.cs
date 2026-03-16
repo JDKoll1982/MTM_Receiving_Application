@@ -95,6 +95,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _hasPendingShipment = false;
 
+    // Cached DB identity of the active pending shipment — avoids repeated sp_Volvo_Shipment_GetPending calls.
+    // Reset to 0 when the form is cleared or a new entry is started.
+    private int _pendingShipmentId = 0;
+
     #endregion
 
 
@@ -139,6 +143,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             if (pendingResult.IsSuccess && pendingResult.Data != null)
             {
                 HasPendingShipment = true;
+                _pendingShipmentId = pendingResult.Data.Id;
                 await LoadPendingShipmentAsync(pendingResult.Data.Id);
             }
 
@@ -354,6 +359,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         try
         {
+            // [BUTTON_LOG_START: AddPart]
+            _logger.LogInfo($"AddPart pressed: part={SelectedPartToAdd?.PartNumber}, skids={ReceivedSkidsToAdd}");
+            // [BUTTON_LOG_END: AddPart]
+
             // Parse and validate skid count
             if (!int.TryParse(ReceivedSkidsToAdd, out int skidCount) || skidCount < 1 || skidCount > 99)
             {
@@ -456,6 +465,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         try
         {
+            // [BUTTON_LOG_START: RemovePart]
+            _logger.LogInfo($"RemovePart pressed: part={SelectedPart?.PartNumber}");
+            // [BUTTON_LOG_END: RemovePart]
+
             // Validate removal using MediatR command
             var removeCommand = new RemovePartFromShipmentCommand
             {
@@ -501,6 +514,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Generating labels...";
+            // [BUTTON_LOG_START: GenerateLabels]
+            _logger.LogInfo($"GenerateLabels pressed: shipment #{ShipmentNumber}, {Parts.Count} part(s), hasPending={HasPendingShipment}");
+            // [BUTTON_LOG_END: GenerateLabels]
 
             // First, save the shipment if not already saved
             if (!HasPendingShipment)
@@ -517,14 +533,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 }
             }
 
-            // Get the pending shipment ID using MediatR
-            var pendingQuery = new GetPendingShipmentQuery
-            {
-                UserName = Environment.UserName
-            };
-            var pendingResult = await _mediator.Send(pendingQuery);
-
-            if (!pendingResult.IsSuccess || pendingResult.Data == null)
+            if (_pendingShipmentId <= 0)
             {
                 await _errorHandler.HandleErrorAsync(
                     "No pending shipment found",
@@ -537,7 +546,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             // Generate label data using MediatR query
             var labelQuery = new GenerateLabelQuery
             {
-                ShipmentId = pendingResult.Data.Id
+                ShipmentId = _pendingShipmentId
             };
             var labelResult = await _mediator.Send(labelQuery);
 
@@ -546,7 +555,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Labels generated successfully!\nFile: {labelResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
-                await _logger.LogInfoAsync($"Labels generated for shipment ID: {pendingResult.Data.Id}, File: {labelResult.Data}");
+                await _logger.LogInfoAsync($"Labels generated for shipment ID: {_pendingShipmentId}, File: {labelResult.Data}");
             }
             else
             {
@@ -579,6 +588,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Formatting email...";
+            // [BUTTON_LOG_START: PreviewEmail]
+            _logger.LogInfo($"PreviewEmail pressed: shipment #{ShipmentNumber}, {Parts.Count} part(s), hasPending={HasPendingShipment}");
+            // [BUTTON_LOG_END: PreviewEmail]
 
             int shipmentId;
 
@@ -600,12 +612,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
             else
             {
-                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
-                {
-                    UserName = Environment.UserName
-                });
-
-                if (!pendingResult.IsSuccess || pendingResult.Data == null)
+                if (_pendingShipmentId <= 0)
                 {
                     await _errorHandler.HandleErrorAsync(
                         "No pending shipment found",
@@ -615,7 +622,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     return;
                 }
 
-                shipmentId = pendingResult.Data.Id;
+                shipmentId = _pendingShipmentId;
             }
 
             var emailResult = await _mediator.Send(new FormatEmailDataQuery
@@ -1019,7 +1026,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [RelayCommand]
     private void ViewHistory()
     {
+        // [BUTTON_LOG_START: ViewHistory]
         _logger.LogInfo("Navigating to Volvo Shipment History");
+        // [BUTTON_LOG_END: ViewHistory]
         var view = App.GetService<Views.View_Volvo_History>();
         if (view != null && App.MainWindow is MainWindow mainWindow)
         {
@@ -1037,6 +1046,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Saving shipment...";
+            // [BUTTON_LOG_START: SaveAsPending]
+            _logger.LogInfo($"SaveAsPending pressed: shipment #{ShipmentNumber}, {Parts.Count} part(s), date={ShipmentDate?.Date:yyyy-MM-dd}");
+            // [BUTTON_LOG_END: SaveAsPending]
 
             // Validate first
             if (!ValidateShipment())
@@ -1071,6 +1083,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
+                _pendingShipmentId = result.Data;
                 SuccessMessage = $"Shipment #{ShipmentNumber} saved as pending";
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = true;
@@ -1128,7 +1141,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
             ShipmentNumber = ShipmentNumber,
             Notes = Notes ?? string.Empty,
-            Parts = partsDto
+            Parts = partsDto,
+            // Pass cached ID so the handler skips its own GetPendingAsync lookup
+            ShipmentId = _pendingShipmentId > 0 ? _pendingShipmentId : (int?)null
         };
 
         try
@@ -1137,6 +1152,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
+                _pendingShipmentId = result.Data;
+                HasPendingShipment = true;
                 return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
                 {
                     Success = true,
@@ -1168,6 +1185,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Completing shipment...";
+            // [BUTTON_LOG_START: CompleteShipment]
+            _logger.LogInfo($"CompleteShipment pressed: shipment #{ShipmentNumber}, {Parts.Count} part(s)");
+            // [BUTTON_LOG_END: CompleteShipment]
 
             // Get pending shipment using MediatR
             var pendingQuery = new GetPendingShipmentQuery
@@ -1304,6 +1324,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
+        // [BUTTON_LOG_START: ToggleDiscrepancy]
+        _logger.LogInfo($"ToggleDiscrepancy pressed: part={line.PartNumber}, hasDiscrepancy={line.HasDiscrepancy}");
+        // [BUTTON_LOG_END: ToggleDiscrepancy]
+
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot == null)
         {
@@ -1384,6 +1408,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [RelayCommand]
     private void StartNewEntry()
     {
+        // [BUTTON_LOG_START: StartNewEntry]
+        _logger.LogInfo("StartNewEntry pressed");
+        // [BUTTON_LOG_END: StartNewEntry]
         IsSuccessMessageVisible = false;
         SuccessMessage = string.Empty;
         HasPendingShipment = false;
@@ -1401,6 +1428,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Checking for completed shipments...";
+            // [BUTTON_LOG_START: ClearLabelData]
+            _logger.LogInfo($"ClearLabelData pressed by {Environment.UserName}");
+            // [BUTTON_LOG_END: ClearLabelData]
 
             var recentQuery = new GetRecentShipmentsQuery { Days = 365 };
             var recentResult = await _mediator.Send(recentQuery);
@@ -1591,6 +1621,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         Parts.Clear();
         Notes = string.Empty;
         ShipmentNumber = 1;
+        _pendingShipmentId = 0;
         SelectedPartToAdd = null;
         ReceivedSkidsToAdd = string.Empty;
         PartSearchText = string.Empty;
