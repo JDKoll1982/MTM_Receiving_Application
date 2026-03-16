@@ -45,17 +45,32 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     "You are not authorized to complete shipments");
             }
 
-            // If a pending shipment exists, complete it instead of inserting a new one
-            var pendingResult = await _shipmentDao.GetPendingAsync();
-            if (!pendingResult.IsSuccess)
+            Model_VolvoShipment? pendingShipment = null;
+
+            if (request.ShipmentId.HasValue && request.ShipmentId.Value > 0)
             {
-                return Model_Dao_Result_Factory.Failure<int>(pendingResult.ErrorMessage);
+                var shipmentByIdResult = await _shipmentDao.GetByIdAsync(request.ShipmentId.Value);
+                if (!shipmentByIdResult.IsSuccess || shipmentByIdResult.Data == null)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(
+                        shipmentByIdResult.ErrorMessage ?? "Shipment not found");
+                }
+
+                pendingShipment = shipmentByIdResult.Data;
+            }
+            else
+            {
+                var pendingResult = await _shipmentDao.GetPendingAsync();
+                if (!pendingResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(pendingResult.ErrorMessage);
+                }
+
+                pendingShipment = pendingResult.Data;
             }
 
-            if (pendingResult.Data != null)
+            if (pendingShipment != null)
             {
-                var pendingShipment = pendingResult.Data;
-
                 // Update notes if changed
                 if (!string.Equals(pendingShipment.Notes ?? string.Empty, request.Notes ?? string.Empty, StringComparison.Ordinal))
                 {

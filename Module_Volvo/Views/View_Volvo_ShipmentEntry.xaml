@@ -209,7 +209,10 @@
 
         <!-- Action Buttons -->
         <CommandBar Grid.Row="3" DefaultLabelPosition="Right">
-            <AppBarButton Icon="Delete" Label="Remove Selected Part" Click="RemoveSelectedPartButton_Click"/>
+            <AppBarButton Icon="Delete"
+                          Label="Remove Selected Part"
+                          Click="RemoveSelectedPartButton_Click"
+                          IsEnabled="{x:Bind ViewModel.HasSelectedPart, Mode=OneWay}"/>
             <AppBarSeparator/>
             <AppBarButton Label="Generate Labels" Command="{x:Bind ViewModel.GenerateLabelsCommand}">
                 <AppBarButton.Icon>

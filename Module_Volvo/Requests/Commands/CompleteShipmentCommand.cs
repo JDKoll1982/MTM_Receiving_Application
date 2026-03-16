@@ -11,6 +11,11 @@ namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
 {
     /// <summary>
+    /// Optional existing shipment ID to complete.
+    /// </summary>
+    public int? ShipmentId { get; init; }
+
+    /// <summary>
     /// Shipment date.
     /// </summary>
     public DateTimeOffset ShipmentDate { get; init; }

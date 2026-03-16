@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,6 +48,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _windowService = windowService;
         _sessionManager = sessionManager;
+
+        AttachPartsCollectionHandlers(Parts);
     }
 
     #region Observable Properties
@@ -73,6 +77,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private Model_VolvoShipmentLine? _selectedPart;
 
+    public bool HasSelectedPart => SelectedPart != null;
+
 
     [ObservableProperty]
     private Model_VolvoPart? _selectedPartToAdd;
@@ -94,6 +100,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     [ObservableProperty]
     private bool _hasPendingShipment = false;
+
+    private int? _currentShipmentId;
 
     #endregion
 
@@ -139,6 +147,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             if (pendingResult.IsSuccess && pendingResult.Data != null)
             {
                 HasPendingShipment = true;
+                _currentShipmentId = pendingResult.Data.Id;
                 await LoadPendingShipmentAsync(pendingResult.Data.Id);
             }
 
@@ -156,6 +165,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshCommandStates();
         }
     }
 
@@ -174,6 +184,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             if (detailResult.IsSuccess && detailResult.Data != null)
             {
                 var shipment = detailResult.Data.Shipment;
+                _currentShipmentId = shipment.Id;
                 ShipmentDate = new DateTimeOffset(shipment.ShipmentDate);
                 ShipmentNumber = shipment.ShipmentNumber;
                 Notes = shipment.Notes ?? string.Empty;
@@ -494,13 +505,15 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// Saves the shipment (if not already saved), runs component explosion, and confirms
     /// label data in the database.  Returns a summary of parts and piece counts.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGenerateLabels))]
     private async Task GenerateLabelsAsync()
     {
         try
         {
             IsBusy = true;
             StatusMessage = "Generating labels...";
+
+            int shipmentId;
 
             // First, save the shipment if not already saved
             if (!HasPendingShipment)
@@ -515,29 +528,41 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                         true);
                     return;
                 }
+
+                shipmentId = saveResult.Data.ShipmentId;
+                _currentShipmentId = shipmentId;
+                HasPendingShipment = true;
             }
-
-            // Get the pending shipment ID using MediatR
-            var pendingQuery = new GetPendingShipmentQuery
+            else if (_currentShipmentId.HasValue && _currentShipmentId.Value > 0)
             {
-                UserName = Environment.UserName
-            };
-            var pendingResult = await _mediator.Send(pendingQuery);
-
-            if (!pendingResult.IsSuccess || pendingResult.Data == null)
+                shipmentId = _currentShipmentId.Value;
+            }
+            else
             {
-                await _errorHandler.HandleErrorAsync(
-                    "No pending shipment found",
-                    Enum_ErrorSeverity.Medium,
-                    null,
-                    true);
-                return;
+                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
+                {
+                    UserName = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName
+                });
+
+                if (!pendingResult.IsSuccess || pendingResult.Data == null)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        "No pending shipment found",
+                        Enum_ErrorSeverity.Medium,
+                        null,
+                        true);
+                    return;
+                }
+
+                shipmentId = pendingResult.Data.Id;
+                _currentShipmentId = shipmentId;
+                HasPendingShipment = true;
             }
 
             // Generate label data using MediatR query
             var labelQuery = new GenerateLabelQuery
             {
-                ShipmentId = pendingResult.Data.Id
+                ShipmentId = shipmentId
             };
             var labelResult = await _mediator.Send(labelQuery);
 
@@ -546,7 +571,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Labels generated successfully!\n{labelResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
-                await _logger.LogInfoAsync($"Labels generated for shipment ID: {pendingResult.Data.Id}, File: {labelResult.Data}");
+                await _logger.LogInfoAsync($"Labels generated for shipment ID: {shipmentId}: {labelResult.Data}");
             }
             else
             {
@@ -569,10 +594,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshCommandStates();
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanPreviewEmail))]
     private async Task PreviewEmailAsync()
     {
         try
@@ -600,22 +626,30 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
             else
             {
-                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
+                if (_currentShipmentId.HasValue && _currentShipmentId.Value > 0)
                 {
-                    UserName = Environment.UserName
-                });
-
-                if (!pendingResult.IsSuccess || pendingResult.Data == null)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        "No pending shipment found",
-                        Enum_ErrorSeverity.Medium,
-                        null,
-                        true);
-                    return;
+                    shipmentId = _currentShipmentId.Value;
                 }
+                else
+                {
+                    var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
+                    {
+                        UserName = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName
+                    });
 
-                shipmentId = pendingResult.Data.Id;
+                    if (!pendingResult.IsSuccess || pendingResult.Data == null)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            "No pending shipment found",
+                            Enum_ErrorSeverity.Medium,
+                            null,
+                            true);
+                        return;
+                    }
+
+                    shipmentId = pendingResult.Data.Id;
+                    _currentShipmentId = shipmentId;
+                }
             }
 
             var emailResult = await _mediator.Send(new FormatEmailDataQuery
@@ -647,6 +681,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshCommandStates();
         }
     }
 
@@ -1030,7 +1065,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// <summary>
     /// Saves shipment as pending using SavePendingShipmentCommand (CQRS)
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSaveAsPending))]
     private async Task SaveAsPendingAsync()
     {
         try
@@ -1071,6 +1106,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
+                _currentShipmentId = result.Data;
                 SuccessMessage = $"Shipment #{ShipmentNumber} saved as pending";
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = true;
@@ -1098,6 +1134,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshCommandStates();
         }
     }
 
@@ -1125,6 +1162,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         var saveCommand = new SavePendingShipmentCommand
         {
+            ShipmentId = _currentShipmentId,
             ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
             ShipmentNumber = ShipmentNumber,
             Notes = Notes ?? string.Empty,
@@ -1137,6 +1175,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
+                _currentShipmentId = result.Data;
+                HasPendingShipment = true;
                 return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
                 {
                     Success = true,
@@ -1169,25 +1209,45 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Completing shipment...";
 
-            // Get pending shipment using MediatR
-            var pendingQuery = new GetPendingShipmentQuery
-            {
-                UserName = Environment.UserName
-            };
-            var pendingResult = await _mediator.Send(pendingQuery);
+            Model_VolvoShipment? shipment = null;
 
-            if (!pendingResult.IsSuccess || pendingResult.Data == null)
+            if (_currentShipmentId.HasValue && _currentShipmentId.Value > 0)
             {
-                await _errorHandler.HandleErrorAsync(
-                    "No pending shipment found",
-                    Enum_ErrorSeverity.Medium,
-                    null,
-                    true);
-                return;
+                var detailResult = await _mediator.Send(new GetShipmentDetailQuery
+                {
+                    ShipmentId = _currentShipmentId.Value
+                });
+
+                if (detailResult.IsSuccess && detailResult.Data != null)
+                {
+                    shipment = detailResult.Data.Shipment;
+                }
+            }
+
+            if (shipment == null)
+            {
+                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
+                {
+                    UserName = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName
+                });
+
+                if (!pendingResult.IsSuccess || pendingResult.Data == null)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        "No pending shipment found",
+                        Enum_ErrorSeverity.Medium,
+                        null,
+                        true);
+                    return;
+                }
+
+                shipment = pendingResult.Data;
+                _currentShipmentId = shipment.Id;
+                HasPendingShipment = true;
             }
 
             // Show completion dialog
-            await ShowCompletionDialogAsync(pendingResult.Data);
+            await ShowCompletionDialogAsync(shipment);
         }
         catch (Exception ex)
         {
@@ -1201,6 +1261,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshCommandStates();
         }
     }
 
@@ -1265,6 +1326,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             var completeCommand = new CompleteShipmentCommand
             {
+                ShipmentId = _currentShipmentId ?? shipment.Id,
                 ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
                 ShipmentNumber = ShipmentNumber,
                 PONumber = poTextBox.Text.Trim(),
@@ -1280,6 +1342,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Shipment #{ShipmentNumber} completed successfully!";
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = false;
+                _currentShipmentId = null;
                 await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} completed with PO: {poTextBox.Text.Trim()}");
 
                 // Clear the form
@@ -1387,6 +1450,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IsSuccessMessageVisible = false;
         SuccessMessage = string.Empty;
         HasPendingShipment = false;
+        _currentShipmentId = null;
         ClearShipmentForm();
     }
 
@@ -1470,6 +1534,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshCommandStates();
         }
     }
 
@@ -1557,6 +1622,37 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private void ValidateSaveEligibility()
     {
         CanSave = Parts.Count > 0 && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+        RefreshCommandStates();
+    }
+
+    private bool CanGenerateLabels()
+    {
+        return HasShipmentData();
+    }
+
+    private bool CanPreviewEmail()
+    {
+        return HasShipmentData();
+    }
+
+    private bool CanSaveAsPending()
+    {
+        return !IsBusy && Parts.Count > 0;
+    }
+
+    private bool HasShipmentData()
+    {
+        return !IsBusy &&
+               Parts.Count > 0 &&
+               Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+    }
+
+    private void RefreshCommandStates()
+    {
+        AddPartCommand.NotifyCanExecuteChanged();
+        GenerateLabelsCommand.NotifyCanExecuteChanged();
+        PreviewEmailCommand.NotifyCanExecuteChanged();
+        SaveAsPendingCommand.NotifyCanExecuteChanged();
     }
 
     #endregion
@@ -1565,12 +1661,18 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     partial void OnPartsChanged(ObservableCollection<Model_VolvoShipmentLine> value)
     {
+        AttachPartsCollectionHandlers(value);
         ValidateSaveEligibility();
     }
 
     partial void OnSelectedPartToAddChanged(Model_VolvoPart? value)
     {
         AddPartCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnSelectedPartChanged(Model_VolvoShipmentLine? value)
+    {
+        OnPropertyChanged(nameof(HasSelectedPart));
     }
 
     partial void OnReceivedSkidsToAddChanged(string value)
@@ -1591,10 +1693,71 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         Parts.Clear();
         Notes = string.Empty;
         ShipmentNumber = 1;
+        _currentShipmentId = null;
         SelectedPartToAdd = null;
         ReceivedSkidsToAdd = string.Empty;
         PartSearchText = string.Empty;
         SuggestedParts.Clear();
+        RefreshCommandStates();
+    }
+
+    private void AttachPartsCollectionHandlers(ObservableCollection<Model_VolvoShipmentLine>? parts)
+    {
+        if (parts == null)
+        {
+            return;
+        }
+
+        parts.CollectionChanged -= OnPartsCollectionChanged;
+        parts.CollectionChanged += OnPartsCollectionChanged;
+
+        foreach (var line in parts)
+        {
+            AttachShipmentLineHandlers(line);
+        }
+    }
+
+    private void OnPartsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+        {
+            foreach (var oldItem in e.OldItems.OfType<Model_VolvoShipmentLine>())
+            {
+                DetachShipmentLineHandlers(oldItem);
+            }
+        }
+
+        if (e.NewItems != null)
+        {
+            foreach (var newItem in e.NewItems.OfType<Model_VolvoShipmentLine>())
+            {
+                AttachShipmentLineHandlers(newItem);
+            }
+        }
+
+        ValidateSaveEligibility();
+    }
+
+    private void AttachShipmentLineHandlers(Model_VolvoShipmentLine line)
+    {
+        if (line is INotifyPropertyChanged notifyPropertyChanged)
+        {
+            notifyPropertyChanged.PropertyChanged -= OnShipmentLinePropertyChanged;
+            notifyPropertyChanged.PropertyChanged += OnShipmentLinePropertyChanged;
+        }
+    }
+
+    private void DetachShipmentLineHandlers(Model_VolvoShipmentLine line)
+    {
+        if (line is INotifyPropertyChanged notifyPropertyChanged)
+        {
+            notifyPropertyChanged.PropertyChanged -= OnShipmentLinePropertyChanged;
+        }
+    }
+
+    private void OnShipmentLinePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        ValidateSaveEligibility();
     }
 
     #endregion

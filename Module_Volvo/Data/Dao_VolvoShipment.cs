@@ -164,12 +164,24 @@ public class Dao_VolvoShipment
     /// <returns>Model_Dao_Result with pending shipment or null if none exists</returns>
     public async Task<Model_Dao_Result<Model_VolvoShipment>> GetPendingAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+        var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
             "sp_Volvo_Shipment_GetPending",
             MapFromReader,
             null
         );
+
+        if (!result.Success && string.Equals(result.ErrorMessage, "No record found", StringComparison.OrdinalIgnoreCase))
+        {
+            return new Model_Dao_Result<Model_VolvoShipment>
+            {
+                Success = true,
+                Data = null,
+                AffectedRows = 0
+            };
+        }
+
+        return result;
     }
 
     /// <summary>
