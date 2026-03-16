@@ -23,12 +23,11 @@ public interface IService_Volvo
         List<Model_VolvoShipmentLine> lines);
 
     /// <summary>
-    /// [STUB] Generates labels for label printing.
-    /// TODO: Implement database-backed label generation.
-    /// Previously saved to: %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_[ID]_[Date] files
+    /// Generates label data for a shipment by loading it from the database,
+    /// running the component explosion, and returning a human-readable summary.
     /// </summary>
     /// <param name="shipmentId">Shipment ID to generate labels for</param>
-    /// <returns>File path where labels were written</returns>
+    /// <returns>Summary string describing the generated label data</returns>
     public Task<Model_Dao_Result<string>> GenerateLabelAsync(int shipmentId);
 
     /// <summary>

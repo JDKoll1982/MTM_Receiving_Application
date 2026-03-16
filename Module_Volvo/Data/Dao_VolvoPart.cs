@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
 /// <summary>
-/// Data Access Object for volvo_masterdata table
-/// Provides CRUD operations using stored procedures
+/// Data Access Object for volvo_masterdata table.
+/// Provides CRUD operations using stored procedures.
 /// </summary>
 public class Dao_VolvoPart
 {
@@ -23,9 +24,9 @@ public class Dao_VolvoPart
     }
 
     /// <summary>
-    /// Gets all Volvo parts (optionally including inactive)
+    /// Gets all Volvo parts, optionally including inactive rows.
     /// </summary>
-    /// <param name="includeInactive"></param>
+    /// <param name="includeInactive">True to include inactive parts; otherwise only active parts.</param>
     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllAsync(bool includeInactive = false)
     {
         var parameters = new Dictionary<string, object>
@@ -37,14 +38,13 @@ public class Dao_VolvoPart
             _connectionString,
             "sp_Volvo_PartMaster_GetAll",
             MapFromReader,
-            parameters
-        );
+            parameters);
     }
 
     /// <summary>
-    /// Gets a part by part number
+    /// Gets a part by part number.
     /// </summary>
-    /// <param name="partNumber"></param>
+    /// <param name="partNumber">Part number to retrieve.</param>
     public async Task<Model_Dao_Result<Model_VolvoPart>> GetByIdAsync(string partNumber)
     {
         var parameters = new Dictionary<string, object>
@@ -56,14 +56,13 @@ public class Dao_VolvoPart
             _connectionString,
             "sp_Volvo_PartMaster_GetById",
             MapFromReader,
-            parameters
-        );
+            parameters);
     }
 
     /// <summary>
-    /// Inserts a new Volvo part
+    /// Inserts a new Volvo part.
     /// </summary>
-    /// <param name="part"></param>
+    /// <param name="part">Part to insert.</param>
     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoPart part)
     {
         var parameters = new Dictionary<string, object>
@@ -76,14 +75,13 @@ public class Dao_VolvoPart
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Volvo_PartMaster_Insert",
-            parameters
-        );
+            parameters);
     }
 
     /// <summary>
-    /// Updates an existing Volvo part
+    /// Updates an existing Volvo part.
     /// </summary>
-    /// <param name="part"></param>
+    /// <param name="part">Part to update.</param>
     public async Task<Model_Dao_Result> UpdateAsync(Model_VolvoPart part)
     {
         var parameters = new Dictionary<string, object>
@@ -95,52 +93,75 @@ public class Dao_VolvoPart
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Volvo_PartMaster_Update",
-            parameters
-        );
+            parameters);
     }
 
     /// <summary>
-    /// Deactivates a Volvo part (soft delete)
-    /// Checks for active shipment references before deactivation
+    /// Deactivates a Volvo part after verifying it has no active shipment references.
     /// </summary>
-    /// <param name="partNumber"></param>
+    /// <param name="partNumber">Part number to deactivate.</param>
     public async Task<Model_Dao_Result> DeactivateAsync(string partNumber)
     {
-        // Check for active references
-        var checkParams = new Dictionary<string, object>
+        try
         {
-            { "part_number", partNumber },
-            { "active_reference_count", 0 } // OUT parameter
-        };
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-        var checkResult = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            _connectionString,
-            "sp_volvo_part_check_references",
-            checkParams
-        );
+            await using var command = new MySqlCommand("sp_volvo_part_check_references", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
-        // Note: Output parameters not yet supported by helper - skip check for now
-        // TODO: Implement when stored proc helper supports OUT parameters
-        // For now, cascade protection is logged but not enforced
+            command.Parameters.AddWithValue("p_part_number", partNumber);
+            var activeReferenceCountParam = new MySqlParameter("p_active_reference_count", MySqlDbType.Int32)
+            {
+                Direction = ParameterDirection.Output
+            };
+            command.Parameters.Add(activeReferenceCountParam);
 
-        // Safe to deactivate
-        var parameters = new Dictionary<string, object>
+            await command.ExecuteNonQueryAsync();
+
+            var activeReferenceCount = activeReferenceCountParam.Value == DBNull.Value
+                ? 0
+                : Convert.ToInt32(activeReferenceCountParam.Value);
+
+            if (activeReferenceCount > 0)
+            {
+                return new Model_Dao_Result
+                {
+                    Success = false,
+                    ErrorMessage = $"Part '{partNumber}' cannot be deactivated because it is referenced by {activeReferenceCount} active shipment line(s).",
+                    Severity = Enum_ErrorSeverity.Warning
+                };
+            }
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "part_number", partNumber },
+                { "is_active", 0 }
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_Volvo_PartMaster_SetActive",
+                parameters);
+        }
+        catch (Exception ex)
         {
-            { "part_number", partNumber },
-            { "is_active", 0 }
-        };
-
-        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            _connectionString,
-            "sp_Volvo_PartMaster_SetActive",
-            parameters
-        );
+            return new Model_Dao_Result
+            {
+                Success = false,
+                ErrorMessage = $"Error deactivating Volvo part: {ex.Message}",
+                Severity = Enum_ErrorSeverity.Error,
+                Exception = ex
+            };
+        }
     }
 
     /// <summary>
-    /// Gets multiple parts by part numbers (batch query to avoid N+1)
+    /// Gets multiple parts by part number.
     /// </summary>
-    /// <param name="partNumbers"></param>
+    /// <param name="partNumbers">Part numbers to resolve.</param>
     public async Task<Model_Dao_Result<Dictionary<string, Model_VolvoPart>>> GetPartsByNumbersAsync(List<string> partNumbers)
     {
         if (partNumbers == null || partNumbers.Count == 0)
@@ -156,7 +177,6 @@ public class Dao_VolvoPart
         {
             var result = new Dictionary<string, Model_VolvoPart>();
 
-            // For now, use multiple queries (better than N+1, can be optimized with stored proc)
             foreach (var partNumber in partNumbers)
             {
                 var partResult = await GetByIdAsync(partNumber);

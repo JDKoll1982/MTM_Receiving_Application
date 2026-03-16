@@ -55,11 +55,12 @@ public interface IService_VolvoMasterData
     public Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(string partNumber);
 
     /// <summary>
-    /// [STUB] Imports parts data.
-    /// TODO: Implement database import operation.
+    /// Bulk-upserts parts into the master table.
+    /// Each item is inserted when new, or updated if the part already exists.
     /// </summary>
-    /// <param name="filePath">File path to import from</param>
-    /// <returns>Tuple of (New, Updated, Unchanged) counts</returns>
-    public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(string filePath);
+    /// <param name="parts">List of parts to import.</param>
+    /// <returns>Tuple of (New, Updated, Unchanged) counts.</returns>
+    public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(
+        System.Collections.Generic.List<(string PartNumber, int QuantityPerSkid)> parts);
 
 }

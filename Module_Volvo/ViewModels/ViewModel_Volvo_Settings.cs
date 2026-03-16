@@ -2,7 +2,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -13,8 +12,6 @@ using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 
@@ -369,12 +366,152 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     [RelayCommand]
     private async Task ImportDataAsync()
     {
-        await _logger.LogWarningAsync("Import operation called - not yet implemented");
-        await _errorHandler.ShowUserErrorAsync(
-            "TODO: Implement database import operation.",
-            "Not Implemented",
-            nameof(ImportDataAsync));
+        if (IsBusy)
+            return;
+
+        var xamlRoot = _windowService?.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            await _errorHandler.ShowUserErrorAsync(
+                "Cannot show import dialog — window not available",
+                "Import Error",
+                nameof(ImportDataAsync));
+            return;
+        }
+
+        // Ask the user for bulk part data: one "PartNumber,QuantityPerSkid" per line.
+        var inputBox = new TextBox
+        {
+            PlaceholderText = "PartNumber,QuantityPerSkid — one per line",
+            AcceptsReturn = true,
+            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+            Height = 220,
+            VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Top
+        };
+
+        var dialog = new ContentDialog
+        {
+            Title = "Bulk Import Parts",
+            Content = new StackPanel
+            {
+                Spacing = 8,
+                Children =
+                {
+                    new TextBlock { Text = "Enter parts to import (one per line):" },
+                    new TextBlock
+                    {
+                        Text = "Format:  PartNumber,QuantityPerSkid",
+                        FontSize = 11,
+                        Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray)
+                    },
+                    inputBox
+                }
+            },
+            PrimaryButtonText = "Import",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = xamlRoot,
+            MinWidth = 420
+        };
+
+        var dialogResult = await dialog.ShowAsync();
+        if (dialogResult != ContentDialogResult.Primary)
+            return;
+
+        var rawText = inputBox.Text ?? string.Empty;
+        var parts = new System.Collections.Generic.List<PartImportItem>();
+        var parseErrors = new System.Collections.Generic.List<string>();
+
+        int lineNumber = 0;
+        foreach (var rawLine in rawText.Split('\n', System.StringSplitOptions.RemoveEmptyEntries))
+        {
+            lineNumber++;
+            var line = rawLine.Trim();
+            if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
+                continue;
+
+            var fields = line.Split(',');
+            if (fields.Length < 2)
+            {
+                parseErrors.Add($"Line {lineNumber}: expected 'PartNumber,QuantityPerSkid'");
+                continue;
+            }
+
+            var partNumber = fields[0].Trim();
+            if (string.IsNullOrWhiteSpace(partNumber))
+            {
+                parseErrors.Add($"Line {lineNumber}: part number is empty");
+                continue;
+            }
+
+            if (!int.TryParse(fields[1].Trim(), out int qty) || qty <= 0)
+            {
+                parseErrors.Add($"Line {lineNumber}: invalid quantity '{fields[1].Trim()}'");
+                continue;
+            }
+
+            parts.Add(new PartImportItem { PartNumber = partNumber, QuantityPerSkid = qty });
+        }
+
+        if (parseErrors.Count > 0 && parts.Count == 0)
+        {
+            await _errorHandler.ShowUserErrorAsync(
+                "No valid rows to import:\n" + string.Join('\n', parseErrors),
+                "Import Error",
+                nameof(ImportDataAsync));
+            return;
+        }
+
+        if (parts.Count == 0)
+        {
+            await _errorHandler.ShowUserErrorAsync(
+                "No data entered.",
+                "Import Error",
+                nameof(ImportDataAsync));
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            StatusMessage = $"Importing {parts.Count} part(s)…";
+
+            var command = new ImportPartsCommand { Parts = parts };
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+            {
+                var d = result.Data;
+                var summary = $"Import complete: {d.SuccessCount} succeeded, {d.FailureCount} failed";
+                if (parseErrors.Count > 0)
+                    summary += $"\n{parseErrors.Count} line(s) could not be parsed";
+
+                StatusMessage = summary;
+                await _logger.LogInfoAsync(summary);
+                await RefreshAsync();
+            }
+            else
+            {
+                await _errorHandler.ShowUserErrorAsync(
+                    result.ErrorMessage ?? "Import failed",
+                    "Import Error",
+                    nameof(ImportDataAsync));
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                nameof(ImportDataAsync),
+                nameof(ViewModel_Volvo_Settings));
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
+
     partial void OnShowInactiveChanged(bool value)
     {
         // Refresh when toggle changes

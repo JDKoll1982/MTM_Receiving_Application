@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
@@ -9,6 +6,8 @@ using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using System;
+using System.Linq;
 
 namespace MTM_Receiving_Application.Module_Volvo.Services;
 
@@ -254,176 +253,51 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         }
     }
 
-    public async Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(string filePath)
+    public async Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(
+        System.Collections.Generic.List<(string PartNumber, int QuantityPerSkid)> parts)
     {
-        await _logger.LogWarningAsync("Import operation called - not yet implemented");
-        return Model_Dao_Result_Factory.Failure<(int, int, int)>("TODO: Implement database import operation.");
-
-        // --- original implementation below (unreachable) ---
-        try
+        if (parts == null || parts.Count == 0)
         {
-            await _logger.LogInfoAsync("Starting data import");
-
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("Import data content is empty");
-            }
-
-            var lines = filePath.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
-
-            if (lines.Count < 2)
-            {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("Import file must contain header and at least one data row");
-            }
-
-            // Validate header
-            var header = lines[0];
-            if (!header.Contains("PartNumber") || !header.Contains("QuantityPerSkid"))
-            {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("Import file must contain columns: PartNumber, QuantityPerSkid, Components");
-            }
-
-            int newCount = 0;
-            int updatedCount = 0;
-            int errorCount = 0;
-            var errors = new List<string>();
-
-            for (int i = 1; i < lines.Count; i++)
-            {
-                try
-                {
-                    var fields = ParseDataLine(lines[i]);
-
-                    if (fields.Length < 3)
-                    {
-                        errors.Add($"Line {i + 1}: Invalid format - expected at least 3 fields");
-                        errorCount++;
-                        continue;
-                    }
-
-                    var partNumber = fields[0].Trim();
-                    var quantityStr = fields[1].Trim();
-                    var componentsStr = fields.Length > 2 ? fields[2].Trim() : "";
-
-                    if (!int.TryParse(quantityStr, out int quantity))
-                    {
-                        errors.Add($"Line {i + 1}: Invalid quantity '{quantityStr}'");
-                        errorCount++;
-                        continue;
-                    }
-
-                    var part = new Model_VolvoPart
-                    {
-                        PartNumber = partNumber,
-                        QuantityPerSkid = quantity,
-                        IsActive = true
-                    };
-
-                    // Parse components (format: "PART1:QTY1;PART2:QTY2")
-                    var components = new List<Model_VolvoPartComponent>();
-                    if (!string.IsNullOrWhiteSpace(componentsStr))
-                    {
-                        var componentPairs = componentsStr.Split(';');
-                        foreach (var pair in componentPairs)
-                        {
-                            var parts = pair.Split(':');
-                            if (parts.Length == 2)
-                            {
-                                if (int.TryParse(parts[1], out int compQty))
-                                {
-                                    components.Add(new Model_VolvoPartComponent
-                                    {
-                                        ComponentPartNumber = parts[0].Trim(),
-                                        Quantity = compQty
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    // Check if exists
-                    var existing = await _daoPart.GetByIdAsync(partNumber);
-                    bool isNew = !existing.IsSuccess || existing.Data == null;
-
-                    Model_Dao_Result saveResult;
-                    if (isNew)
-                    {
-                        saveResult = await AddPartAsync(part, components);
-                    }
-                    else
-                    {
-                        saveResult = await UpdatePartAsync(part, components);
-                    }
-
-                    if (saveResult.IsSuccess)
-                    {
-                        if (isNew)
-                        {
-                            newCount++;
-                        }
-                        else
-                        {
-                            updatedCount++;
-                        }
-                    }
-                    else
-                    {
-                        errors.Add($"Line {i + 1}: {saveResult.ErrorMessage}");
-                        errorCount++;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    errors.Add($"Line {i + 1}: {ex.Message}");
-                    errorCount++;
-                }
-            }
-
-            var summary = $"Import complete: {newCount} new, {updatedCount} updated, {errorCount} errors";
-            await _logger.LogInfoAsync(summary);
-
-            if (errors.Count > 0)
-            {
-                summary += "\nErrors:\n" + string.Join("\n", errors);
-            }
-
-            return Model_Dao_Result_Factory.Success((newCount, updatedCount, errorCount));
+            return Model_Dao_Result_Factory.Failure<(int, int, int)>("At least one part is required");
         }
-        catch (Exception ex)
+
+        int newCount = 0;
+        int updatedCount = 0;
+        int unchangedCount = 0;
+
+        foreach (var (partNumber, quantityPerSkid) in parts)
         {
-            await _logger.LogErrorAsync($"Error importing data: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<(int, int, int)>($"Import failed: {ex.Message}");
-        }
-    }
-
-    private string[] ParseDataLine(string line)
-    {
-        var fields = new List<string>();
-        var currentField = new StringBuilder();
-        bool inQuotes = false;
-
-        for (int i = 0; i < line.Length; i++)
-        {
-            char c = line[i];
-
-            if (c == '"')
+            var part = new Model_VolvoPart
             {
-                inQuotes = !inQuotes;
+                PartNumber = partNumber.Trim().ToUpperInvariant(),
+                QuantityPerSkid = quantityPerSkid,
+                IsActive = true
+            };
+
+            var existing = await _daoPart.GetByIdAsync(part.PartNumber);
+            bool isNew = !existing.IsSuccess || existing.Data == null;
+
+            if (!isNew && existing.Data!.QuantityPerSkid == quantityPerSkid)
+            {
+                unchangedCount++;
+                continue;
             }
-            else if (c == ',' && !inQuotes)
+
+            var saveResult = isNew
+                ? await AddPartAsync(part, new System.Collections.Generic.List<Model_VolvoPartComponent>())
+                : await UpdatePartAsync(part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+
+            if (saveResult.IsSuccess)
             {
-                fields.Add(currentField.ToString());
-                currentField.Clear();
-            }
-            else
-            {
-                currentField.Append(c);
+                if (isNew)
+                    newCount++;
+                else
+                    updatedCount++;
             }
         }
 
-        fields.Add(currentField.ToString());
-        return fields.ToArray();
+        await _logger.LogInfoAsync($"Import complete: {newCount} new, {updatedCount} updated, {unchangedCount} unchanged");
+        return Model_Dao_Result_Factory.Success((newCount, updatedCount, unchangedCount));
     }
 
 }
-

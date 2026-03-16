@@ -13,8 +13,8 @@ using MTM_Receiving_Application.Module_Volvo.Services;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 
 /// <summary>
-/// [STUB] Handler for label generation - generates labels for shipment.
-/// TODO: Implement database-backed label generation.
+/// Handler for <see cref="GenerateLabelQuery"/> — loads the shipment and its lines from the
+/// database, runs the component explosion, and returns a human-readable summary string.
 /// </summary>
 public class GenerateLabelQueryHandler : IRequestHandler<GenerateLabelQuery, Model_Dao_Result<string>>
 {

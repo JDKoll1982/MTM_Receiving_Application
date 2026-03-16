@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Data;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Services;
 
@@ -108,16 +106,10 @@ public static class Helper_VolvoShipmentCalculations
     }
 
     /// <summary>
-    /// [STUB] Generates labels for a shipment.
-    /// TODO: Implement database-backed label generation.
+    /// Generates label data for a shipment by loading the shipment and its lines from the
+    /// database, running the component explosion, and returning a human-readable summary.
+    /// All data lives in the database (volvo_label_data / volvo_line_data); no files are written.
     /// </summary>
-    /// <param name="shipmentDao"></param>
-    /// <param name="lineDao"></param>
-    /// <param name="partDao"></param>
-    /// <param name="componentDao"></param>
-    /// <param name="authService"></param>
-    /// <param name="logger"></param>
-    /// <param name="shipmentId"></param>
     public static async Task<Model_Dao_Result<string>> GenerateLabelAsync(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
@@ -127,100 +119,60 @@ public static class Helper_VolvoShipmentCalculations
         IService_LoggingUtility logger,
         int shipmentId)
     {
-        // TODO: Implement database-backed label generation
-        await Task.CompletedTask;
-        await logger.LogWarningAsync($"Label generation called for shipment {shipmentId} - not yet implemented");
-        return Model_Dao_Result_Factory.Failure<string>("TODO: Implement database-backed label generation.");
+        try
+        {
+            var authResult = await authService.CanGenerateLabelsAsync();
+            if (!authResult.Success)
+            {
+                return Model_Dao_Result_Factory.Failure<string>(
+                    authResult.ErrorMessage ?? "You are not authorized to generate labels.");
+            }
 
-        // --- Original implementation below (unreachable) ---
-        /*
             var shipmentResult = await shipmentDao.GetByIdAsync(shipmentId);
             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
             {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "Shipment not found",
-                    Severity = Enum_ErrorSeverity.Error
-                };
+                return Model_Dao_Result_Factory.Failure<string>(
+                    shipmentResult.ErrorMessage ?? "Shipment not found");
             }
 
             var linesResult = await lineDao.GetByShipmentIdAsync(shipmentId);
             if (!linesResult.IsSuccess || linesResult.Data == null)
             {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "Failed to retrieve shipment lines",
-                    Severity = Enum_ErrorSeverity.Error
-                };
+                return Model_Dao_Result_Factory.Failure<string>(
+                    linesResult.ErrorMessage ?? "Failed to retrieve shipment lines");
             }
 
-            var explosionResult = await CalculateComponentExplosionAsync(partDao, componentDao, linesResult.Data, logger);
+            if (linesResult.Data.Count == 0)
+            {
+                return Model_Dao_Result_Factory.Failure<string>("Shipment has no lines to generate labels for");
+            }
+
+            var explosionResult = await CalculateComponentExplosionAsync(
+                partDao, componentDao, linesResult.Data, logger);
+
             if (!explosionResult.IsSuccess || explosionResult.Data == null)
             {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = explosionResult.ErrorMessage,
-                    Severity = Enum_ErrorSeverity.Error
-                };
-            }
-
-            var aggregatedPieces = explosionResult.Data;
-
-            const int MaxLabelLines = 10000;
-            if (aggregatedPieces.Count > MaxLabelLines)
-            {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = $"Label generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxLabelLines})",
-                    Severity = Enum_ErrorSeverity.Error
-                };
+                return Model_Dao_Result_Factory.Failure<string>(
+                    explosionResult.ErrorMessage ?? "Component explosion failed");
             }
 
             var shipment = shipmentResult.Data;
+            var aggregatedPieces = explosionResult.Data;
+            int totalPieces = aggregatedPieces.Values.Sum();
 
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string outputDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
-            Directory.CreateDirectory(outputDirectory);
+            var summary = $"Shipment #{shipment.ShipmentNumber} ({shipment.ShipmentDate:MM/dd/yyyy}): " +
+                          $"{aggregatedPieces.Count} part(s), {totalPieces:N0} total pieces";
 
-            string fileName = "Volvo_Labels_legacy.dat"; // Legacy export path retained only in commented reference block
-            string filePath = Path.Combine(outputDirectory, fileName);
+            await logger.LogInfoAsync(
+                $"Label data verified for shipment {shipmentId}: {aggregatedPieces.Count} parts, {totalPieces} pieces");
 
-            var fileContent = new StringBuilder();
-            fileContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
-
-            string dateFormatted = shipment.ShipmentDate.ToString("MM/dd/yyyy");
-            string timeFormatted = DateTime.Now.ToString("HH:mm:ss");
-
-            foreach (var kvp in aggregatedPieces.OrderBy(x => x.Key))
-            {
-                fileContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
-            }
-
-            await File.WriteAllTextAsync(filePath, fileContent.ToString());
-
-            await logger.LogInfoAsync($"Label generated: {filePath}");
-
-            return new Model_Dao_Result<string>
-            {
-                Success = true,
-                Data = filePath
-            };
+            return Model_Dao_Result_Factory.Success(summary);
         }
         catch (Exception ex)
         {
-            await logger.LogErrorAsync($"Error generating labels: {ex.Message}", ex);
-            return new Model_Dao_Result<string>
-            {
-                Success = false,
-                ErrorMessage = $"Error generating labels: {ex.Message}",
-                Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
-            };
+            await logger.LogErrorAsync($"Error generating labels for shipment {shipmentId}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<string>(
+                $"Error generating labels: {ex.Message}", ex);
         }
-        */
     }
 }

@@ -238,7 +238,10 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_VolvoAuthorization>(sp =>
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_VolvoAuthorization(logger);
+            var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
+            var rolesDao = sp.GetRequiredService<Dao_SettingsCoreRoles>();
+            var userRolesDao = sp.GetRequiredService<Dao_SettingsCoreUserRoles>();
+            return new Service_VolvoAuthorization(logger, sessionManager, rolesDao, userRolesDao);
         });
 
         // ViewModels (Transient)

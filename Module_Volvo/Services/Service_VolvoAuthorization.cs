@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Data;
 
 namespace MTM_Receiving_Application.Module_Volvo.Services;
 
@@ -13,12 +15,20 @@ namespace MTM_Receiving_Application.Module_Volvo.Services;
 public class Service_VolvoAuthorization : IService_VolvoAuthorization
 {
     private readonly IService_LoggingUtility _logger;
-    // Issue #6: TODO - Inject IService_UserSessionManager when available
-    // Required for proper authentication and role-based authorization
+    private readonly IService_UserSessionManager _sessionManager;
+    private readonly Dao_SettingsCoreRoles _rolesDao;
+    private readonly Dao_SettingsCoreUserRoles _userRolesDao;
 
-    public Service_VolvoAuthorization(IService_LoggingUtility logger)
+    public Service_VolvoAuthorization(
+        IService_LoggingUtility logger,
+        IService_UserSessionManager sessionManager,
+        Dao_SettingsCoreRoles rolesDao,
+        Dao_SettingsCoreUserRoles userRolesDao)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+        _rolesDao = rolesDao ?? throw new ArgumentNullException(nameof(rolesDao));
+        _userRolesDao = userRolesDao ?? throw new ArgumentNullException(nameof(userRolesDao));
     }
 
     /// <summary>
@@ -28,16 +38,9 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
     {
         try
         {
-            // Issue #6: TODO - Implement actual role check when user session management is available
-            // For now, returning true to allow development/testing
-            // For now, log the authorization check
             await _logger.LogInfoAsync("Authorization check: CanManageShipments");
 
-            // Placeholder: Allow all operations until role-based auth is implemented
-            return new Model_Dao_Result
-            {
-                Success = true
-            };
+            return await AuthorizeAuthenticatedUserAsync();
         }
         catch (Exception ex)
         {
@@ -61,11 +64,7 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         {
             await _logger.LogInfoAsync("Authorization check: CanManageMasterData");
 
-            // TODO: Implement role check - typically restricted to supervisors/admins
-            return new Model_Dao_Result
-            {
-                Success = true
-            };
+            return await AuthorizeByRoleAsync("Supervisor", "Admin", "Developer");
         }
         catch (Exception ex)
         {
@@ -89,11 +88,7 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         {
             await _logger.LogInfoAsync("Authorization check: CanCompleteShipments");
 
-            // TODO: Implement role check - may require supervisor approval
-            return new Model_Dao_Result
-            {
-                Success = true
-            };
+            return await AuthorizeAuthenticatedUserAsync();
         }
         catch (Exception ex)
         {
@@ -117,11 +112,7 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         {
             await _logger.LogInfoAsync("Authorization check: CanGenerateLabels");
 
-            // TODO: Implement role check
-            return new Model_Dao_Result
-            {
-                Success = true
-            };
+            return await AuthorizeAuthenticatedUserAsync();
         }
         catch (Exception ex)
         {
@@ -134,5 +125,75 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
                 Exception = ex
             };
         }
+    }
+
+    private Task<Model_Dao_Result> AuthorizeAuthenticatedUserAsync()
+    {
+        var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        if (employeeNumber.HasValue && employeeNumber.Value > 0)
+        {
+            return Task.FromResult(new Model_Dao_Result { Success = true });
+        }
+
+        return Task.FromResult(new Model_Dao_Result
+        {
+            Success = false,
+            ErrorMessage = "No active authenticated user session found.",
+            Severity = Enum_ErrorSeverity.Warning
+        });
+    }
+
+    private async Task<Model_Dao_Result> AuthorizeByRoleAsync(params string[] allowedRoles)
+    {
+        var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        if (!employeeNumber.HasValue || employeeNumber.Value <= 0)
+        {
+            return new Model_Dao_Result
+            {
+                Success = false,
+                ErrorMessage = "No active authenticated user session found.",
+                Severity = Enum_ErrorSeverity.Warning
+            };
+        }
+
+        var rolesResult = await _rolesDao.GetAllAsync();
+        if (!rolesResult.Success || rolesResult.Data == null)
+        {
+            return new Model_Dao_Result
+            {
+                Success = false,
+                ErrorMessage = rolesResult.ErrorMessage ?? "Failed to load application roles.",
+                Severity = Enum_ErrorSeverity.Error
+            };
+        }
+
+        var userRolesResult = await _userRolesDao.GetByUserAsync(employeeNumber.Value);
+        if (!userRolesResult.Success || userRolesResult.Data == null)
+        {
+            return new Model_Dao_Result
+            {
+                Success = false,
+                ErrorMessage = userRolesResult.ErrorMessage ?? "Failed to load user roles.",
+                Severity = Enum_ErrorSeverity.Error
+            };
+        }
+
+        var userRoleIds = userRolesResult.Data.Select(x => x.RoleId).ToHashSet();
+        var userRoleNames = rolesResult.Data
+            .Where(x => userRoleIds.Contains(x.Id))
+            .Select(x => x.RoleName)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        if (allowedRoles.Any(userRoleNames.Contains))
+        {
+            return new Model_Dao_Result { Success = true };
+        }
+
+        return new Model_Dao_Result
+        {
+            Success = false,
+            ErrorMessage = $"You are not authorized for this Volvo operation. Required role: {string.Join(" or ", allowedRoles)}.",
+            Severity = Enum_ErrorSeverity.Warning
+        };
     }
 }
