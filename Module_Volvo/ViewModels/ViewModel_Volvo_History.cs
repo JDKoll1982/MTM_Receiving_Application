@@ -65,13 +65,10 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     [RelayCommand]
     private void GoBack()
     {
-        if (App.MainWindow is MainWindow mainWindow)
+        var view = App.GetService<Views.View_Volvo_ShipmentEntry>();
+        if (view != null && App.MainWindow is MainWindow mainWindow)
         {
-            var contentFrame = mainWindow.GetContentFrame();
-            if (contentFrame?.CanGoBack == true)
-            {
-                contentFrame.GoBack();
-            }
+            mainWindow.GetContentFrame().Content = view;
         }
     }
 

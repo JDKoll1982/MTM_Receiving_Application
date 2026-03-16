@@ -1,3 +1,4 @@
+using System;
 using FluentValidation;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 
@@ -12,7 +13,8 @@ public class SavePendingShipmentCommandValidator : AbstractValidator<SavePending
     {
         RuleFor(x => x.ShipmentDate)
             .NotEmpty().WithMessage("Shipment date is required")
-            .LessThanOrEqualTo(System.DateTimeOffset.Now).WithMessage("Shipment date cannot be in the future");
+            .Must(date => date.Date <= DateTimeOffset.Now.Date)
+            .WithMessage("Shipment date cannot be in the future");
 
         RuleFor(x => x.Parts)
             .NotEmpty().WithMessage("At least one part is required");

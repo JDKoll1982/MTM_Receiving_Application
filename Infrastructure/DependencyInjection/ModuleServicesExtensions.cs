@@ -232,6 +232,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_VolvoPart(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_VolvoPartComponent(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_VolvoSettings(mySqlConnectionString));
+        services.AddSingleton<IDao_VolvoLabelHistory>(_ => new Dao_VolvoLabelHistory(mySqlConnectionString));
 
         // Services (Singleton)
         services.AddSingleton<IService_VolvoAuthorization>(sp =>

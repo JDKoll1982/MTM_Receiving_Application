@@ -20,6 +20,25 @@ SELECT
   l.discrepancy_note
 FROM volvo_label_data s
 LEFT JOIN volvo_line_data l ON s.id = l.shipment_id
-ORDER BY s.shipment_date DESC, s.shipment_number DESC;
+
+UNION ALL
+
+SELECT
+  vlh.id as shipment_id,
+  vlh.shipment_date,
+  vlh.shipment_number,
+  vlh.po_number,
+  vlh.receiver_number,
+  vlh.status,
+  vlnh.part_number,
+  vlnh.received_skid_count,
+  vlnh.calculated_piece_count,
+  vlnh.has_discrepancy,
+  vlnh.expected_skid_count,
+  vlnh.discrepancy_note
+FROM volvo_label_history vlh
+LEFT JOIN volvo_line_history vlnh ON vlh.id = vlnh.shipment_history_id
+
+ORDER BY shipment_date DESC, shipment_number DESC;
 
 -- ============================================================================

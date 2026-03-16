@@ -580,21 +580,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Formatting email...";
 
-            // First, ensure the shipment is saved
-            if (!HasPendingShipment)
-            {
-                var saveResult = await SaveShipmentInternalAsync();
-                if (!saveResult.IsSuccess)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        saveResult.ErrorMessage ?? "Failed to save shipment before preview",
-                        Enum_ErrorSeverity.Medium,
-                        null,
-                        true);
-                    return;
-                }
-            }
-
             int shipmentId;
 
             if (!HasPendingShipment)
@@ -1035,10 +1020,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private void ViewHistory()
     {
         _logger.LogInfo("Navigating to Volvo Shipment History");
-        if (App.MainWindow is MainWindow mainWindow)
+        var view = App.GetService<Views.View_Volvo_History>();
+        if (view != null && App.MainWindow is MainWindow mainWindow)
         {
-            var contentFrame = mainWindow.GetContentFrame();
-            contentFrame?.Navigate(typeof(Views.View_Volvo_History));
+            mainWindow.GetContentFrame().Content = view;
         }
     }
 
@@ -1146,19 +1131,29 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             Parts = partsDto
         };
 
-        var result = await _mediator.Send(saveCommand);
+        try
+        {
+            var result = await _mediator.Send(saveCommand);
 
-        if (result.IsSuccess)
-        {
-            return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+            if (result.IsSuccess)
             {
-                Success = true,
-                Data = (result.Data, ShipmentNumber)
-            };
-        }
-        else
-        {
+                return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+                {
+                    Success = true,
+                    Data = (result.Data, ShipmentNumber)
+                };
+            }
+
             return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(result.ErrorMessage);
+        }
+        catch (FluentValidation.ValidationException vex)
+        {
+            var errors = string.Join("; ", vex.Errors.Select(e => e.ErrorMessage));
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>($"Validation failed: {errors}");
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>($"Save failed: {ex.Message}");
         }
     }
 
@@ -1393,6 +1388,89 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         SuccessMessage = string.Empty;
         HasPendingShipment = false;
         ClearShipmentForm();
+    }
+
+    /// <summary>
+    /// Moves all completed Volvo shipments from the active queue tables to the
+    /// history archive tables. Shows a confirmation dialog before proceeding.
+    /// </summary>
+    [RelayCommand]
+    private async Task ClearLabelDataAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Checking for completed shipments...";
+
+            var recentQuery = new GetRecentShipmentsQuery { Days = 365 };
+            var recentResult = await _mediator.Send(recentQuery);
+            var completedCount = recentResult.IsSuccess && recentResult.Data != null
+                ? recentResult.Data.Count(s => s.Status == "completed")
+                : 0;
+
+            if (completedCount == 0)
+            {
+                StatusMessage = "No completed shipments to clear";
+                return;
+            }
+
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
+            {
+                return;
+            }
+
+            var confirmDialog = new ContentDialog
+            {
+                Title = "Clear Label Data",
+                Content = $"Move {completedCount} completed shipment(s) to history archive? This cannot be undone.",
+                PrimaryButtonText = "Clear",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = xamlRoot
+            };
+
+            var dialogResult = await confirmDialog.ShowAsync();
+            if (dialogResult != ContentDialogResult.Primary)
+            {
+                StatusMessage = "Clear label data cancelled";
+                return;
+            }
+
+            StatusMessage = "Clearing label data...";
+
+            var command = new ClearLabelDataCommand { ArchivedBy = Environment.UserName };
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+            {
+                SuccessMessage = $"Label data cleared — {result.Data} record(s) moved to history";
+                IsSuccessMessageVisible = true;
+                StatusMessage = "Label data cleared";
+                await _logger.LogInfoAsync($"Clear label data completed: {result.Data} records archived by {Environment.UserName}");
+            }
+            else
+            {
+                await _errorHandler.HandleErrorAsync(
+                    result.ErrorMessage ?? "Failed to clear label data",
+                    Enum_ErrorSeverity.Medium,
+                    null,
+                    true);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error clearing label data: {ex.Message}", ex);
+            await _errorHandler.HandleErrorAsync(
+                "Error clearing label data",
+                Enum_ErrorSeverity.Medium,
+                ex,
+                true);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     #endregion
