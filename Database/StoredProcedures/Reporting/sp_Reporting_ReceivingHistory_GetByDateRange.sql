@@ -17,6 +17,7 @@ BEGIN
         heat_lot_number,
         created_date,
         employee_number,
+        NULL AS created_by_username,
         source_module
     FROM view_receiving_history
     WHERE created_date BETWEEN p_start_date AND p_end_date

@@ -15,12 +15,13 @@ BEGIN
         receiver_number,
         status,
         employee_number,
+        NULL AS created_by_username,
         notes,
         part_count,
         created_date,
         source_module
     FROM view_volvo_history
-    WHERE created_date BETWEEN p_start_date AND p_end_date
+    WHERE DATE(created_date) BETWEEN p_start_date AND p_end_date
     ORDER BY created_date DESC;
 END$$
 

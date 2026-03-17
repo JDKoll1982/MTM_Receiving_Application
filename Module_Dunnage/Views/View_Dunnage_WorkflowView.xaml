@@ -82,6 +82,14 @@
                         Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                         ToolTipService.ToolTip="Return to mode selection (clears current work)"
                         Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <Button Content="Clear Label Data"
+                    Command="{x:Bind ViewModel.ClearLabelDataCommand}"
+                    ToolTipService.ToolTip="Archive the active dunnage label queue to history and clear the queue"
+                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Foreground="Red"/>
             </StackPanel>
 
             <!-- Center help button -->

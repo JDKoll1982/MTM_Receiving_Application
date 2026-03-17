@@ -121,7 +121,11 @@ public class Dao_Reporting
 
     private static string? ReadString(IDataReader reader, string columnName)
     {
-        var ordinal = reader.GetOrdinal(columnName);
+        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        {
+            return null;
+        }
+
         if (reader.IsDBNull(ordinal))
         {
             return null;
@@ -132,7 +136,11 @@ public class Dao_Reporting
 
     private static string? ReadNullableString(IDataReader reader, string columnName)
     {
-        var ordinal = reader.GetOrdinal(columnName);
+        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        {
+            return null;
+        }
+
         if (reader.IsDBNull(ordinal))
         {
             return null;
@@ -143,7 +151,11 @@ public class Dao_Reporting
 
     private static decimal? ReadNullableDecimal(IDataReader reader, string columnName)
     {
-        var ordinal = reader.GetOrdinal(columnName);
+        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        {
+            return null;
+        }
+
         if (reader.IsDBNull(ordinal))
         {
             return null;
@@ -154,7 +166,11 @@ public class Dao_Reporting
 
     private static int? ReadNullableInt(IDataReader reader, string columnName)
     {
-        var ordinal = reader.GetOrdinal(columnName);
+        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        {
+            return null;
+        }
+
         if (reader.IsDBNull(ordinal))
         {
             return null;
@@ -167,5 +183,20 @@ public class Dao_Reporting
     {
         var ordinal = reader.GetOrdinal(columnName);
         return reader.GetDateTime(ordinal);
+    }
+
+    private static bool TryGetOrdinal(IDataReader reader, string columnName, out int ordinal)
+    {
+        for (var index = 0; index < reader.FieldCount; index++)
+        {
+            if (string.Equals(reader.GetName(index), columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                ordinal = index;
+                return true;
+            }
+        }
+
+        ordinal = -1;
+        return false;
     }
 }
