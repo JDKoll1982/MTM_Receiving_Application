@@ -134,19 +134,108 @@
                     <TextBlock 
                         Text="{x:Bind ViewModel.CurrentModuleName, Mode=OneWay}" 
                         Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock
+                        Text="Review the generated rows below before copying the formatted table to the clipboard."
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
                     
                     <ListView 
                         ItemsSource="{x:Bind ViewModel.ReportData, Mode=OneWay}"
                         SelectionMode="None">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid Padding="8">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding CreatedDate, Mode=OneWay}" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding PartNumber, Mode=OneWay}"/>
-                                        <TextBlock Text="{Binding PONumber, Mode=OneWay}" Foreground="Gray"/>
+                                <Border
+                                    Margin="0,0,0,8"
+                                    Padding="12"
+                                    CornerRadius="6"
+                                    BorderThickness="1"
+                                    BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnSpacing="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" Spacing="2">
+                                                <TextBlock Text="{Binding SourceModule, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap">
+                                                    <Run Text="PO: "/>
+                                                    <Run Text="{Binding PONumber, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center">
+                                                <Run Text="{Binding CreatedDate, Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </Grid>
+
+                                        <Grid ColumnSpacing="24">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" Spacing="4">
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap">
+                                                    <Run Text="Part: "/>
+                                                    <Run Text="{Binding PartNumber, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap">
+                                                    <Run Text="Description: "/>
+                                                    <Run Text="{Binding PartDescription, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap">
+                                                    <Run Text="Type: "/>
+                                                    <Run Text="{Binding DunnageType, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap">
+                                                    <Run Text="Specs: "/>
+                                                    <Run Text="{Binding SpecsCombined, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1" Spacing="4">
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Qty: "/>
+                                                    <Run Text="{Binding Quantity, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Weight: "/>
+                                                    <Run Text="{Binding WeightLbs, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap">
+                                                    <Run Text="Heat/Lot: "/>
+                                                    <Run Text="{Binding HeatLotNumber, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Shipment #: "/>
+                                                    <Run Text="{Binding ShipmentNumber, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Receiver #: "/>
+                                                    <Run Text="{Binding ReceiverNumber, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Status: "/>
+                                                    <Run Text="{Binding Status, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Part Count: "/>
+                                                    <Run Text="{Binding PartCount, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="User: "/>
+                                                    <Run Text="{Binding CreatedByUsername, Mode=OneWay}"/>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                    <Run Text="Employee #: "/>
+                                                    <Run Text="{Binding EmployeeNumber, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
                                     </StackPanel>
-                                </Grid>
+                                </Border>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>

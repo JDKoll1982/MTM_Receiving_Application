@@ -17,7 +17,7 @@ Execute the reporting module refactor in controlled phases so the module becomes
 - [x] Remove stale Routing references from `Module_Reporting/README.md`
 - [x] Remove stale Routing references from `Module_Reporting/SETTABLE_OBJECTS_REPORT.md`
 - [x] Rename reporting UI text away from generic `Email Format` wording where appropriate
-- [ ] Remove obsolete comments/notes from reporting module files that only restate obvious behavior
+- [x] Remove obsolete comments/notes from reporting module files that only restate obvious behavior
 - [x] Confirm there is no active CSV/XLS/XLSX code path left in `Module_Reporting`
 
 ## Phase 2: Clipboard And Outlook Formatting
@@ -34,9 +34,9 @@ Execute the reporting module refactor in controlled phases so the module becomes
 ## Phase 3: Availability And UI Behavior
 
 - [x] Fix Volvo availability counting in `Dao_Reporting.CheckAvailabilityAsync()`
-- [ ] Ensure module enablement logic distinguishes `0 rows` from query failure
+- [x] Ensure module enablement logic distinguishes `0 rows` from query failure
 - [x] Refresh UI wording/status text to match the real reporting workflow
-- [ ] Improve report presentation beyond the current minimal three-field list
+- [x] Improve report presentation beyond the current minimal three-field list
 
 ## Phase 4: Volvo Reporting Path
 
@@ -47,16 +47,16 @@ Execute the reporting module refactor in controlled phases so the module becomes
 ## Phase 5: Receiving Data-Contract Repair
 
 - [x] Align `Dao_Reporting.GetReceivingHistoryAsync()` with the live Receiving view contract
-- [ ] Align `Database/Schemas/34_View_receiving_history.sql` with reporting needs
-- [ ] Decide whether Receiving reporting should include weight
-- [ ] Decide the correct date semantics for Receiving reporting
-- [ ] Decide the correct `source module` semantics for Receiving reporting
+- [x] Align `Database/Schemas/34_View_receiving_history.sql` with reporting needs
+- [x] Decide whether Receiving reporting should include weight - It should
+- [x] Decide the correct date semantics for Receiving reporting
+- [x] Decide the correct `source module` semantics for Receiving reporting
 
 ## Phase 6: Dunnage Data Semantics
 
-- [ ] Decide whether Dunnage should surface username, employee number, or both
-- [ ] Rename or normalize the projected Dunnage employee field accordingly
-- [ ] Validate spec concatenation output against current Dunnage expectations
+- [x] Decide whether Dunnage should surface username, employee number, or both - Both
+- [x] Rename or normalize the projected Dunnage employee field accordingly
+- [x] Validate spec concatenation output against current Dunnage expectations
 
 ## Phase 7: Shared Model And Architecture
 

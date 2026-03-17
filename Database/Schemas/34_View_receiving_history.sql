@@ -8,40 +8,40 @@
 CREATE OR REPLACE VIEW view_receiving_history AS
 SELECT
     id,
-    quantity,
-    part_id,
     po_number,
+    part_id AS part_number,
+    part_description,
+    quantity,
+    CAST(NULL AS DECIMAL(18,2)) AS weight_lbs,
+    heat AS heat_lot_number,
+    DATE(COALESCE(transaction_date, created_at)) AS created_date,
     employee_number,
-    heat,
-    transaction_date,
     initial_location,
     coils_on_skid,
     label_number,
     vendor_name,
-    part_description,
-    created_at,
-    'history' AS source
+    'Receiving' AS source_module
 FROM receiving_history
 
 UNION ALL
 
 SELECT
     id,
-    quantity,
-    part_id,
     po_number,
+    part_id AS part_number,
+    part_description,
+    quantity,
+    weight_quantity AS weight_lbs,
+    heat AS heat_lot_number,
+    DATE(COALESCE(transaction_date, created_at)) AS created_date,
     employee_number,
-    heat,
-    transaction_date,
     initial_location,
     coils_on_skid,
     label_number,
     vendor_name,
-    part_description,
-    created_at,
-    'label_data' AS source
+    'Receiving' AS source_module
 FROM receiving_label_data
 
-ORDER BY transaction_date DESC, id DESC;
+ORDER BY created_date DESC, id DESC;
 
 -- ============================================================================

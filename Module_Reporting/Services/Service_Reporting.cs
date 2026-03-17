@@ -12,10 +12,6 @@ using MTM_Receiving_Application.Module_Reporting.Data;
 
 namespace MTM_Receiving_Application.Module_Reporting.Services;
 
-/// <summary>
-/// Service implementation for End-of-Day reporting
-/// Handles data retrieval, PO normalization, and email formatting
-/// </summary>
 public class Service_Reporting : IService_Reporting
 {
     private readonly Dao_Reporting _dao;
@@ -36,7 +32,6 @@ public class Service_Reporting : IService_Reporting
         _logger.LogInfo($"Retrieving Receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
         var result = await _dao.GetReceivingHistoryAsync(startDate, endDate);
 
-        // Normalize PO numbers
         if (result.IsSuccess && result.Data != null)
         {
             foreach (var row in result.Data)
@@ -138,9 +133,11 @@ public class Service_Reporting : IService_Reporting
                 case "dunnage":
                     AppendHeaderCell(html, "Type", "18%");
                     AppendHeaderCell(html, "Part", "18%");
-                    AppendHeaderCell(html, "Specs", "34%");
+                    AppendHeaderCell(html, "Specs", "24%");
                     AppendHeaderCell(html, "Qty", "10%");
-                    AppendHeaderCell(html, "Date", "20%");
+                    AppendHeaderCell(html, "User", "12%");
+                    AppendHeaderCell(html, "Employee #", "8%");
+                    AppendHeaderCell(html, "Date", "10%");
                     break;
 
                 case "volvo":
@@ -192,6 +189,8 @@ public class Service_Reporting : IService_Reporting
                         AppendBodyCell(html, row.PartNumber);
                         AppendBodyCell(html, row.SpecsCombined);
                         AppendBodyCell(html, FormatDecimal(row.Quantity), "right");
+                        AppendBodyCell(html, row.CreatedByUsername);
+                        AppendBodyCell(html, row.EmployeeNumber, "right");
                         AppendBodyCell(html, row.CreatedDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
                         break;
 

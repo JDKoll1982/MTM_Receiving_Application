@@ -14,10 +14,6 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace MTM_Receiving_Application.Module_Reporting.ViewModels;
 
-/// <summary>
-/// Main ViewModel for Reporting module
-/// Handles date range selection, module availability checking, and report generation
-/// </summary>
 public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 {
     private readonly IService_Reporting _reportingService;
@@ -78,9 +74,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         Title = "End of Day Reports";
     }
 
-    /// <summary>
-    /// Checks data availability for each module in the selected date range
-    /// </summary>
     [RelayCommand]
     private async Task CheckAvailabilityAsync()
     {
@@ -100,18 +93,23 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                // Update counts
                 ReceivingCount = result.Data.GetValueOrDefault("Receiving", 0);
                 DunnageCount = result.Data.GetValueOrDefault("Dunnage", 0);
                 VolvoCount = result.Data.GetValueOrDefault("Volvo", 0);
 
-                // Enable/disable checkboxes based on availability
                 IsReceivingEnabled = ReceivingCount > 0;
                 IsDunnageEnabled = DunnageCount > 0;
                 IsVolvoEnabled = VolvoCount > 0;
 
                 var totalCount = ReceivingCount + DunnageCount + VolvoCount;
-                ShowStatus($"Found {totalCount} total records", InfoBarSeverity.Success);
+                if (totalCount == 0)
+                {
+                    ShowStatus("No report data found for the selected date range", InfoBarSeverity.Warning);
+                }
+                else
+                {
+                    ShowStatus($"Found {totalCount} total records", InfoBarSeverity.Success);
+                }
             }
             else
             {
@@ -129,9 +127,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>
-    /// Generates report for Receiving module
-    /// </summary>
     [RelayCommand(CanExecute = nameof(CanGenerateReceiving))]
     private async Task GenerateReceivingReportAsync()
     {
@@ -141,9 +136,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanGenerateReceiving() => IsReceivingChecked && IsReceivingEnabled && !IsBusy;
 
-    /// <summary>
-    /// Generates report for Dunnage module
-    /// </summary>
     [RelayCommand(CanExecute = nameof(CanGenerateDunnage))]
     private async Task GenerateDunnageReportAsync()
     {
@@ -153,9 +145,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanGenerateDunnage() => IsDunnageChecked && IsDunnageEnabled && !IsBusy;
 
-    /// <summary>
-    /// Generates report for Volvo module
-    /// </summary>
     [RelayCommand(CanExecute = nameof(CanGenerateVolvo))]
     private async Task GenerateVolvoReportAsync()
     {
@@ -214,11 +203,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanCopyEmail() => ReportData.Count > 0 && !IsBusy;
 
-    /// <summary>
-    /// Helper method to generate report for a specific module
-    /// </summary>
-    /// <param name="moduleName"></param>
-    /// <param name="fetchDataFunc"></param>
     private async Task GenerateReportForModuleAsync(
         string moduleName,
         Func<Task<Module_Core.Models.Core.Model_Dao_Result<List<Model_ReportRow>>>> fetchDataFunc)
@@ -244,10 +228,16 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 }
 
                 CurrentModuleName = moduleName;
-                ShowStatus($"Loaded {ReportData.Count} {moduleName} records", InfoBarSeverity.Success);
-                _logger.LogInfo($"Generated {moduleName} report: {ReportData.Count} records");
+                if (ReportData.Count == 0)
+                {
+                    ShowStatus($"No {moduleName} records found for the selected date range", InfoBarSeverity.Warning);
+                }
+                else
+                {
+                    ShowStatus($"Loaded {ReportData.Count} {moduleName} records", InfoBarSeverity.Success);
+                }
 
-                // Update command availability
+                _logger.LogInfo($"Generated {moduleName} report: {ReportData.Count} records");
                 CopyEmailFormatCommand.NotifyCanExecuteChanged();
             }
             else
@@ -266,9 +256,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>
-    /// Update command availability when checkbox states change
-    /// </summary>
     partial void OnIsReceivingCheckedChanged(bool value)
     {
         GenerateReceivingReportCommand.NotifyCanExecuteChanged();

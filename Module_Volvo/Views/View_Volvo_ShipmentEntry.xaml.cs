@@ -166,8 +166,8 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                     Text = $"Difference: {diffText} pieces",
                     FontSize = 14,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) :
-                                 diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Orange) :
+                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) :
+                                 diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) :
                                  new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
                 });
             }

@@ -53,10 +53,10 @@ public class Service_ReportingClipboard : IService_ReportingClipboard
                 break;
 
             case "dunnage":
-                text.AppendLine("Type\tPart\tSpecs\tQty\tDate");
+                text.AppendLine("Type\tPart\tSpecs\tQty\tUser\tEmployee #\tDate");
                 foreach (var row in rows)
                 {
-                    text.AppendLine($"{row.DunnageType ?? string.Empty}\t{row.PartNumber ?? string.Empty}\t{row.SpecsCombined ?? string.Empty}\t{row.Quantity?.ToString() ?? string.Empty}\t{row.CreatedDate:yyyy-MM-dd}");
+                    text.AppendLine($"{row.DunnageType ?? string.Empty}\t{row.PartNumber ?? string.Empty}\t{row.SpecsCombined ?? string.Empty}\t{row.Quantity?.ToString() ?? string.Empty}\t{row.CreatedByUsername ?? string.Empty}\t{row.EmployeeNumber ?? string.Empty}\t{row.CreatedDate:yyyy-MM-dd}");
                 }
                 break;
 
