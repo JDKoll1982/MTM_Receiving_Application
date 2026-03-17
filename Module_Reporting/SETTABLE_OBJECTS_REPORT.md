@@ -8,11 +8,11 @@ This report lists **settable objects** (configuration, tunables, and hardcoded v
 
 Spreadsheet export workflow has been removed from Reporting. No CSV export file path, filename template, or CSV formatting settable objects are currently active in `Module_Reporting`.
 
-## Email / UX
+## Clipboard / UX
 
 | Settable object | Type | Scope (User/System) | Recommended UI control | Description | Recommended permission to set | Current source | Recommendation |
 |---|---:|---|---|---|---|---|---|
-| `Reporting:EmailTableStyles` | string | System | TextBox (multiline) | HTML styles/colors used for email formatting (e.g., header background `#f0f0f0`). | Admin (Operations) | `Service_Reporting.FormatForEmailAsync` | Externalize into templates or allow theme override; keep safe allowlist for HTML. |
+| `Reporting:ClipboardTableStyles` | string | System | TextBox (multiline) | HTML styles/colors used for formatted clipboard table output (for example header background and border colors). | Admin (Operations) | `Service_Reporting.FormatForEmailAsync` | Externalize into templates or allow theme override; keep safe allowlist for HTML. |
 
 ## Business Rules
 
@@ -24,8 +24,8 @@ Spreadsheet export workflow has been removed from Reporting. No CSV export file 
 
 | Settable object | Type | Scope (User/System) | Recommended UI control | Description | Recommended permission to set | Current source | Recommendation |
 |---|---:|---|---|---|---|---|---|
-| `Reporting:SupportedModuleNames` | string | System | No UI (internal constants) | Module name strings used in switches (`receiving`, `dunnage`, `routing`, `volvo`). | Developer | `Service_Reporting` | Prefer enums/central constants to avoid drift across app. |
+| `Reporting:SupportedModuleNames` | string | System | No UI (internal constants) | Module name strings used in switches (`receiving`, `dunnage`, `volvo`). | Developer | `Service_Reporting` | Prefer enums/central constants to avoid drift across app. |
 
 ## Hardcoded values that should not be hardcoded (high priority)
 
-- Keep email table styling and module labels externally configurable when reporting customization is required.
+- Keep formatted-table styling and module labels externally configurable when reporting customization is required.

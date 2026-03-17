@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -22,11 +21,6 @@ public class Dao_Reporting
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
-    /// <summary>
-    /// Retrieves receiving history from view_receiving_history view
-    /// </summary>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
         DateTime startDate,
         DateTime endDate)
@@ -37,17 +31,17 @@ public class Dao_Reporting
                 SELECT
                     id,
                     po_number,
-                    part_number,
+                    part_id AS part_number,
                     part_description,
                     quantity,
-                    weight_lbs,
-                    heat_lot_number,
-                    created_date,
+                    CAST(NULL AS DECIMAL(18,2)) AS weight_lbs,
+                    heat AS heat_lot_number,
+                    DATE(COALESCE(transaction_date, created_at)) AS created_date,
                     employee_number,
-                    source_module
+                    'Receiving' AS source_module
                 FROM view_receiving_history
-                WHERE created_date BETWEEN @StartDate AND @EndDate
-                ORDER BY created_date DESC, id DESC";
+                WHERE DATE(COALESCE(transaction_date, created_at)) BETWEEN @StartDate AND @EndDate
+                ORDER BY DATE(COALESCE(transaction_date, created_at)) DESC, id DESC";
 
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -59,20 +53,31 @@ public class Dao_Reporting
             await using var reader = await command.ExecuteReaderAsync();
             var rows = new List<Model_ReportRow>();
 
+            var idOrdinal = reader.GetOrdinal("id");
+            var poNumberOrdinal = reader.GetOrdinal("po_number");
+            var partNumberOrdinal = reader.GetOrdinal("part_number");
+            var partDescriptionOrdinal = reader.GetOrdinal("part_description");
+            var quantityOrdinal = reader.GetOrdinal("quantity");
+            var weightOrdinal = reader.GetOrdinal("weight_lbs");
+            var heatLotOrdinal = reader.GetOrdinal("heat_lot_number");
+            var createdDateOrdinal = reader.GetOrdinal("created_date");
+            var employeeNumberOrdinal = reader.GetOrdinal("employee_number");
+            var sourceModuleOrdinal = reader.GetOrdinal("source_module");
+
             while (await reader.ReadAsync())
             {
                 rows.Add(new Model_ReportRow
                 {
-                    Id = reader.GetGuid("id").ToString(),
-                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
-                    PartNumber = reader.IsDBNull(reader.GetOrdinal("part_number")) ? null : reader.GetString("part_number"),
-                    PartDescription = reader.IsDBNull(reader.GetOrdinal("part_description")) ? null : reader.GetString("part_description"),
-                    Quantity = reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetDecimal("quantity"),
-                    WeightLbs = reader.IsDBNull(reader.GetOrdinal("weight_lbs")) ? null : reader.GetDecimal("weight_lbs"),
-                    HeatLotNumber = reader.IsDBNull(reader.GetOrdinal("heat_lot_number")) ? null : reader.GetString("heat_lot_number"),
-                    CreatedDate = reader.GetDateTime("created_date"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
-                    SourceModule = reader.GetString("source_module")
+                    Id = reader.GetGuid(idOrdinal).ToString(),
+                    PONumber = reader.IsDBNull(poNumberOrdinal) ? null : reader.GetString(poNumberOrdinal),
+                    PartNumber = reader.IsDBNull(partNumberOrdinal) ? null : reader.GetString(partNumberOrdinal),
+                    PartDescription = reader.IsDBNull(partDescriptionOrdinal) ? null : reader.GetString(partDescriptionOrdinal),
+                    Quantity = reader.IsDBNull(quantityOrdinal) ? null : reader.GetDecimal(quantityOrdinal),
+                    WeightLbs = reader.IsDBNull(weightOrdinal) ? null : reader.GetDecimal(weightOrdinal),
+                    HeatLotNumber = reader.IsDBNull(heatLotOrdinal) ? null : reader.GetString(heatLotOrdinal),
+                    CreatedDate = reader.GetDateTime(createdDateOrdinal),
+                    EmployeeNumber = reader.IsDBNull(employeeNumberOrdinal) ? null : reader.GetString(employeeNumberOrdinal),
+                    SourceModule = reader.GetString(sourceModuleOrdinal)
                 });
             }
 
@@ -121,18 +126,27 @@ public class Dao_Reporting
             await using var reader = await command.ExecuteReaderAsync();
             var rows = new List<Model_ReportRow>();
 
+            var idOrdinal = reader.GetOrdinal("id");
+            var dunnageTypeOrdinal = reader.GetOrdinal("dunnage_type");
+            var partNumberOrdinal = reader.GetOrdinal("part_number");
+            var specsOrdinal = reader.GetOrdinal("specs_combined");
+            var quantityOrdinal = reader.GetOrdinal("quantity");
+            var createdDateOrdinal = reader.GetOrdinal("created_date");
+            var employeeNumberOrdinal = reader.GetOrdinal("employee_number");
+            var sourceModuleOrdinal = reader.GetOrdinal("source_module");
+
             while (await reader.ReadAsync())
             {
                 rows.Add(new Model_ReportRow
                 {
-                    Id = reader.GetGuid("id").ToString(),
-                    DunnageType = reader.IsDBNull(reader.GetOrdinal("dunnage_type")) ? null : reader.GetString("dunnage_type"),
-                    PartNumber = reader.IsDBNull(reader.GetOrdinal("part_number")) ? null : reader.GetString("part_number"),
-                    SpecsCombined = reader.IsDBNull(reader.GetOrdinal("specs_combined")) ? null : reader.GetString("specs_combined"),
-                    Quantity = reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetDecimal("quantity"),
-                    CreatedDate = reader.GetDateTime("created_date"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
-                    SourceModule = reader.GetString("source_module")
+                    Id = reader.GetGuid(idOrdinal).ToString(),
+                    DunnageType = reader.IsDBNull(dunnageTypeOrdinal) ? null : reader.GetString(dunnageTypeOrdinal),
+                    PartNumber = reader.IsDBNull(partNumberOrdinal) ? null : reader.GetString(partNumberOrdinal),
+                    SpecsCombined = reader.IsDBNull(specsOrdinal) ? null : reader.GetString(specsOrdinal),
+                    Quantity = reader.IsDBNull(quantityOrdinal) ? null : reader.GetDecimal(quantityOrdinal),
+                    CreatedDate = reader.GetDateTime(createdDateOrdinal),
+                    EmployeeNumber = reader.IsDBNull(employeeNumberOrdinal) ? null : reader.GetString(employeeNumberOrdinal),
+                    SourceModule = reader.GetString(sourceModuleOrdinal)
                 });
             }
 
@@ -184,19 +198,29 @@ public class Dao_Reporting
             await using var reader = await command.ExecuteReaderAsync();
             var rows = new List<Model_ReportRow>();
 
+            var idOrdinal = reader.GetOrdinal("id");
+            var shipmentNumberOrdinal = reader.GetOrdinal("shipment_number");
+            var poNumberOrdinal = reader.GetOrdinal("po_number");
+            var receiverNumberOrdinal = reader.GetOrdinal("receiver_number");
+            var statusOrdinal = reader.GetOrdinal("status");
+            var employeeNumberOrdinal = reader.GetOrdinal("employee_number");
+            var partCountOrdinal = reader.GetOrdinal("part_count");
+            var createdDateOrdinal = reader.GetOrdinal("created_date");
+            var sourceModuleOrdinal = reader.GetOrdinal("source_module");
+
             while (await reader.ReadAsync())
             {
                 rows.Add(new Model_ReportRow
                 {
-                    Id = reader.GetInt32("id").ToString(),
-                    ShipmentNumber = reader.IsDBNull(reader.GetOrdinal("shipment_number")) ? null : reader.GetInt32("shipment_number"),
-                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
-                    ReceiverNumber = reader.IsDBNull(reader.GetOrdinal("receiver_number")) ? null : reader.GetString("receiver_number"),
-                    Status = reader.IsDBNull(reader.GetOrdinal("status")) ? null : reader.GetString("status"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
-                    PartCount = reader.IsDBNull(reader.GetOrdinal("part_count")) ? null : reader.GetInt32("part_count"),
-                    CreatedDate = reader.GetDateTime("created_date"),
-                    SourceModule = reader.GetString("source_module")
+                    Id = reader.GetInt32(idOrdinal).ToString(),
+                    ShipmentNumber = reader.IsDBNull(shipmentNumberOrdinal) ? null : reader.GetInt32(shipmentNumberOrdinal),
+                    PONumber = reader.IsDBNull(poNumberOrdinal) ? null : reader.GetString(poNumberOrdinal),
+                    ReceiverNumber = reader.IsDBNull(receiverNumberOrdinal) ? null : reader.GetString(receiverNumberOrdinal),
+                    Status = reader.IsDBNull(statusOrdinal) ? null : reader.GetString(statusOrdinal),
+                    EmployeeNumber = reader.IsDBNull(employeeNumberOrdinal) ? null : reader.GetString(employeeNumberOrdinal),
+                    PartCount = reader.IsDBNull(partCountOrdinal) ? null : reader.GetInt32(partCountOrdinal),
+                    CreatedDate = reader.GetDateTime(createdDateOrdinal),
+                    SourceModule = reader.GetString(sourceModuleOrdinal)
                 });
             }
 
@@ -228,15 +252,21 @@ public class Dao_Reporting
             await connection.OpenAsync();
 
             // Check Receiving
-            var receivingCount = await GetCountAsync(connection, "view_receiving_history", startDate, endDate);
+            var receivingCount = await GetCountAsync(
+                connection,
+                "view_receiving_history",
+                startDate,
+                endDate,
+                "DATE(COALESCE(transaction_date, created_at))");
             availability["Receiving"] = receivingCount;
 
             // Check Dunnage
             var dunnageCount = await GetCountAsync(connection, "view_dunnage_history", startDate, endDate);
             availability["Dunnage"] = dunnageCount;
 
-            // Check Volvo (placeholder)
-            availability["Volvo"] = 0;
+            // Check Volvo
+            var volvoCount = await GetCountAsync(connection, "view_volvo_history", startDate, endDate);
+            availability["Volvo"] = volvoCount;
 
             return Model_Dao_Result_Factory.Success(availability);
         }
@@ -248,23 +278,17 @@ public class Dao_Reporting
         }
     }
 
-    /// <summary>
-    /// Helper method to get count from a view
-    /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="viewName"></param>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
     private async Task<int> GetCountAsync(
         MySqlConnection connection,
         string viewName,
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate,
+        string dateExpression = "created_date")
     {
         var query = $@"
             SELECT COUNT(*)
             FROM {viewName}
-            WHERE created_date BETWEEN @StartDate AND @EndDate";
+            WHERE {dateExpression} BETWEEN @StartDate AND @EndDate";
 
         await using var command = new MySqlCommand(query, connection);
         command.Parameters.AddWithValue("@StartDate", startDate.Date);

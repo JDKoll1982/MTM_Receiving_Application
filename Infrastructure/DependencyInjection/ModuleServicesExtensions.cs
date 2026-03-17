@@ -284,6 +284,7 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Reporting(dao, logger);
         });
+        services.AddSingleton<IService_ReportingClipboard, Service_ReportingClipboard>();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Reporting_Main>();

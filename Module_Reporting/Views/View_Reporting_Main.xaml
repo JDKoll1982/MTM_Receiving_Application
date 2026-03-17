@@ -22,7 +22,7 @@
                 Text="{x:Bind ViewModel.Title, Mode=OneWay}" 
                 Style="{StaticResource TitleTextBlockStyle}"/>
             <TextBlock 
-                Text="Select date range and modules to generate end-of-day reports" 
+                Text="Select a date range, review live module availability, and copy a formatted report for Outlook paste" 
                 Style="{StaticResource BodyTextBlockStyle}"
                 Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
         </StackPanel>
@@ -158,7 +158,7 @@
         <CommandBar Grid.Row="4" DefaultLabelPosition="Right" Margin="0,12,0,0">
             <AppBarButton 
                 Icon="Copy" 
-                Label="Copy Email Format"
+                Label="Copy Formatted Table"
                 Command="{x:Bind ViewModel.CopyEmailFormatCommand}"/>
             <AppBarSeparator/>
             <AppBarButton 

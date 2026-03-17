@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace MTM_Receiving_Application.Module_Reporting.ViewModels;
 
@@ -20,6 +21,7 @@ namespace MTM_Receiving_Application.Module_Reporting.ViewModels;
 public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 {
     private readonly IService_Reporting _reportingService;
+    private readonly IService_ReportingClipboard _reportingClipboard;
 
     #region Observable Properties
 
@@ -66,11 +68,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     public ViewModel_Reporting_Main(
         IService_Reporting reportingService,
+        IService_ReportingClipboard reportingClipboard,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _reportingService = reportingService ?? throw new ArgumentNullException(nameof(reportingService));
+        _reportingClipboard = reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
         Title = "End of Day Reports";
     }
 
@@ -161,9 +165,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanGenerateVolvo() => IsVolvoChecked && IsVolvoEnabled && !IsBusy;
 
-    /// <summary>
-    /// Formats current report data for email and copies to clipboard
-    /// </summary>
     [RelayCommand(CanExecute = nameof(CanCopyEmail))]
     private async Task CopyEmailFormatAsync()
     {
@@ -175,7 +176,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            ShowStatus("Formatting for email...", InfoBarSeverity.Informational);
+            ShowStatus("Copying formatted report...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.FormatForEmailAsync(
                 ReportData.ToList(),
@@ -183,14 +184,17 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {
-                // Copy to clipboard
-                var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-                dataPackage.SetHtmlFormat(result.Data);
-                dataPackage.SetText(result.Data);
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+                var clipboardResult = _reportingClipboard.CreateClipboardPackage(ReportData.ToList(), result.Data);
+                if (!clipboardResult.IsSuccess || clipboardResult.Data == null)
+                {
+                    ShowStatus(clipboardResult.ErrorMessage ?? "Failed to prepare clipboard content", InfoBarSeverity.Error);
+                    return;
+                }
 
-                ShowStatus("Email format copied to clipboard", InfoBarSeverity.Success);
-                _logger.LogInfo("Email format copied to clipboard");
+                Clipboard.SetContent(clipboardResult.Data);
+
+                ShowStatus("Formatted report copied to clipboard", InfoBarSeverity.Success);
+                _logger.LogInfo("Formatted report copied to clipboard");
             }
             else
             {
@@ -200,7 +204,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         catch (Exception ex)
         {
             _logger.LogError($"Error copying email format: {ex.Message}", ex);
-            ShowStatus("Error formatting for email", InfoBarSeverity.Error);
+            ShowStatus("Error copying formatted report", InfoBarSeverity.Error);
         }
         finally
         {

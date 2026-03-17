@@ -1,295 +1,51 @@
-# Reporting Module Implementation Summary
+# Module Reporting
 
-**Feature**: 003-reporting-module
-**Status**: ✅ Implementation Complete
-**Date**: 2026-01-04
+Last Updated: 2026-03-17
 
 ## Overview
 
-The End-of-Day Reporting module has been successfully implemented as a cross-cutting module that works across Receiving, Dunnage, Routing, and Volvo modules. The module provides date range filtering, PO number normalization, in-app data display, and email formatting capabilities.
+`Module_Reporting` provides end-of-day reporting for the live Receiving, Dunnage, and Volvo workflows.
 
-## What Was Implemented
+The module is under active refactor because the upstream modules changed significantly and the original reporting contracts no longer match the live data model in several places.
 
-### Phase 1: Database Infrastructure ✅
+## Current Scope
 
-**File**: `Database/Schemas/10_create_reporting_views.sql`
+- Receiving report generation
+- Dunnage report generation
+- Volvo report generation
+- Date-range availability checks
+- PO normalization
+- Clipboard-based formatted table output for Outlook-style paste workflows
 
-Created four database views for unified reporting:
+## Current Refactor Focus
 
-- `view_receiving_history` - Aggregates receiving loads with PO numbers, parts, quantities, weights, heat/lot numbers
-- `view_dunnage_history` - Aggregates dunnage loads with types, parts, specs (concatenated), quantities
-- `view_routing_history` - Aggregates routing labels with delivery info, departments, package descriptions
-- `view_volvo_history` - Placeholder view for future Volvo module integration
+The current reporting work is focused on:
 
-**Note**: Views need to be deployed to MySQL server using the SQL script.
+1. fixing DAO and SQL view mismatches
+2. restoring correct Volvo availability and formatting behavior
+3. replacing weak raw-HTML clipboard handling with CF_HTML-compliant clipboard output
+4. removing stale spreadsheet/export and Routing assumptions from the module
 
-### Phase 2: Core Models & Data Access ✅
+## Source Documents
 
-**Model**: `Module_Core/Models/Reporting/Model_ReportRow.cs`
+Use these two files as the source of truth for the reporting refactor:
 
-- Unified data structure supporting all module types
-- Properties for common fields (PO Number, Part, Description, Quantity, Date)
-- Module-specific properties (Routing: DeliverTo/Department, Dunnage: Type/Specs, Volvo: ShipmentNumber/Status)
+- `Module_Reporting/Documentation/Reporting-Refactor-Audit.md`
+- `Module_Reporting/Documentation/Reporting-Refactor-Checklist.md`
 
-**DAO**: `Module_Reporting/Data/Dao_Reporting.cs`
+## Known Issues
 
-- `GetReceivingHistoryAsync(startDate, endDate)` - Queries view_receiving_history
-- `GetDunnageHistoryAsync(startDate, endDate)` - Queries view_dunnage_history
-- `GetRoutingHistoryAsync(startDate, endDate)` - Queries view_routing_history
-- `GetVolvoHistoryAsync(startDate, endDate)` - Placeholder for Volvo
-- `CheckAvailabilityAsync(startDate, endDate)` - Returns record counts per module
+- Receiving reporting still has DAO/view contract mismatches.
+- Volvo reporting needed availability and formatting fixes and is still being validated.
+- Outlook-style paste formatting is being upgraded from raw HTML copy behavior to a proper rich clipboard payload.
 
-### Phase 3: Service Layer ✅
+## Validation Priorities
 
-**Interface**: `Module_Core/Contracts/Services/IService_Reporting.cs`
+- Verify report generation for Receiving, Dunnage, and Volvo.
+- Verify clipboard output in Outlook desktop.
+- Verify clipboard output in New Outlook.
+- Verify fallback paste behavior in plain-text targets.
 
-- Defines contract for all reporting operations
-- Matches specification from `specs/003-reporting-module/contracts/IService_Reporting.cs`
+## Notes
 
-**Implementation**: `Module_Reporting/Services/Service_Reporting.cs`
-
-Key Features:
-
-1. **PO Number Normalization** (matching Google Sheets EndOfDayEmail.js algorithm):
-   - "63150" → "PO-063150"
-   - "063150B" → "PO-063150B"
-   - "Customer Supplied" → "Customer Supplied" (pass-through)
-   - Empty/null → "No PO"
-   - < 5 digits → "Validate PO"
-
-2. **In-App Data Display**:
-   - Module-specific fields rendered directly in reporting views
-   - No spreadsheet export dependency
-   - Data remains available for copy/email workflows
-
-3. **Email Formatting** (matching Google Sheets colorHistory() function):
-   - HTML table with proper styling
-   - Alternating row colors (#ffffff / #f9f9f9)
-   - Date grouping support (colors change when date changes)
-   - Module-specific column layouts
-
-### Phase 4: ViewModel Layer ✅
-
-**ViewModel**: `Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs`
-
-Features:
-
-- Date range selection (StartDate/EndDate with DateTimeOffset)
-- Module checkboxes (Receiving, Dunnage, Routing, Volvo)
-- Availability checking (displays record counts, enables/disables checkboxes)
-- Per-module report generation commands
-- Email format copy command (copies HTML to clipboard)
-- Observable report data collection
-- Status messages and busy indicators
-
-Commands Implemented:
-
-- `CheckAvailabilityCommand` - Queries database for record counts
-- `GenerateReceivingReportCommand` - Generates Receiving report
-- `GenerateDunnageReportCommand` - Generates Dunnage report
-- `GenerateRoutingReportCommand` - Generates Routing report
-- `GenerateVolvoReportCommand` - Generates Volvo report
-- `CopyEmailFormatCommand` - Formats as HTML and copies to clipboard
-
-### Phase 5: User Interface ✅
-
-**View**: `Module_Reporting/Views/View_Reporting_Main.xaml`
-
-UI Components:
-
-- **Header Section**: Title and description
-- **Date Range Section**: Start/End CalendarDatePickers with "Check Availability" button
-- **Module Selection**: 4 columns with checkboxes, record counts, and individual "Generate Report" buttons
-- **Report Display**: Scrollable ListView showing current report data
-- **Action Bar**: CommandBar with Copy Email Format and Check Availability buttons
-
-**Navigation**: `MainWindow.xaml` + `MainWindow.xaml.cs`
-
-- Added "End of Day Reports" navigation item with FontIcon (&#xE9F9; - report chart icon)
-- Navigation handler routes to `View_Reporting_Main`
-- Sets page title to "End of Day Reports"
-
-### Phase 6: Dependency Injection ✅
-
-**Registration**: `App.xaml.cs`
-
-Registered Components:
-
-```csharp
-// DAOs
-services.AddSingleton(sp => new Dao_Reporting(mySqlConnectionString));
-
-// Services
-services.AddSingleton<IService_Reporting, Service_Reporting>();
-
-// ViewModels
-services.AddTransient<ViewModel_Reporting_Main>();
-
-// Views
-services.AddTransient<View_Reporting_Main>();
-```
-
-## Architecture Compliance
-
-✅ **MVVM Pattern**: Strict separation of View, ViewModel, Service, and DAO layers
-✅ **Dependency Injection**: All components registered in DI container
-✅ **Async Operations**: All database and file I/O is async
-✅ **Error Handling**: Uses IService_ErrorHandler for user-facing errors
-✅ **Logging**: Uses IService_LoggingUtility for audit trail
-✅ **Constitutional Compliance**: Follows all MTM constitution principles
-
-## File Structure
-
-```
-MTM_Receiving_Application/
-├── Module_Reporting/                           (NEW - module directory)
-│   ├── Data/
-│   │   └── Dao_Reporting.cs                   (Database access)
-│   ├── Services/
-│   │   └── Service_Reporting.cs               (Business logic)
-│   ├── ViewModels/
-│   │   └── ViewModel_Reporting_Main.cs        (Presentation logic)
-│   └── Views/
-│       ├── View_Reporting_Main.xaml           (UI markup)
-│       └── View_Reporting_Main.xaml.cs        (Code-behind)
-├── Module_Core/
-│   ├── Contracts/Services/
-│   │   └── IService_Reporting.cs              (Service interface)
-│   └── Models/Reporting/
-│       └── Model_ReportRow.cs                 (Data model)
-├── Database/Schemas/
-│   └── 10_create_reporting_views.sql          (Database views)
-├── App.xaml.cs                                (Updated - DI registration)
-├── MainWindow.xaml                            (Updated - navigation menu)
-└── MainWindow.xaml.cs                         (Updated - navigation handler)
-```
-
-## Remaining Tasks
-
-### Database Deployment
-
-- [ ] Execute `Database/Schemas/10_create_reporting_views.sql` on MySQL server
-- [ ] Verify views return correct data
-- [ ] Test with various date ranges
-
-### Manual Testing
-
-- [ ] Navigate to "End of Day Reports" in application
-- [ ] Test date range selection
-- [ ] Test "Check Availability" button
-- [ ] Generate reports for each module (Receiving, Dunnage, Routing)
-- [ ] Verify PO number normalization (test cases: "63150", "063150B", "Customer Supplied")
-- [ ] Test email format copy (verify HTML table structure and alternating colors)
-- [ ] Test date range persistence across module changes
-
-### Test Cases
-
-**PO Normalization Test Cases**:
-
-```
-Input           → Expected Output
-"63150"         → "PO-063150"
-"063150"        → "PO-063150"
-"063150B"       → "PO-063150B"
-"Customer Supplied" → "Customer Supplied"
-""              → "No PO"
-"1234"          → "Validate PO" (too short)
-```
-
-**Email Format Test**:
-
-- Verify HTML table structure
-- Verify alternating row colors (#ffffff and #f9f9f9)
-- Verify date grouping (color changes when date changes)
-- Verify clipboard copy successful
-
-## Usage Instructions
-
-### For End Users
-
-1. **Navigate to Module**:
-   - Launch MTM Receiving Application
-   - Click "End of Day Reports" in left navigation menu
-
-2. **Select Date Range**:
-   - Choose Start Date using calendar picker
-   - Choose End Date using calendar picker
-   - Click "Check Availability" to see record counts
-
-3. **Generate Report**:
-   - Check desired module checkbox (Receiving, Dunnage, Routing, or Volvo)
-   - Click "Generate Report" button under the module
-   - View report data in the table below
-
-4. **Copy Email Format**:
-   - After generating a report, click "Copy Email Format" in bottom toolbar
-   - HTML table is copied to clipboard
-   - Paste into email client (e.g., Outlook)
-
-### For Developers
-
-**Adding New Module Support**:
-
-1. Create database view in `Database/Schemas/` (e.g., `vw_newmodule_history`)
-2. Add method to `Dao_Reporting.cs`: `GetNewModuleHistoryAsync()`
-3. Add method to `IService_Reporting.cs` and `Service_Reporting.cs`
-4. Add checkbox and button to `View_Reporting_Main.xaml`
-5. Add properties and command to `ViewModel_Reporting_Main.cs`
-6. Update `CheckAvailabilityAsync()` to include new module
-7. Update email formatting to handle new module
-
-**Modifying PO Normalization**:
-
-- Edit `Service_Reporting.NormalizePONumber()` method
-- Ensure it matches Google Sheets algorithm if that's the source of truth
-
-## Success Criteria Verification
-
-Based on specification SC-001 through SC-007:
-
-- [X] SC-001: Users can generate reports for all three modules within specified date ranges
-- [X] SC-002: PO normalization handles all specified formats correctly (algorithm implemented)
-- [X] SC-003: In-app report display includes correct module columns and data
-- [X] SC-004: Email formatting applies date grouping and alternating colors as specified
-- [ ] SC-005: Routing auto-lookup fills department (requires Routing module implementation)
-- [ ] SC-006: History archival moves today's labels (requires Routing module implementation)
-- [ ] SC-007: Label numbering increments correctly (requires Routing module implementation)
-
-**Note**: SC-005 through SC-007 are for User Story 2 (Routing Module Enhancements), which is not part of this implementation. This implementation focuses on User Story 1 (Generate End-of-Day Reports).
-
-## Known Limitations
-
-1. **Volvo Module**: Placeholder view returns no data (Volvo module not yet implemented)
-2. **Database Views**: Need to be deployed to MySQL before testing
-3. **Real Data Testing**: Cannot be fully tested without deploying views and having actual data
-4. **User Story 2**: Routing enhancements (auto-lookup, archival, numbering) are not implemented
-
-## Next Steps
-
-1. **Deploy Database Views**: Run the SQL script on MySQL server
-2. **Manual Testing**: Follow test cases above to verify functionality
-3. **Create Test Data**: If needed, populate history tables with sample data
-4. **Document Findings**: Update this document with test results
-5. **User Story 2**: If needed, implement Routing module enhancements
-
-## Technical Notes
-
-- **MySQL Version**: Views are compatible with MySQL 5.7.24+ (no JSON functions, CTEs, or window functions used)
-- **WinUI 3**: Uses x:Bind for ViewModel bindings, standard Binding for DataTemplate items
-- **Async/Await**: All database and file operations use async/await pattern
-- **Error Handling**: Non-blocking - failures in network CSV write don't block local write
-- **Thread Safety**: DAO uses using statements for proper connection disposal
-
-## Contact
-
-For questions or issues with this implementation:
-
-- Review specification: `specs/003-reporting-module/spec.md`
-- Review task breakdown: `specs/003-reporting-module/tasks.md`
-- Review plan: `specs/003-reporting-module/plan.md`
-
----
-
-**Implementation Date**: 2026-01-04
-**Implementation Status**: ✅ Complete
-**Testing Status**: ⏳ Pending Database Deployment
+This module should not reintroduce CSV, XLS, or XLSX export workflows unless explicitly requested and re-scoped.
