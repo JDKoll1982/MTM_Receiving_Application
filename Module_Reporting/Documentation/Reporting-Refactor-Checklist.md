@@ -13,40 +13,40 @@ Execute the reporting module refactor in controlled phases so the module becomes
 
 ## Phase 1: Cleanup And Stabilization
 
-- [ ] Remove stale spreadsheet/export wording from `Module_Reporting/README.md`
-- [ ] Remove stale Routing references from `Module_Reporting/README.md`
-- [ ] Remove stale Routing references from `Module_Reporting/SETTABLE_OBJECTS_REPORT.md`
-- [ ] Rename reporting UI text away from generic `Email Format` wording where appropriate
+- [x] Remove stale spreadsheet/export wording from `Module_Reporting/README.md`
+- [x] Remove stale Routing references from `Module_Reporting/README.md`
+- [x] Remove stale Routing references from `Module_Reporting/SETTABLE_OBJECTS_REPORT.md`
+- [x] Rename reporting UI text away from generic `Email Format` wording where appropriate
 - [ ] Remove obsolete comments/notes from reporting module files that only restate obvious behavior
-- [ ] Confirm there is no active CSV/XLS/XLSX code path left in `Module_Reporting`
+- [x] Confirm there is no active CSV/XLS/XLSX code path left in `Module_Reporting`
 
 ## Phase 2: Clipboard And Outlook Formatting
 
-- [ ] Extract clipboard packaging out of `ViewModel_Reporting_Main`
-- [ ] Add a dedicated reporting clipboard formatter/helper/service
-- [ ] Replace raw `SetHtmlFormat(...)` usage with `HtmlFormatHelper.CreateHtmlFormat(...)`
-- [ ] Replace raw HTML `SetText(...)` fallback with a true plain-text fallback
-- [ ] Build spreadsheet-like HTML tables with inline styles suitable for Outlook paste
+- [x] Extract clipboard packaging out of `ViewModel_Reporting_Main`
+- [x] Add a dedicated reporting clipboard formatter/helper/service
+- [x] Replace raw `SetHtmlFormat(...)` usage with `HtmlFormatHelper.CreateHtmlFormat(...)`
+- [x] Replace raw HTML `SetText(...)` fallback with a true plain-text fallback
+- [x] Build spreadsheet-like HTML tables with inline styles suitable for Outlook paste
 - [ ] Test clipboard output in Outlook desktop
 - [ ] Test clipboard output in New Outlook
 - [ ] Test clipboard output in Word and plain-text targets
 
 ## Phase 3: Availability And UI Behavior
 
-- [ ] Fix Volvo availability counting in `Dao_Reporting.CheckAvailabilityAsync()`
+- [x] Fix Volvo availability counting in `Dao_Reporting.CheckAvailabilityAsync()`
 - [ ] Ensure module enablement logic distinguishes `0 rows` from query failure
-- [ ] Refresh UI wording/status text to match the real reporting workflow
+- [x] Refresh UI wording/status text to match the real reporting workflow
 - [ ] Improve report presentation beyond the current minimal three-field list
 
 ## Phase 4: Volvo Reporting Path
 
-- [ ] Add Volvo-specific formatting in `Service_Reporting.FormatForEmailAsync()`
+- [x] Add Volvo-specific formatting in `Service_Reporting.FormatForEmailAsync()`
 - [ ] Confirm whether Volvo reporting should remain shipment-summary only
 - [ ] If required, define a line-detail reporting path for Volvo
 
 ## Phase 5: Receiving Data-Contract Repair
 
-- [ ] Align `Dao_Reporting.GetReceivingHistoryAsync()` with the live Receiving view contract
+- [x] Align `Dao_Reporting.GetReceivingHistoryAsync()` with the live Receiving view contract
 - [ ] Align `Database/Schemas/34_View_receiving_history.sql` with reporting needs
 - [ ] Decide whether Receiving reporting should include weight
 - [ ] Decide the correct date semantics for Receiving reporting

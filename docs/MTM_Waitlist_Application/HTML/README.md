@@ -91,19 +91,22 @@ Create department-specific JSON files for:
 #### Making Changes to Questions
 1. Edit JSON files in `questions/` folder
 2. Run the embedding script:
+
    ```powershell
    .\Embed-JSONData.ps1
    ```
+
 3. Open `questionnaire.html` to test
 
-#### Two Modes:
+#### Two Modes
 - **Embedded Mode** (default): JSON data embedded in HTML - works offline, no CORS issues
 - **Fetch Mode**: Loads JSON from files - requires HTTP server but easier to edit/test
 
 To use Fetch Mode during development:
+
 ```powershell
 python -m http.server 8080
-# Open: http://localhost:8080/generated/questionnaire.html
+# Open: http://172.16.1.104:8080/generated/questionnaire.html
 ```
 
 #### Adding New Department
@@ -135,4 +138,3 @@ Questionnaires export to JSON with all answers and metadata.
 3. Create missing department JSON files
 4. Test with real users
 5. Deploy to production
-

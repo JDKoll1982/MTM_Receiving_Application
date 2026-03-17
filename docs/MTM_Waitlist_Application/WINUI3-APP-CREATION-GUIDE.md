@@ -68,7 +68,7 @@ The MTM Waitlist Application manages production floor tasks across multiple role
 - **MySQL Server 8.0+**
   - Database: `mtm_waitlist_application`
   - Character Set: utf8mb4
-  - Connection: `localhost:3306`
+  - Connection: `172.16.1.104:3306`
 - **SQL Server** (Infor Visual)
   - Server: `VISUAL`
   - Database: `MTMFG`
@@ -290,7 +290,7 @@ mkdir .serena/memories
     "EnableDiagnostics": true
   },
   "ConnectionStrings": {
-    "MySql": "Server=localhost;Port=3306;Database=mtm_waitlist_application;Uid=root;Pwd=root;CharSet=utf8mb4;",
+    "MySql": "Server=172.16.1.104;Port=3306;Database=mtm_waitlist_application;Uid=root;Pwd=root;CharSet=utf8mb4;",
     "InforVisual": "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;"
   },
   "InforVisual": {
@@ -1612,21 +1612,21 @@ DELIMITER ;
 $schemas = Get-ChildItem "Database/Schemas" -Filter "*.sql" | Sort-Object Name
 foreach ($schema in $schemas) {
     Write-Host "Deploying $($schema.Name)..." -ForegroundColor Cyan
-    mysql -h localhost -P 3306 -u root -p mtm_waitlist_application < $schema.FullName
+    mysql -h 172.16.1.104 -P 3306 -u root -p mtm_waitlist_application < $schema.FullName
 }
 
 # Deploy test data
 $testData = Get-ChildItem "Database/TestData" -Filter "*.sql" | Sort-Object Name
 foreach ($data in $testData) {
     Write-Host "Loading $($data.Name)..." -ForegroundColor Cyan
-    mysql -h localhost -P 3306 -u root -p mtm_waitlist_application < $data.FullName
+    mysql -h 172.16.1.104 -P 3306 -u root -p mtm_waitlist_application < $data.FullName
 }
 
 # Deploy stored procedures
 $procedures = Get-ChildItem "Database/StoredProcedures" -Filter "*.sql" -Recurse | Sort-Object Name
 foreach ($proc in $procedures) {
     Write-Host "Deploying $($proc.Name)..." -ForegroundColor Cyan
-    mysql -h localhost -P 3306 -u root -p mtm_waitlist_application < $proc.FullName
+    mysql -h 172.16.1.104 -P 3306 -u root -p mtm_waitlist_application < $proc.FullName
 }
 
 Write-Host "`nDatabase deployment complete!" -ForegroundColor Green
@@ -2367,6 +2367,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
 ### Daily Development Process
 
 1. **Start Development Session**
+
    ```powershell
    # Pull latest changes
    git pull origin main
@@ -2379,6 +2380,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
    ```
 
 2. **Create Feature Branch**
+
    ```powershell
    git checkout -b feature/operator-favorites
    ```
@@ -2393,6 +2395,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
    - Register in DI
 
 4. **Test Feature**
+
    ```powershell
    # Run tests
    dotnet test
@@ -2403,6 +2406,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
    ```
 
 5. **Commit and Push**
+
    ```powershell
    git add .
    git commit -m "feat(operator): Add favorites functionality"
@@ -2434,6 +2438,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
 **Symptom**: Blank UI, binding failures in Output window
 
 **Solution**:
+
 ```xml
 <!-- ❌ WRONG -->
 <TextBox Text="{Binding MyProperty}"/>
@@ -2447,6 +2452,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
 **Symptom**: Service not registered exception
 
 **Solution**: Check DI registration in `ModuleServicesExtensions.cs`:
+
 ```csharp
 services.AddTransient<ViewModel_Operator_CreateRequest>();
 ```
@@ -2456,6 +2462,7 @@ services.AddTransient<ViewModel_Operator_CreateRequest>();
 **Symptom**: Cannot connect to MySQL database
 
 **Solution**: Verify connection string in `appsettings.json` and ensure MySQL service is running:
+
 ```powershell
 Get-Service MySQL80
 Start-Service MySQL80
@@ -2466,8 +2473,9 @@ Start-Service MySQL80
 **Symptom**: `Unknown procedure` error
 
 **Solution**: Deploy stored procedure:
+
 ```powershell
-mysql -h localhost -P 3306 -u root -p mtm_waitlist_application < Database/StoredProcedures/[module]/sp_name.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_waitlist_application < Database/StoredProcedures/[module]/sp_name.sql
 ```
 
 #### Issue: DAO Throws Exception
@@ -2475,6 +2483,7 @@ mysql -h localhost -P 3306 -u root -p mtm_waitlist_application < Database/Stored
 **Symptom**: Unhandled exception from DAO
 
 **Fix**: DAOs must NEVER throw - return failure result:
+
 ```csharp
 // ❌ WRONG
 public async Task<Model_Dao_Result> SaveAsync()
@@ -2505,7 +2514,7 @@ $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 & "$vs\Common7\IDE\devenv.com" MTM_Waitlist_Application.slnx /Rebuild "Debug|x64"
 
 # Test database connection
-mysql -h localhost -P 3306 -u root -p -e "USE mtm_waitlist_application; SHOW TABLES;"
+mysql -h 172.16.1.104 -P 3306 -u root -p -e "USE mtm_waitlist_application; SHOW TABLES;"
 
 # Check DI registrations
 # Add logging in App.xaml.cs ConfigureServices
