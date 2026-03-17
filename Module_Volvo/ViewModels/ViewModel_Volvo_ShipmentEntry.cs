@@ -486,8 +486,32 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
 
             // Validation passed - remove from ObservableCollection
-            await _logger.LogInfoAsync($"User removed part {SelectedPart.PartNumber} from shipment");
+            var removedPartNumber = SelectedPart.PartNumber;
             Parts.Remove(SelectedPart);
+
+            if (Parts.Count == 0 && HasPendingShipment && _currentShipmentId.HasValue)
+            {
+                var deleteResult = await _mediator.Send(new DeletePendingShipmentCommand
+                {
+                    ShipmentId = _currentShipmentId.Value
+                });
+
+                if (!deleteResult.IsSuccess)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        deleteResult.ErrorMessage ?? "Failed to delete empty pending shipment",
+                        Enum_ErrorSeverity.Medium,
+                        null,
+                        true);
+                    return;
+                }
+
+                HasPendingShipment = false;
+                _currentShipmentId = null;
+                StatusMessage = "Pending shipment removed";
+            }
+
+            await _logger.LogInfoAsync($"User removed part {removedPartNumber} from shipment");
             ValidateSaveEligibility();
         }
         catch (Exception ex)
@@ -498,6 +522,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 Enum_ErrorSeverity.Medium,
                 ex,
                 true);
+        }
+        finally
+        {
+            RefreshCommandStates();
         }
     }
 

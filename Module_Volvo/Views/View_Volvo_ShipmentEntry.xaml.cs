@@ -64,7 +64,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         var result = await confirmDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            ViewModel.Parts.Remove(ViewModel.SelectedPart);
+            ViewModel.RemovePartCommand.Execute(null);
         }
     }
 
@@ -123,7 +123,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         }
 
         var content = new StackPanel { Spacing = 12 };
-        
+
         content.Children.Add(new TextBlock
         {
             Text = $"Part: {line.PartNumber}",
@@ -166,7 +166,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                     Text = $"Difference: {diffText} pieces",
                     FontSize = 14,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) : 
+                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) :
                                  diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Orange) :
                                  new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
                 });
@@ -215,7 +215,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
 
         // Load all parts
         await ViewModel.LoadAllPartsForDialogAsync();
-        
+
         var allParts = new List<Model_VolvoPart>(ViewModel.AvailableParts);
         var filteredParts = new List<Model_VolvoPart>(allParts);
 
@@ -258,7 +258,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         searchBox.TextChanged += (s, args) =>
         {
             var searchText = searchBox.Text?.ToLower() ?? string.Empty;
-            
+
             if (string.IsNullOrWhiteSpace(searchText))
             {
                 partsListView.ItemsSource = allParts;
@@ -270,7 +270,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             {
                 var partNumber = part.PartNumber.ToLower();
                 int searchIndex = 0;
-                
+
                 foreach (char c in partNumber)
                 {
                     if (searchIndex < searchText.Length && c == searchText[searchIndex])
@@ -278,7 +278,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                         searchIndex++;
                     }
                 }
-                
+
                 return searchIndex == searchText.Length || partNumber.Contains(searchText);
             }).ToList();
 
@@ -289,7 +289,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         var content = new StackPanel { Spacing = 12 };
         content.Children.Add(errorMessage);  // Error message at top (hidden by default)
         content.Children.Add(searchBox);
-        
+
         var partsHeader = new TextBlock
         {
             Text = "Available Parts",
@@ -313,7 +313,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         dialog.PrimaryButtonClick += async (s, args) =>
         {
             var deferral = args.GetDeferral();
-            
+
             try
             {
                 // Hide previous error
