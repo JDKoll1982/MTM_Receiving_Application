@@ -15,7 +15,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
     public Model_VolvoShipment Shipment { get; set; } = null!;
     public ObservableCollection<Model_VolvoShipmentLine> Lines { get; private set; }
     public ObservableCollection<Model_VolvoPart> AvailableParts { get; set; }
-    
+
     private List<Model_VolvoPart> _allParts = new();
     private bool _addPartPanelOpen = false;
 
@@ -54,10 +54,10 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         {
             Lines.Add(line);
         }
-        
+
         // Debug: Log part count
         System.Diagnostics.Debug.WriteLine($"[EditDialog] Loaded {_allParts.Count} parts for selection");
-        
+
         // IMPORTANT: Set ItemsSource AFTER parts are loaded
         if (_allParts.Count > 0)
         {
@@ -89,14 +89,14 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
     private void ToggleAddPartPanel()
     {
         _addPartPanelOpen = !_addPartPanelOpen;
-        
+
         if (_addPartPanelOpen)
         {
             // Open panel
             AddPartPanel.Visibility = Visibility.Visible;
             AddPartIcon.Symbol = Symbol.Remove;
             AddPartButtonText.Text = "Cancel";
-            
+
             // Reset fields
             PartSearchBox.Text = string.Empty;
             AddPartQuantityBox.Text = string.Empty;
@@ -122,7 +122,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
     private void OnPartSearchTextChanged(object sender, TextChangedEventArgs e)
     {
         var searchText = PartSearchBox.Text?.ToLower() ?? string.Empty;
-        
+
         if (string.IsNullOrWhiteSpace(searchText))
         {
             AddPartListView.ItemsSource = _allParts;
@@ -134,7 +134,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         {
             var partNumber = part.PartNumber.ToLower();
             int searchIndex = 0;
-            
+
             foreach (char c in partNumber)
             {
                 if (searchIndex < searchText.Length && c == searchText[searchIndex])
@@ -142,7 +142,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
                     searchIndex++;
                 }
             }
-            
+
             return searchIndex == searchText.Length || partNumber.Contains(searchText);
         }).ToList();
 
@@ -219,13 +219,13 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
 
         // Remove the part (no confirmation needed - user can use Cancel button to undo)
         Lines.Remove(selectedLine);
-        
+
         // Show success message briefly
         ValidationErrorBar.Severity = InfoBarSeverity.Success;
         ValidationErrorBar.Title = "Part Removed";
         ValidationErrorBar.Message = $"{selectedLine.PartNumber} has been removed from the shipment.";
         ValidationErrorBar.IsOpen = true;
-        
+
         // Auto-hide success message after 3 seconds
         var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
         timer.Tick += (s, e) =>
@@ -309,7 +309,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         }
 
         var content = new StackPanel { Spacing = 12 };
-        
+
         content.Children.Add(new TextBlock
         {
             Text = $"Part: {line.PartNumber}",
@@ -352,7 +352,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
                     Text = $"Difference: {diffText} pieces",
                     FontSize = 14,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) : 
+                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) :
                                  diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) :
                                  new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
                 });
