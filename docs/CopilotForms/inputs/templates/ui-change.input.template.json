@@ -1,0 +1,16 @@
+{
+    "formId": "ui-change",
+    "featureId": "receiving-workflow",
+    "requestTitle": "",
+    "audience": "Receiving Clerk",
+    "changeSummary": "",
+    "successLooksLike": "",
+    "affectedScreens": [],
+    "layoutNotes": "",
+    "interactionChanges": "",
+    "copyChanges": "",
+    "accessibilityNeeds": "",
+    "filesToReview": [],
+    "doNotChange": "",
+    "acceptanceCriteria": []
+}

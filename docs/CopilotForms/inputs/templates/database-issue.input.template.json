@@ -1,0 +1,11 @@
+{
+    "formId": "database-issue",
+    "featureId": "receiving-workflow",
+    "databaseTitle": "",
+    "databaseSystem": "MySQL",
+    "databaseObjects": [],
+    "databaseProblem": "",
+    "databaseEvidence": "",
+    "databaseConstraints": "",
+    "databaseValidation": []
+}

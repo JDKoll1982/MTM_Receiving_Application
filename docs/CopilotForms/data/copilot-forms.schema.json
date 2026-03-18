@@ -1,0 +1,226 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://mtm.local/docs/CopilotForms/data/copilot-forms.schema.json",
+    "title": "Copilot Forms Config",
+    "type": "object",
+    "required": [
+        "project",
+        "shared",
+        "features",
+        "forms"
+    ],
+    "properties": {
+        "project": {
+            "type": "object",
+            "required": [
+                "name",
+                "repoRoot"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "repoRoot": {
+                    "type": "string"
+                },
+                "defaultBranch": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "shared": {
+            "type": "object",
+            "properties": {
+                "priorities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "riskLevels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "changeScopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "loggingModes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": true
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "module",
+                    "name",
+                    "summary",
+                    "owner",
+                    "relatedFiles",
+                    "relatedServices"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "module": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "summary": {
+                        "type": "string"
+                    },
+                    "owner": {
+                        "type": "string"
+                    },
+                    "relatedFiles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "relatedServices": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "forms": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "title",
+                    "summary",
+                    "outputFolder",
+                    "promptFile",
+                    "instructionFile",
+                    "fieldGroups"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "summary": {
+                        "type": "string"
+                    },
+                    "whenToUse": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "beforeYouStart": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "endUserTips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "outputFolder": {
+                        "type": "string"
+                    },
+                    "promptFile": {
+                        "type": "string"
+                    },
+                    "instructionFile": {
+                        "type": "string"
+                    },
+                    "fieldGroups": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "title",
+                                "fields"
+                            ],
+                            "properties": {
+                                "title": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "columns": {
+                                    "type": "integer"
+                                },
+                                "fields": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "id",
+                                            "label",
+                                            "type"
+                                        ],
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "label": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "required": {
+                                                "type": "boolean"
+                                            },
+                                            "placeholder": {
+                                                "type": "string"
+                                            },
+                                            "helpText": {
+                                                "type": "string"
+                                            },
+                                            "optionSource": {
+                                                "type": "string"
+                                            },
+                                            "options": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

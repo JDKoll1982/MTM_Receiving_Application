@@ -1,0 +1,1108 @@
+{
+    "$schema": "./copilot-forms.schema.json",
+    "project": {
+        "name": "MTM Receiving Application",
+        "repoRoot": "c:/Users/johnk/source/repos/MTM_Receiving_Application",
+        "defaultBranch": "orgin",
+        "notes": [
+            "WinUI 3 desktop app with MVVM, CQRS, and database-backed workflows.",
+            "Use this catalog as the single editable source for feature names and suggested code entry points."
+        ]
+    },
+    "shared": {
+        "priorities": [
+            "Critical",
+            "High",
+            "Medium",
+            "Low"
+        ],
+        "riskLevels": [
+            "Low",
+            "Moderate",
+            "High"
+        ],
+        "changeScopes": [
+            "Single file",
+            "Single feature",
+            "Single module",
+            "Cross-module",
+            "Architecture-wide"
+        ],
+        "loggingModes": [
+            "Add logging",
+            "Reduce noise",
+            "Remove logging",
+            "Restructure logging",
+            "Audit logging only"
+        ],
+        "audiences": [
+            "Receiving Clerk",
+            "Supervisor",
+            "IT Administrator",
+            "Developer",
+            "Mixed users"
+        ]
+    },
+    "features": [
+        {
+            "id": "receiving-workflow",
+            "module": "Module_Receiving",
+            "name": "Receiving Workflow",
+            "summary": "Primary receiving flow for queueing, editing, and archiving receiving label data.",
+            "owner": "Receiving Team",
+            "relatedFiles": [
+                "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+                "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+                "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+                "Module_Receiving/Views/View_Receiving_Workflow.xaml"
+            ],
+            "relatedServices": [
+                "IService_ReceivingWorkflow",
+                "IService_MySQL_Receiving"
+            ]
+        },
+        {
+            "id": "bulk-inventory-processing",
+            "module": "Module_Bulk_Inventory",
+            "name": "Bulk Inventory Processing",
+            "summary": "Bulk inventory workflows, automations, and reconciliation logic.",
+            "owner": "Inventory Team",
+            "relatedFiles": [
+                "Module_Bulk_Inventory/ViewModels",
+                "Module_Bulk_Inventory/Services",
+                "Module_Bulk_Inventory/Data"
+            ],
+            "relatedServices": [
+                "IService_BulkInventory",
+                "IService_LoggingUtility"
+            ]
+        },
+        {
+            "id": "reporting-dashboard",
+            "module": "Module_Reporting",
+            "name": "Reporting Dashboard",
+            "summary": "Report generation, filtering, and user-facing export flows.",
+            "owner": "Reporting Team",
+            "relatedFiles": [
+                "Module_Reporting/ViewModels",
+                "Module_Reporting/Views",
+                "Module_Reporting/Services"
+            ],
+            "relatedServices": [
+                "IService_Reporting",
+                "IService_ErrorHandler"
+            ]
+        },
+        {
+            "id": "dunnage-management",
+            "module": "Module_Dunnage",
+            "name": "Dunnage Management",
+            "summary": "Dunnage setup, lookup, and transaction tracking workflows.",
+            "owner": "Operations Team",
+            "relatedFiles": [
+                "Module_Dunnage/ViewModels",
+                "Module_Dunnage/Views",
+                "Module_Dunnage/Services"
+            ],
+            "relatedServices": [
+                "IService_Dunnage",
+                "IService_LoggingUtility"
+            ]
+        },
+        {
+            "id": "volvo-integration",
+            "module": "Module_Volvo",
+            "name": "Volvo Integration",
+            "summary": "Volvo-specific intake, validation, and integration flows.",
+            "owner": "Integration Team",
+            "relatedFiles": [
+                "Module_Volvo/ViewModels",
+                "Module_Volvo/Services",
+                "Module_Volvo/Data"
+            ],
+            "relatedServices": [
+                "IService_Volvo",
+                "IService_LoggingUtility"
+            ]
+        }
+    ],
+    "forms": [
+        {
+            "id": "ui-change",
+            "title": "UI Change Request",
+            "summary": "Capture UI layout, content, visual hierarchy, and interaction changes.",
+            "whenToUse": [
+                "Use this when the screen already exists and the user wants it changed.",
+                "Use this when labels, grouping, layout, navigation, or interaction details need to change.",
+                "Do not use this if the main problem is incorrect business logic or a bug with no UI design intent."
+            ],
+            "beforeYouStart": [
+                "Know the screen name, workflow step, or control names if possible.",
+                "Write down what feels wrong today and what the user wants instead.",
+                "List any parts of the workflow that must stay exactly the same."
+            ],
+            "endUserTips": [
+                "Use plain language first and exact control names second.",
+                "Describe the result the user should see, not the code you think should change.",
+                "If copy matters, paste the exact text you want shown."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/ui-change",
+            "promptFile": ".github/prompts/copilotforms-ui-change.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-ui-change.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Request Summary",
+                    "description": "State what the user wants changed and who the UI serves.",
+                    "columns": 2,
+                    "fields": [
+                        {
+                            "id": "requestTitle",
+                            "label": "Short request title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "Receiving workflow header cleanup"
+                        },
+                        {
+                            "id": "audience",
+                            "label": "Primary audience",
+                            "type": "select",
+                            "optionSource": "audiences",
+                            "required": true
+                        },
+                        {
+                            "id": "changeSummary",
+                            "label": "What should change",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the current UI issue and the desired end state."
+                        },
+                        {
+                            "id": "successLooksLike",
+                            "label": "What success looks like",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe what the user should be able to do more easily after the change."
+                        }
+                    ]
+                },
+                {
+                    "title": "Visual And Interaction Detail",
+                    "description": "Capture layout, content, and behavior detail that Copilot should preserve.",
+                    "fields": [
+                        {
+                            "id": "affectedScreens",
+                            "label": "Affected screens or controls",
+                            "type": "list",
+                            "placeholder": "One screen or control per line"
+                        },
+                        {
+                            "id": "layoutNotes",
+                            "label": "Layout and spacing notes",
+                            "type": "textarea",
+                            "placeholder": "Describe position, grouping, spacing, sizing, or responsive expectations."
+                        },
+                        {
+                            "id": "interactionChanges",
+                            "label": "Interaction changes",
+                            "type": "textarea",
+                            "placeholder": "Describe button behavior, command changes, focus order, validation, or navigation changes."
+                        },
+                        {
+                            "id": "copyChanges",
+                            "label": "Text or copy changes",
+                            "type": "textarea",
+                            "placeholder": "Provide any labels, button text, tooltips, or status messages that should change."
+                        },
+                        {
+                            "id": "accessibilityNeeds",
+                            "label": "Accessibility or usability constraints",
+                            "type": "textarea",
+                            "placeholder": "Keyboard navigation, contrast, larger hit targets, reduced confusion, or user training needs."
+                        }
+                    ]
+                },
+                {
+                    "title": "Engineering Constraints",
+                    "fields": [
+                        {
+                            "id": "filesToReview",
+                            "label": "Specific files to review first",
+                            "type": "list",
+                            "placeholder": "One path per line"
+                        },
+                        {
+                            "id": "doNotChange",
+                            "label": "What must not change",
+                            "type": "textarea",
+                            "placeholder": "Business logic, data flow, command names, test behavior, or existing integrations that should remain intact."
+                        },
+                        {
+                            "id": "acceptanceCriteria",
+                            "label": "Acceptance criteria",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One acceptance criterion per line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "debugging",
+            "title": "Debugging Request",
+            "summary": "Capture symptoms, repro steps, expected behavior, and evidence.",
+            "whenToUse": [
+                "Use this when something is broken, inconsistent, or failing unexpectedly.",
+                "Use this when you can describe what happens and what should have happened instead.",
+                "Do not use this for a pure redesign or cleanup request."
+            ],
+            "beforeYouStart": [
+                "Reproduce the problem at least once if possible.",
+                "Capture exact error text, logs, or screenshots if available.",
+                "Write the shortest reliable repro steps you can."
+            ],
+            "endUserTips": [
+                "Facts matter more than guesses.",
+                "If the issue is intermittent, say when it tends to happen.",
+                "Paste exact messages instead of paraphrasing them."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/debugging",
+            "promptFile": ".github/prompts/copilotforms-debugging.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-debugging.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Symptom Summary",
+                    "columns": 2,
+                    "fields": [
+                        {
+                            "id": "bugTitle",
+                            "label": "Short bug title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "Receiving load list does not refresh after clear"
+                        },
+                        {
+                            "id": "priority",
+                            "label": "Priority",
+                            "type": "select",
+                            "optionSource": "priorities",
+                            "required": true
+                        },
+                        {
+                            "id": "observedBehavior",
+                            "label": "Observed behavior",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the failure exactly as the user sees it."
+                        },
+                        {
+                            "id": "expectedBehavior",
+                            "label": "Expected behavior",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the expected result."
+                        }
+                    ]
+                },
+                {
+                    "title": "Reproduction",
+                    "fields": [
+                        {
+                            "id": "reproSteps",
+                            "label": "Reproduction steps",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One step per line"
+                        },
+                        {
+                            "id": "frequency",
+                            "label": "How often it happens",
+                            "type": "text",
+                            "placeholder": "Always, intermittent, only after navigation, only in Debug, and so on."
+                        },
+                        {
+                            "id": "environment",
+                            "label": "Environment detail",
+                            "type": "textarea",
+                            "placeholder": "User role, machine, branch, config, test data, or timing conditions."
+                        }
+                    ]
+                },
+                {
+                    "title": "Evidence",
+                    "fields": [
+                        {
+                            "id": "errorMessages",
+                            "label": "Error messages or visible warnings",
+                            "type": "textarea",
+                            "placeholder": "Paste exact messages if available."
+                        },
+                        {
+                            "id": "logEvidence",
+                            "label": "Relevant logs, traces, or breakpoints",
+                            "type": "textarea",
+                            "placeholder": "Paste log snippets, stack traces, or debugger observations."
+                        },
+                        {
+                            "id": "suspectedCause",
+                            "label": "Suspected cause",
+                            "type": "textarea",
+                            "placeholder": "If you have a theory, describe it. If not, say Unknown."
+                        },
+                        {
+                            "id": "filesToInspect",
+                            "label": "Likely files or layers",
+                            "type": "list",
+                            "placeholder": "One path or component per line"
+                        }
+                    ]
+                },
+                {
+                    "title": "Definition Of Done",
+                    "fields": [
+                        {
+                            "id": "verificationSteps",
+                            "label": "How to verify the fix",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One verification step per line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "logic-correction",
+            "title": "Feature Logic Correction",
+            "summary": "Capture where feature behavior does not match the intended workflow or rules.",
+            "whenToUse": [
+                "Use this when the feature runs but behaves incorrectly according to user intent or business rules.",
+                "Use this when the UI may be fine but the workflow decisions are wrong.",
+                "Do not use this for styling-only requests."
+            ],
+            "beforeYouStart": [
+                "Describe the intended workflow in plain language before describing the bug.",
+                "List the rules the feature should follow.",
+                "Identify any inputs or data conditions that change the expected result."
+            ],
+            "endUserTips": [
+                "Focus on intent versus actual behavior.",
+                "Give examples of good and bad outcomes.",
+                "List what must keep working after the correction."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/logic-correction",
+            "promptFile": ".github/prompts/copilotforms-logic-correction.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-logic-correction.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Intent Versus Reality",
+                    "fields": [
+                        {
+                            "id": "workflowIntent",
+                            "label": "What the feature is supposed to do",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the intended business behavior in plain language."
+                        },
+                        {
+                            "id": "actualBehavior",
+                            "label": "What it does today",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the current behavior."
+                        },
+                        {
+                            "id": "businessRuleMismatch",
+                            "label": "Business rules being violated",
+                            "type": "textarea",
+                            "placeholder": "State any rule or assumption the current logic breaks."
+                        }
+                    ]
+                },
+                {
+                    "title": "Context And Boundaries",
+                    "fields": [
+                        {
+                            "id": "inputConditions",
+                            "label": "Input conditions that matter",
+                            "type": "list",
+                            "placeholder": "One condition per line"
+                        },
+                        {
+                            "id": "relatedData",
+                            "label": "Related data or database expectations",
+                            "type": "textarea",
+                            "placeholder": "Describe fields, stored procedures, or external data involved."
+                        },
+                        {
+                            "id": "layersInvolved",
+                            "label": "Layers or services involved",
+                            "type": "list",
+                            "placeholder": "ViewModel, Service, DAO, stored procedure, and so on."
+                        },
+                        {
+                            "id": "constraints",
+                            "label": "Constraints to preserve",
+                            "type": "textarea",
+                            "placeholder": "Performance, architecture, database rules, or backwards compatibility constraints."
+                        }
+                    ]
+                },
+                {
+                    "title": "Correction Plan",
+                    "fields": [
+                        {
+                            "id": "desiredRuleSet",
+                            "label": "Desired rule set",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One rule per line"
+                        },
+                        {
+                            "id": "testCases",
+                            "label": "Key scenarios to validate",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One scenario per line"
+                        },
+                        {
+                            "id": "doNotRegress",
+                            "label": "What must not regress",
+                            "type": "textarea",
+                            "placeholder": "List related flows that must remain stable."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "improvement-refactor",
+            "title": "Improvement Refactor Request",
+            "summary": "Capture maintainability, clarity, structure, and performance-driven refactors.",
+            "whenToUse": [
+                "Use this when the behavior is acceptable but the code is hard to maintain, understand, or extend.",
+                "Use this for cleanup, decomposition, duplication removal, or clearer structure.",
+                "Do not use this when the main issue is a production bug or incorrect user behavior."
+            ],
+            "beforeYouStart": [
+                "Identify the biggest pain points for future maintenance.",
+                "Decide how broad the refactor is allowed to be.",
+                "List any sensitive areas that must stay stable."
+            ],
+            "endUserTips": [
+                "Explain why the current code is difficult to work with.",
+                "Keep the scope realistic.",
+                "Call out whether behavior must remain identical."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/improvement-refactor",
+            "promptFile": ".github/prompts/copilotforms-improvement-refactor.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-improvement-refactor.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Refactor Goal",
+                    "fields": [
+                        {
+                            "id": "motivation",
+                            "label": "Why this refactor is needed",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "State the maintainability, readability, duplication, or complexity problem."
+                        },
+                        {
+                            "id": "painPoints",
+                            "label": "Current pain points",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One pain point per line"
+                        },
+                        {
+                            "id": "scope",
+                            "label": "Expected scope",
+                            "type": "select",
+                            "optionSource": "changeScopes",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "title": "Target Shape",
+                    "fields": [
+                        {
+                            "id": "preferredOutcome",
+                            "label": "Preferred end state",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the desired code shape, structure, or ownership boundary."
+                        },
+                        {
+                            "id": "candidateFiles",
+                            "label": "Files or types likely involved",
+                            "type": "list",
+                            "placeholder": "One file or type per line"
+                        },
+                        {
+                            "id": "architectureNotes",
+                            "label": "Architecture notes",
+                            "type": "textarea",
+                            "placeholder": "Mention MVVM boundaries, service seams, DAO rules, or dependency concerns."
+                        },
+                        {
+                            "id": "riskLevel",
+                            "label": "Risk level",
+                            "type": "select",
+                            "optionSource": "riskLevels",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "title": "Validation",
+                    "fields": [
+                        {
+                            "id": "testsNeeded",
+                            "label": "Tests or validation needed",
+                            "type": "list",
+                            "placeholder": "One validation item per line"
+                        },
+                        {
+                            "id": "successCriteria",
+                            "label": "Success criteria",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One success criterion per line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "logging-refactor",
+            "title": "Logging Refactor Request",
+            "summary": "Capture logging additions, removals, noise reduction, or structure changes.",
+            "whenToUse": [
+                "Use this when log output is missing, too noisy, inconsistent, or exposing the wrong details.",
+                "Use this when the main change is about observability rather than workflow behavior.",
+                "Do not use this for general refactors unless logging is the main objective."
+            ],
+            "beforeYouStart": [
+                "Know whether you want more logs, fewer logs, or better-structured logs.",
+                "List which events matter and which logs are noise.",
+                "Note any sensitive data that must never be logged."
+            ],
+            "endUserTips": [
+                "State whether the change is for debugging, support, compliance, or performance.",
+                "Be explicit about which logs should stay or go.",
+                "If severity matters, explain what should count as an error versus a warning."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/logging-refactor",
+            "promptFile": ".github/prompts/copilotforms-logging-refactor.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-logging-refactor.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Logging Goal",
+                    "columns": 2,
+                    "fields": [
+                        {
+                            "id": "loggingMode",
+                            "label": "Logging mode",
+                            "type": "select",
+                            "optionSource": "loggingModes",
+                            "required": true
+                        },
+                        {
+                            "id": "reason",
+                            "label": "Why logging should change",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "State the debugging, audit, noise, or compliance reason."
+                        },
+                        {
+                            "id": "currentIssue",
+                            "label": "Current logging issue",
+                            "type": "textarea",
+                            "placeholder": "Too noisy, too sparse, inconsistent, missing correlation, wrong severity, and so on."
+                        },
+                        {
+                            "id": "targetOutcome",
+                            "label": "Desired logging outcome",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the target signal quality, structure, and severity usage."
+                        }
+                    ]
+                },
+                {
+                    "title": "Logging Boundaries",
+                    "fields": [
+                        {
+                            "id": "eventsToLog",
+                            "label": "Events or transitions that should be logged",
+                            "type": "list",
+                            "placeholder": "One event per line"
+                        },
+                        {
+                            "id": "eventsToRemove",
+                            "label": "Logs to remove or suppress",
+                            "type": "list",
+                            "placeholder": "One log pattern per line"
+                        },
+                        {
+                            "id": "severityRules",
+                            "label": "Severity rules",
+                            "type": "textarea",
+                            "placeholder": "Describe what should be Trace, Debug, Information, Warning, or Error."
+                        },
+                        {
+                            "id": "sensitiveDataRules",
+                            "label": "Sensitive data handling",
+                            "type": "textarea",
+                            "placeholder": "Describe what must not be logged."
+                        },
+                        {
+                            "id": "relevantFiles",
+                            "label": "Relevant files or services",
+                            "type": "list",
+                            "placeholder": "One path or type per line"
+                        }
+                    ]
+                },
+                {
+                    "title": "Validation",
+                    "fields": [
+                        {
+                            "id": "validationNeeds",
+                            "label": "How to validate the logging change",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One validation step per line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "code-review",
+            "title": "Code Review Request",
+            "summary": "Capture a review request focused on defects, regressions, risks, architecture violations, and missing tests.",
+            "whenToUse": [
+                "Use this when you want Copilot to review a feature, module, or set of changes for problems.",
+                "Use this when the main goal is finding risks rather than implementing a requested change.",
+                "Use this for review of planned or completed work."
+            ],
+            "beforeYouStart": [
+                "Name the module, feature, or files being reviewed.",
+                "State whether this is a full review or a focused review.",
+                "List any specific concerns like security, regressions, or missing tests."
+            ],
+            "endUserTips": [
+                "Point to the exact area you care about if the codebase is large.",
+                "Say whether you want critical defects only or a full review.",
+                "Mention any recent changes or known unstable areas."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/code-review",
+            "promptFile": ".github/prompts/copilotforms-code-review.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-code-review.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Review Scope",
+                    "fields": [
+                        {
+                            "id": "reviewTitle",
+                            "label": "Short review title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "Review receiving clear-to-history changes"
+                        },
+                        {
+                            "id": "reviewScope",
+                            "label": "Scope",
+                            "type": "select",
+                            "optionSource": "changeScopes",
+                            "required": true
+                        },
+                        {
+                            "id": "targetFiles",
+                            "label": "Target files or areas",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One file, folder, or type per line"
+                        },
+                        {
+                            "id": "reviewGoal",
+                            "label": "What should the review focus on",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Regressions, architecture violations, data risks, missing tests, performance, security, and so on."
+                        }
+                    ]
+                },
+                {
+                    "title": "Risk Areas",
+                    "fields": [
+                        {
+                            "id": "specificConcerns",
+                            "label": "Specific concerns",
+                            "type": "list",
+                            "placeholder": "One concern per line"
+                        },
+                        {
+                            "id": "knownChanges",
+                            "label": "Recent changes or background",
+                            "type": "textarea",
+                            "placeholder": "Describe recent edits, PR intent, or unstable areas."
+                        },
+                        {
+                            "id": "reviewExpectations",
+                            "label": "Expected review output",
+                            "type": "textarea",
+                            "placeholder": "Example: findings first, severity ordered, file references, testing gaps."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "database-issue",
+            "title": "Database Issue Request",
+            "summary": "Capture stored procedure, SQL, schema, connection, or read-model issues that need investigation or correction.",
+            "whenToUse": [
+                "Use this when the issue is in stored procedures, database mappings, query results, or schema alignment.",
+                "Use this when the code problem cannot be understood without database context.",
+                "Do not use this for purely visual UI changes."
+            ],
+            "beforeYouStart": [
+                "Identify whether the issue is MySQL or Infor Visual SQL Server.",
+                "Name the stored procedure, table, query, or DAO if known.",
+                "Capture any mismatched data, SQL errors, or incorrect result shapes."
+            ],
+            "endUserTips": [
+                "Paste exact SQL or stored procedure names when available.",
+                "State whether the failure is read, write, schema, or data-shape related.",
+                "Mention any constraints such as read-only Visual access or stored-procedure-only rules."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/database-issue",
+            "promptFile": ".github/prompts/copilotforms-database-issue.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-database-issue.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Database Context",
+                    "fields": [
+                        {
+                            "id": "databaseTitle",
+                            "label": "Short database issue title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "sp_Receiving_LabelData_Insert missing field mapping"
+                        },
+                        {
+                            "id": "databaseSystem",
+                            "label": "Database system",
+                            "type": "select",
+                            "required": true,
+                            "options": [
+                                "MySQL",
+                                "Infor Visual SQL Server",
+                                "Both",
+                                "Unknown"
+                            ]
+                        },
+                        {
+                            "id": "databaseObjects",
+                            "label": "Affected procedures, tables, queries, or DAOs",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One object per line"
+                        },
+                        {
+                            "id": "databaseProblem",
+                            "label": "Problem summary",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the mismatch, failure, or incorrect data behavior."
+                        }
+                    ]
+                },
+                {
+                    "title": "Evidence And Constraints",
+                    "fields": [
+                        {
+                            "id": "databaseEvidence",
+                            "label": "SQL errors, mismatched data, or examples",
+                            "type": "textarea",
+                            "placeholder": "Paste exact messages, row examples, or result differences."
+                        },
+                        {
+                            "id": "databaseConstraints",
+                            "label": "Important database constraints",
+                            "type": "textarea",
+                            "placeholder": "Stored procedures only, read-only Visual DB, no schema changes, and so on."
+                        },
+                        {
+                            "id": "databaseValidation",
+                            "label": "How to validate the database fix",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One validation step per line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "test-generation",
+            "title": "Test Generation Request",
+            "summary": "Capture which code needs tests, the intended scope, and what behavior the tests must prove.",
+            "whenToUse": [
+                "Use this when you want Copilot to add or expand tests for a file, class, or module.",
+                "Use this when the main output is tests, not production code changes.",
+                "Use this for unit or integration test requests."
+            ],
+            "beforeYouStart": [
+                "Know which code needs coverage.",
+                "Decide whether you want unit, integration, or mixed tests.",
+                "List critical behaviors, edge cases, and dependencies that should be mocked or left real."
+            ],
+            "endUserTips": [
+                "State the test scope clearly.",
+                "Mention whether the target uses DAOs, services, or UI-bound classes.",
+                "List the behaviors that matter more than coverage percentage."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/test-generation",
+            "promptFile": ".github/prompts/copilotforms-test-generation.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-test-generation.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Test Target",
+                    "fields": [
+                        {
+                            "id": "testRequestTitle",
+                            "label": "Short test request title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "Add ViewModel tests for receiving workflow"
+                        },
+                        {
+                            "id": "testKind",
+                            "label": "Test kind",
+                            "type": "select",
+                            "required": true,
+                            "options": [
+                                "Unit",
+                                "Integration",
+                                "Mixed"
+                            ]
+                        },
+                        {
+                            "id": "testTargets",
+                            "label": "Files, classes, or modules to test",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One target per line"
+                        },
+                        {
+                            "id": "testIntent",
+                            "label": "What these tests must prove",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe core behaviors, edge cases, and failure paths."
+                        }
+                    ]
+                },
+                {
+                    "title": "Coverage Details",
+                    "fields": [
+                        {
+                            "id": "testDependencies",
+                            "label": "Dependencies to mock or keep real",
+                            "type": "textarea",
+                            "placeholder": "Describe services, DAOs, database access, or framework dependencies."
+                        },
+                        {
+                            "id": "testScenarios",
+                            "label": "Required scenarios",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One scenario per line"
+                        },
+                        {
+                            "id": "testConstraints",
+                            "label": "Testing constraints",
+                            "type": "textarea",
+                            "placeholder": "Naming patterns, no database access, use FluentAssertions, and so on."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "documentation-change",
+            "title": "Documentation Change Request",
+            "summary": "Capture missing, outdated, or newly required documentation and the audience it must serve.",
+            "whenToUse": [
+                "Use this when documentation needs to be created, corrected, or expanded.",
+                "Use this when the user goal is clearer guidance for developers, operators, or end users.",
+                "Use this when code changes require synchronized docs."
+            ],
+            "beforeYouStart": [
+                "Know which audience the document is for.",
+                "List the source files, modules, or workflows the docs must reflect.",
+                "State whether the problem is missing docs, stale docs, or poor structure."
+            ],
+            "endUserTips": [
+                "Describe who will read the documentation.",
+                "Call out sections that are wrong or incomplete today.",
+                "If the docs must match code exactly, say so explicitly."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/documentation-change",
+            "promptFile": ".github/prompts/copilotforms-documentation-change.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-documentation-change.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Documentation Goal",
+                    "fields": [
+                        {
+                            "id": "docTitle",
+                            "label": "Short documentation request title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "Update receiving workflow support guide"
+                        },
+                        {
+                            "id": "docAudience",
+                            "label": "Target audience",
+                            "type": "select",
+                            "optionSource": "audiences",
+                            "required": true
+                        },
+                        {
+                            "id": "docProblem",
+                            "label": "What is wrong or missing",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe the missing, stale, or confusing documentation."
+                        },
+                        {
+                            "id": "docOutcome",
+                            "label": "Desired documentation outcome",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe what the finished documentation should help the reader do."
+                        }
+                    ]
+                },
+                {
+                    "title": "Source And Validation",
+                    "fields": [
+                        {
+                            "id": "docSourceFiles",
+                            "label": "Source files or modules to inspect",
+                            "type": "list",
+                            "placeholder": "One path or module per line"
+                        },
+                        {
+                            "id": "docSections",
+                            "label": "Sections or topics to include",
+                            "type": "list",
+                            "placeholder": "One topic per line"
+                        },
+                        {
+                            "id": "docValidation",
+                            "label": "How to verify the documentation",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One validation step per line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "ui-mockup",
+            "title": "UI Mockup Request",
+            "summary": "Capture enough visual and workflow detail for Copilot to generate a mockup artifact for a screen or flow.",
+            "whenToUse": [
+                "Use this when the user wants a new screen concept or a visual mockup before implementation.",
+                "Use this when a normal UI change request is not enough because the screen is still exploratory.",
+                "Do not use this when the request is only for code cleanup."
+            ],
+            "beforeYouStart": [
+                "Know the screen purpose and main user actions.",
+                "List required fields, actions, and sections.",
+                "Describe any layout or visual style constraints that matter."
+            ],
+            "endUserTips": [
+                "Describe the screen as if explaining it to a designer.",
+                "Prioritize the most important user actions.",
+                "Mention desktop assumptions if the screen is WinUI-specific."
+            ],
+            "outputFolder": "docs/CopilotForms/outputs/ui-mockup",
+            "promptFile": ".github/prompts/copilotforms-ui-mockup.prompt.md",
+            "instructionFile": ".github/instructions/copilotforms-ui-mockup.instructions.md",
+            "fieldGroups": [
+                {
+                    "title": "Mockup Goal",
+                    "fields": [
+                        {
+                            "id": "mockupTitle",
+                            "label": "Short mockup title",
+                            "type": "text",
+                            "required": true,
+                            "placeholder": "Receiving discrepancy entry screen"
+                        },
+                        {
+                            "id": "mockupPurpose",
+                            "label": "Screen purpose",
+                            "type": "textarea",
+                            "required": true,
+                            "placeholder": "Describe what this screen helps the user do."
+                        },
+                        {
+                            "id": "mockupPrimaryActions",
+                            "label": "Primary user actions",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One action per line"
+                        },
+                        {
+                            "id": "mockupAudience",
+                            "label": "Primary audience",
+                            "type": "select",
+                            "optionSource": "audiences",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "title": "Layout And Content",
+                    "fields": [
+                        {
+                            "id": "mockupSections",
+                            "label": "Required sections or cards",
+                            "type": "list",
+                            "required": true,
+                            "placeholder": "One section per line"
+                        },
+                        {
+                            "id": "mockupFields",
+                            "label": "Important fields or controls",
+                            "type": "list",
+                            "placeholder": "One field or control per line"
+                        },
+                        {
+                            "id": "mockupVisualNotes",
+                            "label": "Visual or layout notes",
+                            "type": "textarea",
+                            "placeholder": "Describe hierarchy, spacing, panel layout, tables, buttons, and status areas."
+                        },
+                        {
+                            "id": "mockupConstraints",
+                            "label": "Constraints to preserve",
+                            "type": "textarea",
+                            "placeholder": "Window size, desktop assumptions, branding, accessibility, or workflow constraints."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

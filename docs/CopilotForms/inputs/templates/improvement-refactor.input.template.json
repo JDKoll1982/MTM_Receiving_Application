@@ -1,0 +1,13 @@
+{
+    "formId": "improvement-refactor",
+    "featureId": "receiving-workflow",
+    "motivation": "",
+    "painPoints": [],
+    "scope": "Single feature",
+    "preferredOutcome": "",
+    "candidateFiles": [],
+    "architectureNotes": "",
+    "riskLevel": "Moderate",
+    "testsNeeded": [],
+    "successCriteria": []
+}

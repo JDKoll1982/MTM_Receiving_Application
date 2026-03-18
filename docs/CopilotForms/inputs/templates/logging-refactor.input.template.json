@@ -1,0 +1,14 @@
+{
+    "formId": "logging-refactor",
+    "featureId": "receiving-workflow",
+    "loggingMode": "Add logging",
+    "reason": "",
+    "currentIssue": "",
+    "targetOutcome": "",
+    "eventsToLog": [],
+    "eventsToRemove": [],
+    "severityRules": "",
+    "sensitiveDataRules": "",
+    "relevantFiles": [],
+    "validationNeeds": []
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Copilot Forms - Logging Refactor</title>
+    <link rel="stylesheet" href="../assets/copilot-forms.css">
+    <script src="../assets/copilot-forms.js" defer></script>
+</head>
+
+<body data-form-id="logging-refactor" data-base-path="..">
+    <header class="page-header">
+        <p class="eyebrow">Copilot Forms</p>
+        <h1 id="form-title">Logging Refactor</h1>
+        <p class="lead" id="form-summary"></p>
+        <div class="nav-row">
+            <a class="secondary-link" href="../index.html">Back to index</a>
+            <a class="secondary-link" href="ui-change.html">UI Change</a>
+            <a class="secondary-link" href="debugging.html">Debugging</a>
+            <a class="secondary-link" href="logic-correction.html">Logic Correction</a>
+            <a class="secondary-link" href="improvement-refactor.html">Improvement Refactor</a>
+            <a class="secondary-link" href="code-review.html">Code Review</a>
+            <a class="secondary-link" href="database-issue.html">Database Issue</a>
+        </div>
+    </header>
+
+    <main class="form-layout">
+        <aside class="panel">
+            <h2>Context</h2>
+            <div id="status-box" class="status-banner">
+                <p id="status-message">Loading shared config...</p>
+            </div>
+            <div class="field">
+                <label for="feature-select">Feature from catalog</label>
+                <select id="feature-select"></select>
+            </div>
+            <div id="feature-summary" class="feature-summary"></div>
+            <div class="field">
+                <label>Prompt file</label>
+                <div class="link-stack"><a id="prompt-file-link" class="secondary-link" href="#">Prompt</a></div>
+            </div>
+            <div class="field">
+                <label>Instruction file</label>
+                <div class="link-stack"><a id="instruction-file-link" class="secondary-link" href="#">Instruction</a>
+                </div>
+            </div>
+            <div class="field">
+                <label>Suggested output folder</label>
+                <p id="output-folder" class="helper-text"></p>
+            </div>
+            <div class="section-callout">
+                <h3>When to use this form</h3>
+                <ul id="when-to-use-list" class="guide-list"></ul>
+            </div>
+            <div class="section-callout">
+                <h3>Before you start</h3>
+                <ul id="before-you-start-list" class="guide-list"></ul>
+            </div>
+            <div class="section-callout">
+                <h3>Tips for a good request</h3>
+                <ul id="end-user-tips-list" class="guide-list"></ul>
+            </div>
+            <div class="button-row">
+                <button id="load-config-button" class="secondary" type="button">Load Local Config</button>
+                <button id="clear-draft" class="ghost" type="button">Clear Draft</button>
+            </div>
+            <input id="load-config-input" type="file" accept="application/json" hidden>
+        </aside>
+
+        <section class="panel">
+            <h2>Request Input</h2>
+            <p class="helper-text">Use this when the main request is about log quality, noise, structure, or missing
+                observability rather than a broader feature change.</p>
+            <form id="copilot-form">
+                <div id="dynamic-fields"></div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Copilot-Friendly Output</h2>
+            <div class="button-row">
+                <button id="copy-markdown" class="primary" type="button">Copy Markdown</button>
+                <button id="download-markdown" class="secondary" type="button">Download Markdown</button>
+            </div>
+            <div class="field">
+                <label for="markdown-output">Markdown export</label>
+                <textarea id="markdown-output" class="output-box"></textarea>
+            </div>
+            <div class="button-row">
+                <button id="copy-json" class="primary" type="button">Copy JSON</button>
+                <button id="download-json" class="secondary" type="button">Download JSON</button>
+            </div>
+            <div class="field">
+                <label for="json-output">JSON export</label>
+                <textarea id="json-output" class="output-box"></textarea>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

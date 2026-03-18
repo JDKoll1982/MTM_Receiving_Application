@@ -1,0 +1,16 @@
+{
+    "formId": "debugging",
+    "featureId": "receiving-workflow",
+    "bugTitle": "",
+    "priority": "High",
+    "observedBehavior": "",
+    "expectedBehavior": "",
+    "reproSteps": [],
+    "frequency": "",
+    "environment": "",
+    "errorMessages": "",
+    "logEvidence": "",
+    "suspectedCause": "",
+    "filesToInspect": [],
+    "verificationSteps": []
+}

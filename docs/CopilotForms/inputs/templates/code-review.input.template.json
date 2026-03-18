@@ -1,0 +1,11 @@
+{
+    "formId": "code-review",
+    "featureId": "receiving-workflow",
+    "reviewTitle": "",
+    "reviewScope": "Single feature",
+    "targetFiles": [],
+    "reviewGoal": "",
+    "specificConcerns": [],
+    "knownChanges": "",
+    "reviewExpectations": ""
+}

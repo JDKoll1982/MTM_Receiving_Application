@@ -1,0 +1,11 @@
+{
+    "formId": "test-generation",
+    "featureId": "receiving-workflow",
+    "testRequestTitle": "",
+    "testKind": "Unit",
+    "testTargets": [],
+    "testIntent": "",
+    "testDependencies": "",
+    "testScenarios": [],
+    "testConstraints": ""
+}

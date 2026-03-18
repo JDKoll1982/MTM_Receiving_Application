@@ -1,0 +1,14 @@
+{
+    "formId": "logic-correction",
+    "featureId": "receiving-workflow",
+    "workflowIntent": "",
+    "actualBehavior": "",
+    "businessRuleMismatch": "",
+    "inputConditions": [],
+    "relatedData": "",
+    "layersInvolved": [],
+    "constraints": "",
+    "desiredRuleSet": [],
+    "testCases": [],
+    "doNotRegress": ""
+}

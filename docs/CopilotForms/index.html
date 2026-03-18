@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Copilot Forms</title>
+    <link rel="stylesheet" href="assets/copilot-forms.css">
+</head>
+
+<body>
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">MTM Receiving Application</p>
+            <h1>Copilot Forms</h1>
+            <p class="lead">Structured request capture for UI work, debugging, logic fixes, and refactoring.</p>
+        </div>
+    </header>
+
+    <main class="index-layout">
+        <section class="card-grid">
+            <article class="card">
+                <h2>UI Change</h2>
+                <p>Capture layout, copy, workflow, accessibility, and interaction updates.</p>
+                <a class="primary-link" href="forms/ui-change.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Debugging</h2>
+                <p>Capture symptoms, repro steps, expected behavior, logs, and suspected causes.</p>
+                <a class="primary-link" href="forms/debugging.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Logic Correction</h2>
+                <p>Describe where feature behavior does not match the user’s intended workflow.</p>
+                <a class="primary-link" href="forms/logic-correction.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Improvement Refactor</h2>
+                <p>Capture maintainability, clarity, performance, and structure improvements.</p>
+                <a class="primary-link" href="forms/improvement-refactor.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Logging Refactor</h2>
+                <p>Capture logging additions, removals, verbosity changes, or structured logging cleanup.</p>
+                <a class="primary-link" href="forms/logging-refactor.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Code Review</h2>
+                <p>Capture a review request focused on defects, risks, regressions, and missing validation.</p>
+                <a class="primary-link" href="forms/code-review.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Database Issue</h2>
+                <p>Capture stored procedure, query, schema, or database workflow problems.</p>
+                <a class="primary-link" href="forms/database-issue.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Test Generation</h2>
+                <p>Capture which code needs tests, what should be mocked, and what behaviors must be covered.</p>
+                <a class="primary-link" href="forms/test-generation.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>Documentation Change</h2>
+                <p>Capture new or missing documentation needs, audience, and accuracy constraints.</p>
+                <a class="primary-link" href="forms/documentation-change.html">Open form</a>
+            </article>
+            <article class="card">
+                <h2>UI Mockup</h2>
+                <p>Capture enough screen detail for Copilot to generate a visual mockup artifact.</p>
+                <a class="primary-link" href="forms/ui-mockup.html">Open form</a>
+            </article>
+        </section>
+
+        <section class="card">
+            <h2>Shared Data Source</h2>
+            <p>The forms read from <code>data/copilot-forms.config.json</code>. Update that file as features evolve.</p>
+            <ul class="simple-list">
+                <li>Feature catalog</li>
+                <li>Module ownership</li>
+                <li>Suggested files to inspect</li>
+                <li>Prompt and instruction pairing</li>
+                <li>User-facing guidance for each request type</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Suggested Workflow</h2>
+            <ol class="simple-list ordered">
+                <li>Fill out a form</li>
+                <li>Generate Markdown and JSON</li>
+                <li>Save the export into the matching `outputs/` folder</li>
+                <li>Link that export in chat</li>
+                <li>Run the matching prompt from `.github/prompts/`</li>
+            </ol>
+        </section>
+    </main>
+</body>
+
+</html>
