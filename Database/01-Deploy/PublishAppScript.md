@@ -49,6 +49,12 @@ missing, the app will fail to launch with a cryptic error.
 **Only use this if** IT has confirmed .NET 10 Desktop Runtime and the Windows App SDK are
 deployed to every user machine via group policy or an endpoint management tool (e.g., Intune, SCCM).
 
+**Why you might still choose this:**
+- IT already manages workstations via Intune/SCCM and deploys runtimes as part of the standard image — the prereqs will always be present.
+- The publish output is significantly smaller, so pushing updates to the server share is faster.
+- Keeps the .NET runtime version centrally controlled by IT — patching a .NET security vulnerability only requires IT to push a runtime update, not a full app republish.
+- Useful in environments where disk space on the server share is constrained.
+
 **Prerequisites:**
 - [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed on **every** user PC
 - [Windows App SDK Runtime](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads) installed on **every** user PC
@@ -68,6 +74,12 @@ Some WinUI 3 native assets will still appear as loose files next to the exe.
 while the runtime extracts to the user's local temp folder. Subsequent launches are faster.
 For a server-share deployment the standard Self-Contained (Option 1) typically launches more
 reliably since all files are already loose on disk.
+
+**Why you might still choose this:**
+- You want a visually clean share folder with a single `.exe` rather than hundreds of loose files — easier to explain to users what to shortcut.
+- Simpler to back up or version a single file on the server.
+- The first-run extraction delay only happens once per user (files are cached in `%TEMP%\.net`); after that, launches are as fast as Option 1.
+- Works well if the network is fast and cold-start time is not a concern.
 
 **Prerequisites:** None on user PCs. Same server share accessibility requirement as Option 1.
 
@@ -109,6 +121,12 @@ dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiv
 launch. This can improve startup speed on slower network connections. However, the risk of
 runtime failures due to trimming is high with WinUI 3.
 
+**Why you might still choose this:**
+- The server share is on a genuinely slow link (e.g., remote site over VPN) and folder size is causing noticeable launch delays — trimming can cut the output by 30–60%.
+- Disk space on the server share is heavily constrained.
+- You have already addressed all trim warnings in the codebase and run a full test pass with no runtime failures — in that case, the risk is reduced to acceptable.
+- You need the smallest possible artifact for automated deployment pipelines.
+
 **Prerequisites:** None on user PCs, but **use with caution** — WinUI 3 relies heavily on
 reflection and dynamic type loading. Thorough testing after trimming is required to catch
 missing-at-runtime errors before deploying to users.
@@ -128,6 +146,12 @@ Best balance of deployment simplicity and startup performance without the risks 
 
 **Server-share note:** The ReadyToRun pre-compilation helps offset the network launch overhead,
 but see the single-file caveat in Option 3 regarding first-run extraction time.
+
+**Why you might still choose this:**
+- You want the fastest possible startup after the first-run extraction has happened — this is the best performing option once the cache is warm.
+- You prefer a cleaner share folder (single file) AND need fast startup for power users who launch the app many times per day.
+- The one-time first-run delay is acceptable as a trade-off for better ongoing performance.
+- A good choice if you control the user environment and can pre-warm the extraction cache during onboarding (e.g., via an IT logon script).
 
 **Prerequisites:** None on user PCs. Same server share accessibility requirement as Option 1.
 
