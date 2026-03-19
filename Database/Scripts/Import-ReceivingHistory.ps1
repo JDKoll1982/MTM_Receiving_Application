@@ -309,7 +309,11 @@ foreach ($row in $records) {
     if ($partID.Length -gt 50) { $partID = $partID.Substring(0, 50) }
 
     # Normalise PO number: apply canonical PO-NNNNNN zero-padding (matches app workflow)
-    $poNumber = Format-PoNumber $row.PONumber
+    # "CUSTOMER SUPPLIED" is a special sentinel value: preserve it verbatim and mark the
+    # row as a non-PO item so it bypasses Infor Visual lookup and no correction flag is raised.
+    $poNormalised = Format-PoNumber $row.PONumber
+    $isCustomerSupplied = ($row.PONumber.Trim().ToUpperInvariant() -eq 'CUSTOMER SUPPLIED')
+    if ($isCustomerSupplied) { $poNormalised = 'CUSTOMER SUPPLIED' }
 
     $location = $row.InitialLocation.Trim()
     if ($location -eq "") { $location = $null }
@@ -317,14 +321,14 @@ foreach ($row in $records) {
     $validRows.Add([PSCustomObject]@{
             Quantity        = $qty
             PartID          = $partID
-            PONumber        = $poNumber
+            PONumber        = $poNormalised
             EmployeeNumber  = $empNum
             Heat            = $heat
             TransactionDate = $mySqlDate
             InitialLocation = $location
             PartDescription = $null    # enriched from Infor Visual
             VendorName      = $null    # enriched from Infor Visual
-            IsNonPOItem     = [int]0   # 1 when part not in IV and no PO
+            IsNonPOItem     = [int]$(if ($isCustomerSupplied) { 1 } else { 0 })   # 1 for Customer Supplied or part not in IV with no PO
         })
 }
 
@@ -410,6 +414,9 @@ WHERE po.ID = @PO
 
         foreach ($row in $validRows) {
             try {
+                # CUSTOMER SUPPLIED rows are already marked IsNonPOItem=1 — skip IV entirely
+                if ($row.IsNonPOItem -eq 1) { continue }
+
                 if (![string]::IsNullOrWhiteSpace($row.PONumber)) {
                     # IV stores PO IDs as 'PO-NNNNNN' - pass the formatted number directly
                     $pPO.Value = $row.PONumber

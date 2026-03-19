@@ -9,6 +9,15 @@ param(
     [string]$Password = "root"
 )
 
+# WPF requires an STA thread. The VS Code PowerShell Extension REPL runs MTA and will
+# crash with exit code 0xE0434352 if WPF is loaded there. This guard re-launches the
+# script in a dedicated pwsh -STA process automatically.
+if ([System.Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') {
+    $psExe = (Get-Process -Id $PID).MainModule.FileName
+    & $psExe -STA -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath @args
+    exit $LASTEXITCODE
+}
+
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
@@ -419,6 +428,14 @@ function Execute-SqlFile {
 # Async deployment using Background Worker
 $deployButton.Add_Click({
         try {
+            # Stop and discard any timer left over from a previous run or failed retry.
+            # Without this, the old timer keeps firing and Add_Tick stacks a second
+            # handler, causing deployment to appear to start automatically.
+            if ($script:timer) {
+                $script:timer.Stop()
+                $script:timer = $null
+            }
+
             $errorBorder.Visibility = "Collapsed"
             $summaryBorder.Visibility = "Collapsed"
             $deployButton.IsEnabled = $false
@@ -533,11 +550,11 @@ $deployButton.Add_Click({
                             Write-Host "DEBUG: Checking stored procedures path: $storedProcsPath" -ForegroundColor Yellow
                     
                             if (Test-Path $storedProcsPath) {
-                                $script:currentFiles = Get-ChildItem -Path $storedProcsPath -Recurse -Filter "*.sql" | 
+                                $script:currentFiles = @(Get-ChildItem -Path $storedProcsPath -Recurse -Filter "*.sql" | 
                                 Where-Object { 
                                     $filename = $_.Name
                                     -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                                } | Sort-Object FullName
+                                } | Sort-Object FullName)
                         
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
                         
@@ -579,11 +596,11 @@ $deployButton.Add_Click({
                             Write-Host "DEBUG: Checking migrations path: $migrationsPath" -ForegroundColor Yellow
                     
                             if (Test-Path $migrationsPath) {
-                                $script:currentFiles = Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
+                                $script:currentFiles = @(Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
                                 Where-Object { 
                                     $filename = $_.Name
                                     -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                                } | Sort-Object Name
+                                } | Sort-Object Name)
                         
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
                         
@@ -631,11 +648,11 @@ $deployButton.Add_Click({
                             Write-Host "DEBUG: Checking test data path: $testDataPath" -ForegroundColor Yellow
                     
                             if (Test-Path $testDataPath) {
-                                $script:currentFiles = Get-ChildItem -Path $testDataPath -Filter "*.sql" | 
+                                $script:currentFiles = @(Get-ChildItem -Path $testDataPath -Filter "*.sql" | 
                                 Where-Object { 
                                     $filename = $_.Name
                                     -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                                } | Sort-Object Name
+                                } | Sort-Object Name)
                         
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) test data files" -ForegroundColor Yellow
                         
@@ -704,12 +721,15 @@ $deployButton.Add_Click({
                         }
                 
                         # Build detailed error message
+                        $currentFile = if ($script:currentFiles -and $script:currentIndex -lt $script:currentFiles.Count) {
+                            $script:currentFiles[$script:currentIndex].FullName
+                        } else { '(no file)' }
                         $errorDetails = @"
 Error in deployment step $script:deploymentStep
 
 Message: $($_.Exception.Message)
 
-File: $($file.FullName)
+File: $currentFile
 
 Stack Trace:
 $($_.ScriptStackTrace)
