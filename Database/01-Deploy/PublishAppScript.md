@@ -6,12 +6,14 @@ The application lives on the server at `X:\Software Development\Live Application
 Users launch it via a **desktop shortcut pointing to the `.exe` on the server share** — nothing is installed
 locally on each PC. This means:
 
-- **Self-Contained is always required.** The .NET 10 runtime and Windows App SDK must be bundled in the
-  output folder because the runtime will not be present on user PCs.
+- **Self-Contained is always required** for the standard deployment. The .NET 10 runtime and Windows App SDK
+  must be bundled because the runtime will not be present on user PCs.
 - **Framework-Dependent (Option 2) is not suitable** for this deployment model unless every PC has the
   correct runtime pre-installed via IT policy.
-- When you publish, you overwrite the folder on the server. All users get the update automatically the
-  next time they launch the app via their shortcut — no re-deployment to individual machines required.
+- Each option publishes to its **own subfolder** so that experimental builds never overwrite the live app.
+  The primary user shortcut always points to `MTM_Receiving_Application`.
+- When you publish Option 1, you overwrite the live folder on the server. All users get the update automatically
+  the next time they launch the app via their shortcut — no re-deployment to individual machines required.
 
 All commands target `Release` configuration and output directly to the server share.
 Replace `-r win-x64` with `-r win-x86` or `-r win-arm64` as needed for the target machine.
@@ -60,7 +62,7 @@ deployed to every user machine via group policy or an endpoint management tool (
 - [Windows App SDK Runtime](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads) installed on **every** user PC
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained false -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
+dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained false -o "X:\Software Development\Live Applications\MTM_Receiving_Application_FD"
 ```
 
 ---
@@ -88,7 +90,7 @@ reliably since all files are already loose on disk.
 > **Reference:** [Single-file deployment docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/single-file/overview)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
+dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_SingleFile"
 ```
 
 ---
@@ -108,7 +110,7 @@ user PC must do on launch, which partially compensates for the network file-read
 > **Reference:** [ReadyToRun compilation docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
+dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_R2R"
 ```
 
 ---
@@ -134,7 +136,7 @@ missing-at-runtime errors before deploying to users.
 > **Reference:** [Trim self-contained deployments docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/trim-self-contained)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishTrimmed=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
+dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishTrimmed=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Trimmed"
 ```
 
 ---
@@ -160,7 +162,7 @@ but see the single-file caveat in Option 3 regarding first-run extraction time.
 > - [ReadyToRun compilation docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
+dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Optimized"
 ```
 
 ---
@@ -199,12 +201,12 @@ X:\Software Development\Live Applications\MTM_Receiving_Application\MTM_Receivin
 
 ## Quick Reference
 
-| Option | Runtime Bundled | Single EXE | Faster Startup | Smaller Size | Safe for WinUI 3 | Server-Share Suitable |
-|---|---|---|---|---|---|---|
-| 1. Self-Contained | ✅ | ❌ | — | — | ✅ | ✅ Best choice |
-| 2. Framework-Dependent | ❌ | ❌ | — | ✅ | ✅ | ⚠️ Avoid unless IT managed |
-| 3. Single File | ✅ | ~✅ | ❌ slight | — | ✅ | ⚠️ Slower first launch |
-| 4. ReadyToRun | ✅ | ❌ | ✅ | ❌ larger | ✅ | ✅ Good for slow networks |
-| 5. Trimmed | ✅ | ❌ | — | ✅ | ⚠️ Test thoroughly | ⚠️ Test before deploying |
-| 6. Single File + R2R | ✅ | ~✅ | ✅ | — | ✅ | ⚠️ Slower first launch |
-| 7. ARM64 | ✅ | ❌ | — | — | ✅ | ✅ Separate folder/shortcut |
+| Option | Output Folder | Runtime Bundled | Single EXE | Faster Startup | Smaller Size | Safe for WinUI 3 | Server-Share Suitable |
+|---|---|---|---|---|---|---|---|
+| 1. Self-Contained | `MTM_Receiving_Application` | ✅ | ❌ | — | — | ✅ | ✅ Best choice |
+| 2. Framework-Dependent | `MTM_Receiving_Application_FD` | ❌ | ❌ | — | ✅ | ✅ | ⚠️ Avoid unless IT managed |
+| 3. Single File | `MTM_Receiving_Application_SingleFile` | ✅ | ~✅ | ❌ slight | — | ✅ | ⚠️ Slower first launch |
+| 4. ReadyToRun | `MTM_Receiving_Application_R2R` | ✅ | ❌ | ✅ | ❌ larger | ✅ | ✅ Good for slow networks |
+| 5. Trimmed | `MTM_Receiving_Application_Trimmed` | ✅ | ❌ | — | ✅ | ⚠️ Test thoroughly | ⚠️ Test before deploying |
+| 6. Single File + R2R | `MTM_Receiving_Application_Optimized` | ✅ | ~✅ | ✅ | — | ✅ | ⚠️ Slower first launch |
+| 7. ARM64 | `MTM_Receiving_Application_ARM64` | ✅ | ❌ | — | — | ✅ | ✅ Separate folder/shortcut |
