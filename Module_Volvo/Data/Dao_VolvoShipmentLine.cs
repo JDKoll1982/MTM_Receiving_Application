@@ -32,6 +32,7 @@ public class Dao_VolvoShipmentLine
         {
             { "shipment_id", line.ShipmentId },
             { "part_number", line.PartNumber },
+            { "location", string.IsNullOrWhiteSpace(line.Location) ? (object)DBNull.Value : line.Location.Trim() },
             { "quantity_per_skid", line.QuantityPerSkid },
             { "received_skid_count", line.ReceivedSkidCount },
             { "calculated_piece_count", line.CalculatedPieceCount },
@@ -75,6 +76,7 @@ public class Dao_VolvoShipmentLine
         var parameters = new Dictionary<string, object>
         {
             { "id", line.Id },
+            { "location", string.IsNullOrWhiteSpace(line.Location) ? (object)DBNull.Value : line.Location.Trim() },
             { "received_skid_count", line.ReceivedSkidCount },
             { "calculated_piece_count", line.CalculatedPieceCount },
             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
@@ -114,6 +116,9 @@ public class Dao_VolvoShipmentLine
             Id = reader.GetInt32(reader.GetOrdinal("id")),
             ShipmentId = reader.GetInt32(reader.GetOrdinal("shipment_id")),
             PartNumber = reader.GetString(reader.GetOrdinal("part_number")),
+            Location = reader.IsDBNull(reader.GetOrdinal("location"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("location")),
             QuantityPerSkid = reader.GetInt32(reader.GetOrdinal("quantity_per_skid")),
             ReceivedSkidCount = reader.GetInt32(reader.GetOrdinal("received_skid_count")),
             CalculatedPieceCount = reader.GetInt32(reader.GetOrdinal("calculated_piece_count")),

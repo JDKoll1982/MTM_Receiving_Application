@@ -95,6 +95,7 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                 {
                     ShipmentId = shipment.Id,
                     PartNumber = part.PartNumber,
+                    Location = part.Location,
                     QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = part.ReceivedSkidCount,
                     CalculatedPieceCount = quantityPerSkid * part.ReceivedSkidCount,

@@ -12,9 +12,9 @@
     DefaultButton="Primary">
     
     <ContentDialog.Resources>
-        <x:Double x:Key="ContentDialogMaxWidth">1400</x:Double>
-        <x:Double x:Key="ContentDialogMinWidth">1400</x:Double>
-        <x:Double x:Key="ContentDialogMaxHeight">800</x:Double>
+        <x:Double x:Key="ContentDialogMaxWidth">1180</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">1180</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">680</x:Double>
         <converters:NullableDoubleToDoubleConverter x:Key="NullableDoubleToDoubleConverter"/>
         <converters:Converter_BoolToString x:Key="BoolToStringConverter"/>
         <converters:Converter_IntToString x:Key="IntToStringConverter"/>
@@ -134,47 +134,73 @@
                     Padding="12"
                     Margin="0,0,0,8"
                     Background="{ThemeResource LayerFillColorDefaultBrush}">
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <!-- Left: Search & Parts List -->
-                    <StackPanel Grid.Column="0" Spacing="8">
-                        <TextBlock x:Name="AddPartErrorMessage"
-                                   Foreground="Red"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap"
-                                   Visibility="Collapsed"/>
-                        
-                        <TextBox x:Name="PartSearchBox"
-                                 PlaceholderText="Search part numbers..."
-                                 TextChanged="OnPartSearchTextChanged"/>
-                        
-                        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4"
-                                Height="120">
-                            <ListView x:Name="AddPartListView"
-                                      SelectionMode="Single"
-                                      DisplayMemberPath="PartNumber"
-                                      Background="{ThemeResource ControlFillColorDefaultBrush}"/>
-                        </Border>
-                    </StackPanel>
-                    
-                    <!-- Middle: Quantity Input -->
-                    <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="0,26,0,0">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="AddPartErrorMessage"
+                               Grid.Row="0"
+                               Foreground="Red"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"
+                               Visibility="Collapsed"/>
+
+                    <TextBox x:Name="PartSearchBox"
+                             Grid.Row="1"
+                             PlaceholderText="Search part numbers..."
+                             TextChanged="OnPartSearchTextChanged"
+                             TabIndex="0"/>
+
+                    <Grid Grid.Row="2" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
                         <TextBox x:Name="AddPartQuantityBox"
+                                 Grid.Column="0"
                                  Header="Received Skids"
                                  PlaceholderText="1-99"
                                  InputScope="Number"
+                                 HorizontalAlignment="Stretch"
+                                 TabIndex="2"/>
+
+                        <TextBox x:Name="AddPartLocationBox"
+                                 Grid.Column="1"
+                                 Header="Location"
+                                 PlaceholderText="Auto-set from Infor Visual"
+                                 IsReadOnly="True"
+                                 IsTabStop="False"
                                  HorizontalAlignment="Stretch"/>
-                    </StackPanel>
-                    
-                    <!-- Right: Action Buttons -->
-                    <StackPanel Grid.Column="2" VerticalAlignment="Top" Spacing="8" Margin="0,26,0,0">
+                    </Grid>
+
+                    <TextBlock Grid.Row="3"
+                               Text="Available Parts"
+                               FontWeight="SemiBold"/>
+
+                    <Border Grid.Row="4"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Height="170">
+                        <ListView x:Name="AddPartListView"
+                                  SelectionMode="Single"
+                                  SelectionChanged="AddPartListView_SelectionChanged"
+                                  DisplayMemberPath="PartNumber"
+                                  Background="{ThemeResource ControlFillColorDefaultBrush}"
+                                  TabIndex="1"/>
+                    </Border>
+
+                    <StackPanel Grid.Row="5"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Spacing="8">
                         <Button x:Name="ConfirmAddPartButton"
                                 Content="Add to List"
                                 Style="{StaticResource AccentButtonStyle}"
@@ -225,6 +251,16 @@
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                 <TextBlock Text="{x:Bind CalculatedPieceCount, Mode=OneWay}" 
+                                           VerticalAlignment="Center"
+                                           Margin="8,0"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+
+                    <controls:DataGridTemplateColumn Header="Location" Width="*">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <TextBlock Text="{x:Bind Location, Mode=OneWay}"
                                            VerticalAlignment="Center"
                                            Margin="8,0"/>
                             </DataTemplate>

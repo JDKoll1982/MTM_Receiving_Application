@@ -136,6 +136,7 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                 {
                     ShipmentId = shipmentId,
                     PartNumber = partDto.PartNumber,
+                    Location = partDto.Location,
                     QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = partDto.ReceivedSkidCount,
                     CalculatedPieceCount = calculatedPieceCount,

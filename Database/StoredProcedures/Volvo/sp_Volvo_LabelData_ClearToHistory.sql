@@ -68,6 +68,7 @@ BEGIN
             shipment_history_id,
             original_shipment_id,
             part_number,
+            location,
             quantity_per_skid,
             received_skid_count,
             calculated_piece_count,
@@ -87,6 +88,7 @@ BEGIN
             0,                              -- placeholder; overwritten in Step 3
             vld.shipment_id                 AS original_shipment_id,
             vld.part_number,
+            vld.location,
             vld.quantity_per_skid,
             vld.received_skid_count,
             vld.calculated_piece_count,

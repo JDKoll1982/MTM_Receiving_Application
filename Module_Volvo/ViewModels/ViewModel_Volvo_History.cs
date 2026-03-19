@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests;
@@ -23,6 +24,8 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_InforVisual _inforVisualService;
+    private readonly IService_ReceivingValidation _receivingValidation;
 
     #region Observable Properties
 
@@ -50,12 +53,16 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
     public ViewModel_Volvo_History(
         IMediator mediator,
+        IService_InforVisual inforVisualService,
+        IService_ReceivingValidation receivingValidation,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService)
         : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
+        _receivingValidation = receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
     }
 
     #endregion
@@ -322,7 +329,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 : new ObservableCollection<Model_VolvoPart>();
 
             // Create and show edit dialog
-            var dialog = new Views.VolvoShipmentEditDialog
+            var dialog = new Views.VolvoShipmentEditDialog(ResolvePartLocationAsync)
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot
             };
@@ -352,6 +359,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                     Parts = updatedLines.Select(line => new ShipmentLineDto
                     {
                         PartNumber = line.PartNumber,
+                        Location = line.Location,
                         ReceivedSkidCount = line.ReceivedSkidCount,
                         ExpectedSkidCount = line.ExpectedSkidCount.HasValue
                             ? Convert.ToInt32(line.ExpectedSkidCount.Value)
@@ -400,6 +408,34 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     }
 
     private bool CanEdit() => SelectedShipment != null && !IsBusy;
+
+    private async Task<string> ResolvePartLocationAsync(string partNumber)
+    {
+        if (string.IsNullOrWhiteSpace(partNumber))
+        {
+            return string.Empty;
+        }
+
+        if (_receivingValidation.UseMockLocationList)
+        {
+            var presetLocations = _receivingValidation.PresetLocations;
+            if (presetLocations.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var index = Math.Abs(StringComparer.OrdinalIgnoreCase.GetHashCode(partNumber)) % presetLocations.Count;
+            return presetLocations[index];
+        }
+
+        var partResult = await _inforVisualService.GetPartByIDAsync(partNumber.Trim());
+        if (!partResult.IsSuccess || partResult.Data is null)
+        {
+            return string.Empty;
+        }
+
+        return partResult.Data.DefaultLocationId?.Trim() ?? string.Empty;
+    }
 
     #endregion
 

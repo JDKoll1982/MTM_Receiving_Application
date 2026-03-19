@@ -15,6 +15,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
@@ -29,6 +30,8 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_InforVisual _inforVisualService;
+    private readonly IService_ReceivingValidation _receivingValidation;
 
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
@@ -36,9 +39,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     // Public accessors for code-behind dialog
     public IService_ErrorHandler ErrorHandler => _errorHandler;
     public IService_LoggingUtility Logger => _logger;
+    public bool UseMockLocationList => _receivingValidation.UseMockLocationList;
+    public IReadOnlyList<string> PresetLocations => _receivingValidation.PresetLocations;
 
     public ViewModel_Volvo_ShipmentEntry(
         IMediator mediator,
+        IService_InforVisual inforVisualService,
+        IService_ReceivingValidation receivingValidation,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -46,6 +53,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
+        _receivingValidation = receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
         _windowService = windowService;
         _sessionManager = sessionManager;
 
@@ -413,6 +422,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var newLine = new Model_VolvoShipmentLine
             {
                 PartNumber = SelectedPartToAdd.PartNumber,
+                Location = await ResolvePartLocationAsync(SelectedPartToAdd.PartNumber),
                 QuantityPerSkid = SelectedPartToAdd.QuantityPerSkid,
                 ReceivedSkidCount = skidCount,
                 CalculatedPieceCount = calculatedPieces,
@@ -1116,6 +1126,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var partsDto = Parts.Select(p => new ShipmentLineDto
             {
                 PartNumber = p.PartNumber,
+                Location = p.Location,
                 ReceivedSkidCount = p.ReceivedSkidCount,
                 ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
                 HasDiscrepancy = p.HasDiscrepancy,
@@ -1182,6 +1193,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         var partsDto = Parts.Select(p => new ShipmentLineDto
         {
             PartNumber = p.PartNumber,
+            Location = p.Location,
             ReceivedSkidCount = p.ReceivedSkidCount,
             ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
             HasDiscrepancy = p.HasDiscrepancy,
@@ -1346,6 +1358,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var partsDto = Parts.Select(p => new ShipmentLineDto
             {
                 PartNumber = p.PartNumber,
+                Location = p.Location,
                 ReceivedSkidCount = p.ReceivedSkidCount,
                 ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
                 HasDiscrepancy = p.HasDiscrepancy,
@@ -1681,6 +1694,38 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         GenerateLabelsCommand.NotifyCanExecuteChanged();
         PreviewEmailCommand.NotifyCanExecuteChanged();
         SaveAsPendingCommand.NotifyCanExecuteChanged();
+    }
+
+    public async Task<string> ResolvePartLocationAsync(string partNumber)
+    {
+        if (string.IsNullOrWhiteSpace(partNumber))
+        {
+            return string.Empty;
+        }
+
+        if (UseMockLocationList)
+        {
+            return ResolveMockLocation(partNumber);
+        }
+
+        var partResult = await _inforVisualService.GetPartByIDAsync(partNumber.Trim());
+        if (!partResult.IsSuccess || partResult.Data is null)
+        {
+            return string.Empty;
+        }
+
+        return partResult.Data.DefaultLocationId?.Trim() ?? string.Empty;
+    }
+
+    private string ResolveMockLocation(string partNumber)
+    {
+        if (PresetLocations.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var index = Math.Abs(StringComparer.OrdinalIgnoreCase.GetHashCode(partNumber)) % PresetLocations.Count;
+        return PresetLocations[index];
     }
 
     #endregion

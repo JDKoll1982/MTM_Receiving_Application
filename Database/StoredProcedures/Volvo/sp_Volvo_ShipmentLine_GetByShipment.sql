@@ -14,7 +14,7 @@ CREATE PROCEDURE `sp_Volvo_ShipmentLine_GetByShipment`(
 )
 BEGIN
   SELECT
-    id, shipment_id, part_number, quantity_per_skid, received_skid_count, calculated_piece_count,
+    id, shipment_id, part_number, location, quantity_per_skid, received_skid_count, calculated_piece_count,
     has_discrepancy, expected_skid_count, discrepancy_note
   FROM volvo_line_data
   WHERE shipment_id = p_shipment_id

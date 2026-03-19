@@ -17,6 +17,7 @@ SELECT
     vs.receiver_number,
     vs.status,
     1 AS part_count,
+    vsl.location,
     vsl.quantity_per_skid,
     vsl.received_skid_count,
     'Volvo' AS source_module
@@ -37,6 +38,7 @@ SELECT
     vlh.receiver_number,
     vlh.status,
     1 AS part_count,
+    vlnh.location,
     vlnh.quantity_per_skid,
     vlnh.received_skid_count,
     'Volvo' AS source_module

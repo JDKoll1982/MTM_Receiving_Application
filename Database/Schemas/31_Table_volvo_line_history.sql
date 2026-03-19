@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS volvo_line_history (
     shipment_history_id     INT NOT NULL COMMENT 'FK to volvo_label_history.id (archived header)',
     original_shipment_id    INT NOT NULL COMMENT 'Preserved FK from volvo_line_data.shipment_id (original active header ID)',
     part_number             VARCHAR(20) NOT NULL COMMENT 'Volvo part number (from volvo_masterdata at time of entry)',
+    location                VARCHAR(50) NULL COMMENT 'Warehouse location for this shipment line',
     quantity_per_skid       INT NOT NULL DEFAULT 0 COMMENT 'Cached quantity per skid from master data at time of shipment',
     received_skid_count     INT NOT NULL COMMENT 'User-entered actual skid count',
     calculated_piece_count  INT NOT NULL COMMENT 'Snapshot of calculated piece count',

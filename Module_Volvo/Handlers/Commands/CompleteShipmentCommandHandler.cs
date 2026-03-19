@@ -119,6 +119,7 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     {
                         ShipmentId = pendingShipment.Id,
                         PartNumber = partDto.PartNumber,
+                        Location = partDto.Location,
                         QuantityPerSkid = quantityPerSkid,
                         ReceivedSkidCount = partDto.ReceivedSkidCount,
                         CalculatedPieceCount = calculatedPieceCount,
@@ -185,6 +186,7 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                 {
                     ShipmentId = shipmentId,
                     PartNumber = partDto.PartNumber,
+                    Location = partDto.Location,
                     QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = partDto.ReceivedSkidCount,
                     CalculatedPieceCount = calculatedPieceCount,

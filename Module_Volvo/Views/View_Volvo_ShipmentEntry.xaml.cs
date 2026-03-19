@@ -226,32 +226,51 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
             TextWrapping = TextWrapping.Wrap,
             Visibility = Visibility.Collapsed,
-            Margin = new Thickness(0, 0, 0, 12)
+            Margin = new Thickness(0, 0, 0, 8)
         };
 
-        // Create search box
         var searchBox = new TextBox
         {
             PlaceholderText = "Search part numbers...",
-            Margin = new Thickness(0, 0, 0, 12)
+            Margin = new Thickness(0, 0, 0, 8),
+            TabIndex = 0
         };
 
-        // Create ListView for parts
-        var partsListView = new ListView
-        {
-            ItemsSource = filteredParts,
-            SelectionMode = ListViewSelectionMode.Single,
-            MaxHeight = 300,
-            Margin = new Thickness(0, 0, 0, 12),
-            DisplayMemberPath = "PartNumber"  // Show PartNumber property for each item
-        };
-
-        // Create received skids input
         var receivedSkidsBox = new TextBox
         {
             Header = "Received Skids",
             PlaceholderText = "Enter quantity (1-99)",
-            InputScope = new InputScope { Names = { new InputScopeName(InputScopeNameValue.Number) } }
+            InputScope = new InputScope { Names = { new InputScopeName(InputScopeNameValue.Number) } },
+            TabIndex = 2
+        };
+
+        var locationBox = new TextBox
+        {
+            Header = "Location",
+            PlaceholderText = "Auto-set from Infor Visual",
+            IsReadOnly = true,
+            IsTabStop = false
+        };
+
+        var partsListView = new ListView
+        {
+            ItemsSource = filteredParts,
+            SelectionMode = ListViewSelectionMode.Single,
+            MaxHeight = 190,
+            Margin = new Thickness(0, 0, 0, 8),
+            TabIndex = 1,
+            DisplayMemberPath = "PartNumber"  // Show PartNumber property for each item
+        };
+
+        partsListView.SelectionChanged += async (_, _) =>
+        {
+            if (partsListView.SelectedItem is not Model_VolvoPart selectedPart)
+            {
+                locationBox.Text = string.Empty;
+                return;
+            }
+
+            locationBox.Text = await ViewModel.ResolvePartLocationAsync(selectedPart.PartNumber);
         };
 
         // Search handler with fuzzy filtering
@@ -286,9 +305,16 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         };
 
         // Build dialog content
-        var content = new StackPanel { Spacing = 12 };
-        content.Children.Add(errorMessage);  // Error message at top (hidden by default)
+        var content = new StackPanel
+        {
+            Spacing = 8,
+            Width = 420,
+            MaxHeight = 430
+        };
+        content.Children.Add(errorMessage);
         content.Children.Add(searchBox);
+        content.Children.Add(receivedSkidsBox);
+        content.Children.Add(locationBox);
 
         var partsHeader = new TextBlock
         {
@@ -298,7 +324,6 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         };
         content.Children.Add(partsHeader);
         content.Children.Add(partsListView);
-        content.Children.Add(receivedSkidsBox);
 
         var dialog = new ContentDialog
         {
@@ -309,6 +334,8 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot
         };
+
+        dialog.Opened += (_, _) => searchBox.Focus(FocusState.Programmatic);
 
         dialog.PrimaryButtonClick += async (s, args) =>
         {
@@ -351,6 +378,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                 var newLine = new Model_VolvoShipmentLine
                 {
                     PartNumber = selectedPart.PartNumber,
+                    Location = locationBox.Text?.Trim() ?? string.Empty,
                     QuantityPerSkid = selectedPart.QuantityPerSkid,
                     ReceivedSkidCount = skidCount,
                     CalculatedPieceCount = calculatedPieces,

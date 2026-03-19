@@ -21,6 +21,11 @@ public record ShipmentLineDto
     public int ReceivedSkidCount { get; init; }
 
     /// <summary>
+    /// Warehouse location for this part line.
+    /// </summary>
+    public string Location { get; init; } = string.Empty;
+
+    /// <summary>
     /// Expected number of skids (populated when HasDiscrepancy = true).
     /// </summary>
     public int? ExpectedSkidCount { get; init; }

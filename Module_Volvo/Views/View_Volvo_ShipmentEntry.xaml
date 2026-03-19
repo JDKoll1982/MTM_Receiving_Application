@@ -129,6 +129,16 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
+                    <controls:DataGridTemplateColumn Header="Location" Width="*">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <TextBlock Text="{x:Bind Location, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Margin="8,0"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+
                     <controls:DataGridTemplateColumn Header="Discrepancy" Width="230">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">

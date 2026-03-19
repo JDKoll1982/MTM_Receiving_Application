@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
@@ -18,9 +19,11 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
 
     private List<Model_VolvoPart> _allParts = new();
     private bool _addPartPanelOpen = false;
+    private readonly Func<string, Task<string>> _resolvePartLocationAsync;
 
-    public VolvoShipmentEditDialog()
+    public VolvoShipmentEditDialog(Func<string, Task<string>> resolvePartLocationAsync)
     {
+        _resolvePartLocationAsync = resolvePartLocationAsync ?? throw new ArgumentNullException(nameof(resolvePartLocationAsync));
         InitializeComponent();
         Lines = new ObservableCollection<Model_VolvoShipmentLine>();
         AvailableParts = new ObservableCollection<Model_VolvoPart>();
@@ -100,9 +103,11 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             // Reset fields
             PartSearchBox.Text = string.Empty;
             AddPartQuantityBox.Text = string.Empty;
+            AddPartLocationBox.Text = string.Empty;
             AddPartListView.SelectedItem = null;
             AddPartErrorMessage.Visibility = Visibility.Collapsed;
             AddPartListView.ItemsSource = _allParts;
+            DispatcherQueue.TryEnqueue(() => PartSearchBox.Focus(FocusState.Programmatic));
         }
         else
         {
@@ -117,6 +122,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         AddPartIcon.Symbol = Symbol.Add;
         AddPartButtonText.Text = "Add Part";
         AddPartErrorMessage.Visibility = Visibility.Collapsed;
+        AddPartLocationBox.Text = string.Empty;
     }
 
     private void OnPartSearchTextChanged(object sender, TextChangedEventArgs e)
@@ -184,6 +190,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         {
             ShipmentId = Shipment.Id,
             PartNumber = selectedPart.PartNumber,
+            Location = AddPartLocationBox.Text?.Trim() ?? string.Empty,
             QuantityPerSkid = selectedPart.QuantityPerSkid,
             ReceivedSkidCount = skidCount,
             CalculatedPieceCount = calculatedPieces,
@@ -194,6 +201,17 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
 
         Lines.Add(newLine);
         CloseAddPartPanel();
+    }
+
+    private async void AddPartListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (AddPartListView.SelectedItem is not Model_VolvoPart selectedPart)
+        {
+            AddPartLocationBox.Text = string.Empty;
+            return;
+        }
+
+        AddPartLocationBox.Text = await _resolvePartLocationAsync(selectedPart.PartNumber);
     }
 
     private void RemoveSelectedLine()

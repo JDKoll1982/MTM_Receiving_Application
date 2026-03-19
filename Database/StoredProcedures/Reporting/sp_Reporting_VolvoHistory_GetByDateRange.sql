@@ -17,7 +17,7 @@ BEGIN
         created_date,
         NULL AS created_by_username,
         source_module,
-        NULL AS location,
+        location,
         NULL AS load_number,
         NULL AS label_number,
         NULL AS packages_per_load,

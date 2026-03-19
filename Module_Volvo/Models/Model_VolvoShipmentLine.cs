@@ -29,6 +29,13 @@ public partial class Model_VolvoShipmentLine : ObservableObject
     private string _partNumber = string.Empty;
 
     /// <summary>
+    /// Warehouse location for this part line.
+    /// Auto-populated from Infor Visual when available.
+    /// </summary>
+    [ObservableProperty]
+    private string _location = string.Empty;
+
+    /// <summary>
     /// Quantity per skid for this part (cached for recalculation)
     /// </summary>
     [ObservableProperty]

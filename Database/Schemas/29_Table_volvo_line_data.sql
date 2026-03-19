@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS volvo_line_data (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for volvo_line_data',
     shipment_id INT NOT NULL COMMENT 'FK to volvo_label_data.id (shipment header)',
     part_number VARCHAR(20) NOT NULL COMMENT 'From volvo_masterdata',
+    location VARCHAR(50) NULL COMMENT 'Warehouse location for this shipment line',
     quantity_per_skid INT NOT NULL DEFAULT 0 COMMENT 'Cached quantity per skid from master data at time of shipment',
     received_skid_count INT NOT NULL COMMENT 'User-entered actual skid count',
     calculated_piece_count INT NOT NULL COMMENT 'Stored snapshot of calculated piece count from component explosion',
