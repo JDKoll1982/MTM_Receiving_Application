@@ -240,6 +240,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// Loads the user's saved column visibility preference from settings and populates
         /// <see cref="ColumnSettings"/>. Falls back to the default visible set if none stored.
         /// </summary>
+        /// <param name="userId">Optional user ID for user-scoped settings.</param>
         internal async Task LoadColumnVisibilityAsync(int? userId = null)
         {
             try
@@ -304,6 +305,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// Persists the current column visibility selection to settings.
         /// Called after the column-chooser dialog is confirmed.
         /// </summary>
+        /// <param name="userId">Optional user ID for user-scoped settings.</param>
         internal async Task SaveColumnVisibilityAsync(int? userId = null)
         {
             try
@@ -376,6 +378,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void ClearSearch() => SearchText = string.Empty;
 
         /// <summary>Called from the View's Sorting event handler to apply a column sort.</summary>
+        /// <param name="columnKey">The column key to sort by.</param>
+        /// <param name="ascending">True to sort ascending; false for descending.</param>
         internal void SortBy(string columnKey, bool ascending)
         {
             SortColumn = columnKey;
@@ -419,6 +423,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>Gets the text representation of the quarter for a given date.</summary>
+        /// <param name="date">The date whose quarter label is needed.</param>
         private static string GetQuarterText(DateTime date)
         {
             int quarter = (date.Month - 1) / 3 + 1;
@@ -1214,6 +1219,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <summary>
         /// Validates the list of loads before saving.
         /// </summary>
+        /// <param name="loadsToValidate">The loads to validate.</param>
+        /// <param name="dataSource">The data source type, used to adjust validation rules.</param>
         private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate, Enum_DataSourceType dataSource = Enum_DataSourceType.Memory)
         {
             var errors = new System.Collections.Generic.List<string>();

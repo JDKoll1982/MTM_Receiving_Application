@@ -110,6 +110,13 @@ public static class Helper_VolvoShipmentCalculations
     /// database, running the component explosion, and returning a human-readable summary.
     /// All data lives in the database (volvo_label_data / volvo_line_data); no files are written.
     /// </summary>
+    /// <param name="shipmentDao">DAO for shipment header data.</param>
+    /// <param name="lineDao">DAO for shipment line data.</param>
+    /// <param name="partDao">DAO for part data.</param>
+    /// <param name="componentDao">DAO for part component data.</param>
+    /// <param name="authService">Authorization service to verify label generation rights.</param>
+    /// <param name="logger">Logging utility.</param>
+    /// <param name="shipmentId">Unique identifier of the shipment to process.</param>
     public static async Task<Model_Dao_Result<string>> GenerateLabelAsync(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,

@@ -30,6 +30,8 @@ public class Dao_DunnageLabelData
     /// Uses explicit <see cref="MySqlParameter"/> objects with declared types to avoid
     /// "MySQL Error 0: Unhandled type encountered" when nullable values are DBNull.
     /// </summary>
+    /// <param name="loads">The list of dunnage loads to insert.</param>
+    /// <param name="user">The user ID to record against each inserted row.</param>
     public async Task<Model_Dao_Result<int>> InsertBatchAsync(List<Model_DunnageLoad> loads, string user)
     {
         if (loads == null || loads.Count == 0)
@@ -107,6 +109,7 @@ public class Dao_DunnageLabelData
     /// Atomically moves all rows from <c>dunnage_label_data</c> to <c>dunnage_history</c>
     /// and deletes them from the queue. Returns the number of rows moved.
     /// </summary>
+    /// <param name="archivedBy">User or system identifier recorded in the archive record.</param>
     public async Task<Model_Dao_Result<int>> ClearToHistoryAsync(string archivedBy)
     {
         try
@@ -182,6 +185,7 @@ public class Dao_DunnageLabelData
     /// Prefers <see cref="Model_DunnageLoad.SpecValues"/> then falls back to <see cref="Model_DunnageLoad.Specs"/>.
     /// Returns <c>null</c> if both are empty.
     /// </summary>
+    /// <param name="load">The dunnage load whose spec values to serialize.</param>
     private static string? BuildSpecsJson(Model_DunnageLoad load)
     {
         var specs = load.SpecValues ?? load.Specs;

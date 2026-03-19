@@ -389,8 +389,14 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>\n    /// Shows contextual help for details entry\n    /// </summary>
-    /// <param name="key"></param>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.DetailsEntry\");\n    }
+    /// <summary>
+    /// Shows contextual help for details entry.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.DetailsEntry");
+    }
 
     #endregion
 

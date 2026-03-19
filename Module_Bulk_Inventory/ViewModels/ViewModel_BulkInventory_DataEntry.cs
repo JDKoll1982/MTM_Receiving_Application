@@ -151,6 +151,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     }
 
     /// <summary>Removes a row. If it has been saved to MySQL (Id > 0) it is deleted there first.</summary>
+    /// <param name="row">The row to remove.</param>
     [RelayCommand]
     private async Task DeleteRowAsync(Model_BulkInventoryTransaction row)
     {

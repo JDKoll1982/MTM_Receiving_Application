@@ -39,6 +39,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
         /// <param name="parameter">Optional conversion parameter.</param>
         /// <param name="language">The language for the conversion.</param>
         /// <returns>The core severity value.</returns>
+        /// <exception cref="NotImplementedException">Always thrown; this conversion is not supported.</exception>
         public object ConvertBack(object? value, Type targetType, object? parameter, string language)
         {
             throw new NotImplementedException();

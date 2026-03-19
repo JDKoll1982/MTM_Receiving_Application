@@ -64,6 +64,8 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
     ///   <item>Auto-saves the row to MySQL: inserts new rows, updates existing ones, removes cleared rows.</item>
     /// </list>
     /// </summary>
+    /// <param name="sender">Event sender.</param>
+    /// <param name="e">Cell edit event arguments.</param>
     private async void BulkInventoryDataGrid_CellEditEnded(object sender, DataGridCellEditEndedEventArgs e)
     {
         if (e.EditAction != DataGridEditAction.Commit)
@@ -86,6 +88,8 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
     /// Keyboard shortcuts for the Data Entry view:
     /// F5 = Push Batch (if enabled), F6 = Skip Row (stub), Escape = Clear All (with confirm).
     /// </summary>
+    /// <param name="sender">Event sender.</param>
+    /// <param name="e">Key event arguments.</param>
     private void UserControl_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         switch (e.Key)

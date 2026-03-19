@@ -315,6 +315,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     /// Sorts <see cref="Results"/> by the named property, toggling direction on repeated calls.
     /// Returns <see langword="true"/> if now sorted ascending, <see langword="false"/> if descending.
     /// </summary>
+    /// <param name="propertyName">The property name to sort by.</param>
     public bool SortBy(string propertyName)
     {
         if (_sortPropertyName == propertyName)

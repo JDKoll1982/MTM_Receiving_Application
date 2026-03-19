@@ -476,8 +476,14 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>\n    /// Shows contextual help for part selection\n    /// </summary>
-    /// <param name="key"></param>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.PartSelection\");\n    }
+    /// <summary>
+    /// Shows contextual help for part selection.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.PartSelection");
+    }
 
     #endregion
 

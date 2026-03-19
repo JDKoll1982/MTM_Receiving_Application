@@ -36,7 +36,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="filePath">Absolute path to XLS file</param>
         /// <returns>List of receiving loads</returns>
-        /// <exception cref="FileNotFoundException">If file does not exist</exception>
+        /// <exception cref="System.IO.FileNotFoundException">If file does not exist</exception>
         /// <exception cref="InvalidOperationException">If read fails</exception>
         public Task<List<Model_ReceivingLoad>> ReadFromXLSAsync(string filePath);
 

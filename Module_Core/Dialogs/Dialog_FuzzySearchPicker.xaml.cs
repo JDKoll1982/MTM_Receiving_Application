@@ -107,6 +107,8 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
     }
 
     /// <summary>Double-tapping a row is equivalent to selecting it and clicking "Select".</summary>
+    /// <param name="sender">Event sender.</param>
+    /// <param name="e">Event arguments.</param>
     private void ResultsListView_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
         if (SelectedResult != null)

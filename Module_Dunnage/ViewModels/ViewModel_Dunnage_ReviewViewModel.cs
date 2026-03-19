@@ -15,7 +15,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
-/// ViewModel for Dunnage Review & Save
+/// ViewModel for Dunnage Review &amp; Save
 /// </summary>
 public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposable
 {

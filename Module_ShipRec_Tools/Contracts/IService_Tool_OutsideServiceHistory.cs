@@ -28,12 +28,14 @@ public interface IService_Tool_OutsideServiceHistory
     /// Fuzzy-searches Infor Visual for parts whose ID contains <paramref name="term"/>.
     /// Returns candidates for display in the selection picker.
     /// </summary>
+    /// <param name="term">Partial part ID to search for.</param>
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term);
 
     /// <summary>
     /// Fuzzy-searches Infor Visual for vendors whose name contains <paramref name="term"/>.
     /// Returns candidates for display in the selection picker.
     /// </summary>
+    /// <param name="term">Partial vendor name to search for.</param>
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(string term);
 
     /// <summary>

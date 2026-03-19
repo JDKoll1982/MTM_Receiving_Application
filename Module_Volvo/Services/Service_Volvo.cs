@@ -156,6 +156,7 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Generates label summary for a shipment by delegating to the shared calculation helper.
     /// </summary>
+    /// <param name="shipmentId">Unique identifier of the shipment to generate the label for.</param>
     public async Task<Model_Dao_Result<string>> GenerateLabelAsync(int shipmentId)
     {
         return await Helper_VolvoShipmentCalculations.GenerateLabelAsync(

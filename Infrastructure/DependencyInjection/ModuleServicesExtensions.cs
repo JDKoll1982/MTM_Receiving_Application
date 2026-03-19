@@ -503,7 +503,7 @@ public static class ModuleServicesExtensions
     /// Uses the InforVisual connection string for read-only Infor Visual queries.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
-    /// <param name="configuration">The application configuration.</param>
+    /// <param name="_">The application configuration (unused).</param>
     /// <exception cref="InvalidOperationException">Thrown when InforVisual connection string is missing.</exception>
     private static IServiceCollection AddShipRecToolsModule(
         this IServiceCollection services,
@@ -537,6 +537,7 @@ public static class ModuleServicesExtensions
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="configuration">The application configuration.</param>
+    /// <exception cref="InvalidOperationException">Thrown when MySql connection string is not found.</exception>
     private static IServiceCollection AddBulkInventoryModule(
         this IServiceCollection services,
         IConfiguration configuration)

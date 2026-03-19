@@ -14,5 +14,6 @@ public interface IDao_VolvoLabelHistory
     /// to the history archive tables.
     /// Returns a tuple of <c>(HeadersMoved, LinesMoved)</c> on success.
     /// </summary>
+    /// <param name="archivedBy">User or system identifier recorded in the archive record.</param>
     Task<Model_Dao_Result<(int HeadersMoved, int LinesMoved)>> ClearToHistoryAsync(string archivedBy);
 }

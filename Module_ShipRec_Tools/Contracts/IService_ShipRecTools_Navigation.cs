@@ -14,6 +14,7 @@ public interface IService_ShipRecTools_Navigation
     /// <summary>
     /// Returns all available tools filtered by the specified category.
     /// </summary>
+    /// <param name="category">The tool category to filter by.</param>
     IReadOnlyList<Model_ToolDefinition> GetToolsByCategory(Enum_ToolCategory category);
 
     /// <summary>
@@ -30,5 +31,6 @@ public interface IService_ShipRecTools_Navigation
     /// Registers a tool in the module's tool registry.
     /// Replaces any existing tool with the same ToolKey.
     /// </summary>
+    /// <param name="tool">The tool definition to register.</param>
     void RegisterTool(Model_ToolDefinition tool);
 }

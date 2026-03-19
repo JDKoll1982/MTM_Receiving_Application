@@ -304,6 +304,8 @@ public class Dao_InforVisualConnection
     /// Fuzzy search for parts whose ID contains <paramref name="term"/> (LIKE '%term%').
     /// Uses: 06_FuzzySearchPartsByID.sql
     /// </summary>
+    /// <param name="term">Partial part ID to search for.</param>
+    /// <param name="maxResults">Maximum number of results to return.</param>
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsByIdAsync(
         string term,
         int maxResults = 50)
@@ -350,6 +352,8 @@ public class Dao_InforVisualConnection
     /// Fuzzy search for vendors whose NAME contains <paramref name="term"/> (LIKE '%term%').
     /// Uses: 07_FuzzySearchVendorsByName.sql
     /// </summary>
+    /// <param name="term">Partial vendor name to search for.</param>
+    /// <param name="maxResults">Maximum number of results to return.</param>
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsByNameAsync(
         string term,
         int maxResults = 50)
@@ -406,6 +410,7 @@ public class Dao_InforVisualConnection
     /// Uses: 08_GetOutsideServiceHistoryByVendor.sql
     /// ⚠️ READ-ONLY — no writes to Infor Visual.
     /// </summary>
+    /// <param name="vendorId">Vendor ID to filter dispatch records by.</param>
     public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAsync(string vendorId)
     {
         try

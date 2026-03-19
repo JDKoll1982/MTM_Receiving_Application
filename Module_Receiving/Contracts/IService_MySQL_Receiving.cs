@@ -76,6 +76,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// Updates rows in the active receiving_label_data print queue.
         /// Used by Edit Mode when saving edits to Current Labels records.
         /// </summary>
+        /// <param name="loads">The list of receiving loads to update.</param>
         public Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads);
     }
 }
