@@ -294,7 +294,7 @@ mkdir .serena/memories
     "InforVisual": "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;"
   },
   "InforVisual": {
-    "UseMockData": true,
+    "UseMockData": false,
     "ConnectionTimeout": 30
   },
   "Session": {

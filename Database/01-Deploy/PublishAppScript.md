@@ -1,0 +1,1 @@
+dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
