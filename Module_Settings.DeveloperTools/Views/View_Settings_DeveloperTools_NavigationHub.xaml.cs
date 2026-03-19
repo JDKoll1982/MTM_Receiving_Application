@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Settings.DeveloperTools.Views;
 public sealed partial class View_Settings_DeveloperTools_NavigationHub : Page
 {
     public ViewModel_Settings_DeveloperTools_NavigationHub ViewModel { get; }
-    private readonly IService_LoggingUtility? _logger;
+    private readonly IService_LoggingUtility? _logger = null;
 
     private Frame? NavigationFrameControl => GetHostFrame();
 

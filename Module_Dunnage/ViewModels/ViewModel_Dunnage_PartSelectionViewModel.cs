@@ -234,6 +234,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
         // Notify that command can execute state changed
         SelectPartCommand.NotifyCanExecuteChanged();
+        EditPartCommand.NotifyCanExecuteChanged();
     }
 
     private async Task CheckInventoryStatusAsync(Model_DunnagePart part)
@@ -391,6 +392,83 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         {
             await _errorHandler.HandleErrorAsync(
                 "Error adding new dunnage part",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsPartSelected))]
+    private async Task EditPartAsync()
+    {
+        if (SelectedPart == null || IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            _logger.LogInfo($"Edit Part requested for: {SelectedPart.PartId}", "PartSelection");
+
+            var specsResult = await _dunnageService.GetSpecsForTypeAsync(SelectedTypeId);
+            var specs = (specsResult.IsSuccess && specsResult.Data != null)
+                ? specsResult.Data
+                : new List<Model_DunnageSpec>();
+
+            var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(SelectedPart, specs)
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot
+            };
+
+            if (dialog.XamlRoot == null)
+            {
+                _logger.LogInfo("Cannot show dialog: XamlRoot is null", "PartSelection");
+                return;
+            }
+
+            var result = await dialog.ShowAsync();
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                var partIdToReselect = SelectedPart.PartId;
+
+                var updatedPart = new Model_DunnagePart
+                {
+                    Id = SelectedPart.Id,
+                    PartId = SelectedPart.PartId,
+                    TypeId = SelectedPart.TypeId,
+                    DunnageTypeName = SelectedPart.DunnageTypeName,
+                    SpecValues = dialog.UpdatedSpecValuesJson,
+                    HomeLocation = dialog.UpdatedHomeLocation
+                };
+
+                var updateResult = await _dunnageService.UpdatePartAsync(updatedPart);
+
+                if (updateResult.IsSuccess)
+                {
+                    _logger.LogInfo($"Successfully updated part: {partIdToReselect}", "PartSelection");
+
+                    await LoadPartsAsync();
+
+                    var refreshed = AvailableParts.FirstOrDefault(p => p.PartId == partIdToReselect);
+                    if (refreshed != null)
+                    {
+                        SelectedPart = refreshed;
+                    }
+
+                    StatusMessage = $"Updated part: {partIdToReselect}";
+                }
+                else
+                {
+                    await _errorHandler.HandleDaoErrorAsync(updateResult, nameof(EditPartAsync), true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error editing dunnage part",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

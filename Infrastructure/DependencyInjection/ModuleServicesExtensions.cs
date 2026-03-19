@@ -507,7 +507,7 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException">Thrown when InforVisual connection string is missing.</exception>
     private static IServiceCollection AddShipRecToolsModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration _)
     {
 
         // Services (Singleton)
@@ -545,7 +545,7 @@ public static class ModuleServicesExtensions
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAO (Singleton — stateless, reusable)
-        services.AddSingleton(sp => new Dao_BulkInventoryTransaction(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_BulkInventoryTransaction(mySqlConnectionString));
 
         // Services (Singleton)
         services.AddSingleton<IService_MySQL_BulkInventory, Service_MySQL_BulkInventory>();

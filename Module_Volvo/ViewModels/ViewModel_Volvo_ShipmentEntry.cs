@@ -1093,7 +1093,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private void ViewHistory()
     {
         _logger.LogInfo("Navigating to Volvo Shipment History");
+#pragma warning disable CS0618
         var view = App.GetService<Views.View_Volvo_History>();
+#pragma warning restore CS0618
         if (view != null && App.MainWindow is MainWindow mainWindow)
         {
             mainWindow.GetContentFrame().Content = view;

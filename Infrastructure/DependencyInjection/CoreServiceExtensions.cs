@@ -50,7 +50,7 @@ public static class CoreServiceExtensions
 
         // Dispatcher Service (Singleton - Wraps the UI thread dispatcher)
         // Note: Dispatcher is lazy-initialized on first use since it requires UI thread
-        services.AddSingleton<IService_Dispatcher>(sp =>
+        services.AddSingleton<IService_Dispatcher>(_ =>
         {
             // Defer dispatcher queue retrieval until first use (when UI thread is available)
             return new Service_Dispatcher();

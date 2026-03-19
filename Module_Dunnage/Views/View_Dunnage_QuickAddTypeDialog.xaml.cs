@@ -205,29 +205,10 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
             return;
         }
 
-        // 3. No spaces check
-        if (input.Contains(" "))
-        {
-            ShowError("Name cannot contain spaces");
-            args.Cancel = true;
-            return;
-        }
-
-        // 4. No special characters check (Alphanumeric only)
-        if (!AlphanumericRegex().IsMatch(input))
-        {
-            ShowError("Name cannot contain special characters");
-            args.Cancel = true;
-            return;
-        }
-
         // Set properties for caller to retrieve
         TypeName = input;
         SelectedIconKind = _selectedIcon;
     }
-
-    [System.Text.RegularExpressions.GeneratedRegex("^[a-zA-Z0-9]*$")]
-    private static partial System.Text.RegularExpressions.Regex AlphanumericRegex();
 
     private void ShowError(string message)
     {

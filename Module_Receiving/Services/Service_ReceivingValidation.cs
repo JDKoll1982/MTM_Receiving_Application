@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_ReceivingValidation : IService_ReceivingValidation
     {
         private readonly IService_InforVisual _inforVisualService;
-        private readonly bool _useMockLocationList;
+
         // Allows optional "PO-" prefix, 1-6 digits, and an optional B/b suffix for blanket POs (e.g. PO-064489B)
         private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}[Bb]?$", RegexOptions.IgnoreCase);
         private static readonly Regex _qualityHoldRegex = new Regex(@"(MMFSR|MMCSR)", RegexOptions.IgnoreCase);
@@ -32,7 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             "STAGE-01"
         };
 
-        public bool UseMockLocationList => _useMockLocationList;
+        public bool UseMockLocationList { get; }
 
         public IReadOnlyList<string> PresetLocations => _presetLocations;
 
@@ -42,7 +42,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
             ArgumentNullException.ThrowIfNull(inforVisualSettings);
-            _useMockLocationList = inforVisualSettings.Value.UseMockData;
+            UseMockLocationList = inforVisualSettings.Value.UseMockData;
         }
 
         public Model_ReceivingValidationResult ValidatePONumber(string poNumber)
@@ -140,7 +140,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return Model_ReceivingValidationResult.Error("Location cannot exceed 15 characters");
             }
 
-            if (_useMockLocationList)
+            if (UseMockLocationList)
             {
                 return _presetLocations.Contains(normalizedLocation, StringComparer.OrdinalIgnoreCase)
                     ? Model_ReceivingValidationResult.Success()

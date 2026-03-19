@@ -446,7 +446,7 @@ public class Service_InforVisualConnect : IService_InforVisual
         return Model_Dao_Result_Factory.Success(results);
     }
 
-    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string vendorId)
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string _)
     {
         var results = new List<Model_FuzzySearchResult>
         {

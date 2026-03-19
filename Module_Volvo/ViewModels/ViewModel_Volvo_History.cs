@@ -72,7 +72,9 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     [RelayCommand]
     private void GoBack()
     {
+#pragma warning disable CS0618
         var view = App.GetService<Views.View_Volvo_ShipmentEntry>();
+#pragma warning restore CS0618
         if (view != null && App.MainWindow is MainWindow mainWindow)
         {
             mainWindow.GetContentFrame().Content = view;

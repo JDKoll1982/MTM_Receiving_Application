@@ -481,7 +481,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
-                var d = result.Data;
+                var d = result.Data!;
                 var summary = $"Import complete: {d.SuccessCount} succeeded, {d.FailureCount} failed";
                 if (parseErrors.Count > 0)
                     summary += $"\n{parseErrors.Count} line(s) could not be parsed";

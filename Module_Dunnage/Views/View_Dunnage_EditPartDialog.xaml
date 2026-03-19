@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_EditPartDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Edit Dunnage Part"
+    PrimaryButtonText="Save Changes"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OnPrimaryButtonClick"
+    PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
+    Width="500">
+
+    <ScrollViewer MaxHeight="540">
+        <StackPanel Spacing="20" Padding="8">
+
+            <!-- Part ID (read-only) -->
+            <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    Padding="12"
+                    CornerRadius="4">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Part ID"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock x:Name="PartIdTextBlock"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Dunnage Type"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock x:Name="TypeNameTextBlock"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Dimensions Section -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="Dimensions" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+                <Grid ColumnSpacing="12" RowSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Width -->
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Width (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <NumberBox x:Name="WidthNumberBox"
+                                   PlaceholderText="0"
+                                   SpinButtonPlacementMode="Hidden"
+                                   Minimum="0"
+                                   Maximum="999"
+                                   SmallChange="1"
+                                   LargeChange="10"/>
+                    </StackPanel>
+
+                    <!-- Height -->
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Height (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <NumberBox x:Name="HeightNumberBox"
+                                   PlaceholderText="0"
+                                   SpinButtonPlacementMode="Hidden"
+                                   Minimum="0"
+                                   Maximum="999"
+                                   SmallChange="1"
+                                   LargeChange="10"/>
+                    </StackPanel>
+
+                    <!-- Depth -->
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="Depth (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <NumberBox x:Name="DepthNumberBox"
+                                   PlaceholderText="0"
+                                   SpinButtonPlacementMode="Hidden"
+                                   Minimum="0"
+                                   Maximum="999"
+                                   SmallChange="1"
+                                   LargeChange="10"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <!-- Dynamic Specs Container -->
+            <StackPanel x:Name="DynamicSpecsPanel" Spacing="12"/>
+
+            <!-- Home Location -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Home Location" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <TextBox x:Name="HomeLocationTextBox"
+                         PlaceholderText="e.g. A-12-B, DOCK-2, Rack by 100-15"
+                         MaxLength="100"/>
+            </StackPanel>
+
+            <!-- Additional Notes -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Additional Notes (Optional)" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <TextBox x:Name="NotesTextBox"
+                         PlaceholderText="Any additional specifications or notes"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         MaxLength="500"
+                         Height="80"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>
