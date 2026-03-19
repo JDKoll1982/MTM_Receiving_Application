@@ -5,7 +5,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    mc:Ignorable="d">
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    mc:Ignorable="d"
+    x:Name="Root">
+
+    <UserControl.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Padding="24">
         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -56,6 +62,29 @@
                            MaxWidth="480"
                            HorizontalAlignment="Stretch"
                            AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"/>
+
+                <ComboBox Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
+                          ItemsSource="{x:Bind ViewModel.PresetLocations, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.Location, Mode=TwoWay}"
+                          PlaceholderText="Select a preset mock location"
+                          MinWidth="240"
+                          MaxWidth="480"
+                          HorizontalAlignment="Stretch"
+                          Visibility="{Binding ElementName=Root, Path=ViewModel.IsMockLocationMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                <TextBox Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
+                         Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         PlaceholderText="Enter receiving location"
+                         MinWidth="240"
+                         MaxWidth="480"
+                         HorizontalAlignment="Stretch"
+                         Visibility="{Binding ElementName=Root, Path=ViewModel.IsMockLocationMode, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+
+                <TextBlock Text="{x:Bind ViewModel.LoadEntryLocationInstructionText, Mode=OneWay}"
+                           Style="{StaticResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"/>
                        
                 <TextBlock Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}" 
                            Style="{StaticResource CaptionTextBlockStyle}"

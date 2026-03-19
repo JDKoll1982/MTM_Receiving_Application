@@ -13,6 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Data;
 public class Dao_ReceivingLabelData
 {
     private readonly string _connectionString;
+    private const string DefaultInitialLocation = "Nothing Entered";
 
     public Dao_ReceivingLabelData(string connectionString)
     {
@@ -45,6 +46,13 @@ public class Dao_ReceivingLabelData
         return errorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
             && (errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
                 || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string NormalizeLocation(string? location)
+    {
+        return string.IsNullOrWhiteSpace(location)
+            ? DefaultInitialLocation
+            : location.Trim();
     }
 
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -113,7 +121,7 @@ public class Dao_ReceivingLabelData
                     { "heat", load.HeatLotNumber ?? string.Empty },
                     { "received_date", load.ReceivedDate },
                     { "transaction_date", load.ReceivedDate.Date },
-                    { "initial_location", (object)DBNull.Value },
+                    { "initial_location", NormalizeLocation(load.InitialLocation) },
                     { "packages_per_load", load.PackagesPerLoad },
                     { "package_type_name", load.PackageTypeName ?? string.Empty },
                     { "weight_per_package", load.WeightPerPackage },
@@ -280,7 +288,7 @@ public class Dao_ReceivingLabelData
                     { "p_heat",                             load.HeatLotNumber                                  },
                     { "p_received_date",                    load.ReceivedDate                                   },
                     { "p_transaction_date",                 load.ReceivedDate.Date                              },
-                    { "p_initial_location",                 string.Empty                                        },
+                    { "p_initial_location",                 NormalizeLocation(load.InitialLocation)            },
                     { "p_packages_per_load",                load.PackagesPerLoad                                },
                     { "p_package_type_name",                load.PackageTypeName                                },
                     { "p_weight_per_package",               load.WeightPerPackage                               },
@@ -333,6 +341,7 @@ public class Dao_ReceivingLabelData
             LoadNumber = ReadInt(row, "LoadNumber"),
             WeightQuantity = ReadDecimal(row, "WeightQuantity"),
             HeatLotNumber = ReadString(row, "HeatLotNumber"),
+            InitialLocation = ReadString(row, "InitialLocation"),
             PackagesPerLoad = ReadInt(row, "PackagesPerLoad"),
             PackageTypeName = ReadString(row, "PackageTypeName"),
             WeightPerPackage = ReadDecimal(row, "WeightPerPackage"),

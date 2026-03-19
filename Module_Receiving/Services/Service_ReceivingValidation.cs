@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
@@ -16,13 +18,31 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_ReceivingValidation : IService_ReceivingValidation
     {
         private readonly IService_InforVisual _inforVisualService;
+        private readonly bool _useMockLocationList;
         // Allows optional "PO-" prefix, 1-6 digits, and an optional B/b suffix for blanket POs (e.g. PO-064489B)
         private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}[Bb]?$", RegexOptions.IgnoreCase);
         private static readonly Regex _qualityHoldRegex = new Regex(@"(MMFSR|MMCSR)", RegexOptions.IgnoreCase);
+        private static readonly IReadOnlyList<string> _presetLocations = new[]
+        {
+            "A-RECV-01",
+            "B-RECV-02",
+            "C-RECV-03",
+            "DOCK-01",
+            "QC-HOLD-01",
+            "STAGE-01"
+        };
 
-        public Service_ReceivingValidation(IService_InforVisual inforVisualService)
+        public bool UseMockLocationList => _useMockLocationList;
+
+        public IReadOnlyList<string> PresetLocations => _presetLocations;
+
+        public Service_ReceivingValidation(
+            IService_InforVisual inforVisualService,
+            IOptions<InforVisualSettings> inforVisualSettings)
         {
             _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
+            ArgumentNullException.ThrowIfNull(inforVisualSettings);
+            _useMockLocationList = inforVisualSettings.Value.UseMockData;
         }
 
         public Model_ReceivingValidationResult ValidatePONumber(string poNumber)
@@ -107,6 +127,37 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return Model_ReceivingValidationResult.Success();
         }
 
+        public async Task<Model_ReceivingValidationResult> ValidateLocationAsync(string? location, string warehouseCode = "002")
+        {
+            if (string.IsNullOrWhiteSpace(location))
+            {
+                return Model_ReceivingValidationResult.Success();
+            }
+
+            var normalizedLocation = location.Trim();
+            if (normalizedLocation.Length > 15)
+            {
+                return Model_ReceivingValidationResult.Error("Location cannot exceed 15 characters");
+            }
+
+            if (_useMockLocationList)
+            {
+                return _presetLocations.Contains(normalizedLocation, StringComparer.OrdinalIgnoreCase)
+                    ? Model_ReceivingValidationResult.Success()
+                    : Model_ReceivingValidationResult.Error($"Location must match one of the preset mock locations: {string.Join(", ", _presetLocations)}");
+            }
+
+            var existsResult = await _inforVisualService.LocationExistsAsync(normalizedLocation, warehouseCode);
+            if (!existsResult.IsSuccess)
+            {
+                return Model_ReceivingValidationResult.Error(existsResult.ErrorMessage ?? "Unable to validate location in Infor Visual");
+            }
+
+            return existsResult.Data
+                ? Model_ReceivingValidationResult.Success()
+                : Model_ReceivingValidationResult.Error($"Location '{normalizedLocation}' was not found in warehouse {warehouseCode}");
+        }
+
         public Task<Model_ReceivingValidationResult> ValidateAgainstPOQuantityAsync(decimal totalQuantity, decimal orderedQuantity, string partID)
         {
             if (totalQuantity > orderedQuantity)
@@ -165,6 +216,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             if (!string.IsNullOrWhiteSpace(load.HeatLotNumber) && load.HeatLotNumber.Length > 50)
             {
                 errors.Add($"Load {load.LoadNumber}: Heat/Lot number cannot exceed 50 characters");
+            }
+
+            if (!string.IsNullOrWhiteSpace(load.InitialLocation) && load.InitialLocation.Length > 15)
+            {
+                errors.Add($"Load {load.LoadNumber}: Location cannot exceed 15 characters");
             }
 
             if (load.PackagesPerLoad <= 0)

@@ -2,6 +2,7 @@
     x:Class="MTM_Receiving_Application.Module_Reporting.Views.View_Reporting_Main"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.Reporting"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -17,19 +18,24 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
-            <TextBlock 
-                Text="{x:Bind ViewModel.Title, Mode=OneWay}" 
+        <StackPanel Grid.Row="0"
+                Spacing="8"
+                Margin="0,0,0,24">
+            <TextBlock
+                Text="{x:Bind ViewModel.Title, Mode=OneWay}"
                 Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock 
-                Text="Select a date range, review live module availability, and copy a formatted report for Outlook paste" 
+            <TextBlock
+                Text="Select a date range, review live module availability, and copy a formatted report for Outlook paste"
                 Style="{StaticResource BodyTextBlockStyle}"
                 Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
         </StackPanel>
 
         <!-- Date Range Selection -->
-        <StackPanel Grid.Row="1" Spacing="12" Margin="0,0,0,24">
-            <TextBlock Text="Date Range" Style="{StaticResource SubtitleTextBlockStyle}"/>
+        <StackPanel Grid.Row="1"
+                Spacing="12"
+                Margin="0,0,0,24">
+            <TextBlock Text="Date Range"
+                    Style="{StaticResource SubtitleTextBlockStyle}"/>
             <Grid ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -37,19 +43,19 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <CalendarDatePicker 
+                <CalendarDatePicker
                     Grid.Column="0"
                     Header="Start Date"
                     Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
                     HorizontalAlignment="Stretch"/>
 
-                <CalendarDatePicker 
+                <CalendarDatePicker
                     Grid.Column="1"
                     Header="End Date"
                     Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
                     HorizontalAlignment="Stretch"/>
 
-                <Button 
+                <Button
                     Grid.Column="2"
                     Content="Check Availability"
                     Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
@@ -60,8 +66,11 @@
         </StackPanel>
 
         <!-- Module Selection -->
-        <StackPanel Grid.Row="2" Spacing="12" Margin="0,0,0,24">
-            <TextBlock Text="Select Modules" Style="{StaticResource SubtitleTextBlockStyle}"/>
+        <StackPanel Grid.Row="2"
+                Spacing="12"
+                Margin="0,0,0,24">
+            <TextBlock Text="Select Modules"
+                    Style="{StaticResource SubtitleTextBlockStyle}"/>
             <Grid ColumnSpacing="24">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -69,51 +78,54 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Spacing="4">
-                    <CheckBox 
+                <StackPanel Grid.Column="0"
+                        Spacing="4">
+                    <CheckBox
                         Content="Receiving"
                         IsChecked="{x:Bind ViewModel.IsReceivingChecked, Mode=TwoWay}"
                         IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}"/>
-                    <TextBlock 
+                    <TextBlock
                         Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}"
                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                         Margin="28,0,0,0"
                         FontSize="12"/>
-                    <Button 
+                    <Button
                         Content="Generate Report"
                         Command="{x:Bind ViewModel.GenerateReceivingReportCommand}"
                         HorizontalAlignment="Stretch"
                         Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Spacing="4">
-                    <CheckBox 
+                <StackPanel Grid.Column="1"
+                        Spacing="4">
+                    <CheckBox
                         Content="Dunnage"
                         IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
                         IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}"/>
-                    <TextBlock 
+                    <TextBlock
                         Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}"
                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                         Margin="28,0,0,0"
                         FontSize="12"/>
-                    <Button 
+                    <Button
                         Content="Generate Report"
                         Command="{x:Bind ViewModel.GenerateDunnageReportCommand}"
                         HorizontalAlignment="Stretch"
                         Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Spacing="4">
-                    <CheckBox 
+                <StackPanel Grid.Column="2"
+                        Spacing="4">
+                    <CheckBox
                         Content="Volvo"
                         IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"
                         IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}"/>
-                    <TextBlock 
+                    <TextBlock
                         Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}"
                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                         Margin="28,0,0,0"
                         FontSize="12"/>
-                    <Button 
+                    <Button
                         Content="Generate Report"
                         Command="{x:Bind ViewModel.GenerateVolvoReportCommand}"
                         HorizontalAlignment="Stretch"
@@ -123,118 +135,80 @@
         </StackPanel>
 
         <!-- Report Data Grid -->
-        <Border 
-            Grid.Row="3" 
+        <Border
+            Grid.Row="3"
             BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
             BorderThickness="1"
             CornerRadius="4"
             Padding="12">
             <ScrollViewer>
                 <StackPanel Spacing="12">
-                    <TextBlock 
-                        Text="{x:Bind ViewModel.CurrentModuleName, Mode=OneWay}" 
+                    <TextBlock
+                        Text="{x:Bind ViewModel.CurrentModuleName, Mode=OneWay}"
                         Style="{StaticResource SubtitleTextBlockStyle}"/>
                     <TextBlock
-                        Text="Review the generated rows below before copying the formatted table to the clipboard."
+                        Text="Review the simplified rows below before copying the report summary to the clipboard."
                         Style="{StaticResource BodyTextBlockStyle}"
                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-                    
-                    <ListView 
+
+                    <ListView
                         ItemsSource="{x:Bind ViewModel.ReportData, Mode=OneWay}"
                         SelectionMode="None">
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="models:Model_ReportRow">
                                 <Border
                                     Margin="0,0,0,8"
                                     Padding="12"
                                     CornerRadius="6"
                                     BorderThickness="1"
                                     BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}">
-                                    <StackPanel Spacing="8">
-                                        <Grid ColumnSpacing="16">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
+                                    <Grid ColumnSpacing="24">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                            <StackPanel Grid.Column="0" Spacing="2">
-                                                <TextBlock Text="{Binding SourceModule, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap">
-                                                    <Run Text="PO: "/>
-                                                    <Run Text="{Binding PONumber, Mode=OneWay}"/>
-                                                </TextBlock>
-                                            </StackPanel>
-
-                                            <TextBlock Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center">
-                                                <Run Text="{Binding CreatedDate, Mode=OneWay}"/>
+                                        <StackPanel Grid.Column="0"
+                                                Spacing="6">
+                                            <TextBlock FontWeight="SemiBold"
+                                                    TextWrapping="Wrap">
+                                                <Run Text="PO: "/>
+                                                <Run Text="{x:Bind DisplayPo}"/>
                                             </TextBlock>
-                                        </Grid>
+                                            <TextBlock FontWeight="SemiBold"
+                                                    TextWrapping="Wrap">
+                                                <Run Text="Part/Dunnage: "/>
+                                                <Run Text="{x:Bind DisplayPartOrDunnage}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                <Run Text="Quantity: "/>
+                                                <Run Text="{x:Bind DisplayQuantity}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}"
+                                                    TextWrapping="Wrap">
+                                                <Run Text="Location: "/>
+                                                <Run Text="{x:Bind DisplayLocation}"/>
+                                            </TextBlock>
+                                        </StackPanel>
 
-                                        <Grid ColumnSpacing="24">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <StackPanel Grid.Column="0" Spacing="4">
-                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap">
-                                                    <Run Text="Part: "/>
-                                                    <Run Text="{Binding PartNumber, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap">
-                                                    <Run Text="Description: "/>
-                                                    <Run Text="{Binding PartDescription, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap">
-                                                    <Run Text="Type: "/>
-                                                    <Run Text="{Binding DunnageType, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap">
-                                                    <Run Text="Specs: "/>
-                                                    <Run Text="{Binding SpecsCombined, Mode=OneWay}"/>
-                                                </TextBlock>
-                                            </StackPanel>
-
-                                            <StackPanel Grid.Column="1" Spacing="4">
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Qty: "/>
-                                                    <Run Text="{Binding Quantity, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Weight: "/>
-                                                    <Run Text="{Binding WeightLbs, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap">
-                                                    <Run Text="Heat/Lot: "/>
-                                                    <Run Text="{Binding HeatLotNumber, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Shipment #: "/>
-                                                    <Run Text="{Binding ShipmentNumber, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Receiver #: "/>
-                                                    <Run Text="{Binding ReceiverNumber, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Status: "/>
-                                                    <Run Text="{Binding Status, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Part Count: "/>
-                                                    <Run Text="{Binding PartCount, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="User: "/>
-                                                    <Run Text="{Binding CreatedByUsername, Mode=OneWay}"/>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-                                                    <Run Text="Employee #: "/>
-                                                    <Run Text="{Binding EmployeeNumber, Mode=OneWay}"/>
-                                                </TextBlock>
-                                            </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
+                                        <StackPanel Grid.Column="1"
+                                                Spacing="6">
+                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}"
+                                                    TextWrapping="Wrap">
+                                                <Run Text="Notes: "/>
+                                                <Run Text="{x:Bind DisplayNotes}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                                                <Run Text="Loads/Skids: "/>
+                                                <Run Text="{x:Bind DisplayLoadsOrSkids}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}"
+                                                    TextWrapping="Wrap">
+                                                <Run Text="Coils/Pcs/Type per Skid: "/>
+                                                <Run Text="{x:Bind DisplayUnitsPerSkid}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -244,14 +218,16 @@
         </Border>
 
         <!-- Action Buttons -->
-        <CommandBar Grid.Row="4" DefaultLabelPosition="Right" Margin="0,12,0,0">
-            <AppBarButton 
-                Icon="Copy" 
-                Label="Copy Formatted Table"
+        <CommandBar Grid.Row="4"
+                DefaultLabelPosition="Right"
+                Margin="0,12,0,0">
+            <AppBarButton
+                Icon="Copy"
+                Label="Copy Report Summary"
                 Command="{x:Bind ViewModel.CopyEmailFormatCommand}"/>
             <AppBarSeparator/>
-            <AppBarButton 
-                Icon="Refresh" 
+            <AppBarButton
+                Icon="Refresh"
                 Label="Check Availability"
                 Command="{x:Bind ViewModel.CheckAvailabilityCommand}"/>
         </CommandBar>

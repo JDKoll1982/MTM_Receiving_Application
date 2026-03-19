@@ -16,10 +16,14 @@ SELECT
     heat AS heat_lot_number,
     DATE(COALESCE(transaction_date, created_at)) AS created_date,
     employee_number,
+    NULL AS load_number,
     initial_location,
+    NULL AS packages_per_load,
+    NULL AS package_type_name,
     coils_on_skid,
     label_number,
     vendor_name,
+    NULL AS notes,
     'Receiving' AS source_module
 FROM receiving_history
 
@@ -35,10 +39,14 @@ SELECT
     heat AS heat_lot_number,
     DATE(COALESCE(transaction_date, created_at)) AS created_date,
     employee_number,
+    load_number,
     initial_location,
+    packages_per_load,
+    package_type_name,
     coils_on_skid,
     label_number,
     vendor_name,
+    NULL AS notes,
     'Receiving' AS source_module
 FROM receiving_label_data
 

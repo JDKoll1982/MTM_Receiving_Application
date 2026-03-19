@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
@@ -28,6 +29,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _selectedPartDescription = string.Empty;
 
+        [ObservableProperty]
+        private string _location = string.Empty;
+
+        [ObservableProperty]
+        private bool _isMockLocationMode;
+
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
         private string _loadEntryHeaderText = "Number of Loads (1-99)";
@@ -35,9 +42,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _loadEntryInstructionText = "Enter the total number of skids/loads for this part.";
 
+        [ObservableProperty]
+        private string _loadEntryLocationHeaderText = "Location (Optional)";
+
+        [ObservableProperty]
+        private string _loadEntryLocationInstructionText = "Leave blank to save as Nothing Entered.";
+
         // Accessibility Properties
         [ObservableProperty]
         private string _numberOfLoadsAccessibilityName = "Number of Loads";
+
+        public ObservableCollection<string> PresetLocations { get; } = new();
+
+        public bool IsLiveLocationMode => !IsMockLocationMode;
 
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
@@ -55,6 +72,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
+            IsMockLocationMode = _validationService.UseMockLocationList;
+
+            foreach (var presetLocation in _validationService.PresetLocations)
+            {
+                PresetLocations.Add(presetLocation);
+            }
 
             _workflowService.StepChanged += OnStepChanged;
             _viewModelRegistry.Register(this);
@@ -82,6 +105,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             NumberOfLoads = 1;
             SelectedPartId = string.Empty;
             SelectedPartDescription = string.Empty;
+            Location = string.Empty;
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)
@@ -99,6 +123,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     SelectedPartId = string.Empty;
                     SelectedPartDescription = string.Empty;
                 }
+
+                Location = _workflowService.CurrentLocation;
             }
         }
 
@@ -119,6 +145,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         partial void OnNumberOfLoadsChanged(int value)
         {
             _workflowService.NumberOfLoads = value;
+        }
+
+        partial void OnLocationChanged(string value)
+        {
+            _workflowService.CurrentLocation = value?.Trim() ?? string.Empty;
         }
 
         public void UpdatePartInfo(string partId, string description)

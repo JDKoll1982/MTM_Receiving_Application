@@ -105,7 +105,16 @@ public class Dao_Reporting
             ShipmentNumber = ReadNullableInt(reader, "shipment_number"),
             ReceiverNumber = ReadNullableString(reader, "receiver_number"),
             Status = ReadNullableString(reader, "status"),
-            PartCount = ReadNullableInt(reader, "part_count")
+            PartCount = ReadNullableInt(reader, "part_count"),
+            Location = ReadNullableString(reader, "location"),
+            Notes = ReadNullableString(reader, "notes"),
+            LoadNumber = ReadNullableInt(reader, "load_number"),
+            LabelNumber = ReadNullableInt(reader, "label_number"),
+            PackagesPerLoad = ReadNullableInt(reader, "packages_per_load"),
+            PackageTypeName = ReadNullableString(reader, "package_type_name"),
+            CoilsOnSkid = ReadNullableInt(reader, "coils_on_skid"),
+            QuantityPerSkid = ReadNullableInt(reader, "quantity_per_skid"),
+            ReceivedSkidCount = ReadNullableInt(reader, "received_skid_count")
         };
     }
 

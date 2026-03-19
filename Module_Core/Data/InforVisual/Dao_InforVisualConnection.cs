@@ -84,6 +84,7 @@ public class Dao_InforVisualConnection
                     PoLine = Convert.ToInt32(reader["PoLine"]),
                     PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
                     PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                    DefaultLocationId = reader["DefaultLocationId"].ToString() ?? string.Empty,
                     OrderedQty = Convert.ToDecimal(reader["OrderedQty"]),
                     ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
                     RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
@@ -174,6 +175,7 @@ public class Dao_InforVisualConnection
                     AllocatedQty = Convert.ToDecimal(reader["AllocatedQty"]),
                     AvailableQty = Convert.ToDecimal(reader["AvailableQty"]),
                     DefaultSite = reader["DefaultSite"].ToString() ?? string.Empty,
+                    DefaultLocationId = reader["DefaultLocationId"].ToString() ?? string.Empty,
                     PartStatus = reader["PartStatus"].ToString() ?? string.Empty,
                     ProductLine = reader["ProductLine"].ToString() ?? string.Empty
                 };

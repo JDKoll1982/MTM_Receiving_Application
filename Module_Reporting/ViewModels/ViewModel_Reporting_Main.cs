@@ -72,6 +72,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         _reportingService = reportingService ?? throw new ArgumentNullException(nameof(reportingService));
         _reportingClipboard = reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
         Title = "End of Day Reports";
+        ResetAvailabilityState();
     }
 
     [RelayCommand]
@@ -85,6 +86,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            NotifyGenerateCommands();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
             ShowStatus("Checking data availability...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.CheckAvailabilityAsync(
@@ -101,6 +104,21 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 IsDunnageEnabled = DunnageCount > 0;
                 IsVolvoEnabled = VolvoCount > 0;
 
+                if (!IsReceivingEnabled)
+                {
+                    IsReceivingChecked = false;
+                }
+
+                if (!IsDunnageEnabled)
+                {
+                    IsDunnageChecked = false;
+                }
+
+                if (!IsVolvoEnabled)
+                {
+                    IsVolvoChecked = false;
+                }
+
                 var totalCount = ReceivingCount + DunnageCount + VolvoCount;
                 if (totalCount == 0)
                 {
@@ -113,17 +131,23 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
             else
             {
+                ResetAvailabilityState();
+                ClearReportState();
                 ShowStatus(result.ErrorMessage ?? "Failed to check availability", InfoBarSeverity.Error);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error checking availability: {ex.Message}", ex);
+            ResetAvailabilityState();
+            ClearReportState();
             ShowStatus("Error checking data availability", InfoBarSeverity.Error);
         }
         finally
         {
             IsBusy = false;
+            NotifyGenerateCommands();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
         }
     }
 
@@ -165,6 +189,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            NotifyGenerateCommands();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
             ShowStatus("Copying formatted report...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.FormatForEmailAsync(
@@ -187,17 +213,21 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
             else
             {
+                ClearReportState();
                 ShowStatus(result.ErrorMessage ?? "Formatting failed", InfoBarSeverity.Error);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error copying email format: {ex.Message}", ex);
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
             ShowStatus("Error copying formatted report", InfoBarSeverity.Error);
         }
         finally
         {
             IsBusy = false;
+            NotifyGenerateCommands();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
         }
     }
 
@@ -215,6 +245,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            NotifyGenerateCommands();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
             ShowStatus($"Generating {moduleName} report...", InfoBarSeverity.Informational);
 
             var result = await fetchDataFunc();
@@ -242,18 +274,82 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
             else
             {
+                ClearReportState();
                 ShowStatus(result.ErrorMessage ?? $"Failed to load {moduleName} data", InfoBarSeverity.Error);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error generating {moduleName} report: {ex.Message}", ex);
+            ClearReportState();
             ShowStatus($"Error generating {moduleName} report", InfoBarSeverity.Error);
         }
         finally
         {
             IsBusy = false;
+            NotifyGenerateCommands();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
         }
+    }
+
+    private void ResetAvailabilityState()
+    {
+        ReceivingCount = 0;
+        DunnageCount = 0;
+        VolvoCount = 0;
+        IsReceivingEnabled = false;
+        IsDunnageEnabled = false;
+        IsVolvoEnabled = false;
+        IsReceivingChecked = false;
+        IsDunnageChecked = false;
+        IsVolvoChecked = false;
+        NotifyGenerateCommands();
+    }
+
+    private void ClearReportState()
+    {
+        ReportData.Clear();
+        CurrentModuleName = string.Empty;
+        CopyEmailFormatCommand.NotifyCanExecuteChanged();
+    }
+
+    private void ResetForDateRangeChange()
+    {
+        ResetAvailabilityState();
+        ClearReportState();
+        ShowStatus("Date range changed. Check availability to refresh the report options.", InfoBarSeverity.Informational);
+    }
+
+    private void NotifyGenerateCommands()
+    {
+        GenerateReceivingReportCommand.NotifyCanExecuteChanged();
+        GenerateDunnageReportCommand.NotifyCanExecuteChanged();
+        GenerateVolvoReportCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnStartDateChanged(DateTimeOffset value)
+    {
+        ResetForDateRangeChange();
+    }
+
+    partial void OnEndDateChanged(DateTimeOffset value)
+    {
+        ResetForDateRangeChange();
+    }
+
+    partial void OnIsReceivingEnabledChanged(bool value)
+    {
+        GenerateReceivingReportCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsDunnageEnabledChanged(bool value)
+    {
+        GenerateDunnageReportCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsVolvoEnabledChanged(bool value)
+    {
+        GenerateVolvoReportCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsReceivingCheckedChanged(bool value)

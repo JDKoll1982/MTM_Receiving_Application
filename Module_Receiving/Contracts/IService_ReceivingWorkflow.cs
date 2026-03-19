@@ -61,6 +61,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public int NumberOfLoads { get; set; }
 
         /// <summary>
+        /// Gets or sets the location entered for the current guided receiving batch.
+        /// Applied to each generated load for the current part.
+        /// </summary>
+        public string CurrentLocation { get; set; }
+
+        /// <summary>
         /// Gets or sets the current PO vendor name from Infor Visual.
         /// </summary>
         public string? CurrentPOVendor { get; set; }

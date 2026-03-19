@@ -46,6 +46,10 @@ public partial class Model_InforVisualPartInfo : ObservableObject
     [ObservableProperty]
     private string _defaultSite = InforVisualDefaults.DefaultSiteId;
 
+    /// <summary>Default receiving location for the default site.</summary>
+    [ObservableProperty]
+    private string _defaultLocationId = string.Empty;
+
     /// <summary>Part Status (ACTIVE, OBSOLETE, etc.)</summary>
     [ObservableProperty]
     private string _partStatus = InforVisualDefaults.DefaultPartStatus;

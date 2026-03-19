@@ -13,6 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Data;
 public class Dao_ReceivingLoad
 {
     private readonly string _connectionString;
+    private const string DefaultInitialLocation = "Nothing Entered";
 
     public Dao_ReceivingLoad(string connectionString)
     {
@@ -45,6 +46,13 @@ public class Dao_ReceivingLoad
         return errorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
             && (errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
                 || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string NormalizeLocation(string? location)
+    {
+        return string.IsNullOrWhiteSpace(location)
+            ? DefaultInitialLocation
+            : location.Trim();
     }
 
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -111,7 +119,7 @@ public class Dao_ReceivingLoad
                     { "heat", load.HeatLotNumber ?? string.Empty },
                     { "received_date", load.ReceivedDate },
                     { "transaction_date", load.ReceivedDate.Date },
-                    { "initial_location", (object)DBNull.Value },
+                    { "initial_location", NormalizeLocation(load.InitialLocation) },
                     { "packages_per_load", load.PackagesPerLoad },
                     { "package_type_name", load.PackageTypeName ?? string.Empty },
                     { "weight_per_package", load.WeightPerPackage },
@@ -185,6 +193,7 @@ public class Dao_ReceivingLoad
                     { "LoadNumber", load.LoadNumber },
                     { "WeightQuantity", load.WeightQuantity },
                     { "HeatLotNumber", load.HeatLotNumber },
+                    { "InitialLocation", NormalizeLocation(load.InitialLocation) },
                     { "PackagesPerLoad", load.PackagesPerLoad },
                     { "PackageTypeName", load.PackageTypeName },
                     { "WeightPerPackage", load.WeightPerPackage },
@@ -413,6 +422,7 @@ public class Dao_ReceivingLoad
             LoadNumber = ReadInt(row, "LoadNumber"),
             WeightQuantity = ReadDecimal(row, "WeightQuantity"),
             HeatLotNumber = ReadString(row, "HeatLotNumber"),
+            InitialLocation = ReadString(row, "InitialLocation"),
             PackagesPerLoad = ReadInt(row, "PackagesPerLoad"),
             PackageTypeName = ReadString(row, "PackageTypeName"),
             WeightPerPackage = ReadDecimal(row, "WeightPerPackage"),

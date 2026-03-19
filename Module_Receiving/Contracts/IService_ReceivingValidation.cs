@@ -11,6 +11,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
     public interface IService_ReceivingValidation
     {
         /// <summary>
+        /// Gets whether receiving location entry should use preset mock locations.
+        /// </summary>
+        public bool UseMockLocationList { get; }
+
+        /// <summary>
+        /// Gets preset receiving locations for mock-data mode.
+        /// </summary>
+        public IReadOnlyList<string> PresetLocations { get; }
+
+        /// <summary>
         /// Validates a PO number format (6 digits, numeric).
         /// </summary>
         /// <param name="poNumber">PO number to validate</param>
@@ -51,6 +61,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="heatLotNumber">Heat/lot number</param>
         /// <returns>Validation result</returns>
         public Model_ReceivingValidationResult ValidateHeatLotNumber(string heatLotNumber);
+
+        /// <summary>
+        /// Validates a receiving location when one is entered.
+        /// Blank values are allowed and will be defaulted at save time.
+        /// </summary>
+        /// <param name="location">Location entered by the user.</param>
+        /// <param name="warehouseCode">Warehouse code to validate against.</param>
+        public Task<Model_ReceivingValidationResult> ValidateLocationAsync(string? location, string warehouseCode = "002");
 
         /// <summary>
         /// Validates total quantity against PO ordered quantity (for PO items only).

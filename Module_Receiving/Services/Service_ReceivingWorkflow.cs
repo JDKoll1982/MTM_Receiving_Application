@@ -55,6 +55,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public Model_InforVisualPart? CurrentPart { get; set; }
         public bool IsNonPOItem { get; set; }
         public int NumberOfLoads { get; set; } = 1;
+        public string CurrentLocation { get; set; } = string.Empty;
 
         // PO Header Data (from Model_InforVisualPO)
         public string? CurrentPOVendor { get; set; }
@@ -97,6 +98,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             // Start fresh
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
+            CurrentLocation = string.Empty;
 
             // Check if user has a default receiving mode set
             var currentUser = _userSessionManager?.CurrentSession?.User;
@@ -188,6 +190,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         validationErrors.Add("Number of loads must be at least 1.");
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
+
+                    var locationValidation = await _validation.ValidateLocationAsync(CurrentLocation);
+                    if (!locationValidation.IsValid)
+                    {
+                        validationErrors.Add(locationValidation.Message);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                    }
+
                     GenerateLoads();
                     CurrentStep = Enum_ReceivingWorkflowStep.WeightQuantityEntry;
                     break;
@@ -308,6 +318,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     UnitOfMeasure = CurrentPart?.UnitOfMeasure ?? "EA",
                     QtyOrdered = CurrentPart?.QtyOrdered ?? 0,
                     RemainingQuantity = CurrentPart?.RemainingQuantity ?? 0,
+                    InitialLocation = CurrentLocation?.Trim() ?? string.Empty,
                     // PO Header Data
                     PoVendor = CurrentPOVendor ?? string.Empty,
                     PoStatus = CurrentPOStatus ?? string.Empty,
@@ -364,6 +375,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentPart = null;
             IsNonPOItem = false;
             NumberOfLoads = 1;
+            CurrentLocation = string.Empty;
 
             await PersistSessionAsync();
             CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
@@ -511,6 +523,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentPONumber = null;
             CurrentPart = null;
             IsNonPOItem = false;
+            CurrentLocation = string.Empty;
             _currentBatchLoads.Clear();
 
             _viewModelRegistry.ClearAllInputs();

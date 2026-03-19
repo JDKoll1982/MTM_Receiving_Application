@@ -38,6 +38,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private string _heatLotNumber = string.Empty;  // Default to empty, set to "Nothing Entered" on save if blank
 
         [ObservableProperty]
+        private string _initialLocation = string.Empty;  // Optional, validated only when populated
+
+        [ObservableProperty]
         private int _remainingQuantity;
 
         [ObservableProperty]

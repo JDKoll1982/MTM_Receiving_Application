@@ -40,7 +40,7 @@ public class Dao_ReceivingLine
                 new MySqlParameter("@p_EmployeeNumber", line.EmployeeNumber),
                 new MySqlParameter("@p_Heat", line.Heat ?? string.Empty),
                 new MySqlParameter("@p_Date", line.Date),
-                new MySqlParameter("@p_InitialLocation", line.InitialLocation ?? string.Empty),
+                new MySqlParameter("@p_InitialLocation", string.IsNullOrWhiteSpace(line.InitialLocation) ? "Nothing Entered" : line.InitialLocation.Trim()),
                 new MySqlParameter("@p_CoilsOnSkid", (object?)line.CoilsOnSkid ?? DBNull.Value),
                 new MySqlParameter("@p_VendorName", line.VendorName ?? "Unknown"),
                 new MySqlParameter("@p_PartDescription", line.PartDescription ?? string.Empty),

@@ -39,41 +39,12 @@ public class Service_ReportingClipboard : IService_ReportingClipboard
             return "No data to display";
         }
 
-        var moduleName = rows[0].SourceModule?.Trim().ToLowerInvariant() ?? string.Empty;
         var text = new StringBuilder();
 
-        switch (moduleName)
+        text.AppendLine("PO\tPart/Dunnage\tQuantity\tLocation\tNotes\tLoads/Skids\tCoils/Pcs/Type per Skid");
+        foreach (var row in rows)
         {
-            case "receiving":
-                text.AppendLine("PO Number\tPart\tDescription\tQty\tWeight\tHeat/Lot\tDate");
-                foreach (var row in rows)
-                {
-                    text.AppendLine($"{row.PONumber ?? string.Empty}\t{row.PartNumber ?? string.Empty}\t{row.PartDescription ?? string.Empty}\t{row.Quantity?.ToString() ?? string.Empty}\t{row.WeightLbs?.ToString() ?? string.Empty}\t{row.HeatLotNumber ?? string.Empty}\t{row.CreatedDate:yyyy-MM-dd}");
-                }
-                break;
-
-            case "dunnage":
-                text.AppendLine("Type\tPart\tSpecs\tQty\tUser\tEmployee #\tDate");
-                foreach (var row in rows)
-                {
-                    text.AppendLine($"{row.DunnageType ?? string.Empty}\t{row.PartNumber ?? string.Empty}\t{row.SpecsCombined ?? string.Empty}\t{row.Quantity?.ToString() ?? string.Empty}\t{row.CreatedByUsername ?? string.Empty}\t{row.EmployeeNumber ?? string.Empty}\t{row.CreatedDate:yyyy-MM-dd}");
-                }
-                break;
-
-            case "volvo":
-                text.AppendLine("Shipment #\tPO Number\tReceiver #\tStatus\tPart Count\tDate");
-                foreach (var row in rows)
-                {
-                    text.AppendLine($"{row.ShipmentNumber?.ToString() ?? string.Empty}\t{row.PONumber ?? string.Empty}\t{row.ReceiverNumber ?? string.Empty}\t{row.Status ?? string.Empty}\t{row.PartCount?.ToString() ?? string.Empty}\t{row.CreatedDate:yyyy-MM-dd}");
-                }
-                break;
-
-            default:
-                foreach (var row in rows)
-                {
-                    text.AppendLine($"{row.SourceModule}\t{row.CreatedDate:yyyy-MM-dd}");
-                }
-                break;
+            text.AppendLine($"{row.DisplayPo}\t{row.DisplayPartOrDunnage}\t{row.DisplayQuantity}\t{row.DisplayLocation}\t{row.DisplayNotes}\t{row.DisplayLoadsOrSkids}\t{row.DisplayUnitsPerSkid}");
         }
 
         return text.ToString();

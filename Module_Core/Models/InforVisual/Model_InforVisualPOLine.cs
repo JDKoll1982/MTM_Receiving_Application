@@ -48,4 +48,7 @@ public partial class Model_InforVisualPOLine : ObservableObject
 
     [ObservableProperty]
     private string _siteId = InforVisualDefaults.DefaultSiteId;
+
+    [ObservableProperty]
+    private string _defaultLocationId = string.Empty;
 }

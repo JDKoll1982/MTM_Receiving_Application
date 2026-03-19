@@ -259,6 +259,7 @@ public class Service_InforVisualConnect : IService_InforVisual
                 Description = line.PartDescription,
                 POLineNumber = line.PoLine.ToString(),
                 PartType = "FG", // Default - could be enhanced with additional query
+                DefaultLocationId = line.DefaultLocationId,
                 QtyOrdered = (int)line.OrderedQty,
                 RemainingQuantity = (int)line.RemainingQty,
                 UnitOfMeasure = line.UnitOfMeasure
@@ -278,6 +279,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             Description = daoPart.Description,
             POLineNumber = "N/A",
             PartType = "FG", // Default
+            DefaultLocationId = daoPart.DefaultLocationId,
             QtyOrdered = 0,
             RemainingQuantity = (int)daoPart.AvailableQty,
             UnitOfMeasure = daoPart.PrimaryUom
@@ -302,6 +304,7 @@ public class Service_InforVisualConnect : IService_InforVisual
                     PartID = "MOCK-PART-001",
                     POLineNumber = "1",
                     PartType = "RAW",
+                    DefaultLocationId = "A-RECV-01",
                     QtyOrdered = 100,
                     Description = "Mock Part 1 Description",
                     RemainingQuantity = 50,
@@ -312,6 +315,7 @@ public class Service_InforVisualConnect : IService_InforVisual
                     PartID = "MOCK-PART-002",
                     POLineNumber = "2",
                     PartType = "FG",
+                    DefaultLocationId = "B-RECV-02",
                     QtyOrdered = 50,
                     Description = "Mock Part 2 Description",
                     RemainingQuantity = 10,
@@ -331,6 +335,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             PartType = "MOCK_TYPE",
             Description = "Mock Part Description",
             POLineNumber = "N/A",
+            DefaultLocationId = "A-RECV-01",
             QtyOrdered = 0,
             RemainingQuantity = 100,
             UnitOfMeasure = "EA"

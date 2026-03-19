@@ -14,6 +14,7 @@ SELECT
     pol.LINE_NO AS PoLine,
     pol.PART_ID AS PartNumber,
     p.DESCRIPTION AS PartDescription,
+    COALESCE(ps.PRIMARY_LOC_ID, fallback.LocationId, pol.CONSIGNED_LOC_ID, '') AS DefaultLocationId,
     pol.ORDER_QTY AS OrderedQty,
     pol.TOTAL_RECEIVED_QTY AS ReceivedQty,
     (pol.ORDER_QTY - pol.TOTAL_RECEIVED_QTY) AS RemainingQty,
@@ -26,6 +27,21 @@ SELECT
 FROM dbo.PURCHASE_ORDER po
 INNER JOIN dbo.PURC_ORDER_LINE pol ON po.ID = pol.PURC_ORDER_ID
 LEFT JOIN dbo.PART p ON pol.PART_ID = p.ID
+LEFT JOIN dbo.PART_SITE ps ON pol.PART_ID = ps.PART_ID AND ps.SITE_ID = po.SITE_ID
+OUTER APPLY
+(
+        SELECT TOP (1)
+                cpl.LOCATION_ID AS LocationId
+        FROM dbo.CR_PART_LOCATION cpl
+        WHERE cpl.ID = pol.PART_ID
+            AND cpl.WAREHOUSE_ID = po.SITE_ID
+            AND cpl.LOCATION_ID IS NOT NULL
+            AND cpl.LOCATION_ID <> ''
+        ORDER BY
+                CASE WHEN cpl.DEF_INSPECT_LOC = 'Y' THEN 0 ELSE 1 END,
+                CASE WHEN cpl.AUTO_ISSUE_LOC = 'Y' THEN 0 ELSE 1 END,
+                cpl.LOCATION_ID
+) fallback
 LEFT JOIN dbo.VENDOR v ON po.VENDOR_ID = v.ID
 WHERE po.ID = @PoNumber
 -- AND po.SITE_ID = '002' -- Commented out to allow finding POs in other sites for testing

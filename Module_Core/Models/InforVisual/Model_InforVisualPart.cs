@@ -19,6 +19,11 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
+        /// Default receiving location from Infor Visual for this part.
+        /// </summary>
+        public string DefaultLocationId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Remaining quantity available to receive (Ordered - Received).
         /// Whole number only (no decimals).
         /// </summary>

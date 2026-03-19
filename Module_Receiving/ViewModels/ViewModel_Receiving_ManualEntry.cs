@@ -18,6 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_InforVisual _inforVisualService;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -60,6 +61,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _manualEntryColumnHeatLotText = "Heat/Lot";
 
         [ObservableProperty]
+        private string _manualEntryColumnLocationText = "Location";
+
+        [ObservableProperty]
         private string _manualEntryColumnPkgTypeText = "Pkg Type";
 
         [ObservableProperty]
@@ -68,11 +72,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _manualEntryColumnWtPerPkgText = "Wt/Pkg";
 
+        public bool IsMockLocationMode => _validationService.UseMockLocationList;
+
+        public string MockLocationListText => string.Join(", ", _validationService.PresetLocations);
+
+        public ObservableCollection<string> PresetLocations { get; } = new();
+
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
 
         public ViewModel_Receiving_ManualEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
+            IService_InforVisual inforVisualService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
@@ -84,9 +95,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _windowService = windowService;
             _workflowService = workflowService;
             _validationService = validationService;
+            _inforVisualService = inforVisualService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
+
+            foreach (var presetLocation in _validationService.PresetLocations)
+            {
+                PresetLocations.Add(presetLocation);
+            }
 
             _ = LoadUITextAsync();
         }
@@ -194,6 +211,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             if (string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber) && !string.IsNullOrWhiteSpace(sourceLoad.HeatLotNumber))
                             {
                                 currentLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
+                                filledCount++;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(currentLoad.InitialLocation) && !string.IsNullOrWhiteSpace(sourceLoad.InitialLocation))
+                            {
+                                currentLoad.InitialLocation = sourceLoad.InitialLocation;
                                 filledCount++;
                             }
 
@@ -459,7 +482,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var loadsWithUnacknowledgedHolds = Loads
                     .Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged)
                     .ToList();
-                
+
                 if (loadsWithUnacknowledgedHolds.Count > 0)
                 {
                     // Show confirmation dialog for quality hold acknowledgment
@@ -469,7 +492,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
                         return; // Block save if user doesn't acknowledge
                     }
-                    
+
                     // Mark all as acknowledged
                     foreach (var load in loadsWithUnacknowledgedHolds)
                     {
@@ -507,6 +530,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
+                var locationErrors = new System.Collections.Generic.List<string>();
+                foreach (var load in Loads)
+                {
+                    var locationValidation = await _validationService.ValidateLocationAsync(load.InitialLocation);
+                    if (!locationValidation.IsValid)
+                    {
+                        locationErrors.Add($"Row {load.LoadNumber}: Location — {locationValidation.Message}");
+                    }
+                }
+
+                if (locationErrors.Count > 0)
+                {
+                    await _errorHandler.HandleErrorAsync(string.Join("\n", locationErrors), Enum_ErrorSeverity.Warning);
+                    return;
+                }
+
                 // Only default blank Heat/Lot to "Nothing Entered" once all validation has passed.
                 // Mutating earlier would leave "Nothing Entered" visible in the grid if the user cancels.
                 foreach (var load in Loads)
@@ -515,15 +554,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     {
                         load.HeatLotNumber = "Nothing Entered";
                     }
+
+                    if (string.IsNullOrWhiteSpace(load.InitialLocation))
+                    {
+                        load.InitialLocation = "Nothing Entered";
+                    }
                 }
 
                 // In manual mode, we skip step-by-step validation and go straight to saving
                 // The workflow service will handle the actual save logic
-                var result = await _workflowService.AdvanceToNextStepAsync();                
+                var result = await _workflowService.AdvanceToNextStepAsync();
                 if (!result.Success)
                 {
                     _logger.LogWarning($"Workflow advance failed: {string.Join(", ", result.ValidationErrors)}");
-                    
+
                     if (result.ValidationErrors.Count > 0)
                     {
                         await _errorHandler.HandleErrorAsync(
@@ -652,6 +696,44 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private async Task ShowHelpAsync()
         {
             await _helpService.ShowHelpAsync("Receiving.ManualEntry");
+        }
+
+        public async Task<Model_ReceivingValidationResult> ValidateLocationAsync(Model_ReceivingLoad load)
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            if (string.IsNullOrWhiteSpace(load.InitialLocation))
+            {
+                return Model_ReceivingValidationResult.Success();
+            }
+
+            var validation = await _validationService.ValidateLocationAsync(load.InitialLocation);
+            if (validation.IsValid)
+            {
+                load.InitialLocation = load.InitialLocation.Trim();
+            }
+
+            return validation;
+        }
+
+        public async Task ApplyDefaultLocationFromPartAsync(Model_ReceivingLoad load)
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            if (IsMockLocationMode
+                || string.IsNullOrWhiteSpace(load.PartID)
+                || !string.IsNullOrWhiteSpace(load.InitialLocation))
+            {
+                return;
+            }
+
+            var result = await _inforVisualService.GetPartByIDAsync(load.PartID.Trim());
+            if (!result.IsSuccess || result.Data is null || string.IsNullOrWhiteSpace(result.Data.DefaultLocationId))
+            {
+                return;
+            }
+
+            load.InitialLocation = result.Data.DefaultLocationId.Trim();
         }
 
         #region Help Content Helpers

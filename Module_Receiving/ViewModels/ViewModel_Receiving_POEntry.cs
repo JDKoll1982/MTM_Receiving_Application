@@ -282,6 +282,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         : await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoNotFound);
                     await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
                     Parts.Clear();
+                    _workflowService.CurrentLocation = string.Empty;
                 }
             }
             finally
@@ -299,6 +300,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             PoNumber = string.Empty;
             PartID = string.Empty;
             _workflowService.IsNonPOItem = IsNonPOItem;
+            _workflowService.CurrentLocation = string.Empty;
         }
 
         [RelayCommand]
@@ -329,6 +331,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartNotFound), Enum_ErrorSeverity.Error);
                     SelectedPart = null;
                     Parts.Clear();
+                    _workflowService.CurrentLocation = string.Empty;
                 }
             }
             finally
@@ -430,6 +433,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         partial void OnSelectedPartChanged(Model_InforVisualPart? value)
         {
             _workflowService.CurrentPart = value;
+            _workflowService.CurrentLocation = value?.DefaultLocationId?.Trim() ?? string.Empty;
 
             // Auto-detect package type when a part is selected from PO
             if (value != null && !string.IsNullOrWhiteSpace(value.PartID))

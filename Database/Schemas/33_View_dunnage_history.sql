@@ -7,6 +7,7 @@
 CREATE OR REPLACE VIEW view_dunnage_history AS
 SELECT
     dl.load_uuid AS id,
+    CAST(NULL AS CHAR(20)) AS po_number,
     dt.type_name AS dunnage_type,
     dp.part_id AS part_number,
     GROUP_CONCAT(
@@ -18,6 +19,8 @@ SELECT
     DATE(dl.received_date) AS created_date,
     CAST(au.employee_number AS CHAR(20)) AS employee_number,
     dl.created_by AS created_by_username,
+    dp.home_location AS location,
+    CAST(NULL AS CHAR(255)) AS notes,
     'Dunnage' AS source_module
 FROM dunnage_history dl
 INNER JOIN dunnage_parts dp ON dl.part_id = dp.part_id

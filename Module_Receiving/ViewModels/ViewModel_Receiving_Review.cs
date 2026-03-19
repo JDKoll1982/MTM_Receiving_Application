@@ -60,6 +60,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _reviewHeatLotNumberText = "Heat/Lot Number";
 
         [ObservableProperty]
+        private string _reviewLocationText = "Location";
+
+        [ObservableProperty]
         private string _reviewPackagesPerLoadText = "Packages Per Load";
 
         [ObservableProperty]
@@ -100,6 +103,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _reviewColumnHeatLotText = "Heat/Lot #";
+
+        [ObservableProperty]
+        private string _reviewColumnLocationText = "Location";
 
         [ObservableProperty]
         private string _reviewColumnPkgsText = "Pkgs";

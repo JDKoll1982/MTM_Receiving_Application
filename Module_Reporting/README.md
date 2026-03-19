@@ -1,6 +1,6 @@
 # Module Reporting
 
-Last Updated: 2026-03-17
+Last Updated: 2026-03-19
 
 ## Overview
 
@@ -15,7 +15,7 @@ The module is under active refactor because the upstream modules changed signifi
 - Volvo report generation
 - Date-range availability checks
 - PO normalization
-- Clipboard-based formatted table output for Outlook-style paste workflows
+- Clipboard-based simplified report summary output for Outlook-style paste workflows
 
 ## Current Refactor Focus
 
@@ -38,6 +38,18 @@ Use these two files as the source of truth for the reporting refactor:
 - Receiving reporting still has DAO/view contract mismatches.
 - Volvo reporting needed availability and formatting fixes and is still being validated.
 - Outlook-style paste formatting is being upgraded from raw HTML copy behavior to a proper rich clipboard payload.
+
+## Current Output Shape
+
+The reporting screen and clipboard output are intentionally reduced to the business summary fields users asked for:
+
+- PO
+- Part/Dunnage
+- Quantity
+- Location
+- Notes when available
+- Loads/Skids when available
+- Coils/Pcs/Type per Skid when available
 
 ## Validation Priorities
 

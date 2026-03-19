@@ -15,6 +15,7 @@
         <converters:Converter_DecimalToString x:Key="DecimalToStringConverter"/>
         <converters:Converter_PartIDToQualityHoldBrush x:Key="PartIDToQualityHoldBrushConverter"/>
         <converters:Converter_PartIDToQualityHoldTextColor x:Key="PartIDToQualityHoldTextColorConverter"/>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid Padding="16">
@@ -58,6 +59,12 @@
                 </Button>
             </StackPanel>
         </Grid>
+
+        <InfoBar Grid.Row="0"
+                 Margin="0,48,0,0"
+                 Severity="Informational"
+                 IsOpen="{x:Bind ViewModel.IsMockLocationMode, Mode=OneWay}"
+                 Message="{x:Bind ViewModel.MockLocationListText, Mode=OneWay}"/>
 
         <!-- Data Grid -->
         <controls:DataGrid Grid.Row="1"
@@ -170,6 +177,37 @@
                                 VerticalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <!-- Location column -->
+                <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnLocationText, Mode=OneWay}" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Text="{Binding InitialLocation}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ComboBox ItemsSource="{Binding DataContext.PresetLocations, ElementName=Root}"
+                                          SelectedItem="{Binding InitialLocation, Mode=TwoWay}"
+                                          BorderThickness="0"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch"
+                                          Visibility="{Binding DataContext.IsMockLocationMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBox Text="{Binding InitialLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         BorderThickness="0"
+                                         LostFocus="LocationTextBox_LostFocus"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         VerticalContentAlignment="Center"
+                                         Visibility="{Binding DataContext.IsMockLocationMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                            </Grid>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellEditingTemplate>
                 </controls:DataGridTemplateColumn>

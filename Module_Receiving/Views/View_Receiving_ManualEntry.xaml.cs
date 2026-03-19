@@ -288,6 +288,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// LoadingRow event handler for applying row-level highlighting based on quality holds.
         /// Subscribes to each load's PropertyChanged so the background stays reactive.
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ManualEntryDataGrid_LoadingRow(object? sender, DataGridRowEventArgs e)
         {
             if (e.Row.DataContext is not Model_ReceivingLoad load)
@@ -358,7 +360,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             // Auto-format PO number
             string formattedPO = FormatPONumber(value);
-            
+
             if (formattedPO != value)
             {
                 load.PoNumber = formattedPO;
@@ -375,6 +377,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// Also handles the B-suffix variant used for blanket POs (e.g. "64489B" → "PO-064489B").
         /// Mirrors Format-PoNumber in Import-ReceivingHistory.ps1.
         /// </summary>
+        /// <param name="input"></param>
         private static string FormatPONumber(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -418,7 +421,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PartIDTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private async void PartIDTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is not TextBox textBox)
             {
@@ -446,6 +449,32 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 load.PartID = formattedPartID;
                 textBox.Text = formattedPartID;
                 Debug.WriteLine($"[ManualEntry] Formatted PartID: '{value}' → '{formattedPartID}'");
+            }
+
+            await ViewModel.ApplyDefaultLocationFromPartAsync(load);
+        }
+
+        private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not TextBox textBox)
+            {
+                return;
+            }
+
+            if (textBox.DataContext is not Model_ReceivingLoad load)
+            {
+                return;
+            }
+
+            var value = textBox.Text?.Trim();
+            load.InitialLocation = value ?? string.Empty;
+
+            var validation = await ViewModel.ValidateLocationAsync(load);
+            if (!validation.IsValid)
+            {
+                ViewModel.ShowStatus(validation.Message, Module_Core.Models.Enums.InfoBarSeverity.Warning);
+                textBox.Focus(FocusState.Programmatic);
+                textBox.SelectAll();
             }
         }
 
