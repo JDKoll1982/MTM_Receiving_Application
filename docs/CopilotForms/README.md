@@ -50,7 +50,7 @@ To serve the forms locally and open the index page automatically:
 
 Optional parameters:
 
-- `-Port 9001` to use a different localhost port
+- `-Port 9001` to use a different 172.16.1.104 port
 - `-NoBrowser` to start the server without opening a browser window
 
 This avoids browser restrictions around loading JSON directly from disk and lets the forms load `data/copilot-forms.config.json` automatically.
