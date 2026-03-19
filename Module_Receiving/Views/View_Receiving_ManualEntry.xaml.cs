@@ -308,7 +308,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     return;
                 }
 
-                ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
+                e.Row.DispatcherQueue.TryEnqueue(() =>
                 {
                     // Guard against recycled rows that now show a different load
                     if (e.Row.DataContext is Model_ReceivingLoad currentRowLoad
