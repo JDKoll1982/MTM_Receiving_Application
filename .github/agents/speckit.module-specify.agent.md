@@ -1,6 +1,6 @@
 ---
 description: Generate feature specification for module modernization/creation based on module-agent workflow analysis.
-handoffs: 
+handoffs:
   - label: Generate Task Checklist
     agent: speckit.tasks
     prompt: Generate implementation tasks for this specification
@@ -10,7 +10,7 @@ handoffs:
     prompt: Create detailed implementation plan
     send: true
   - label: Run Compliance Audit
-    agent: module-compliance-auditor
+    agent: speckit.module-specify
     prompt: Validate constitutional compliance
     send: true
 ---
@@ -43,11 +43,11 @@ Examples:
 
      ```
      Please specify: <module-agent-type> <module-name> [mode]
-     
+
      Module Agent Types:
      - module-rebuilder: Modernize existing module to CQRS
      - module-creator: Create new module from scratch
-     
+
      Example: module-rebuilder Module_Volvo STRICT
      ```
 
@@ -155,16 +155,17 @@ Examples:
 
    ```markdown
    ### User Story 1 - [Module] [Primary Workflow] with CQRS (Priority: P1)
-   
-   Users must be able to [complete primary workflow] using modernized CQRS architecture 
+
+   Users must be able to [complete primary workflow] using modernized CQRS architecture
    without experiencing functional degradation or workflow changes from current implementation.
-   
+
    **Why this priority**: This is the primary workflow, without it the module provides no value.
-   
-   **Independent Test**: Can be fully tested by [specific actions] and success measured by 
+
+   **Independent Test**: Can be fully tested by [specific actions] and success measured by
    identical output files and database records compared to current implementation.
-   
+
    **Acceptance Scenarios**:
+
    1. **Given** user opens [screen], **When** screen loads, **Then** [data] displayed via CQRS query handlers
    2. **Given** user [action], **When** [trigger], **Then** CQRS command handler validates and [result]
    ```
@@ -197,7 +198,7 @@ Examples:
 
    ```markdown
    ### Measurable Outcomes
-   
+
    1. **CQRS Migration Completeness**: 100% of ViewModels use IMediator (verified via grep)
    2. **Test Coverage**: Minimum 80% code coverage for handlers/validators
    3. **Performance Parity**: [Key operations] complete in ≤ current time
@@ -237,17 +238,17 @@ Examples:
 
    **Create risk table from tasks.md complexity**:
 
-   | Risk | Impact | Probability | Mitigation |
-   |------|--------|-------------|------------|
-   | [Algorithm] produces different results | CRITICAL | Medium | Property-based tests with 1000+ cases |
-   | [Format] changes break downstream | HIGH | Low | Golden file tests for byte-by-byte verification |
-   | Missing pipeline behaviors | HIGH | Low | Integration tests verify pipeline execution |
+   | Risk                                   | Impact   | Probability | Mitigation                                      |
+   | -------------------------------------- | -------- | ----------- | ----------------------------------------------- |
+   | [Algorithm] produces different results | CRITICAL | Medium      | Property-based tests with 1000+ cases           |
+   | [Format] changes break downstream      | HIGH     | Low         | Golden file tests for byte-by-byte verification |
+   | Missing pipeline behaviors             | HIGH     | Low         | Integration tests verify pipeline execution     |
 
 9. **Generate Compliance Alignment** (STRICT mode):
 
    ```markdown
    ### Constitutional Principles Checklist
-   
+
    - **Principle I (MVVM & View Purity)**: ✅ [How spec ensures compliance]
    - **Principle II (Data Access Integrity)**: ✅ [How spec ensures compliance]
    - **Principle III (CQRS + Mediator First)**: ✅ PRIMARY FOCUS - [Details]
@@ -255,8 +256,8 @@ Examples:
    - **Principle V (Validation & Structured Logging)**: ✅ [How spec ensures compliance]
    - **Principle VI (Security & Session Discipline)**: ✅ [How spec ensures compliance]
    - **Principle VII (Library-First Reuse)**: ✅ [Libraries used]
-   
-   **Zero Deviations Policy**: Any code changes violating above principles MUST be 
+
+   **Zero Deviations Policy**: Any code changes violating above principles MUST be
    rejected in code review. This specification serves as the constitutional contract.
    ```
 
@@ -264,7 +265,7 @@ Examples:
 
     ```
     Write to: {FEATURE_DIR}/spec.md
-    
+
     Use EXACT template structure from .specify/templates/spec-template.md
     Fill ALL sections with generated content
     Preserve all comments and formatting from template
@@ -280,7 +281,7 @@ Examples:
 
    ```
    Create: {FEATURE_DIR}/checklists/requirements.md
-   
+
    Use structure:
    - Content Quality (4 items)
    - Requirement Completeness (8 items)
@@ -306,7 +307,7 @@ Examples:
 
    ```
    Invoke: module-doc-generator agent for Module_{Name}
-   
+
    Creates:
    - Module_{Name}/QUICK_REF.md (handler/validator reference)
    - Module_{Name}/SETTABLE_OBJECTS_REPORT.md (if applicable)
@@ -314,58 +315,63 @@ Examples:
 
 2. **Generate Completion Report**:
 
-   ```markdown
-   # Module Specification Complete: Module_{Name}
-   
+   ````markdown
+   # Module Specification Complete: Module\_{Name}
+
    **Branch**: {BRANCH_NAME}
    **Specification**: {FEATURE_DIR}/spec.md
    **Quality Validation**: {FEATURE_DIR}/checklists/requirements.md
-   
+
    ## Generated Content
-   
+
    ✅ **User Stories**: {count} prioritized stories (P1, P2, P3...)
    ✅ **Functional Requirements**: {count} requirements mapped from constitutional violations
    ✅ **Success Criteria**: {count} measurable outcomes
    ✅ **Dependencies**: Upstream/downstream clearly identified
    ✅ **Compliance**: {STRICT/STANDARD} mode - zero deviations policy stated
-   
+
    ## Module Analysis Summary
-   
+
    **Current State**:
+
    - ViewModels: {count}
    - Services: {count} (to be deprecated)
    - DAOs: {count} (compliant/non-compliant)
    - Constitutional Violations: {count}
-   
+
    **Target State**:
+
    - CQRS Handlers: {count} queries + {count} commands
    - FluentValidation Validators: {count}
    - Pipeline Behaviors: Validation, Logging, Error Handling
    - Test Coverage: 80%+ target
-   
+
    ## Next Steps
-   
+
    1. **Review Specification**: Validate user stories and requirements
    2. **Generate Tasks**: Run `/speckit.tasks` to create implementation checklist
    3. **Create Plan**: Run `/speckit.plan` for detailed technical plan
    4. **Run Compliance Audit**: Invoke module-compliance-auditor
    5. **Begin Implementation**: Follow tasks.md phase-by-phase
-   
+
    ## Recommended Commands
-   
+
    ```powershell
    # Generate implementation tasks
    /speckit.tasks
-   
+
    # Run compliance audit
    @module-compliance-auditor Module_{Name}
-   
+
    # Generate technical plan
    /speckit.plan
    ```
+   ````
 
    **Specification Quality**: ⭐⭐⭐⭐⭐ ({validation_score}/21 validation items pass)
    **Readiness**: ✅ READY FOR TASK GENERATION
+
+   ```
 
    ```
 
@@ -375,13 +381,13 @@ Examples:
    git add {FEATURE_DIR}/spec.md
    git add {FEATURE_DIR}/checklists/requirements.md
    git commit -m "feat(spec): Module_{Name} specification via module-agent workflow
-   
+
    - {count} prioritized user stories
    - {count} functional requirements from constitutional violations
    - {count} measurable success criteria
    - Constitutional compliance: {STRICT/STANDARD} mode
    - Quality validation: {score}/21 items pass
-   
+
    Module Agent: {agent-type}
    Status: READY FOR TASK GENERATION"
    ```
@@ -483,7 +489,7 @@ Continue anyway? [Y/N]
 - Spec structure MUST match `.specify/templates/spec-template.md` exactly
 - All paths must be absolute (no relative paths)
 - Use Serena MCP for efficient module analysis (avoid reading entire files)
-- Reference repomix-*.md files for quick context but prioritize Serena analysis
+- Reference repomix-\*.md files for quick context but prioritize Serena analysis
 - STRICT mode enforces zero-deviation constitutional compliance
 - Agent orchestration is sequential (brownfield-check → module-agent → spec generation → validation → doc-gen)
 - Handoffs to speckit.tasks and module-compliance-auditor are automatic after completion

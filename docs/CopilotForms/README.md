@@ -45,7 +45,7 @@ Each form reads from a shared JSON catalog so Copilot or a maintainer can update
 To serve the forms locally and open the index page automatically:
 
 ```powershell
-.\Scripts\Start-CopilotForms.ps1
+.\docs\CopilotForms\Start-CopilotForms.ps1
 ```
 
 Optional parameters:

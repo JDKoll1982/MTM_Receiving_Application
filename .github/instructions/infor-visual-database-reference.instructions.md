@@ -8,7 +8,7 @@ description: >
 
 # Infor Visual Database Reference Files
 
-The `docs/InforVisual/DatabaseReferenceFiles/` folder contains CSV exports of the MTMFG SQL
+The `docs/InforVisual/DatabaseCSVFiles/` folder contains CSV exports of the MTMFG SQL
 Server schema used by the Infor Visual ERP. **This database is READ ONLY** — the application
 never issues INSERT, UPDATE, or DELETE against it. All write operations go to MySQL via stored
 procedures.
@@ -36,23 +36,24 @@ an Infor Visual table, or a DAO that joins multiple Visual tables.
 **Columns:** `TABLE_SCHEMA`, `TABLE_NAME`, `COLUMN_NAME`, `DATA_TYPE`, `IS_NULLABLE`
 
 **Use for:**
+
 - Confirming a column exists on a table before referencing it in SQL.
 - Determining the SQL data type to map to a C# property.
 - Checking nullability to decide whether a C# property should be nullable (`?`).
 
 **Data-type → C# mapping guide:**
 
-| SQL Type | C# Type | Notes |
-|---|---|---|
-| `int` | `int` | Nullable if `IS_NULLABLE = YES` → `int?` |
-| `smallint` | `short` | Nullable → `short?` |
-| `bigint` | `long` | Nullable → `long?` |
-| `decimal` | `decimal` | Nullable → `decimal?` — check precision/scale in ColumnDetails CSV |
-| `nvarchar` | `string` | Always reference-type; use `string?` when nullable |
-| `nchar` | `string` | Single-char flags (`'Y'`/`'N'`) — map to `bool` with a converter |
-| `datetime` | `DateTime` | Nullable → `DateTime?` |
-| `image` | `byte[]` | Binary blobs — rarely needed in this application |
-| `bit` | `bool` | Nullable → `bool?` |
+| SQL Type   | C# Type    | Notes                                                              |
+| ---------- | ---------- | ------------------------------------------------------------------ |
+| `int`      | `int`      | Nullable if `IS_NULLABLE = YES` → `int?`                           |
+| `smallint` | `short`    | Nullable → `short?`                                                |
+| `bigint`   | `long`     | Nullable → `long?`                                                 |
+| `decimal`  | `decimal`  | Nullable → `decimal?` — check precision/scale in ColumnDetails CSV |
+| `nvarchar` | `string`   | Always reference-type; use `string?` when nullable                 |
+| `nchar`    | `string`   | Single-char flags (`'Y'`/`'N'`) — map to `bool` with a converter   |
+| `datetime` | `DateTime` | Nullable → `DateTime?`                                             |
+| `image`    | `byte[]`   | Binary blobs — rarely needed in this application                   |
+| `bit`      | `bool`     | Nullable → `bool?`                                                 |
 
 **Limitation:** Does not include string max-length, decimal precision/scale, or identity flags.
 See `MTMFG_Schema_ColumnDetails.csv` (recommended) for those details.
@@ -64,6 +65,7 @@ See `MTMFG_Schema_ColumnDetails.csv` (recommended) for those details.
 **Columns:** `FK_Name`, `Table`, `Column`, `Referenced_Table`, `Referenced_Column`
 
 **Use for:**
+
 - Constructing JOIN clauses between tables.
 - Understanding navigation paths (e.g., to get from `RECEIVER_LINE` to `PURCHASE_ORDER`).
 - Validating that a proposed JOIN is based on an actual relationship, not an assumption.
@@ -76,6 +78,7 @@ FK lookup: Table=RECEIVER_LINE, Column=PURC_ORDER_LINE_NO → References PURC_OR
 ```
 
 This tells you:
+
 ```sql
 SELECT r.*, po.*
 FROM   RECEIVER_LINE r
@@ -92,6 +95,7 @@ columns must appear in the JOIN condition.
 **Columns:** `Table`, `PrimaryKeyColumn`
 
 **Use for:**
+
 - Building WHERE clauses that uniquely identify a record.
 - Understanding composite PKs — if multiple rows list the same table, all listed columns
   together form the PK.
@@ -127,6 +131,7 @@ the SSMS queries used to produce each one.
 `IS_COMPUTED` — ~14,775 rows
 
 Use when:
+
 - Generating `decimal(18,4)` vs `decimal(10,2)` stored procedure parameters.
 - Setting `[MaxLength]` annotations on C# string properties.
 - Skipping identity columns (`IS_IDENTITY=YES`) from INSERT parameter lists (MySQL DAOs).
@@ -157,6 +162,7 @@ Use when: Querying `CR_PART_LOCATION` (part/warehouse location data) or `SYSUSER
 `IS_PRIMARY_KEY`, `COLUMN_NAME`, `KEY_ORDINAL`, `IS_INCLUDED`
 
 Use when:
+
 - Writing WHERE clauses on large tables — filter on indexed columns first.
 - Choosing between equivalent join paths — prefer the one using an indexed FK column.
 - Tables known to be large (see RowCounts CSV): `CUST_BOOK_DEL` (~4.8M rows),
@@ -172,6 +178,7 @@ Use when:
 Top tables: `CUST_BOOK_DEL` (~4.8M), `WIP_ISSUE_DETAIL` (~3.9M), `INVENTORY_TRANS` (~3.5M).
 
 Use when:
+
 - Deciding whether a full-table query is safe or whether a TOP/WHERE clause is mandatory.
 - Documenting expected query performance in DAO method XML comments.
 
@@ -183,6 +190,7 @@ Use when:
 `IS_INSTEAD_OF`, `TRIGGER_EVENTS` — 331 rows
 
 Use when:
+
 - Explaining why a Visual record changes automatically after an ERP action (trigger side-effects).
 - Identifying tables with heavy trigger activity that should not be queried mid-transaction.
 
@@ -201,6 +209,7 @@ business logic in the application tier. This file will never have data — skip 
 **Columns (no header row):** `TABLE_NAME`, `CONSTRAINT_NAME`, `COLUMN_NAME`, `KEY_ORDINAL`
 
 Use when:
+
 - Writing lookup queries by business key (e.g., `PART.ID`, `VENDOR.ID`, `CUSTOMER.ID`) —
   unique constraints confirm these are safe single-row lookups.
 
@@ -213,8 +222,8 @@ Use when:
 
 > ⚠️ **Limitation:** `DEFAULT_EXPRESSION` is NULL for all rows. Infor Visual stores default
 > constraint definitions with encryption, making them inaccessible via
-> `sys.default_constraints.definition`. The file confirms *which* columns have defaults but
-> not *what* the default values are.
+> `sys.default_constraints.definition`. The file confirms _which_ columns have defaults but
+> not _what_ the default values are.
 
 Use when: Knowing which columns have defaults (safe to omit from INSERT test fixture data).
 
@@ -226,7 +235,7 @@ Use when: Knowing which columns have defaults (safe to omit from INSERT test fix
 
 > ⚠️ **Limitation:** `CHECK_DEFINITION` is NULL for all rows. Infor Visual stores check
 > constraint definitions with encryption, making them inaccessible via
-> `sys.check_constraints.definition`. The file confirms *which* tables have check constraints
+> `sys.check_constraints.definition`. The file confirms _which_ tables have check constraints
 > but cannot reveal allowed values for enum mapping.
 
 Use when: Knowing which tables enforce check constraints — but do not rely on this file to
@@ -301,19 +310,19 @@ WHERE WORKORDER_TYPE      = @type
 
 ## File Inventory
 
-| File | Status | Priority |
-|---|---|---|
-| `MTMFG_Schema_Tables.csv` | ✅ Generated | Core |
-| `MTMFG_Schema_FKs.csv` | ✅ Generated | Core |
-| `MTMFG_Schema_PKs.csv` | ✅ Generated | Core |
-| `MTMFG_Schema_ColumnDetails.csv` | ✅ Generated — no header row, ~14,775 rows | ★★★ |
-| `MTMFG_Schema_Views.csv` | ✅ Generated — 2 views only; V_ tables are base tables, not views | ★★★ |
-| `MTMFG_Schema_Indexes.csv` | ✅ Generated — no header row | ★★ |
-| `MTMFG_Schema_TableRowCounts.csv` | ✅ Generated — no header row | ★★ |
-| `MTMFG_Schema_Triggers.csv` | ✅ Generated — no header row, 331 rows | ★★ |
-| `MTMFG_Schema_StoredProcedures.csv` | ⛔ Not applicable — MTMFG has no SPs or UDFs | N/A |
-| `MTMFG_Schema_UniqueConstraints.csv` | ✅ Generated — no header row | ★ |
-| `MTMFG_Schema_DefaultConstraints.csv` | ✅ Generated — DEFAULT_EXPRESSION all NULL (encrypted) | ★ |
-| `MTMFG_Schema_CheckConstraints.csv` | ✅ Generated — CHECK_DEFINITION all NULL (encrypted) | ★ |
-| `MTMFG_Schema_ExtendedProperties.csv` | ⛔ Not applicable — no MS_Description properties | N/A |
-| `ADDITIONAL_CSV_RECOMMENDATIONS.md` | ✅ Created | Reference |
+| File                                  | Status                                                             | Priority  |
+| ------------------------------------- | ------------------------------------------------------------------ | --------- |
+| `MTMFG_Schema_Tables.csv`             | ✅ Generated                                                       | Core      |
+| `MTMFG_Schema_FKs.csv`                | ✅ Generated                                                       | Core      |
+| `MTMFG_Schema_PKs.csv`                | ✅ Generated                                                       | Core      |
+| `MTMFG_Schema_ColumnDetails.csv`      | ✅ Generated — no header row, ~14,775 rows                         | ★★★       |
+| `MTMFG_Schema_Views.csv`              | ✅ Generated — 2 views only; V\_ tables are base tables, not views | ★★★       |
+| `MTMFG_Schema_Indexes.csv`            | ✅ Generated — no header row                                       | ★★        |
+| `MTMFG_Schema_TableRowCounts.csv`     | ✅ Generated — no header row                                       | ★★        |
+| `MTMFG_Schema_Triggers.csv`           | ✅ Generated — no header row, 331 rows                             | ★★        |
+| `MTMFG_Schema_StoredProcedures.csv`   | ⛔ Not applicable — MTMFG has no SPs or UDFs                       | N/A       |
+| `MTMFG_Schema_UniqueConstraints.csv`  | ✅ Generated — no header row                                       | ★         |
+| `MTMFG_Schema_DefaultConstraints.csv` | ✅ Generated — DEFAULT_EXPRESSION all NULL (encrypted)             | ★         |
+| `MTMFG_Schema_CheckConstraints.csv`   | ✅ Generated — CHECK_DEFINITION all NULL (encrypted)               | ★         |
+| `MTMFG_Schema_ExtendedProperties.csv` | ⛔ Not applicable — no MS_Description properties                   | N/A       |
+| `ADDITIONAL_CSV_RECOMMENDATIONS.md`   | ✅ Created                                                         | Reference |

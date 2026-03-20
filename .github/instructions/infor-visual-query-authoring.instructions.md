@@ -15,7 +15,7 @@ description: >
    The connection string must include `ApplicationIntent=ReadOnly`.
 2. **No stored procedures exist.** MTMFG has zero user-defined stored procedures or functions
    in SQL Server (verified 2026-03-06). Every database operation is a plain `SELECT` query.
-3. **V_ prefix tables are base tables, not views.** `V_ACCOUNT`, `V_CONTRACT`, and similar are
+3. **V\_ prefix tables are base tables, not views.** `V_ACCOUNT`, `V_CONTRACT`, and similar are
    regular SQL Server tables accessed the same way as any other table. The only actual SQL
    Server views are `CR_PART_LOCATION` and `SYSUSERAUTH` (see `MTMFG_Schema_Views.csv`).
 4. **Always use the `dbo.` schema prefix** — all MTMFG tables are in the `dbo` schema.
@@ -32,7 +32,7 @@ description: >
 
 ### Step 1 — Determine what tables you need
 
-Open `docs/InforVisual/DatabaseReferenceFiles/MTMFG_Schema_Tables.csv` (columns:
+Open `docs/InforVisual/DatabaseCSVFiles/MTMFG_Schema_Tables.csv` (columns:
 `TABLE_SCHEMA`, `TABLE_NAME`, `COLUMN_NAME`, `DATA_TYPE`, `IS_NULLABLE`) and identify the
 candidate tables. Then confirm the columns exist and note their exact spelling — Infor Visual
 column names must be spelled exactly.
@@ -57,6 +57,7 @@ IS_UNIQUE, IS_PRIMARY_KEY, COLUMN_NAME, KEY_ORDINAL, IS_INCLUDED`) and ensure yo
 clause filters on indexed columns.
 
 **Largest tables (avoid full scans):**
+
 - `CUST_BOOK_DEL` (~4.8M rows)
 - `WIP_ISSUE_DETAIL` (~3.9M rows)
 - `INVENTORY_TRANS` (~3.5M rows)
@@ -176,6 +177,7 @@ ORDER BY pol.LINE_NO;
 ```
 
 **Research path used:**
+
 - `MTMFG_Schema_FKs.csv`: `PURC_ORDER_LINE.PURC_ORDER_ID → PURCHASE_ORDER.ID`
 - `MTMFG_Schema_Tables.csv`: confirmed `TOTAL_RECEIVED_QTY`, `PROMISE_DATE`, `SITE_ID` columns
 - `MTMFG_Schema_PKs.csv`: `PURCHASE_ORDER` PK = `ID`
@@ -220,6 +222,7 @@ WHERE p.ID = @PartNumber;
 ```
 
 **Key patterns:**
+
 - `COALESCE(column, 0)` for nullable numeric columns — `PART_SITE` rows may be absent.
 - `LEFT JOIN` used because a part may not have a `PART_SITE` row.
 
@@ -359,6 +362,7 @@ public async Task<Model_Dao_Result<List<Model_PurchaseOrderLine>>> GetPOLinesAsy
 ```
 
 **Important:**
+
 - The `DECLARE` blocks from the `.sql` file are removed; the C# method passes `@PoNumber`
   as a Dapper / SqlParameter argument instead.
 - Map each query alias (`PoLine`, `PartNumber`, etc.) to the corresponding C# model property.
@@ -368,15 +372,15 @@ public async Task<Model_Dao_Result<List<Model_PurchaseOrderLine>>> GetPOLinesAsy
 
 ## Common Mistakes to Avoid
 
-| Mistake | Correct Approach |
-|---|---|
-| Using a `V_` table name expecting it to be a view | `V_` tables are base tables — query them like any other table |
-| Calling a stored procedure that doesn't exist | Use a plain `SELECT` — MTMFG has no SPs |
+| Mistake                                                                            | Correct Approach                                                               |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Using a `V_` table name expecting it to be a view                                  | `V_` tables are base tables — query them like any other table                  |
+| Calling a stored procedure that doesn't exist                                      | Use a plain `SELECT` — MTMFG has no SPs                                        |
 | Including `CHECK_DEFINITION` or `DEFAULT_EXPRESSION` from the CSVs as valid values | These are all NULL in MTMFG (encrypted) — do not rely on them for enum mapping |
-| Running unsupported `STRING_AGG` | SQL Server 2016 — use `STUFF`/`FOR XML PATH` instead |
-| Filtering on a non-indexed column on a large table | Check `MTMFG_Schema_Indexes.csv` first |
-| Returning all rows from `INVENTORY_TRANS` or `CUST_BOOK_DEL` | Always add `TOP (@MaxResults)` and a tight `WHERE` clause |
-| Writing to the Visual database from C# | READ ONLY — `ApplicationIntent=ReadOnly` enforced |
+| Running unsupported `STRING_AGG`                                                   | SQL Server 2016 — use `STUFF`/`FOR XML PATH` instead                           |
+| Filtering on a non-indexed column on a large table                                 | Check `MTMFG_Schema_Indexes.csv` first                                         |
+| Returning all rows from `INVENTORY_TRANS` or `CUST_BOOK_DEL`                       | Always add `TOP (@MaxResults)` and a tight `WHERE` clause                      |
+| Writing to the Visual database from C#                                             | READ ONLY — `ApplicationIntent=ReadOnly` enforced                              |
 
 ---
 
@@ -391,4 +395,4 @@ Before writing a new query, confirm you have consulted:
 - [ ] `MTMFG_Schema_Indexes.csv` — ensure WHERE filters use indexed columns
 - [ ] `MTMFG_Schema_TableRowCounts.csv` — assess whether TOP and tight WHERE are needed
 
-All files are in `docs/InforVisual/DatabaseReferenceFiles/`.
+All files are in `docs/InforVisual/DatabaseCSVFiles/`.

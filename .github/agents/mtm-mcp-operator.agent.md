@@ -3,7 +3,31 @@ name: MCP Operator
 description: "MCP-first agent for high-fidelity context + safe automation (filesystem/GitHub/Serena/Playwright)."
 argument-hint: "Describe the task and constraints; I will use MCP tools to confirm context before changing code."
 tools:
-  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'copilot-container-tools/*', 'oraios/serena/*', 'filesystem/*', 'githublocal/*', 'githubremote/*', 'playwright/*', 'agent', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'mermaidchart.vscode-mermaid-chart/get_syntax_docs', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-validator', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-preview', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'ms-toolsai.jupyter/configureNotebook', 'ms-toolsai.jupyter/listNotebookPackages', 'ms-toolsai.jupyter/installNotebookPackages', 'todo']
+  [
+    vscode,
+    execute,
+    read,
+    agent,
+    edit,
+    search,
+    web,
+    browser,
+    "oraios/serena/*",
+    "filesystem/*",
+    "playwright/*",
+    "awesome-copilot/*",
+    "githublocal/*",
+    "githubremote/*",
+    vscode.mermaid-chat-features/renderMermaidDiagram,
+    github.vscode-pull-request-github/issue_fetch,
+    github.vscode-pull-request-github/labels_fetch,
+    github.vscode-pull-request-github/notification_fetch,
+    github.vscode-pull-request-github/doSearch,
+    github.vscode-pull-request-github/activePullRequest,
+    github.vscode-pull-request-github/pullRequestStatusChecks,
+    github.vscode-pull-request-github/openPullRequest,
+    todo,
+  ]
 ---
 
 # MCP Operator

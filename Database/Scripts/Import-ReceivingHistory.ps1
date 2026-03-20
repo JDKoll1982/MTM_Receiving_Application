@@ -16,7 +16,7 @@ param(
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
     [string]$Password = "root",
-    [string]$CsvPath = "$PSScriptRoot\..\..\docs\GoogleSheetsVersion\Receiving Data - History 2025.csv",
+    [string]$CsvPath = "$PSScriptRoot\..\..\docs\GoogleSheetsVersion\CSV Imports\Receiving Data\Receiving Data - History 2025.csv",
     [switch]$WhatIf,
     [switch]$SkipErrors,
     # ---------------------------------------------------------------------------
