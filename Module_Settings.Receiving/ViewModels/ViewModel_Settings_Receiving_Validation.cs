@@ -20,9 +20,6 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
     private bool _requirePoNumber;
 
     [ObservableProperty]
-    private bool _requirePartId;
-
-    [ObservableProperty]
     private bool _requireQuantity;
 
     [ObservableProperty]
@@ -82,7 +79,6 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
             IsBusy = true;
 
             await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber, RequirePoNumber.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequirePartId, RequirePartId.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity, RequireQuantity.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot, RequireHeatLot.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, AllowNegativeQuantity.ToString());
@@ -115,7 +111,6 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
             IsBusy = true;
 
             await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequirePartId);
             await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity);
             await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot);
             await ResetSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity);
@@ -157,7 +152,6 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         try
         {
             RequirePoNumber = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequirePoNumber]);
-            RequirePartId = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequirePartId, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequirePartId]);
             RequireQuantity = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireQuantity]);
             RequireHeatLot = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireHeatLot]);
             AllowNegativeQuantity = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.AllowNegativeQuantity]);

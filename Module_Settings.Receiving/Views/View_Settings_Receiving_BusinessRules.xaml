@@ -28,43 +28,14 @@
                         BorderThickness="1"
                         CornerRadius="8">
                     <StackPanel Spacing="12">
-                        <TextBlock Text="Storage" Style="{StaticResource SubtitleTextBlockStyle}" />
-
-                        <Grid ColumnSpacing="12" RowSpacing="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Save To Label Table" IsOn="{x:Bind ViewModel.SaveToLabelTableEnabled, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Save To Label Table"
-                                          ToolTipService.ToolTip="When turned on, the app also saves a copy to a database table (accessible format for reporting)."
-                                          IsOn="{x:Bind ViewModel.SaveToLabelTableEnabled, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="0" Grid.Column="1" Header="Save To Network Label Table"
-                                          ToolTipService.ToolTip="When turned on, the database table copy is saved to a shared network location (if configured)."
-                                          IsOn="{x:Bind ViewModel.SaveToNetworkLabelTableEnabled, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="1" Grid.Column="0" Header="Save To Database"
-                                          ToolTipService.ToolTip="When turned on, the app saves the receiving information into the database for reporting and history."
-                                          IsOn="{x:Bind ViewModel.SaveToDatabaseEnabled, Mode=TwoWay}" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <Border Padding="16"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                    <StackPanel Spacing="12">
                         <TextBlock Text="Workflow" Style="{StaticResource SubtitleTextBlockStyle}" />
 
-                        <TextBox Header="Default Mode On Startup"
-                                 ToolTipService.ToolTip="Which mode the Receiving screen should start in when you open the app."
-                                 Text="{x:Bind ViewModel.DefaultModeOnStartup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox Header="Default Mode On Startup"
+                                  ToolTipService.ToolTip="Which mode the Receiving screen should start in when you open the app."
+                                  ItemsSource="{x:Bind ViewModel.DefaultModeOptions, Mode=OneWay}"
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{x:Bind ViewModel.DefaultModeOnStartup, Mode=TwoWay}" />
 
                         <Grid ColumnSpacing="12" RowSpacing="8">
                             <Grid.ColumnDefinitions>

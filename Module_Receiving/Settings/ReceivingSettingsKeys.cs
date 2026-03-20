@@ -244,7 +244,6 @@ public static class ReceivingSettingsKeys
     public static class Validation
     {
         public const string RequirePoNumber = "Receiving.Validation.RequirePoNumber";
-        public const string RequirePartId = "Receiving.Validation.RequirePartId";
         public const string RequireQuantity = "Receiving.Validation.RequireQuantity";
         public const string RequireHeatLot = "Receiving.Validation.RequireHeatLot";
         public const string AllowNegativeQuantity = "Receiving.Validation.AllowNegativeQuantity";
@@ -262,9 +261,6 @@ public static class ReceivingSettingsKeys
     {
         public const string AutoSaveEnabled = "Receiving.BusinessRules.AutoSaveEnabled";
         public const string AutoSaveIntervalSeconds = "Receiving.BusinessRules.AutoSaveIntervalSeconds";
-        public const string SaveToLabelTableEnabled = "Receiving.BusinessRules.SaveToLabelTableEnabled";
-        public const string SaveToNetworkLabelTableEnabled = "Receiving.BusinessRules.SaveToNetworkLabelTableEnabled";
-        public const string SaveToDatabaseEnabled = "Receiving.BusinessRules.SaveToDatabaseEnabled";
         public const string DefaultModeOnStartup = "Receiving.BusinessRules.DefaultModeOnStartup";
         public const string RememberLastMode = "Receiving.BusinessRules.RememberLastMode";
         public const string ConfirmModeChange = "Receiving.BusinessRules.ConfirmModeChange";
@@ -277,7 +273,7 @@ public static class ReceivingSettingsKeys
     public static class Defaults
     {
         public const string DefaultReceivingMode = "Receiving.Defaults.DefaultReceivingMode";
-        public const string LabelTableSaveLocation = "Receiving.Defaults.LabelTableSaveLocation";
+        public const string DefaultLocation = "Receiving.Defaults.DefaultLocation";
         public const string XlsSaveLocation = "Receiving.Defaults.XlsSaveLocation";
     }
 

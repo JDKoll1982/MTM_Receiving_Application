@@ -14,6 +14,8 @@ public class Dao_ReceivingLabelData
 {
     private readonly string _connectionString;
     private const string DefaultInitialLocation = "Nothing Entered";
+    private const int MaxTransactionRetries = 3;
+    private static readonly int[] RetryDelaysMs = [150, 400, 900];
 
     public Dao_ReceivingLabelData(string connectionString)
     {
@@ -55,6 +57,16 @@ public class Dao_ReceivingLabelData
             : location.Trim();
     }
 
+    private static bool IsTransientTransactionError(Exception exception)
+    {
+        if (exception is MySqlException mySqlException)
+        {
+            return mySqlException.Number is 1205 or 1213;
+        }
+
+        return false;
+    }
+
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
@@ -62,108 +74,127 @@ public class Dao_ReceivingLabelData
             return Model_Dao_Result_Factory.Failure<int>("Loads list cannot be null or empty");
         }
 
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
+        var orderedLoads = loads
+            .OrderBy(load => load.PartID, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(load => load.LoadNumber)
+            .ThenBy(load => load.LoadID)
+            .ToList();
 
-        await using var transaction = await connection.BeginTransactionAsync();
-        try
+        for (var attempt = 1; attempt <= MaxTransactionRetries; attempt++)
         {
-            int savedCount = 0;
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-            // Pre-compute per-part skid totals and sequences for the "N of M" label counter.
-            // Group by PartID to get the total skids per part, then track per-part position.
-            var partTotals = loads
-                .GroupBy(l => l.PartID, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
-            var partSequenceCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var load in loads)
+            await using var transaction = await connection.BeginTransactionAsync();
+            try
             {
-                if (!partSequenceCounters.ContainsKey(load.PartID))
+                int savedCount = 0;
+
+                // Pre-compute per-part skid totals and sequences for the "N of M" label counter.
+                // Group by PartID to get the total skids per part, then track per-part position.
+                var partTotals = orderedLoads
+                    .GroupBy(load => load.PartID, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(group => group.Key, group => group.Count(), StringComparer.OrdinalIgnoreCase);
+                var partSequenceCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var load in orderedLoads)
                 {
-                    partSequenceCounters[load.PartID] = 0;
-                }
-                partSequenceCounters[load.PartID]++;
-                int skidSequence = partSequenceCounters[load.PartID];
-                int skidTotal = partTotals[load.PartID];
-
-                var roundedQuantity = Convert.ToInt32(Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero));
-                var cleanedPoNumber = CleanPONumber(load.PoNumber);
-                object poNumber = cleanedPoNumber is null ? DBNull.Value : cleanedPoNumber;
-                object poVendor = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
-                object poStatus = string.IsNullOrWhiteSpace(load.PoStatus) ? DBNull.Value : load.PoStatus;
-                object poDueDate = load.PoDueDate.HasValue ? load.PoDueDate.Value.Date : DBNull.Value;
-                object userId = string.IsNullOrWhiteSpace(load.UserId) ? DBNull.Value : load.UserId;
-                object vendorName = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
-                object qualityHoldRestrictionType = string.IsNullOrWhiteSpace(load.QualityHoldRestrictionType)
-                    ? DBNull.Value
-                    : load.QualityHoldRestrictionType;
-
-                var parameters = new Dictionary<string, object>
-                {
-                    { "load_id", load.LoadID.ToString() },
-                    { "load_number", load.LoadNumber },
-                    { "quantity", roundedQuantity },
-                    { "weight_quantity", load.WeightQuantity },
-                    { "part_id", load.PartID },
-                    { "part_description", load.PartDescription ?? string.Empty },
-                    { "part_type", load.PartType ?? string.Empty },
-                    { "po_number", poNumber },
-                    { "po_line_number", load.PoLineNumber ?? string.Empty },
-                    { "po_vendor", poVendor },
-                    { "po_status", poStatus },
-                    { "po_due_date", poDueDate },
-                    { "qty_ordered", load.QtyOrdered },
-                    { "unit_of_measure", load.UnitOfMeasure ?? "EA" },
-                    { "remaining_quantity", load.RemainingQuantity },
-                    { "employee_number", load.EmployeeNumber },
-                    { "user_id", userId },
-                    { "heat", load.HeatLotNumber ?? string.Empty },
-                    { "received_date", load.ReceivedDate },
-                    { "transaction_date", load.ReceivedDate.Date },
-                    { "initial_location", NormalizeLocation(load.InitialLocation) },
-                    { "packages_per_load", load.PackagesPerLoad },
-                    { "package_type_name", load.PackageTypeName ?? string.Empty },
-                    { "weight_per_package", load.WeightPerPackage },
-                    { "coils_on_skid", (object)DBNull.Value },
-                    { "label_number", load.LoadNumber },
-                    { "vendor_name", vendorName },
-                    { "is_non_po_item", load.IsNonPOItem },
-                    { "is_quality_hold_required", load.IsQualityHoldRequired },
-                    { "is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged },
-                    { "quality_hold_restriction_type", qualityHoldRestrictionType },
-                    { "part_skid_sequence", skidSequence },
-                    { "part_skid_total", skidTotal }
-                };
-
-                var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
-                    connection,
-                    transaction,
-                    "sp_Receiving_LabelData_Insert",
-                    parameters
-                );
-
-                if (!result.Success)
-                {
-                    if (IsDuplicateKeyError(result))
+                    if (!partSequenceCounters.ContainsKey(load.PartID))
                     {
-                        continue;
+                        partSequenceCounters[load.PartID] = 0;
+                    }
+                    partSequenceCounters[load.PartID]++;
+                    int skidSequence = partSequenceCounters[load.PartID];
+                    int skidTotal = partTotals[load.PartID];
+
+                    var roundedQuantity = Convert.ToInt32(Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero));
+                    var cleanedPoNumber = CleanPONumber(load.PoNumber);
+                    object poNumber = cleanedPoNumber is null ? DBNull.Value : cleanedPoNumber;
+                    object poVendor = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
+                    object poStatus = string.IsNullOrWhiteSpace(load.PoStatus) ? DBNull.Value : load.PoStatus;
+                    object poDueDate = load.PoDueDate.HasValue ? load.PoDueDate.Value.Date : DBNull.Value;
+                    object userId = string.IsNullOrWhiteSpace(load.UserId) ? DBNull.Value : load.UserId;
+                    object vendorName = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
+                    object qualityHoldRestrictionType = string.IsNullOrWhiteSpace(load.QualityHoldRestrictionType)
+                        ? DBNull.Value
+                        : load.QualityHoldRestrictionType;
+
+                    var parameters = new Dictionary<string, object>
+                    {
+                        { "load_id", load.LoadID.ToString() },
+                        { "load_number", load.LoadNumber },
+                        { "quantity", roundedQuantity },
+                        { "weight_quantity", load.WeightQuantity },
+                        { "part_id", load.PartID },
+                        { "part_description", load.PartDescription ?? string.Empty },
+                        { "part_type", load.PartType ?? string.Empty },
+                        { "po_number", poNumber },
+                        { "po_line_number", load.PoLineNumber ?? string.Empty },
+                        { "po_vendor", poVendor },
+                        { "po_status", poStatus },
+                        { "po_due_date", poDueDate },
+                        { "qty_ordered", load.QtyOrdered },
+                        { "unit_of_measure", load.UnitOfMeasure ?? "EA" },
+                        { "remaining_quantity", load.RemainingQuantity },
+                        { "employee_number", load.EmployeeNumber },
+                        { "user_id", userId },
+                        { "heat", load.HeatLotNumber ?? string.Empty },
+                        { "received_date", load.ReceivedDate },
+                        { "transaction_date", load.ReceivedDate.Date },
+                        { "initial_location", NormalizeLocation(load.InitialLocation) },
+                        { "packages_per_load", load.PackagesPerLoad },
+                        { "package_type_name", load.PackageTypeName ?? string.Empty },
+                        { "weight_per_package", load.WeightPerPackage },
+                        { "coils_on_skid", (object)DBNull.Value },
+                        { "label_number", load.LoadNumber },
+                        { "vendor_name", vendorName },
+                        { "is_non_po_item", load.IsNonPOItem },
+                        { "is_quality_hold_required", load.IsQualityHoldRequired },
+                        { "is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged },
+                        { "quality_hold_restriction_type", qualityHoldRestrictionType },
+                        { "part_skid_sequence", skidSequence },
+                        { "part_skid_total", skidTotal }
+                    };
+
+                    var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                        connection,
+                        transaction,
+                        "sp_Receiving_LabelData_Insert",
+                        parameters
+                    );
+
+                    if (!result.Success)
+                    {
+                        if (IsDuplicateKeyError(result))
+                        {
+                            continue;
+                        }
+
+                        throw result.Exception ?? new InvalidOperationException(result.ErrorMessage);
                     }
 
-                    throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+                    savedCount++;
                 }
 
-                savedCount++;
+                await transaction.CommitAsync();
+                return Model_Dao_Result_Factory.Success<int>(savedCount);
             }
 
-            await transaction.CommitAsync();
-            return Model_Dao_Result_Factory.Success<int>(savedCount);
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+
+                if (attempt < MaxTransactionRetries && IsTransientTransactionError(ex))
+                {
+                    await Task.Delay(RetryDelaysMs[attempt - 1]);
+                    continue;
+                }
+
+                return Model_Dao_Result_Factory.Failure<int>($"Failed to save label data loads: {ex.Message}", ex);
+            }
         }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to save label data loads: {ex.Message}", ex);
-        }
+
+        return Model_Dao_Result_Factory.Failure<int>("Failed to save label data loads after retrying transient database errors.");
     }
 
     public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy)

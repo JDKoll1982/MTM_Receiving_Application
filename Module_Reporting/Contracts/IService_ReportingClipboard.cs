@@ -7,5 +7,5 @@ namespace MTM_Receiving_Application.Module_Reporting.Contracts;
 
 public interface IService_ReportingClipboard
 {
-    Model_Dao_Result<DataPackage> CreateClipboardPackage(List<Model_ReportRow> rows, string htmlFragment);
+    Model_Dao_Result<DataPackage> CreateClipboardPackage(Model_FormattedReportDocument document);
 }

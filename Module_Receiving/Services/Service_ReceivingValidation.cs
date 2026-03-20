@@ -3,6 +3,7 @@ using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_ReceivingValidation : IService_ReceivingValidation
     {
         private readonly IService_InforVisual _inforVisualService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         // Allows optional "PO-" prefix, 1-6 digits, and an optional B/b suffix for blanket POs (e.g. PO-064489B)
         private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}[Bb]?$", RegexOptions.IgnoreCase);
@@ -38,15 +40,47 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Service_ReceivingValidation(
             IService_InforVisual inforVisualService,
+            IService_ReceivingSettings receivingSettings,
             IOptions<InforVisualSettings> inforVisualSettings)
         {
             _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
+            _receivingSettings = receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
             ArgumentNullException.ThrowIfNull(inforVisualSettings);
             UseMockLocationList = inforVisualSettings.Value.UseMockData;
         }
 
+        private bool GetBoolSetting(string key, bool fallback)
+        {
+            try
+            {
+                return _receivingSettings.GetBoolAsync(key).GetAwaiter().GetResult();
+            }
+            catch
+            {
+                return fallback;
+            }
+        }
+
+        private int GetIntSetting(string key, int fallback)
+        {
+            try
+            {
+                return _receivingSettings.GetIntAsync(key).GetAwaiter().GetResult();
+            }
+            catch
+            {
+                return fallback;
+            }
+        }
+
         public Model_ReceivingValidationResult ValidatePONumber(string poNumber)
         {
+            if (!GetBoolSetting(ReceivingSettingsKeys.Validation.RequirePoNumber, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequirePoNumber])
+                && string.IsNullOrWhiteSpace(poNumber))
+            {
+                return Model_ReceivingValidationResult.Success();
+            }
+
             if (string.IsNullOrWhiteSpace(poNumber))
             {
                 return Model_ReceivingValidationResult.Error("PO number is required");
@@ -78,14 +112,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Model_ReceivingValidationResult ValidateNumberOfLoads(int numLoads)
         {
-            if (numLoads < 1)
+            var minimumLoads = GetIntSetting(ReceivingSettingsKeys.Validation.MinLoadCount, 1);
+            var maximumLoads = GetIntSetting(ReceivingSettingsKeys.Validation.MaxLoadCount, 99);
+
+            if (numLoads < minimumLoads)
             {
-                return Model_ReceivingValidationResult.Error("Number of loads must be at least 1");
+                return Model_ReceivingValidationResult.Error($"Number of loads must be at least {minimumLoads}");
             }
 
-            if (numLoads > 99)
+            if (numLoads > maximumLoads)
             {
-                return Model_ReceivingValidationResult.Error("Number of loads cannot exceed 99");
+                return Model_ReceivingValidationResult.Error($"Number of loads cannot exceed {maximumLoads}");
             }
 
             return Model_ReceivingValidationResult.Success();
@@ -93,9 +130,30 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Model_ReceivingValidationResult ValidateWeightQuantity(decimal weightQuantity)
         {
-            if (weightQuantity <= 0)
+            var allowNegativeQuantity = GetBoolSetting(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.AllowNegativeQuantity]);
+            var minimumQuantity = GetIntSetting(ReceivingSettingsKeys.Validation.MinQuantity, 0);
+            var maximumQuantity = GetIntSetting(ReceivingSettingsKeys.Validation.MaxQuantity, 999999);
+
+            if (allowNegativeQuantity)
+            {
+                if (weightQuantity == 0)
+                {
+                    return Model_ReceivingValidationResult.Error("Weight/Quantity cannot be 0");
+                }
+            }
+            else if (weightQuantity <= 0)
             {
                 return Model_ReceivingValidationResult.Error("Weight/Quantity must be greater than 0");
+            }
+
+            if (weightQuantity < minimumQuantity)
+            {
+                return Model_ReceivingValidationResult.Error($"Weight/Quantity cannot be less than {minimumQuantity}");
+            }
+
+            if (weightQuantity > maximumQuantity)
+            {
+                return Model_ReceivingValidationResult.Error($"Weight/Quantity cannot exceed {maximumQuantity}");
             }
 
             return Model_ReceivingValidationResult.Success();
@@ -113,6 +171,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Model_ReceivingValidationResult ValidateHeatLotNumber(string heatLotNumber)
         {
+            if (GetBoolSetting(ReceivingSettingsKeys.Validation.RequireHeatLot, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireHeatLot])
+                && string.IsNullOrWhiteSpace(heatLotNumber))
+            {
+                return Model_ReceivingValidationResult.Error("Heat/Lot number is required");
+            }
+
             // Heat/Lot number is optional - blank values are allowed and will be set to "Nothing Entered"
             if (string.IsNullOrWhiteSpace(heatLotNumber))
             {
@@ -160,6 +224,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Task<Model_ReceivingValidationResult> ValidateAgainstPOQuantityAsync(decimal totalQuantity, decimal orderedQuantity, string partID)
         {
+            if (!GetBoolSetting(ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo]))
+            {
+                return Task.FromResult(Model_ReceivingValidationResult.Success());
+            }
+
             if (totalQuantity > orderedQuantity)
             {
                 return Task.FromResult(Model_ReceivingValidationResult.Warning(
@@ -171,6 +240,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_ReceivingValidationResult> CheckSameDayReceivingAsync(string poNumber, string partID, decimal userEnteredQuantity)
         {
+            if (!GetBoolSetting(ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving]))
+            {
+                return Model_ReceivingValidationResult.Success();
+            }
+
             var result = await _inforVisualService.GetSameDayReceivingQuantityAsync(poNumber, partID, DateTime.Today);
 
             if (result.Success)
@@ -191,9 +265,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             var errors = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(load.PartID))
+            var partValidation = ValidatePartID(load.PartID);
+            if (!partValidation.IsValid)
             {
-                errors.Add($"Load {load.LoadNumber}: Part ID is required");
+                errors.Add($"Load {load.LoadNumber}: {partValidation.Message}");
             }
 
             if (string.IsNullOrWhiteSpace(load.PartType))
@@ -206,16 +281,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 errors.Add("Load number must be at least 1");
             }
 
-            if (load.WeightQuantity <= 0)
+            var quantityValidation = ValidateWeightQuantity(load.WeightQuantity);
+            if (!quantityValidation.IsValid)
             {
-                errors.Add($"Load {load.LoadNumber}: Weight/Quantity must be greater than 0");
+                errors.Add($"Load {load.LoadNumber}: {quantityValidation.Message}");
             }
 
-            // Heat/Lot number is optional — SaveAsync defaults blank values to "Nothing Entered" after all
-            // validation passes, so we do not require a value here.
-            if (!string.IsNullOrWhiteSpace(load.HeatLotNumber) && load.HeatLotNumber.Length > 50)
+            var heatLotValidation = ValidateHeatLotNumber(load.HeatLotNumber);
+            if (!heatLotValidation.IsValid)
             {
-                errors.Add($"Load {load.LoadNumber}: Heat/Lot number cannot exceed 50 characters");
+                errors.Add($"Load {load.LoadNumber}: {heatLotValidation.Message}");
             }
 
             if (!string.IsNullOrWhiteSpace(load.InitialLocation) && load.InitialLocation.Length > 15)
@@ -223,9 +298,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 errors.Add($"Load {load.LoadNumber}: Location cannot exceed 15 characters");
             }
 
-            if (load.PackagesPerLoad <= 0)
+            var packageCountValidation = ValidatePackageCount(load.PackagesPerLoad);
+            if (!packageCountValidation.IsValid)
             {
-                errors.Add($"Load {load.LoadNumber}: Package count must be greater than 0");
+                errors.Add($"Load {load.LoadNumber}: {packageCountValidation.Message}");
             }
 
             if (string.IsNullOrWhiteSpace(load.PackageTypeName))

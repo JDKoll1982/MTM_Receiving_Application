@@ -363,10 +363,10 @@ dotnet test --filter "FullyQualifiedName~Integration" # Integration tests
 
 ```powershell
 # MySQL connection test
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application
 
 # Deploy stored procedure
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < sp_name.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_name.sql
 ```
 
 ### XAML Troubleshooting

@@ -18,7 +18,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
-        private readonly IService_InforVisual _inforVisualService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
 
@@ -50,6 +49,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _weightQuantityPlaceholderText = "Enter whole number";
 
+        [ObservableProperty]
+        private string _weightQuantityAutoFillText = "Auto Fill";
+
         // Accessibility Properties
         [ObservableProperty]
         private string _weightQuantityAccessibilityName = "Weight Quantity";
@@ -57,7 +59,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ViewModel_Receiving_WeightQuantity(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
-            IService_InforVisual inforVisualService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
@@ -67,7 +68,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             _workflowService = workflowService;
             _validationService = validationService;
-            _inforVisualService = inforVisualService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
 
@@ -164,11 +164,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             try
             {
-                var result = await _inforVisualService.GetSameDayReceivingQuantityAsync(poNumber, partId, DateTime.Today);
-                if (result.IsSuccess && result.Data > 0)
+                var totalWeight = Loads.Sum(static load => load.WeightQuantity);
+                var validation = await _validationService.CheckSameDayReceivingAsync(poNumber, partId, totalWeight);
+                if (validation.Severity == Enum_ValidationSeverity.Warning && string.IsNullOrWhiteSpace(validation.Message) is false)
                 {
                     HasWarning = true;
-                    WarningMessage = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.WarningSameDayReceiving, result.Data);
+                    WarningMessage = validation.Message;
                 }
             }
             catch (Exception ex)
@@ -194,10 +195,30 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (!_workflowService.CurrentSession.IsNonPO && _workflowService.CurrentPart != null)
             {
                 var totalWeight = Loads.Sum(l => l.WeightQuantity);
-                if (totalWeight > _workflowService.CurrentPart.QtyOrdered)
+                var validation = await _validationService.ValidateAgainstPOQuantityAsync(
+                    totalWeight,
+                    _workflowService.CurrentPart.QtyOrdered,
+                    _workflowService.CurrentPart.PartID);
+
+                if (validation.Severity == Enum_ValidationSeverity.Warning && string.IsNullOrWhiteSpace(validation.Message) is false)
                 {
-                    WarningMessage = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.WarningExceedsOrdered, totalWeight, _workflowService.CurrentPart.QtyOrdered);
+                    WarningMessage = validation.Message;
                     HasWarning = true;
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void AutoFill()
+        {
+            for (int i = 1; i < Loads.Count; i++)
+            {
+                var currentLoad = Loads[i];
+                var previousLoad = Loads[i - 1];
+
+                if (currentLoad.WeightQuantity == 0m && previousLoad.WeightQuantity != 0m)
+                {
+                    currentLoad.WeightQuantity = previousLoad.WeightQuantity;
                 }
             }
         }

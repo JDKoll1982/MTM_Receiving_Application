@@ -143,8 +143,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
+            IsSaveAsDefault = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault);
+
             await LoadPreferencesAsync();
-            
+
             // Ensure package type is set for all loads after preferences are loaded
             UpdateLoadsPackageType();
         }
@@ -188,7 +190,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 // Apply smart defaults based on PartID prefix or PartType from loads
                 var partType = Loads.Count > 0 ? Loads[0].PartType : string.Empty;
-                
+
                 // Check PartType first (more reliable than PartID parsing)
                 if (!string.IsNullOrEmpty(partType))
                 {

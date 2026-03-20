@@ -74,9 +74,12 @@
                                                     </Grid.ColumnDefinitions>
 
                                                     <StackPanel Grid.Column="0" Spacing="2">
-                                                        <TextBlock Text="{x:Bind Prefix, Mode=OneWay}" 
+                                                        <TextBlock Text="{x:Bind Name, Mode=OneWay}" 
                                                                    FontWeight="SemiBold" 
                                                                    FontSize="14" />
+                                                        <TextBlock Text="{x:Bind Prefix, Mode=OneWay}"
+                                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                                         <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                                                             <Run Text="Length:" />
@@ -146,10 +149,18 @@
 
                                     <StackPanel x:Name="RuleEditorFields" Spacing="16" Visibility="Collapsed">
                                         <TextBox 
+                                            x:Name="NameTextBox"
+                                            Header="Name"
+                                            PlaceholderText="e.g., Coil, Flatstock"
+                                            Description="Friendly name shown in the auto-padding rule list"
+                                            TextChanged="NameTextBox_TextChanged" />
+
+                                        <TextBox 
                                             x:Name="PrefixTextBox"
                                             Header="Prefix"
                                             PlaceholderText="e.g., MMC, MMF, PART-"
-                                            Description="Part numbers starting with this text will be formatted" />
+                                            Description="Part numbers starting with this text will be formatted"
+                                            TextChanged="PrefixTextBox_TextChanged" />
 
                                         <NumberBox 
                                             x:Name="MaxLengthNumberBox"
@@ -157,7 +168,8 @@
                                             Description="Total characters after padding (includes prefix)"
                                             Minimum="1"
                                             Maximum="50"
-                                            SpinButtonPlacementMode="Inline" />
+                                            SpinButtonPlacementMode="Inline"
+                                            ValueChanged="MaxLengthNumberBox_ValueChanged" />
 
                                         <StackPanel Spacing="8">
                                             <TextBlock Text="Padding Character" 
@@ -194,7 +206,8 @@
                                             x:Name="IsEnabledToggle"
                                             Header="Enable This Rule"
                                             OffContent="Rule disabled"
-                                            OnContent="Rule enabled" />
+                                            OnContent="Rule enabled"
+                                            Toggled="IsEnabledToggle_Toggled" />
                                     </StackPanel>
                                 </StackPanel>
                             </Border>

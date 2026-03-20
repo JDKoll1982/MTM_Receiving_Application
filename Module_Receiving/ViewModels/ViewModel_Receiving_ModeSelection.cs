@@ -132,6 +132,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (await ConfirmModeChangeAsync())
             {
                 ClearWorkflowData();
+                await RememberLastModeAsync("Guided");
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
             }
         }
@@ -144,6 +145,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (await ConfirmModeChangeAsync())
             {
                 ClearWorkflowData();
+                await RememberLastModeAsync(nameof(Enum_ReceivingWorkflowStep.ManualEntry));
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
             }
         }
@@ -156,8 +158,33 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (await ConfirmModeChangeAsync())
             {
                 ClearWorkflowData();
+                _workflowService.RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
+                await RememberLastModeAsync(nameof(Enum_ReceivingWorkflowStep.EditMode));
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
             }
+        }
+
+        private async Task RememberLastModeAsync(string modeValue)
+        {
+            var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+            if (currentUserId is null)
+            {
+                return;
+            }
+
+            var rememberLastMode = await _receivingSettings.GetBoolAsync(
+                ReceivingSettingsKeys.BusinessRules.RememberLastMode,
+                currentUserId);
+
+            if (!rememberLastMode)
+            {
+                return;
+            }
+
+            await _receivingSettings.SaveStringAsync(
+                ReceivingSettingsKeys.Defaults.DefaultReceivingMode,
+                modeValue,
+                currentUserId);
         }
 
         /// <summary>
@@ -192,6 +219,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private async Task<bool> ConfirmModeChangeAsync()
         {
+            var confirmModeChange = await _receivingSettings.GetBoolAsync(
+                ReceivingSettingsKeys.BusinessRules.ConfirmModeChange,
+                _sessionManager.CurrentSession?.User?.EmployeeNumber);
+
+            if (!confirmModeChange)
+            {
+                return true;
+            }
+
             // Skip confirmation if there's no unsaved data
             if (!HasUnsavedData())
             {

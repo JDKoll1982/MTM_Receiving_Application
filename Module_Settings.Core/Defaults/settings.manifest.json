@@ -2094,17 +2094,6 @@
     },
     {
       "category": "Receiving",
-      "key": "Receiving.Validation.RequirePartId",
-      "displayName": "Validation - Require Part ID",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
       "key": "Receiving.Validation.RequireQuantity",
       "displayName": "Validation - Require Quantity",
       "defaultValue": "true",
@@ -2248,39 +2237,6 @@
     },
     {
       "category": "Receiving",
-      "key": "Receiving.BusinessRules.SaveToCsvEnabled",
-      "displayName": "Business Rules - Save to Label Table Enabled",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.BusinessRules.SaveToNetworkCsvEnabled",
-      "displayName": "Business Rules - Save to Network Label Table Enabled",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.BusinessRules.SaveToDatabaseEnabled",
-      "displayName": "Business Rules - Save to Database Enabled",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
       "key": "Receiving.BusinessRules.DefaultModeOnStartup",
       "displayName": "Business Rules - Default Mode on Startup",
       "defaultValue": "ModeSelection",
@@ -2404,7 +2360,7 @@
       "category": "Receiving",
       "key": "Receiving.Defaults.DefaultLocation",
       "displayName": "Defaults - Default Location",
-      "defaultValue": "RECEIVING",
+      "defaultValue": "RECV",
       "dataType": "String",
       "scope": "System",
       "permissionLevel": "User",

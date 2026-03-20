@@ -1,13 +1,16 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
@@ -16,6 +19,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_InforVisual _inforVisualService;
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -59,6 +63,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
+            IService_InforVisual inforVisualService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
@@ -69,6 +74,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             _workflowService = workflowService;
             _validationService = validationService;
+            _inforVisualService = inforVisualService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
@@ -156,6 +162,41 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             SelectedPartId = partId;
             SelectedPartDescription = description;
+        }
+
+        public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
+        {
+            var validation = await _validationService.ValidateLocationAsync(Location);
+            if (validation.IsValid)
+            {
+                Location = Location?.Trim() ?? string.Empty;
+                return validation;
+            }
+
+            if (IsMockLocationMode || string.IsNullOrWhiteSpace(Location))
+            {
+                return validation;
+            }
+
+            var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(Location.Trim(), "002");
+            if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null || fuzzyResult.Data.Count == 0)
+            {
+                return validation;
+            }
+
+            var suggestions = string.Join(", ",
+                fuzzyResult.Data
+                    .Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
+                    .Select(static result => result.Label.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Take(5));
+
+            if (string.IsNullOrWhiteSpace(suggestions))
+            {
+                return validation;
+            }
+
+            return Model_ReceivingValidationResult.Error($"{validation.Message} Closest matches: {suggestions}");
         }
 
         /// <summary>

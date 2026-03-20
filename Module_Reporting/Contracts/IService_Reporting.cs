@@ -24,9 +24,13 @@ public interface IService_Reporting
         DateTime startDate,
         DateTime endDate);
 
-    public Task<Model_Dao_Result<string>> FormatForEmailAsync(
-        List<Model_ReportRow> data,
-        bool applyDateGrouping = true);
+    public Task<Model_Dao_Result<List<Model_ReportSummaryTable>>> BuildSummaryTablesAsync(
+        List<Model_ReportSection> sections);
+
+    public Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatForEmailAsync(
+        List<Model_ReportSection> sections,
+        List<Model_ReportSummaryTable> summaryTables,
+        string summaryTitle);
 
     public string NormalizePONumber(string? poNumber);
 }

@@ -11,18 +11,18 @@ namespace MTM_Receiving_Application.Module_Reporting.Services;
 
 public class Service_ReportingClipboard : IService_ReportingClipboard
 {
-    public Model_Dao_Result<DataPackage> CreateClipboardPackage(List<Model_ReportRow> rows, string htmlFragment)
+    public Model_Dao_Result<DataPackage> CreateClipboardPackage(Model_FormattedReportDocument document)
     {
         try
         {
-            ArgumentNullException.ThrowIfNull(rows);
-            ArgumentException.ThrowIfNullOrWhiteSpace(htmlFragment);
+            ArgumentNullException.ThrowIfNull(document);
+            ArgumentException.ThrowIfNullOrWhiteSpace(document.HtmlFragment);
 
             var dataPackage = new DataPackage();
-            var htmlFormat = HtmlFormatHelper.CreateHtmlFormat(htmlFragment);
+            var htmlFormat = HtmlFormatHelper.CreateHtmlFormat(document.HtmlFragment);
 
             dataPackage.SetHtmlFormat(htmlFormat);
-            dataPackage.SetText(BuildPlainTextFallback(rows));
+            dataPackage.SetText(document.PlainText);
 
             return Model_Dao_Result_Factory.Success(dataPackage);
         }
@@ -30,23 +30,5 @@ public class Service_ReportingClipboard : IService_ReportingClipboard
         {
             return Model_Dao_Result_Factory.Failure<DataPackage>($"Failed to create clipboard package: {ex.Message}", ex);
         }
-    }
-
-    private static string BuildPlainTextFallback(List<Model_ReportRow> rows)
-    {
-        if (rows.Count == 0)
-        {
-            return "No data to display";
-        }
-
-        var text = new StringBuilder();
-
-        text.AppendLine("PO\tPart/Dunnage\tQuantity\tLocation\tNotes\tLoads/Skids\tCoils/Pcs/Type per Skid");
-        foreach (var row in rows)
-        {
-            text.AppendLine($"{row.DisplayPo}\t{row.DisplayPartOrDunnage}\t{row.DisplayQuantity}\t{row.DisplayLocation}\t{row.DisplayNotes}\t{row.DisplayLoadsOrSkids}\t{row.DisplayUnitsPerSkid}");
-        }
-
-        return text.ToString();
     }
 }

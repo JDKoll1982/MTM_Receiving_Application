@@ -125,6 +125,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _completionStartNewEntryText = "Start New Entry";
 
         [ObservableProperty]
+        private string _completionEditSavedEntriesText = "Edit Saved Entries";
+
+        [ObservableProperty]
+        private bool _canEditAfterSave;
+
+        [ObservableProperty]
         private double _saveProgressValue = 0;
 
         [ObservableProperty]
@@ -201,6 +207,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 CompletionSavedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaved);
                 CompletionFailedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailed);
                 CompletionStartNewEntryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionStartNewEntry);
+                CanEditAfterSave = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave);
 
                 SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressInitializing);
 
@@ -393,6 +400,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private async Task StartNewEntryAsync()
         {
             await _workflowService.ResetWorkflowAsync();
+        }
+
+        [RelayCommand]
+        private Task EditSavedEntriesAsync()
+        {
+            _workflowService.RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
+            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
+            return Task.CompletedTask;
         }
 
         [RelayCommand]

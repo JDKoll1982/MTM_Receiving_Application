@@ -2,9 +2,6 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml;
-using Windows.Storage.Pickers;
-using WinRT;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Settings;
@@ -21,13 +18,12 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     private readonly IService_SettingsCoreFacade _settingsCore;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_SettingsErrorHandler _settingsErrorHandler;
-    private Window? _settingsWindow;
 
     [ObservableProperty]
     private string _defaultReceivingMode = string.Empty;
 
     [ObservableProperty]
-    private string _labelTableSaveLocation = string.Empty;
+    private string _defaultLocation = string.Empty;
 
     public ViewModel_Settings_Receiving_Defaults(
         IService_SettingsCoreFacade settingsCore,
@@ -44,7 +40,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
 
         // Initialize with defaults before async load
         DefaultReceivingMode = "Guided";
-        LabelTableSaveLocation = string.Empty;
+        DefaultLocation = "RECV";
 
         // Load current settings asynchronously
         _ = LoadSettingsAsync();
@@ -56,25 +52,14 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     public bool IsSaveVisible => true;
     public bool IsResetVisible => true;
 
-    /// <summary>
-    /// Sets the settings window to be used for the folder picker dialog.
-    /// This should be called from the view's code-behind.
-    /// </summary>
-    /// <param name="settingsWindow"></param>
-    public void SetSettingsWindow(Window settingsWindow)
-    {
-        _settingsWindow = settingsWindow;
-    }
-
     public async Task SaveAsync()
     {
         try
         {
             IsBusy = true;
 
-            // Both settings are user-scoped to ensure they're properly personalized
             await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode, DefaultReceivingMode);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.LabelTableSaveLocation, LabelTableSaveLocation);
+            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation, DefaultLocation);
 
             await _settingsErrorHandler.ShowSuccessAsync("Receiving defaults saved successfully.", "Save Successful");
             ShowStatus("Receiving defaults saved.");
@@ -102,7 +87,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
             IsBusy = true;
 
             await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.LabelTableSaveLocation);
+            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving defaults reset.");
@@ -133,16 +118,16 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         try
         {
             var mode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
-            var location = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.LabelTableSaveLocation);
-            
+            var location = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
+
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode loaded: '{mode}'");
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location loaded: '{location}'");
-            
+
             DefaultReceivingMode = mode;
-            LabelTableSaveLocation = location;
-            
+            DefaultLocation = location;
+
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode set to: '{DefaultReceivingMode}'");
-            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location set to: '{LabelTableSaveLocation}'");
+            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location set to: '{DefaultLocation}'");
         }
         catch (Exception ex)
         {
@@ -179,37 +164,6 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         if (!result.IsSuccess)
         {
             await _errorHandler.HandleDaoErrorAsync(result, $"Reset {key}");
-        }
-    }
-
-    [RelayCommand]
-    private async Task BrowseLabelTableLocationAsync()
-    {
-        try
-        {
-            var folderPicker = new FolderPicker();
-            
-            // Initialize the folder picker with the settings window
-            if (_settingsWindow != null)
-            {
-                WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, WinRT.Interop.WindowNative.GetWindowHandle(_settingsWindow));
-            }
-
-            // Set folder picker options
-            folderPicker.FileTypeFilter.Add("*");
-            folderPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-
-            // Show the folder picker dialog
-            var folder = await folderPicker.PickSingleFolderAsync();
-            
-            if (folder != null)
-            {
-                LabelTableSaveLocation = folder.Path;
-            }
-        }
-        catch (Exception ex)
-        {
-            await _errorHandler.HandleErrorAsync("Failed to browse for label database table save location.", Enum_ErrorSeverity.Warning, ex, false);
         }
     }
 }

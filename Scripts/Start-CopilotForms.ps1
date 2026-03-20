@@ -2,7 +2,7 @@
 .SYNOPSIS
     Starts a local web server for CopilotForms and opens the index page.
 .DESCRIPTION
-    Serves files from docs/CopilotForms over http://172.16.1.104 so the browser can
+    Serves files from docs/CopilotForms over http://localhost so the browser can
     load the shared JSON configuration without using the manual local-config fallback.
     The script keeps running until you stop it with Ctrl+C.
 #>
@@ -68,7 +68,7 @@ if (-not (Test-Path -Path $resolvedRoot -PathType Container)) {
 }
 
 $listener = [System.Net.HttpListener]::new()
-$prefix = "http://172.16.1.104:$Port/"
+$prefix = "http://localhost:$Port/"
 $listener.Prefixes.Add($prefix)
 
 try {

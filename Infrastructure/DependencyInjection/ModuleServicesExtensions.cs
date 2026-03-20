@@ -282,7 +282,8 @@ public static class ModuleServicesExtensions
         {
             var dao = sp.GetRequiredService<Dao_Reporting>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_Reporting(dao, logger);
+            var receivingSettings = sp.GetRequiredService<IService_ReceivingSettings>();
+            return new Service_Reporting(dao, logger, receivingSettings);
         });
         services.AddSingleton<IService_ReportingClipboard, Service_ReportingClipboard>();
 
@@ -358,12 +359,10 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Settings_DeveloperTools_NavigationHub>();
 
         // Receiving Settings Pages
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_SettingsOverview>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Defaults>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Validation>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_UserPreferences>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_BusinessRules>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Integrations>();
 
         // Dunnage Settings Pages
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_SettingsOverview>();
@@ -436,11 +435,9 @@ public static class ModuleServicesExtensions
 
         // Receiving Settings Views
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_SettingsOverview>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Validation>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Integrations>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_UserPreferences>();
 
         // Volvo Settings Views

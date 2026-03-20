@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -23,15 +24,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
     private string _autoSaveIntervalSeconds = string.Empty;
 
     [ObservableProperty]
-    private bool _saveToLabelTableEnabled;
-
-    [ObservableProperty]
-    private bool _saveToNetworkLabelTableEnabled;
-
-    [ObservableProperty]
-    private bool _saveToDatabaseEnabled;
-
-    [ObservableProperty]
     private string _defaultModeOnStartup = string.Empty;
 
     [ObservableProperty]
@@ -52,6 +44,14 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
     [ObservableProperty]
     private bool _allowEditAfterSave;
 
+    public IReadOnlyList<ReceivingModeOption> DefaultModeOptions { get; } =
+    [
+        new("Mode Selection", nameof(Enum_ReceivingWorkflowStep.ModeSelection)),
+        new("Guided Wizard", "Guided"),
+        new("Manual Entry", nameof(Enum_ReceivingWorkflowStep.ManualEntry)),
+        new("Edit Mode", nameof(Enum_ReceivingWorkflowStep.EditMode)),
+    ];
+
     public ViewModel_Settings_Receiving_BusinessRules(
         IService_SettingsCoreFacade settingsCore,
         IService_UserSessionManager sessionManager,
@@ -61,7 +61,7 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
     {
         _settingsCore = settingsCore;
         _sessionManager = sessionManager;
-        Title = "Receiving Business Rules";
+        Title = "Receiving Workflow Options";
 
         _ = LoadSettingsAsync();
     }
@@ -80,9 +80,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
 
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, AutoSaveEnabled.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds, AutoSaveIntervalSeconds);
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled, SaveToLabelTableEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled, SaveToNetworkLabelTableEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled, SaveToDatabaseEnabled.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup, DefaultModeOnStartup);
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode, RememberLastMode.ToString());
             await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange, ConfirmModeChange.ToString());
@@ -111,9 +108,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
 
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange);
@@ -152,9 +146,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
         {
             AutoSaveEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled]);
             AutoSaveIntervalSeconds = await GetStringSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
-            SaveToLabelTableEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled]);
-            SaveToNetworkLabelTableEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled]);
-            SaveToDatabaseEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled]);
             DefaultModeOnStartup = await GetStringSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
             RememberLastMode = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.RememberLastMode]);
             ConfirmModeChange = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.ConfirmModeChange]);
@@ -219,3 +210,5 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
         }
     }
 }
+
+public sealed record ReceivingModeOption(string DisplayName, string Value);

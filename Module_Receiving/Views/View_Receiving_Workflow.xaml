@@ -117,6 +117,9 @@
                 
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
                     <Button Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"/>
+                    <Button Content="{x:Bind ViewModel.CompletionEditSavedEntriesText, Mode=OneWay}"
+                            Command="{x:Bind ViewModel.EditSavedEntriesCommand}"
+                            Visibility="{x:Bind ViewModel.CanEditAfterSave, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <Button Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}" Command="{x:Bind ViewModel.ResetXLSCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"/>
                 </StackPanel>
             </StackPanel>

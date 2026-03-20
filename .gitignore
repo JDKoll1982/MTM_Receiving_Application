@@ -90,6 +90,7 @@ node_modules/
 dist/
 build/
 coverage/
+artifacts/
 
 # Google Cloud service account credentials - NEVER commit real keys
 **/visual-easy-inventory-*.json

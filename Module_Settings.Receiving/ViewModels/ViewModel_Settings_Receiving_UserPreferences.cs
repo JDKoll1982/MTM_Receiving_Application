@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
 public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewModel_Shared_Base
 {
     private const string SettingsCategory = "Receiving";
-    
+
     private readonly IService_SettingsCoreFacade _settingsCore;
     private readonly IService_UserSessionManager _sessionManager;
 
@@ -43,7 +43,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) 
+        IService_Notification notificationService)
         : base(errorHandler, logger, notificationService)
     {
         Title = "Part Number Padding";
@@ -82,6 +82,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
                     PrefixRules.Clear();
                     foreach (var rule in rules)
                     {
+                        ApplyDefaultRuleName(rule);
                         PrefixRules.Add(rule);
                     }
                 }
@@ -90,13 +91,8 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             // Add default rule if none exist
             if (PrefixRules.Count == 0)
             {
-                PrefixRules.Add(new Model_PartNumberPrefixRule
-                {
-                    Prefix = "MMC",
-                    MaxLength = 10,
-                    PadChar = '0',
-                    IsEnabled = true
-                });
+                PrefixRules.Add(CreateDefaultRule("Coil", "MMC"));
+                PrefixRules.Add(CreateDefaultRule("Flatstock", "MMF"));
             }
         }
         catch (Exception ex)
@@ -111,6 +107,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     {
         var newRule = new Model_PartNumberPrefixRule
         {
+            Name = "New Rule",
             Prefix = "NEW",
             MaxLength = 10,
             PadChar = '0',
@@ -231,6 +228,33 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         {
             await _errorHandler.HandleDaoErrorAsync(result, $"Save {key}");
         }
+    }
+
+    private static Model_PartNumberPrefixRule CreateDefaultRule(string name, string prefix)
+    {
+        return new Model_PartNumberPrefixRule
+        {
+            Name = name,
+            Prefix = prefix,
+            MaxLength = 10,
+            PadChar = '0',
+            IsEnabled = true
+        };
+    }
+
+    private static void ApplyDefaultRuleName(Model_PartNumberPrefixRule rule)
+    {
+        if (!string.IsNullOrWhiteSpace(rule.Name))
+        {
+            return;
+        }
+
+        rule.Name = rule.Prefix?.Trim().ToUpperInvariant() switch
+        {
+            "MMC" => "Coil",
+            "MMF" => "Flatstock",
+            _ => string.Empty
+        };
     }
 }
 

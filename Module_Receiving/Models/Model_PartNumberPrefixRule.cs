@@ -10,6 +10,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 public partial class Model_PartNumberPrefixRule : ObservableObject
 {
     [ObservableProperty]
+    private string _name = string.Empty;
+
+    [ObservableProperty]
     private string _prefix = string.Empty;
 
     [ObservableProperty]

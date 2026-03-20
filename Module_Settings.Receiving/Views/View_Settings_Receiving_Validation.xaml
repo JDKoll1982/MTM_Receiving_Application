@@ -30,32 +30,29 @@
                             <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="Require PO Number"
                                           ToolTipService.ToolTip="When turned on, the app will not let you save unless a PO number is entered."
                                           IsOn="{x:Bind ViewModel.RequirePoNumber, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="0" Grid.Column="1" Header="Require Part ID"
-                                          ToolTipService.ToolTip="When turned on, the app will not let you save unless a part number is entered."
-                                          IsOn="{x:Bind ViewModel.RequirePartId, Mode=TwoWay}" />
 
-                            <ToggleSwitch Grid.Row="1" Grid.Column="0" Header="Require Quantity"
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" Header="Require Quantity"
                                           ToolTipService.ToolTip="When turned on, you must enter a quantity before you can save."
                                           IsOn="{x:Bind ViewModel.RequireQuantity, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="1" Grid.Column="1" Header="Require Heat/Lot"
+                            <ToggleSwitch Grid.Row="1" Grid.Column="0" Header="Require Heat/Lot"
                                           ToolTipService.ToolTip="When turned on, you must enter heat/lot information before you can save."
                                           IsOn="{x:Bind ViewModel.RequireHeatLot, Mode=TwoWay}" />
 
-                            <ToggleSwitch Grid.Row="2" Grid.Column="0" Header="Allow Negative Quantity"
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" Header="Allow Negative Quantity"
                                           ToolTipService.ToolTip="When turned off, the app will block negative quantities (less than zero)."
                                           IsOn="{x:Bind ViewModel.AllowNegativeQuantity, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="2" Grid.Column="1" Header="Validate PO Exists"
+                            <ToggleSwitch Grid.Row="2" Grid.Column="0" Header="Validate PO Exists"
                                           ToolTipService.ToolTip="When turned on, the app checks that the PO exists in the system before saving."
                                           IsOn="{x:Bind ViewModel.ValidatePoExists, Mode=TwoWay}" />
 
-                            <ToggleSwitch Grid.Row="3" Grid.Column="0" Header="Validate Part Exists"
+                            <ToggleSwitch Grid.Row="2" Grid.Column="1" Header="Validate Part Exists"
                                           ToolTipService.ToolTip="When turned on, the app checks that the part number exists in the system before saving."
                                           IsOn="{x:Bind ViewModel.ValidatePartExists, Mode=TwoWay}" />
-                            <ToggleSwitch Grid.Row="3" Grid.Column="1" Header="Warn On Quantity Exceeds PO"
+                            <ToggleSwitch Grid.Row="3" Grid.Column="0" Header="Warn On Quantity Exceeds PO"
                                           ToolTipService.ToolTip="When turned on, the app shows a warning if you receive more than the PO quantity."
                                           IsOn="{x:Bind ViewModel.WarnOnQuantityExceedsPo, Mode=TwoWay}" />
 
-                            <ToggleSwitch Grid.Row="4" Grid.Column="0" Header="Warn On Same-Day Receiving"
+                            <ToggleSwitch Grid.Row="3" Grid.Column="1" Header="Warn On Same-Day Receiving"
                                           ToolTipService.ToolTip="When turned on, the app warns you if the same item is received again on the same day."
                                           IsOn="{x:Bind ViewModel.WarnOnSameDayReceiving, Mode=TwoWay}" />
                         </Grid>

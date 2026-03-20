@@ -41,37 +41,45 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
             NoSelectionText.Visibility = Visibility.Collapsed;
 
             // Bind values to controls
+            NameTextBox.Text = ViewModel.SelectedRule.Name;
             PrefixTextBox.Text = ViewModel.SelectedRule.Prefix;
             MaxLengthNumberBox.Value = ViewModel.SelectedRule.MaxLength;
             IsEnabledToggle.IsOn = ViewModel.SelectedRule.IsEnabled;
 
             // Set PadChar combobox selection
             SetPadCharSelection(ViewModel.SelectedRule.PadChar);
+        }
+    }
 
-            // Wire up two-way binding manually
-            PrefixTextBox.TextChanged += (s, e) =>
-            {
-                if (ViewModel.SelectedRule != null)
-                {
-                    ViewModel.SelectedRule.Prefix = PrefixTextBox.Text;
-                }
-            };
+    private void NameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (ViewModel.SelectedRule != null)
+        {
+            ViewModel.SelectedRule.Name = NameTextBox.Text;
+        }
+    }
 
-            MaxLengthNumberBox.ValueChanged += (s, e) =>
-            {
-                if (ViewModel.SelectedRule != null)
-                {
-                    ViewModel.SelectedRule.MaxLength = (int)MaxLengthNumberBox.Value;
-                }
-            };
+    private void PrefixTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (ViewModel.SelectedRule != null)
+        {
+            ViewModel.SelectedRule.Prefix = PrefixTextBox.Text;
+        }
+    }
 
-            IsEnabledToggle.Toggled += (s, e) =>
-            {
-                if (ViewModel.SelectedRule != null)
-                {
-                    ViewModel.SelectedRule.IsEnabled = IsEnabledToggle.IsOn;
-                }
-            };
+    private void MaxLengthNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (ViewModel.SelectedRule != null)
+        {
+            ViewModel.SelectedRule.MaxLength = (int)sender.Value;
+        }
+    }
+
+    private void IsEnabledToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedRule != null)
+        {
+            ViewModel.SelectedRule.IsEnabled = IsEnabledToggle.IsOn;
         }
     }
 

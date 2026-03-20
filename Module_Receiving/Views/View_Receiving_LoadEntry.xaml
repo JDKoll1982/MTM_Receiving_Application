@@ -74,6 +74,7 @@
 
                 <TextBox Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
                          Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         LostFocus="LocationTextBox_LostFocus"
                          PlaceholderText="Enter receiving location"
                          MinWidth="240"
                          MaxWidth="480"

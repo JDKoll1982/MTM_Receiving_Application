@@ -179,8 +179,6 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
     private void OnStep1Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(1);
     private void OnStep2Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(2);
     private void OnStep3Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(3);
-    private void OnStep4Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(4);
-    private void OnStep5Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(5);
 
     private async void OnBackClicked(object sender, RoutedEventArgs e)
     {

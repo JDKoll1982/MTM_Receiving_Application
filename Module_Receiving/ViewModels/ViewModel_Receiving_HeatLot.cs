@@ -100,7 +100,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        public Task OnNavigatedToAsync()
+        public async Task OnNavigatedToAsync()
         {
             Loads.Clear();
 
@@ -112,7 +112,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            return Task.CompletedTask;
+            var autoFillEnabled = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled);
+            if (autoFillEnabled)
+            {
+                AutoFill();
+            }
         }
 
         [RelayCommand]

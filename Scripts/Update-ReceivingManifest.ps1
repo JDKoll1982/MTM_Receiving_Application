@@ -235,7 +235,6 @@ Add-Entry "Receiving.Accessibility.Review.SaveToDatabase" "Accessibility - Revie
 
 # Validation Settings
 Add-Entry "Receiving.Validation.RequirePoNumber" "Validation - Require PO Number" "false" "Bool"
-Add-Entry "Receiving.Validation.RequirePartId" "Validation - Require Part ID" "true" "Bool"
 Add-Entry "Receiving.Validation.RequireQuantity" "Validation - Require Quantity" "true" "Bool"
 Add-Entry "Receiving.Validation.RequireHeatLot" "Validation - Require Heat/Lot" "false" "Bool"
 Add-Entry "Receiving.Validation.AllowNegativeQuantity" "Validation - Allow Negative Quantity" "false" "Bool"
@@ -251,9 +250,6 @@ Add-Entry "Receiving.Validation.MaxQuantity" "Validation - Maximum Quantity" "99
 # Business Rules Settings
 Add-Entry "Receiving.BusinessRules.AutoSaveEnabled" "Business Rules - Auto Save Enabled" "false" "Bool"
 Add-Entry "Receiving.BusinessRules.AutoSaveIntervalSeconds" "Business Rules - Auto Save Interval" "300" "Int"
-Add-Entry "Receiving.BusinessRules.SaveToLabelTableEnabled" "Business Rules - Save to Label Table Enabled" "true" "Bool"
-Add-Entry "Receiving.BusinessRules.SaveToNetworkLabelTableEnabled" "Business Rules - Save to Network Label Table Enabled" "true" "Bool"
-Add-Entry "Receiving.BusinessRules.SaveToDatabaseEnabled" "Business Rules - Save to Database Enabled" "true" "Bool"
 Add-Entry "Receiving.BusinessRules.DefaultModeOnStartup" "Business Rules - Default Mode on Startup" "ModeSelection"
 Add-Entry "Receiving.BusinessRules.RememberLastMode" "Business Rules - Remember Last Mode" "true" "Bool" "User" "User"
 Add-Entry "Receiving.BusinessRules.ConfirmModeChange" "Business Rules - Confirm Mode Change" "true" "Bool" "User" "User"
@@ -267,7 +263,7 @@ Add-Entry "Receiving.Defaults.DefaultPackageType" "Defaults - Default Package Ty
 Add-Entry "Receiving.Defaults.DefaultPackagesPerLoad" "Defaults - Default Packages Per Load" "1"
 Add-Entry "Receiving.Defaults.DefaultWeightPerPackage" "Defaults - Default Weight Per Package" "0"
 Add-Entry "Receiving.Defaults.DefaultUnitOfMeasure" "Defaults - Default Unit of Measure" "LBS"
-Add-Entry "Receiving.Defaults.DefaultLocation" "Defaults - Default Location" "RECEIVING"
+Add-Entry "Receiving.Defaults.DefaultLocation" "Defaults - Default Location" "RECV"
 Add-Entry "Receiving.Defaults.DefaultLoadNumberPrefix" "Defaults - Default Load Number Prefix" "L"
 Add-Entry "Receiving.Defaults.DefaultReceivingMode" "Defaults - Default Receiving Mode" "Guided"
 

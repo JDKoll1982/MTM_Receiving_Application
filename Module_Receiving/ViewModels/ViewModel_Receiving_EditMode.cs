@@ -193,10 +193,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             _paginationService.PageChanged += OnPageChanged;
             _paginationService.PageSize = 20;
+            _workflowService.StepChanged += OnWorkflowStepChanged;
 
             _logger.LogInfo("Edit Mode initialized");
 
             _ = LoadUITextAsync().ContinueWith(_ => LoadColumnVisibilityAsync(), TaskScheduler.Default);
+        }
+
+        private void OnWorkflowStepChanged(object? sender, EventArgs e)
+        {
+            if (_workflowService.CurrentStep != Enum_ReceivingWorkflowStep.EditMode)
+            {
+                return;
+            }
+
+            _ = _workflowService.RequestedEditDataSource == Enum_DataSourceType.CurrentLabels
+                ? LoadFromCurrentLabelsAsync()
+                : LoadFromCurrentMemoryAsync();
         }
 
         private async Task LoadUITextAsync()

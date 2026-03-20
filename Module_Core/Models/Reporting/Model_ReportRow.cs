@@ -79,6 +79,10 @@ public class Model_ReportRow
 
     public string DisplayQuantity => Quantity?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty;
 
+    public string DisplayCreatedDate => CreatedDate == default
+        ? string.Empty
+        : CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+
     public string DisplayLocation => Location?.Trim() ?? string.Empty;
 
     public string DisplayNotes => Notes?.Trim() ?? string.Empty;
@@ -94,8 +98,17 @@ public class Model_ReportRow
 
             if (SourceModule.Equals("Receiving", StringComparison.OrdinalIgnoreCase))
             {
-                var value = LoadNumber ?? LabelNumber;
-                return value?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+                if (CoilsOnSkid is > 0)
+                {
+                    return CoilsOnSkid.Value.ToString(CultureInfo.InvariantCulture);
+                }
+
+                if (PackagesPerLoad is > 0)
+                {
+                    return PackagesPerLoad.Value.ToString(CultureInfo.InvariantCulture);
+                }
+
+                return string.Empty;
             }
 
             return string.Empty;

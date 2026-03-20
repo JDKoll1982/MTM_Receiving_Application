@@ -239,14 +239,14 @@ public static class ReceivingSettingsDefaults
 
         // Defaults for non-UI settings
         [ReceivingSettingsKeys.Defaults.DefaultReceivingMode] = "Guided",
-        [ReceivingSettingsKeys.Defaults.LabelTableSaveLocation] = "",
+        [ReceivingSettingsKeys.Defaults.DefaultLocation] = "RECV",
 
         // Integrations defaults
         [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = "30",
         [ReceivingSettingsKeys.Integrations.MaxSyncRetries] = "3",
 
         // Part Number Padding defaults
-        [ReceivingSettingsKeys.PartNumberPadding.RulesJson] = "[{\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
+        [ReceivingSettingsKeys.PartNumberPadding.RulesJson] = "[{\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"Name\":\"Flatstock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
 
         // Validation defaults
         [ReceivingSettingsKeys.Validation.MinLoadCount] = "1",
@@ -263,7 +263,6 @@ public static class ReceivingSettingsDefaults
     {
         // Validation
         [ReceivingSettingsKeys.Validation.RequirePoNumber] = false,
-        [ReceivingSettingsKeys.Validation.RequirePartId] = true,
         [ReceivingSettingsKeys.Validation.RequireQuantity] = true,
         [ReceivingSettingsKeys.Validation.RequireHeatLot] = false,
         [ReceivingSettingsKeys.Validation.AllowNegativeQuantity] = false,
@@ -274,9 +273,6 @@ public static class ReceivingSettingsDefaults
 
         // Business Rules
         [ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled] = false,
-        [ReceivingSettingsKeys.BusinessRules.SaveToLabelTableEnabled] = true,
-        [ReceivingSettingsKeys.BusinessRules.SaveToNetworkLabelTableEnabled] = true,
-        [ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled] = true,
         [ReceivingSettingsKeys.BusinessRules.RememberLastMode] = true,
         [ReceivingSettingsKeys.BusinessRules.ConfirmModeChange] = true,
         [ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled] = true,

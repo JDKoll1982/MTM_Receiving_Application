@@ -62,7 +62,6 @@ $manifestEntries += New-ManifestEntry "Receiving.UiText.ManualEntry.Column.WtPer
 
 # Validation entries
 $manifestEntries += New-ManifestEntry "Receiving.Validation.RequirePoNumber" "Validation - Require PO Number" "false" "Bool" "System" "Admin"
-$manifestEntries += New-ManifestEntry "Receiving.Validation.RequirePartId" "Validation - Require Part ID" "true" "Bool" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Validation.RequireQuantity" "Validation - Require Quantity" "true" "Bool" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Validation.RequireHeatLot" "Validation - Require Heat/Lot" "false" "Bool" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Validation.AllowNegativeQuantity" "Validation - Allow Negative Quantity" "false" "Bool" "System" "Admin"
@@ -78,9 +77,6 @@ $manifestEntries += New-ManifestEntry "Receiving.Validation.MaxQuantity" "Valida
 # BusinessRules entries
 $manifestEntries += New-ManifestEntry "Receiving.BusinessRules.AutoSaveEnabled" "Business Rules - Auto Save Enabled" "false" "Bool" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.BusinessRules.AutoSaveIntervalSeconds" "Business Rules - Auto Save Interval (Seconds)" "300" "Int" "System" "Admin"
-$manifestEntries += New-ManifestEntry "Receiving.BusinessRules.SaveToLabelTableEnabled" "Business Rules - Save to Label Table Enabled" "true" "Bool" "System" "Admin"
-$manifestEntries += New-ManifestEntry "Receiving.BusinessRules.SaveToNetworkLabelTableEnabled" "Business Rules - Save to Network Label Table Enabled" "true" "Bool" "System" "Admin"
-$manifestEntries += New-ManifestEntry "Receiving.BusinessRules.SaveToDatabaseEnabled" "Business Rules - Save to Database Enabled" "true" "Bool" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.BusinessRules.DefaultModeOnStartup" "Business Rules - Default Mode on Startup" "ModeSelection" "String" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.BusinessRules.RememberLastMode" "Business Rules - Remember Last Mode" "true" "Bool" "User" "User"
 $manifestEntries += New-ManifestEntry "Receiving.BusinessRules.ConfirmModeChange" "Business Rules - Confirm Mode Change" "true" "Bool" "User" "User"
@@ -94,7 +90,7 @@ $manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultPackageType" "D
 $manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultPackagesPerLoad" "Defaults - Default Packages Per Load" "1" "String" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultWeightPerPackage" "Defaults - Default Weight Per Package" "0" "String" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultUnitOfMeasure" "Defaults - Default Unit of Measure" "LBS" "String" "System" "Admin"
-$manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultLocation" "Defaults - Default Location" "RECEIVING" "String" "System" "Admin"
+$manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultLocation" "Defaults - Default Location" "RECV" "String" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultLoadNumberPrefix" "Defaults - Default Load Number Prefix" "L" "String" "System" "Admin"
 $manifestEntries += New-ManifestEntry "Receiving.Defaults.DefaultReceivingMode" "Defaults - Default Receiving Mode" "Guided" "String" "System" "Admin"
 

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
 
@@ -12,5 +13,16 @@ public sealed partial class View_Reporting_Main : Page
         ViewModel = App.GetService<ViewModel_Reporting_Main>();
         InitializeComponent();
         DataContext = ViewModel;
+        ViewModel.PreviewRequested += OnPreviewRequested;
+    }
+
+    private async void OnPreviewRequested(object? sender, System.EventArgs e)
+    {
+        var dialog = new View_Reporting_PreviewDialog(ViewModel)
+        {
+            XamlRoot = XamlRoot
+        };
+
+        await dialog.ShowAsync();
     }
 }

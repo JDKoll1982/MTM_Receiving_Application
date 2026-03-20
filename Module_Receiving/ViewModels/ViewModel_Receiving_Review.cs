@@ -249,9 +249,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
+            IsSingleView = !await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault);
+
             OnPropertyChanged(nameof(CanGoBack));
             OnPropertyChanged(nameof(CanGoNext));
             OnPropertyChanged(nameof(DisplayIndex));
+            OnPropertyChanged(nameof(IsTableView));
             await Task.CompletedTask;
         }
 

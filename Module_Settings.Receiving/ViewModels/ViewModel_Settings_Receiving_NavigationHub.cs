@@ -23,12 +23,10 @@ public sealed partial class ViewModel_Settings_Receiving_NavigationHub : ViewMod
         CurrentStepTitle = NavigationTitle;
 
         SetSteps(
-            new Model_SettingsNavigationStep("Overview", typeof(Views.View_Settings_Receiving_SettingsOverview)),
             new Model_SettingsNavigationStep("Defaults", typeof(Views.View_Settings_Receiving_Defaults)),
             new Model_SettingsNavigationStep("Validation", typeof(Views.View_Settings_Receiving_Validation)),
-            new Model_SettingsNavigationStep("Preferences", typeof(Views.View_Settings_Receiving_UserPreferences)),
-            new Model_SettingsNavigationStep("Business Rules", typeof(Views.View_Settings_Receiving_BusinessRules)),
-            new Model_SettingsNavigationStep("ERP Integration", typeof(Views.View_Settings_Receiving_Integrations)));
+            new Model_SettingsNavigationStep("Part Number Auto Padding", typeof(Views.View_Settings_Receiving_UserPreferences)),
+            new Model_SettingsNavigationStep("Workflow Options", typeof(Views.View_Settings_Receiving_BusinessRules)));
     }
 
     public async Task SaveAsync()

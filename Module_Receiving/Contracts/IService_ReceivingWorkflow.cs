@@ -82,6 +82,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public DateTime? CurrentPODueDate { get; set; }
 
         /// <summary>
+        /// Gets or sets which data source Edit Mode should load when entered.
+        /// </summary>
+        public Enum_DataSourceType RequestedEditDataSource { get; set; }
+
+        /// <summary>
         /// Starts a new receiving workflow session.
         /// Loads any existing persisted session if available.
         /// </summary>

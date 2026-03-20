@@ -21,6 +21,7 @@ public sealed partial class View_Settings_CoreWindow : Window
     private bool _isHandlingSelectionChanged;
     private readonly IServiceProvider _serviceProvider;
     private readonly IService_LoggingUtility _logger;
+    private Type? _currentNestedSettingsPageType;
 
     public View_Settings_CoreWindow(ViewModel_SettingsWindow viewModel, IServiceProvider serviceProvider)
     {
@@ -77,6 +78,7 @@ public sealed partial class View_Settings_CoreWindow : Window
         }
 
         var pageType = SettingsFrame.Content.GetType();
+        _currentNestedSettingsPageType = pageType;
         var pageName = pageType.Name;
 
         // Extract friendly name from class name (e.g., "View_Settings_Receiving_Defaults" → "Receiving Defaults")
@@ -108,6 +110,7 @@ public sealed partial class View_Settings_CoreWindow : Window
             return;
         }
 
+        _currentNestedSettingsPageType = pageType;
         _logger.LogInfo($"UpdateHeaderForPageType called with: {pageType.Name} (Full: {pageType.FullName})", "Settings.Navigation");
 
         var (title, description) = GetPageHeader(pageType);
@@ -122,6 +125,8 @@ public sealed partial class View_Settings_CoreWindow : Window
         {
             _logger.LogWarning($"NO HEADER MAPPING FOUND for page type: {pageType.Name} (Full: {pageType.FullName})", "Settings.Navigation");
         }
+
+        UpdateHeaderActions();
     }
 
     /// <summary>
@@ -133,18 +138,14 @@ public sealed partial class View_Settings_CoreWindow : Window
         return pageType.Name switch
         {
             // Receiving Settings Pages
-            "View_Settings_Receiving_SettingsOverview" =>
-                ("Receiving Settings", "Review the current Receiving configuration and jump to common sections."),
             "View_Settings_Receiving_Defaults" =>
                 ("Receiving Defaults", "Set common default values used when creating new loads and packages."),
             "View_Settings_Receiving_Validation" =>
                 ("Receiving Validation", "Control required fields and validation rules applied during Receiving."),
             "View_Settings_Receiving_UserPreferences" =>
-                ("User Preferences", "Configure how the Receiving workflow behaves for your user account."),
+                ("Part Number Auto Padding", "Configure how receiving part numbers are automatically padded and normalized."),
             "View_Settings_Receiving_BusinessRules" =>
-                ("Business Rules", "Configure workflow behavior, auto-save, and storage options."),
-            "View_Settings_Receiving_Integrations" =>
-                ("ERP Integration", "Configure ERP synchronization and automated data pulls."),
+                ("Workflow Options", "Configure workflow defaults, auto-save, and receiving behavior options."),
             "View_Settings_Receiving_NavigationHub" =>
                 ("Receiving Navigation", "Manage Receiving module defaults and configuration pages."),
 
@@ -262,20 +263,26 @@ public sealed partial class View_Settings_CoreWindow : Window
             return;
         }
 
-        if (SettingsFrame.Content is null || hubViewType is null)
+        if (hubViewType is null)
         {
             BackToHubButton.Visibility = Visibility.Collapsed;
             return;
         }
 
-        if (SettingsFrame.Content.GetType() == hubViewType)
+        var activePageType = _currentNestedSettingsPageType ?? SettingsFrame.Content?.GetType();
+        if (activePageType is null)
         {
             BackToHubButton.Visibility = Visibility.Collapsed;
             return;
         }
 
-        if (SettingsFrame.Content is FrameworkElement element
-            && element.GetType().Namespace?.StartsWith(moduleNamespacePrefix, StringComparison.Ordinal) == true)
+        if (activePageType == hubViewType)
+        {
+            BackToHubButton.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        if (activePageType.Namespace?.StartsWith(moduleNamespacePrefix, StringComparison.Ordinal) == true)
         {
             BackToHubButton.Visibility = Visibility.Visible;
             return;
@@ -334,6 +341,7 @@ public sealed partial class View_Settings_CoreWindow : Window
         // Avoid walking the back stack which can transiently null `Content`.
         // Instead, replace the content with the hub page for the currently selected module.
         SettingsFrame.Content = _serviceProvider.GetRequiredService(hubViewType);
+        _currentNestedSettingsPageType = hubViewType;
         _logger.LogInfo($"Navigated back to hub: {selectedTag}", "Settings.Navigation");
         UpdateHeaderActions();
     }
@@ -342,6 +350,7 @@ public sealed partial class View_Settings_CoreWindow : Window
     {
         _logger.LogInfo("Navigating to Core Hub", "Settings.Navigation");
         SettingsFrame.Content = _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
+        _currentNestedSettingsPageType = typeof(View_Settings_CoreNavigationHub);
     }
 
     private void OnWindowActivated(object sender, WindowActivatedEventArgs args)
@@ -460,31 +469,37 @@ public sealed partial class View_Settings_CoreWindow : Window
                 {
                     case "CoreSettingsHub":
                         SettingsFrame.Content = _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
+                        _currentNestedSettingsPageType = typeof(View_Settings_CoreNavigationHub);
                         SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
                         UpdateHeaderActions();
                         break;
                     case "ReceivingSettingsHub":
                         SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
+                        _currentNestedSettingsPageType = typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
                         SetHeader("Receiving Navigation", "Manage Receiving module defaults and configuration pages.");
                         UpdateHeaderActions();
                         break;
                     case "DunnageSettingsHub":
                         SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
+                        _currentNestedSettingsPageType = typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
                         SetHeader("Dunnage Navigation", "Manage Dunnage module defaults and configuration pages.");
                         UpdateHeaderActions();
                         break;
                     case "ReportingSettingsHub":
                         SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
+                        _currentNestedSettingsPageType = typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
                         SetHeader("Reporting Navigation", "Manage Reporting module defaults and configuration pages.");
                         UpdateHeaderActions();
                         break;
                     case "VolvoSettingsHub":
                         SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+                        _currentNestedSettingsPageType = typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
                         SetHeader("Volvo Navigation", "Manage Volvo module defaults and configuration pages.");
                         UpdateHeaderActions();
                         break;
                     case "DeveloperToolsSettingsHub":
                         SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
+                        _currentNestedSettingsPageType = typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
                         SetHeader("Developer Tools", "Access diagnostic and developer utilities.");
                         UpdateHeaderActions();
                         break;

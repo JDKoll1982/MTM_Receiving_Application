@@ -4,6 +4,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_XLSWriter _xlsWriter;
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
+        private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
@@ -61,12 +63,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public string? CurrentPOVendor { get; set; }
         public string? CurrentPOStatus { get; set; }
         public DateTime? CurrentPODueDate { get; set; }
+        public Enum_DataSourceType RequestedEditDataSource { get; set; } = Enum_DataSourceType.Memory;
 
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
             IService_XLSWriter xlsWriter,
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
+            IService_ReceivingSettings receivingSettings,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
             IService_UserSessionManager userSessionManager)
@@ -75,6 +79,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _xlsWriter = xlsWriter ?? throw new ArgumentNullException(nameof(xlsWriter));
             _mysqlReceiving = mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
+            _receivingSettings = receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _viewModelRegistry = viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
             _userSessionManager = userSessionManager ?? throw new ArgumentNullException(nameof(userSessionManager));
@@ -99,9 +104,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
             CurrentLocation = string.Empty;
+            RequestedEditDataSource = Enum_DataSourceType.Memory;
 
             // Check if user has a default receiving mode set
             var currentUser = _userSessionManager?.CurrentSession?.User;
+            var currentUserId = currentUser?.EmployeeNumber;
 
             if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultReceivingMode))
             {
@@ -118,6 +125,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         break;
                     case "edit":
                         CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
+                        RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
                         _logger.LogInfo("Starting in Edit mode (default)");
                         break;
                     default:
@@ -129,9 +137,41 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                // No default mode, show mode selection
-                CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
-                _logger.LogInfo("No default mode set, showing mode selection");
+                var rememberLastMode = await _receivingSettings.GetBoolAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.BusinessRules.RememberLastMode, currentUserId);
+                var configuredDefaultMode = (await _receivingSettings.GetStringAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup, currentUserId)).Trim();
+                var rememberedMode = rememberLastMode
+                    ? (await _receivingSettings.GetStringAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.Defaults.DefaultReceivingMode, currentUserId)).Trim()
+                    : string.Empty;
+                var startupMode = string.IsNullOrWhiteSpace(rememberedMode) ? configuredDefaultMode : rememberedMode;
+                var normalizedDefaultMode = startupMode.ToLowerInvariant();
+
+                if (normalizedDefaultMode == "guided")
+                {
+                    CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
+                    _logger.LogInfo(string.IsNullOrWhiteSpace(rememberedMode)
+                        ? "Starting in Guided mode (settings default)"
+                        : "Starting in Guided mode (remembered last mode)");
+                }
+                else if (normalizedDefaultMode == "manualentry" || normalizedDefaultMode == "manual")
+                {
+                    CurrentStep = Enum_ReceivingWorkflowStep.ManualEntry;
+                    _logger.LogInfo(string.IsNullOrWhiteSpace(rememberedMode)
+                        ? "Starting in Manual Entry mode (settings default)"
+                        : "Starting in Manual Entry mode (remembered last mode)");
+                }
+                else if (normalizedDefaultMode == "editmode" || normalizedDefaultMode == "edit")
+                {
+                    CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
+                    RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
+                    _logger.LogInfo(string.IsNullOrWhiteSpace(rememberedMode)
+                        ? "Starting in Edit mode (settings default)"
+                        : "Starting in Edit mode (remembered last mode)");
+                }
+                else
+                {
+                    CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+                    _logger.LogInfo("No default mode set, showing mode selection");
+                }
             }
 
             return false; // New session
@@ -189,6 +229,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     {
                         validationErrors.Add("Number of loads must be at least 1.");
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                    }
+
+                    if (string.IsNullOrWhiteSpace(CurrentLocation))
+                    {
+                        var defaultLocation = (await _receivingSettings.GetStringAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.Defaults.DefaultLocation)).Trim();
+                        if (string.IsNullOrWhiteSpace(defaultLocation) is false)
+                        {
+                            CurrentLocation = defaultLocation;
+                        }
                     }
 
                     var locationValidation = await _validation.ValidateLocationAsync(CurrentLocation);
@@ -376,6 +425,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IsNonPOItem = false;
             NumberOfLoads = 1;
             CurrentLocation = string.Empty;
+            RequestedEditDataSource = Enum_DataSourceType.Memory;
 
             await PersistSessionAsync();
             CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
@@ -524,6 +574,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentPart = null;
             IsNonPOItem = false;
             CurrentLocation = string.Empty;
+            RequestedEditDataSource = Enum_DataSourceType.Memory;
             _currentBatchLoads.Clear();
 
             _viewModelRegistry.ClearAllInputs();
