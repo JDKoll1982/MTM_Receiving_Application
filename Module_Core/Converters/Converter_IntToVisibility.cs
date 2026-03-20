@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
-using System;
 
 namespace MTM_Receiving_Application.Module_Core.Converters
 {
@@ -53,10 +53,14 @@ namespace MTM_Receiving_Application.Module_Core.Converters
             return isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object? value, Type targetType, object? parameter, string language)
+        public object ConvertBack(
+            object? value,
+            Type targetType,
+            object? parameter,
+            string language
+        )
         {
             throw new NotImplementedException();
         }
     }
 }
-

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Contracts.Services;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Data;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Enums;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Models;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 
 namespace MTM_Receiving_Application.Module_Bulk_Inventory.Services;
 
@@ -21,7 +21,8 @@ public class Service_MySQL_BulkInventory : IService_MySQL_BulkInventory
 
     public Service_MySQL_BulkInventory(
         Dao_BulkInventoryTransaction dao,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger
+    )
     {
         _dao = dao;
         _logger = logger;
@@ -31,7 +32,9 @@ public class Service_MySQL_BulkInventory : IService_MySQL_BulkInventory
 
     public async Task<Model_Dao_Result<int>> StartRowAsync(Model_BulkInventoryTransaction row)
     {
-        _logger.LogInfo($"BulkInventory: Inserting row — PartId={row.PartId}, Type={row.TransactionType}");
+        _logger.LogInfo(
+            $"BulkInventory: Inserting row — PartId={row.PartId}, Type={row.TransactionType}"
+        );
         var result = await _dao.InsertAsync(row);
         if (!result.IsSuccess)
         {
@@ -42,11 +45,15 @@ public class Service_MySQL_BulkInventory : IService_MySQL_BulkInventory
 
     public async Task<Model_Dao_Result> UpdateRowAsync(Model_BulkInventoryTransaction row)
     {
-        _logger.LogInfo($"BulkInventory: Updating row Id={row.Id} — PartId={row.PartId}, Type={row.TransactionType}");
+        _logger.LogInfo(
+            $"BulkInventory: Updating row Id={row.Id} — PartId={row.PartId}, Type={row.TransactionType}"
+        );
         var result = await _dao.UpdateAsync(row);
         if (!result.IsSuccess)
         {
-            _logger.LogError($"BulkInventory: Update failed for Id={row.Id} — {result.ErrorMessage}");
+            _logger.LogError(
+                $"BulkInventory: Update failed for Id={row.Id} — {result.ErrorMessage}"
+            );
         }
         return result;
     }
@@ -59,7 +66,11 @@ public class Service_MySQL_BulkInventory : IService_MySQL_BulkInventory
         return await _dao.UpdateStatusAsync(id, Enum_BulkInventoryStatus.InProgress, null);
     }
 
-    public async Task<Model_Dao_Result> CompleteRowAsync(int id, Enum_BulkInventoryStatus status, string? errorMessage = null)
+    public async Task<Model_Dao_Result> CompleteRowAsync(
+        int id,
+        Enum_BulkInventoryStatus status,
+        string? errorMessage = null
+    )
     {
         if (status == Enum_BulkInventoryStatus.Failed)
         {
@@ -75,14 +86,16 @@ public class Service_MySQL_BulkInventory : IService_MySQL_BulkInventory
 
     // ── General CRUD ──────────────────────────────────────────────────────────
 
-    public Task<Model_Dao_Result> UpdateStatusAsync(int id, Enum_BulkInventoryStatus status, string? errorMessage = null)
-        => _dao.UpdateStatusAsync(id, status, errorMessage);
+    public Task<Model_Dao_Result> UpdateStatusAsync(
+        int id,
+        Enum_BulkInventoryStatus status,
+        string? errorMessage = null
+    ) => _dao.UpdateStatusAsync(id, status, errorMessage);
 
     public Task<Model_Dao_Result<List<Model_BulkInventoryTransaction>>> GetByUserAsync(
         string username,
-        Enum_BulkInventoryStatus? status = null)
-        => _dao.GetByUserAsync(username, status);
+        Enum_BulkInventoryStatus? status = null
+    ) => _dao.GetByUserAsync(username, status);
 
-    public Task<Model_Dao_Result> DeleteByIdAsync(int id)
-        => _dao.DeleteByIdAsync(id);
+    public Task<Model_Dao_Result> DeleteByIdAsync(int id) => _dao.DeleteByIdAsync(id);
 }

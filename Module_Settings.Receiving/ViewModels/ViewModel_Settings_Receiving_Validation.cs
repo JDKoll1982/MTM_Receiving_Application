@@ -9,7 +9,10 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
 
-public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_Shared_Base, ISettingsNavigationActions, ISettingsNavigationNavState
+public sealed partial class ViewModel_Settings_Receiving_Validation
+    : ViewModel_Shared_Base,
+        ISettingsNavigationActions,
+        ISettingsNavigationNavState
 {
     private const string SettingsCategory = "Receiving";
 
@@ -57,7 +60,9 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _settingsCore = settingsCore;
         _sessionManager = sessionManager;
@@ -78,14 +83,38 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber, RequirePoNumber.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity, RequireQuantity.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot, RequireHeatLot.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, AllowNegativeQuantity.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.ValidatePoExists, ValidatePoExists.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.ValidatePartExists, ValidatePartExists.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo, WarnOnQuantityExceedsPo.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving, WarnOnSameDayReceiving.ToString());
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.RequirePoNumber,
+                RequirePoNumber.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.RequireQuantity,
+                RequireQuantity.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.RequireHeatLot,
+                RequireHeatLot.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.AllowNegativeQuantity,
+                AllowNegativeQuantity.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.ValidatePoExists,
+                ValidatePoExists.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.ValidatePartExists,
+                ValidatePartExists.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo,
+                WarnOnQuantityExceedsPo.ToString()
+            );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving,
+                WarnOnSameDayReceiving.ToString()
+            );
 
             await SaveSettingAsync(ReceivingSettingsKeys.Validation.MinLoadCount, MinLoadCount);
             await SaveSettingAsync(ReceivingSettingsKeys.Validation.MaxLoadCount, MaxLoadCount);
@@ -96,7 +125,11 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Failed to save receiving validation settings.", Enum_ErrorSeverity.Error, ex);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to save receiving validation settings.",
+                Enum_ErrorSeverity.Error,
+                ex
+            );
         }
         finally
         {
@@ -128,7 +161,11 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Failed to reset receiving validation settings.", Enum_ErrorSeverity.Error, ex);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to reset receiving validation settings.",
+                Enum_ErrorSeverity.Error,
+                ex
+            );
         }
         finally
         {
@@ -151,30 +188,83 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
     {
         try
         {
-            RequirePoNumber = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequirePoNumber]);
-            RequireQuantity = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireQuantity]);
-            RequireHeatLot = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireHeatLot]);
-            AllowNegativeQuantity = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.AllowNegativeQuantity]);
-            ValidatePoExists = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.ValidatePoExists, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.ValidatePoExists]);
-            ValidatePartExists = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.ValidatePartExists, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.ValidatePartExists]);
-            WarnOnQuantityExceedsPo = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo]);
-            WarnOnSameDayReceiving = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving]);
+            RequirePoNumber = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.RequirePoNumber,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.RequirePoNumber
+                ]
+            );
+            RequireQuantity = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.RequireQuantity,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.RequireQuantity
+                ]
+            );
+            RequireHeatLot = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.RequireHeatLot,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.RequireHeatLot
+                ]
+            );
+            AllowNegativeQuantity = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.AllowNegativeQuantity,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.AllowNegativeQuantity
+                ]
+            );
+            ValidatePoExists = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.ValidatePoExists,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.ValidatePoExists
+                ]
+            );
+            ValidatePartExists = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.ValidatePartExists,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.ValidatePartExists
+                ]
+            );
+            WarnOnQuantityExceedsPo = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo
+                ]
+            );
+            WarnOnSameDayReceiving = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving,
+                ReceivingSettingsDefaults.BoolDefaults[
+                    ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving
+                ]
+            );
 
-            MinLoadCount = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MinLoadCount);
-            MaxLoadCount = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MaxLoadCount);
+            MinLoadCount = await GetStringSettingAsync(
+                ReceivingSettingsKeys.Validation.MinLoadCount
+            );
+            MaxLoadCount = await GetStringSettingAsync(
+                ReceivingSettingsKeys.Validation.MaxLoadCount
+            );
             MinQuantity = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MinQuantity);
             MaxQuantity = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MaxQuantity);
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Failed to load receiving validation settings.", Enum_ErrorSeverity.Warning, ex, false);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to load receiving validation settings.",
+                Enum_ErrorSeverity.Warning,
+                ex,
+                false
+            );
         }
     }
 
     private async Task<bool> GetBoolSettingAsync(string key, bool fallback)
     {
         var result = await _settingsCore.GetSettingAsync(SettingsCategory, key, CurrentUserId);
-        if (result.IsSuccess && result.Data != null && bool.TryParse(result.Data.Value, out var parsed))
+        if (
+            result.IsSuccess
+            && result.Data != null
+            && bool.TryParse(result.Data.Value, out var parsed)
+        )
         {
             return parsed;
         }
@@ -205,7 +295,12 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
 
     private async Task SaveSettingAsync(string key, string value)
     {
-        var result = await _settingsCore.SetSettingAsync(SettingsCategory, key, value ?? string.Empty, CurrentUserId);
+        var result = await _settingsCore.SetSettingAsync(
+            SettingsCategory,
+            key,
+            value ?? string.Empty,
+            CurrentUserId
+        );
         if (!result.IsSuccess)
         {
             await _errorHandler.HandleDaoErrorAsync(result, $"Save {key}");

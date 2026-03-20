@@ -1,6 +1,6 @@
+using System;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using System;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
@@ -35,8 +35,10 @@ public class Converter_PartIDToQualityHoldTextColor : IValueConverter
         }
 
         // Check for restricted part patterns: MMFSR or MMCSR
-        if (partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase) ||
-            partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase))
+        if (
+            partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase)
+            || partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase)
+        )
         {
             return RedTextBrush;
         }

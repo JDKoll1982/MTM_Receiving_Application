@@ -26,7 +26,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
         public async Task<TResponse> Handle(
             TRequest request,
             RequestHandlerDelegate<TResponse> next,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             var requestName = typeof(TRequest).Name;
             var requestGuid = Guid.NewGuid().ToString();
@@ -34,7 +35,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
             _logger.LogInformation(
                 "[{RequestGuid}] Handling {RequestName}",
                 requestGuid,
-                requestName);
+                requestName
+            );
 
             var stopwatch = Stopwatch.StartNew();
 
@@ -48,7 +50,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
                     "[{RequestGuid}] Handled {RequestName} in {ElapsedMilliseconds}ms",
                     requestGuid,
                     requestName,
-                    stopwatch.ElapsedMilliseconds);
+                    stopwatch.ElapsedMilliseconds
+                );
 
                 return response;
             }
@@ -62,7 +65,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
                     requestGuid,
                     requestName,
                     stopwatch.ElapsedMilliseconds,
-                    ex.Message);
+                    ex.Message
+                );
 
                 throw;
             }

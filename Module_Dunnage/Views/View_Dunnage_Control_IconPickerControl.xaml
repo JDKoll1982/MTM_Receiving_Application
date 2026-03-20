@@ -8,11 +8,11 @@
     xmlns:icons="using:Material.Icons"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
-    mc:Ignorable="d">
-
+    mc:Ignorable="d"
+>
     <UserControl.Resources>
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
-        
+
         <Style x:Key="IconGridViewItemStyle" TargetType="GridViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -24,34 +24,52 @@
         </Style>
 
         <DataTemplate x:Key="IconTemplate" x:DataType="icons:MaterialIconKind">
-            <Border Width="40" Height="40" 
-                    BorderThickness="1" 
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    CornerRadius="4" 
-                    Padding="4" 
-                    ToolTipService.ToolTip="{x:Bind ToString()}">
-                <materialIcons:MaterialIcon Kind="{x:Bind}" Width="24" Height="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+            <Border
+                Width="40"
+                Height="40"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="4"
+                Padding="4"
+                ToolTipService.ToolTip="{x:Bind ToString()}"
+            >
+                <materialIcons:MaterialIcon
+                    Kind="{x:Bind}"
+                    Width="24"
+                    Height="24"
+                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                />
             </Border>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="RecentIconTemplate" x:DataType="models:Model_IconDefinition">
-             <Border Width="40" Height="40" 
-                    BorderThickness="1" 
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    CornerRadius="4" 
-                    Padding="4" 
-                    ToolTipService.ToolTip="{x:Bind Name}">
-                <materialIcons:MaterialIcon Kind="{x:Bind Kind}" Width="24" Height="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+            <Border
+                Width="40"
+                Height="40"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="4"
+                Padding="4"
+                ToolTipService.ToolTip="{x:Bind Name}"
+            >
+                <materialIcons:MaterialIcon
+                    Kind="{x:Bind Kind}"
+                    Width="24"
+                    Height="24"
+                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                />
             </Border>
         </DataTemplate>
     </UserControl.Resources>
 
     <StackPanel Spacing="12">
-
         <!-- Recently Used Section -->
-        <StackPanel Spacing="8" Visibility="{x:Bind RecentlyUsedIcons.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}}">
+        <StackPanel
+            Spacing="8"
+            Visibility="{x:Bind RecentlyUsedIcons.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}}"
+        >
             <TextBlock Text="Recently Used" FontWeight="SemiBold" FontSize="12" />
             <GridView
                 x:Name="RecentIconsGrid"
@@ -60,7 +78,8 @@
                 ItemsSource="{x:Bind RecentlyUsedIcons, Mode=OneWay}"
                 ItemTemplate="{StaticResource RecentIconTemplate}"
                 ItemContainerStyle="{StaticResource IconGridViewItemStyle}"
-                SelectionChanged="OnRecentIconSelectionChanged">
+                SelectionChanged="OnRecentIconSelectionChanged"
+            >
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="6" />
@@ -73,7 +92,8 @@
         <TextBox
             x:Name="SearchBox"
             PlaceholderText="Search icons..."
-            TextChanged="OnSearchTextChanged" />
+            TextChanged="OnSearchTextChanged"
+        />
 
         <!-- All Icons Grid -->
         <GridView
@@ -82,7 +102,8 @@
             SelectedItem="{x:Bind SelectedIcon, Mode=TwoWay}"
             ItemTemplate="{StaticResource IconTemplate}"
             ItemContainerStyle="{StaticResource IconGridViewItemStyle}"
-            MaxHeight="300">
+            MaxHeight="300"
+        >
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="6" />
@@ -91,4 +112,3 @@
         </GridView>
     </StackPanel>
 </UserControl>
-

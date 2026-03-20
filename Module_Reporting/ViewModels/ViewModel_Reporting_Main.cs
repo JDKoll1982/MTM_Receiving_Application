@@ -89,10 +89,14 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         IService_ReportingClipboard reportingClipboard,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
-        _reportingService = reportingService ?? throw new ArgumentNullException(nameof(reportingService));
-        _reportingClipboard = reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
+        _reportingService =
+            reportingService ?? throw new ArgumentNullException(nameof(reportingService));
+        _reportingClipboard =
+            reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
         Title = "End of Day Reports";
         ResetAvailabilityState();
     }
@@ -111,7 +115,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             NotifyActionCommands();
             ShowStatus("Checking data availability...", InfoBarSeverity.Informational);
 
-            var result = await _reportingService.CheckAvailabilityAsync(StartDate.DateTime, EndDate.DateTime);
+            var result = await _reportingService.CheckAvailabilityAsync(
+                StartDate.DateTime,
+                EndDate.DateTime
+            );
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -143,13 +150,17 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                     totalCount == 0
                         ? "No report data found for the selected date range"
                         : $"Found {totalCount} total records",
-                    totalCount == 0 ? InfoBarSeverity.Warning : InfoBarSeverity.Success);
+                    totalCount == 0 ? InfoBarSeverity.Warning : InfoBarSeverity.Success
+                );
             }
             else
             {
                 ResetAvailabilityState();
                 ClearPreviewState();
-                ShowStatus(result.ErrorMessage ?? "Failed to check availability", InfoBarSeverity.Error);
+                ShowStatus(
+                    result.ErrorMessage ?? "Failed to check availability",
+                    InfoBarSeverity.Error
+                );
             }
         }
         catch (Exception ex)
@@ -177,7 +188,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         var selectedModules = GetSelectedModules().ToList();
         if (selectedModules.Count == 0)
         {
-            ShowStatus("Select at least one module before generating a report.", InfoBarSeverity.Warning);
+            ShowStatus(
+                "Select at least one module before generating a report.",
+                InfoBarSeverity.Warning
+            );
             return;
         }
 
@@ -195,24 +209,32 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 if (!result.IsSuccess)
                 {
                     ClearPreviewState();
-                    ShowStatus(result.ErrorMessage ?? $"Failed to load {module.ModuleName} data", InfoBarSeverity.Error);
+                    ShowStatus(
+                        result.ErrorMessage ?? $"Failed to load {module.ModuleName} data",
+                        InfoBarSeverity.Error
+                    );
                     return;
                 }
 
-                sections.Add(new Model_ReportSection
-                {
-                    ModuleName = module.ModuleName,
-                    Title = $"{module.ModuleName} Activity for {GetDateRangeText()}",
-                    Description = module.Description,
-                    Rows = new ObservableCollection<Model_ReportRow>(result.Data ?? [])
-                });
+                sections.Add(
+                    new Model_ReportSection
+                    {
+                        ModuleName = module.ModuleName,
+                        Title = $"{module.ModuleName} Activity for {GetDateRangeText()}",
+                        Description = module.Description,
+                        Rows = new ObservableCollection<Model_ReportRow>(result.Data ?? []),
+                    }
+                );
             }
 
             var summaryTablesResult = await _reportingService.BuildSummaryTablesAsync(sections);
             if (!summaryTablesResult.IsSuccess || summaryTablesResult.Data is null)
             {
                 ClearPreviewState();
-                ShowStatus(summaryTablesResult.ErrorMessage ?? "Failed to build report summaries", InfoBarSeverity.Error);
+                ShowStatus(
+                    summaryTablesResult.ErrorMessage ?? "Failed to build report summaries",
+                    InfoBarSeverity.Error
+                );
                 return;
             }
 
@@ -220,11 +242,17 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
             if (PreviewSections.Count == 0)
             {
-                ShowStatus("No report data found for the selected modules and date range.", InfoBarSeverity.Warning);
+                ShowStatus(
+                    "No report data found for the selected modules and date range.",
+                    InfoBarSeverity.Warning
+                );
                 return;
             }
 
-            ShowStatus($"Prepared preview for {PreviewSections.Count} selected module(s)", InfoBarSeverity.Success);
+            ShowStatus(
+                $"Prepared preview for {PreviewSections.Count} selected module(s)",
+                InfoBarSeverity.Success
+            );
             PreviewRequested?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
@@ -259,7 +287,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             var formatResult = await _reportingService.FormatForEmailAsync(
                 IncludedPreviewModuleCards.Select(card => card.DetailSection).ToList(),
                 IncludedPreviewModuleCards.Select(card => card.SummaryTable).ToList(),
-                PreviewSummaryTitle);
+                PreviewSummaryTitle
+            );
 
             if (!formatResult.IsSuccess || formatResult.Data == null)
             {
@@ -270,7 +299,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             var clipboardResult = _reportingClipboard.CreateClipboardPackage(formatResult.Data);
             if (!clipboardResult.IsSuccess || clipboardResult.Data == null)
             {
-                ShowStatus(clipboardResult.ErrorMessage ?? "Failed to prepare clipboard content", InfoBarSeverity.Error);
+                ShowStatus(
+                    clipboardResult.ErrorMessage ?? "Failed to prepare clipboard content",
+                    InfoBarSeverity.Error
+                );
                 return;
             }
 
@@ -299,7 +331,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Receiving",
                 "Detailed receiving rows captured for the selected date range.",
-                () => _reportingService.GetReceivingHistoryAsync(StartDate.DateTime, EndDate.DateTime));
+                () =>
+                    _reportingService.GetReceivingHistoryAsync(StartDate.DateTime, EndDate.DateTime)
+            );
         }
 
         if (IsDunnageChecked && IsDunnageEnabled)
@@ -307,7 +341,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Dunnage",
                 "Detailed dunnage activity captured for the selected date range.",
-                () => _reportingService.GetDunnageHistoryAsync(StartDate.DateTime, EndDate.DateTime));
+                () => _reportingService.GetDunnageHistoryAsync(StartDate.DateTime, EndDate.DateTime)
+            );
         }
 
         if (IsVolvoChecked && IsVolvoEnabled)
@@ -315,13 +350,15 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Volvo",
                 "Detailed Volvo activity captured for the selected date range.",
-                () => _reportingService.GetVolvoHistoryAsync(StartDate.DateTime, EndDate.DateTime));
+                () => _reportingService.GetVolvoHistoryAsync(StartDate.DateTime, EndDate.DateTime)
+            );
         }
     }
 
     private void BuildPreviewState(
         IEnumerable<Model_ReportSection> sections,
-        IEnumerable<Model_ReportSummaryTable> summaryTables)
+        IEnumerable<Model_ReportSummaryTable> summaryTables
+    )
     {
         ClearPreviewCardSubscriptions();
         PreviewSections.Clear();
@@ -331,18 +368,24 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
         var sectionList = sections.Where(section => section.Rows.Count > 0).ToList();
         var summaryTableList = summaryTables.ToList();
-        var summaryLookup = summaryTableList.ToDictionary(table => table.ModuleName, StringComparer.OrdinalIgnoreCase);
+        var summaryLookup = summaryTableList.ToDictionary(
+            table => table.ModuleName,
+            StringComparer.OrdinalIgnoreCase
+        );
 
         foreach (var section in sectionList)
         {
             PreviewSections.Add(section);
 
-            var summaryTable = summaryLookup.TryGetValue(section.ModuleName, out var matchedSummaryTable)
+            var summaryTable = summaryLookup.TryGetValue(
+                section.ModuleName,
+                out var matchedSummaryTable
+            )
                 ? matchedSummaryTable
                 : new Model_ReportSummaryTable
                 {
                     ModuleName = section.ModuleName,
-                    Title = $"{section.ModuleName} Summary"
+                    Title = $"{section.ModuleName} Summary",
                 };
 
             PreviewModuleCards.Add(CreatePreviewModuleCard(section, summaryTable));
@@ -368,9 +411,12 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private Model_ReportingPreviewModuleCard CreatePreviewModuleCard(
         Model_ReportSection section,
-        Model_ReportSummaryTable summaryTable)
+        Model_ReportSummaryTable summaryTable
+    )
     {
-        var (accentBackgroundBrush, accentForegroundBrush) = GetModulePreviewBrushes(section.ModuleName);
+        var (accentBackgroundBrush, accentForegroundBrush) = GetModulePreviewBrushes(
+            section.ModuleName
+        );
         var previewModuleCard = new Model_ReportingPreviewModuleCard
         {
             ModuleName = section.ModuleName,
@@ -380,7 +426,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             AccentForegroundBrush = accentForegroundBrush,
             SummaryTable = summaryTable,
             DetailSection = section,
-            IsIncluded = GetModuleCheckedState(section.ModuleName)
+            IsIncluded = GetModuleCheckedState(section.ModuleName),
         };
 
         previewModuleCard.PropertyChanged += OnPreviewModuleCardPropertyChanged;
@@ -423,14 +469,29 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
     }
 
-    private static (SolidColorBrush AccentBackgroundBrush, SolidColorBrush AccentForegroundBrush) GetModulePreviewBrushes(string moduleName)
+    private static (
+        SolidColorBrush AccentBackgroundBrush,
+        SolidColorBrush AccentForegroundBrush
+    ) GetModulePreviewBrushes(string moduleName)
     {
         return moduleName switch
         {
-            "Receiving" => (new SolidColorBrush(ColorHelper.FromArgb(255, 11, 97, 87)), new SolidColorBrush(Colors.White)),
-            "Dunnage" => (new SolidColorBrush(ColorHelper.FromArgb(255, 138, 94, 0)), new SolidColorBrush(Colors.White)),
-            "Volvo" => (new SolidColorBrush(ColorHelper.FromArgb(255, 30, 79, 122)), new SolidColorBrush(Colors.White)),
-            _ => (new SolidColorBrush(ColorHelper.FromArgb(255, 74, 85, 104)), new SolidColorBrush(Colors.White))
+            "Receiving" => (
+                new SolidColorBrush(ColorHelper.FromArgb(255, 11, 97, 87)),
+                new SolidColorBrush(Colors.White)
+            ),
+            "Dunnage" => (
+                new SolidColorBrush(ColorHelper.FromArgb(255, 138, 94, 0)),
+                new SolidColorBrush(Colors.White)
+            ),
+            "Volvo" => (
+                new SolidColorBrush(ColorHelper.FromArgb(255, 30, 79, 122)),
+                new SolidColorBrush(Colors.White)
+            ),
+            _ => (
+                new SolidColorBrush(ColorHelper.FromArgb(255, 74, 85, 104)),
+                new SolidColorBrush(Colors.White)
+            ),
         };
     }
 
@@ -441,7 +502,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             "Receiving" => IsReceivingChecked,
             "Dunnage" => IsDunnageChecked,
             "Volvo" => IsVolvoChecked,
-            _ => true
+            _ => true,
         };
     }
 
@@ -482,7 +543,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             return;
         }
 
-        var previewModuleCard = PreviewModuleCards.FirstOrDefault(card => card.ModuleName.Equals(moduleName, StringComparison.OrdinalIgnoreCase));
+        var previewModuleCard = PreviewModuleCards.FirstOrDefault(card =>
+            card.ModuleName.Equals(moduleName, StringComparison.OrdinalIgnoreCase)
+        );
         if (previewModuleCard is null || previewModuleCard.IsIncluded == isIncluded)
         {
             return;
@@ -534,7 +597,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     {
         ResetAvailabilityState();
         ClearPreviewState();
-        ShowStatus("Date range changed. Check availability to refresh the report options.", InfoBarSeverity.Informational);
+        ShowStatus(
+            "Date range changed. Check availability to refresh the report options.",
+            InfoBarSeverity.Informational
+        );
     }
 
     private void NotifyActionCommands()
@@ -589,5 +655,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private sealed record SelectedModuleRequest(
         string ModuleName,
         string Description,
-        Func<Task<Model_Dao_Result<List<Model_ReportRow>>>> FetchDataAsync);
+        Func<Task<Model_Dao_Result<List<Model_ReportRow>>>> FetchDataAsync
+    );
 }

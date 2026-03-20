@@ -6,5 +6,5 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Enums;
 public enum Enum_SettingsScope
 {
     System = 0,
-    User = 1
+    User = 1,
 }

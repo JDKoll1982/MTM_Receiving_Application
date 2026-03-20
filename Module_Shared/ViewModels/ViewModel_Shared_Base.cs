@@ -33,7 +33,8 @@ public abstract partial class ViewModel_Shared_Base : ObservableObject
     protected ViewModel_Shared_Base(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
     {
         ArgumentNullException.ThrowIfNull(errorHandler);
         ArgumentNullException.ThrowIfNull(logger);
@@ -55,4 +56,3 @@ public abstract partial class ViewModel_Shared_Base : ObservableObject
         IsStatusOpen = true;
     }
 }
-

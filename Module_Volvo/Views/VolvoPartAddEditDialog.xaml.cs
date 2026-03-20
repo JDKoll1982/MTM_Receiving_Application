@@ -62,7 +62,7 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
         {
             PartNumber = PartNumberTextBox.Text.Trim().ToUpperInvariant(),
             QuantityPerSkid = (int)QuantityPerSkidNumberBox.Value,
-            IsActive = true
+            IsActive = true,
         };
     }
 }

@@ -52,7 +52,10 @@ public partial class Model_DunnageLoad : ObservableObject
     {
         get
         {
-            if (!string.IsNullOrEmpty(TypeIcon) && Enum.TryParse<MaterialIconKind>(TypeIcon, true, out var kind))
+            if (
+                !string.IsNullOrEmpty(TypeIcon)
+                && Enum.TryParse<MaterialIconKind>(TypeIcon, true, out var kind)
+            )
             {
                 return kind;
             }

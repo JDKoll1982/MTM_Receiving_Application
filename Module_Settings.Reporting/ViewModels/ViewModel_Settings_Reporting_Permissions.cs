@@ -8,7 +8,9 @@ public sealed partial class ViewModel_Settings_Reporting_Permissions : ViewModel
     public ViewModel_Settings_Reporting_Permissions(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         Title = "Reporting Permissions";
     }

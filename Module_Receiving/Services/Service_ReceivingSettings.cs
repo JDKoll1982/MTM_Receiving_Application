@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services;
 
@@ -29,7 +29,11 @@ public class Service_ReceivingSettings : IService_ReceivingSettings
         }
 
         var result = await _settings.GetSettingAsync(Category, key, userId);
-        if (result.IsSuccess && result.Data != null && !string.IsNullOrWhiteSpace(result.Data.Value))
+        if (
+            result.IsSuccess
+            && result.Data != null
+            && !string.IsNullOrWhiteSpace(result.Data.Value)
+        )
         {
             return result.Data.Value;
         }
@@ -51,7 +55,14 @@ public class Service_ReceivingSettings : IService_ReceivingSettings
     public async Task<int> GetIntAsync(string key, int? userId = null)
     {
         var value = await GetStringAsync(key, userId);
-        return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
+        return int.TryParse(
+            value,
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out var parsed
+        )
+            ? parsed
+            : 0;
     }
 
     public async Task<string> FormatAsync(string key, object? arg0, int? userId = null)
@@ -60,7 +71,12 @@ public class Service_ReceivingSettings : IService_ReceivingSettings
         return string.Format(CultureInfo.CurrentCulture, template, arg0);
     }
 
-    public async Task<string> FormatAsync(string key, object? arg0, object? arg1, int? userId = null)
+    public async Task<string> FormatAsync(
+        string key,
+        object? arg0,
+        object? arg1,
+        int? userId = null
+    )
     {
         var template = await GetStringAsync(key, userId);
         return string.Format(CultureInfo.CurrentCulture, template, arg0, arg1);

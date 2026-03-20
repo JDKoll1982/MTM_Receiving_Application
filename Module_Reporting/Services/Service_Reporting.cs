@@ -6,13 +6,13 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
-using MTM_Receiving_Application.Module_Reporting.Data;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Reporting.Contracts;
+using MTM_Receiving_Application.Module_Reporting.Data;
 
 namespace MTM_Receiving_Application.Module_Reporting.Services;
 
@@ -34,18 +34,23 @@ public class Service_Reporting : IService_Reporting
     public Service_Reporting(
         Dao_Reporting dao,
         IService_LoggingUtility logger,
-        IService_ReceivingSettings receivingSettings)
+        IService_ReceivingSettings receivingSettings
+    )
     {
         _dao = dao ?? throw new ArgumentNullException(nameof(dao));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _receivingSettings = receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
+        _receivingSettings =
+            receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
-        _logger.LogInfo($"Retrieving Receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo(
+            $"Retrieving Receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
+        );
         var result = await _dao.GetReceivingHistoryAsync(startDate, endDate);
 
         if (result.IsSuccess && result.Data != null)
@@ -61,25 +66,34 @@ public class Service_Reporting : IService_Reporting
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetDunnageHistoryAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
-        _logger.LogInfo($"Retrieving Dunnage history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo(
+            $"Retrieving Dunnage history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
+        );
         return await _dao.GetDunnageHistoryAsync(startDate, endDate);
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
-        _logger.LogInfo($"Retrieving Volvo history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo(
+            $"Retrieving Volvo history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
+        );
         return await _dao.GetVolvoHistoryAsync(startDate, endDate);
     }
 
     public async Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
-        _logger.LogInfo($"Checking module availability from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo(
+            $"Checking module availability from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
+        );
         return await _dao.CheckAvailabilityAsync(startDate, endDate);
     }
 
@@ -124,7 +138,8 @@ public class Service_Reporting : IService_Reporting
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportSummaryTable>>> BuildSummaryTablesAsync(
-        List<Model_ReportSection> sections)
+        List<Model_ReportSection> sections
+    )
     {
         try
         {
@@ -142,14 +157,18 @@ public class Service_Reporting : IService_Reporting
         catch (Exception ex)
         {
             _logger.LogError($"Error building summary tables: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_ReportSummaryTable>>($"Failed to build summary tables: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReportSummaryTable>>(
+                $"Failed to build summary tables: {ex.Message}",
+                ex
+            );
         }
     }
 
     public async Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatForEmailAsync(
         List<Model_ReportSection> sections,
         List<Model_ReportSummaryTable> summaryTables,
-        string summaryTitle)
+        string summaryTitle
+    )
     {
         try
         {
@@ -157,26 +176,38 @@ public class Service_Reporting : IService_Reporting
 
             if (sections.Count == 0)
             {
-                return Model_Dao_Result_Factory.Success(new Model_FormattedReportDocument
-                {
-                    HtmlFragment = "<p>No data to display</p>",
-                    PlainText = "No data to display"
-                });
+                return Model_Dao_Result_Factory.Success(
+                    new Model_FormattedReportDocument
+                    {
+                        HtmlFragment = "<p>No data to display</p>",
+                        PlainText = "No data to display",
+                    }
+                );
             }
 
             var html = new StringBuilder();
             var plainText = new StringBuilder();
 
-            html.AppendLine("<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
+            html.AppendLine(
+                "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
+            );
 
-            html.AppendLine($"<div style='font-size: 16pt; font-weight: 700; text-align: center; margin-bottom: 8px;'>{System.Net.WebUtility.HtmlEncode(summaryTitle)}</div>");
+            html.AppendLine(
+                $"<div style='font-size: 16pt; font-weight: 700; text-align: center; margin-bottom: 8px;'>{System.Net.WebUtility.HtmlEncode(summaryTitle)}</div>"
+            );
             plainText.AppendLine(summaryTitle);
 
-            var summaryLookup = summaryTables.ToDictionary(table => table.ModuleName, StringComparer.OrdinalIgnoreCase);
+            var summaryLookup = summaryTables.ToDictionary(
+                table => table.ModuleName,
+                StringComparer.OrdinalIgnoreCase
+            );
 
             foreach (var section in sections)
             {
-                var summaryTable = summaryLookup.TryGetValue(section.ModuleName, out var matchedSummaryTable)
+                var summaryTable = summaryLookup.TryGetValue(
+                    section.ModuleName,
+                    out var matchedSummaryTable
+                )
                     ? matchedSummaryTable
                     : null;
                 var (accentBackground, accentForeground) = GetModuleAccent(section.ModuleName);
@@ -187,17 +218,26 @@ public class Service_Reporting : IService_Reporting
                     CardBackground,
                     CardBorder,
                     accentBackground,
-                    accentForeground);
+                    accentForeground
+                );
 
                 plainText.AppendLine();
-                plainText.AppendLine($"{section.ModuleName} Report for {GetDateRangeText(section.Title)}");
+                plainText.AppendLine(
+                    $"{section.ModuleName} Report for {GetDateRangeText(section.Title)}"
+                );
 
                 if (summaryTable is not null)
                 {
-                    html.AppendLine("<div style='font-size: 11pt; font-weight: 700; color: #1f2937; margin: 0 0 8px 0;'>Summary</div>");
-                    html.AppendLine("<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 6px 0 16px 0;'>");
+                    html.AppendLine(
+                        "<div style='font-size: 11pt; font-weight: 700; color: #1f2937; margin: 0 0 8px 0;'>Summary</div>"
+                    );
+                    html.AppendLine(
+                        "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 6px 0 16px 0;'>"
+                    );
                     html.AppendLine("<thead>");
-                    html.AppendLine($"<tr style='background-color: {accentBackground}; color: {accentForeground}; font-weight: 700;'>");
+                    html.AppendLine(
+                        $"<tr style='background-color: {accentBackground}; color: {accentForeground}; font-weight: 700;'>"
+                    );
 
                     foreach (var column in summaryTable.Columns)
                     {
@@ -209,7 +249,9 @@ public class Service_Reporting : IService_Reporting
                     html.AppendLine("<tbody>");
 
                     plainText.AppendLine("Summary");
-                    plainText.AppendJoin('\t', summaryTable.Columns.Select(column => column.Header)).AppendLine();
+                    plainText
+                        .AppendJoin('\t', summaryTable.Columns.Select(column => column.Header))
+                        .AppendLine();
 
                     foreach (var row in summaryTable.Rows)
                     {
@@ -221,24 +263,34 @@ public class Service_Reporting : IService_Reporting
                         }
 
                         html.AppendLine("</tr>");
-                        plainText.AppendJoin('\t', row.Cells.Select(cell => cell.Value)).AppendLine();
+                        plainText
+                            .AppendJoin('\t', row.Cells.Select(cell => cell.Value))
+                            .AppendLine();
                     }
 
                     html.AppendLine("</tbody>");
                     html.AppendLine("</table>");
                 }
 
-                html.AppendLine("<div style='font-size: 11pt; font-weight: 700; color: #1f2937; margin: 0 0 8px 0;'>Detailed Activity</div>");
+                html.AppendLine(
+                    "<div style='font-size: 11pt; font-weight: 700; color: #1f2937; margin: 0 0 8px 0;'>Detailed Activity</div>"
+                );
 
                 if (!string.IsNullOrWhiteSpace(section.Description))
                 {
-                    html.AppendLine($"<div style='font-size: 10pt; color: #445566; text-align: center; margin: 0 0 12px 0;'>{System.Net.WebUtility.HtmlEncode(section.Description)}</div>");
+                    html.AppendLine(
+                        $"<div style='font-size: 10pt; color: #445566; text-align: center; margin: 0 0 12px 0;'>{System.Net.WebUtility.HtmlEncode(section.Description)}</div>"
+                    );
                     plainText.AppendLine(section.Description);
                 }
 
-                html.AppendLine("<table style='border-collapse: collapse; width: 100%; table-layout: fixed; margin: 6px 0 10px 0;'>");
+                html.AppendLine(
+                    "<table style='border-collapse: collapse; width: 100%; table-layout: fixed; margin: 6px 0 10px 0;'>"
+                );
                 html.AppendLine("<thead>");
-                html.AppendLine($"<tr style='background-color: {accentBackground}; color: {accentForeground}; font-weight: 700;'>");
+                html.AppendLine(
+                    $"<tr style='background-color: {accentBackground}; color: {accentForeground}; font-weight: 700;'>"
+                );
                 AppendHeaderCell(html, "Quantity", "14%");
                 AppendHeaderCell(html, "Item", "22%");
                 AppendHeaderCell(html, "Reference", "18%");
@@ -251,7 +303,9 @@ public class Service_Reporting : IService_Reporting
                 html.AppendLine("<tbody>");
 
                 plainText.AppendLine("Detailed Activity");
-                plainText.AppendLine("Quantity\tItem\tReference\tEmployee\tDate\tLocation\tPackages/Loads");
+                plainText.AppendLine(
+                    "Quantity\tItem\tReference\tEmployee\tDate\tLocation\tPackages/Loads"
+                );
 
                 foreach (var row in section.Rows)
                 {
@@ -260,12 +314,17 @@ public class Service_Reporting : IService_Reporting
                     AppendBodyCell(html, row.DisplayPartOrDunnage);
                     AppendBodyCell(html, row.DisplayPo);
                     AppendBodyCell(html, row.EmployeeNumber);
-                    AppendBodyCell(html, row.CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture));
+                    AppendBodyCell(
+                        html,
+                        row.CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture)
+                    );
                     AppendBodyCell(html, row.DisplayLocation);
                     AppendBodyCell(html, row.DisplayLoadsOrSkids, "right");
                     html.AppendLine("</tr>");
 
-                    plainText.AppendLine($"{row.DisplayQuantity}\t{row.DisplayPartOrDunnage}\t{row.DisplayPo}\t{row.EmployeeNumber}\t{row.CreatedDate:M/d/yyyy}\t{row.DisplayLocation}\t{row.DisplayLoadsOrSkids}");
+                    plainText.AppendLine(
+                        $"{row.DisplayQuantity}\t{row.DisplayPartOrDunnage}\t{row.DisplayPo}\t{row.EmployeeNumber}\t{row.CreatedDate:M/d/yyyy}\t{row.DisplayLocation}\t{row.DisplayLoadsOrSkids}"
+                    );
                 }
 
                 html.AppendLine("</tbody>");
@@ -275,22 +334,29 @@ public class Service_Reporting : IService_Reporting
 
             html.AppendLine("</div>");
 
-            return Model_Dao_Result_Factory.Success(new Model_FormattedReportDocument
-            {
-                HtmlFragment = html.ToString(),
-                PlainText = plainText.ToString()
-            });
+            return Model_Dao_Result_Factory.Success(
+                new Model_FormattedReportDocument
+                {
+                    HtmlFragment = html.ToString(),
+                    PlainText = plainText.ToString(),
+                }
+            );
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error formatting email: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>($"Email formatting failed: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>(
+                $"Email formatting failed: {ex.Message}",
+                ex
+            );
         }
     }
 
     private async Task<List<Model_PartNumberPrefixRule>> GetEnabledPrefixRulesAsync()
     {
-        var rulesJson = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.PartNumberPadding.RulesJson);
+        var rulesJson = await _receivingSettings.GetStringAsync(
+            ReceivingSettingsKeys.PartNumberPadding.RulesJson
+        );
         if (string.IsNullOrWhiteSpace(rulesJson))
         {
             return [];
@@ -298,50 +364,63 @@ public class Service_Reporting : IService_Reporting
 
         try
         {
-            return JsonSerializer.Deserialize<List<Model_PartNumberPrefixRule>>(rulesJson)?
-                .Where(rule => rule.IsEnabled && !string.IsNullOrWhiteSpace(rule.Prefix))
-                .ToList() ?? [];
+            return JsonSerializer
+                    .Deserialize<List<Model_PartNumberPrefixRule>>(rulesJson)
+                    ?.Where(rule => rule.IsEnabled && !string.IsNullOrWhiteSpace(rule.Prefix))
+                    .ToList()
+                ?? [];
         }
         catch (JsonException ex)
         {
-            _logger.LogError($"Error parsing prefix rules for reporting summaries: {ex.Message}", ex);
+            _logger.LogError(
+                $"Error parsing prefix rules for reporting summaries: {ex.Message}",
+                ex
+            );
             return [];
         }
     }
 
     private static Model_ReportSummaryTable BuildSummaryTable(
         Model_ReportSection section,
-        IReadOnlyList<Model_PartNumberPrefixRule> configuredRules)
+        IReadOnlyList<Model_PartNumberPrefixRule> configuredRules
+    )
     {
         return section.ModuleName switch
         {
             "Receiving" => BuildReceivingSummaryTable(section, configuredRules),
             "Dunnage" => BuildDunnageSummaryTable(section),
             "Volvo" => BuildVolvoSummaryTable(section),
-            _ => BuildGenericSummaryTable(section)
+            _ => BuildGenericSummaryTable(section),
         };
     }
 
     private static Model_ReportSummaryTable BuildReceivingSummaryTable(
         Model_ReportSection section,
-        IReadOnlyList<Model_PartNumberPrefixRule> configuredRules)
+        IReadOnlyList<Model_PartNumberPrefixRule> configuredRules
+    )
     {
         var rows = section.Rows.ToList();
         var activeRules = configuredRules
-            .Where(rule => rows.Any(row => ReferenceEquals(FindMatchingRule(row, configuredRules), rule)))
+            .Where(rule =>
+                rows.Any(row => ReferenceEquals(FindMatchingRule(row, configuredRules), rule))
+            )
             .ToList();
 
-        var includeOtherColumns = rows.Any(row => FindMatchingRule(row, configuredRules) is null) || activeRules.Count == 0;
+        var includeOtherColumns =
+            rows.Any(row => FindMatchingRule(row, configuredRules) is null)
+            || activeRules.Count == 0;
 
         var columns = new List<Model_ReportSummaryColumn>
         {
-            new() { Header = "Date", Width = 120d }
+            new() { Header = "Date", Width = 120d },
         };
 
         foreach (var rule in activeRules)
         {
             var label = GetRuleLabel(rule);
-            columns.Add(new Model_ReportSummaryColumn { Header = $"{label} (Qty/Lbs)", Width = 132d });
+            columns.Add(
+                new Model_ReportSummaryColumn { Header = $"{label} (Qty/Lbs)", Width = 132d }
+            );
             columns.Add(new Model_ReportSummaryColumn { Header = $"{label} Count", Width = 110d });
         }
 
@@ -353,28 +432,47 @@ public class Service_Reporting : IService_Reporting
 
         columns.Add(new Model_ReportSummaryColumn { Header = "Total Rows", Width = 120d });
 
-        var summaryRows = rows
-            .GroupBy(row => row.CreatedDate.Date)
+        var summaryRows = rows.GroupBy(row => row.CreatedDate.Date)
             .OrderBy(group => group.Key)
-            .Select(group => CreateSummaryTableRow(group.Key.ToString("M/d/yyyy", CultureInfo.InvariantCulture), group.ToList(), activeRules, configuredRules, includeOtherColumns, columns))
+            .Select(group =>
+                CreateSummaryTableRow(
+                    group.Key.ToString("M/d/yyyy", CultureInfo.InvariantCulture),
+                    group.ToList(),
+                    activeRules,
+                    configuredRules,
+                    includeOtherColumns,
+                    columns
+                )
+            )
             .ToList();
 
-        summaryRows.Add(CreateSummaryTableRow("GRAND TOTAL", rows, activeRules, configuredRules, includeOtherColumns, columns, isGrandTotal: true));
+        summaryRows.Add(
+            CreateSummaryTableRow(
+                "GRAND TOTAL",
+                rows,
+                activeRules,
+                configuredRules,
+                includeOtherColumns,
+                columns,
+                isGrandTotal: true
+            )
+        );
 
         return new Model_ReportSummaryTable
         {
             ModuleName = section.ModuleName,
-            Title = $"{section.ModuleName} Summary by Prefix for {section.Title.Replace(section.ModuleName + " Activity for ", string.Empty, StringComparison.OrdinalIgnoreCase)}",
+            Title =
+                $"{section.ModuleName} Summary by Prefix for {section.Title.Replace(section.ModuleName + " Activity for ", string.Empty, StringComparison.OrdinalIgnoreCase)}",
             Columns = [.. columns],
             Rows = [.. summaryRows],
-            TableWidth = columns.Sum(column => column.Width)
+            TableWidth = columns.Sum(column => column.Width),
         };
     }
 
     private static Model_ReportSummaryTable BuildDunnageSummaryTable(Model_ReportSection section)
     {
-        var categories = section.Rows
-            .Select(row => NormalizeDunnageType(row.DunnageType))
+        var categories = section
+            .Rows.Select(row => NormalizeDunnageType(row.DunnageType))
             .Where(label => !string.IsNullOrWhiteSpace(label))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(label => label, StringComparer.OrdinalIgnoreCase)
@@ -385,7 +483,8 @@ public class Service_Reporting : IService_Reporting
             categories,
             row => NormalizeDunnageType(row.DunnageType),
             amountHeaderSuffix: "Qty",
-            titlePrefix: "Summary by Type");
+            titlePrefix: "Summary by Type"
+        );
     }
 
     private static Model_ReportSummaryTable BuildVolvoSummaryTable(Model_ReportSection section)
@@ -396,27 +495,32 @@ public class Service_Reporting : IService_Reporting
             new() { Header = "Date", Width = 150d },
             new() { Header = "Unique Part IDs", Width = 170d },
             new() { Header = "Total Skids", Width = 150d },
-            new() { Header = "Total Rows", Width = 130d }
+            new() { Header = "Total Rows", Width = 130d },
         };
 
-        var summaryRows = rows
-            .GroupBy(row => row.CreatedDate.Date)
+        var summaryRows = rows.GroupBy(row => row.CreatedDate.Date)
             .OrderBy(group => group.Key)
-            .Select(group => CreateVolvoSummaryTableRow(
-                group.Key.ToString("M/d/yyyy", CultureInfo.InvariantCulture),
-                group.ToList(),
-                columns))
+            .Select(group =>
+                CreateVolvoSummaryTableRow(
+                    group.Key.ToString("M/d/yyyy", CultureInfo.InvariantCulture),
+                    group.ToList(),
+                    columns
+                )
+            )
             .ToList();
 
-        summaryRows.Add(CreateVolvoSummaryTableRow("GRAND TOTAL", rows, columns, isGrandTotal: true));
+        summaryRows.Add(
+            CreateVolvoSummaryTableRow("GRAND TOTAL", rows, columns, isGrandTotal: true)
+        );
 
         return new Model_ReportSummaryTable
         {
             ModuleName = section.ModuleName,
-            Title = $"{section.ModuleName} Summary for {section.Title.Replace(section.ModuleName + " Activity for ", string.Empty, StringComparison.OrdinalIgnoreCase)}",
+            Title =
+                $"{section.ModuleName} Summary for {section.Title.Replace(section.ModuleName + " Activity for ", string.Empty, StringComparison.OrdinalIgnoreCase)}",
             Columns = [.. columns],
             Rows = [.. summaryRows],
-            TableWidth = columns.Sum(column => column.Width)
+            TableWidth = columns.Sum(column => column.Width),
         };
     }
 
@@ -424,10 +528,10 @@ public class Service_Reporting : IService_Reporting
         string label,
         IReadOnlyCollection<Model_ReportRow> rows,
         IReadOnlyList<Model_ReportSummaryColumn> columns,
-        bool isGrandTotal = false)
+        bool isGrandTotal = false
+    )
     {
-        var uniquePartIds = rows
-            .Select(row => row.PartNumber?.Trim())
+        var uniquePartIds = rows.Select(row => row.PartNumber?.Trim())
             .Where(partNumber => !string.IsNullOrWhiteSpace(partNumber))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Count();
@@ -439,11 +543,23 @@ public class Service_Reporting : IService_Reporting
             Cells =
             [
                 new Model_ReportSummaryTableCell { Value = label, Width = columns[0].Width },
-                new Model_ReportSummaryTableCell { Value = FormatInt(uniquePartIds), Width = columns[1].Width },
-                new Model_ReportSummaryTableCell { Value = FormatInt(totalSkids), Width = columns[2].Width },
-                new Model_ReportSummaryTableCell { Value = FormatInt(rows.Count), Width = columns[3].Width }
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(uniquePartIds),
+                    Width = columns[1].Width,
+                },
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(totalSkids),
+                    Width = columns[2].Width,
+                },
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(rows.Count),
+                    Width = columns[3].Width,
+                },
             ],
-            IsGrandTotal = isGrandTotal
+            IsGrandTotal = isGrandTotal,
         };
     }
 
@@ -454,7 +570,8 @@ public class Service_Reporting : IService_Reporting
             [],
             _ => string.Empty,
             amountHeaderSuffix: "Qty/Lbs",
-            titlePrefix: "Summary");
+            titlePrefix: "Summary"
+        );
     }
 
     private static Model_ReportSummaryTable BuildCategorySummaryTable(
@@ -462,58 +579,81 @@ public class Service_Reporting : IService_Reporting
         IReadOnlyList<string> categories,
         Func<Model_ReportRow, string> categorySelector,
         string amountHeaderSuffix,
-        string titlePrefix)
+        string titlePrefix
+    )
     {
         var rows = section.Rows.ToList();
-        var includeOtherColumns = rows.Any(row => string.IsNullOrWhiteSpace(categorySelector(row))) || categories.Count == 0;
+        var includeOtherColumns =
+            rows.Any(row => string.IsNullOrWhiteSpace(categorySelector(row)))
+            || categories.Count == 0;
 
         var columns = new List<Model_ReportSummaryColumn>
         {
-            new() { Header = "Date", Width = 120d }
+            new() { Header = "Date", Width = 120d },
         };
 
         foreach (var category in categories)
         {
-            columns.Add(new Model_ReportSummaryColumn { Header = $"{category} ({amountHeaderSuffix})", Width = 132d });
-            columns.Add(new Model_ReportSummaryColumn { Header = $"{category} Count", Width = 110d });
+            columns.Add(
+                new Model_ReportSummaryColumn
+                {
+                    Header = $"{category} ({amountHeaderSuffix})",
+                    Width = 132d,
+                }
+            );
+            columns.Add(
+                new Model_ReportSummaryColumn { Header = $"{category} Count", Width = 110d }
+            );
         }
 
         if (includeOtherColumns)
         {
-            columns.Add(new Model_ReportSummaryColumn { Header = $"Other ({amountHeaderSuffix})", Width = 132d });
+            columns.Add(
+                new Model_ReportSummaryColumn
+                {
+                    Header = $"Other ({amountHeaderSuffix})",
+                    Width = 132d,
+                }
+            );
             columns.Add(new Model_ReportSummaryColumn { Header = "Other Count", Width = 110d });
         }
 
         columns.Add(new Model_ReportSummaryColumn { Header = "Total Rows", Width = 120d });
 
-        var summaryRows = rows
-            .GroupBy(row => row.CreatedDate.Date)
+        var summaryRows = rows.GroupBy(row => row.CreatedDate.Date)
             .OrderBy(group => group.Key)
-            .Select(group => CreateCategorySummaryTableRow(
-                group.Key.ToString("M/d/yyyy", CultureInfo.InvariantCulture),
-                group.ToList(),
+            .Select(group =>
+                CreateCategorySummaryTableRow(
+                    group.Key.ToString("M/d/yyyy", CultureInfo.InvariantCulture),
+                    group.ToList(),
+                    categories,
+                    categorySelector,
+                    includeOtherColumns,
+                    columns
+                )
+            )
+            .ToList();
+
+        summaryRows.Add(
+            CreateCategorySummaryTableRow(
+                "GRAND TOTAL",
+                rows,
                 categories,
                 categorySelector,
                 includeOtherColumns,
-                columns))
-            .ToList();
-
-        summaryRows.Add(CreateCategorySummaryTableRow(
-            "GRAND TOTAL",
-            rows,
-            categories,
-            categorySelector,
-            includeOtherColumns,
-            columns,
-            isGrandTotal: true));
+                columns,
+                isGrandTotal: true
+            )
+        );
 
         return new Model_ReportSummaryTable
         {
             ModuleName = section.ModuleName,
-            Title = $"{section.ModuleName} {titlePrefix} for {section.Title.Replace(section.ModuleName + " Activity for ", string.Empty, StringComparison.OrdinalIgnoreCase)}",
+            Title =
+                $"{section.ModuleName} {titlePrefix} for {section.Title.Replace(section.ModuleName + " Activity for ", string.Empty, StringComparison.OrdinalIgnoreCase)}",
             Columns = [.. columns],
             Rows = [.. summaryRows],
-            TableWidth = columns.Sum(column => column.Width)
+            TableWidth = columns.Sum(column => column.Width),
         };
     }
 
@@ -524,35 +664,66 @@ public class Service_Reporting : IService_Reporting
         IReadOnlyList<Model_PartNumberPrefixRule> configuredRules,
         bool includeOtherColumns,
         IReadOnlyList<Model_ReportSummaryColumn> columns,
-        bool isGrandTotal = false)
+        bool isGrandTotal = false
+    )
     {
         var cells = new List<Model_ReportSummaryTableCell>
         {
-            new() { Value = label, Width = columns[0].Width }
+            new() { Value = label, Width = columns[0].Width },
         };
 
         var columnIndex = 1;
         foreach (var rule in activeRules)
         {
-            var matchedRows = rows.Where(row => ReferenceEquals(FindMatchingRule(row, configuredRules), rule)).ToList();
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatDecimal(matchedRows.Sum(GetSummaryValue)), Width = columns[columnIndex++].Width });
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatInt(matchedRows.Count), Width = columns[columnIndex++].Width });
+            var matchedRows = rows.Where(row =>
+                    ReferenceEquals(FindMatchingRule(row, configuredRules), rule)
+                )
+                .ToList();
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatDecimal(matchedRows.Sum(GetSummaryValue)),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(matchedRows.Count),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
         }
 
         if (includeOtherColumns)
         {
-            var otherRows = rows.Where(row => FindMatchingRule(row, configuredRules) is null).ToList();
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatDecimal(otherRows.Sum(GetSummaryValue)), Width = columns[columnIndex++].Width });
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatInt(otherRows.Count), Width = columns[columnIndex++].Width });
+            var otherRows = rows.Where(row => FindMatchingRule(row, configuredRules) is null)
+                .ToList();
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatDecimal(otherRows.Sum(GetSummaryValue)),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(otherRows.Count),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
         }
 
-        cells.Add(new Model_ReportSummaryTableCell { Value = FormatInt(rows.Count), Width = columns[columnIndex].Width });
+        cells.Add(
+            new Model_ReportSummaryTableCell
+            {
+                Value = FormatInt(rows.Count),
+                Width = columns[columnIndex].Width,
+            }
+        );
 
-        return new Model_ReportSummaryTableRow
-        {
-            Cells = [.. cells],
-            IsGrandTotal = isGrandTotal
-        };
+        return new Model_ReportSummaryTableRow { Cells = [.. cells], IsGrandTotal = isGrandTotal };
     }
 
     private static Model_ReportSummaryTableRow CreateCategorySummaryTableRow(
@@ -562,43 +733,73 @@ public class Service_Reporting : IService_Reporting
         Func<Model_ReportRow, string> categorySelector,
         bool includeOtherColumns,
         IReadOnlyList<Model_ReportSummaryColumn> columns,
-        bool isGrandTotal = false)
+        bool isGrandTotal = false
+    )
     {
         var cells = new List<Model_ReportSummaryTableCell>
         {
-            new() { Value = label, Width = columns[0].Width }
+            new() { Value = label, Width = columns[0].Width },
         };
 
         var columnIndex = 1;
         foreach (var category in categories)
         {
-            var matchedRows = rows
-                .Where(row => categorySelector(row).Equals(category, StringComparison.OrdinalIgnoreCase))
+            var matchedRows = rows.Where(row =>
+                    categorySelector(row).Equals(category, StringComparison.OrdinalIgnoreCase)
+                )
                 .ToList();
 
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatDecimal(matchedRows.Sum(GetSummaryValue)), Width = columns[columnIndex++].Width });
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatInt(matchedRows.Count), Width = columns[columnIndex++].Width });
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatDecimal(matchedRows.Sum(GetSummaryValue)),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(matchedRows.Count),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
         }
 
         if (includeOtherColumns)
         {
-            var otherRows = rows.Where(row => string.IsNullOrWhiteSpace(categorySelector(row))).ToList();
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatDecimal(otherRows.Sum(GetSummaryValue)), Width = columns[columnIndex++].Width });
-            cells.Add(new Model_ReportSummaryTableCell { Value = FormatInt(otherRows.Count), Width = columns[columnIndex++].Width });
+            var otherRows = rows.Where(row => string.IsNullOrWhiteSpace(categorySelector(row)))
+                .ToList();
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatDecimal(otherRows.Sum(GetSummaryValue)),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(otherRows.Count),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
         }
 
-        cells.Add(new Model_ReportSummaryTableCell { Value = FormatInt(rows.Count), Width = columns[columnIndex].Width });
+        cells.Add(
+            new Model_ReportSummaryTableCell
+            {
+                Value = FormatInt(rows.Count),
+                Width = columns[columnIndex].Width,
+            }
+        );
 
-        return new Model_ReportSummaryTableRow
-        {
-            Cells = [.. cells],
-            IsGrandTotal = isGrandTotal
-        };
+        return new Model_ReportSummaryTableRow { Cells = [.. cells], IsGrandTotal = isGrandTotal };
     }
 
     private static Model_PartNumberPrefixRule? FindMatchingRule(
         Model_ReportRow row,
-        IReadOnlyList<Model_PartNumberPrefixRule> rules)
+        IReadOnlyList<Model_PartNumberPrefixRule> rules
+    )
     {
         if (string.IsNullOrWhiteSpace(row.PartNumber))
         {
@@ -606,7 +807,9 @@ public class Service_Reporting : IService_Reporting
         }
 
         var partNumber = row.PartNumber.Trim();
-        return rules.FirstOrDefault(rule => partNumber.StartsWith(rule.Prefix, StringComparison.OrdinalIgnoreCase));
+        return rules.FirstOrDefault(rule =>
+            partNumber.StartsWith(rule.Prefix, StringComparison.OrdinalIgnoreCase)
+        );
     }
 
     private static string GetRuleLabel(Model_PartNumberPrefixRule rule)
@@ -654,17 +857,21 @@ public class Service_Reporting : IService_Reporting
     private static void AppendHeaderCell(StringBuilder html, string text, string? width)
     {
         var widthStyle = string.IsNullOrWhiteSpace(width) ? string.Empty : $" width: {width};";
-        html.AppendLine($"<th style='border: 1px solid #9fbad0; padding: 8px 10px; text-align: left;{widthStyle} white-space: nowrap;'>{text}</th>");
+        html.AppendLine(
+            $"<th style='border: 1px solid #9fbad0; padding: 8px 10px; text-align: left;{widthStyle} white-space: nowrap;'>{text}</th>"
+        );
     }
 
-    private static (string AccentBackground, string AccentForeground) GetModuleAccent(string moduleName)
+    private static (string AccentBackground, string AccentForeground) GetModuleAccent(
+        string moduleName
+    )
     {
         return moduleName switch
         {
             "Receiving" => (SummaryAccentBackground, SummaryAccentForeground),
             "Dunnage" => (DunnageAccentBackground, DunnageAccentForeground),
             "Volvo" => (DetailAccentBackground, DetailAccentForeground),
-            _ => ("#4A5568", "#FFFFFF")
+            _ => ("#4A5568", "#FFFFFF"),
         };
     }
 
@@ -672,9 +879,7 @@ public class Service_Reporting : IService_Reporting
     {
         const string separator = " for ";
         var separatorIndex = title.IndexOf(separator, StringComparison.OrdinalIgnoreCase);
-        return separatorIndex >= 0
-            ? title[(separatorIndex + separator.Length)..]
-            : title;
+        return separatorIndex >= 0 ? title[(separatorIndex + separator.Length)..] : title;
     }
 
     private void AppendSectionStart(
@@ -683,11 +888,18 @@ public class Service_Reporting : IService_Reporting
         string cardBackground,
         string cardBorder,
         string accentBackground,
-        string accentForeground)
+        string accentForeground
+    )
     {
         var safeTitle = System.Net.WebUtility.HtmlEncode(title);
-        html.AppendLine($"<div style='margin: 0 0 16px 0; border: 1px solid {cardBorder}; border-radius: 4px; overflow: hidden; background-color: {cardBackground};'>");
-        html.AppendLine($"<div style='background-color: {accentBackground}; color: {accentForeground}; padding: 10px 12px; font-weight: 700; display: block;'>" + safeTitle + "</div>");
+        html.AppendLine(
+            $"<div style='margin: 0 0 16px 0; border: 1px solid {cardBorder}; border-radius: 4px; overflow: hidden; background-color: {cardBackground};'>"
+        );
+        html.AppendLine(
+            $"<div style='background-color: {accentBackground}; color: {accentForeground}; padding: 10px 12px; font-weight: 700; display: block;'>"
+                + safeTitle
+                + "</div>"
+        );
         html.AppendLine("<div style='padding: 10px 12px 12px 12px;'>");
     }
 
@@ -700,7 +912,8 @@ public class Service_Reporting : IService_Reporting
     private static void AppendBodyCell(StringBuilder html, string? value, string alignment = "left")
     {
         var safeValue = System.Net.WebUtility.HtmlEncode(value ?? string.Empty);
-        html.AppendLine($"<td style='border: 1px solid #c8d6e5; padding: 6px 10px; text-align: {alignment}; vertical-align: top; word-wrap: break-word;'>{safeValue}</td>");
+        html.AppendLine(
+            $"<td style='border: 1px solid #c8d6e5; padding: 6px 10px; text-align: {alignment}; vertical-align: top; word-wrap: break-word;'>{safeValue}</td>"
+        );
     }
-
 }

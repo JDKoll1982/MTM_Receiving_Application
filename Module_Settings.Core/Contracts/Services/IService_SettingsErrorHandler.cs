@@ -17,7 +17,11 @@ public interface IService_SettingsErrorHandler
     /// <param name="title">Dialog title</param>
     /// <param name="severity">Error severity level</param>
     /// <returns>Task representing the async operation</returns>
-    Task HandleErrorAsync(string message, string title, Enum_ErrorSeverity severity = Enum_ErrorSeverity.Error);
+    Task HandleErrorAsync(
+        string message,
+        string title,
+        Enum_ErrorSeverity severity = Enum_ErrorSeverity.Error
+    );
 
     /// <summary>
     /// Handles an error with exception details and displays it in the Settings window.
@@ -27,7 +31,12 @@ public interface IService_SettingsErrorHandler
     /// <param name="ex">Exception object for logging</param>
     /// <param name="severity">Error severity level</param>
     /// <returns>Task representing the async operation</returns>
-    Task HandleErrorAsync(string message, string title, Exception ex, Enum_ErrorSeverity severity = Enum_ErrorSeverity.Error);
+    Task HandleErrorAsync(
+        string message,
+        string title,
+        Exception ex,
+        Enum_ErrorSeverity severity = Enum_ErrorSeverity.Error
+    );
 
     /// <summary>
     /// Shows a success message in the Settings window.

@@ -12,14 +12,14 @@ using MediatR;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests;
-using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
@@ -50,11 +50,15 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IService_LoggingUtility logger,
         IService_Window windowService,
         IService_UserSessionManager sessionManager,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
-        _receivingValidation = receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
+        _inforVisualService =
+            inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
+        _receivingValidation =
+            receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
         _windowService = windowService;
         _sessionManager = sessionManager;
 
@@ -88,7 +92,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     public bool HasSelectedPart => SelectedPart != null;
 
-
     [ObservableProperty]
     private Model_VolvoPart? _selectedPartToAdd;
 
@@ -113,7 +116,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private int? _currentShipmentId;
 
     #endregion
-
 
 
     #region Initialization
@@ -142,7 +144,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 await _errorHandler.HandleErrorAsync(
                     initialDataResult.ErrorMessage ?? "Failed to get initial shipment data",
-                    Enum_ErrorSeverity.Medium);
+                    Enum_ErrorSeverity.Medium
+                );
             }
 
             // Load part master data for quantity-per-skid cache
@@ -164,12 +167,16 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error initializing Volvo shipment entry: {ex.Message}", ex);
+            await _logger.LogErrorAsync(
+                $"Error initializing Volvo shipment entry: {ex.Message}",
+                ex
+            );
             await _errorHandler.HandleErrorAsync(
                 "Error initializing Volvo shipment entry",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -207,7 +214,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
                 ApplyCachedQuantitiesToLines();
 
-                await _logger.LogInfoAsync($"Loaded pending shipment #{shipment.ShipmentNumber} with {Parts.Count} parts");
+                await _logger.LogInfoAsync(
+                    $"Loaded pending shipment #{shipment.ShipmentNumber} with {Parts.Count} parts"
+                );
             }
         }
         catch (Exception ex)
@@ -220,10 +229,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         try
         {
-            var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
-            {
-                IncludeInactive = true
-            });
+            var partsResult = await _mediator.Send(
+                new GetAllVolvoPartsQuery { IncludeInactive = true }
+            );
 
             if (partsResult.IsSuccess && partsResult.Data != null)
             {
@@ -243,13 +251,18 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
-        var partsByNumber = _allParts.ToDictionary(p => p.PartNumber, StringComparer.OrdinalIgnoreCase);
+        var partsByNumber = _allParts.ToDictionary(
+            p => p.PartNumber,
+            StringComparer.OrdinalIgnoreCase
+        );
 
         foreach (var line in Parts)
         {
-            if (line.QuantityPerSkid <= 0 &&
-                !string.IsNullOrWhiteSpace(line.PartNumber) &&
-                partsByNumber.TryGetValue(line.PartNumber, out var part))
+            if (
+                line.QuantityPerSkid <= 0
+                && !string.IsNullOrWhiteSpace(line.PartNumber)
+                && partsByNumber.TryGetValue(line.PartNumber, out var part)
+            )
             {
                 line.QuantityPerSkid = part.QuantityPerSkid;
             }
@@ -272,10 +285,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         try
         {
-            var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
-            {
-                IncludeInactive = false // Only show active parts in dialog
-            });
+            var partsResult = await _mediator.Send(
+                new GetAllVolvoPartsQuery
+                {
+                    IncludeInactive = false, // Only show active parts in dialog
+                }
+            );
 
             if (partsResult.IsSuccess && partsResult.Data != null)
             {
@@ -309,11 +324,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         try
         {
             // Use MediatR query for search
-            var searchQuery = new SearchVolvoPartsQuery
-            {
-                SearchText = queryText,
-                MaxResults = 20
-            };
+            var searchQuery = new SearchVolvoPartsQuery { SearchText = queryText, MaxResults = 20 };
 
             var searchResult = await _mediator.Send(searchQuery);
 
@@ -328,7 +339,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
                 // Check if text matches a part exactly
                 var exactMatch = searchResult.Data.FirstOrDefault(p =>
-                    p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase));
+                    p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase)
+                );
                 SelectedPartToAdd = exactMatch;
             }
         }
@@ -375,24 +387,37 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         try
         {
             // Parse and validate skid count
-            if (!int.TryParse(ReceivedSkidsToAdd, out int skidCount) || skidCount < 1 || skidCount > 99)
+            if (
+                !int.TryParse(ReceivedSkidsToAdd, out int skidCount)
+                || skidCount < 1
+                || skidCount > 99
+            )
             {
                 await _errorHandler.HandleErrorAsync(
                     "Received skid count must be a number between 1 and 99",
                     Enum_ErrorSeverity.Low,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
             // Check for duplicate part number
-            if (Parts.Any(p => p.PartNumber.Equals(SelectedPartToAdd.PartNumber, StringComparison.OrdinalIgnoreCase)))
+            if (
+                Parts.Any(p =>
+                    p.PartNumber.Equals(
+                        SelectedPartToAdd.PartNumber,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+            )
             {
                 await _errorHandler.HandleErrorAsync(
                     $"Part {SelectedPartToAdd.PartNumber} is already in this shipment. Remove it first if you want to update the quantity.",
                     Enum_ErrorSeverity.Low,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
@@ -401,7 +426,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 PartNumber = SelectedPartToAdd.PartNumber,
                 ReceivedSkidCount = skidCount,
-                HasDiscrepancy = false
+                HasDiscrepancy = false,
             };
 
             var validationResult = await _mediator.Send(addCommand);
@@ -412,7 +437,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     validationResult.ErrorMessage ?? "Failed to validate part",
                     Enum_ErrorSeverity.Medium,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
@@ -428,13 +454,15 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 CalculatedPieceCount = calculatedPieces,
                 HasDiscrepancy = false,
                 ExpectedSkidCount = null,
-                DiscrepancyNote = string.Empty
+                DiscrepancyNote = string.Empty,
             };
 
             Parts.Add(newLine);
 
             // Log user action
-            await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)");
+            await _logger.LogInfoAsync(
+                $"User added part {SelectedPartToAdd.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)"
+            );
 
             // Reset input fields
             SelectedPartToAdd = null;
@@ -451,17 +479,18 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error adding part to shipment",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
     }
 
     private bool CanAddPart()
     {
-        return SelectedPartToAdd != null &&
-               !string.IsNullOrWhiteSpace(ReceivedSkidsToAdd) &&
-               int.TryParse(ReceivedSkidsToAdd, out int count) &&
-               count >= 1 &&
-               count <= 99;
+        return SelectedPartToAdd != null
+            && !string.IsNullOrWhiteSpace(ReceivedSkidsToAdd)
+            && int.TryParse(ReceivedSkidsToAdd, out int count)
+            && count >= 1
+            && count <= 99;
     }
 
     /// <summary>
@@ -480,7 +509,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             // Validate removal using MediatR command
             var removeCommand = new RemovePartFromShipmentCommand
             {
-                PartNumber = SelectedPart.PartNumber
+                PartNumber = SelectedPart.PartNumber,
             };
 
             var validationResult = await _mediator.Send(removeCommand);
@@ -491,7 +520,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     validationResult.ErrorMessage ?? "Failed to validate part removal",
                     Enum_ErrorSeverity.Low,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
@@ -501,10 +531,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (Parts.Count == 0 && HasPendingShipment && _currentShipmentId.HasValue)
             {
-                var deleteResult = await _mediator.Send(new DeletePendingShipmentCommand
-                {
-                    ShipmentId = _currentShipmentId.Value
-                });
+                var deleteResult = await _mediator.Send(
+                    new DeletePendingShipmentCommand { ShipmentId = _currentShipmentId.Value }
+                );
 
                 if (!deleteResult.IsSuccess)
                 {
@@ -512,7 +541,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                         deleteResult.ErrorMessage ?? "Failed to delete empty pending shipment",
                         Enum_ErrorSeverity.Medium,
                         null,
-                        true);
+                        true
+                    );
                     return;
                 }
 
@@ -531,7 +561,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error removing part from shipment",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -560,10 +591,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 if (!saveResult.IsSuccess)
                 {
                     await _errorHandler.HandleErrorAsync(
-                        saveResult.ErrorMessage ?? "Failed to save shipment before generating labels",
+                        saveResult.ErrorMessage
+                            ?? "Failed to save shipment before generating labels",
                         Enum_ErrorSeverity.Medium,
                         null,
-                        true);
+                        true
+                    );
                     return;
                 }
 
@@ -577,10 +610,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
             else
             {
-                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
-                {
-                    UserName = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName
-                });
+                var pendingResult = await _mediator.Send(
+                    new GetPendingShipmentQuery
+                    {
+                        UserName =
+                            _sessionManager.CurrentSession?.User?.WindowsUsername
+                            ?? Environment.UserName,
+                    }
+                );
 
                 if (!pendingResult.IsSuccess || pendingResult.Data == null)
                 {
@@ -588,7 +625,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                         "No pending shipment found",
                         Enum_ErrorSeverity.Medium,
                         null,
-                        true);
+                        true
+                    );
                     return;
                 }
 
@@ -598,10 +636,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
 
             // Generate label data using MediatR query
-            var labelQuery = new GenerateLabelQuery
-            {
-                ShipmentId = shipmentId
-            };
+            var labelQuery = new GenerateLabelQuery { ShipmentId = shipmentId };
             var labelResult = await _mediator.Send(labelQuery);
 
             if (labelResult.IsSuccess)
@@ -609,7 +644,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Labels generated successfully!\n{labelResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
-                await _logger.LogInfoAsync($"Labels generated for shipment ID: {shipmentId}: {labelResult.Data}");
+                await _logger.LogInfoAsync(
+                    $"Labels generated for shipment ID: {shipmentId}: {labelResult.Data}"
+                );
             }
             else
             {
@@ -617,7 +654,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     labelResult.ErrorMessage ?? "Failed to generate labels",
                     Enum_ErrorSeverity.Medium,
                     null,
-                    true);
+                    true
+                );
             }
         }
         catch (Exception ex)
@@ -627,7 +665,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error generating labels",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -655,7 +694,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                         saveResult.ErrorMessage ?? "Failed to save shipment before preview",
                         Enum_ErrorSeverity.Medium,
                         null,
-                        true);
+                        true
+                    );
                     return;
                 }
 
@@ -670,10 +710,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 }
                 else
                 {
-                    var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
-                    {
-                        UserName = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName
-                    });
+                    var pendingResult = await _mediator.Send(
+                        new GetPendingShipmentQuery
+                        {
+                            UserName =
+                                _sessionManager.CurrentSession?.User?.WindowsUsername
+                                ?? Environment.UserName,
+                        }
+                    );
 
                     if (!pendingResult.IsSuccess || pendingResult.Data == null)
                     {
@@ -681,7 +725,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                             "No pending shipment found",
                             Enum_ErrorSeverity.Medium,
                             null,
-                            true);
+                            true
+                        );
                         return;
                     }
 
@@ -690,10 +735,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 }
             }
 
-            var emailResult = await _mediator.Send(new FormatEmailDataQuery
-            {
-                ShipmentId = shipmentId
-            });
+            var emailResult = await _mediator.Send(
+                new FormatEmailDataQuery { ShipmentId = shipmentId }
+            );
 
             if (!emailResult.IsSuccess || emailResult.Data == null)
             {
@@ -701,7 +745,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     emailResult.ErrorMessage ?? "Failed to format email data",
                     Enum_ErrorSeverity.Medium,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
@@ -714,7 +759,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error previewing email",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -732,7 +778,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Cannot show dialog - XamlRoot not available",
                 Enum_ErrorSeverity.Low,
                 null,
-                true);
+                true
+            );
             return;
         }
 
@@ -757,23 +804,37 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             CloseButtonText = "Close",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
-            MaxWidth = 800
+            MaxWidth = 800,
         };
 
         // Build structured preview UI
-        var mainStack = new StackPanel { Spacing = 12, Margin = new Microsoft.UI.Xaml.Thickness(0) };
+        var mainStack = new StackPanel
+        {
+            Spacing = 12,
+            Margin = new Microsoft.UI.Xaml.Thickness(0),
+        };
 
         // TO Recipients
         var toPanel = new Grid { ColumnSpacing = 8 };
-        toPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
-        toPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+        toPanel.ColumnDefinitions.Add(
+            new Microsoft.UI.Xaml.Controls.ColumnDefinition
+            {
+                Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star),
+            }
+        );
+        toPanel.ColumnDefinitions.Add(
+            new Microsoft.UI.Xaml.Controls.ColumnDefinition
+            {
+                Width = Microsoft.UI.Xaml.GridLength.Auto,
+            }
+        );
         var toBox = new TextBox
         {
             Header = "To:",
             Text = toRecipients,
             IsReadOnly = true,
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-            MaxHeight = 80
+            MaxHeight = 80,
         };
         toBox.SetValue(Grid.ColumnProperty, 0);
         var toCopyButton = new Button
@@ -783,7 +844,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             Height = 40,
             FontSize = 16,
             VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
-            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4),
         };
         toCopyButton.SetValue(Grid.ColumnProperty, 1);
         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(toCopyButton, "Copy To Recipients");
@@ -799,15 +860,25 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         // CC Recipients
         var ccPanel = new Grid { ColumnSpacing = 8 };
-        ccPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
-        ccPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+        ccPanel.ColumnDefinitions.Add(
+            new Microsoft.UI.Xaml.Controls.ColumnDefinition
+            {
+                Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star),
+            }
+        );
+        ccPanel.ColumnDefinitions.Add(
+            new Microsoft.UI.Xaml.Controls.ColumnDefinition
+            {
+                Width = Microsoft.UI.Xaml.GridLength.Auto,
+            }
+        );
         var ccBox = new TextBox
         {
             Header = "Cc:",
             Text = ccRecipients,
             IsReadOnly = true,
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-            MaxHeight = 80
+            MaxHeight = 80,
         };
         ccBox.SetValue(Grid.ColumnProperty, 0);
         var ccCopyButton = new Button
@@ -817,7 +888,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             Height = 40,
             FontSize = 16,
             VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
-            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4),
         };
         ccCopyButton.SetValue(Grid.ColumnProperty, 1);
         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(ccCopyButton, "Copy CC Recipients");
@@ -833,15 +904,25 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         // Subject
         var subjectPanel = new Grid { ColumnSpacing = 8 };
-        subjectPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
-        subjectPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+        subjectPanel.ColumnDefinitions.Add(
+            new Microsoft.UI.Xaml.Controls.ColumnDefinition
+            {
+                Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star),
+            }
+        );
+        subjectPanel.ColumnDefinitions.Add(
+            new Microsoft.UI.Xaml.Controls.ColumnDefinition
+            {
+                Width = Microsoft.UI.Xaml.GridLength.Auto,
+            }
+        );
         var subjectBox = new TextBox
         {
             Header = "Subject:",
             Text = emailData.Subject,
             IsReadOnly = true,
             FontWeight = Microsoft.UI.Text.FontWeights.Bold,
-            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
+            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
         };
         subjectBox.SetValue(Grid.ColumnProperty, 0);
         var subjectCopyButton = new Button
@@ -851,7 +932,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             Height = 40,
             FontSize = 16,
             VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
-            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4),
         };
         subjectCopyButton.SetValue(Grid.ColumnProperty, 1);
         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(subjectCopyButton, "Copy Subject");
@@ -872,7 +953,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 Text = "**DISCREPANCIES NOTED**",
                 FontWeight = Microsoft.UI.Text.FontWeights.Bold,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4)
+                Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4),
             };
             mainStack.Children.Add(discHeader);
 
@@ -883,15 +964,20 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
                 AcceptsReturn = true,
                 MinHeight = 120,
-                MaxHeight = 250
+                MaxHeight = 250,
             };
             var discText = new StringBuilder();
-            discText.AppendLine("Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote");
+            discText.AppendLine(
+                "Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote"
+            );
             discText.AppendLine(new string('-', 80));
             foreach (var disc in emailData.Discrepancies)
             {
-                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
-                discText.AppendLine($"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}");
+                string diffStr =
+                    disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                discText.AppendLine(
+                    $"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}"
+                );
             }
             discBox.Text = discText.ToString();
             mainStack.Children.Add(discBox);
@@ -902,7 +988,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             Text = "Requested Lines:",
             FontWeight = Microsoft.UI.Text.FontWeights.Bold,
-            Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4)
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4),
         };
         mainStack.Children.Add(reqHeader);
 
@@ -913,7 +999,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
             AcceptsReturn = true,
             MinHeight = 150,
-            MaxHeight = 300
+            MaxHeight = 300,
         };
         var reqText = new StringBuilder();
         reqText.AppendLine("Part Number\tQuantity (pcs)");
@@ -934,7 +1020,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 Text = emailData.AdditionalNotes,
                 IsReadOnly = true,
                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-                Height = 60
+                Height = 60,
             };
             mainStack.Children.Add(notesBox);
         }
@@ -943,7 +1029,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             Content = mainStack,
             Height = 500,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
         };
 
         dialog.Content = scrollViewer;
@@ -984,8 +1070,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             text.AppendLine(new string('-', 80));
             foreach (var disc in emailData.Discrepancies)
             {
-                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
-                text.AppendLine($"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}");
+                string diffStr =
+                    disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                text.AppendLine(
+                    $"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}"
+                );
             }
             text.AppendLine();
         }
@@ -1024,7 +1113,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         if (emailData.Discrepancies.Count > 0)
         {
             html.AppendLine("<p><strong>**DISCREPANCIES NOTED**</strong></p>");
-            html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+            html.AppendLine(
+                "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>"
+            );
             html.AppendLine("<thead>");
             html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
             html.AppendLine("<th>Part Number</th>");
@@ -1038,7 +1129,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             foreach (var disc in emailData.Discrepancies)
             {
-                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                string diffStr =
+                    disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
                 html.AppendLine("<tr>");
                 html.AppendLine($"<td>{disc.PartNumber}</td>");
                 html.AppendLine($"<td>{disc.PacklistQty}</td>");
@@ -1054,7 +1146,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
 
         html.AppendLine("<p><strong>Requested Lines:</strong></p>");
-        html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+        html.AppendLine(
+            "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>"
+        );
         html.AppendLine("<thead>");
         html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
         html.AppendLine("<th>Part Number</th>");
@@ -1120,27 +1214,32 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     "Please add at least one part before saving",
                     Enum_ErrorSeverity.Low,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
             // Build command with ShipmentLineDto list
-            var partsDto = Parts.Select(p => new ShipmentLineDto
-            {
-                PartNumber = p.PartNumber,
-                Location = p.Location,
-                ReceivedSkidCount = p.ReceivedSkidCount,
-                ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
-                HasDiscrepancy = p.HasDiscrepancy,
-                DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
-            }).ToList();
+            var partsDto = Parts
+                .Select(p => new ShipmentLineDto
+                {
+                    PartNumber = p.PartNumber,
+                    Location = p.Location,
+                    ReceivedSkidCount = p.ReceivedSkidCount,
+                    ExpectedSkidCount = p.ExpectedSkidCount.HasValue
+                        ? (int?)p.ExpectedSkidCount.Value
+                        : null,
+                    HasDiscrepancy = p.HasDiscrepancy,
+                    DiscrepancyNote = p.DiscrepancyNote ?? string.Empty,
+                })
+                .ToList();
 
             var saveCommand = new SavePendingShipmentCommand
             {
                 ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
                 ShipmentNumber = ShipmentNumber,
                 Notes = Notes ?? string.Empty,
-                Parts = partsDto
+                Parts = partsDto,
             };
 
             var result = await _mediator.Send(saveCommand);
@@ -1152,7 +1251,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = true;
                 StatusMessage = "Shipment saved";
-                await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} saved as pending (ID: {result.Data})");
+                await _logger.LogInfoAsync(
+                    $"Shipment #{ShipmentNumber} saved as pending (ID: {result.Data})"
+                );
             }
             else
             {
@@ -1160,7 +1261,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     result.ErrorMessage ?? "Failed to save shipment",
                     Enum_ErrorSeverity.Medium,
                     null,
-                    true);
+                    true
+                );
             }
         }
         catch (Exception ex)
@@ -1170,7 +1272,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error saving shipment",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -1183,24 +1286,32 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// Internal save method for backward compatibility (legacy code)
     /// TODO: Migrate all callers to use SavePendingShipmentCommand directly
     /// </summary>
-    private async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentInternalAsync()
+    private async Task<
+        Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+    > SaveShipmentInternalAsync()
     {
         // Validate
         if (!ValidateShipment())
         {
-            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment validation failed");
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(
+                "Shipment validation failed"
+            );
         }
 
         // Use MediatR command for save
-        var partsDto = Parts.Select(p => new ShipmentLineDto
-        {
-            PartNumber = p.PartNumber,
-            Location = p.Location,
-            ReceivedSkidCount = p.ReceivedSkidCount,
-            ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
-            HasDiscrepancy = p.HasDiscrepancy,
-            DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
-        }).ToList();
+        var partsDto = Parts
+            .Select(p => new ShipmentLineDto
+            {
+                PartNumber = p.PartNumber,
+                Location = p.Location,
+                ReceivedSkidCount = p.ReceivedSkidCount,
+                ExpectedSkidCount = p.ExpectedSkidCount.HasValue
+                    ? (int?)p.ExpectedSkidCount.Value
+                    : null,
+                HasDiscrepancy = p.HasDiscrepancy,
+                DiscrepancyNote = p.DiscrepancyNote ?? string.Empty,
+            })
+            .ToList();
 
         var saveCommand = new SavePendingShipmentCommand
         {
@@ -1208,7 +1319,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
             ShipmentNumber = ShipmentNumber,
             Notes = Notes ?? string.Empty,
-            Parts = partsDto
+            Parts = partsDto,
         };
 
         try
@@ -1222,20 +1333,26 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
                 {
                     Success = true,
-                    Data = (result.Data, ShipmentNumber)
+                    Data = (result.Data, ShipmentNumber),
                 };
             }
 
-            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(
+                result.ErrorMessage
+            );
         }
         catch (FluentValidation.ValidationException vex)
         {
             var errors = string.Join("; ", vex.Errors.Select(e => e.ErrorMessage));
-            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>($"Validation failed: {errors}");
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(
+                $"Validation failed: {errors}"
+            );
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>($"Save failed: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(
+                $"Save failed: {ex.Message}"
+            );
         }
     }
 
@@ -1255,10 +1372,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (_currentShipmentId.HasValue && _currentShipmentId.Value > 0)
             {
-                var detailResult = await _mediator.Send(new GetShipmentDetailQuery
-                {
-                    ShipmentId = _currentShipmentId.Value
-                });
+                var detailResult = await _mediator.Send(
+                    new GetShipmentDetailQuery { ShipmentId = _currentShipmentId.Value }
+                );
 
                 if (detailResult.IsSuccess && detailResult.Data != null)
                 {
@@ -1268,10 +1384,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (shipment == null)
             {
-                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
-                {
-                    UserName = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName
-                });
+                var pendingResult = await _mediator.Send(
+                    new GetPendingShipmentQuery
+                    {
+                        UserName =
+                            _sessionManager.CurrentSession?.User?.WindowsUsername
+                            ?? Environment.UserName,
+                    }
+                );
 
                 if (!pendingResult.IsSuccess || pendingResult.Data == null)
                 {
@@ -1279,7 +1399,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                         "No pending shipment found",
                         Enum_ErrorSeverity.Medium,
                         null,
-                        true);
+                        true
+                    );
                     return;
                 }
 
@@ -1298,7 +1419,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error completing shipment",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -1321,7 +1443,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             PrimaryButtonText = "Complete",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var stackPanel = new StackPanel { Spacing = 12 };
@@ -1329,13 +1451,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         var poTextBox = new TextBox
         {
             Header = "PO Number",
-            PlaceholderText = "Enter PO number (e.g., PO-062450)"
+            PlaceholderText = "Enter PO number (e.g., PO-062450)",
         };
 
         var receiverTextBox = new TextBox
         {
             Header = "Receiver Number",
-            PlaceholderText = "Enter receiver number (e.g., 134393)"
+            PlaceholderText = "Enter receiver number (e.g., 134393)",
         };
 
         stackPanel.Children.Add(poTextBox);
@@ -1346,26 +1468,34 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         if (result == ContentDialogResult.Primary)
         {
-            if (string.IsNullOrWhiteSpace(poTextBox.Text) || string.IsNullOrWhiteSpace(receiverTextBox.Text))
+            if (
+                string.IsNullOrWhiteSpace(poTextBox.Text)
+                || string.IsNullOrWhiteSpace(receiverTextBox.Text)
+            )
             {
                 await _errorHandler.HandleErrorAsync(
                     "PO Number and Receiver Number are required",
                     Enum_ErrorSeverity.Low,
                     null,
-                    true);
+                    true
+                );
                 return;
             }
 
             // Use MediatR CompleteShipmentCommand
-            var partsDto = Parts.Select(p => new ShipmentLineDto
-            {
-                PartNumber = p.PartNumber,
-                Location = p.Location,
-                ReceivedSkidCount = p.ReceivedSkidCount,
-                ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
-                HasDiscrepancy = p.HasDiscrepancy,
-                DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
-            }).ToList();
+            var partsDto = Parts
+                .Select(p => new ShipmentLineDto
+                {
+                    PartNumber = p.PartNumber,
+                    Location = p.Location,
+                    ReceivedSkidCount = p.ReceivedSkidCount,
+                    ExpectedSkidCount = p.ExpectedSkidCount.HasValue
+                        ? (int?)p.ExpectedSkidCount.Value
+                        : null,
+                    HasDiscrepancy = p.HasDiscrepancy,
+                    DiscrepancyNote = p.DiscrepancyNote ?? string.Empty,
+                })
+                .ToList();
 
             var completeCommand = new CompleteShipmentCommand
             {
@@ -1375,7 +1505,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 PONumber = poTextBox.Text.Trim(),
                 ReceiverNumber = receiverTextBox.Text.Trim(),
                 Notes = Notes ?? string.Empty,
-                Parts = partsDto
+                Parts = partsDto,
             };
 
             var completeResult = await _mediator.Send(completeCommand);
@@ -1386,7 +1516,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = false;
                 _currentShipmentId = null;
-                await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} completed with PO: {poTextBox.Text.Trim()}");
+                await _logger.LogInfoAsync(
+                    $"Shipment #{ShipmentNumber} completed with PO: {poTextBox.Text.Trim()}"
+                );
 
                 // Clear the form
                 ClearShipmentForm();
@@ -1397,7 +1529,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     completeResult.ErrorMessage ?? "Failed to complete shipment",
                     Enum_ErrorSeverity.Medium,
                     null,
-                    true);
+                    true
+                );
             }
         }
     }
@@ -1425,7 +1558,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 PrimaryButtonText = "Remove",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var confirmResult = await confirmDialog.ShowAsync();
@@ -1442,14 +1575,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             Header = "Expected Skids",
             Minimum = 1,
             SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
-            Value = line.ExpectedSkidCount ?? 1
+            Value = line.ExpectedSkidCount ?? 1,
         };
 
         var noteBox = new TextBox
         {
             Header = "Discrepancy Note",
             PlaceholderText = "Explain discrepancy",
-            Text = line.DiscrepancyNote ?? string.Empty
+            Text = line.DiscrepancyNote ?? string.Empty,
         };
 
         var panel = new StackPanel { Spacing = 12 };
@@ -1463,7 +1596,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             PrimaryButtonText = "Save",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var result = await dialog.ShowAsync();
@@ -1478,7 +1611,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Expected skids must be greater than 0",
                 Enum_ErrorSeverity.Low,
                 null,
-                true);
+                true
+            );
             return;
         }
 
@@ -1511,9 +1645,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             var recentQuery = new GetRecentShipmentsQuery { Days = 365 };
             var recentResult = await _mediator.Send(recentQuery);
-            var completedCount = recentResult.IsSuccess && recentResult.Data != null
-                ? recentResult.Data.Count(s => s.Status == "completed")
-                : 0;
+            var completedCount =
+                recentResult.IsSuccess && recentResult.Data != null
+                    ? recentResult.Data.Count(s => s.Status == "completed")
+                    : 0;
 
             if (completedCount == 0)
             {
@@ -1530,11 +1665,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var confirmDialog = new ContentDialog
             {
                 Title = "Clear Label Data",
-                Content = $"Move {completedCount} completed shipment(s) to history archive? This cannot be undone.",
+                Content =
+                    $"Move {completedCount} completed shipment(s) to history archive? This cannot be undone.",
                 PrimaryButtonText = "Clear",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var dialogResult = await confirmDialog.ShowAsync();
@@ -1554,7 +1690,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Label data cleared — {result.Data} record(s) moved to history";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Label data cleared";
-                await _logger.LogInfoAsync($"Clear label data completed: {result.Data} records archived by {Environment.UserName}");
+                await _logger.LogInfoAsync(
+                    $"Clear label data completed: {result.Data} records archived by {Environment.UserName}"
+                );
             }
             else
             {
@@ -1562,7 +1700,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     result.ErrorMessage ?? "Failed to clear label data",
                     Enum_ErrorSeverity.Medium,
                     null,
-                    true);
+                    true
+                );
             }
         }
         catch (Exception ex)
@@ -1572,7 +1711,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "Error clearing label data",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
         finally
         {
@@ -1589,11 +1729,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         if (Parts.Count == 0)
         {
-            _errorHandler.HandleErrorAsync(
-                "At least one part is required",
-                Enum_ErrorSeverity.Low,
-                null,
-                true).ConfigureAwait(false);
+            _errorHandler
+                .HandleErrorAsync(
+                    "At least one part is required",
+                    Enum_ErrorSeverity.Low,
+                    null,
+                    true
+                )
+                .ConfigureAwait(false);
             return false;
         }
 
@@ -1601,31 +1744,40 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             if (string.IsNullOrWhiteSpace(part.PartNumber))
             {
-                _errorHandler.HandleErrorAsync(
-                    "All parts must have a part number selected",
-                    Enum_ErrorSeverity.Low,
-                    null,
-                    true).ConfigureAwait(false);
+                _errorHandler
+                    .HandleErrorAsync(
+                        "All parts must have a part number selected",
+                        Enum_ErrorSeverity.Low,
+                        null,
+                        true
+                    )
+                    .ConfigureAwait(false);
                 return false;
             }
 
             if (part.ReceivedSkidCount <= 0)
             {
-                _errorHandler.HandleErrorAsync(
-                    $"Part {part.PartNumber} must have at least 1 skid",
-                    Enum_ErrorSeverity.Low,
-                    null,
-                    true).ConfigureAwait(false);
+                _errorHandler
+                    .HandleErrorAsync(
+                        $"Part {part.PartNumber} must have at least 1 skid",
+                        Enum_ErrorSeverity.Low,
+                        null,
+                        true
+                    )
+                    .ConfigureAwait(false);
                 return false;
             }
 
             if (part.HasDiscrepancy && !part.ExpectedSkidCount.HasValue)
             {
-                _errorHandler.HandleErrorAsync(
-                    $"Part {part.PartNumber} has discrepancy but no expected skid count",
-                    Enum_ErrorSeverity.Low,
-                    null,
-                    true).ConfigureAwait(false);
+                _errorHandler
+                    .HandleErrorAsync(
+                        $"Part {part.PartNumber} has discrepancy but no expected skid count",
+                        Enum_ErrorSeverity.Low,
+                        null,
+                        true
+                    )
+                    .ConfigureAwait(false);
                 return false;
             }
         }
@@ -1647,7 +1799,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         try
         {
-            var recipients = System.Text.Json.JsonSerializer.Deserialize<List<Models.Model_EmailRecipient>>(jsonValue);
+            var recipients = System.Text.Json.JsonSerializer.Deserialize<
+                List<Models.Model_EmailRecipient>
+            >(jsonValue);
             if (recipients == null || recipients.Count == 0)
             {
                 return fallbackValue;
@@ -1657,14 +1811,18 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _logger.LogErrorAsync($"Error parsing email recipients JSON: {ex.Message}", ex).ConfigureAwait(false);
+            _logger
+                .LogErrorAsync($"Error parsing email recipients JSON: {ex.Message}", ex)
+                .ConfigureAwait(false);
             return fallbackValue;
         }
     }
 
     private void ValidateSaveEligibility()
     {
-        CanSave = Parts.Count > 0 && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+        CanSave =
+            Parts.Count > 0
+            && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
         RefreshCommandStates();
     }
 
@@ -1685,9 +1843,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     private bool HasShipmentData()
     {
-        return !IsBusy &&
-               Parts.Count > 0 &&
-               Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+        return !IsBusy
+            && Parts.Count > 0
+            && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
     }
 
     private void RefreshCommandStates()
@@ -1726,7 +1884,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return string.Empty;
         }
 
-        var index = Math.Abs(StringComparer.OrdinalIgnoreCase.GetHashCode(partNumber)) % PresetLocations.Count;
+        var index =
+            Math.Abs(StringComparer.OrdinalIgnoreCase.GetHashCode(partNumber))
+            % PresetLocations.Count;
         return PresetLocations[index];
     }
 

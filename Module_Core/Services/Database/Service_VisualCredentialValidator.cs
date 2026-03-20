@@ -34,8 +34,8 @@ public class Service_VisualCredentialValidator : IService_VisualCredentialValida
         }
 
         var normalised = visualUserName?.Trim().ToUpperInvariant() ?? string.Empty;
-        return $"The Visual account '{normalised}' is a shared terminal account and cannot be used " +
-               "for Bulk Inventory automation. Please enter your personal Visual username and password " +
-               "in Settings → Users.";
+        return $"The Visual account '{normalised}' is a shared terminal account and cannot be used "
+            + "for Bulk Inventory automation. Please enter your personal Visual username and password "
+            + "in Settings → Users.";
     }
 }

@@ -21,13 +21,16 @@ public class AddVolvoPartCommandHandler : IRequestHandler<AddVolvoPartCommand, M
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
     }
 
-    public async Task<Model_Dao_Result> Handle(AddVolvoPartCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        AddVolvoPartCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var part = new Model_VolvoPart
         {
             PartNumber = request.PartNumber.Trim().ToUpperInvariant(),
             QuantityPerSkid = request.QuantityPerSkid,
-            IsActive = true
+            IsActive = true,
         };
 
         return await _partDao.InsertAsync(part);

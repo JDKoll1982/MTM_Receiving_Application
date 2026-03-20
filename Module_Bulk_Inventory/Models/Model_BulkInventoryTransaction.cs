@@ -35,9 +35,11 @@ public partial class Model_BulkInventoryTransaction : ObservableObject
     public int TransactionTypeIndex
     {
         get => TransactionType == Enum_BulkInventoryTransactionType.Transfer ? 0 : 1;
-        set => TransactionType = value == 0
-            ? Enum_BulkInventoryTransactionType.Transfer
-            : Enum_BulkInventoryTransactionType.NewTransaction;
+        set =>
+            TransactionType =
+                value == 0
+                    ? Enum_BulkInventoryTransactionType.Transfer
+                    : Enum_BulkInventoryTransactionType.NewTransaction;
     }
 
     [ObservableProperty]
@@ -88,4 +90,3 @@ public partial class Model_BulkInventoryTransaction : ObservableObject
     /// </summary>
     public bool IsSelectedForRepush { get; set; }
 }
-

@@ -9,17 +9,10 @@
         public int EmployeeNumber { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public static Model_CreateUserResult SuccessResult(int employeeNumber) => new()
-        {
-            Success = true,
-            EmployeeNumber = employeeNumber
-        };
+        public static Model_CreateUserResult SuccessResult(int employeeNumber) =>
+            new() { Success = true, EmployeeNumber = employeeNumber };
 
-        public static Model_CreateUserResult ErrorResult(string message) => new()
-        {
-            Success = false,
-            ErrorMessage = message
-        };
+        public static Model_CreateUserResult ErrorResult(string message) =>
+            new() { Success = false, ErrorMessage = message };
     }
 }
-

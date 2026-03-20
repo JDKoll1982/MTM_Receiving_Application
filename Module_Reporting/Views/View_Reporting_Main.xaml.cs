@@ -18,10 +18,7 @@ public sealed partial class View_Reporting_Main : Page
 
     private async void OnPreviewRequested(object? sender, System.EventArgs e)
     {
-        var dialog = new View_Reporting_PreviewDialog(ViewModel)
-        {
-            XamlRoot = XamlRoot
-        };
+        var dialog = new View_Reporting_PreviewDialog(ViewModel) { XamlRoot = XamlRoot };
 
         await dialog.ShowAsync();
     }

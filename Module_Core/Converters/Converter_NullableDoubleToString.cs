@@ -1,5 +1,5 @@
-using Microsoft.UI.Xaml.Data;
 using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
@@ -12,13 +12,13 @@ public class Converter_NullableDoubleToString : IValueConverter
         {
             return string.Empty;
         }
-        
+
         // Handle nullable double
         if (value is double doubleValue)
         {
             return doubleValue.ToString("F2"); // Format to 2 decimal places
         }
-        
+
         // Fallback
         return string.Empty;
     }

@@ -11,7 +11,9 @@ public class DeactivateVolvoPartCommandValidator : AbstractValidator<DeactivateV
     public DeactivateVolvoPartCommandValidator()
     {
         RuleFor(x => x.PartNumber)
-            .NotEmpty().WithMessage("Part number is required")
-            .MaximumLength(50).WithMessage("Part number must not exceed 50 characters");
+            .NotEmpty()
+            .WithMessage("Part number is required")
+            .MaximumLength(50)
+            .WithMessage("Part number must not exceed 50 characters");
     }
 }

@@ -104,11 +104,11 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         /// Constructor that requires an authenticated user.
         /// </summary>
         /// <param name="user">Authenticated user for this session.</param>
-        public Model_UserSession(Model_User user) : this()
+        public Model_UserSession(Model_User user)
+            : this()
         {
             ArgumentNullException.ThrowIfNull(user);
             User = user;
         }
     }
 }
-

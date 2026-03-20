@@ -1,14 +1,15 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Settings;
-using System;
-using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_ModeSelection : ViewModel_Shared_Base
@@ -34,13 +35,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _guidedTitleText = "Guided Wizard";
 
         [ObservableProperty]
-        private string _guidedDescriptionText = "Step-by-step process for standard receiving workflow.";
+        private string _guidedDescriptionText =
+            "Step-by-step process for standard receiving workflow.";
 
         [ObservableProperty]
         private string _manualTitleText = "Manual Entry";
 
         [ObservableProperty]
-        private string _manualDescriptionText = "Customizable grid for bulk data entry and editing.";
+        private string _manualDescriptionText =
+            "Customizable grid for bulk data entry and editing.";
 
         [ObservableProperty]
         private string _editTitleText = "Edit Mode";
@@ -70,7 +73,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+            IService_Notification notificationService
+        )
+            : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _sessionManager = sessionManager;
@@ -91,18 +96,38 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             try
             {
                 // Load UI text
-                GuidedTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionGuidedTitle);
-                GuidedDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionGuidedDescription);
-                ManualTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionManualTitle);
-                ManualDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionManualDescription);
-                EditTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionEditTitle);
-                EditDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionEditDescription);
-                SetAsDefaultText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionSetDefault);
+                GuidedTitleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionGuidedTitle
+                );
+                GuidedDescriptionText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionGuidedDescription
+                );
+                ManualTitleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionManualTitle
+                );
+                ManualDescriptionText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionManualDescription
+                );
+                EditTitleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionEditTitle
+                );
+                EditDescriptionText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionEditDescription
+                );
+                SetAsDefaultText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ModeSelectionSetDefault
+                );
 
                 // Load accessibility text
-                GuidedAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionGuidedButton);
-                ManualAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionManualButton);
-                EditAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionEditButton);
+                GuidedAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.ModeSelectionGuidedButton
+                );
+                ManualAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.ModeSelectionManualButton
+                );
+                EditAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.ModeSelectionEditButton
+                );
 
                 _logger.LogInfo("Mode Selection UI text loaded from settings successfully");
             }
@@ -174,7 +199,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var rememberLastMode = await _receivingSettings.GetBoolAsync(
                 ReceivingSettingsKeys.BusinessRules.RememberLastMode,
-                currentUserId);
+                currentUserId
+            );
 
             if (!rememberLastMode)
             {
@@ -184,7 +210,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             await _receivingSettings.SaveStringAsync(
                 ReceivingSettingsKeys.Defaults.DefaultReceivingMode,
                 modeValue,
-                currentUserId);
+                currentUserId
+            );
         }
 
         /// <summary>
@@ -208,8 +235,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             // Check if there's any PO/Part selection
-            if (!string.IsNullOrEmpty(_workflowService.CurrentSession.PoNumber) ||
-                _workflowService.CurrentPart != null)
+            if (
+                !string.IsNullOrEmpty(_workflowService.CurrentSession.PoNumber)
+                || _workflowService.CurrentPart != null
+            )
             {
                 return true;
             }
@@ -221,7 +250,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             var confirmModeChange = await _receivingSettings.GetBoolAsync(
                 ReceivingSettingsKeys.BusinessRules.ConfirmModeChange,
-                _sessionManager.CurrentSession?.User?.EmployeeNumber);
+                _sessionManager.CurrentSession?.User?.EmployeeNumber
+            );
 
             if (!confirmModeChange)
             {
@@ -246,12 +276,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 var dialog = new ContentDialog
                 {
-                    Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle),
-                    Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContent),
-                    PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue),
-                    CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel),
+                    Title = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle
+                    ),
+                    Content = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContent
+                    ),
+                    PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue
+                    ),
+                    CloseButtonText = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel
+                    ),
                     DefaultButton = ContentDialogButton.Close,
-                    XamlRoot = xamlRoot
+                    XamlRoot = xamlRoot,
                 };
 
                 var result = await dialog.ShowAsync();
@@ -311,7 +349,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 string? newMode = isChecked ? "guided" : null;
 
-                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode);
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(
+                    currentUser.WindowsUsername,
+                    newMode
+                );
 
                 if (result.IsSuccess)
                 {
@@ -327,19 +368,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
 
                     _logger.LogInfo($"Default mode set to: {newMode ?? "none"}");
-                    StatusMessage = isChecked ? "Guided mode set as default" : "Default mode cleared";
+                    StatusMessage = isChecked
+                        ? "Guided mode set as default"
+                        : "Default mode cleared";
                 }
                 else
                 {
-                    await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "Save Error",
+                        result.ErrorMessage,
+                        Enum_ErrorSeverity.Error
+                    );
                     // Revert checkbox
                     IsGuidedModeDefault = !isChecked;
                 }
             }
             catch (Exception ex)
             {
-                await _errorHandler.HandleErrorAsync($"Failed to set default mode: {ex.Message}",
-                    Enum_ErrorSeverity.Error, ex, true);
+                await _errorHandler.HandleErrorAsync(
+                    $"Failed to set default mode: {ex.Message}",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
                 // Revert checkbox
                 IsGuidedModeDefault = !isChecked;
             }
@@ -358,7 +409,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 string? newMode = isChecked ? "manual" : null;
 
-                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode);
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(
+                    currentUser.WindowsUsername,
+                    newMode
+                );
 
                 if (result.IsSuccess)
                 {
@@ -374,19 +428,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
 
                     _logger.LogInfo($"Default mode set to: {newMode ?? "none"}");
-                    StatusMessage = isChecked ? "Manual mode set as default" : "Default mode cleared";
+                    StatusMessage = isChecked
+                        ? "Manual mode set as default"
+                        : "Default mode cleared";
                 }
                 else
                 {
-                    await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "Save Error",
+                        result.ErrorMessage,
+                        Enum_ErrorSeverity.Error
+                    );
                     // Revert checkbox
                     IsManualModeDefault = !isChecked;
                 }
             }
             catch (Exception ex)
             {
-                await _errorHandler.HandleErrorAsync($"Failed to set default mode: {ex.Message}",
-                    Enum_ErrorSeverity.Error, ex, true);
+                await _errorHandler.HandleErrorAsync(
+                    $"Failed to set default mode: {ex.Message}",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
                 // Revert checkbox
                 IsManualModeDefault = !isChecked;
             }
@@ -405,7 +469,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 string? newMode = isChecked ? "edit" : null;
 
-                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(currentUser.WindowsUsername, newMode);
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(
+                    currentUser.WindowsUsername,
+                    newMode
+                );
 
                 if (result.IsSuccess)
                 {
@@ -425,15 +492,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
                 else
                 {
-                    await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "Save Error",
+                        result.ErrorMessage,
+                        Enum_ErrorSeverity.Error
+                    );
                     // Revert checkbox
                     IsEditModeDefault = !isChecked;
                 }
             }
             catch (Exception ex)
             {
-                await _errorHandler.HandleErrorAsync($"Failed to set default mode: {ex.Message}",
-                    Enum_ErrorSeverity.Error, ex, true);
+                await _errorHandler.HandleErrorAsync(
+                    $"Failed to set default mode: {ex.Message}",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
                 // Revert checkbox
                 IsEditModeDefault = !isChecked;
             }
@@ -471,4 +546,3 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #endregion
     }
 }
-

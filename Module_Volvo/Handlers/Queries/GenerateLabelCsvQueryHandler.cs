@@ -16,7 +16,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// Handler for <see cref="GenerateLabelQuery"/> — loads the shipment and its lines from the
 /// database, runs the component explosion, and returns a human-readable summary string.
 /// </summary>
-public class GenerateLabelQueryHandler : IRequestHandler<GenerateLabelQuery, Model_Dao_Result<string>>
+public class GenerateLabelQueryHandler
+    : IRequestHandler<GenerateLabelQuery, Model_Dao_Result<string>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
@@ -31,7 +32,8 @@ public class GenerateLabelQueryHandler : IRequestHandler<GenerateLabelQuery, Mod
         Dao_VolvoPart partDao,
         Dao_VolvoPartComponent componentDao,
         IService_VolvoAuthorization authService,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger
+    )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
@@ -41,7 +43,10 @@ public class GenerateLabelQueryHandler : IRequestHandler<GenerateLabelQuery, Mod
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Model_Dao_Result<string>> Handle(GenerateLabelQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<string>> Handle(
+        GenerateLabelQuery request,
+        CancellationToken cancellationToken
+    )
     {
         return await Helper_VolvoShipmentCalculations.GenerateLabelAsync(
             _shipmentDao,
@@ -50,6 +55,7 @@ public class GenerateLabelQueryHandler : IRequestHandler<GenerateLabelQuery, Mod
             _componentDao,
             _authService,
             _logger,
-            request.ShipmentId);
+            request.ShipmentId
+        );
     }
 }

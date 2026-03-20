@@ -1,13 +1,14 @@
-﻿<Page x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_WorkflowView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:viewmodels="using:MTM_Receiving_Application.Module_Dunnage.ViewModels"
-      xmlns:views="using:MTM_Receiving_Application.Module_Dunnage.Views"
-      xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
-      mc:Ignorable="d">
-
+﻿<Page
+    x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_WorkflowView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Dunnage.ViewModels"
+    xmlns:views="using:MTM_Receiving_Application.Module_Dunnage.Views"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    mc:Ignorable="d"
+>
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
@@ -20,8 +21,7 @@
         </Grid.RowDefinitions>
 
         <!-- Content Area -->
-        <Grid Grid.Row="1"
-              Margin="16,12,16,16">
+        <Grid Grid.Row="1" Margin="16,12,16,16">
             <!-- Mode Selection View -->
             <views:View_Dunnage_ModeSelectionView Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
@@ -32,7 +32,10 @@
 
             <views:View_Dunnage_QuantityEntryView Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <views:View_Dunnage_DetailsEntryView x:Name="DetailsEntryView" Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:View_Dunnage_DetailsEntryView
+                x:Name="DetailsEntryView"
+                Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
 
             <views:View_Dunnage_ReviewView Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
@@ -43,8 +46,7 @@
         </Grid>
 
         <!-- Navigation Buttons -->
-        <Grid Grid.Row="2"
-              Margin="24">
+        <Grid Grid.Row="2" Margin="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -52,134 +54,159 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left-aligned buttons -->
-            <StackPanel Grid.Column="0"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Left"
-                        Spacing="12">
+            <StackPanel
+                Grid.Column="0"
+                Orientation="Horizontal"
+                HorizontalAlignment="Left"
+                Spacing="12"
+            >
                 <!-- Mode Selection Button (visible in wizard steps) -->
-                <Button Content="Mode Selection"
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <Button Content="Mode Selection"
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <Button Content="Mode Selection"
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <Button Content="Mode Selection"
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button
+                    Content="Mode Selection"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+                <Button
+                    Content="Mode Selection"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+                <Button
+                    Content="Mode Selection"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+                <Button
+                    Content="Mode Selection"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
 
-                <Button Content="Mode Selection"
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <Button Content="Mode Selection"
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button
+                    Content="Mode Selection"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+                <Button
+                    Content="Mode Selection"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
 
-                <Button Content="Clear Label Data"
+                <Button
+                    Content="Clear Label Data"
                     Command="{x:Bind ViewModel.ClearLabelDataCommand}"
                     ToolTipService.ToolTip="Archive the active dunnage label queue to history and clear the queue"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
                     Background="Transparent"
                     BorderBrush="Transparent"
-                    Foreground="Red"/>
+                    Foreground="Red"
+                />
             </StackPanel>
 
             <!-- Center help button -->
-            <Button Grid.Column="1"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Padding="12,8"
-                    Click="HelpButton_Click"
-                    ToolTipService.ToolTip="Click for help about the current step">
-                <StackPanel Orientation="Horizontal"
-                            Spacing="8">
-                    <FontIcon Glyph="&#xE946;"
-                              FontSize="16" />
+            <Button
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                Style="{StaticResource AccentButtonStyle}"
+                Padding="12,8"
+                Click="HelpButton_Click"
+                ToolTipService.ToolTip="Click for help about the current step"
+            >
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE946;" FontSize="16" />
                     <TextBlock Text="Help" />
                 </StackPanel>
             </Button>
 
             <!-- Right-aligned navigation buttons (wizard flow) -->
-            <StackPanel Grid.Column="2"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Spacing="12">
+            <StackPanel
+                Grid.Column="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="12"
+            >
                 <!-- Back Button (not visible on first wizard step) -->
-                <Button Content="Back"
-                        Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick"
-                        ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)">
+                <Button
+                    Content="Back"
+                    Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnBackClick"
+                    ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Left"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Left" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Back"
-                        Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick"
-                        ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)">
+                <Button
+                    Content="Back"
+                    Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnBackClick"
+                    ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Left"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Left" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Back"
-                        Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick"
-                        ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)">
+                <Button
+                    Content="Back"
+                    Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnBackClick"
+                    ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Left"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Left" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
 
                 <!-- Next Button (wizard flow) -->
-                <Button Content="Next"
-                        Style="{StaticResource AccentButtonStyle}"
-                        Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick"
-                        ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)">
+                <Button
+                    Content="Next"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnNextClick"
+                    ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Right"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Right" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Next"
-                        Style="{StaticResource AccentButtonStyle}"
-                        Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick"
-                        ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)">
+                <Button
+                    Content="Next"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnNextClick"
+                    ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Right"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Right" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Next"
-                        Style="{StaticResource AccentButtonStyle}"
-                        Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick"
-                        ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)">
+                <Button
+                    Content="Next"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnNextClick"
+                    ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Right"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Right" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Save &amp; Review"
-                        Style="{StaticResource AccentButtonStyle}"
-                        Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnSaveAndReviewClick"
-                        ToolTipService.ToolTip="Save entry and proceed to review (Ctrl+Right)">
+                <Button
+                    Content="Save &amp; Review"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="OnSaveAndReviewClick"
+                    ToolTipService.ToolTip="Save entry and proceed to review (Ctrl+Right)"
+                >
                     <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Right"
-                                             Modifiers="Control" />
+                        <KeyboardAccelerator Key="Right" Modifiers="Control" />
                     </Button.KeyboardAccelerators>
                 </Button>
             </StackPanel>

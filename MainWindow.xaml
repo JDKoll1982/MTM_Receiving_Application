@@ -8,149 +8,172 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d"
-    
     x:Name="MainWindowRoot"
-    Title="MTM_Receiving_Application">
-
+    Title="MTM_Receiving_Application"
+>
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Custom Title Bar Area (when ExtendsContentIntoTitleBar = true) -->
-        <Grid x:Name="AppTitleBar" 
-              Grid.Row="0"
-              Height="48">
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="48">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
-                <ColumnDefinition x:Name="PaneToggleColumn" Width="Auto"/>
-                <ColumnDefinition x:Name="IconColumn" Width="Auto"/>
-                <ColumnDefinition x:Name="TitleColumn" Width="Auto"/>
-                <ColumnDefinition x:Name="LeftDragColumn" Width="*"/>
-                <ColumnDefinition x:Name="SearchColumn" Width="4*" MinWidth="220"/>
-                <ColumnDefinition x:Name="RightDragColumn" Width="*" MinWidth="48"/>
-                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0" />
+                <ColumnDefinition x:Name="PaneToggleColumn" Width="Auto" />
+                <ColumnDefinition x:Name="IconColumn" Width="Auto" />
+                <ColumnDefinition x:Name="TitleColumn" Width="Auto" />
+                <ColumnDefinition x:Name="LeftDragColumn" Width="*" />
+                <ColumnDefinition x:Name="SearchColumn" Width="4*" MinWidth="220" />
+                <ColumnDefinition x:Name="RightDragColumn" Width="*" MinWidth="48" />
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0" />
             </Grid.ColumnDefinitions>
-            
+
             <!-- NavigationView Pane Toggle Button -->
-            <Button x:Name="PaneToggleButton"
-                    Grid.Column="1"
-                    Width="48"
-                    Height="48"
-                    Style="{StaticResource PaneToggleButtonStyle}"
-                    Click="PaneToggleButton_Click"
-                    VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE700;" FontSize="16"/>
+            <Button
+                x:Name="PaneToggleButton"
+                Grid.Column="1"
+                Width="48"
+                Height="48"
+                Style="{StaticResource PaneToggleButtonStyle}"
+                Click="PaneToggleButton_Click"
+                VerticalAlignment="Center"
+            >
+                <FontIcon Glyph="&#xE700;" FontSize="16" />
             </Button>
-            
+
             <!-- App Icon -->
-            <Image x:Name="TitleBarIcon" 
-                   Source="Assets/MTMIcon.ico"
-                   Grid.Column="2"
-                   Width="16" 
-                   Height="16" 
-                   Margin="8,0,4,0"/>
-            
+            <Image
+                x:Name="TitleBarIcon"
+                Source="Assets/MTMIcon.ico"
+                Grid.Column="2"
+                Width="16"
+                Height="16"
+                Margin="8,0,4,0"
+            />
+
             <!-- App Title -->
-            <TextBlock x:Name="TitleBarTextBlock"
-                       Text="MTM Receiving Application"
-                       FontSize="16"
-                       Grid.Column="3"
-                       VerticalAlignment="Center"
-                       Margin="4,0,0,0"
-                       Style="{StaticResource TitleTextBlockStyle }"/>
-            
+            <TextBlock
+                x:Name="TitleBarTextBlock"
+                Text="MTM Receiving Application"
+                FontSize="16"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Margin="4,0,0,0"
+                Style="{StaticResource TitleTextBlockStyle }"
+            />
+
             <!-- Search Box -->
-            <AutoSuggestBox x:Name="TitleBarSearchBox" 
-                            Grid.Column="5" 
-                            QueryIcon="Find"
-                            PlaceholderText="Search"
-                            VerticalAlignment="Center"
-                            MaxWidth="600"
-                            Margin="8,0,8,0"/>
+            <AutoSuggestBox
+                x:Name="TitleBarSearchBox"
+                Grid.Column="5"
+                QueryIcon="Find"
+                PlaceholderText="Search"
+                VerticalAlignment="Center"
+                MaxWidth="600"
+                Margin="8,0,8,0"
+            />
         </Grid>
 
-        <NavigationView x:Name="NavView"
-                        Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        Margin="0,20,20,20"
-                        PaneDisplayMode="Left"
-                        IsSettingsVisible="True"
-                        IsPaneToggleButtonVisible="False"
-                        IsBackButtonVisible="Collapsed"
-                        SelectionChanged="NavView_SelectionChanged">
-
-
-           
+        <NavigationView
+            x:Name="NavView"
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            Margin="0,20,20,20"
+            PaneDisplayMode="Left"
+            IsSettingsVisible="True"
+            IsPaneToggleButtonVisible="False"
+            IsBackButtonVisible="Collapsed"
+            SelectionChanged="NavView_SelectionChanged"
+        >
             <NavigationView.Header>
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        
-                        <TextBlock x:Name="PageTitleTextBlock"
-                                   Text="Dashboard" 
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   VerticalAlignment="Center"
-                                   Margin="16,0"/>
-                                   
-                        <StackPanel Grid.Column="1" 
-                                    Orientation="Horizontal" 
-                                    Spacing="12" 
-                                    Margin="0,0,24,0"
-                                    VerticalAlignment="Center">
-                            <PersonPicture x:Name="UserPicture"
-                                           Height="32"
-                                           Width="32"/>
-                            <TextBlock x:Name="UserDisplayTextBlock"
-                                       Text="Not Logged In"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+                        <TextBlock
+                            x:Name="PageTitleTextBlock"
+                            Text="Dashboard"
+                            Style="{StaticResource TitleTextBlockStyle}"
+                            VerticalAlignment="Center"
+                            Margin="16,0"
+                        />
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="12"
+                            Margin="0,0,24,0"
+                            VerticalAlignment="Center"
+                        >
+                            <PersonPicture x:Name="UserPicture" Height="32" Width="32" />
+                            <TextBlock
+                                x:Name="UserDisplayTextBlock"
+                                Text="Not Logged In"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                            />
                         </StackPanel>
                     </Grid>
-                    <InfoBar x:Name="StatusInfoBar"
-                             IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
-                             Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}"
-                             Message="{x:Bind ViewModel.NotificationService.StatusMessage, Mode=OneWay}"
-                             IsClosable="True"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Margin="0,20,0,20"/>
+                    <InfoBar
+                        x:Name="StatusInfoBar"
+                        IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
+                        Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}"
+                        Message="{x:Bind ViewModel.NotificationService.StatusMessage, Mode=OneWay}"
+                        IsClosable="True"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0,20,0,20"
+                    />
                 </StackPanel>
             </NavigationView.Header>
 
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Receiving Labels" Tag="ReceivingWorkflowView" Margin="0,0,0,4">
+                <NavigationViewItem
+                    Content="Receiving Labels"
+                    Tag="ReceivingWorkflowView"
+                    Margin="0,0,0,4"
+                >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Dunnage Labels" Tag="DunnageLabelPage" Margin="0,0,0,4">
+                <NavigationViewItem
+                    Content="Dunnage Labels"
+                    Tag="DunnageLabelPage"
+                    Margin="0,0,0,4"
+                >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7B8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Volvo Dunnage Requisition" Tag="VolvoShipmentEntry" Margin="0,0,0,4">
+                <NavigationViewItem
+                    Content="Volvo Dunnage Requisition"
+                    Tag="VolvoShipmentEntry"
+                    Margin="0,0,0,4"
+                >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7C1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Name="BulkInventoryNavItem"
-                                    Content="Bulk Inventory"
-                                    Tag="BulkInventoryPage"
-                                    Margin="0,0,0,4"
-                                    IsEnabled="False">
+                <NavigationViewItem
+                    x:Name="BulkInventoryNavItem"
+                    Content="Bulk Inventory"
+                    Tag="BulkInventoryPage"
+                    Margin="0,0,0,4"
+                    IsEnabled="False"
+                >
                     <ToolTipService.ToolTip>
                         <ToolTip Content="Under Development — Coming Soon" />
                     </ToolTipService.ToolTip>
@@ -158,20 +181,31 @@
                         <FontIcon Glyph="&#xE8B7;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="End of Day Reports" Tag="ReportingMainPage" Margin="0,0,0,4">
+                <NavigationViewItem
+                    Content="End of Day Reports"
+                    Tag="ReportingMainPage"
+                    Margin="0,0,0,4"
+                >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE9F9;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Ship/Rec Tools" Tag="ShipRecToolsPage" Margin="0,0,0,4">
+                <NavigationViewItem
+                    Content="Ship/Rec Tools"
+                    Tag="ShipRecToolsPage"
+                    Margin="0,0,0,4"
+                >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE90F;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
 
-            <Frame x:Name="ContentFrame" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"  />
+            <Frame
+                x:Name="ContentFrame"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+            />
         </NavigationView>
     </Grid>
 </Window>
-

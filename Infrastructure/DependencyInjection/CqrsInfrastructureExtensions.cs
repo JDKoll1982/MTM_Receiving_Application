@@ -1,8 +1,8 @@
+using System.Reflection;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using MTM_Receiving_Application.Module_Core.Behaviors;
-using System.Reflection;
 
 namespace MTM_Receiving_Application.Infrastructure.DependencyInjection;
 

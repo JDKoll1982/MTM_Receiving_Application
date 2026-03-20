@@ -1,17 +1,24 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Receiving.Services;
-using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Contracts.Services;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Data;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Services;
+using MTM_Receiving_Application.Module_Bulk_Inventory.ViewModels;
+using MTM_Receiving_Application.Module_Bulk_Inventory.Views;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Services;
+using MTM_Receiving_Application.Module_Core.Services.Startup;
+using MTM_Receiving_Application.Module_Core.Services.UI;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Views;
-using MTM_Receiving_Application.Module_Volvo.Data;
-using MTM_Receiving_Application.Module_Volvo.Services;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Receiving.Services;
+using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Data;
 using MTM_Receiving_Application.Module_Reporting.Services;
@@ -24,18 +31,11 @@ using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 using MTM_Receiving_Application.Module_Settings.DeveloperTools.Data;
 using MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Services.Startup;
-using MTM_Receiving_Application.Module_Core.Services;
-using MTM_Receiving_Application.Module_Core.Services.UI;
-using MTM_Receiving_Application.Module_Bulk_Inventory.Contracts.Services;
-using MTM_Receiving_Application.Module_Bulk_Inventory.Data;
-using MTM_Receiving_Application.Module_Bulk_Inventory.Services;
-using MTM_Receiving_Application.Module_Bulk_Inventory.ViewModels;
-using MTM_Receiving_Application.Module_Bulk_Inventory.Views;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Data;
+using MTM_Receiving_Application.Module_Volvo.Services;
 
 namespace MTM_Receiving_Application.Infrastructure.DependencyInjection;
 
@@ -53,7 +53,8 @@ public static class ModuleServicesExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddModuleServices(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         services.AddReceivingModule(configuration);
         services.AddDunnageModule(configuration);
@@ -75,9 +76,11 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static IServiceCollection AddReceivingModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAOs (Singleton - Stateless data access objects)
@@ -90,8 +93,9 @@ public static class ModuleServicesExtensions
         // Services (Singleton - Stateless business logic)
         services.AddSingleton<IService_MySQL_Receiving, Service_MySQL_Receiving>();
         services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
-        services.AddSingleton<IService_MySQL_PackagePreferences>(_ =>
-            new Service_MySQL_PackagePreferences(mySqlConnectionString));
+        services.AddSingleton<IService_MySQL_PackagePreferences>(
+            _ => new Service_MySQL_PackagePreferences(mySqlConnectionString)
+        );
         services.AddSingleton<IService_MySQL_QualityHold, Service_MySQL_QualityHold>();
         services.AddSingleton<IService_QualityHoldWarning, Service_QualityHoldWarning>();
         services.AddSingleton<IService_SessionManager>(sp =>
@@ -111,8 +115,10 @@ public static class ModuleServicesExtensions
         services.AddTransient<IService_Pagination, Service_Pagination>();
 
         // Settings
-        services.AddSingleton<Module_Receiving.Contracts.IService_ReceivingSettings,
-            Module_Receiving.Services.Service_ReceivingSettings>();
+        services.AddSingleton<
+            Module_Receiving.Contracts.IService_ReceivingSettings,
+            Module_Receiving.Services.Service_ReceivingSettings
+        >();
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -149,9 +155,11 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static IServiceCollection AddDunnageModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAOs (Singleton - Stateless data access)
@@ -209,7 +217,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog>();
 
-
         return services;
     }
 
@@ -221,9 +228,11 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static IServiceCollection AddVolvoModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAOs (Singleton)
@@ -232,7 +241,9 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_VolvoPart(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_VolvoPartComponent(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_VolvoSettings(mySqlConnectionString));
-        services.AddSingleton<IDao_VolvoLabelHistory>(_ => new Dao_VolvoLabelHistory(mySqlConnectionString));
+        services.AddSingleton<IDao_VolvoLabelHistory>(_ => new Dao_VolvoLabelHistory(
+            mySqlConnectionString
+        ));
 
         // Services (Singleton)
         services.AddSingleton<IService_VolvoAuthorization>(sp =>
@@ -269,9 +280,11 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static IServiceCollection AddReportingModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAOs (Singleton)
@@ -305,9 +318,11 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static IServiceCollection AddSettingsModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // Settings Core DAOs (Singleton)
@@ -466,9 +481,10 @@ public static class ModuleServicesExtensions
     /// <param name="configuration"></param>
     private static IServiceCollection AddSharedModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        _ = configuration;  // Currently unused, preserved for future configuration needs
+        _ = configuration; // Currently unused, preserved for future configuration needs
         // Startup Service (Transient - Per-startup execution)
         services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
@@ -504,9 +520,9 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException">Thrown when InforVisual connection string is missing.</exception>
     private static IServiceCollection AddShipRecToolsModule(
         this IServiceCollection services,
-        IConfiguration _)
+        IConfiguration _
+    )
     {
-
         // Services (Singleton)
         services.AddSingleton<IService_ShipRecTools_Navigation, Service_ShipRecTools_Navigation>();
         services.AddSingleton<IService_Tool_OutsideServiceHistory>(sp =>
@@ -537,9 +553,11 @@ public static class ModuleServicesExtensions
     /// <exception cref="InvalidOperationException">Thrown when MySql connection string is not found.</exception>
     private static IServiceCollection AddBulkInventoryModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAO (Singleton — stateless, reusable)
@@ -547,8 +565,14 @@ public static class ModuleServicesExtensions
 
         // Services (Singleton)
         services.AddSingleton<IService_MySQL_BulkInventory, Service_MySQL_BulkInventory>();
-        services.AddSingleton<IService_VisualInventoryAutomation, Service_VisualInventoryAutomation>();
-        services.AddSingleton<IService_BulkInventory_FuzzySearch, Service_BulkInventory_FuzzySearch>();
+        services.AddSingleton<
+            IService_VisualInventoryAutomation,
+            Service_VisualInventoryAutomation
+        >();
+        services.AddSingleton<
+            IService_BulkInventory_FuzzySearch,
+            Service_BulkInventory_FuzzySearch
+        >();
 
         // ViewModels (Transient — new instance per navigation)
         services.AddTransient<ViewModel_BulkInventory_DataEntry>();

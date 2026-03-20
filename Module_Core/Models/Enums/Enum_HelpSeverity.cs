@@ -18,6 +18,5 @@ public enum Enum_HelpSeverity
     /// <summary>
     /// Critical information, must read
     /// </summary>
-    Critical = 2
+    Critical = 2,
 }
-

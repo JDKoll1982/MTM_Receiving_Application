@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Core.Data.InforVisual;
 
@@ -14,7 +14,10 @@ public class Dao_InforVisualPO
     private readonly string _connectionString;
     private readonly IService_LoggingUtility? _logger;
 
-    public Dao_InforVisualPO(string inforVisualConnectionString, IService_LoggingUtility? logger = null)
+    public Dao_InforVisualPO(
+        string inforVisualConnectionString,
+        IService_LoggingUtility? logger = null
+    )
     {
         ValidateReadOnlyConnection(inforVisualConnectionString);
         _connectionString = inforVisualConnectionString;
@@ -35,20 +38,25 @@ public class Dao_InforVisualPO
             if (builder.ApplicationIntent != ApplicationIntent.ReadOnly)
             {
                 throw new InvalidOperationException(
-                    $"CONSTITUTIONAL VIOLATION: Infor Visual DAO requires ApplicationIntent=ReadOnly. " +
-                    $"Current ApplicationIntent: {builder.ApplicationIntent}. " +
-                    $"Writing to Infor Visual ERP database is STRICTLY PROHIBITED. " +
-                    "See Constitution Principle X: Infor Visual DAO Architecture.");
+                    $"CONSTITUTIONAL VIOLATION: Infor Visual DAO requires ApplicationIntent=ReadOnly. "
+                        + $"Current ApplicationIntent: {builder.ApplicationIntent}. "
+                        + $"Writing to Infor Visual ERP database is STRICTLY PROHIBITED. "
+                        + "See Constitution Principle X: Infor Visual DAO Architecture."
+                );
             }
         }
         catch (ArgumentException ex)
         {
             throw new InvalidOperationException(
-                $"Invalid Infor Visual connection string format: {ex.Message}", ex);
+                $"Invalid Infor Visual connection string format: {ex.Message}",
+                ex
+            );
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetByPoNumberAsync(string poNumber)
+    public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetByPoNumberAsync(
+        string poNumber
+    )
     {
         try
         {
@@ -65,22 +73,27 @@ public class Dao_InforVisualPO
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                list.Add(new Model_InforVisualPOLine
-                {
-                    PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
-                    PoLine = Convert.ToInt32(reader["PoLine"]),
-                    PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
-                    PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
-                    OrderedQty = Convert.ToDecimal(reader["OrderedQty"]),
-                    ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
-                    RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
-                    UnitOfMeasure = reader["UnitOfMeasure"].ToString() ?? "EA",
-                    DueDate = reader["DueDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["DueDate"]),
-                    VendorCode = reader["VendorCode"].ToString() ?? string.Empty,
-                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
-                    PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
-                    SiteId = reader["SiteId"].ToString() ?? "002"
-                });
+                list.Add(
+                    new Model_InforVisualPOLine
+                    {
+                        PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
+                        PoLine = Convert.ToInt32(reader["PoLine"]),
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                        OrderedQty = Convert.ToDecimal(reader["OrderedQty"]),
+                        ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
+                        RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
+                        UnitOfMeasure = reader["UnitOfMeasure"].ToString() ?? "EA",
+                        DueDate =
+                            reader["DueDate"] == DBNull.Value
+                                ? null
+                                : Convert.ToDateTime(reader["DueDate"]),
+                        VendorCode = reader["VendorCode"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        SiteId = reader["SiteId"].ToString() ?? "002",
+                    }
+                );
             }
 
             _logger?.LogInfo($"Retrieved {list.Count} lines for PO {poNumber}");
@@ -91,7 +104,8 @@ public class Dao_InforVisualPO
             _logger?.LogError($"Error retrieving PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>(
                 $"Error retrieving PO {poNumber}: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 
@@ -117,8 +131,8 @@ public class Dao_InforVisualPO
             _logger?.LogError($"Error validating PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<bool>(
                 $"Error validating PO {poNumber}: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 }
-

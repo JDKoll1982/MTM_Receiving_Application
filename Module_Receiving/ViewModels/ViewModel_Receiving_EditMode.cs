@@ -1,17 +1,17 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -44,16 +44,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ObservableCollection<Model_EditModeColumn> ColumnSettings { get; } = new();
 
         /// <summary>Options shown in the "Search by" ComboBox.</summary>
-        public ObservableCollection<string> SearchByOptions { get; } = new()
-        {
-            "All Fields",
-            "Part ID",
-            "PO Number",
-            "Heat/Lot",
-            "Employee #",
-            "Part Description",
-            "Vendor",
-        };
+        public ObservableCollection<string> SearchByOptions { get; } =
+            new()
+            {
+                "All Fields",
+                "Part ID",
+                "PO Number",
+                "Heat/Lot",
+                "Employee #",
+                "Part Description",
+                "Vendor",
+            };
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } =
             new(Enum.GetValues<Enum_PackageType>());
@@ -137,28 +138,71 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private int _gotoPageNumber = 1;
 
         // ------------------------------------------------------------------ UI text (loaded from settings)
-        [ObservableProperty] private string _editModeLoadDataFromText = "Load Data From:";
-        [ObservableProperty] private string _editModeCurrentMemoryText = "Current Memory";
-        [ObservableProperty] private string _editModeCurrentLabelsText = "Current Labels";
-        [ObservableProperty] private string _editModeHistoryText = "History";
-        [ObservableProperty] private string _editModeFilterDateText = "Filter Date:";
-        [ObservableProperty] private string _editModeToText = "to";
-        [ObservableProperty] private string _editModeLastWeekText = "Last Week";
-        [ObservableProperty] private string _editModeTodayText = "Today";
-        [ObservableProperty] private string _editModeThisWeekText = "This Week";
-        [ObservableProperty] private string _editModeShowAllText = "Show All";
-        [ObservableProperty] private string _editModePageText = "Page";
-        [ObservableProperty] private string _editModeOfText = "of";
-        [ObservableProperty] private string _editModeGoText = "Go";
-        [ObservableProperty] private string _editModeSaveAndFinishText = "Save & Finish";
-        [ObservableProperty] private string _editModeRemoveRowText = "Remove Row";
-        [ObservableProperty] private string _editModeColumnLoadNumberText = "Load #";
-        [ObservableProperty] private string _editModeColumnPartIdText = "Part ID";
-        [ObservableProperty] private string _editModeColumnWeightQtyText = "Weight/Qty";
-        [ObservableProperty] private string _editModeColumnHeatLotText = "Heat/Lot";
-        [ObservableProperty] private string _editModeColumnPkgTypeText = "Pkg Type";
-        [ObservableProperty] private string _editModeColumnPkgsPerLoadText = "Pkgs/Load";
-        [ObservableProperty] private string _editModeColumnWtPerPkgText = "Wt/Pkg";
+        [ObservableProperty]
+        private string _editModeLoadDataFromText = "Load Data From:";
+
+        [ObservableProperty]
+        private string _editModeCurrentMemoryText = "Current Memory";
+
+        [ObservableProperty]
+        private string _editModeCurrentLabelsText = "Current Labels";
+
+        [ObservableProperty]
+        private string _editModeHistoryText = "History";
+
+        [ObservableProperty]
+        private string _editModeFilterDateText = "Filter Date:";
+
+        [ObservableProperty]
+        private string _editModeToText = "to";
+
+        [ObservableProperty]
+        private string _editModeLastWeekText = "Last Week";
+
+        [ObservableProperty]
+        private string _editModeTodayText = "Today";
+
+        [ObservableProperty]
+        private string _editModeThisWeekText = "This Week";
+
+        [ObservableProperty]
+        private string _editModeShowAllText = "Show All";
+
+        [ObservableProperty]
+        private string _editModePageText = "Page";
+
+        [ObservableProperty]
+        private string _editModeOfText = "of";
+
+        [ObservableProperty]
+        private string _editModeGoText = "Go";
+
+        [ObservableProperty]
+        private string _editModeSaveAndFinishText = "Save & Finish";
+
+        [ObservableProperty]
+        private string _editModeRemoveRowText = "Remove Row";
+
+        [ObservableProperty]
+        private string _editModeColumnLoadNumberText = "Load #";
+
+        [ObservableProperty]
+        private string _editModeColumnPartIdText = "Part ID";
+
+        [ObservableProperty]
+        private string _editModeColumnWeightQtyText = "Weight/Qty";
+
+        [ObservableProperty]
+        private string _editModeColumnHeatLotText = "Heat/Lot";
+
+        [ObservableProperty]
+        private string _editModeColumnPkgTypeText = "Pkg Type";
+
+        [ObservableProperty]
+        private string _editModeColumnPkgsPerLoadText = "Pkgs/Load";
+
+        [ObservableProperty]
+        private string _editModeColumnWtPerPkgText = "Wt/Pkg";
 
         // ------------------------------------------------------------------ event — tells the View to open the column-chooser dialog
         /// <summary>Raised when the user clicks the "Columns" toolbar button.</summary>
@@ -176,7 +220,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
             IService_Notification notificationService,
-            IService_ReceivingValidation validationService)
+            IService_ReceivingValidation validationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _windowService = windowService;
@@ -197,7 +242,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             _logger.LogInfo("Edit Mode initialized");
 
-            _ = LoadUITextAsync().ContinueWith(_ => LoadColumnVisibilityAsync(), TaskScheduler.Default);
+            _ = LoadUITextAsync()
+                .ContinueWith(_ => LoadColumnVisibilityAsync(), TaskScheduler.Default);
         }
 
         private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -207,44 +253,92 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
-            _ = _workflowService.RequestedEditDataSource == Enum_DataSourceType.CurrentLabels
-                ? LoadFromCurrentLabelsAsync()
-                : LoadFromCurrentMemoryAsync();
+            _ =
+                _workflowService.RequestedEditDataSource == Enum_DataSourceType.CurrentLabels
+                    ? LoadFromCurrentLabelsAsync()
+                    : LoadFromCurrentMemoryAsync();
         }
 
         private async Task LoadUITextAsync()
         {
             try
             {
-                EditModeLoadDataFromText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeLoadDataFrom);
-                EditModeCurrentMemoryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeCurrentMemory);
-                EditModeCurrentLabelsText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeCurrentLabels);
-                EditModeHistoryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeHistory);
-                EditModeFilterDateText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeFilterDate);
-                EditModeToText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeTo);
-                EditModeLastWeekText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeLastWeek);
-                EditModeTodayText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeToday);
-                EditModeThisWeekText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeThisWeek);
-                EditModeShowAllText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeShowAll);
-                EditModePageText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModePage);
-                EditModeOfText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeOf);
-                EditModeGoText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeGo);
-                EditModeSaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeSaveAndFinish);
-                EditModeRemoveRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeRemoveRow);
+                EditModeLoadDataFromText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeLoadDataFrom
+                );
+                EditModeCurrentMemoryText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeCurrentMemory
+                );
+                EditModeCurrentLabelsText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeCurrentLabels
+                );
+                EditModeHistoryText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeHistory
+                );
+                EditModeFilterDateText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeFilterDate
+                );
+                EditModeToText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeTo
+                );
+                EditModeLastWeekText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeLastWeek
+                );
+                EditModeTodayText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeToday
+                );
+                EditModeThisWeekText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeThisWeek
+                );
+                EditModeShowAllText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeShowAll
+                );
+                EditModePageText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModePage
+                );
+                EditModeOfText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeOf
+                );
+                EditModeGoText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeGo
+                );
+                EditModeSaveAndFinishText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeSaveAndFinish
+                );
+                EditModeRemoveRowText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeRemoveRow
+                );
 
-                EditModeColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnLoadNumber);
-                EditModeColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPartId);
-                EditModeColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnWeightQty);
-                EditModeColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnHeatLot);
-                EditModeColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPkgType);
-                EditModeColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPkgsPerLoad);
-                EditModeColumnWtPerPkgText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg);
+                EditModeColumnLoadNumberText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnLoadNumber
+                );
+                EditModeColumnPartIdText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnPartId
+                );
+                EditModeColumnWeightQtyText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnWeightQty
+                );
+                EditModeColumnHeatLotText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnHeatLot
+                );
+                EditModeColumnPkgTypeText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnPkgType
+                );
+                EditModeColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnPkgsPerLoad
+                );
+                EditModeColumnWtPerPkgText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg
+                );
 
                 _logger.LogInfo("Edit Mode UI text loaded from settings successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading Edit Mode UI text from settings: {ex.Message}", ex);
+                _logger.LogError(
+                    $"Error loading Edit Mode UI text from settings: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -259,46 +353,66 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             try
             {
                 var stored = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeColumnVisibility, userId);
+                    ReceivingSettingsKeys.UiText.EditModeColumnVisibility,
+                    userId
+                );
 
                 var savedSearchBy = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeSearchByColumn, userId);
+                    ReceivingSettingsKeys.UiText.EditModeSearchByColumn,
+                    userId
+                );
 
-                if (!string.IsNullOrWhiteSpace(savedSearchBy) && SearchByOptions.Contains(savedSearchBy))
+                if (
+                    !string.IsNullOrWhiteSpace(savedSearchBy)
+                    && SearchByOptions.Contains(savedSearchBy)
+                )
                 {
                     SearchByColumnKey = savedSearchBy;
                 }
 
                 // Sort preference
                 var savedSortColumn = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeSortColumn, userId);
+                    ReceivingSettingsKeys.UiText.EditModeSortColumn,
+                    userId
+                );
                 var savedSortAscending = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeSortAscending, userId);
+                    ReceivingSettingsKeys.UiText.EditModeSortAscending,
+                    userId
+                );
 
                 SortColumn = savedSortColumn ?? string.Empty;
                 SortAscending = savedSortAscending != "false";
 
                 // Page-size preference
                 var savedPageSize = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModePageSize, userId);
+                    ReceivingSettingsKeys.UiText.EditModePageSize,
+                    userId
+                );
 
                 if (int.TryParse(savedPageSize, out int ps) && PageSizeOptions.Contains(ps))
                 {
-                    _selectedPageSize = ps;             // bypass partial callback — no data yet
+                    _selectedPageSize = ps; // bypass partial callback — no data yet
                     _paginationService.PageSize = ps;
                     OnPropertyChanged(nameof(SelectedPageSize));
                 }
 
                 var visibleKeys = new HashSet<string>(
-                    stored.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+                    stored.Split(
+                        ',',
+                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+                    )
+                );
 
                 ColumnSettings.Clear();
                 foreach (var col in BuildAllColumns())
                 {
-                    col.IsVisible = col.IsAlwaysVisible ||
-                                    (visibleKeys.Count == 0
-                                        ? IsDefaultVisible(col.Key)
-                                        : visibleKeys.Contains(col.Key));
+                    col.IsVisible =
+                        col.IsAlwaysVisible
+                        || (
+                            visibleKeys.Count == 0
+                                ? IsDefaultVisible(col.Key)
+                                : visibleKeys.Contains(col.Key)
+                        );
                     ColumnSettings.Add(col);
                 }
             }
@@ -323,24 +437,40 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                var visible = string.Join(",", ColumnSettings
-                    .Where(c => c.IsVisible)
-                    .Select(c => c.Key));
+                var visible = string.Join(
+                    ",",
+                    ColumnSettings.Where(c => c.IsVisible).Select(c => c.Key)
+                );
 
                 await _receivingSettings.SaveStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeColumnVisibility, visible, userId);
+                    ReceivingSettingsKeys.UiText.EditModeColumnVisibility,
+                    visible,
+                    userId
+                );
 
                 await _receivingSettings.SaveStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeSearchByColumn, SearchByColumnKey, userId);
+                    ReceivingSettingsKeys.UiText.EditModeSearchByColumn,
+                    SearchByColumnKey,
+                    userId
+                );
 
                 await _receivingSettings.SaveStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeSortColumn, SortColumn, userId);
+                    ReceivingSettingsKeys.UiText.EditModeSortColumn,
+                    SortColumn,
+                    userId
+                );
 
                 await _receivingSettings.SaveStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModeSortAscending, SortAscending ? "true" : "false", userId);
+                    ReceivingSettingsKeys.UiText.EditModeSortAscending,
+                    SortAscending ? "true" : "false",
+                    userId
+                );
 
                 await _receivingSettings.SaveStringAsync(
-                    ReceivingSettingsKeys.UiText.EditModePageSize, SelectedPageSize.ToString(), userId);
+                    ReceivingSettingsKeys.UiText.EditModePageSize,
+                    SelectedPageSize.ToString(),
+                    userId
+                );
             }
             catch (Exception ex)
             {
@@ -350,41 +480,59 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         /// <summary>Raises the event that tells the View to open the column-chooser dialog.</summary>
         [RelayCommand]
-        private void ShowColumnChooser() => ShowColumnChooserRequested?.Invoke(this, EventArgs.Empty);
+        private void ShowColumnChooser() =>
+            ShowColumnChooserRequested?.Invoke(this, EventArgs.Empty);
 
         // ------------------------------------------------------------------ column definitions
         private static IEnumerable<Model_EditModeColumn> BuildAllColumns() =>
-        [
-            new() { Key = "LoadNumber",                 Header = "Load #",            IsAlwaysVisible = true },
-            new() { Key = "ReceivedDate",               Header = "Received Date"                             },
-            new() { Key = "PartID",                     Header = "Part ID",           IsAlwaysVisible = true },
-            new() { Key = "PartType",                   Header = "Part Type"                                 },
-            new() { Key = "PONumber",                   Header = "PO Number"                                 },
-            new() { Key = "POLineNumber",               Header = "PO Line #"                                 },
-            new() { Key = "WeightQuantity",             Header = "Weight/Qty"                                },
-            new() { Key = "HeatLotNumber",              Header = "Heat/Lot"                                  },
-            new() { Key = "RemainingQuantity",          Header = "Remaining Qty"                             },
-            new() { Key = "PackagesPerLoad",            Header = "Pkgs/Load"                                 },
-            new() { Key = "PackageType",                Header = "Pkg Type"                                  },
-            new() { Key = "WeightPerPackage",           Header = "Wt/Pkg"                                    },
-            new() { Key = "IsNonPOItem",                Header = "Non-PO?"                                   },
-            new() { Key = "UserId",                     Header = "User"                                      },
-            new() { Key = "EmployeeNumber",             Header = "Employee #"                                },
-            new() { Key = "IsQualityHoldRequired",      Header = "QH Required?"                              },
-            new() { Key = "IsQualityHoldAcknowledged",  Header = "QH Acknowledged?"                          },
-            new() { Key = "QualityHoldRestrictionType", Header = "QH Restriction"                            },
-            new() { Key = "PartDescription",            Header = "Part Description"                          },
-            new() { Key = "UnitOfMeasure",              Header = "UOM"                                       },
-            new() { Key = "QtyOrdered",                 Header = "Qty Ordered"                               },
-            new() { Key = "POVendor",                   Header = "Vendor"                                    },
-            new() { Key = "POStatus",                   Header = "PO Status"                                 },
-            new() { Key = "PODueDate",                  Header = "PO Due Date"                               },
-        ];
+            [
+                new()
+                {
+                    Key = "LoadNumber",
+                    Header = "Load #",
+                    IsAlwaysVisible = true,
+                },
+                new() { Key = "ReceivedDate", Header = "Received Date" },
+                new()
+                {
+                    Key = "PartID",
+                    Header = "Part ID",
+                    IsAlwaysVisible = true,
+                },
+                new() { Key = "PartType", Header = "Part Type" },
+                new() { Key = "PONumber", Header = "PO Number" },
+                new() { Key = "POLineNumber", Header = "PO Line #" },
+                new() { Key = "WeightQuantity", Header = "Weight/Qty" },
+                new() { Key = "HeatLotNumber", Header = "Heat/Lot" },
+                new() { Key = "RemainingQuantity", Header = "Remaining Qty" },
+                new() { Key = "PackagesPerLoad", Header = "Pkgs/Load" },
+                new() { Key = "PackageType", Header = "Pkg Type" },
+                new() { Key = "WeightPerPackage", Header = "Wt/Pkg" },
+                new() { Key = "IsNonPOItem", Header = "Non-PO?" },
+                new() { Key = "UserId", Header = "User" },
+                new() { Key = "EmployeeNumber", Header = "Employee #" },
+                new() { Key = "IsQualityHoldRequired", Header = "QH Required?" },
+                new() { Key = "IsQualityHoldAcknowledged", Header = "QH Acknowledged?" },
+                new() { Key = "QualityHoldRestrictionType", Header = "QH Restriction" },
+                new() { Key = "PartDescription", Header = "Part Description" },
+                new() { Key = "UnitOfMeasure", Header = "UOM" },
+                new() { Key = "QtyOrdered", Header = "Qty Ordered" },
+                new() { Key = "POVendor", Header = "Vendor" },
+                new() { Key = "POStatus", Header = "PO Status" },
+                new() { Key = "PODueDate", Header = "PO Due Date" },
+            ];
 
-        private static bool IsDefaultVisible(string key) => key is
-            "LoadNumber" or "ReceivedDate" or "PartID" or "PONumber" or
-            "WeightQuantity" or "HeatLotNumber" or "PackagesPerLoad" or
-            "PackageType" or "WeightPerPackage";
+        private static bool IsDefaultVisible(string key) =>
+            key
+                is "LoadNumber"
+                    or "ReceivedDate"
+                    or "PartID"
+                    or "PONumber"
+                    or "WeightQuantity"
+                    or "HeatLotNumber"
+                    or "PackagesPerLoad"
+                    or "PackageType"
+                    or "WeightPerPackage";
 
         // ------------------------------------------------------------------ search
         [RelayCommand]
@@ -401,35 +549,122 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         private static List<Model_ReceivingLoad> ApplySort(
-            List<Model_ReceivingLoad> source, string column, bool ascending)
+            List<Model_ReceivingLoad> source,
+            string column,
+            bool ascending
+        )
         {
             Func<List<Model_ReceivingLoad>, List<Model_ReceivingLoad>> sorter = column switch
             {
-                "LoadNumber" => lst => ascending ? lst.OrderBy(l => l.LoadNumber).ToList() : lst.OrderByDescending(l => l.LoadNumber).ToList(),
-                "ReceivedDate" => lst => ascending ? lst.OrderBy(l => l.ReceivedDate).ToList() : lst.OrderByDescending(l => l.ReceivedDate).ToList(),
-                "PartID" => lst => ascending ? lst.OrderBy(l => l.PartID, StringComparer.OrdinalIgnoreCase).ToList() : lst.OrderByDescending(l => l.PartID, StringComparer.OrdinalIgnoreCase).ToList(),
-                "PartType" => lst => ascending ? lst.OrderBy(l => l.PartType).ToList() : lst.OrderByDescending(l => l.PartType).ToList(),
-                "PONumber" => lst => ascending ? lst.OrderBy(l => l.PoNumber).ToList() : lst.OrderByDescending(l => l.PoNumber).ToList(),
-                "POLineNumber" => lst => ascending ? lst.OrderBy(l => l.PoLineNumber).ToList() : lst.OrderByDescending(l => l.PoLineNumber).ToList(),
-                "WeightQuantity" => lst => ascending ? lst.OrderBy(l => l.WeightQuantity).ToList() : lst.OrderByDescending(l => l.WeightQuantity).ToList(),
-                "HeatLotNumber" => lst => ascending ? lst.OrderBy(l => l.HeatLotNumber, StringComparer.OrdinalIgnoreCase).ToList() : lst.OrderByDescending(l => l.HeatLotNumber, StringComparer.OrdinalIgnoreCase).ToList(),
-                "RemainingQuantity" => lst => ascending ? lst.OrderBy(l => l.RemainingQuantity).ToList() : lst.OrderByDescending(l => l.RemainingQuantity).ToList(),
-                "PackagesPerLoad" => lst => ascending ? lst.OrderBy(l => l.PackagesPerLoad).ToList() : lst.OrderByDescending(l => l.PackagesPerLoad).ToList(),
-                "PackageType" => lst => ascending ? lst.OrderBy(l => l.PackageTypeName).ToList() : lst.OrderByDescending(l => l.PackageTypeName).ToList(),
-                "WeightPerPackage" => lst => ascending ? lst.OrderBy(l => l.WeightPerPackage).ToList() : lst.OrderByDescending(l => l.WeightPerPackage).ToList(),
-                "IsNonPOItem" => lst => ascending ? lst.OrderBy(l => l.IsNonPOItem).ToList() : lst.OrderByDescending(l => l.IsNonPOItem).ToList(),
-                "UserId" => lst => ascending ? lst.OrderBy(l => l.UserId).ToList() : lst.OrderByDescending(l => l.UserId).ToList(),
-                "EmployeeNumber" => lst => ascending ? lst.OrderBy(l => l.EmployeeNumber).ToList() : lst.OrderByDescending(l => l.EmployeeNumber).ToList(),
-                "IsQualityHoldRequired" => lst => ascending ? lst.OrderBy(l => l.IsQualityHoldRequired).ToList() : lst.OrderByDescending(l => l.IsQualityHoldRequired).ToList(),
-                "IsQualityHoldAcknowledged" => lst => ascending ? lst.OrderBy(l => l.IsQualityHoldAcknowledged).ToList() : lst.OrderByDescending(l => l.IsQualityHoldAcknowledged).ToList(),
-                "QualityHoldRestrictionType" => lst => ascending ? lst.OrderBy(l => l.QualityHoldRestrictionType).ToList() : lst.OrderByDescending(l => l.QualityHoldRestrictionType).ToList(),
-                "PartDescription" => lst => ascending ? lst.OrderBy(l => l.PartDescription, StringComparer.OrdinalIgnoreCase).ToList() : lst.OrderByDescending(l => l.PartDescription, StringComparer.OrdinalIgnoreCase).ToList(),
-                "UnitOfMeasure" => lst => ascending ? lst.OrderBy(l => l.UnitOfMeasure).ToList() : lst.OrderByDescending(l => l.UnitOfMeasure).ToList(),
-                "QtyOrdered" => lst => ascending ? lst.OrderBy(l => l.QtyOrdered).ToList() : lst.OrderByDescending(l => l.QtyOrdered).ToList(),
-                "POVendor" => lst => ascending ? lst.OrderBy(l => l.PoVendor, StringComparer.OrdinalIgnoreCase).ToList() : lst.OrderByDescending(l => l.PoVendor, StringComparer.OrdinalIgnoreCase).ToList(),
-                "POStatus" => lst => ascending ? lst.OrderBy(l => l.PoStatus).ToList() : lst.OrderByDescending(l => l.PoStatus).ToList(),
-                "PODueDate" => lst => ascending ? lst.OrderBy(l => l.PoDueDate).ToList() : lst.OrderByDescending(l => l.PoDueDate).ToList(),
-                _ => lst => lst
+                "LoadNumber" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.LoadNumber).ToList()
+                        : lst.OrderByDescending(l => l.LoadNumber).ToList(),
+                "ReceivedDate" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.ReceivedDate).ToList()
+                        : lst.OrderByDescending(l => l.ReceivedDate).ToList(),
+                "PartID" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PartID, StringComparer.OrdinalIgnoreCase).ToList()
+                        : lst.OrderByDescending(l => l.PartID, StringComparer.OrdinalIgnoreCase)
+                            .ToList(),
+                "PartType" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PartType).ToList()
+                        : lst.OrderByDescending(l => l.PartType).ToList(),
+                "PONumber" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PoNumber).ToList()
+                        : lst.OrderByDescending(l => l.PoNumber).ToList(),
+                "POLineNumber" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PoLineNumber).ToList()
+                        : lst.OrderByDescending(l => l.PoLineNumber).ToList(),
+                "WeightQuantity" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.WeightQuantity).ToList()
+                        : lst.OrderByDescending(l => l.WeightQuantity).ToList(),
+                "HeatLotNumber" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.HeatLotNumber, StringComparer.OrdinalIgnoreCase)
+                            .ToList()
+                        : lst.OrderByDescending(
+                                l => l.HeatLotNumber,
+                                StringComparer.OrdinalIgnoreCase
+                            )
+                            .ToList(),
+                "RemainingQuantity" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.RemainingQuantity).ToList()
+                        : lst.OrderByDescending(l => l.RemainingQuantity).ToList(),
+                "PackagesPerLoad" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PackagesPerLoad).ToList()
+                        : lst.OrderByDescending(l => l.PackagesPerLoad).ToList(),
+                "PackageType" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PackageTypeName).ToList()
+                        : lst.OrderByDescending(l => l.PackageTypeName).ToList(),
+                "WeightPerPackage" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.WeightPerPackage).ToList()
+                        : lst.OrderByDescending(l => l.WeightPerPackage).ToList(),
+                "IsNonPOItem" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.IsNonPOItem).ToList()
+                        : lst.OrderByDescending(l => l.IsNonPOItem).ToList(),
+                "UserId" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.UserId).ToList()
+                        : lst.OrderByDescending(l => l.UserId).ToList(),
+                "EmployeeNumber" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.EmployeeNumber).ToList()
+                        : lst.OrderByDescending(l => l.EmployeeNumber).ToList(),
+                "IsQualityHoldRequired" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.IsQualityHoldRequired).ToList()
+                        : lst.OrderByDescending(l => l.IsQualityHoldRequired).ToList(),
+                "IsQualityHoldAcknowledged" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.IsQualityHoldAcknowledged).ToList()
+                        : lst.OrderByDescending(l => l.IsQualityHoldAcknowledged).ToList(),
+                "QualityHoldRestrictionType" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.QualityHoldRestrictionType).ToList()
+                        : lst.OrderByDescending(l => l.QualityHoldRestrictionType).ToList(),
+                "PartDescription" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PartDescription, StringComparer.OrdinalIgnoreCase)
+                            .ToList()
+                        : lst.OrderByDescending(
+                                l => l.PartDescription,
+                                StringComparer.OrdinalIgnoreCase
+                            )
+                            .ToList(),
+                "UnitOfMeasure" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.UnitOfMeasure).ToList()
+                        : lst.OrderByDescending(l => l.UnitOfMeasure).ToList(),
+                "QtyOrdered" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.QtyOrdered).ToList()
+                        : lst.OrderByDescending(l => l.QtyOrdered).ToList(),
+                "POVendor" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PoVendor, StringComparer.OrdinalIgnoreCase).ToList()
+                        : lst.OrderByDescending(l => l.PoVendor, StringComparer.OrdinalIgnoreCase)
+                            .ToList(),
+                "POStatus" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PoStatus).ToList()
+                        : lst.OrderByDescending(l => l.PoStatus).ToList(),
+                "PODueDate" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.PoDueDate).ToList()
+                        : lst.OrderByDescending(l => l.PoDueDate).ToList(),
+                _ => lst => lst,
             };
 
             return sorter(source);
@@ -446,7 +681,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 2 => "Apr-Jun",
                 3 => "Jul-Sep",
                 4 => "Oct-Dec",
-                _ => "Quarter"
+                _ => "Quarter",
             };
         }
 
@@ -498,7 +733,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Loads_CollectionChanged(
+            object? sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e
+        )
         {
             if (e.NewItems != null)
             {
@@ -523,7 +761,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Load_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Load_PropertyChanged(
+            object? sender,
+            System.ComponentModel.PropertyChangedEventArgs e
+        )
         {
             if (e.PropertyName == nameof(Model_ReceivingLoad.IsSelected))
             {
@@ -581,19 +822,46 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var term = SearchText.Trim();
                 result = SearchByColumnKey switch
                 {
-                    "Part ID" => result.Where(l => l.PartID.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList(),
-                    "PO Number" => result.Where(l => (l.PoNumber ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase)).ToList(),
-                    "Heat/Lot" => result.Where(l => l.HeatLotNumber.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList(),
-                    "Employee #" => result.Where(l => l.EmployeeNumber.ToString().Contains(term)).ToList(),
-                    "Part Description" => result.Where(l => l.PartDescription.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList(),
-                    "Vendor" => result.Where(l => l.PoVendor.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList(),
-                    _ => result.Where(l =>
-                        l.PartID.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        (l.PoNumber ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        l.HeatLotNumber.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        l.EmployeeNumber.ToString().Contains(term) ||
-                        l.PartDescription.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        l.PoVendor.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList()
+                    "Part ID" => result
+                        .Where(l => l.PartID.Contains(term, StringComparison.OrdinalIgnoreCase))
+                        .ToList(),
+                    "PO Number" => result
+                        .Where(l =>
+                            (l.PoNumber ?? string.Empty).Contains(
+                                term,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        )
+                        .ToList(),
+                    "Heat/Lot" => result
+                        .Where(l =>
+                            l.HeatLotNumber.Contains(term, StringComparison.OrdinalIgnoreCase)
+                        )
+                        .ToList(),
+                    "Employee #" => result
+                        .Where(l => l.EmployeeNumber.ToString().Contains(term))
+                        .ToList(),
+                    "Part Description" => result
+                        .Where(l =>
+                            l.PartDescription.Contains(term, StringComparison.OrdinalIgnoreCase)
+                        )
+                        .ToList(),
+                    "Vendor" => result
+                        .Where(l => l.PoVendor.Contains(term, StringComparison.OrdinalIgnoreCase))
+                        .ToList(),
+                    _ => result
+                        .Where(l =>
+                            l.PartID.Contains(term, StringComparison.OrdinalIgnoreCase)
+                            || (l.PoNumber ?? string.Empty).Contains(
+                                term,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                            || l.HeatLotNumber.Contains(term, StringComparison.OrdinalIgnoreCase)
+                            || l.EmployeeNumber.ToString().Contains(term)
+                            || l.PartDescription.Contains(term, StringComparison.OrdinalIgnoreCase)
+                            || l.PoVendor.Contains(term, StringComparison.OrdinalIgnoreCase)
+                        )
+                        .ToList(),
                 };
             }
 
@@ -782,7 +1050,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     await _errorHandler.HandleErrorAsync(
                         "No data in current session. Please use Manual Entry mode to create new loads.",
-                        Enum_ErrorSeverity.Warning);
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
@@ -805,7 +1074,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to load from current memory: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Failed to load data from current session", Enum_ErrorSeverity.Error, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to load data from current session",
+                    Enum_ErrorSeverity.Error,
+                    ex
+                );
             }
             finally
             {
@@ -832,18 +1105,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     await _errorHandler.ShowErrorDialogAsync(
                         "Load Failed",
                         result.ErrorMessage ?? "Failed to load current label data from database.",
-                        Enum_ErrorSeverity.Warning);
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
-                var loadedData = result.Data ?? new System.Collections.Generic.List<Model_ReceivingLoad>();
+                var loadedData =
+                    result.Data ?? new System.Collections.Generic.List<Model_ReceivingLoad>();
 
                 if (loadedData.Count == 0)
                 {
                     await _errorHandler.ShowErrorDialogAsync(
                         "No Labels Found",
                         "The current label queue is empty. No labels have been printed today.",
-                        Enum_ErrorSeverity.Warning);
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
@@ -854,7 +1130,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _allLoads.Add(load);
                 }
                 StatusMessage = $"Loaded {_allLoads.Count} loads from current label queue";
-                _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from current label queue");
+                _logger.LogInfo(
+                    $"Successfully loaded {_allLoads.Count} loads from current label queue"
+                );
                 CurrentDataSource = Enum_DataSourceType.CurrentLabels;
 
                 FilterStartDate = DateTimeOffset.Now.AddYears(-1);
@@ -865,7 +1143,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to load from label queue: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Failed to load data from label queue", Enum_ErrorSeverity.Error, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to load data from label queue",
+                    Enum_ErrorSeverity.Error,
+                    ex
+                );
             }
             finally
             {
@@ -896,7 +1178,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             _workflowService.CurrentSession.Loads.Add(load);
                         }
                         StatusMessage = $"Loaded {_allLoads.Count} loads from network labels";
-                        _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from network labels");
+                        _logger.LogInfo(
+                            $"Successfully loaded {_allLoads.Count} loads from network labels"
+                        );
                         CurrentDataSource = Enum_DataSourceType.CurrentLabels;
                         _currentXlsPath = networkPath;
                         SelectAllButtonText = "Select All";
@@ -932,14 +1216,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var startDate = FilterStartDate.Date;
                 var endDate = FilterEndDate.Date;
 
-                _logger.LogInfo($"Loading receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+                _logger.LogInfo(
+                    $"Loading receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
+                );
                 var result = await _mysqlService.GetAllReceivingLoadsAsync(startDate, endDate);
 
                 if (!result.IsSuccess)
                 {
                     await _errorHandler.HandleErrorAsync(
                         $"Failed to load from history: {result.ErrorMessage}",
-                        Enum_ErrorSeverity.Error);
+                        Enum_ErrorSeverity.Error
+                    );
                     return;
                 }
 
@@ -947,7 +1234,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     await _errorHandler.HandleErrorAsync(
                         "No receiving records found in the specified date range.",
-                        Enum_ErrorSeverity.Warning);
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
@@ -969,7 +1257,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to load from history: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Failed to load data from history", Enum_ErrorSeverity.Error, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to load data from history",
+                    Enum_ErrorSeverity.Error,
+                    ex
+                );
             }
             finally
             {
@@ -1034,7 +1326,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             else if (SelectedLoad != null)
             {
-                _logger.LogInfo($"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})");
+                _logger.LogInfo(
+                    $"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})"
+                );
                 _deletedLoads.Add(SelectedLoad);
                 _workflowService.CurrentSession.Loads.Remove(SelectedLoad);
                 _allLoads.Remove(SelectedLoad);
@@ -1063,7 +1357,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                _logger.LogInfo($"Validating and saving {_filteredLoads.Count} loads from edit mode");
+                _logger.LogInfo(
+                    $"Validating and saving {_filteredLoads.Count} loads from edit mode"
+                );
                 IsBusy = true;
                 StatusMessage = "Validating loads...";
 
@@ -1079,7 +1375,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     // Check for quality hold requirement on each load
                     if (!string.IsNullOrWhiteSpace(load.PartID))
                     {
-                        var (isRestricted, restrictionType) = await _validationService.IsRestrictedPartAsync(load.PartID);
+                        var (isRestricted, restrictionType) =
+                            await _validationService.IsRestrictedPartAsync(load.PartID);
                         if (isRestricted)
                         {
                             load.IsQualityHoldRequired = true;
@@ -1096,7 +1393,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (loadsWithUnacknowledgedHolds.Count > 0)
                 {
                     // Show confirmation dialog for quality hold acknowledgment
-                    var acknowledged = await ShowQualityHoldConfirmationAsync(loadsWithUnacknowledgedHolds);
+                    var acknowledged = await ShowQualityHoldConfirmationAsync(
+                        loadsWithUnacknowledgedHolds
+                    );
                     if (!acknowledged)
                     {
                         _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
@@ -1114,10 +1413,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (validationErrors.Count > 0)
                 {
                     var errorMessage = string.Join("\n", validationErrors);
-                    _logger.LogWarning($"Edit mode validation failed: {validationErrors.Count} errors");
+                    _logger.LogWarning(
+                        $"Edit mode validation failed: {validationErrors.Count} errors"
+                    );
                     await _errorHandler.HandleErrorAsync(
                         $"Validation failed:\n{errorMessage}",
-                        Enum_ErrorSeverity.Warning);
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
@@ -1136,10 +1438,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         int labelUpdated = 0;
                         if (_filteredLoads.Count > 0)
                         {
-                            labelUpdated = await _mysqlService.UpdateCurrentLabelDataAsync(_filteredLoads);
+                            labelUpdated = await _mysqlService.UpdateCurrentLabelDataAsync(
+                                _filteredLoads
+                            );
                         }
                         StatusMessage = $"Label queue updated ({labelUpdated} updated)";
-                        await _errorHandler.ShowErrorDialogAsync("Success", $"{labelUpdated} label record(s) updated successfully.", Enum_ErrorSeverity.Info);
+                        await _errorHandler.ShowErrorDialogAsync(
+                            "Success",
+                            $"{labelUpdated} label record(s) updated successfully.",
+                            Enum_ErrorSeverity.Info
+                        );
                         break;
 
                     case Enum_DataSourceType.History:
@@ -1158,17 +1466,27 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         }
 
                         StatusMessage = $"History updated ({updated} updated, {deleted} deleted)";
-                        await _errorHandler.ShowErrorDialogAsync("Success", $"History updated successfully.\n{updated} records updated.\n{deleted} records deleted.", Enum_ErrorSeverity.Info);
+                        await _errorHandler.ShowErrorDialogAsync(
+                            "Success",
+                            $"History updated successfully.\n{updated} records updated.\n{deleted} records deleted.",
+                            Enum_ErrorSeverity.Info
+                        );
                         break;
                 }
 
-                _logger.LogInfo($"Edit mode save completed successfully for source: {CurrentDataSource}");
+                _logger.LogInfo(
+                    $"Edit mode save completed successfully for source: {CurrentDataSource}"
+                );
                 _deletedLoads.Clear();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to save edit mode data: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Failed to save receiving data", Enum_ErrorSeverity.Critical, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to save receiving data",
+                    Enum_ErrorSeverity.Critical,
+                    ex
+                );
             }
             finally
             {
@@ -1194,18 +1512,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display dialog",
+                    Enum_ErrorSeverity.Error
+                );
                 return;
             }
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
                 Title = "Change Mode?",
-                Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+                Content =
+                    "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
                 PrimaryButtonText = "Yes, Change Mode",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync().AsTask();
@@ -1220,7 +1542,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 catch (Exception ex)
                 {
                     _logger.LogError($"Failed to reset workflow: {ex.Message}");
-                    await _errorHandler.HandleErrorAsync("Failed to return to mode selection", Enum_ErrorSeverity.Error, ex);
+                    await _errorHandler.HandleErrorAsync(
+                        "Failed to return to mode selection",
+                        Enum_ErrorSeverity.Error,
+                        ex
+                    );
                 }
             }
             else
@@ -1234,7 +1560,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="loadsToValidate">The loads to validate.</param>
         /// <param name="dataSource">The data source type, used to adjust validation rules.</param>
-        private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate, Enum_DataSourceType dataSource = Enum_DataSourceType.Memory)
+        private System.Collections.Generic.List<string> ValidateLoads(
+            IEnumerable<Model_ReceivingLoad> loadsToValidate,
+            Enum_DataSourceType dataSource = Enum_DataSourceType.Memory
+        )
         {
             var errors = new System.Collections.Generic.List<string>();
 
@@ -1246,7 +1575,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             // History and CurrentLabels records may legitimately have blank PartID (non-PO items)
             // or zero PackagesPerLoad (legacy data entered before this field was added).
-            bool isEditingStoredRecords = dataSource == Enum_DataSourceType.History
+            bool isEditingStoredRecords =
+                dataSource == Enum_DataSourceType.History
                 || dataSource == Enum_DataSourceType.CurrentLabels;
 
             foreach (var load in loadsToValidate)
@@ -1258,12 +1588,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (load.WeightQuantity <= 0)
                 {
-                    errors.Add($"Load #{load.LoadNumber}: Weight/Quantity must be greater than zero");
+                    errors.Add(
+                        $"Load #{load.LoadNumber}: Weight/Quantity must be greater than zero"
+                    );
                 }
 
                 if (!isEditingStoredRecords && load.PackagesPerLoad <= 0)
                 {
-                    errors.Add($"Load #{load.LoadNumber}: Packages per load must be greater than zero");
+                    errors.Add(
+                        $"Load #{load.LoadNumber}: Packages per load must be greater than zero"
+                    );
                 }
             }
 
@@ -1282,7 +1616,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
@@ -1295,14 +1631,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="loadsWithHolds">List of loads requiring quality acknowledgment</param>
         /// <returns>True if user acknowledges; false if cancelled</returns>
-        private async Task<bool> ShowQualityHoldConfirmationAsync(List<Model_ReceivingLoad> loadsWithHolds)
+        private async Task<bool> ShowQualityHoldConfirmationAsync(
+            List<Model_ReceivingLoad> loadsWithHolds
+        )
         {
             ArgumentNullException.ThrowIfNull(loadsWithHolds);
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show quality hold dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display dialog",
+                    Enum_ErrorSeverity.Error
+                );
                 return false;
             }
 
@@ -1312,16 +1653,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 loadsWithHolds.Select(l => $"  • {l.PartID} ({l.QualityHoldRestrictionType})")
             );
 
-            var content = $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n" +
-                         $"This is your SECOND and FINAL acknowledgment.\n\n" +
-                         $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n" +
-                         $"BEFORE YOU PROCEED:\n" +
-                         $"✓ Have you contacted Quality?\n" +
-                         $"✓ Has Quality physically inspected these loads?\n" +
-                         $"✓ Has Quality accepted these loads?\n" +
-                         $"✓ Are you ready to save WITHOUT signing paperwork?\n\n" +
-                         $"This is a critical quality control checkpoint.\n" +
-                         $"DO NOT proceed unless Quality has accepted.";
+            var content =
+                $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n"
+                + $"This is your SECOND and FINAL acknowledgment.\n\n"
+                + $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n"
+                + $"BEFORE YOU PROCEED:\n"
+                + $"✓ Have you contacted Quality?\n"
+                + $"✓ Has Quality physically inspected these loads?\n"
+                + $"✓ Has Quality accepted these loads?\n"
+                + $"✓ Are you ready to save WITHOUT signing paperwork?\n\n"
+                + $"This is a critical quality control checkpoint.\n"
+                + $"DO NOT proceed unless Quality has accepted.";
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
@@ -1332,12 +1674,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
                     FontSize = 14,
                     Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                        Microsoft.UI.Colors.DarkRed)
+                        Microsoft.UI.Colors.DarkRed
+                    ),
                 },
                 PrimaryButtonText = "✓ YES - Quality Has Accepted - Save Now",
                 CloseButtonText = "✗ NO - Cancel Save",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync().AsTask();
@@ -1347,7 +1690,3 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #endregion
     }
 }
-
-
-
-

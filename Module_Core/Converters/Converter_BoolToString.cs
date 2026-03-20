@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace MTM_Receiving_Application.Module_Core.Converters
 {
@@ -18,10 +18,14 @@ namespace MTM_Receiving_Application.Module_Core.Converters
             return value?.ToString() ?? string.Empty;
         }
 
-        public object ConvertBack(object? value, Type targetType, object? parameter, string language)
+        public object ConvertBack(
+            object? value,
+            Type targetType,
+            object? parameter,
+            string language
+        )
         {
             throw new NotImplementedException();
         }
     }
 }
-

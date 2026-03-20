@@ -28,6 +28,5 @@ public enum Enum_LabelType
     /// <summary>
     /// Mini coil label variant
     /// </summary>
-    MiniCoil = 5
+    MiniCoil = 5,
 }
-

@@ -8,8 +8,8 @@
     xmlns:models="using:MTM_Receiving_Application.Module_Bulk_Inventory.Models"
     mc:Ignorable="d"
     d:DesignWidth="900"
-    d:DesignHeight="700">
-
+    d:DesignHeight="700"
+>
     <Page.Resources>
         <converters:Converter_IntToVisibility x:Key="CountToVisibilityConverter" />
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
@@ -25,61 +25,81 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Padding="32" Spacing="24">
-
             <!-- Title -->
-            <TextBlock Text="Batch Complete"
-                       Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Batch Complete" Style="{StaticResource TitleTextBlockStyle}" />
 
             <!-- Badge row -->
             <StackPanel Orientation="Horizontal" Spacing="16">
-
                 <!-- Success badge -->
-                <Border Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
-                        CornerRadius="8"
-                        Padding="16,12">
+                <Border
+                    Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                    CornerRadius="8"
+                    Padding="16,12"
+                >
                     <StackPanel HorizontalAlignment="Center" Spacing="4">
-                        <TextBlock Text="{x:Bind ViewModel.SuccessCount, Mode=OneWay}"
-                                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock Text="Success" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                        <TextBlock
+                            Text="{x:Bind ViewModel.SuccessCount, Mode=OneWay}"
+                            Style="{StaticResource TitleLargeTextBlockStyle}"
+                            HorizontalAlignment="Center"
+                        />
+                        <TextBlock
+                            Text="Success"
+                            Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                        />
                     </StackPanel>
                 </Border>
 
                 <!-- Failed badge -->
-                <Border Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
-                        CornerRadius="8"
-                        Padding="16,12">
+                <Border
+                    Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                    CornerRadius="8"
+                    Padding="16,12"
+                >
                     <StackPanel HorizontalAlignment="Center" Spacing="4">
-                        <TextBlock Text="{x:Bind ViewModel.FailedCount, Mode=OneWay}"
-                                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock Text="Failed" Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                        <TextBlock
+                            Text="{x:Bind ViewModel.FailedCount, Mode=OneWay}"
+                            Style="{StaticResource TitleLargeTextBlockStyle}"
+                            HorizontalAlignment="Center"
+                        />
+                        <TextBlock
+                            Text="Failed"
+                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                        />
                     </StackPanel>
                 </Border>
 
                 <!-- Skipped badge -->
-                <Border Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
-                        CornerRadius="8"
-                        Padding="16,12">
+                <Border
+                    Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
+                    CornerRadius="8"
+                    Padding="16,12"
+                >
                     <StackPanel HorizontalAlignment="Center" Spacing="4">
-                        <TextBlock Text="{x:Bind ViewModel.SkippedCount, Mode=OneWay}"
-                                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                                   HorizontalAlignment="Center" />
+                        <TextBlock
+                            Text="{x:Bind ViewModel.SkippedCount, Mode=OneWay}"
+                            Style="{StaticResource TitleLargeTextBlockStyle}"
+                            HorizontalAlignment="Center"
+                        />
                         <TextBlock Text="Skipped" />
                     </StackPanel>
                 </Border>
             </StackPanel>
 
             <!-- Failed rows list (only visible when there are failures) -->
-            <StackPanel Spacing="12"
-                        Visibility="{x:Bind ViewModel.FailedRows.Count, Mode=OneWay,
-                                     Converter={StaticResource CountToVisibilityConverter}}">
+            <StackPanel
+                Spacing="12"
+                Visibility="{x:Bind ViewModel.FailedRows.Count, Mode=OneWay,
+                                     Converter={StaticResource CountToVisibilityConverter}}"
+            >
+                <TextBlock
+                    Text="Failed rows — select to re-push:"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                />
 
-                <TextBlock Text="Failed rows — select to re-push:"
-                           Style="{StaticResource SubtitleTextBlockStyle}" />
-
-                <ListView ItemsSource="{x:Bind ViewModel.FailedRows, Mode=OneWay}"
-                          SelectionMode="None">
+                <ListView
+                    ItemsSource="{x:Bind ViewModel.FailedRows, Mode=OneWay}"
+                    SelectionMode="None"
+                >
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_BulkInventoryTransaction">
                             <Grid ColumnSpacing="12" Padding="0,4">
@@ -90,48 +110,61 @@
                                     <ColumnDefinition Width="2*" />
                                 </Grid.ColumnDefinitions>
 
-                                <CheckBox Grid.Column="0"
-                                          IsChecked="{x:Bind IsSelectedForRepush, Mode=TwoWay}"
-                                          VerticalAlignment="Center" />
+                                <CheckBox
+                                    Grid.Column="0"
+                                    IsChecked="{x:Bind IsSelectedForRepush, Mode=TwoWay}"
+                                    VerticalAlignment="Center"
+                                />
 
-                                <TextBlock Grid.Column="1"
-                                           Text="{x:Bind PartId}"
-                                           VerticalAlignment="Center"
-                                           FontWeight="SemiBold" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{x:Bind PartId}"
+                                    VerticalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                />
 
-                                <TextBlock Grid.Column="2"
-                                           Text="{x:Bind ToLocation}"
-                                           VerticalAlignment="Center" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="{x:Bind ToLocation}"
+                                    VerticalAlignment="Center"
+                                />
 
-                                <TextBlock Grid.Column="3"
-                                           Text="{x:Bind ErrorMessage}"
-                                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                           VerticalAlignment="Center"
-                                           TextWrapping="Wrap" />
+                                <TextBlock
+                                    Grid.Column="3"
+                                    Text="{x:Bind ErrorMessage}"
+                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                    VerticalAlignment="Center"
+                                    TextWrapping="Wrap"
+                                />
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <Button Content="Re-push Selected"
-                        Command="{x:Bind ViewModel.RePushSelectedCommand}"
-                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay,
-                                    Converter={StaticResource InverseBoolConverter}}" />
+                <Button
+                    Content="Re-push Selected"
+                    Command="{x:Bind ViewModel.RePushSelectedCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay,
+                                    Converter={StaticResource InverseBoolConverter}}"
+                />
             </StackPanel>
 
             <!-- InfoBar for status messages -->
-            <InfoBar x:Name="SummaryInfoBar"
-                     IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=OneWay}"
-                     Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay,
+            <InfoBar
+                x:Name="SummaryInfoBar"
+                IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=OneWay}"
+                Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay,
                                 Converter={StaticResource InfoBarSeverityConverter}}"
-                     Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                     IsClosable="True" />
+                Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                IsClosable="True"
+            />
 
             <!-- Done -->
-            <Button Content="Done — Start New Batch"
-                    Command="{x:Bind ViewModel.DoneCommand}"
-                    Style="{StaticResource AccentButtonStyle}" />
-
+            <Button
+                Content="Done — Start New Batch"
+                Command="{x:Bind ViewModel.DoneCommand}"
+                Style="{StaticResource AccentButtonStyle}"
+            />
         </StackPanel>
     </ScrollViewer>
 </Page>

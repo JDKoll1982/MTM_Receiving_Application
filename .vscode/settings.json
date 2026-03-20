@@ -1,39 +1,60 @@
 {
-    "dotnet.defaultSolution": "MTM_Receiving_Application.slnx",
-    "dotnet.test.enable": true,
-    "dotnet.unitTests.runSettingsPath": "",
-    "dotnetAcquisitionExtension.enableTelemetry": false,
-    "omnisharp.enableRoslynAnalyzers": true,
-    "omnisharp.enableEditorConfigSupport": true,
-    "dotnet.unitTestDebuggingOptions": {},
-    "dotnet.defaultSolution.openExternally": false,
-    "dotnet.preferCSharpExtension": false,
-    "cSpell.words": [
-        "daos",
-        "gantt",
-        "Infor",
-        "Mediat",
-        "MTMFG",
-        "MTMFGPLAY",
-        "MVVM",
-        "Rebuilder",
-        "Serilog",
-        "startuml",
-        "subfolders",
-        "tablesready",
-        "viewmodels",
-        "Wireframes"
-    ],
-    "chat.promptFilesRecommendations": {
-        "speckit.constitution": true,
-        "speckit.specify": true,
-        "speckit.plan": true,
-        "speckit.tasks": true,
-        "speckit.implement": true
-    },
-    "chat.tools.terminal.autoApprove": {
-        ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
-    },
-    "markdown-preview-enhanced.plantumlServer": "https://kroki.io/plantuml/svg/"
+  "dotnet.defaultSolution": "MTM_Receiving_Application.slnx",
+  "dotnet.unitTests.runSettingsPath": "",
+  "dotnetAcquisitionExtension.enableTelemetry": false,
+  "omnisharp.enableEditorConfigSupport": true,
+  "dotnet.unitTestDebuggingOptions": {},
+  "dotnet.preferCSharpExtension": false,
+  "[csharp]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": null
+  },
+  "[xaml]": {
+    "editor.defaultFormatter": null
+  },
+  "prettier.useEditorConfig": true,
+  "prettier.requireConfig": false,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "chat.promptFilesRecommendations": {
+    "speckit.constitution": true,
+    "speckit.specify": true,
+    "speckit.plan": true,
+    "speckit.tasks": true,
+    "speckit.implement": true
+  },
+  "chat.tools.terminal.autoApprove": {
+    ".specify/scripts/bash/": true,
+    ".specify/scripts/powershell/": true
+  }
 }

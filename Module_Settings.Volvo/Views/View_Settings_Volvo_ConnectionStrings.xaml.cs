@@ -8,7 +8,9 @@ public sealed partial class View_Settings_Volvo_ConnectionStrings : Page
 {
     public ViewModel_Settings_Volvo_ConnectionStrings ViewModel { get; }
 
-    public View_Settings_Volvo_ConnectionStrings(ViewModel_Settings_Volvo_ConnectionStrings viewModel)
+    public View_Settings_Volvo_ConnectionStrings(
+        ViewModel_Settings_Volvo_ConnectionStrings viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;

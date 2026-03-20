@@ -12,8 +12,8 @@ using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
-using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -84,7 +84,8 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService,
-        IService_UserSessionManager sessionManager)
+        IService_UserSessionManager sessionManager
+    )
         : base(errorHandler, logger, notificationService)
     {
         _daoUser = daoUser;
@@ -129,7 +130,12 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(LoadUsersAsync), nameof(ViewModel_Settings_Users));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(LoadUsersAsync),
+                nameof(ViewModel_Settings_Users)
+            );
         }
         finally
         {
@@ -169,7 +175,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
             DefaultDunnageMode = user.DefaultDunnageMode,
             CreatedDate = user.CreatedDate,
             CreatedBy = user.CreatedBy,
-            ModifiedDate = user.ModifiedDate
+            ModifiedDate = user.ModifiedDate,
         };
         IsAddingNew = false;
         IsEditing = true;
@@ -218,7 +224,9 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
                 var createResult = await _daoUser.CreateNewUserAsync(EditingUser, updatedBy);
                 opResult = createResult.IsSuccess
                     ? Model_Dao_Result_Factory.Success()
-                    : Model_Dao_Result_Factory.Failure(createResult.ErrorMessage ?? "Create failed.");
+                    : Model_Dao_Result_Factory.Failure(
+                        createResult.ErrorMessage ?? "Create failed."
+                    );
             }
             else
             {
@@ -227,7 +235,10 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
 
             if (opResult.IsSuccess)
             {
-                ShowStatus(IsAddingNew ? "User created successfully." : "User updated successfully.", InfoBarSeverity.Success);
+                ShowStatus(
+                    IsAddingNew ? "User created successfully." : "User updated successfully.",
+                    InfoBarSeverity.Success
+                );
                 await LoadUsersAsync();
             }
             else
@@ -237,7 +248,12 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(SaveUserAsync), nameof(ViewModel_Settings_Users));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(SaveUserAsync),
+                nameof(ViewModel_Settings_Users)
+            );
         }
         finally
         {
@@ -262,15 +278,24 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
                 EditingUser.EmployeeNumber,
                 EditingUser.VisualUsername,
                 EditingUser.VisualPassword,
-                updatedBy);
+                updatedBy
+            );
 
             ShowStatus(
-                result.IsSuccess ? "Visual credentials saved." : (result.ErrorMessage ?? "Failed to save credentials."),
-                result.IsSuccess ? InfoBarSeverity.Success : InfoBarSeverity.Error);
+                result.IsSuccess
+                    ? "Visual credentials saved."
+                    : (result.ErrorMessage ?? "Failed to save credentials."),
+                result.IsSuccess ? InfoBarSeverity.Success : InfoBarSeverity.Error
+            );
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(SaveVisualCredentialsAsync), nameof(ViewModel_Settings_Users));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(SaveVisualCredentialsAsync),
+                nameof(ViewModel_Settings_Users)
+            );
         }
         finally
         {
@@ -302,7 +327,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
                 PrimaryButtonText = "Deactivate",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = XamlRoot
+                XamlRoot = XamlRoot,
             };
 
             var dialogResult = await dialog.ShowAsync();
@@ -330,7 +355,12 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(DeactivateUserAsync), nameof(ViewModel_Settings_Users));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(DeactivateUserAsync),
+                nameof(ViewModel_Settings_Users)
+            );
         }
         finally
         {
@@ -356,4 +386,3 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         OnPropertyChanged(nameof(IsBlockedVisualAccount));
     }
 }
-

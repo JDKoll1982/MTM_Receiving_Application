@@ -2,11 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Automation;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Contracts.Services;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Enums;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Models;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Bulk_Inventory.Services;
 
@@ -50,7 +50,8 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
         IService_UIAutomation ui,
         IService_LoggingUtility logger,
         IService_MySQL_BulkInventory bulkService,
-        IService_SettingsCoreFacade settings)
+        IService_SettingsCoreFacade settings
+    )
     {
         _ui = ui;
         _logger = logger;
@@ -77,7 +78,12 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
     private async Task<bool> TryDismissPartsPopupAsync(int rowId, CancellationToken ct)
     {
         var partsHwnd = await _ui.WaitForPopupAsync(
-            VisualClassName, PartsPopupTitle, PopupSettle, pollMs: 100, ct: ct);
+            VisualClassName,
+            PartsPopupTitle,
+            PopupSettle,
+            pollMs: 100,
+            ct: ct
+        );
 
         if (partsHwnd == IntPtr.Zero)
         {
@@ -87,13 +93,20 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
         if (!_ui.SetForegroundVerified(partsHwnd))
         {
             // [VISUAL_LOG]
-            _logger.LogError($"Visual: Could not acquire foreground on Parts popup for row {rowId}");
+            _logger.LogError(
+                $"Visual: Could not acquire foreground on Parts popup for row {rowId}"
+            );
             // [END_VISUAL_LOG]
             return false;
         }
 
         _ui.SendKeys("{UP}{ENTER}");
-        await _ui.WaitForWindowToCloseAsync(VisualClassName, PartsPopupTitle, TimeSpan.FromSeconds(3), ct: ct);
+        await _ui.WaitForWindowToCloseAsync(
+            VisualClassName,
+            PartsPopupTitle,
+            TimeSpan.FromSeconds(3),
+            ct: ct
+        );
 
         // [VISUAL_LOG]
         _logger.LogInfo($"Visual: Parts popup dismissed for row {rowId}");
@@ -141,8 +154,11 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
         // Step 3 — Poll for Parts lookup popup then dismiss
         if (!await TryDismissPartsPopupAsync(row.Id, ct))
         {
-            await _bulkService.CompleteRowAsync(row.Id, Enum_BulkInventoryStatus.Failed,
-                "Could not dismiss Parts popup during Transfer.");
+            await _bulkService.CompleteRowAsync(
+                row.Id,
+                Enum_BulkInventoryStatus.Failed,
+                "Could not dismiss Parts popup during Transfer."
+            );
             return;
         }
 
@@ -153,7 +169,13 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
         await _ui.FillFieldAsync(window, "4123", warehouseCode, sendTab: false, ct);
 
         // Step 6 — From Location
-        await _ui.FillFieldAsync(window, "4124", row.FromLocation ?? string.Empty, sendTab: false, ct);
+        await _ui.FillFieldAsync(
+            window,
+            "4124",
+            row.FromLocation ?? string.Empty,
+            sendTab: false,
+            ct
+        );
 
         // Step 7 — To Warehouse
         await _ui.FillFieldAsync(window, "4142", warehouseCode, sendTab: false, ct);
@@ -163,21 +185,35 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
 
         // Step 9 — Poll for duplicate transaction confirmation popup
         var confirmHwnd = await _ui.WaitForPopupAsync(
-            VisualClassName, EntryWindowShortTitle, PopupSettle, pollMs: 100, ct: ct);
+            VisualClassName,
+            EntryWindowShortTitle,
+            PopupSettle,
+            pollMs: 100,
+            ct: ct
+        );
 
         if (confirmHwnd != IntPtr.Zero)
         {
             // [VISUAL_LOG]
-            _logger.LogWarning($"Transfer: WaitingForConfirmation — row {row.Id} awaiting user input");
+            _logger.LogWarning(
+                $"Transfer: WaitingForConfirmation — row {row.Id} awaiting user input"
+            );
             // [END_VISUAL_LOG]
 
-            await _bulkService.CompleteRowAsync(row.Id, Enum_BulkInventoryStatus.WaitingForConfirmation);
+            await _bulkService.CompleteRowAsync(
+                row.Id,
+                Enum_BulkInventoryStatus.WaitingForConfirmation
+            );
 
             try
             {
                 await _ui.WaitForWindowToCloseAsync(
-                    VisualClassName, EntryWindowShortTitle,
-                    TimeSpan.FromMinutes(5), pollMs: 200, ct: ct);
+                    VisualClassName,
+                    EntryWindowShortTitle,
+                    TimeSpan.FromMinutes(5),
+                    pollMs: 200,
+                    ct: ct
+                );
             }
             catch (OperationCanceledException)
             {
@@ -187,7 +223,11 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
                 _logger.LogError($"Transfer: row {row.Id} Failed — {reason}");
                 // [END_VISUAL_LOG]
 
-                await _bulkService.CompleteRowAsync(row.Id, Enum_BulkInventoryStatus.Failed, reason);
+                await _bulkService.CompleteRowAsync(
+                    row.Id,
+                    Enum_BulkInventoryStatus.Failed,
+                    reason
+                );
                 return;
             }
         }
@@ -207,7 +247,10 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
     /// </summary>
     /// <param name="row">The transaction row to process.</param>
     /// <param name="ct">Cancellation token.</param>
-    public async Task ExecuteNewTransactionAsync(Model_BulkInventoryTransaction row, CancellationToken ct)
+    public async Task ExecuteNewTransactionAsync(
+        Model_BulkInventoryTransaction row,
+        CancellationToken ct
+    )
     {
         var warehouseCode = await GetWarehouseCodeAsync();
         var lotNo = row.LotNo ?? await GetLotNoAsync();
@@ -215,7 +258,8 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
         var window = await _ui.FindWindowAsync(EntryWindowTitle, WindowLookup, ct);
         if (window is null)
         {
-            const string reason = "Inventory Transaction Entry window not found; Visual may not be open.";
+            const string reason =
+                "Inventory Transaction Entry window not found; Visual may not be open.";
 
             // [VISUAL_LOG]
             _logger.LogError($"NewTransaction: row {row.Id} Failed — {reason}");
@@ -231,7 +275,12 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
             var transferHwnd = _ui.FindWindowByClassAndTitle(VisualClassName, TransferWindowTitle);
             if (transferHwnd != IntPtr.Zero)
             {
-                NativeMethods.SendMessage(transferHwnd, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                NativeMethods.SendMessage(
+                    transferHwnd,
+                    NativeMethods.WM_CLOSE,
+                    IntPtr.Zero,
+                    IntPtr.Zero
+                );
             }
 
             _appOpenedTransferWindow = false;
@@ -243,8 +292,11 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
         // Step 4 — Precautionary Parts popup check
         if (!await TryDismissPartsPopupAsync(row.Id, ct))
         {
-            await _bulkService.CompleteRowAsync(row.Id, Enum_BulkInventoryStatus.Failed,
-                "Could not dismiss Parts popup during NewTransaction.");
+            await _bulkService.CompleteRowAsync(
+                row.Id,
+                Enum_BulkInventoryStatus.Failed,
+                "Could not dismiss Parts popup during NewTransaction."
+            );
             return;
         }
 
@@ -277,7 +329,15 @@ public class Service_VisualInventoryAutomation : IService_VisualInventoryAutomat
     {
         internal const int WM_CLOSE = 0x0010;
 
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        [System.Runtime.InteropServices.DllImport(
+            "user32.dll",
+            CharSet = System.Runtime.InteropServices.CharSet.Auto
+        )]
+        internal static extern IntPtr SendMessage(
+            IntPtr hWnd,
+            int msg,
+            IntPtr wParam,
+            IntPtr lParam
+        );
     }
 }

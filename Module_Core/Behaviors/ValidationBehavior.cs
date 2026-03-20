@@ -28,7 +28,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
         public async Task<TResponse> Handle(
             TRequest request,
             RequestHandlerDelegate<TResponse> next,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             // If no validators registered for this request type, skip validation
             if (!_validators.Any())
@@ -40,7 +41,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
 
             // Run all validators in parallel
             var validationResults = await Task.WhenAll(
-                _validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+                _validators.Select(v => v.ValidateAsync(context, cancellationToken))
+            );
 
             // Collect all validation failures
             var failures = validationResults

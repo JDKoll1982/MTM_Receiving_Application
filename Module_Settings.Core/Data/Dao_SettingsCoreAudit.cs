@@ -31,21 +31,25 @@ public class Dao_SettingsCoreAudit
             { "p_user_id", entry.UserId ?? 0 },
             { "p_changed_by", entry.ChangedBy },
             { "p_ip_address", entry.IpAddress ?? string.Empty },
-            { "p_workstation", entry.WorkstationName ?? string.Empty }
+            { "p_workstation", entry.WorkstationName ?? string.Empty },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_SettingsCore_Audit_Insert",
-            parameters);
+            parameters
+        );
     }
 
-    public Task<Model_Dao_Result<List<Model_SettingsAuditEntry>>> GetBySettingAsync(string category, string key)
+    public Task<Model_Dao_Result<List<Model_SettingsAuditEntry>>> GetBySettingAsync(
+        string category,
+        string key
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "p_category", category },
-            { "p_setting_key", key }
+            { "p_setting_key", key },
         };
 
         return Helper_Database_StoredProcedure.ExecuteListAsync(
@@ -64,17 +68,15 @@ public class Dao_SettingsCoreAudit
                 ChangedBy = reader.GetString(reader.GetOrdinal("changed_by")),
                 ChangedAt = reader.GetDateTime(reader.GetOrdinal("changed_at")),
                 IpAddress = reader.GetString(reader.GetOrdinal("ip_address")),
-                WorkstationName = reader.GetString(reader.GetOrdinal("workstation"))
+                WorkstationName = reader.GetString(reader.GetOrdinal("workstation")),
             },
-            parameters);
+            parameters
+        );
     }
 
     public Task<Model_Dao_Result<List<Model_SettingsAuditEntry>>> GetByUserAsync(int userId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "p_user_id", userId }
-        };
+        var parameters = new Dictionary<string, object> { { "p_user_id", userId } };
 
         return Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -92,8 +94,9 @@ public class Dao_SettingsCoreAudit
                 ChangedBy = reader.GetString(reader.GetOrdinal("changed_by")),
                 ChangedAt = reader.GetDateTime(reader.GetOrdinal("changed_at")),
                 IpAddress = reader.GetString(reader.GetOrdinal("ip_address")),
-                WorkstationName = reader.GetString(reader.GetOrdinal("workstation"))
+                WorkstationName = reader.GetString(reader.GetOrdinal("workstation")),
             },
-            parameters);
+            parameters
+        );
     }
 }

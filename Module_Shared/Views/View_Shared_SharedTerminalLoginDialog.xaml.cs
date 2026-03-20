@@ -38,7 +38,10 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private async void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void OnPrimaryButtonClick(
+            ContentDialog sender,
+            ContentDialogButtonClickEventArgs args
+        )
         {
             args.Cancel = true;
 
@@ -100,7 +103,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
                 // Show error
                 ErrorInfoBar.Title = "Login Failed";
-                ErrorInfoBar.Message = ViewModel.ErrorMessage ?? "Invalid username or PIN. Please try again.";
+                ErrorInfoBar.Message =
+                    ViewModel.ErrorMessage ?? "Invalid username or PIN. Please try again.";
                 ErrorInfoBar.IsOpen = true;
 
                 // Update attempt counter display
@@ -112,13 +116,15 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 else
                 {
                     // Maximum attempts reached - show lockout message
-                    AttemptCounterTextBlock.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                        Microsoft.UI.Colors.Red);
-                    AttemptCounterTextBlock.Text = "Maximum login attempts exceeded. Application closing for security.";
+                    AttemptCounterTextBlock.Foreground =
+                        new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red);
+                    AttemptCounterTextBlock.Text =
+                        "Maximum login attempts exceeded. Application closing for security.";
                     AttemptCounterTextBlock.Visibility = Visibility.Visible;
 
                     ErrorInfoBar.Title = "Account Locked";
-                    ErrorInfoBar.Message = "Too many failed login attempts. The application will close.";
+                    ErrorInfoBar.Message =
+                        "Too many failed login attempts. The application will close.";
                     ErrorInfoBar.Severity = InfoBarSeverity.Error;
                     ErrorInfoBar.IsOpen = true;
 
@@ -143,7 +149,10 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void OnCloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void OnCloseButtonClick(
+            ContentDialog sender,
+            ContentDialogButtonClickEventArgs args
+        )
         {
             // User cancelled login
             ViewModel.IsCancelled = true;

@@ -25,7 +25,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         public View_Receiving_EditMode(
             ViewModel_Receiving_EditMode viewModel,
-            IService_QualityHoldWarning qualityHoldWarning)
+            IService_QualityHoldWarning qualityHoldWarning
+        )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(qualityHoldWarning);
@@ -57,8 +58,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return;
             }
 
-            var visibilityMap = ViewModel.ColumnSettings
-                .ToDictionary(c => c.Key, c => c.IsVisible);
+            var visibilityMap = ViewModel.ColumnSettings.ToDictionary(c => c.Key, c => c.IsVisible);
 
             foreach (var col in EditModeDataGrid.Columns)
             {
@@ -84,15 +84,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private async Task ShowColumnChooserDialogAsync()
         {
             // Build a CheckBox list from ColumnSettings, skipping always-visible columns
-            var items = ViewModel.ColumnSettings
-                .Where(c => !c.IsAlwaysVisible)
-                .ToList();
+            var items = ViewModel.ColumnSettings.Where(c => !c.IsAlwaysVisible).ToList();
 
             var panel = new StackPanel { Spacing = 6 };
             var checkBoxes = new List<(CheckBox Box, string Key)>();
 
             // Select All / Clear All quick buttons
-            var quickRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 8) };
+            var quickRow = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                Margin = new Thickness(0, 0, 0, 8),
+            };
             var selectAllBtn = new Button { Content = "Select All" };
             var clearAllBtn = new Button { Content = "Clear All" };
             quickRow.Children.Add(selectAllBtn);
@@ -111,8 +114,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 checkBoxes.Add((cb, col.Key));
             }
 
-            selectAllBtn.Click += (_, _) => { foreach (var (cb, _) in checkBoxes) cb.IsChecked = true; };
-            clearAllBtn.Click += (_, _) => { foreach (var (cb, _) in checkBoxes) cb.IsChecked = false; };
+            selectAllBtn.Click += (_, _) =>
+            {
+                foreach (var (cb, _) in checkBoxes)
+                    cb.IsChecked = true;
+            };
+            clearAllBtn.Click += (_, _) =>
+            {
+                foreach (var (cb, _) in checkBoxes)
+                    cb.IsChecked = false;
+            };
 
             var scrollViewer = new ScrollViewer
             {
@@ -164,7 +175,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             bool ascending;
-            if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            if (
+                e.Column.SortDirection == null
+                || e.Column.SortDirection == DataGridSortDirection.Descending
+            )
             {
                 e.Column.SortDirection = DataGridSortDirection.Ascending;
                 ascending = true;
@@ -231,7 +245,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             {
                 _lastCheckedPartID = partID;
 
-                bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
+                bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(
+                    partID,
+                    currentLoad
+                );
 
                 if (!acknowledged)
                 {
@@ -241,7 +258,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     grid.DispatcherQueue.TryEnqueue(() =>
                     {
                         var partIDColumn = grid.Columns.FirstOrDefault(c =>
-                            c.Header?.ToString()?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true);
+                            c.Header?.ToString()
+                                ?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true
+                        );
 
                         if (partIDColumn != null)
                         {
@@ -261,9 +280,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
-            bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+            bool isShiftDown =
+                (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
-            Debug.WriteLine($"[EditModeView] KeyDown: Key={e.Key}, Shift={isShiftDown}, Col={grid.CurrentColumn?.Header}");
+            Debug.WriteLine(
+                $"[EditModeView] KeyDown: Key={e.Key}, Shift={isShiftDown}, Col={grid.CurrentColumn?.Header}"
+            );
         }
 
         private void EditModeDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
@@ -297,8 +319,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         {
             if (grid.ItemsSource is IList items && items.Count > 0)
             {
-                var firstEditable = grid.Columns
-                    .Where(c => c.Visibility == Visibility.Visible)
+                var firstEditable = grid
+                    .Columns.Where(c => c.Visibility == Visibility.Visible)
                     .OrderBy(c => c.DisplayIndex)
                     .FirstOrDefault(c => !c.IsReadOnly);
 

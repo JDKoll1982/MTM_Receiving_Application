@@ -15,7 +15,10 @@ public class Converter_InfoBarSeverityTests
     [InlineData(CoreInfoBarSeverity.Success, WinInfoBarSeverity.Success)]
     [InlineData(CoreInfoBarSeverity.Warning, WinInfoBarSeverity.Warning)]
     [InlineData(CoreInfoBarSeverity.Error, WinInfoBarSeverity.Error)]
-    public void Convert_ReturnsMappedSeverity_WhenValueIsValid(CoreInfoBarSeverity input, WinInfoBarSeverity expected)
+    public void Convert_ReturnsMappedSeverity_WhenValueIsValid(
+        CoreInfoBarSeverity input,
+        WinInfoBarSeverity expected
+    )
     {
         var result = _sut.Convert(input, typeof(WinInfoBarSeverity), null, "en-US");
 
@@ -33,7 +36,8 @@ public class Converter_InfoBarSeverityTests
     [Fact]
     public void ConvertBack_ThrowsNotImplementedException()
     {
-        var act = () => _sut.ConvertBack(WinInfoBarSeverity.Error, typeof(CoreInfoBarSeverity), null, "en-US");
+        var act = () =>
+            _sut.ConvertBack(WinInfoBarSeverity.Error, typeof(CoreInfoBarSeverity), null, "en-US");
 
         act.Should().Throw<NotImplementedException>();
     }

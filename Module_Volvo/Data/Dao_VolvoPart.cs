@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -20,25 +20,29 @@ public class Dao_VolvoPart
 
     public Dao_VolvoPart(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
     /// Gets all Volvo parts, optionally including inactive rows.
     /// </summary>
     /// <param name="includeInactive">True to include inactive parts; otherwise only active parts.</param>
-    public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllAsync(bool includeInactive = false)
+    public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllAsync(
+        bool includeInactive = false
+    )
     {
         var parameters = new Dictionary<string, object>
         {
-            { "include_inactive", includeInactive ? 1 : 0 }
+            { "include_inactive", includeInactive ? 1 : 0 },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
             "sp_Volvo_PartMaster_GetAll",
             MapFromReader,
-            parameters);
+            parameters
+        );
     }
 
     /// <summary>
@@ -47,16 +51,14 @@ public class Dao_VolvoPart
     /// <param name="partNumber">Part number to retrieve.</param>
     public async Task<Model_Dao_Result<Model_VolvoPart>> GetByIdAsync(string partNumber)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "part_number", partNumber }
-        };
+        var parameters = new Dictionary<string, object> { { "part_number", partNumber } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
             "sp_Volvo_PartMaster_GetById",
             MapFromReader,
-            parameters);
+            parameters
+        );
     }
 
     /// <summary>
@@ -69,13 +71,14 @@ public class Dao_VolvoPart
         {
             { "part_number", part.PartNumber },
             { "quantity_per_skid", part.QuantityPerSkid },
-            { "is_active", part.IsActive ? 1 : 0 }
+            { "is_active", part.IsActive ? 1 : 0 },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Volvo_PartMaster_Insert",
-            parameters);
+            parameters
+        );
     }
 
     /// <summary>
@@ -87,13 +90,14 @@ public class Dao_VolvoPart
         var parameters = new Dictionary<string, object>
         {
             { "part_number", part.PartNumber },
-            { "quantity_per_skid", part.QuantityPerSkid }
+            { "quantity_per_skid", part.QuantityPerSkid },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Volvo_PartMaster_Update",
-            parameters);
+            parameters
+        );
     }
 
     /// <summary>
@@ -109,42 +113,48 @@ public class Dao_VolvoPart
 
             await using var command = new MySqlCommand("sp_volvo_part_check_references", connection)
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
             };
 
             command.Parameters.AddWithValue("p_part_number", partNumber);
-            var activeReferenceCountParam = new MySqlParameter("p_active_reference_count", MySqlDbType.Int32)
+            var activeReferenceCountParam = new MySqlParameter(
+                "p_active_reference_count",
+                MySqlDbType.Int32
+            )
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(activeReferenceCountParam);
 
             await command.ExecuteNonQueryAsync();
 
-            var activeReferenceCount = activeReferenceCountParam.Value == DBNull.Value
-                ? 0
-                : Convert.ToInt32(activeReferenceCountParam.Value);
+            var activeReferenceCount =
+                activeReferenceCountParam.Value == DBNull.Value
+                    ? 0
+                    : Convert.ToInt32(activeReferenceCountParam.Value);
 
             if (activeReferenceCount > 0)
             {
                 return new Model_Dao_Result
                 {
                     Success = false,
-                    ErrorMessage = $"Part '{partNumber}' cannot be deactivated because it is referenced by {activeReferenceCount} active shipment line(s).",
-                    Severity = Enum_ErrorSeverity.Warning
+                    ErrorMessage =
+                        $"Part '{partNumber}' cannot be deactivated because it is referenced by {activeReferenceCount} active shipment line(s).",
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
             var parameters = new Dictionary<string, object>
             {
                 { "part_number", partNumber },
-                { "is_active", 0 }
+                { "is_active", 0 },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
                 "sp_Volvo_PartMaster_SetActive",
-                parameters);
+                parameters
+            );
         }
         catch (Exception ex)
         {
@@ -153,7 +163,7 @@ public class Dao_VolvoPart
                 Success = false,
                 ErrorMessage = $"Error deactivating Volvo part: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -162,14 +172,16 @@ public class Dao_VolvoPart
     /// Gets multiple parts by part number.
     /// </summary>
     /// <param name="partNumbers">Part numbers to resolve.</param>
-    public async Task<Model_Dao_Result<Dictionary<string, Model_VolvoPart>>> GetPartsByNumbersAsync(List<string> partNumbers)
+    public async Task<Model_Dao_Result<Dictionary<string, Model_VolvoPart>>> GetPartsByNumbersAsync(
+        List<string> partNumbers
+    )
     {
         if (partNumbers == null || partNumbers.Count == 0)
         {
             return new Model_Dao_Result<Dictionary<string, Model_VolvoPart>>
             {
                 Success = true,
-                Data = new Dictionary<string, Model_VolvoPart>()
+                Data = new Dictionary<string, Model_VolvoPart>(),
             };
         }
 
@@ -189,7 +201,7 @@ public class Dao_VolvoPart
             return new Model_Dao_Result<Dictionary<string, Model_VolvoPart>>
             {
                 Success = true,
-                Data = result
+                Data = result,
             };
         }
         catch (Exception ex)
@@ -199,7 +211,7 @@ public class Dao_VolvoPart
                 Success = false,
                 ErrorMessage = $"Error retrieving parts batch: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -212,7 +224,7 @@ public class Dao_VolvoPart
             QuantityPerSkid = reader.GetInt32(reader.GetOrdinal("quantity_per_skid")),
             IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
-            ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
+            ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
         };
     }
 }

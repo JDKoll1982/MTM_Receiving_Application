@@ -12,7 +12,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for GetPendingShipmentQuery - retrieves pending shipment for current user.
 /// </summary>
-public class GetPendingShipmentQueryHandler : IRequestHandler<GetPendingShipmentQuery, Model_Dao_Result<Model_VolvoShipment>>
+public class GetPendingShipmentQueryHandler
+    : IRequestHandler<GetPendingShipmentQuery, Model_Dao_Result<Model_VolvoShipment>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
 
@@ -21,7 +22,10 @@ public class GetPendingShipmentQueryHandler : IRequestHandler<GetPendingShipment
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
     }
 
-    public async Task<Model_Dao_Result<Model_VolvoShipment>> Handle(GetPendingShipmentQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<Model_VolvoShipment>> Handle(
+        GetPendingShipmentQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -31,7 +35,9 @@ public class GetPendingShipmentQueryHandler : IRequestHandler<GetPendingShipment
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<Model_VolvoShipment>(
-                $"Unexpected error retrieving pending shipment: {ex.Message}", ex);
+                $"Unexpected error retrieving pending shipment: {ex.Message}",
+                ex
+            );
         }
     }
 }

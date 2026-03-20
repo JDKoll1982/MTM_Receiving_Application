@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Helpers;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Volvo.Data;
 using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Volvo.Services;
@@ -35,7 +35,8 @@ public class Service_Volvo : IService_Volvo
         Dao_VolvoPart partDao,
         Dao_VolvoPartComponent componentDao,
         IService_LoggingUtility logger,
-        IService_VolvoAuthorization authService)
+        IService_VolvoAuthorization authService
+    )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
@@ -56,7 +57,8 @@ public class Service_Volvo : IService_Volvo
     /// </summary>
     /// <param name="lines"></param>
     public async Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
-        List<Model_VolvoShipmentLine> lines)
+        List<Model_VolvoShipmentLine> lines
+    )
     {
         try
         {
@@ -74,7 +76,7 @@ public class Service_Volvo : IService_Volvo
                     {
                         Success = false,
                         ErrorMessage = $"Part {line.PartNumber} not found in master data",
-                        Severity = Enum_ErrorSeverity.Error
+                        Severity = Enum_ErrorSeverity.Error,
                     };
                 }
 
@@ -86,8 +88,9 @@ public class Service_Volvo : IService_Volvo
                     return new Model_Dao_Result<Dictionary<string, int>>
                     {
                         Success = false,
-                        ErrorMessage = $"Part {line.PartNumber} has invalid QuantityPerSkid: {parentPart.QuantityPerSkid} (must be > 0)",
-                        Severity = Enum_ErrorSeverity.Error
+                        ErrorMessage =
+                            $"Part {line.PartNumber} has invalid QuantityPerSkid: {parentPart.QuantityPerSkid} (must be > 0)",
+                        Severity = Enum_ErrorSeverity.Error,
                     };
                 }
 
@@ -112,13 +115,17 @@ public class Service_Volvo : IService_Volvo
                         if (component.Quantity <= 0 || component.ComponentQuantityPerSkid <= 0)
                         {
                             await _logger.LogWarningAsync(
-                                $"Skipping component {component.ComponentPartNumber} with invalid quantity: " +
-                                $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}");
+                                $"Skipping component {component.ComponentPartNumber} with invalid quantity: "
+                                    + $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}"
+                            );
                             continue;
                         }
 
                         // Component pieces = skidCount × componentQty × componentQtyPerSkid
-                        int componentPieces = line.ReceivedSkidCount * component.Quantity * component.ComponentQuantityPerSkid;
+                        int componentPieces =
+                            line.ReceivedSkidCount
+                            * component.Quantity
+                            * component.ComponentQuantityPerSkid;
 
                         if (aggregatedPieces.ContainsKey(component.ComponentPartNumber))
                         {
@@ -132,12 +139,14 @@ public class Service_Volvo : IService_Volvo
                 }
             }
 
-            await _logger.LogInfoAsync($"Component explosion complete: {aggregatedPieces.Count} unique parts");
+            await _logger.LogInfoAsync(
+                $"Component explosion complete: {aggregatedPieces.Count} unique parts"
+            );
 
             return new Model_Dao_Result<Dictionary<string, int>>
             {
                 Success = true,
-                Data = aggregatedPieces
+                Data = aggregatedPieces,
             };
         }
         catch (Exception ex)
@@ -148,7 +157,7 @@ public class Service_Volvo : IService_Volvo
                 Success = false,
                 ErrorMessage = $"Error calculating component explosion: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -160,7 +169,14 @@ public class Service_Volvo : IService_Volvo
     public async Task<Model_Dao_Result<string>> GenerateLabelAsync(int shipmentId)
     {
         return await Helper_VolvoShipmentCalculations.GenerateLabelAsync(
-            _shipmentDao, _lineDao, _partDao, _componentDao, _authService, _logger, shipmentId);
+            _shipmentDao,
+            _lineDao,
+            _partDao,
+            _componentDao,
+            _authService,
+            _logger,
+            shipmentId
+        );
     }
 
     /// <summary>
@@ -172,7 +188,8 @@ public class Service_Volvo : IService_Volvo
     public async Task<string> FormatEmailTextAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        Dictionary<string, int>? requestedLines = null)
+        Dictionary<string, int>? requestedLines = null
+    )
     {
         // Null guard for requestedLines
         requestedLines ??= new Dictionary<string, int>();
@@ -180,13 +197,17 @@ public class Service_Volvo : IService_Volvo
         var emailText = new StringBuilder();
 
         // Subject line (for user reference)
-        emailText.AppendLine($"Subject: PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}");
+        emailText.AppendLine(
+            $"Subject: PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}"
+        );
         emailText.AppendLine();
 
         // Greeting
         emailText.AppendLine("Good morning,");
         emailText.AppendLine();
-        emailText.AppendLine($"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:");
+        emailText.AppendLine(
+            $"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:"
+        );
         emailText.AppendLine();
 
         // Discrepancy section (if any)
@@ -195,7 +216,9 @@ public class Service_Volvo : IService_Volvo
         {
             emailText.AppendLine("**DISCREPANCIES NOTED**");
             emailText.AppendLine();
-            emailText.AppendLine("Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote");
+            emailText.AppendLine(
+                "Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote"
+            );
             emailText.AppendLine(new string('-', 80));
 
             foreach (var line in discrepancies)
@@ -204,7 +227,9 @@ public class Service_Volvo : IService_Volvo
                 int receivedPieces = line.CalculatedPieceCount;
                 int difference = receivedPieces - expectedPieces;
                 string diffStr = difference > 0 ? $"+{difference}" : difference.ToString();
-                emailText.AppendLine($"{line.PartNumber}\t{expectedPieces}\t{receivedPieces}\t{diffStr}\t{line.DiscrepancyNote ?? ""}");
+                emailText.AppendLine(
+                    $"{line.PartNumber}\t{expectedPieces}\t{receivedPieces}\t{diffStr}\t{line.DiscrepancyNote ?? ""}"
+                );
             }
 
             emailText.AppendLine();
@@ -245,19 +270,22 @@ public class Service_Volvo : IService_Volvo
     public async Task<Model_VolvoEmailData> FormatEmailDataAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        Dictionary<string, int>? requestedLines = null)
+        Dictionary<string, int>? requestedLines = null
+    )
     {
         // Null guard for requestedLines
         requestedLines ??= new Dictionary<string, int>();
 
         var emailData = new Model_VolvoEmailData
         {
-            Subject = $"PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}",
+            Subject =
+                $"PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}",
             Greeting = "Good morning,",
-            Message = $"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:",
+            Message =
+                $"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:",
             RequestedLines = requestedLines,
             AdditionalNotes = string.IsNullOrWhiteSpace(shipment.Notes) ? null : shipment.Notes,
-            Signature = string.Empty
+            Signature = string.Empty,
         };
 
         // Build discrepancy list
@@ -267,14 +295,16 @@ public class Service_Volvo : IService_Volvo
             int expectedPieces = line.ExpectedPieceCount ?? 0;
             int receivedPieces = line.CalculatedPieceCount;
             int difference = receivedPieces - expectedPieces;
-            emailData.Discrepancies.Add(new Model_VolvoEmailData.DiscrepancyLineItem
-            {
-                PartNumber = line.PartNumber,
-                PacklistQty = expectedPieces,
-                ReceivedQty = receivedPieces,
-                Difference = difference,
-                Note = line.DiscrepancyNote ?? string.Empty
-            });
+            emailData.Discrepancies.Add(
+                new Model_VolvoEmailData.DiscrepancyLineItem
+                {
+                    PartNumber = line.PartNumber,
+                    PacklistQty = expectedPieces,
+                    ReceivedQty = receivedPieces,
+                    Difference = difference,
+                    Note = line.DiscrepancyNote ?? string.Empty,
+                }
+            );
         }
 
         await _logger.LogInfoAsync("Email data formatted");
@@ -300,7 +330,9 @@ public class Service_Volvo : IService_Volvo
         if (emailData.Discrepancies.Count > 0)
         {
             html.AppendLine("<p><strong>**DISCREPANCIES NOTED**</strong></p>");
-            html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+            html.AppendLine(
+                "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>"
+            );
             html.AppendLine("<thead>");
             html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
             html.AppendLine("<th>Part Number</th>");
@@ -314,7 +346,8 @@ public class Service_Volvo : IService_Volvo
 
             foreach (var disc in emailData.Discrepancies)
             {
-                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                string diffStr =
+                    disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
                 html.AppendLine("<tr>");
                 html.AppendLine($"<td>{disc.PartNumber}</td>");
                 html.AppendLine($"<td>{disc.PacklistQty}</td>");
@@ -331,7 +364,9 @@ public class Service_Volvo : IService_Volvo
 
         // Requested Lines table
         html.AppendLine("<p><strong>Requested Lines:</strong></p>");
-        html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+        html.AppendLine(
+            "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>"
+        );
         html.AppendLine("<thead>");
         html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
         html.AppendLine("<th>Part Number</th>");
@@ -376,7 +411,8 @@ public class Service_Volvo : IService_Volvo
     /// <param name="lines"></param>
     public async Task<Model_Dao_Result> ValidateShipmentAsync(
         Model_VolvoShipment shipment,
-        List<Model_VolvoShipmentLine> lines)
+        List<Model_VolvoShipmentLine> lines
+    )
     {
         // Validate: At least one line required
         if (lines == null || lines.Count == 0)
@@ -395,13 +431,15 @@ public class Service_Volvo : IService_Volvo
             if (line.ReceivedSkidCount < 1 || line.ReceivedSkidCount > 99)
             {
                 return Model_Dao_Result_Factory.Failure(
-                    $"Part {line.PartNumber}: skid count must be between 1 and 99");
+                    $"Part {line.PartNumber}: skid count must be between 1 and 99"
+                );
             }
 
             if (line.HasDiscrepancy && !line.ExpectedSkidCount.HasValue)
             {
                 return Model_Dao_Result_Factory.Failure(
-                    $"Part {line.PartNumber} has discrepancy but no expected skid count");
+                    $"Part {line.PartNumber} has discrepancy but no expected skid count"
+                );
             }
         }
 
@@ -425,7 +463,8 @@ public class Service_Volvo : IService_Volvo
     public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        bool overwriteExisting = false)
+        bool overwriteExisting = false
+    )
     {
         try
         {
@@ -437,7 +476,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = "You are not authorized to manage shipments",
-                    Severity = Enum_ErrorSeverity.Warning
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
@@ -450,15 +489,20 @@ public class Service_Volvo : IService_Volvo
                 if (overwriteExisting)
                 {
                     // Delete the existing pending shipment
-                    await _logger.LogInfoAsync($"Deleting existing pending shipment #{existingPendingResult.Data.ShipmentNumber}");
-                    var deleteResult = await _shipmentDao.DeleteAsync(existingPendingResult.Data.Id);
+                    await _logger.LogInfoAsync(
+                        $"Deleting existing pending shipment #{existingPendingResult.Data.ShipmentNumber}"
+                    );
+                    var deleteResult = await _shipmentDao.DeleteAsync(
+                        existingPendingResult.Data.Id
+                    );
                     if (!deleteResult.IsSuccess)
                     {
                         return new Model_Dao_Result<(int, int)>
                         {
                             Success = false,
-                            ErrorMessage = $"Failed to delete existing shipment: {deleteResult.ErrorMessage}",
-                            Severity = Enum_ErrorSeverity.Error
+                            ErrorMessage =
+                                $"Failed to delete existing shipment: {deleteResult.ErrorMessage}",
+                            Severity = Enum_ErrorSeverity.Error,
                         };
                     }
                 }
@@ -468,9 +512,13 @@ public class Service_Volvo : IService_Volvo
                     return new Model_Dao_Result<(int, int)>
                     {
                         Success = false,
-                        ErrorMessage = $"PENDING_EXISTS|{existingPendingResult.Data.ShipmentNumber}|{existingPendingResult.Data.ShipmentDate:MM/dd/yyyy}",
-                        Data = (existingPendingResult.Data.Id, existingPendingResult.Data.ShipmentNumber),
-                        Severity = Enum_ErrorSeverity.Warning
+                        ErrorMessage =
+                            $"PENDING_EXISTS|{existingPendingResult.Data.ShipmentNumber}|{existingPendingResult.Data.ShipmentDate:MM/dd/yyyy}",
+                        Data = (
+                            existingPendingResult.Data.Id,
+                            existingPendingResult.Data.ShipmentNumber
+                        ),
+                        Severity = Enum_ErrorSeverity.Warning,
                     };
                 }
             }
@@ -482,7 +530,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = "At least one part line is required",
-                    Severity = Enum_ErrorSeverity.Warning
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
@@ -496,7 +544,7 @@ public class Service_Volvo : IService_Volvo
                     {
                         Success = false,
                         ErrorMessage = $"Part {line.PartNumber} not found",
-                        Severity = Enum_ErrorSeverity.Error
+                        Severity = Enum_ErrorSeverity.Error,
                     };
                 }
 
@@ -513,17 +561,21 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = insertResult.ErrorMessage,
-                    Severity = Enum_ErrorSeverity.Error
+                    Severity = Enum_ErrorSeverity.Error,
                 };
             }
 
             int shipmentId = insertResult.Data.ShipmentId;
             int shipmentNumber = insertResult.Data.ShipmentNumber;
 
-            await _logger.LogInfoAsync($"Starting line insertion transaction for shipment {shipmentId}, {lines.Count} lines to insert");
+            await _logger.LogInfoAsync(
+                $"Starting line insertion transaction for shipment {shipmentId}, {lines.Count} lines to insert"
+            );
 
             // Insert lines within transaction for data integrity
-            await using var connection = new MySqlConnection(Helper_Database_Variables.GetConnectionString());
+            await using var connection = new MySqlConnection(
+                Helper_Database_Variables.GetConnectionString()
+            );
             await connection.OpenAsync();
             await using var transaction = await connection.BeginTransactionAsync();
 
@@ -535,13 +587,15 @@ public class Service_Volvo : IService_Volvo
                     lineIndex++;
                     line.ShipmentId = shipmentId;
 
-                    await _logger.LogInfoAsync($"Inserting line {lineIndex}/{lines.Count}: " +
-                        $"Part={line.PartNumber}, " +
-                        $"Skids={line.ReceivedSkidCount}, " +
-                        $"Pieces={line.CalculatedPieceCount}, " +
-                        $"HasDiscrepancy={line.HasDiscrepancy}, " +
-                        $"ExpectedSkids={line.ExpectedSkidCount?.ToString() ?? "NULL"}, " +
-                        $"Note={(!string.IsNullOrEmpty(line.DiscrepancyNote) ? "PROVIDED" : "NULL")}");
+                    await _logger.LogInfoAsync(
+                        $"Inserting line {lineIndex}/{lines.Count}: "
+                            + $"Part={line.PartNumber}, "
+                            + $"Skids={line.ReceivedSkidCount}, "
+                            + $"Pieces={line.CalculatedPieceCount}, "
+                            + $"HasDiscrepancy={line.HasDiscrepancy}, "
+                            + $"ExpectedSkids={line.ExpectedSkidCount?.ToString() ?? "NULL"}, "
+                            + $"Note={(!string.IsNullOrEmpty(line.DiscrepancyNote) ? "PROVIDED" : "NULL")}"
+                    );
 
                     var parameters = new Dictionary<string, object>
                     {
@@ -551,36 +605,49 @@ public class Service_Volvo : IService_Volvo
                         { "calculated_piece_count", line.CalculatedPieceCount },
                         { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
                         { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
-                        { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+                        { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
                     };
 
-                    await _logger.LogInfoAsync($"Parameters: {string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}"))}");
+                    await _logger.LogInfoAsync(
+                        $"Parameters: {string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}"))}"
+                    );
 
-                    var lineResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
-                        connection,
-                        (MySqlTransaction)transaction,
-                        "sp_Volvo_ShipmentLine_Insert",
-                        parameters);
+                    var lineResult =
+                        await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                            connection,
+                            (MySqlTransaction)transaction,
+                            "sp_Volvo_ShipmentLine_Insert",
+                            parameters
+                        );
 
                     if (!lineResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
-                        await _logger.LogErrorAsync($"Failed to insert line {lineIndex} for part {line.PartNumber}");
+                        await _logger.LogErrorAsync(
+                            $"Failed to insert line {lineIndex} for part {line.PartNumber}"
+                        );
                         await _logger.LogErrorAsync($"Error: {lineResult.ErrorMessage}");
                         if (lineResult.Exception != null)
                         {
-                            await _logger.LogErrorAsync($"Exception Type: {lineResult.Exception.GetType().Name}");
-                            await _logger.LogErrorAsync($"Exception Message: {lineResult.Exception.Message}");
+                            await _logger.LogErrorAsync(
+                                $"Exception Type: {lineResult.Exception.GetType().Name}"
+                            );
+                            await _logger.LogErrorAsync(
+                                $"Exception Message: {lineResult.Exception.Message}"
+                            );
                             if (lineResult.Exception.InnerException != null)
                             {
-                                await _logger.LogErrorAsync($"Inner Exception: {lineResult.Exception.InnerException.Message}");
+                                await _logger.LogErrorAsync(
+                                    $"Inner Exception: {lineResult.Exception.InnerException.Message}"
+                                );
                             }
                         }
                         return new Model_Dao_Result<(int, int)>
                         {
                             Success = false,
-                            ErrorMessage = $"Failed to insert line for part {line.PartNumber}: {lineResult.ErrorMessage}",
-                            Severity = Enum_ErrorSeverity.Error
+                            ErrorMessage =
+                                $"Failed to insert line for part {line.PartNumber}: {lineResult.ErrorMessage}",
+                            Severity = Enum_ErrorSeverity.Error,
                         };
                     }
 
@@ -588,12 +655,14 @@ public class Service_Volvo : IService_Volvo
                 }
 
                 await transaction.CommitAsync();
-                await _logger.LogInfoAsync($"Transaction committed: Shipment {shipmentId} saved with {lines.Count} lines");
+                await _logger.LogInfoAsync(
+                    $"Transaction committed: Shipment {shipmentId} saved with {lines.Count} lines"
+                );
 
                 return new Model_Dao_Result<(int, int)>
                 {
                     Success = true,
-                    Data = (shipmentId, shipmentNumber)
+                    Data = (shipmentId, shipmentNumber),
                 };
             }
             catch (Exception ex)
@@ -604,7 +673,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = $"Transaction failed: {ex.Message}",
-                    Severity = Enum_ErrorSeverity.Error
+                    Severity = Enum_ErrorSeverity.Error,
                 };
             }
         }
@@ -616,7 +685,7 @@ public class Service_Volvo : IService_Volvo
                 Success = false,
                 ErrorMessage = $"Error saving shipment: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -637,7 +706,9 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Gets pending shipment with all line items
     /// </summary>
-    public async Task<Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>> GetPendingShipmentWithLinesAsync()
+    public async Task<
+        Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>
+    > GetPendingShipmentWithLinesAsync()
     {
         try
         {
@@ -648,7 +719,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = shipmentResult.ErrorMessage,
-                    Severity = shipmentResult.Severity
+                    Severity = shipmentResult.Severity,
                 };
             }
 
@@ -657,7 +728,7 @@ public class Service_Volvo : IService_Volvo
                 return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
                 {
                     Success = true,
-                    Data = (null, new List<Model_VolvoShipmentLine>())
+                    Data = (null, new List<Model_VolvoShipmentLine>()),
                 };
             }
 
@@ -668,25 +739,31 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = linesResult.ErrorMessage,
-                    Severity = linesResult.Severity
+                    Severity = linesResult.Severity,
                 };
             }
 
             return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
             {
                 Success = true,
-                Data = (shipmentResult.Data, linesResult.Data ?? new List<Model_VolvoShipmentLine>())
+                Data = (
+                    shipmentResult.Data,
+                    linesResult.Data ?? new List<Model_VolvoShipmentLine>()
+                ),
             };
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error getting pending shipment with lines: {ex.Message}", ex);
+            await _logger.LogErrorAsync(
+                $"Error getting pending shipment with lines: {ex.Message}",
+                ex
+            );
             return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
             {
                 Success = false,
                 ErrorMessage = $"Error: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -697,7 +774,11 @@ public class Service_Volvo : IService_Volvo
     /// <param name="shipmentId"></param>
     /// <param name="poNumber"></param>
     /// <param name="receiverNumber"></param>
-    public async Task<Model_Dao_Result> CompleteShipmentAsync(int shipmentId, string poNumber, string receiverNumber)
+    public async Task<Model_Dao_Result> CompleteShipmentAsync(
+        int shipmentId,
+        string poNumber,
+        string receiverNumber
+    )
     {
         try
         {
@@ -709,11 +790,13 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = "You are not authorized to complete shipments",
-                    Severity = Enum_ErrorSeverity.Warning
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
-            await _logger.LogInfoAsync($"Completing shipment {shipmentId} with PO={poNumber}, Receiver={receiverNumber}");
+            await _logger.LogInfoAsync(
+                $"Completing shipment {shipmentId} with PO={poNumber}, Receiver={receiverNumber}"
+            );
 
             // Validate inputs
             if (string.IsNullOrWhiteSpace(poNumber))
@@ -722,7 +805,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = "PO Number is required",
-                    Severity = Enum_ErrorSeverity.Warning
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
@@ -732,7 +815,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     Success = false,
                     ErrorMessage = "Receiver Number is required",
-                    Severity = Enum_ErrorSeverity.Warning
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
@@ -753,7 +836,7 @@ public class Service_Volvo : IService_Volvo
                 Success = false,
                 ErrorMessage = $"Error completing shipment: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -775,7 +858,8 @@ public class Service_Volvo : IService_Volvo
     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
         DateTime startDate,
         DateTime endDate,
-        string status = "all")
+        string status = "all"
+    )
     {
         return await _shipmentDao.GetHistoryAsync(startDate, endDate, status);
     }
@@ -784,7 +868,9 @@ public class Service_Volvo : IService_Volvo
     /// Gets all shipment lines for a specific shipment
     /// </summary>
     /// <param name="shipmentId"></param>
-    public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId)
+    public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(
+        int shipmentId
+    )
     {
         return await _lineDao.GetByShipmentIdAsync(shipmentId);
     }
@@ -797,7 +883,8 @@ public class Service_Volvo : IService_Volvo
     /// <param name="lines"></param>
     public async Task<Model_Dao_Result> UpdateShipmentAsync(
         Model_VolvoShipment shipment,
-        List<Model_VolvoShipmentLine> lines)
+        List<Model_VolvoShipmentLine> lines
+    )
     {
         try
         {
@@ -828,7 +915,8 @@ public class Service_Volvo : IService_Volvo
                     await _logger.LogErrorAsync(
                         $"Failed to insert line: {lineResult.ErrorMessage}",
                         null,
-                        nameof(UpdateShipmentAsync));
+                        nameof(UpdateShipmentAsync)
+                    );
                 }
             }
 
@@ -845,9 +933,9 @@ public class Service_Volvo : IService_Volvo
             await _logger.LogErrorAsync(
                 $"Error updating shipment: {ex.Message}",
                 ex,
-                nameof(UpdateShipmentAsync));
+                nameof(UpdateShipmentAsync)
+            );
             return Model_Dao_Result_Factory.Failure($"Error updating shipment: {ex.Message}");
         }
     }
-
 }

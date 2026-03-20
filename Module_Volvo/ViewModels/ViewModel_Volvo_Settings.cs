@@ -7,11 +7,11 @@ using CommunityToolkit.Mvvm.Input;
 using MediatR;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 
@@ -43,7 +43,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService,
-        IService_Window windowService) : base(errorHandler, logger, notificationService)
+        IService_Window windowService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
@@ -62,10 +64,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading parts catalog...";
 
-            var result = await _mediator.Send(new GetAllVolvoPartsQuery
-            {
-                IncludeInactive = ShowInactive
-            });
+            var result = await _mediator.Send(
+                new GetAllVolvoPartsQuery { IncludeInactive = ShowInactive }
+            );
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -77,14 +78,16 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 
                 TotalPartsCount = Parts.Count;
                 ActivePartsCount = Parts.Count(p => p.IsActive);
-                StatusMessage = $"Loaded {ActivePartsCount} active parts (Total: {TotalPartsCount})";
+                StatusMessage =
+                    $"Loaded {ActivePartsCount} active parts (Total: {TotalPartsCount})";
             }
             else
             {
                 await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load parts catalog",
                     "Load Error",
-                    nameof(RefreshAsync));
+                    nameof(RefreshAsync)
+                );
                 StatusMessage = "Failed to load parts";
             }
         }
@@ -94,7 +97,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 ex,
                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(RefreshAsync),
-                nameof(ViewModel_Volvo_Settings));
+                nameof(ViewModel_Volvo_Settings)
+            );
             StatusMessage = "Error loading parts";
         }
         finally
@@ -130,11 +134,13 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 IsBusy = true;
                 StatusMessage = $"Adding part {dialog.Part.PartNumber}...";
 
-                var saveResult = await _mediator.Send(new AddVolvoPartCommand
-                {
-                    PartNumber = dialog.Part.PartNumber,
-                    QuantityPerSkid = dialog.Part.QuantityPerSkid
-                });
+                var saveResult = await _mediator.Send(
+                    new AddVolvoPartCommand
+                    {
+                        PartNumber = dialog.Part.PartNumber,
+                        QuantityPerSkid = dialog.Part.QuantityPerSkid,
+                    }
+                );
 
                 if (saveResult.IsSuccess)
                 {
@@ -146,7 +152,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     await _errorHandler.ShowUserErrorAsync(
                         saveResult.ErrorMessage ?? "Failed to add part",
                         "Add Error",
-                        nameof(AddPartAsync));
+                        nameof(AddPartAsync)
+                    );
                     StatusMessage = "Failed to add part";
                 }
 
@@ -163,7 +170,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 ex,
                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(AddPartAsync),
-                nameof(ViewModel_Volvo_Settings));
+                nameof(ViewModel_Volvo_Settings)
+            );
             StatusMessage = "Error adding part";
         }
     }
@@ -195,11 +203,13 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 IsBusy = true;
                 StatusMessage = $"Updating part {dialog.Part.PartNumber}...";
 
-                var saveResult = await _mediator.Send(new UpdateVolvoPartCommand
-                {
-                    PartNumber = dialog.Part.PartNumber,
-                    QuantityPerSkid = dialog.Part.QuantityPerSkid
-                });
+                var saveResult = await _mediator.Send(
+                    new UpdateVolvoPartCommand
+                    {
+                        PartNumber = dialog.Part.PartNumber,
+                        QuantityPerSkid = dialog.Part.QuantityPerSkid,
+                    }
+                );
 
                 if (saveResult.IsSuccess)
                 {
@@ -211,7 +221,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     await _errorHandler.ShowUserErrorAsync(
                         saveResult.ErrorMessage ?? "Failed to update part",
                         "Update Error",
-                        nameof(EditPartAsync));
+                        nameof(EditPartAsync)
+                    );
                     StatusMessage = "Failed to update part";
                 }
 
@@ -228,7 +239,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 ex,
                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(EditPartAsync),
-                nameof(ViewModel_Volvo_Settings));
+                nameof(ViewModel_Volvo_Settings)
+            );
             StatusMessage = "Error editing part";
         }
     }
@@ -249,11 +261,12 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             var dialog = new ContentDialog
             {
                 Title = "Deactivate Part",
-                Content = $"Are you sure you want to deactivate part {SelectedPart.PartNumber}?\n\n" +
-                          "This will hide the part from active lists, but it will remain in historical shipments.",
+                Content =
+                    $"Are you sure you want to deactivate part {SelectedPart.PartNumber}?\n\n"
+                    + "This will hide the part from active lists, but it will remain in historical shipments.",
                 PrimaryButtonText = "Deactivate",
                 CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Close
+                DefaultButton = ContentDialogButton.Close,
             };
 
             // Get XamlRoot from service
@@ -269,10 +282,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 IsBusy = true;
                 StatusMessage = $"Deactivating part {SelectedPart.PartNumber}...";
 
-                var deactivateResult = await _mediator.Send(new DeactivateVolvoPartCommand
-                {
-                    PartNumber = SelectedPart.PartNumber
-                });
+                var deactivateResult = await _mediator.Send(
+                    new DeactivateVolvoPartCommand { PartNumber = SelectedPart.PartNumber }
+                );
 
                 if (deactivateResult.IsSuccess)
                 {
@@ -284,7 +296,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     await _errorHandler.ShowUserErrorAsync(
                         deactivateResult.ErrorMessage ?? "Failed to deactivate part",
                         "Deactivate Error",
-                        nameof(DeactivatePartAsync));
+                        nameof(DeactivatePartAsync)
+                    );
                     StatusMessage = "Failed to deactivate part";
                 }
 
@@ -297,7 +310,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 ex,
                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(DeactivatePartAsync),
-                nameof(ViewModel_Volvo_Settings));
+                nameof(ViewModel_Volvo_Settings)
+            );
             IsBusy = false;
         }
     }
@@ -316,22 +330,27 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             StatusMessage = $"Loading components for {SelectedPart.PartNumber}...";
 
-            var result = await _mediator.Send(new GetPartComponentsQuery
-            {
-                PartNumber = SelectedPart.PartNumber
-            });
+            var result = await _mediator.Send(
+                new GetPartComponentsQuery { PartNumber = SelectedPart.PartNumber }
+            );
 
             if (result.IsSuccess && result.Data != null)
             {
-                var componentsList = result.Data.Count > 0
-                    ? string.Join("\n", result.Data.Select(c => $"• {c.ComponentPartNumber} (Qty: {c.Quantity})"))
-                    : "No components defined";
+                var componentsList =
+                    result.Data.Count > 0
+                        ? string.Join(
+                            "\n",
+                            result.Data.Select(c =>
+                                $"• {c.ComponentPartNumber} (Qty: {c.Quantity})"
+                            )
+                        )
+                        : "No components defined";
 
                 var dialog = new ContentDialog
                 {
                     Title = $"Components for {SelectedPart.PartNumber}",
                     Content = componentsList,
-                    CloseButtonText = "Close"
+                    CloseButtonText = "Close",
                 };
 
                 if (_windowService != null)
@@ -347,7 +366,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load components",
                     "Load Error",
-                    nameof(ViewComponentsAsync));
+                    nameof(ViewComponentsAsync)
+                );
                 StatusMessage = "Failed to load components";
             }
         }
@@ -357,7 +377,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 ex,
                 Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
                 nameof(ViewComponentsAsync),
-                nameof(ViewModel_Volvo_Settings));
+                nameof(ViewModel_Volvo_Settings)
+            );
         }
     }
 
@@ -375,7 +396,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             await _errorHandler.ShowUserErrorAsync(
                 "Cannot show import dialog — window not available",
                 "Import Error",
-                nameof(ImportDataAsync));
+                nameof(ImportDataAsync)
+            );
             return;
         }
 
@@ -386,7 +408,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             AcceptsReturn = true,
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
             Height = 220,
-            VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Top
+            VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Top,
         };
 
         var dialog = new ContentDialog
@@ -402,16 +424,18 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     {
                         Text = "Format:  PartNumber,QuantityPerSkid",
                         FontSize = 11,
-                        Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray)
+                        Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                            Microsoft.UI.Colors.Gray
+                        ),
                     },
-                    inputBox
-                }
+                    inputBox,
+                },
             },
             PrimaryButtonText = "Import",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
-            MinWidth = 420
+            MinWidth = 420,
         };
 
         var dialogResult = await dialog.ShowAsync();
@@ -458,7 +482,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             await _errorHandler.ShowUserErrorAsync(
                 "No valid rows to import:\n" + string.Join('\n', parseErrors),
                 "Import Error",
-                nameof(ImportDataAsync));
+                nameof(ImportDataAsync)
+            );
             return;
         }
 
@@ -467,7 +492,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             await _errorHandler.ShowUserErrorAsync(
                 "No data entered.",
                 "Import Error",
-                nameof(ImportDataAsync));
+                nameof(ImportDataAsync)
+            );
             return;
         }
 
@@ -482,7 +508,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             if (result.IsSuccess)
             {
                 var d = result.Data!;
-                var summary = $"Import complete: {d.SuccessCount} succeeded, {d.FailureCount} failed";
+                var summary =
+                    $"Import complete: {d.SuccessCount} succeeded, {d.FailureCount} failed";
                 if (parseErrors.Count > 0)
                     summary += $"\n{parseErrors.Count} line(s) could not be parsed";
 
@@ -495,7 +522,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Import failed",
                     "Import Error",
-                    nameof(ImportDataAsync));
+                    nameof(ImportDataAsync)
+                );
             }
         }
         catch (Exception ex)
@@ -504,7 +532,8 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 ex,
                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(ImportDataAsync),
-                nameof(ViewModel_Volvo_Settings));
+                nameof(ViewModel_Volvo_Settings)
+            );
         }
         finally
         {

@@ -6,14 +6,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Receiving.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models"
-    mc:Ignorable="d">
-
+    mc:Ignorable="d"
+>
     <Grid Padding="24" RowSpacing="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" RowSpacing="16" ColumnSpacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid
+            Grid.Row="0"
+            RowSpacing="16"
+            ColumnSpacing="16"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+        >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -23,35 +29,135 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Row="0" Grid.Column="0" Click="OnStep0Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+            <Button
+                Grid.Row="0"
+                Grid.Column="0"
+                Click="OnStep0Clicked"
+                Width="280"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+            >
                 <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="{x:Bind ViewModel.Steps[0].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Manage defaults and common values." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <FontIcon
+                        Glyph="&#xE8D4;"
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                    />
+                    <TextBlock
+                        Text="{x:Bind ViewModel.Steps[0].Title}"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        HorizontalAlignment="Center"
+                    />
+                    <TextBlock
+                        Text="Manage defaults and common values."
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    />
                 </StackPanel>
             </Button>
 
-            <Button Grid.Row="0" Grid.Column="1" Click="OnStep1Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Click="OnStep1Clicked"
+                Width="280"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+            >
                 <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="{x:Bind ViewModel.Steps[1].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Review validation and constraints." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <FontIcon
+                        Glyph="&#xE8D4;"
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                    />
+                    <TextBlock
+                        Text="{x:Bind ViewModel.Steps[1].Title}"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        HorizontalAlignment="Center"
+                    />
+                    <TextBlock
+                        Text="Review validation and constraints."
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    />
                 </StackPanel>
             </Button>
 
-            <Button Grid.Row="1" Grid.Column="0" Click="OnStep2Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+            <Button
+                Grid.Row="1"
+                Grid.Column="0"
+                Click="OnStep2Clicked"
+                Width="280"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+            >
                 <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="{x:Bind ViewModel.Steps[2].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Configure automatic part number padding behavior." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <FontIcon
+                        Glyph="&#xE8D4;"
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                    />
+                    <TextBlock
+                        Text="{x:Bind ViewModel.Steps[2].Title}"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        HorizontalAlignment="Center"
+                    />
+                    <TextBlock
+                        Text="Configure automatic part number padding behavior."
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    />
                 </StackPanel>
             </Button>
 
-            <Button Grid.Row="1" Grid.Column="1" Click="OnStep3Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                Click="OnStep3Clicked"
+                Width="280"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+            >
                 <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="{x:Bind ViewModel.Steps[3].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Control workflow defaults and behavior." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <FontIcon
+                        Glyph="&#xE8D4;"
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                    />
+                    <TextBlock
+                        Text="{x:Bind ViewModel.Steps[3].Title}"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        HorizontalAlignment="Center"
+                    />
+                    <TextBlock
+                        Text="Control workflow defaults and behavior."
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    />
                 </StackPanel>
             </Button>
         </Grid>

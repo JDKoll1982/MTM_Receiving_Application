@@ -1,5 +1,5 @@
-using Microsoft.UI.Xaml.Data;
 using System;
+using Microsoft.UI.Xaml.Data;
 using CoreInfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 using WinInfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 
@@ -27,7 +27,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
                 CoreInfoBarSeverity.Success => WinInfoBarSeverity.Success,
                 CoreInfoBarSeverity.Warning => WinInfoBarSeverity.Warning,
                 CoreInfoBarSeverity.Error => WinInfoBarSeverity.Error,
-                _ => WinInfoBarSeverity.Informational
+                _ => WinInfoBarSeverity.Informational,
             };
         }
 
@@ -40,7 +40,12 @@ namespace MTM_Receiving_Application.Module_Core.Converters
         /// <param name="language">The language for the conversion.</param>
         /// <returns>The core severity value.</returns>
         /// <exception cref="NotImplementedException">Always thrown; this conversion is not supported.</exception>
-        public object ConvertBack(object? value, Type targetType, object? parameter, string language)
+        public object ConvertBack(
+            object? value,
+            Type targetType,
+            object? parameter,
+            string language
+        )
         {
             throw new NotImplementedException();
         }

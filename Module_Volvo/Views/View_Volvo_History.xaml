@@ -8,28 +8,30 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
     mc:Ignorable="d"
-    Loaded="OnPageLoaded">
-
+    Loaded="OnPageLoaded"
+>
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
-            <Button 
+            <Button
                 Command="{x:Bind ViewModel.GoBackCommand}"
                 VerticalAlignment="Center"
-                ToolTipService.ToolTip="Back to Shipment Entry">
-                <SymbolIcon Symbol="Back"/>
+                ToolTipService.ToolTip="Back to Shipment Entry"
+            >
+                <SymbolIcon Symbol="Back" />
             </Button>
-            <TextBlock 
+            <TextBlock
                 Text="Volvo Shipment History"
                 Style="{StaticResource TitleTextBlockStyle}"
-                VerticalAlignment="Center"/>
+                VerticalAlignment="Center"
+            />
         </StackPanel>
 
         <!-- Filters -->
@@ -37,24 +39,28 @@
             <CalendarDatePicker
                 Header="Start Date"
                 Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
-                Width="200"/>
-            
+                Width="200"
+            />
+
             <CalendarDatePicker
                 Header="End Date"
                 Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
-                Width="200"/>
-            
+                Width="200"
+            />
+
             <ComboBox
                 Header="Status"
                 ItemsSource="{x:Bind ViewModel.StatusOptions}"
                 SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}"
-                Width="150"/>
-            
+                Width="150"
+            />
+
             <Button
                 Content="Filter"
                 Command="{x:Bind ViewModel.FilterCommand}"
                 Style="{StaticResource AccentButtonStyle}"
-                VerticalAlignment="Bottom"/>
+                VerticalAlignment="Bottom"
+            />
         </StackPanel>
 
         <!-- DataGrid -->
@@ -65,8 +71,8 @@
             AutoGenerateColumns="False"
             IsReadOnly="True"
             CanUserReorderColumns="False"
-            GridLinesVisibility="Horizontal">
-            
+            GridLinesVisibility="Horizontal"
+        >
             <controls:DataGrid.Columns>
                 <controls:DataGridTemplateColumn Header="Shipment #" Width="100">
                     <controls:DataGridTemplateColumn.CellTemplate>
@@ -111,7 +117,10 @@
                 <controls:DataGridTemplateColumn Header="Notes" Width="*">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind Notes, Mode=OneTime}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Text="{x:Bind Notes, Mode=OneTime}"
+                                TextTrimming="CharacterEllipsis"
+                            />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
@@ -120,19 +129,21 @@
 
         <!-- Status Bar -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">
-            <ProgressRing 
+            <ProgressRing
                 IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                Width="20" Height="20"/>
-            <TextBlock 
+                Width="20"
+                Height="20"
+            />
+            <TextBlock
                 Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                VerticalAlignment="Center"/>
+                VerticalAlignment="Center"
+            />
             <Button
                 Content="View Details"
                 Command="{x:Bind ViewModel.ViewDetailCommand}"
-                Margin="12,0,0,0"/>
-            <Button
-                Content="Edit"
-                Command="{x:Bind ViewModel.EditCommand}"/>
+                Margin="12,0,0,0"
+            />
+            <Button Content="Edit" Command="{x:Bind ViewModel.EditCommand}" />
         </StackPanel>
     </Grid>
 </Page>

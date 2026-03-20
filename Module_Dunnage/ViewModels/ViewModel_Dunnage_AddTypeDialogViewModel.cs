@@ -7,10 +7,10 @@ using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.UI.Dispatching;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -87,7 +87,8 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
         IService_MySQL_Dunnage dunnageService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
@@ -118,10 +119,17 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
             StatusMessage = "Saving type...";
 
             // Save type to database
-            var typeResult = await _dunnageService.InsertTypeAsync(TypeName, SelectedIcon.ToString());
+            var typeResult = await _dunnageService.InsertTypeAsync(
+                TypeName,
+                SelectedIcon.ToString()
+            );
             if (!typeResult.IsSuccess)
             {
-                await _errorHandler.ShowUserErrorAsync(typeResult.ErrorMessage, "Save Failed", nameof(SaveTypeAsync));
+                await _errorHandler.ShowUserErrorAsync(
+                    typeResult.ErrorMessage,
+                    "Save Failed",
+                    nameof(SaveTypeAsync)
+                );
                 return;
             }
 
@@ -132,21 +140,31 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
                 var fieldResult = await _dunnageService.InsertCustomFieldAsync(typeId, field);
                 if (!fieldResult.IsSuccess)
                 {
-                    await _errorHandler.ShowUserErrorAsync($"Failed to save field '{field.FieldName}': {fieldResult.ErrorMessage}",
-                        "Save Failed", nameof(SaveTypeAsync));
+                    await _errorHandler.ShowUserErrorAsync(
+                        $"Failed to save field '{field.FieldName}': {fieldResult.ErrorMessage}",
+                        "Save Failed",
+                        nameof(SaveTypeAsync)
+                    );
                     return;
                 }
             }
 
             // Update recently used icons
-            await _dunnageService.UpsertUserPreferenceAsync($"RecentIcon_{SelectedIcon}", DateTime.Now.ToString("O"));
+            await _dunnageService.UpsertUserPreferenceAsync(
+                $"RecentIcon_{SelectedIcon}",
+                DateTime.Now.ToString("O")
+            );
 
             StatusMessage = "Type saved successfully";
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium,
-                nameof(SaveTypeAsync), nameof(ViewModel_Dunnage_AddTypeDialog));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(SaveTypeAsync),
+                nameof(ViewModel_Dunnage_AddTypeDialog)
+            );
         }
         finally
         {
@@ -180,7 +198,7 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
                 FieldName = FieldName,
                 FieldType = FieldType,
                 IsRequired = IsFieldRequired,
-                DisplayOrder = CustomFields.Count + 1
+                DisplayOrder = CustomFields.Count + 1,
             };
             CustomFields.Add(field);
         }
@@ -294,7 +312,12 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
         }
 
         // Check for duplicate field name
-        if (CustomFields.Any(f => f.FieldName.Equals(FieldName, StringComparison.OrdinalIgnoreCase) && f != EditingField))
+        if (
+            CustomFields.Any(f =>
+                f.FieldName.Equals(FieldName, StringComparison.OrdinalIgnoreCase)
+                && f != EditingField
+            )
+        )
         {
             FieldNameError = "Field name must be unique";
             return;
@@ -303,9 +326,10 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
 
     private void UpdateCanSave()
     {
-        CanSave = !string.IsNullOrWhiteSpace(TypeName) &&
-                  string.IsNullOrEmpty(TypeNameError) &&
-                  TypeName.Length <= 100;
+        CanSave =
+            !string.IsNullOrWhiteSpace(TypeName)
+            && string.IsNullOrEmpty(TypeNameError)
+            && TypeName.Length <= 100;
     }
     #endregion
 
@@ -342,5 +366,3 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
     }
     #endregion
 }
-
-

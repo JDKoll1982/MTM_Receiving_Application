@@ -19,7 +19,11 @@ public interface IService_UIAutomation
     /// <param name="windowTitle">Title of the window to search for.</param>
     /// <param name="timeout">Maximum time to wait for the window to appear.</param>
     /// <param name="ct">Optional cancellation token.</param>
-    Task<AutomationElement?> FindWindowAsync(string windowTitle, TimeSpan timeout, CancellationToken ct = default);
+    Task<AutomationElement?> FindWindowAsync(
+        string windowTitle,
+        TimeSpan timeout,
+        CancellationToken ct = default
+    );
 
     /// <summary>Returns the hwnd for a top-level window matching both class name and window title, or IntPtr.Zero.</summary>
     /// <param name="className">Window class name to match.</param>
@@ -43,7 +47,13 @@ public interface IService_UIAutomation
     /// <param name="settleTimeout">Maximum time to wait for the popup to appear.</param>
     /// <param name="pollMs">Polling interval in milliseconds.</param>
     /// <param name="ct">Optional cancellation token.</param>
-    Task<IntPtr> WaitForPopupAsync(string className, string windowTitle, TimeSpan settleTimeout, int pollMs = 100, CancellationToken ct = default);
+    Task<IntPtr> WaitForPopupAsync(
+        string className,
+        string windowTitle,
+        TimeSpan settleTimeout,
+        int pollMs = 100,
+        CancellationToken ct = default
+    );
 
     // ── Popup lifecycle ───────────────────────────────────────────────────────
 
@@ -56,7 +66,13 @@ public interface IService_UIAutomation
     /// <param name="timeout">Maximum time to wait for the window to close.</param>
     /// <param name="pollMs">Polling interval in milliseconds.</param>
     /// <param name="ct">Optional cancellation token.</param>
-    Task WaitForWindowToCloseAsync(string className, string windowTitle, TimeSpan timeout, int pollMs = 100, CancellationToken ct = default);
+    Task WaitForWindowToCloseAsync(
+        string className,
+        string windowTitle,
+        TimeSpan timeout,
+        int pollMs = 100,
+        CancellationToken ct = default
+    );
 
     /// <summary>
     /// If a popup matching className/windowTitle is present, brings it to foreground (verified
@@ -68,7 +84,13 @@ public interface IService_UIAutomation
     /// <param name="keySequence">Key sequence to send to dismiss the popup.</param>
     /// <param name="timeout">Maximum time to wait for the popup to close.</param>
     /// <param name="ct">Optional cancellation token.</param>
-    Task<bool> DismissPopupIfPresentAsync(string className, string windowTitle, string keySequence, TimeSpan timeout, CancellationToken ct = default);
+    Task<bool> DismissPopupIfPresentAsync(
+        string className,
+        string windowTitle,
+        string keySequence,
+        TimeSpan timeout,
+        CancellationToken ct = default
+    );
 
     // ── Field filling ─────────────────────────────────────────────────────────
 
@@ -78,14 +100,25 @@ public interface IService_UIAutomation
     /// <param name="value">Value to type into the field.</param>
     /// <param name="sendTab">If true, sends Tab after filling.</param>
     /// <param name="ct">Optional cancellation token.</param>
-    Task FillFieldAsync(AutomationElement window, string automationId, string value, bool sendTab = false, CancellationToken ct = default);
+    Task FillFieldAsync(
+        AutomationElement window,
+        string automationId,
+        string value,
+        bool sendTab = false,
+        CancellationToken ct = default
+    );
 
     /// <summary>Clears existing content then types the new value.</summary>
     /// <param name="window">The parent automation element (window).</param>
     /// <param name="automationId">AutomationId of the field to fill.</param>
     /// <param name="value">Value to type into the field.</param>
     /// <param name="ct">Optional cancellation token.</param>
-    Task ClearAndFillFieldAsync(AutomationElement window, string automationId, string value, CancellationToken ct = default);
+    Task ClearAndFillFieldAsync(
+        AutomationElement window,
+        string automationId,
+        string value,
+        CancellationToken ct = default
+    );
 
     // ── Input ─────────────────────────────────────────────────────────────────
 

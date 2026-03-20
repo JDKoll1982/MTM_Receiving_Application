@@ -13,18 +13,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public string Message { get; set; } = string.Empty;
         public List<string> ValidationErrors { get; set; } = new();
 
-        public static Model_ReceivingWorkflowStepResult SuccessResult(Enum_ReceivingWorkflowStep newStep, string message = "") => new()
-        {
-            Success = true,
-            NewStep = newStep,
-            Message = message
-        };
+        public static Model_ReceivingWorkflowStepResult SuccessResult(
+            Enum_ReceivingWorkflowStep newStep,
+            string message = ""
+        ) =>
+            new()
+            {
+                Success = true,
+                NewStep = newStep,
+                Message = message,
+            };
 
-        public static Model_ReceivingWorkflowStepResult ErrorResult(List<string> errors) => new()
-        {
-            Success = false,
-            ValidationErrors = errors
-        };
+        public static Model_ReceivingWorkflowStepResult ErrorResult(List<string> errors) =>
+            new() { Success = false, ValidationErrors = errors };
     }
 }
-

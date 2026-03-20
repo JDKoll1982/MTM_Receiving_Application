@@ -1,19 +1,19 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -51,7 +51,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private Model_InforVisualPart? _selectedPart;
 
         [ObservableProperty]
-        private string _packageType = "Skids";  // Default package type
+        private string _packageType = "Skids"; // Default package type
 
         [ObservableProperty]
         private string _poStatus = string.Empty;
@@ -133,7 +133,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ViewModelRegistry viewModelRegistry,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
             IService_ReceivingSettings receivingSettings,
-            IService_Notification notificationService)
+            IService_Notification notificationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _inforVisualService = inforVisualService;
@@ -159,27 +160,65 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                PoNumberHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPurchaseOrderNumber);
-                PoStatusLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryStatusLabel);
-                LoadPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryLoadPo);
-                SwitchToNonPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntrySwitchToNonPo);
-                PartIdentifierHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPartIdentifier);
-                PackageTypeAutoHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPackageTypeAuto);
-                LookupPartButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryLookupPart);
-                SwitchToPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntrySwitchToPo);
-                AvailablePartsHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryAvailableParts);
+                PoNumberHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryPurchaseOrderNumber
+                );
+                PoStatusLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryStatusLabel
+                );
+                LoadPoButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryLoadPo
+                );
+                SwitchToNonPoButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntrySwitchToNonPo
+                );
+                PartIdentifierHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryPartIdentifier
+                );
+                PackageTypeAutoHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryPackageTypeAuto
+                );
+                LookupPartButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryLookupPart
+                );
+                SwitchToPoButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntrySwitchToPo
+                );
+                AvailablePartsHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryAvailableParts
+                );
 
-                ColumnPartIdHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnPartId);
-                ColumnDescriptionHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnDescription);
-                ColumnRemainingQtyHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty);
-                ColumnQtyOrderedHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered);
-                ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber);
+                ColumnPartIdHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnPartId
+                );
+                ColumnDescriptionHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnDescription
+                );
+                ColumnRemainingQtyHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty
+                );
+                ColumnQtyOrderedHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered
+                );
+                ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber
+                );
 
-                PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPONumber);
-                LoadPoAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryLoadPo);
-                PartIdAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPartId);
-                LookupPartAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryLookupPart);
-                PartsListAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPartsList);
+                PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PoEntryPONumber
+                );
+                LoadPoAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PoEntryLoadPo
+                );
+                PartIdAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PoEntryPartId
+                );
+                LookupPartAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PoEntryLookupPart
+                );
+                PartsListAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PoEntryPartsList
+                );
 
                 _logger.LogInfo("PO Entry UI text loaded from settings successfully");
             }
@@ -237,7 +276,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (string.IsNullOrWhiteSpace(PoNumber))
             {
-                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoRequired), Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(
+                    await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Messages.ErrorPoRequired
+                    ),
+                    Enum_ErrorSeverity.Warning
+                );
                 return;
             }
 
@@ -263,7 +307,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     foreach (var part in result.Data.Parts)
                     {
                         // Get remaining quantity for this part
-                        var remainingQtyResult = await _inforVisualService.GetRemainingQuantityAsync(PoNumber, part.PartID);
+                        var remainingQtyResult =
+                            await _inforVisualService.GetRemainingQuantityAsync(
+                                PoNumber,
+                                part.PartID
+                            );
                         if (remainingQtyResult.IsSuccess)
                         {
                             part.RemainingQuantity = remainingQtyResult.Data;
@@ -272,14 +320,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         Parts.Add(part);
                     }
 
-                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts, PoNumber, (object)Parts.Count);
+                    var msg = await _receivingSettings.FormatAsync(
+                        ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts,
+                        PoNumber,
+                        (object)Parts.Count
+                    );
                     _workflowService.RaiseStatusMessage(msg);
                 }
                 else
                 {
                     var errorMessage = !string.IsNullOrWhiteSpace(result.ErrorMessage)
                         ? result.ErrorMessage
-                        : await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoNotFound);
+                        : await _receivingSettings.GetStringAsync(
+                            ReceivingSettingsKeys.Messages.ErrorPoNotFound
+                        );
                     await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
                     Parts.Clear();
                     _workflowService.CurrentLocation = string.Empty;
@@ -308,7 +362,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (string.IsNullOrWhiteSpace(PartID))
             {
-                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartIdRequired), Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(
+                    await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Messages.ErrorPartIdRequired
+                    ),
+                    Enum_ErrorSeverity.Warning
+                );
                 return;
             }
 
@@ -323,12 +382,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     // Setting SelectedPart directly is enough for the workflow, but the UI might want to show it.
                     Parts.Clear();
                     Parts.Add(result.Data);
-                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPartFound, PartID);
+                    var msg = await _receivingSettings.FormatAsync(
+                        ReceivingSettingsKeys.Messages.InfoPartFound,
+                        PartID
+                    );
                     _workflowService.RaiseStatusMessage(msg);
                 }
                 else
                 {
-                    await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartNotFound), Enum_ErrorSeverity.Error);
+                    await _errorHandler.HandleErrorAsync(
+                        result.ErrorMessage
+                            ?? await _receivingSettings.GetStringAsync(
+                                ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                            ),
+                        Enum_ErrorSeverity.Error
+                    );
                     SelectedPart = null;
                     Parts.Clear();
                     _workflowService.CurrentLocation = string.Empty;
@@ -461,7 +529,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
@@ -473,12 +543,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                var useMockData = _configuration.GetValue<bool>("AppSettings:UseInforVisualMockData");
+                var useMockData = _configuration.GetValue<bool>(
+                    "AppSettings:UseInforVisualMockData"
+                );
 
                 if (useMockData)
                 {
-                    var defaultPO = _configuration.GetValue<string>("AppSettings:DefaultMockPONumber") ?? "PO-066868";
-                    await _logger.LogInfoAsync($"[MOCK DATA MODE] Auto-filling PO number: {defaultPO}");
+                    var defaultPO =
+                        _configuration.GetValue<string>("AppSettings:DefaultMockPONumber")
+                        ?? "PO-066868";
+                    await _logger.LogInfoAsync(
+                        $"[MOCK DATA MODE] Auto-filling PO number: {defaultPO}"
+                    );
 
                     PoNumber = defaultPO;
                     _workflowService.RaiseStatusMessage($"[MOCK DATA] Auto-filled PO: {defaultPO}");
@@ -495,4 +571,3 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
     }
 }
-

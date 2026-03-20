@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Enums;
 using MTM_Receiving_Application.Module_Bulk_Inventory.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 
 namespace MTM_Receiving_Application.Module_Bulk_Inventory.Contracts.Services;
 
@@ -45,7 +45,11 @@ public interface IService_MySQL_BulkInventory
     /// <param name="id">Primary key of the row to finalize.</param>
     /// <param name="status">Outcome status to set.</param>
     /// <param name="errorMessage">Optional failure detail; stored only on Failed status.</param>
-    Task<Model_Dao_Result> CompleteRowAsync(int id, Enum_BulkInventoryStatus status, string? errorMessage = null);
+    Task<Model_Dao_Result> CompleteRowAsync(
+        int id,
+        Enum_BulkInventoryStatus status,
+        string? errorMessage = null
+    );
 
     // ── General CRUD ──────────────────────────────────────────────────────────
 
@@ -53,7 +57,11 @@ public interface IService_MySQL_BulkInventory
     /// <param name="id">Row primary key.</param>
     /// <param name="status">New status.</param>
     /// <param name="errorMessage">Optional error detail.</param>
-    Task<Model_Dao_Result> UpdateStatusAsync(int id, Enum_BulkInventoryStatus status, string? errorMessage = null);
+    Task<Model_Dao_Result> UpdateStatusAsync(
+        int id,
+        Enum_BulkInventoryStatus status,
+        string? errorMessage = null
+    );
 
     /// <summary>
     /// Returns all rows for <paramref name="username"/>, optionally filtered to one status.
@@ -63,7 +71,8 @@ public interface IService_MySQL_BulkInventory
     /// <param name="status">Optional status filter; <c>null</c> returns all.</param>
     Task<Model_Dao_Result<List<Model_BulkInventoryTransaction>>> GetByUserAsync(
         string username,
-        Enum_BulkInventoryStatus? status = null);
+        Enum_BulkInventoryStatus? status = null
+    );
 
     /// <summary>Hard-deletes a single row by id.</summary>
     /// <param name="id">Primary key of the row to delete.</param>

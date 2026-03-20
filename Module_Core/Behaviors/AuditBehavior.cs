@@ -26,7 +26,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
         public async Task<TResponse> Handle(
             TRequest request,
             RequestHandlerDelegate<TResponse> next,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             var requestName = typeof(TRequest).Name;
 
@@ -40,7 +41,8 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
                 userId,
                 requestName,
                 timestamp,
-                machineName);
+                machineName
+            );
 
             // Proceed to next behavior or handler
             return await next();

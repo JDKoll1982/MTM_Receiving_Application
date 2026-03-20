@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.UI.Controls;
@@ -32,12 +33,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private List<Model_PartNumberPrefixRule> _paddingRules = new();
         private bool _isPaddingEnabled;
         private bool _paddingSettingsLoaded;
+        private bool _isDialogTransitionActive;
 
         public View_Receiving_ManualEntry(
             ViewModel_Receiving_ManualEntry viewModel,
             IService_Focus focusService,
             IService_QualityHoldWarning qualityHoldWarning,
-            IService_ReceivingSettings receivingSettings)
+            IService_ReceivingSettings receivingSettings
+        )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
@@ -50,6 +53,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _receivingSettings = receivingSettings;
             this.DataContext = ViewModel;
             this.InitializeComponent();
+            this.Loaded += View_Receiving_ManualEntry_Loaded;
 
             // Listen for collection changes to handle "Add Row" focus
             ViewModel.Loads.CollectionChanged += Loads_CollectionChanged;
@@ -64,23 +68,33 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         {
             try
             {
-                _isPaddingEnabled = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.PartNumberPadding.Enabled);
-                var rulesJson = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.PartNumberPadding.RulesJson);
+                _isPaddingEnabled = await _receivingSettings.GetBoolAsync(
+                    ReceivingSettingsKeys.PartNumberPadding.Enabled
+                );
+                var rulesJson = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.PartNumberPadding.RulesJson
+                );
 
                 if (!string.IsNullOrWhiteSpace(rulesJson))
                 {
                     try
                     {
-                        var rules = JsonSerializer.Deserialize<Model_PartNumberPrefixRule[]>(rulesJson);
+                        var rules = JsonSerializer.Deserialize<Model_PartNumberPrefixRule[]>(
+                            rulesJson
+                        );
                         if (rules?.Length > 0)
                         {
                             _paddingRules = rules.ToList();
-                            Debug.WriteLine($"[ManualEntry] Loaded {_paddingRules.Count} padding rules");
+                            Debug.WriteLine(
+                                $"[ManualEntry] Loaded {_paddingRules.Count} padding rules"
+                            );
                         }
                     }
                     catch (JsonException jsonEx)
                     {
-                        Debug.WriteLine($"[ManualEntry] Failed to deserialize padding rules JSON: {jsonEx.Message}");
+                        Debug.WriteLine(
+                            $"[ManualEntry] Failed to deserialize padding rules JSON: {jsonEx.Message}"
+                        );
                         // Fall back to empty list
                         _paddingRules = new List<Model_PartNumberPrefixRule>();
                     }
@@ -96,7 +110,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
         }
 
-        private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void View_Receiving_ManualEntry_Loaded(object sender, RoutedEventArgs e)
+        {
+            ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
+            {
+                if (ViewModel.Loads.Count == 0)
+                {
+                    return;
+                }
+
+                ManualEntryDataGrid.SelectedItem = ViewModel.Loads[0];
+                ManualEntryDataGrid.ScrollIntoView(
+                    ViewModel.Loads[0],
+                    GetPreferredEntryColumn(ViewModel.Loads[0])
+                );
+                SelectPreferredEditableCell(ManualEntryDataGrid);
+            });
+        }
+
+        private void Loads_CollectionChanged(
+            object? sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e
+        )
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
@@ -109,9 +144,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                         // Select the last added item (assuming add to bottom)
                         if (e.NewItems?[0] is Model_ReceivingLoad newItem)
                         {
-                            Debug.WriteLine($"[ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}");
+                            Debug.WriteLine(
+                                $"[ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}"
+                            );
                             ManualEntryDataGrid.SelectedItem = newItem;
-                            ManualEntryDataGrid.ScrollIntoView(newItem, ManualEntryDataGrid.Columns.FirstOrDefault());
+                            ManualEntryDataGrid.ScrollIntoView(
+                                newItem,
+                                GetPreferredEntryColumn(newItem)
+                            );
 
                             // Use async delay to ensure grid is fully ready before entering edit mode
                             _ = Task.Run(async () =>
@@ -119,7 +159,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                                 await Task.Delay(100); // Give grid time to complete selection and render
                                 ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
                                 {
-                                    SelectFirstEditableCell(ManualEntryDataGrid);
+                                    SelectPreferredEditableCell(ManualEntryDataGrid);
                                 });
                             });
                         }
@@ -138,10 +178,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             // Wait for the move to complete then activate edit mode
             grid?.DispatcherQueue.TryEnqueue(() =>
             {
+                if (_isDialogTransitionActive)
+                {
+                    Debug.WriteLine(
+                        "[ManualEntryView] CurrentCellChanged: BeginEdit suppressed during dialog transition."
+                    );
+                    return;
+                }
+
                 if (grid.CurrentColumn?.IsReadOnly == false)
                 {
-                    Debug.WriteLine($"[ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
-                    grid.BeginEdit();
+                    Debug.WriteLine(
+                        $"[ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}"
+                    );
+                    TryBeginEdit(grid, "CurrentCellChanged");
                 }
             });
         }
@@ -161,7 +211,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             var partID = currentLoad.PartID;
 
             // Skip if empty or if we already checked this exact value on this exact row
-            if (string.IsNullOrWhiteSpace(partID) || (partID == _lastCheckedPartID && currentLoad.LoadID == _lastCheckedLoadId))
+            if (
+                string.IsNullOrWhiteSpace(partID)
+                || (partID == _lastCheckedPartID && currentLoad.LoadID == _lastCheckedLoadId)
+            )
             {
                 return;
             }
@@ -173,7 +226,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 _lastCheckedLoadId = currentLoad.LoadID;
 
                 // Show warning and get user acknowledgment
-                bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
+                bool acknowledged = await RunWithDialogTransitionSuppressedAsync(() =>
+                    _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad)
+                );
 
                 if (!acknowledged)
                 {
@@ -186,12 +241,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     grid.DispatcherQueue.TryEnqueue(() =>
                     {
                         var partIDColumn = grid.Columns.FirstOrDefault(c =>
-                            c.Header?.ToString()?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true);
+                            c.Header?.ToString()
+                                ?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true
+                        );
 
                         if (partIDColumn != null)
                         {
                             grid.CurrentColumn = partIDColumn;
-                            grid.BeginEdit();
+                            TryBeginEdit(grid, "QualityHoldRefocus");
                         }
                     });
                 }
@@ -206,9 +263,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
-            bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+            bool isShiftDown =
+                (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
-            Debug.WriteLine($"[ManualEntryView] KeyDown: Key={e.Key}, Shift={isShiftDown}, OriginalSource={e.OriginalSource}, CurrentColumn={grid.CurrentColumn?.Header}");
+            Debug.WriteLine(
+                $"[ManualEntryView] KeyDown: Key={e.Key}, Shift={isShiftDown}, OriginalSource={e.OriginalSource}, CurrentColumn={grid.CurrentColumn?.Header}"
+            );
         }
 
         private void ManualEntryDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
@@ -232,12 +292,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
             else if (grid.SelectedItem == null)
             {
-                Debug.WriteLine("[ManualEntryView] Tapped: SelectedItem is null (Header or empty space). Selecting first editable cell.");
+                Debug.WriteLine(
+                    "[ManualEntryView] Tapped: SelectedItem is null (Header or empty space). Selecting first editable cell."
+                );
                 // Header clicked or empty space
                 if (grid.ItemsSource is IList list && list.Count > 0)
                 {
                     grid.SelectedIndex = 0;
-                    SelectFirstEditableCell(grid);
+                    grid.SelectedItem = list[0];
+                    SelectPreferredEditableCell(grid);
                 }
             }
             else
@@ -248,40 +311,73 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 Debug.WriteLine("[ManualEntryView] Tapped: Cell clicked. Enqueuing BeginEdit.");
                 grid.DispatcherQueue.TryEnqueue(() =>
                 {
+                    if (_isDialogTransitionActive)
+                    {
+                        Debug.WriteLine(
+                            "[ManualEntryView] Tapped: BeginEdit suppressed during dialog transition."
+                        );
+                        return;
+                    }
+
                     if (grid.CurrentColumn?.IsReadOnly == false)
                     {
-                        Debug.WriteLine($"[ManualEntryView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
-                        grid.BeginEdit();
+                        Debug.WriteLine(
+                            $"[ManualEntryView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}"
+                        );
+                        TryBeginEdit(grid, "Tapped");
                     }
                 });
             }
         }
 
-        private void SelectFirstEditableCell(DataGrid grid)
+        private void SelectPreferredEditableCell(DataGrid grid)
         {
-            Debug.WriteLine("[ManualEntryView] SelectFirstEditableCell: Starting");
+            Debug.WriteLine("[ManualEntryView] SelectPreferredEditableCell: Starting");
             if (grid.ItemsSource is IList items && items.Count > 0)
             {
-                // Find first non-readonly column
-                var firstEditable = grid.Columns.OrderBy(c => c.DisplayIndex).FirstOrDefault(c => !c.IsReadOnly);
-                if (firstEditable != null)
+                var currentLoad = grid.SelectedItem as Model_ReceivingLoad;
+                var preferredColumn =
+                    GetPreferredEntryColumn(currentLoad)
+                    ?? grid.Columns.OrderBy(c => c.DisplayIndex).FirstOrDefault(c => !c.IsReadOnly);
+
+                if (preferredColumn != null)
                 {
-                    Debug.WriteLine($"[ManualEntryView] SelectFirstEditableCell: Found editable column {firstEditable.Header}. Setting CurrentColumn and calling BeginEdit.");
-                    grid.CurrentColumn = firstEditable;
+                    Debug.WriteLine(
+                        $"[ManualEntryView] SelectPreferredEditableCell: Found editable column {preferredColumn.Header}. Setting CurrentColumn and calling BeginEdit."
+                    );
+                    grid.CurrentColumn = preferredColumn;
                     grid.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-                    grid.BeginEdit();
-                    Debug.WriteLine($"[ManualEntryView] SelectFirstEditableCell: BeginEdit called for column {firstEditable.Header}");
+                    TryBeginEdit(grid, "SelectPreferredEditableCell");
+                    Debug.WriteLine(
+                        $"[ManualEntryView] SelectPreferredEditableCell: BeginEdit requested for column {preferredColumn.Header}"
+                    );
                 }
                 else
                 {
-                    Debug.WriteLine("[ManualEntryView] SelectFirstEditableCell: No editable column found.");
+                    Debug.WriteLine(
+                        "[ManualEntryView] SelectPreferredEditableCell: No editable column found."
+                    );
                 }
             }
             else
             {
                 var itemCount = (grid.ItemsSource as IList)?.Count ?? 0;
-                Debug.WriteLine($"[ManualEntryView] SelectFirstEditableCell: Grid has no items (Count={itemCount})");
+                Debug.WriteLine(
+                    $"[ManualEntryView] SelectPreferredEditableCell: Grid has no items (Count={itemCount})"
+                );
             }
+        }
+
+        private DataGridColumn? GetPreferredEntryColumn(Model_ReceivingLoad? load)
+        {
+            if (load?.IsNonPOItem == true)
+            {
+                return !PartIdColumn.IsReadOnly ? PartIdColumn : null;
+            }
+
+            return !PoNumberColumn.IsReadOnly ? PoNumberColumn
+                : !PartIdColumn.IsReadOnly ? PartIdColumn
+                : null;
         }
 
         /// <summary>
@@ -302,8 +398,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             // Keep the background in sync when IsQualityHoldRequired changes after initial render
             System.ComponentModel.PropertyChangedEventHandler handler = (s, pe) =>
             {
-                if (s is not Model_ReceivingLoad changedLoad
-                    || pe.PropertyName != nameof(Model_ReceivingLoad.IsQualityHoldRequired))
+                if (s is not Model_ReceivingLoad changedLoad)
                 {
                     return;
                 }
@@ -311,10 +406,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 e.Row.DispatcherQueue.TryEnqueue(() =>
                 {
                     // Guard against recycled rows that now show a different load
-                    if (e.Row.DataContext is Model_ReceivingLoad currentRowLoad
-                        && currentRowLoad.LoadID == changedLoad.LoadID)
+                    if (
+                        e.Row.DataContext is Model_ReceivingLoad currentRowLoad
+                        && currentRowLoad.LoadID == changedLoad.LoadID
+                    )
                     {
-                        ApplyQualityHoldRowBackground(e.Row, changedLoad.IsQualityHoldRequired);
+                        if (pe.PropertyName == nameof(Model_ReceivingLoad.IsQualityHoldRequired))
+                        {
+                            ApplyQualityHoldRowBackground(e.Row, changedLoad.IsQualityHoldRequired);
+                        }
+
+                        if (
+                            pe.PropertyName == nameof(Model_ReceivingLoad.IsNonPOItem)
+                            && Equals(ManualEntryDataGrid.SelectedItem, changedLoad)
+                        )
+                        {
+                            SelectPreferredEditableCell(ManualEntryDataGrid);
+                        }
                     }
                 });
             };
@@ -325,10 +433,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             e.Row.Unloaded += (_, _) => load.PropertyChanged -= handler;
         }
 
-        private static void ApplyQualityHoldRowBackground(DataGridRow row, bool isQualityHoldRequired)
+        private static void ApplyQualityHoldRowBackground(
+            DataGridRow row,
+            bool isQualityHoldRequired
+        )
         {
             row.Background = isQualityHoldRequired
-                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 230, 230))
+                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                    Windows.UI.Color.FromArgb(255, 255, 230, 230)
+                )
                 : null;
         }
 
@@ -338,7 +451,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PONumberTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private async void PONumberTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is not TextBox textBox)
             {
@@ -366,11 +479,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 load.PoNumber = formattedPO;
                 textBox.Text = formattedPO;
             }
+
+            await RunWithDialogTransitionSuppressedAsync(async () =>
+            {
+                await ViewModel.TrySelectPartForPoAsync(load);
+                return true;
+            });
         }
 
         // Matches 1-6 digits with an optional B/b suffix (e.g. "064489", "064489B")
-        private static readonly System.Text.RegularExpressions.Regex _poNumberPartRegex =
-            new(@"^(\d{1,6})([Bb]?)$", System.Text.RegularExpressions.RegexOptions.None);
+        private static readonly System.Text.RegularExpressions.Regex _poNumberPartRegex = new(
+            @"^(\d{1,6})([Bb]?)$",
+            System.Text.RegularExpressions.RegexOptions.None
+        );
 
         /// <summary>
         /// Formats a PO number to canonical form: PO-NNNNNN (6 digits, zero-padded).
@@ -393,7 +514,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             {
                 numberPart = trimmed.Substring(3);
             }
-            else if (trimmed.StartsWith("po", StringComparison.OrdinalIgnoreCase) && trimmed.Length > 2)
+            else if (
+                trimmed.StartsWith("po", StringComparison.OrdinalIgnoreCase)
+                && trimmed.Length > 2
+            )
             {
                 numberPart = trimmed.Substring(2);
             }
@@ -454,6 +578,24 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             await ViewModel.ApplyDefaultLocationFromPartAsync(load);
         }
 
+        private async void PartIdCell_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (
+                sender is not FrameworkElement element
+                || element.DataContext is not Model_ReceivingLoad load
+            )
+            {
+                return;
+            }
+
+            e.Handled = true;
+            await RunWithDialogTransitionSuppressedAsync(async () =>
+            {
+                await ViewModel.TrySelectPartForPoAsync(load, forceReselection: true);
+                return true;
+            });
+        }
+
         private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is not TextBox textBox)
@@ -472,7 +614,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             var validation = await ViewModel.ValidateLocationAsync(load);
             if (!validation.IsValid)
             {
-                ViewModel.ShowStatus(validation.Message, Module_Core.Models.Enums.InfoBarSeverity.Warning);
+                ViewModel.ShowStatus(
+                    validation.Message,
+                    Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
                 textBox.Focus(FocusState.Programmatic);
                 textBox.SelectAll();
             }
@@ -500,7 +645,34 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             return result;
         }
+
+        private async Task<T> RunWithDialogTransitionSuppressedAsync<T>(Func<Task<T>> action)
+        {
+            _isDialogTransitionActive = true;
+
+            try
+            {
+                await Task.Yield();
+                return await action();
+            }
+            finally
+            {
+                _isDialogTransitionActive = false;
+            }
+        }
+
+        private static void TryBeginEdit(DataGrid grid, string source)
+        {
+            try
+            {
+                grid.BeginEdit();
+            }
+            catch (COMException ex)
+            {
+                Debug.WriteLine(
+                    $"[ManualEntryView] {source}: BeginEdit suppressed after COMException: {ex.Message}"
+                );
+            }
+        }
     }
 }
-
-

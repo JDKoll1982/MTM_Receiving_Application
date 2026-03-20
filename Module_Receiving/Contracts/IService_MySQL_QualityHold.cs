@@ -33,5 +33,9 @@ public interface IService_MySQL_QualityHold
     /// <param name="acknowledgedBy">Username who acknowledged</param>
     /// <param name="acknowledgedAt">Timestamp of acknowledgment</param>
     /// <returns>Result with success status</returns>
-    Task<Model_Dao_Result> UpdateQualityHoldAcknowledgmentAsync(int qualityHoldId, string acknowledgedBy, DateTime acknowledgedAt);
+    Task<Model_Dao_Result> UpdateQualityHoldAcknowledgmentAsync(
+        int qualityHoldId,
+        string acknowledgedBy,
+        DateTime acknowledgedAt
+    );
 }

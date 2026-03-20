@@ -22,8 +22,8 @@ public sealed partial class View_Dunnage_AdminInventoryView : Page
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        App.GetService<IService_LoggingUtility>().LogInfo("Admin Inventory View loaded", "AdminInventoryView");
+        App.GetService<IService_LoggingUtility>()
+            .LogInfo("Admin Inventory View loaded", "AdminInventoryView");
         await ViewModel.InitializeAsync();
     }
 }
-

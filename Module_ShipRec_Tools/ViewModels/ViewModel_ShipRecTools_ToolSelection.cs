@@ -1,14 +1,14 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using System;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -47,7 +47,8 @@ public partial class ViewModel_ShipRecTools_ToolSelection : ViewModel_Shared_Bas
         IService_ShipRecTools_Navigation navigationService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         ArgumentNullException.ThrowIfNull(navigationService);
@@ -84,11 +85,18 @@ public partial class ViewModel_ShipRecTools_ToolSelection : ViewModel_Shared_Bas
             HasAnalysisTools = AnalysisTools.Count > 0;
             HasUtilityTools = UtilityTools.Count > 0;
 
-            _logger.LogInfo($"Tool selection loaded: {LookupTools.Count} lookup, {AnalysisTools.Count} analysis, {UtilityTools.Count} utility tools.");
+            _logger.LogInfo(
+                $"Tool selection loaded: {LookupTools.Count} lookup, {AnalysisTools.Count} analysis, {UtilityTools.Count} utility tools."
+            );
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(LoadTools), nameof(ViewModel_ShipRecTools_ToolSelection));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(LoadTools),
+                nameof(ViewModel_ShipRecTools_ToolSelection)
+            );
         }
     }
 

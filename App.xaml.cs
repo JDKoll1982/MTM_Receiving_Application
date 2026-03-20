@@ -34,22 +34,27 @@ public partial class App : Application
         InitializeComponent();
 
         _host = Host.CreateDefaultBuilder()
-            .UseSerilog((context, configuration) => SerilogConfiguration.Configure(configuration, context.Configuration))
-            .ConfigureServices((context, services) =>
-            {
-                // ===== CORE INFRASTRUCTURE =====
-                // Error handling, logging, notifications, authentication, UI services
-                services.AddCoreServices(context.Configuration);
+            .UseSerilog(
+                (context, configuration) =>
+                    SerilogConfiguration.Configure(configuration, context.Configuration)
+            )
+            .ConfigureServices(
+                (context, services) =>
+                {
+                    // ===== CORE INFRASTRUCTURE =====
+                    // Error handling, logging, notifications, authentication, UI services
+                    services.AddCoreServices(context.Configuration);
 
-                // ===== CQRS INFRASTRUCTURE (MediatR + FluentValidation) =====
-                // Command/Query handlers with pipeline behaviors: Logging → Validation → Audit
-                services.AddCqrsInfrastructure();
+                    // ===== CQRS INFRASTRUCTURE (MediatR + FluentValidation) =====
+                    // Command/Query handlers with pipeline behaviors: Logging → Validation → Audit
+                    services.AddCqrsInfrastructure();
 
-                // ===== FEATURE MODULES =====
-                // Receiving, Dunnage, Volvo, Reporting, Settings, Shared
-                // Each module registers its DAOs, services, ViewModels, and Views
-                services.AddModuleServices(context.Configuration);
-            })
+                    // ===== FEATURE MODULES =====
+                    // Receiving, Dunnage, Volvo, Reporting, Settings, Shared
+                    // Each module registers its DAOs, services, ViewModels, and Views
+                    services.AddModuleServices(context.Configuration);
+                }
+            )
             .Build();
     }
 
@@ -104,8 +109,11 @@ public partial class App : Application
     /// <typeparam name="T">The service type to retrieve.</typeparam>
     /// <returns>The requested service instance.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the service is not registered.</exception>
-    [Obsolete("Service Locator is an anti-pattern. Use constructor injection instead. See: https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/")]
-    public static T GetService<T>() where T : class
+    [Obsolete(
+        "Service Locator is an anti-pattern. Use constructor injection instead. See: https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/"
+    )]
+    public static T GetService<T>()
+        where T : class
     {
         if (Current is not App app)
         {

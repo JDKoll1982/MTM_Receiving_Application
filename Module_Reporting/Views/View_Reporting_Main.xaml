@@ -5,104 +5,134 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="Transparent">
-
+    Background="Transparent"
+>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0"
-              Margin="16,12,16,16"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
+        <Grid
+            Grid.Row="0"
+            Margin="16,12,16,16"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+        >
             <StackPanel Spacing="20">
-                <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20">
+                <Border
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20"
+                >
                     <StackPanel Spacing="16">
-                        <TextBlock Text="Select a date range, review live module availability, and generate a combined preview for the selected modules."
-                                   Style="{StaticResource BodyTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock
+                            Text="Select a date range, review live module availability, and generate a combined preview for the selected modules."
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        />
 
                         <StackPanel Spacing="12">
-                            <TextBlock Text="Date Range"
-                                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock
+                                Text="Date Range"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                            />
                             <Grid ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <CalendarDatePicker Grid.Column="0"
-                                                    Header="Start Date"
-                                                    Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
-                                                    HorizontalAlignment="Stretch"/>
+                                <CalendarDatePicker
+                                    Grid.Column="0"
+                                    Header="Start Date"
+                                    Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
+                                    HorizontalAlignment="Stretch"
+                                />
 
-                                <CalendarDatePicker Grid.Column="1"
-                                                    Header="End Date"
-                                                    Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
-                                                    HorizontalAlignment="Stretch"/>
+                                <CalendarDatePicker
+                                    Grid.Column="1"
+                                    Header="End Date"
+                                    Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
+                                    HorizontalAlignment="Stretch"
+                                />
 
-                                <Button Grid.Column="2"
-                                        Content="Check Availability"
-                                        Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        VerticalAlignment="Bottom"
-                                        Margin="0,0,0,4"/>
+                                <Button
+                                    Grid.Column="2"
+                                    Content="Check Availability"
+                                    Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0,0,0,4"
+                                />
                             </Grid>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20">
+                <Border
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20"
+                >
                     <StackPanel Spacing="16">
-                        <TextBlock Text="Select Modules"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <TextBlock
+                            Text="Select Modules"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                        />
 
                         <Grid ColumnSpacing="24">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Spacing="6">
-                                <CheckBox Content="Receiving"
-                                          IsChecked="{x:Bind ViewModel.IsReceivingChecked, Mode=TwoWay}"
-                                          IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}"
-                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                           Margin="28,0,0,0"
-                                           FontSize="12"/>
+                                <CheckBox
+                                    Content="Receiving"
+                                    IsChecked="{x:Bind ViewModel.IsReceivingChecked, Mode=TwoWay}"
+                                    IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}"
+                                />
+                                <TextBlock
+                                    Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Margin="28,0,0,0"
+                                    FontSize="12"
+                                />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Spacing="6">
-                                <CheckBox Content="Dunnage"
-                                          IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
-                                          IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}"
-                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                           Margin="28,0,0,0"
-                                           FontSize="12"/>
+                                <CheckBox
+                                    Content="Dunnage"
+                                    IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
+                                    IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}"
+                                />
+                                <TextBlock
+                                    Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Margin="28,0,0,0"
+                                    FontSize="12"
+                                />
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Spacing="6">
-                                <CheckBox Content="Volvo"
-                                          IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"
-                                          IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}"
-                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                           Margin="28,0,0,0"
-                                           FontSize="12"/>
+                                <CheckBox
+                                    Content="Volvo"
+                                    IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"
+                                    IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}"
+                                />
+                                <TextBlock
+                                    Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Margin="28,0,0,0"
+                                    FontSize="12"
+                                />
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -112,17 +142,21 @@
 
         <Grid Grid.Row="1" Margin="24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Spacing="12">
-                <Button Content="Generate Report"
-                        Command="{x:Bind ViewModel.GenerateReportsCommand}"
-                        Style="{StaticResource AccentButtonStyle}"/>
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="12"
+            >
+                <Button
+                    Content="Generate Report"
+                    Command="{x:Bind ViewModel.GenerateReportsCommand}"
+                    Style="{StaticResource AccentButtonStyle}"
+                />
             </StackPanel>
         </Grid>
     </Grid>

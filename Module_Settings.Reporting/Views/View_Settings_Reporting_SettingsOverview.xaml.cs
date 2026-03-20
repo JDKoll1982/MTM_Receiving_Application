@@ -8,7 +8,9 @@ public sealed partial class View_Settings_Reporting_SettingsOverview : Page
 {
     public ViewModel_Settings_Reporting_SettingsOverview ViewModel { get; }
 
-    public View_Settings_Reporting_SettingsOverview(ViewModel_Settings_Reporting_SettingsOverview viewModel)
+    public View_Settings_Reporting_SettingsOverview(
+        ViewModel_Settings_Reporting_SettingsOverview viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;

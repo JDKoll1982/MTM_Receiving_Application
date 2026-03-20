@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
 
 namespace MTM_Receiving_Application.Module_Volvo.Services;
@@ -23,7 +23,8 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         IService_LoggingUtility logger,
         IService_UserSessionManager sessionManager,
         Dao_SettingsCoreRoles rolesDao,
-        Dao_SettingsCoreUserRoles userRolesDao)
+        Dao_SettingsCoreUserRoles userRolesDao
+    )
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
@@ -44,13 +45,16 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error checking shipment management authorization: {ex.Message}", ex);
+            await _logger.LogErrorAsync(
+                $"Error checking shipment management authorization: {ex.Message}",
+                ex
+            );
             return new Model_Dao_Result
             {
                 Success = false,
                 ErrorMessage = "Authorization check failed",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -68,13 +72,16 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error checking master data authorization: {ex.Message}", ex);
+            await _logger.LogErrorAsync(
+                $"Error checking master data authorization: {ex.Message}",
+                ex
+            );
             return new Model_Dao_Result
             {
                 Success = false,
                 ErrorMessage = "Authorization check failed",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -92,13 +99,16 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error checking shipment completion authorization: {ex.Message}", ex);
+            await _logger.LogErrorAsync(
+                $"Error checking shipment completion authorization: {ex.Message}",
+                ex
+            );
             return new Model_Dao_Result
             {
                 Success = false,
                 ErrorMessage = "Authorization check failed",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -116,13 +126,16 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error checking label generation authorization: {ex.Message}", ex);
+            await _logger.LogErrorAsync(
+                $"Error checking label generation authorization: {ex.Message}",
+                ex
+            );
             return new Model_Dao_Result
             {
                 Success = false,
                 ErrorMessage = "Authorization check failed",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -135,12 +148,14 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
             return Task.FromResult(new Model_Dao_Result { Success = true });
         }
 
-        return Task.FromResult(new Model_Dao_Result
-        {
-            Success = false,
-            ErrorMessage = "No active authenticated user session found.",
-            Severity = Enum_ErrorSeverity.Warning
-        });
+        return Task.FromResult(
+            new Model_Dao_Result
+            {
+                Success = false,
+                ErrorMessage = "No active authenticated user session found.",
+                Severity = Enum_ErrorSeverity.Warning,
+            }
+        );
     }
 
     private async Task<Model_Dao_Result> AuthorizeByRoleAsync(params string[] allowedRoles)
@@ -152,7 +167,7 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
             {
                 Success = false,
                 ErrorMessage = "No active authenticated user session found.",
-                Severity = Enum_ErrorSeverity.Warning
+                Severity = Enum_ErrorSeverity.Warning,
             };
         }
 
@@ -163,7 +178,7 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
             {
                 Success = false,
                 ErrorMessage = rolesResult.ErrorMessage ?? "Failed to load application roles.",
-                Severity = Enum_ErrorSeverity.Error
+                Severity = Enum_ErrorSeverity.Error,
             };
         }
 
@@ -174,13 +189,13 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
             {
                 Success = false,
                 ErrorMessage = userRolesResult.ErrorMessage ?? "Failed to load user roles.",
-                Severity = Enum_ErrorSeverity.Error
+                Severity = Enum_ErrorSeverity.Error,
             };
         }
 
         var userRoleIds = userRolesResult.Data.Select(x => x.RoleId).ToHashSet();
-        var userRoleNames = rolesResult.Data
-            .Where(x => userRoleIds.Contains(x.Id))
+        var userRoleNames = rolesResult
+            .Data.Where(x => userRoleIds.Contains(x.Id))
             .Select(x => x.RoleName)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -192,8 +207,9 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
         return new Model_Dao_Result
         {
             Success = false,
-            ErrorMessage = $"You are not authorized for this Volvo operation. Required role: {string.Join(" or ", allowedRoles)}.",
-            Severity = Enum_ErrorSeverity.Warning
+            ErrorMessage =
+                $"You are not authorized for this Volvo operation. Required role: {string.Join(" or ", allowedRoles)}.",
+            Severity = Enum_ErrorSeverity.Warning,
         };
     }
 }

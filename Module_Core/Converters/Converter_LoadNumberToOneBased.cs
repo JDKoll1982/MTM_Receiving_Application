@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
@@ -26,4 +26,3 @@ public class Converter_LoadNumberToOneBased : IValueConverter
         return value!;
     }
 }
-

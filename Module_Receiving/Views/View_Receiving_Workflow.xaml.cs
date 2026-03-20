@@ -24,7 +24,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             View_Receiving_WeightQuantity weightQuantityView,
             View_Receiving_HeatLot heatLotView,
             View_Receiving_PackageType packageTypeView,
-            View_Receiving_Review reviewView)
+            View_Receiving_Review reviewView
+        )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(workflowService);
@@ -64,8 +65,5 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
         }
-
-
     }
 }
-

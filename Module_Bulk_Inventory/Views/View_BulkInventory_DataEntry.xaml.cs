@@ -35,8 +35,9 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
         if (viewModel is null)
         {
             throw new InvalidOperationException(
-                "ViewModel_BulkInventory_DataEntry could not be resolved from the DI container. " +
-                "Ensure the ViewModel and all its dependencies are registered in ModuleServicesExtensions.cs");
+                "ViewModel_BulkInventory_DataEntry could not be resolved from the DI container. "
+                    + "Ensure the ViewModel and all its dependencies are registered in ModuleServicesExtensions.cs"
+            );
         }
 
         ViewModel = viewModel;
@@ -66,7 +67,10 @@ public sealed partial class View_BulkInventory_DataEntry : UserControl
     /// </summary>
     /// <param name="sender">Event sender.</param>
     /// <param name="e">Cell edit event arguments.</param>
-    private async void BulkInventoryDataGrid_CellEditEnded(object sender, DataGridCellEditEndedEventArgs e)
+    private async void BulkInventoryDataGrid_CellEditEnded(
+        object sender,
+        DataGridCellEditEndedEventArgs e
+    )
     {
         if (e.EditAction != DataGridEditAction.Commit)
             return;

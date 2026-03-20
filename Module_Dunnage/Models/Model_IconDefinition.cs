@@ -44,7 +44,7 @@ public partial class Model_IconDefinition : ObservableObject
         { "Document", MaterialIconKind.FileDocument },
         { "Image", MaterialIconKind.Image },
         { "Music", MaterialIconKind.MusicNote },
-        { "Video", MaterialIconKind.Video }
+        { "Video", MaterialIconKind.Video },
     };
 
     // Alias for compatibility

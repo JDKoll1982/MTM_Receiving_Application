@@ -14,7 +14,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// <summary>
 /// Handler for CompleteShipmentCommand - finalizes shipment, generates labels, sends email.
 /// </summary>
-public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCommand, Model_Dao_Result<int>>
+public class CompleteShipmentCommandHandler
+    : IRequestHandler<CompleteShipmentCommand, Model_Dao_Result<int>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
@@ -25,7 +26,8 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
         Dao_VolvoPart partDao,
-        IService_VolvoAuthorization authService)
+        IService_VolvoAuthorization authService
+    )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
@@ -33,7 +35,10 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
-    public async Task<Model_Dao_Result<int>> Handle(CompleteShipmentCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<int>> Handle(
+        CompleteShipmentCommand request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -42,7 +47,8 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
             if (!authResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure<int>(
-                    "You are not authorized to complete shipments");
+                    "You are not authorized to complete shipments"
+                );
             }
 
             Model_VolvoShipment? pendingShipment = null;
@@ -53,7 +59,8 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                 if (!shipmentByIdResult.IsSuccess || shipmentByIdResult.Data == null)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        shipmentByIdResult.ErrorMessage ?? "Shipment not found");
+                        shipmentByIdResult.ErrorMessage ?? "Shipment not found"
+                    );
                 }
 
                 pendingShipment = shipmentByIdResult.Data;
@@ -72,13 +79,17 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
             if (pendingShipment != null)
             {
                 // Update notes if changed
-                if (!string.Equals(pendingShipment.Notes ?? string.Empty, request.Notes ?? string.Empty, StringComparison.Ordinal))
+                if (
+                    !string.Equals(
+                        pendingShipment.Notes ?? string.Empty,
+                        request.Notes ?? string.Empty,
+                        StringComparison.Ordinal
+                    )
+                )
                 {
-                    var updateResult = await _shipmentDao.UpdateAsync(new Model_VolvoShipment
-                    {
-                        Id = pendingShipment.Id,
-                        Notes = request.Notes
-                    });
+                    var updateResult = await _shipmentDao.UpdateAsync(
+                        new Model_VolvoShipment { Id = pendingShipment.Id, Notes = request.Notes }
+                    );
 
                     if (!updateResult.IsSuccess)
                     {
@@ -93,13 +104,17 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     return Model_Dao_Result_Factory.Failure<int>(existingLinesResult.ErrorMessage);
                 }
 
-                foreach (var existingLine in existingLinesResult.Data ?? Enumerable.Empty<Model_VolvoShipmentLine>())
+                foreach (
+                    var existingLine in existingLinesResult.Data
+                        ?? Enumerable.Empty<Model_VolvoShipmentLine>()
+                )
                 {
                     var deleteResult = await _lineDao.DeleteAsync(existingLine.Id);
                     if (!deleteResult.IsSuccess)
                     {
                         return Model_Dao_Result_Factory.Failure<int>(
-                            $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}");
+                            $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}"
+                        );
                     }
                 }
 
@@ -109,7 +124,9 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     if (!partResult.IsSuccess || partResult.Data == null)
                     {
                         return Model_Dao_Result_Factory.Failure<int>(
-                            partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                            partResult.ErrorMessage
+                                ?? $"Part '{partDto.PartNumber}' not found in master data"
+                        );
                     }
 
                     var quantityPerSkid = partResult.Data.QuantityPerSkid;
@@ -125,22 +142,23 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                         CalculatedPieceCount = calculatedPieceCount,
                         ExpectedSkidCount = partDto.ExpectedSkidCount,
                         HasDiscrepancy = partDto.HasDiscrepancy,
-                        DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+                        DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty,
                     };
 
                     var lineResult = await _lineDao.InsertAsync(line);
                     if (!lineResult.IsSuccess)
                     {
                         return Model_Dao_Result_Factory.Failure<int>(
-                            $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+                            $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}"
+                        );
                     }
                 }
-
 
                 var completeResult = await _shipmentDao.CompleteAsync(
                     pendingShipment.Id,
                     request.PONumber,
-                    request.ReceiverNumber);
+                    request.ReceiverNumber
+                );
 
                 if (!completeResult.IsSuccess)
                 {
@@ -159,7 +177,7 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                 Status = "Completed",
                 PONumber = request.PONumber,
                 ReceiverNumber = request.ReceiverNumber,
-                EmployeeNumber = Environment.UserName
+                EmployeeNumber = Environment.UserName,
             };
 
             var insertResult = await _shipmentDao.InsertAsync(shipment);
@@ -176,7 +194,9 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                 if (!partResult.IsSuccess || partResult.Data == null)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                        partResult.ErrorMessage
+                            ?? $"Part '{partDto.PartNumber}' not found in master data"
+                    );
                 }
 
                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
@@ -192,18 +212,23 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     CalculatedPieceCount = calculatedPieceCount,
                     ExpectedSkidCount = partDto.ExpectedSkidCount,
                     HasDiscrepancy = partDto.HasDiscrepancy,
-                    DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+                    DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty,
                 };
 
                 var lineResult = await _lineDao.InsertAsync(line);
                 if (!lineResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+                        $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}"
+                    );
                 }
             }
 
-            var completeInsertResult = await _shipmentDao.CompleteAsync(shipmentId, request.PONumber, request.ReceiverNumber);
+            var completeInsertResult = await _shipmentDao.CompleteAsync(
+                shipmentId,
+                request.PONumber,
+                request.ReceiverNumber
+            );
             if (!completeInsertResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure<int>(completeInsertResult.ErrorMessage);
@@ -214,7 +239,9 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<int>(
-                $"Unexpected error completing shipment: {ex.Message}", ex);
+                $"Unexpected error completing shipment: {ex.Message}",
+                ex
+            );
         }
     }
 }

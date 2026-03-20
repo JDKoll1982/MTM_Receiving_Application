@@ -89,4 +89,3 @@ public interface IService_LoggingUtility
     /// <returns>Number of log files archived</returns>
     public int ArchiveOldLogs(int daysToKeep = 30);
 }
-

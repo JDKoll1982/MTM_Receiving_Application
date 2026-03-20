@@ -68,7 +68,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="location">Location entered by the user.</param>
         /// <param name="warehouseCode">Warehouse code to validate against.</param>
-        public Task<Model_ReceivingValidationResult> ValidateLocationAsync(string? location, string warehouseCode = "002");
+        public Task<Model_ReceivingValidationResult> ValidateLocationAsync(
+            string? location,
+            string warehouseCode = "002"
+        );
 
         /// <summary>
         /// Validates total quantity against PO ordered quantity (for PO items only).
@@ -81,7 +84,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<Model_ReceivingValidationResult> ValidateAgainstPOQuantityAsync(
             decimal totalQuantity,
             decimal orderedQuantity,
-            string partID);
+            string partID
+        );
 
         /// <summary>
         /// Checks for same-day receiving and returns warning if found.
@@ -94,7 +98,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<Model_ReceivingValidationResult> CheckSameDayReceivingAsync(
             string poNumber,
             string partID,
-            decimal userEnteredQuantity);
+            decimal userEnteredQuantity
+        );
 
         /// <summary>
         /// Validates a complete receiving load before save.
@@ -123,7 +128,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="partID">Part ID to check</param>
         /// <returns>Tuple of (IsRestricted, RestrictionType)</returns>
-        public Task<(bool IsRestricted, string RestrictionType)> IsRestrictedPartAsync(string partID);
+        public Task<(bool IsRestricted, string RestrictionType)> IsRestrictedPartAsync(
+            string partID
+        );
     }
 }
-

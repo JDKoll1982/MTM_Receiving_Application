@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
-using Visual_Inventory_Assistant.Windows;
 using System.Windows.Automation;
+using System.Windows.Forms;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using System.Collections.Generic;
-using System.IO;
 using Visual_Inventory_Assistant.Classes;
+using Visual_Inventory_Assistant.Windows;
 using Visual_Inventory_Assistant.Windows;
 
 namespace Visual_Inventory_Assistant.Classes
@@ -47,17 +47,31 @@ namespace Visual_Inventory_Assistant.Classes
         private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        private static extern IntPtr FindWindowEx(
+            IntPtr hwndParent,
+            IntPtr hwndChildAfter,
+            string lpszClass,
+            string lpszWindow
+        );
 
         [DllImport("user32.dll", EntryPoint = "SendMessage", CharSet = CharSet.Auto)]
-        internal static extern IntPtr SendMessageString(IntPtr hWnd, uint Msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
+        internal static extern IntPtr SendMessageString(
+            IntPtr hWnd,
+            uint Msg,
+            IntPtr wParam,
+            [MarshalAs(UnmanagedType.LPWStr)] string lParam
+        );
 
         [DllImport("user32.dll", EntryPoint = "SendMessage")]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        internal static extern IntPtr SendMessage(
+            IntPtr hWnd,
+            uint Msg,
+            IntPtr wParam,
+            IntPtr lParam
+        );
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-
         private static extern bool SetForegroundWindow(IntPtr hWnd);
         #endregion
 
@@ -77,7 +91,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while checking for 'NEW': {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while checking for 'NEW': {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
 
             return false; // Default to false if no data or an error occurs
@@ -108,7 +127,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while opening Visual Command: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while opening Visual Command: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -120,7 +144,10 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                var runningProcessByName = FindWindow(null, "Inventory Transaction Entry - Infor VISUAL - MTMFG");
+                var runningProcessByName = FindWindow(
+                    null,
+                    "Inventory Transaction Entry - Infor VISUAL - MTMFG"
+                );
                 if (runningProcessByName == IntPtr.Zero)
                 {
                     var cmd2 = Process.Start(@"\\visual\visual908$\VMFG\VMINVENT.exe", argument);
@@ -131,9 +158,10 @@ namespace Visual_Inventory_Assistant.Classes
                     cmd2.WaitForInputIdle();
 
                     // Wait for the "Inventory Transaction Entry" window to fully open
-                    
-                    WaitForWindow("Inventory Transaction Entry - Infor VISUAL - MTMFG");                   
-                } else
+
+                    WaitForWindow("Inventory Transaction Entry - Infor VISUAL - MTMFG");
+                }
+                else
                 {
                     // Only call OpenVisualTransferCommand if it's not a "NEW"
                     if (!isNewTransaction)
@@ -145,12 +173,15 @@ namespace Visual_Inventory_Assistant.Classes
                         HandleNewTransaction();
                     }
                 }
-
-               
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while opening Visual Inventory Command: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while opening Visual Inventory Command: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -165,11 +196,16 @@ namespace Visual_Inventory_Assistant.Classes
                 var runningProcessByName1 = FindWindow(null, "Inventory Transfers");
                 if (runningProcessByName1 == IntPtr.Zero)
                 {
-                    var runningProcessByName = FindWindow(null, "Inventory Transaction Entry - Infor VISUAL - MTMFG");
+                    var runningProcessByName = FindWindow(
+                        null,
+                        "Inventory Transaction Entry - Infor VISUAL - MTMFG"
+                    );
                     if (runningProcessByName != IntPtr.Zero)
                     {
-                        SetForegroundWindow(FindWindow(null, "Inventory Transaction Entry - Infor Visual - MTMFG"));
-           
+                        SetForegroundWindow(
+                            FindWindow(null, "Inventory Transaction Entry - Infor Visual - MTMFG")
+                        );
+
                         SendKeys.SendWait("%");
                         SendKeys.SendWait("e");
                         SendKeys.SendWait("s");
@@ -186,12 +222,15 @@ namespace Visual_Inventory_Assistant.Classes
 
                     FillTransferPartID();
                 }
-
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while opening Visual Transfer Command: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while opening Visual Transfer Command: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -254,8 +293,11 @@ namespace Visual_Inventory_Assistant.Classes
                 {
                     closeVisualTransferCommand();
                 }
-                
-                var inventoryWindowHandle = FindWindow(null, "Inventory Transaction Entry - Infor VISUAL - MTMFG");
+
+                var inventoryWindowHandle = FindWindow(
+                    null,
+                    "Inventory Transaction Entry - Infor VISUAL - MTMFG"
+                );
 
                 if (inventoryWindowHandle == IntPtr.Zero)
                 {
@@ -263,30 +305,48 @@ namespace Visual_Inventory_Assistant.Classes
                 }
 
                 // Step 4: Fill the fields in the Inventory Window
-                inventoryWindowHandle = FindWindow(null, "Inventory Transaction Entry - Infor VISUAL - MTMFG");
+                inventoryWindowHandle = FindWindow(
+                    null,
+                    "Inventory Transaction Entry - Infor VISUAL - MTMFG"
+                );
                 if (inventoryWindowHandle != IntPtr.Zero)
                 {
                     SetForegroundWindow(inventoryWindowHandle);
-                    AutomationElement mainWindow = AutomationElement.FromHandle(inventoryWindowHandle);
+                    AutomationElement mainWindow = AutomationElement.FromHandle(
+                        inventoryWindowHandle
+                    );
 
                     if (mainWindow != null)
                     {
-
-
                         // Fill Automation ID 4115 with WorkOrder
-                        SendKeysToVisual("4115", mainWindow, mainForm.MainForm_TextBox_WorkOrder.Text, true);
+                        SendKeysToVisual(
+                            "4115",
+                            mainWindow,
+                            mainForm.MainForm_TextBox_WorkOrder.Text,
+                            true
+                        );
 
                         // Fill Automation ID 4116 with "1"
                         SendKeysToVisual("4116", mainWindow, "1", true);
 
-                        // Fill Automation ID 4143 with Quantity                     
-                        SendKeysToVisual("4143", mainWindow, mainForm.MainForm_TextBox_Quantity.Text, false);
-                        
+                        // Fill Automation ID 4143 with Quantity
+                        SendKeysToVisual(
+                            "4143",
+                            mainWindow,
+                            mainForm.MainForm_TextBox_Quantity.Text,
+                            false
+                        );
+
                         // Fill Automation ID 4148 with "002"
                         SendKeysToVisual("4148", mainWindow, "002", false);
 
                         // Fill Automation ID 4152 with To
-                        SendKeysToVisual("4152", mainWindow, mainForm.MainForm_TextBox_To.Text,true);
+                        SendKeysToVisual(
+                            "4152",
+                            mainWindow,
+                            mainForm.MainForm_TextBox_To.Text,
+                            true
+                        );
 
                         // Wait for the save button to be clicked
                         FillNewTransactionWaitForSaveButtonClick();
@@ -303,7 +363,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while handling 'NEW': {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while handling 'NEW': {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -318,10 +383,15 @@ namespace Visual_Inventory_Assistant.Classes
                     AutomationElement mainWindow = AutomationElement.FromHandle(hwndMain);
                     if (mainWindow != null)
                     {
-                        AutomationElement partIdTextBox = FindTextBoxByAutomationId(mainWindow, "4102");
+                        AutomationElement partIdTextBox = FindTextBoxByAutomationId(
+                            mainWindow,
+                            "4102"
+                        );
                         if (partIdTextBox != null)
                         {
-                            SetForegroundWindow(new IntPtr(partIdTextBox.Current.NativeWindowHandle)); // Set focus on the control
+                            SetForegroundWindow(
+                                new IntPtr(partIdTextBox.Current.NativeWindowHandle)
+                            ); // Set focus on the control
                             SendKeys.Send("^a"); // Select all text
                             SendKeys.Send("{DEL}"); // Delete the selected text
                             SendKeys.Send(mainForm.MainForm_TextBox_PartID.Text); // Simulate typing
@@ -345,7 +415,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling Part ID: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling Part ID: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -382,7 +457,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling all text boxes: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling all text boxes: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -411,7 +491,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling Quantity: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling Quantity: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -423,7 +508,10 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                AutomationElement transferFromTextBox = FindTextBoxByAutomationId(mainWindow, "4123");
+                AutomationElement transferFromTextBox = FindTextBoxByAutomationId(
+                    mainWindow,
+                    "4123"
+                );
                 if (transferFromTextBox != null)
                 {
                     SetForegroundWindow(new IntPtr(transferFromTextBox.Current.NativeWindowHandle)); // Set focus on the control
@@ -438,7 +526,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling Transfer From 002: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling Transfer From 002: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -465,7 +558,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling Transfer To 002: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling Transfer To 002: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -477,10 +575,15 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                AutomationElement transferFromLocationTextBox = FindTextBoxByAutomationId(mainWindow, "4124");
+                AutomationElement transferFromLocationTextBox = FindTextBoxByAutomationId(
+                    mainWindow,
+                    "4124"
+                );
                 if (transferFromLocationTextBox != null)
                 {
-                    SetForegroundWindow(new IntPtr(transferFromLocationTextBox.Current.NativeWindowHandle)); // Set focus on the control
+                    SetForegroundWindow(
+                        new IntPtr(transferFromLocationTextBox.Current.NativeWindowHandle)
+                    ); // Set focus on the control
                     SendKeys.Send("^a"); // Select all text
                     SendKeys.Send("{DEL}"); // Delete the selected text
                     SendKeys.Send(mainForm.MainForm_TextBox_From.Text); // Simulate typing
@@ -492,7 +595,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling Transfer From Location: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling Transfer From Location: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -504,11 +612,16 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                AutomationElement transferToLocationTextBox = FindTextBoxByAutomationId(mainWindow, "4143");
+                AutomationElement transferToLocationTextBox = FindTextBoxByAutomationId(
+                    mainWindow,
+                    "4143"
+                );
                 if (transferToLocationTextBox != null)
                 {
                     windowOpen = false;
-                    SetForegroundWindow(new IntPtr(transferToLocationTextBox.Current.NativeWindowHandle)); // Set focus on the control
+                    SetForegroundWindow(
+                        new IntPtr(transferToLocationTextBox.Current.NativeWindowHandle)
+                    ); // Set focus on the control
                     Thread.Sleep(1000); // Wait for 1 second
                     FillTransferCheckForInventoryTransactionEntryWindow(); // Call FillTransferCheckForInventoryTransactionEntryWindow after filling the control
                     if (windowOpen == false)
@@ -524,7 +637,6 @@ namespace Visual_Inventory_Assistant.Classes
                     {
                         FillTransferWaitForSaveButtonClick();
                     }
-
                 }
                 else
                 {
@@ -533,7 +645,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while filling Transfer To Location: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while filling Transfer To Location: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -560,7 +677,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while interacting with the Parts window: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while interacting with the Parts window: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -572,16 +694,23 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                var hwndInventoryTransactionEntry = FindWindow("Gupta:AccFrame", "Inventory Transaction Entry");
+                var hwndInventoryTransactionEntry = FindWindow(
+                    "Gupta:AccFrame",
+                    "Inventory Transaction Entry"
+                );
                 if (hwndInventoryTransactionEntry != IntPtr.Zero)
                 {
                     while (true)
                     {
-                        if (FindWindow("Gupta:AccFrame", "Inventory Transaction Entry") == IntPtr.Zero)
+                        if (
+                            FindWindow("Gupta:AccFrame", "Inventory Transaction Entry")
+                            == IntPtr.Zero
+                        )
                         {
                             break;
                         }
-                        mainForm.MainForm_StatusText_Loading.Text = "Waiting for the Inventory Transaction Entry Window Detected, Process Stopped...";
+                        mainForm.MainForm_StatusText_Loading.Text =
+                            "Waiting for the Inventory Transaction Entry Window Detected, Process Stopped...";
                         // Sleep for a short period to avoid busy-waiting
                         windowOpen = true;
                     }
@@ -589,7 +718,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while checking for Inventory Transaction Entry window: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while checking for Inventory Transaction Entry window: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -601,10 +735,19 @@ namespace Visual_Inventory_Assistant.Classes
 
         #region Helper Methods
         // Helper methods for finding text boxes by AutomationId and other utility functions
-        private AutomationElement FindTextBoxByAutomationId(AutomationElement mainWindow, string automationId)
+        private AutomationElement FindTextBoxByAutomationId(
+            AutomationElement mainWindow,
+            string automationId
+        )
         {
-            Condition condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit);
-            AutomationElementCollection textBoxes = mainWindow.FindAll(TreeScope.Descendants, condition);
+            Condition condition = new PropertyCondition(
+                AutomationElement.ControlTypeProperty,
+                ControlType.Edit
+            );
+            AutomationElementCollection textBoxes = mainWindow.FindAll(
+                TreeScope.Descendants,
+                condition
+            );
 
             foreach (AutomationElement textBox in textBoxes)
             {
@@ -620,14 +763,20 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                mainForm.MainForm_StatusText_Loading.Text = "Transaction " + (mainForm._currentRowIndex + 1).ToString() + " Saved.";
+                mainForm.MainForm_StatusText_Loading.Text =
+                    "Transaction " + (mainForm._currentRowIndex + 1).ToString() + " Saved.";
                 mainForm.MainForm_Button_Next.Enabled = true;
                 mainForm.MainForm_Button_Next.Text = "Next";
                 mainForm.MainForm_Button_Next.Focus();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while waiting for save button click: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while waiting for save button click: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -639,14 +788,20 @@ namespace Visual_Inventory_Assistant.Classes
         {
             try
             {
-                mainForm.MainForm_StatusText_Loading.Text = "Transaction " + (mainForm._currentRowIndex + 1).ToString() + " Saved.";
+                mainForm.MainForm_StatusText_Loading.Text =
+                    "Transaction " + (mainForm._currentRowIndex + 1).ToString() + " Saved.";
                 mainForm.MainForm_Button_Next.Enabled = true;
                 mainForm.MainForm_Button_Next.Text = "Next";
                 mainForm.MainForm_Button_Next.Focus();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while waiting for save button click: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while waiting for save button click: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -667,7 +822,12 @@ namespace Visual_Inventory_Assistant.Classes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while closing Visual Transfer Command: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while closing Visual Transfer Command: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -685,7 +845,7 @@ namespace Visual_Inventory_Assistant.Classes
                     "MainForm_Button_SentOR" => "E-Mail: Over Receipts",
                     "MainForm_Button_SendClosed" => "E-Mail: Work Order Closed",
                     "MainForm_Button_SendAddRemove" => "E-Mail: Add Remove",
-                    _ => throw new InvalidOperationException("Unknown button name.")
+                    _ => throw new InvalidOperationException("Unknown button name."),
                 };
 
                 // Extract Work Order, Quantity, and To Location using Automation IDs
@@ -703,7 +863,12 @@ namespace Visual_Inventory_Assistant.Classes
                 {
                     if (!int.TryParse(mainForm.MainForm_TextBox_TagQty.Text, out int tagQuantity))
                     {
-                        MessageBox.Show("Invalid tag quantity entered. Please ensure it is a valid number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(
+                            "Invalid tag quantity entered. Please ensure it is a valid number.",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
                         return;
                     }
 
@@ -721,35 +886,51 @@ namespace Visual_Inventory_Assistant.Classes
                 string notes = mainForm.MainForm_TextBox_Notes.Text;
 
                 // Validate required fields
-                if (string.IsNullOrWhiteSpace(workOrder) || string.IsNullOrWhiteSpace(partNumber) ||
-                    quantity <= 0 || string.IsNullOrWhiteSpace(location))
+                if (
+                    string.IsNullOrWhiteSpace(workOrder)
+                    || string.IsNullOrWhiteSpace(partNumber)
+                    || quantity <= 0
+                    || string.IsNullOrWhiteSpace(location)
+                )
                 {
-                    MessageBox.Show("One or more required fields are empty or invalid. Please ensure all fields are filled.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "One or more required fields are empty or invalid. Please ensure all fields are filled.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return;
                 }
 
                 // Prepare the data to send, ensuring all values are strings
                 var values = new List<IList<object>>
-        {
-            new List<object>
-            {
-                workOrder, // Work Order as text
-                partNumber, // Part Number as text
-                quantity.ToString(), // Quantity as text
-                location, // Location as text
-                sheetName == "E-Mail: Add Remove" ? columnEValue : notes // Column E value
-            }
-        };
+                {
+                    new List<object>
+                    {
+                        workOrder, // Work Order as text
+                        partNumber, // Part Number as text
+                        quantity.ToString(), // Quantity as text
+                        location, // Location as text
+                        sheetName == "E-Mail: Add Remove" ? columnEValue : notes, // Column E value
+                    },
+                };
 
                 // Google Sheets API setup
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "visual-easy-inventory-3e055e946d7c.json");
-                var credential = GoogleCredential.FromFile(filePath).CreateScoped(SheetsService.Scope.Spreadsheets);
+                var filePath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "visual-easy-inventory-3e055e946d7c.json"
+                );
+                var credential = GoogleCredential
+                    .FromFile(filePath)
+                    .CreateScoped(SheetsService.Scope.Spreadsheets);
 
-                var service = new SheetsService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "EasyInventory"
-                });
+                var service = new SheetsService(
+                    new BaseClientService.Initializer()
+                    {
+                        HttpClientInitializer = credential,
+                        ApplicationName = "EasyInventory",
+                    }
+                );
 
                 // Define the spreadsheet ID and range
                 string spreadsheetId = "1QO0byGw_hJ35FpQUnUaZw_16zhiHXwVgrppB4-JF2TY"; // Replace with the actual ID
@@ -757,8 +938,16 @@ namespace Visual_Inventory_Assistant.Classes
 
                 // Create the request to append data
                 var valueRange = new Google.Apis.Sheets.v4.Data.ValueRange { Values = values };
-                var appendRequest = service.Spreadsheets.Values.Append(valueRange, spreadsheetId, range);
-                appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.RAW;
+                var appendRequest = service.Spreadsheets.Values.Append(
+                    valueRange,
+                    spreadsheetId,
+                    range
+                );
+                appendRequest.ValueInputOption = SpreadsheetsResource
+                    .ValuesResource
+                    .AppendRequest
+                    .ValueInputOptionEnum
+                    .RAW;
 
                 // Execute the request
                 var response = appendRequest.Execute();
@@ -767,17 +956,30 @@ namespace Visual_Inventory_Assistant.Classes
                 mainForm.MainForm_TextBox_Notes.Clear();
                 mainForm.MainForm_TextBox_TagQty.Clear();
 
-                MessageBox.Show("Data sent successfully to Google Sheet.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    "Data sent successfully to Google Sheet.",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while sending data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while sending data: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
         public int GetQuantityFromAutomationId(string automationId)
         {
-            var inventoryWindowHandle = FindWindow(null, "Inventory Transaction Entry - Infor VISUAL - MTMFG");
+            var inventoryWindowHandle = FindWindow(
+                null,
+                "Inventory Transaction Entry - Infor VISUAL - MTMFG"
+            );
             if (inventoryWindowHandle != IntPtr.Zero)
             {
                 AutomationElement mainWindow = AutomationElement.FromHandle(inventoryWindowHandle);
@@ -799,7 +1001,12 @@ namespace Visual_Inventory_Assistant.Classes
                             }
                             else
                             {
-                                MessageBox.Show($"Invalid quantity value: {value}. Please ensure it is a valid number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show(
+                                    $"Invalid quantity value: {value}. Please ensure it is a valid number.",
+                                    "Error",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
                                 return 0; // Default to 0 if the value is invalid
                             }
                         }
@@ -812,7 +1019,10 @@ namespace Visual_Inventory_Assistant.Classes
 
         private string GetTextFromAutomationId(string automationId, bool enforceWholeNumber = false)
         {
-            var inventoryWindowHandle = FindWindow(null, "Inventory Transaction Entry - Infor VISUAL - MTMFG");
+            var inventoryWindowHandle = FindWindow(
+                null,
+                "Inventory Transaction Entry - Infor VISUAL - MTMFG"
+            );
             if (inventoryWindowHandle != IntPtr.Zero)
             {
                 AutomationElement mainWindow = AutomationElement.FromHandle(inventoryWindowHandle);
@@ -836,7 +1046,12 @@ namespace Visual_Inventory_Assistant.Classes
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"Invalid quantity value: {value}. Please ensure it is a whole number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show(
+                                        $"Invalid quantity value: {value}. Please ensure it is a whole number.",
+                                        "Error",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
                                     return "0"; // Default to 0 if the value is invalid
                                 }
                             }

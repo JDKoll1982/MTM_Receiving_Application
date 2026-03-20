@@ -1,5 +1,5 @@
-﻿using MTM_Receiving_Application.Module_Core.Models.Enums;
-using System;
+﻿using System;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Core.Models.Core;
 
@@ -51,5 +51,3 @@ public class Model_Dao_Result
 
     // Static factory methods moved to DaoResultFactory to avoid circular dependencies
 }
-
-

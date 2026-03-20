@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
@@ -19,7 +19,8 @@ public class Dao_ReceivingLine
 
     public Dao_ReceivingLine(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
@@ -40,12 +41,23 @@ public class Dao_ReceivingLine
                 new MySqlParameter("@p_EmployeeNumber", line.EmployeeNumber),
                 new MySqlParameter("@p_Heat", line.Heat ?? string.Empty),
                 new MySqlParameter("@p_Date", line.Date),
-                new MySqlParameter("@p_InitialLocation", string.IsNullOrWhiteSpace(line.InitialLocation) ? "Nothing Entered" : line.InitialLocation.Trim()),
+                new MySqlParameter(
+                    "@p_InitialLocation",
+                    string.IsNullOrWhiteSpace(line.InitialLocation)
+                        ? "Nothing Entered"
+                        : line.InitialLocation.Trim()
+                ),
                 new MySqlParameter("@p_CoilsOnSkid", (object?)line.CoilsOnSkid ?? DBNull.Value),
                 new MySqlParameter("@p_VendorName", line.VendorName ?? "Unknown"),
                 new MySqlParameter("@p_PartDescription", line.PartDescription ?? string.Empty),
-                new MySqlParameter("@p_Status", MySqlDbType.Int32) { Direction = System.Data.ParameterDirection.Output },
-                new MySqlParameter("@p_ErrorMsg", MySqlDbType.VarChar, 500) { Direction = System.Data.ParameterDirection.Output }
+                new MySqlParameter("@p_Status", MySqlDbType.Int32)
+                {
+                    Direction = System.Data.ParameterDirection.Output,
+                },
+                new MySqlParameter("@p_ErrorMsg", MySqlDbType.VarChar, 500)
+                {
+                    Direction = System.Data.ParameterDirection.Output,
+                },
             };
 
             // Validate parameters
@@ -55,7 +67,7 @@ public class Dao_ReceivingLine
                 {
                     Success = false,
                     ErrorMessage = "Required parameters are missing or invalid",
-                    Severity = Enum_ErrorSeverity.Warning
+                    Severity = Enum_ErrorSeverity.Warning,
                 };
             }
 
@@ -74,7 +86,7 @@ public class Dao_ReceivingLine
             {
                 Success = false,
                 ErrorMessage = $"Unexpected error inserting receiving line: {ex.Message}",
-                Severity = Enum_ErrorSeverity.Error
+                Severity = Enum_ErrorSeverity.Error,
             };
         }
     }

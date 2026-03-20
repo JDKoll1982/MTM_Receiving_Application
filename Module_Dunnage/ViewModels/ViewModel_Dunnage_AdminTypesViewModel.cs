@@ -9,11 +9,11 @@ using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -36,7 +36,9 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
         _adminWorkflow = adminWorkflow;
@@ -122,7 +124,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
         {
             var dialog = new Module_Dunnage.Views.View_Dunnage_Dialog_Dunnage_AddTypeDialog
             {
-                XamlRoot = _windowService.GetXamlRoot()
+                XamlRoot = _windowService.GetXamlRoot(),
             };
 
             var result = await dialog.ShowAsync();
@@ -130,7 +132,10 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
             if (result == ContentDialogResult.Primary)
             {
                 StatusMessage = "Type added successfully";
-                await _logger.LogInfoAsync("New dunnage type added via Add Type Dialog", "TypeManagement");
+                await _logger.LogInfoAsync(
+                    "New dunnage type added via Add Type Dialog",
+                    "TypeManagement"
+                );
 
                 // Reload types to show the new type
                 await LoadTypesAsync();
@@ -172,7 +177,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 DateAdded = SelectedType.DateAdded,
                 AddedBy = SelectedType.AddedBy,
                 LastModified = SelectedType.LastModified,
-                ModifiedBy = SelectedType.ModifiedBy
+                ModifiedBy = SelectedType.ModifiedBy,
             };
 
             var dialog = new ContentDialog
@@ -181,7 +186,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 PrimaryButtonText = "Save",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = _windowService.GetXamlRoot()
+                XamlRoot = _windowService.GetXamlRoot(),
             };
 
             var stackPanel = new StackPanel { Spacing = 12 };
@@ -190,20 +195,20 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
             {
                 Header = "Type Name",
                 Text = editedType.DunnageType,
-                PlaceholderText = "Enter type name"
+                PlaceholderText = "Enter type name",
             };
 
             // Icon selector button
             var iconSelectorButton = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Padding = new Thickness(16, 12, 16, 12)
+                Padding = new Thickness(16, 12, 16, 12),
             };
 
             var iconButtonPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
-                Spacing = 12
+                Spacing = 12,
             };
 
             var iconDisplay = new Material.Icons.WinUI3.MaterialIcon
@@ -211,25 +216,24 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 Kind = editedType.IconKind,
                 Width = 32,
                 Height = 32,
-                Foreground = (Microsoft.UI.Xaml.Media.Brush)Microsoft.UI.Xaml.Application.Current.Resources["AccentFillColorDefaultBrush"]
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)
+                    Microsoft.UI.Xaml.Application.Current.Resources["AccentFillColorDefaultBrush"],
             };
 
-            var iconTextPanel = new StackPanel
-            {
-                VerticalAlignment = VerticalAlignment.Center
-            };
+            var iconTextPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
 
             var iconLabel = new TextBlock
             {
                 Text = "Click to select icon",
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
             };
 
             var iconName = new TextBlock
             {
                 Text = editedType.Icon,
                 FontSize = 12,
-                Foreground = (Microsoft.UI.Xaml.Media.Brush)Microsoft.UI.Xaml.Application.Current.Resources["TextFillColorSecondaryBrush"]
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)
+                    Microsoft.UI.Xaml.Application.Current.Resources["TextFillColorSecondaryBrush"],
             };
 
             iconTextPanel.Children.Add(iconLabel);
@@ -241,7 +245,8 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
             // Handle icon selection
             iconSelectorButton.Click += async (_, __) =>
             {
-                var iconSelector = new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
+                var iconSelector =
+                    new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
                 iconSelector.SetInitialSelection(editedType.IconKind);
                 iconSelector.Activate();
 
@@ -258,7 +263,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
             {
                 Text = "Icon",
                 Margin = new Thickness(0, 8, 0, 0),
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
             };
 
             stackPanel.Children.Add(typeNameBox);
@@ -275,7 +280,11 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
                 if (string.IsNullOrWhiteSpace(editedType.DunnageType))
                 {
-                    await _errorHandler.ShowUserErrorAsync("Type name is required", "Validation Error", "ShowEditTypeAsync");
+                    await _errorHandler.ShowUserErrorAsync(
+                        "Type name is required",
+                        "Validation Error",
+                        "ShowEditTypeAsync"
+                    );
                     return;
                 }
 
@@ -291,7 +300,10 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 }
 
                 StatusMessage = "Type updated successfully";
-                await _logger.LogInfoAsync($"Updated type: {editedType.DunnageType}", "TypeManagement");
+                await _logger.LogInfoAsync(
+                    $"Updated type: {editedType.DunnageType}",
+                    "TypeManagement"
+                );
 
                 // Reload types
                 await LoadTypesAsync();
@@ -334,7 +346,9 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
             // Get impact counts
             var partCountResult = await _dunnageService.GetPartCountByTypeAsync(SelectedType.Id);
-            var transactionCountResult = await _dunnageService.GetTransactionCountByTypeAsync(SelectedType.Id);
+            var transactionCountResult = await _dunnageService.GetTransactionCountByTypeAsync(
+                SelectedType.Id
+            );
 
             if (!partCountResult.Success || !transactionCountResult.Success)
             {
@@ -365,7 +379,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                     Title = "Cannot Delete Type",
                     Content = impactMessage,
                     CloseButtonText = "OK",
-                    XamlRoot = _windowService.GetXamlRoot()
+                    XamlRoot = _windowService.GetXamlRoot(),
                 };
 
                 await warningDialog.ShowAsync();
@@ -382,16 +396,19 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = _windowService.GetXamlRoot()
+                XamlRoot = _windowService.GetXamlRoot(),
             };
 
             var stackPanel = new StackPanel { Spacing = 12 };
-            stackPanel.Children.Add(new TextBlock { Text = impactMessage, TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap });
+            stackPanel.Children.Add(
+                new TextBlock
+                {
+                    Text = impactMessage,
+                    TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                }
+            );
 
-            var confirmBox = new TextBox
-            {
-                PlaceholderText = "Type DELETE to confirm"
-            };
+            var confirmBox = new TextBox { PlaceholderText = "Type DELETE to confirm" };
             stackPanel.Children.Add(confirmBox);
 
             confirmDialog.Content = stackPanel;
@@ -442,7 +459,10 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
             }
 
             StatusMessage = "Type deleted successfully";
-            await _logger.LogInfoAsync($"Deleted type: {SelectedType.DunnageType}", "TypeManagement");
+            await _logger.LogInfoAsync(
+                $"Deleted type: {SelectedType.DunnageType}",
+                "TypeManagement"
+            );
 
             // Reload types
             await LoadTypesAsync();
@@ -510,4 +530,3 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
     #endregion
 }
-

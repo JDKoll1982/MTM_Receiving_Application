@@ -1,6 +1,6 @@
+using System;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using System;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
@@ -11,7 +11,9 @@ namespace MTM_Receiving_Application.Module_Core.Converters;
 /// </summary>
 public class Converter_PartIDToQualityHoldBrush : IValueConverter
 {
-    private static readonly SolidColorBrush LightRedBrush = new(Windows.UI.Color.FromArgb(255, 255, 230, 230)); // #FFE6E6
+    private static readonly SolidColorBrush LightRedBrush = new(
+        Windows.UI.Color.FromArgb(255, 255, 230, 230)
+    ); // #FFE6E6
     private static readonly SolidColorBrush TransparentBrush = new(Microsoft.UI.Colors.Transparent);
 
     /// <summary>
@@ -35,8 +37,10 @@ public class Converter_PartIDToQualityHoldBrush : IValueConverter
         }
 
         // Check for restricted part patterns: MMFSR or MMCSR
-        if (partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase) ||
-            partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase))
+        if (
+            partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase)
+            || partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase)
+        )
         {
             return LightRedBrush; // Light red background for visibility
         }

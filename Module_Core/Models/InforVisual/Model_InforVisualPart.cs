@@ -32,7 +32,6 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         /// <summary>
         /// Display text for UI showing part ID, description, and line number.
         /// </summary>
-        public string DisplayText =>
-            $"{PartID} - {Description} (Line {POLineNumber})";
+        public string DisplayText => $"{PartID} - {Description} (Line {POLineNumber})";
     }
 }

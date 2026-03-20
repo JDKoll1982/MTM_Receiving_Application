@@ -1,13 +1,13 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Microsoft.Extensions.DependencyInjection;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
+using Windows.Foundation;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.Views;
 
@@ -42,7 +42,9 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
         return Frame;
     }
 
-    public View_Settings_Receiving_NavigationHub(ViewModel_Settings_Receiving_NavigationHub viewModel)
+    public View_Settings_Receiving_NavigationHub(
+        ViewModel_Settings_Receiving_NavigationHub viewModel
+    )
     {
         InitializeComponent();
         ViewModel = viewModel;
@@ -53,7 +55,10 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
             if (serviceProvider != null)
             {
                 _logger = serviceProvider.GetService<IService_LoggingUtility>();
-                _logger?.LogInfo("View_Settings_Receiving_NavigationHub initialized", "Settings.Navigation");
+                _logger?.LogInfo(
+                    "View_Settings_Receiving_NavigationHub initialized",
+                    "Settings.Navigation"
+                );
             }
         }
         catch { }
@@ -109,7 +114,9 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Navigation to {pageType.Name} failed: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine(
+                $"Navigation to {pageType.Name} failed: {ex.Message}"
+            );
         }
     }
 
@@ -124,9 +131,13 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
             var coreWindow = Module_Settings.Core.Views.View_Settings_CoreWindow.GetInstance();
             if (coreWindow != null)
             {
-                var method = coreWindow.GetType().GetMethod(
-                    "UpdateHeaderForPageType",
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var method = coreWindow
+                    .GetType()
+                    .GetMethod(
+                        "UpdateHeaderForPageType",
+                        System.Reflection.BindingFlags.Public
+                            | System.Reflection.BindingFlags.Instance
+                    );
                 method?.Invoke(coreWindow, new object[] { pageType });
             }
         }
@@ -143,8 +154,11 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
             if (Application.Current is App app)
             {
                 // Access the internal _host field to get the IServiceProvider
-                var hostField = typeof(App).GetField("_host",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var hostField = typeof(App).GetField(
+                    "_host",
+                    System.Reflection.BindingFlags.NonPublic
+                        | System.Reflection.BindingFlags.Instance
+                );
 
                 if (hostField?.GetValue(app) is not object host)
                 {
@@ -153,8 +167,12 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
                 }
 
                 // Get the Services property from IHost
-                var servicesProperty = host.GetType().GetProperty("Services",
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var servicesProperty = host.GetType()
+                    .GetProperty(
+                        "Services",
+                        System.Reflection.BindingFlags.Public
+                            | System.Reflection.BindingFlags.Instance
+                    );
 
                 if (servicesProperty?.GetValue(host) is IServiceProvider services)
                 {
@@ -165,7 +183,9 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
                 return null;
             }
 
-            System.Diagnostics.Debug.WriteLine($"Application.Current is not App, it's {Application.Current?.GetType().Name}");
+            System.Diagnostics.Debug.WriteLine(
+                $"Application.Current is not App, it's {Application.Current?.GetType().Name}"
+            );
             return null;
         }
         catch (Exception ex)
@@ -176,8 +196,11 @@ public sealed partial class View_Settings_Receiving_NavigationHub : Page
     }
 
     private void OnStep0Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(0);
+
     private void OnStep1Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(1);
+
     private void OnStep2Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(2);
+
     private void OnStep3Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(3);
 
     private async void OnBackClicked(object sender, RoutedEventArgs e)

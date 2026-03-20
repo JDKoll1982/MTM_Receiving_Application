@@ -9,8 +9,17 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 /// </summary>
 public interface IService_SettingsCoreFacade
 {
-    Task<Model_Dao_Result<Model_SettingsValue>> GetSettingAsync(string category, string key, int? userId = null);
-    Task<Model_Dao_Result> SetSettingAsync(string category, string key, string value, int? userId = null);
+    Task<Model_Dao_Result<Model_SettingsValue>> GetSettingAsync(
+        string category,
+        string key,
+        int? userId = null
+    );
+    Task<Model_Dao_Result> SetSettingAsync(
+        string category,
+        string key,
+        string value,
+        int? userId = null
+    );
     Task<Model_Dao_Result> ResetSettingAsync(string category, string key, int? userId = null);
     Task InitializeDefaultsAsync(int? userId = null);
 }

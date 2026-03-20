@@ -7,10 +7,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -38,7 +38,9 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
         _adminWorkflow = adminWorkflow;
@@ -368,11 +370,17 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Checking usage...";
 
-            var countResult = await _dunnageService.GetTransactionCountByPartAsync(SelectedPart.PartId);
+            var countResult = await _dunnageService.GetTransactionCountByPartAsync(
+                SelectedPart.PartId
+            );
 
             if (!countResult.Success)
             {
-                await _errorHandler.HandleDaoErrorAsync(countResult, "GetTransactionCountByPartAsync", true);
+                await _errorHandler.HandleDaoErrorAsync(
+                    countResult,
+                    "GetTransactionCountByPartAsync",
+                    true
+                );
                 return;
             }
 
@@ -391,7 +399,7 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
                     Title = "Cannot Delete Part",
                     Content = message,
                     CloseButtonText = "OK",
-                    XamlRoot = _windowService.GetXamlRoot()
+                    XamlRoot = _windowService.GetXamlRoot(),
                 };
 
                 await warningDialog.ShowAsync();
@@ -408,7 +416,7 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = _windowService.GetXamlRoot()
+                XamlRoot = _windowService.GetXamlRoot(),
             };
 
             var result = await confirmDialog.ShowAsync();
@@ -508,5 +516,3 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
 
     #endregion
 }
-
-

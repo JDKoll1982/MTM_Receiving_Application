@@ -10,5 +10,5 @@ public enum Enum_BulkInventoryTransactionType
     Transfer,
 
     /// <summary>New Transaction — posts a work-order issue using the "Inventory Transaction Entry" window.</summary>
-    NewTransaction
+    NewTransaction,
 }

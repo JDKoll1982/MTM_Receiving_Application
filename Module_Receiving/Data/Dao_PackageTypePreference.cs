@@ -14,7 +14,8 @@ public class Dao_PackageTypePreference
 
     public Dao_PackageTypePreference(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     // ====================================================================
@@ -25,10 +26,7 @@ public class Dao_PackageTypePreference
     {
         try
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "username", username }
-            };
+            var parameters = new Dictionary<string, object> { { "username", username } };
 
             return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_UserPreference>(
                 _connectionString,
@@ -36,17 +34,20 @@ public class Dao_PackageTypePreference
                 reader => new Model_UserPreference
                 {
                     Username = reader["username"].ToString() ?? string.Empty,
-                    PreferredPackageType = reader["preferred_package_type"].ToString() ?? string.Empty,
+                    PreferredPackageType =
+                        reader["preferred_package_type"].ToString() ?? string.Empty,
                     Workstation = reader["workstation"].ToString() ?? string.Empty,
-                    LastUpdated = Convert.ToDateTime(reader["last_modified"])
+                    LastUpdated = Convert.ToDateTime(reader["last_modified"]),
                 },
-                parameters);
+                parameters
+            );
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
                 $"Error retrieving user package preference: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 
@@ -58,19 +59,21 @@ public class Dao_PackageTypePreference
             {
                 { "username", preference.Username },
                 { "preferred_package_type", preference.PreferredPackageType },
-                { "workstation", preference.Workstation }
+                { "workstation", preference.Workstation },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
                 "sp_package_preferences_upsert",
-                parameters);
+                parameters
+            );
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure(
                 $"Error upserting user package preference: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 
@@ -78,41 +81,47 @@ public class Dao_PackageTypePreference
     // Part Preferences (Existing Feature)
     // ====================================================================
 
-    public async Task<Model_Dao_Result<Model_PackageTypePreference?>> GetPreferenceAsync(string partID)
+    public async Task<Model_Dao_Result<Model_PackageTypePreference?>> GetPreferenceAsync(
+        string partID
+    )
     {
         try
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "@p_PartID", partID }
-            };
+            var parameters = new Dictionary<string, object> { { "@p_PartID", partID } };
 
             // Using custom mapper as in original service
-            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_PackageTypePreference?>(
-                _connectionString,
-                "sp_Receiving_PackageTypePreference_Get",
-                reader => new Model_PackageTypePreference
-                {
-                    PreferenceID = Convert.ToInt32(reader["PreferenceID"]),
-                    PartID = reader["PartID"].ToString() ?? string.Empty,
-                    PackageTypeName = reader["PackageTypeName"].ToString() ?? string.Empty,
-                    CustomTypeName = reader["CustomTypeName"] == DBNull.Value ? null : reader["CustomTypeName"].ToString(),
-                    LastModified = Convert.ToDateTime(reader["LastModified"])
-                },
-                parameters
-            );
+            var result =
+                await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_PackageTypePreference?>(
+                    _connectionString,
+                    "sp_Receiving_PackageTypePreference_Get",
+                    reader => new Model_PackageTypePreference
+                    {
+                        PreferenceID = Convert.ToInt32(reader["PreferenceID"]),
+                        PartID = reader["PartID"].ToString() ?? string.Empty,
+                        PackageTypeName = reader["PackageTypeName"].ToString() ?? string.Empty,
+                        CustomTypeName =
+                            reader["CustomTypeName"] == DBNull.Value
+                                ? null
+                                : reader["CustomTypeName"].ToString(),
+                        LastModified = Convert.ToDateTime(reader["LastModified"]),
+                    },
+                    parameters
+                );
 
             if (result.Success)
             {
                 return Model_Dao_Result_Factory.Success(result.Data);
             }
-            return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(
+                result.ErrorMessage
+            );
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(
                 $"Error retrieving part package preference: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 
@@ -125,7 +134,7 @@ public class Dao_PackageTypePreference
                 { "@p_PartID", preference.PartID },
                 { "@p_PackageTypeName", preference.PackageTypeName },
                 { "@p_CustomTypeName", preference.CustomTypeName ?? (object)DBNull.Value },
-                { "@p_LastModified", DateTime.Now }
+                { "@p_LastModified", DateTime.Now },
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -144,7 +153,8 @@ public class Dao_PackageTypePreference
         {
             return Model_Dao_Result_Factory.Failure(
                 $"Error saving part package preference: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 
@@ -152,10 +162,7 @@ public class Dao_PackageTypePreference
     {
         try
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "@p_PartID", partID }
-            };
+            var parameters = new Dictionary<string, object> { { "@p_PartID", partID } };
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
@@ -173,8 +180,8 @@ public class Dao_PackageTypePreference
         {
             return Model_Dao_Result_Factory.Failure<bool>(
                 $"Error deleting part package preference: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 }
-

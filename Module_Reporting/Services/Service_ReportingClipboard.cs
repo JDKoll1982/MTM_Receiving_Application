@@ -11,7 +11,9 @@ namespace MTM_Receiving_Application.Module_Reporting.Services;
 
 public class Service_ReportingClipboard : IService_ReportingClipboard
 {
-    public Model_Dao_Result<DataPackage> CreateClipboardPackage(Model_FormattedReportDocument document)
+    public Model_Dao_Result<DataPackage> CreateClipboardPackage(
+        Model_FormattedReportDocument document
+    )
     {
         try
         {
@@ -28,7 +30,10 @@ public class Service_ReportingClipboard : IService_ReportingClipboard
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<DataPackage>($"Failed to create clipboard package: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<DataPackage>(
+                $"Failed to create clipboard package: {ex.Message}",
+                ex
+            );
         }
     }
 }

@@ -39,14 +39,20 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> InsertPartAsync(Model_DunnagePart part);
         public Task<Model_Dao_Result> UpdatePartAsync(Model_DunnagePart part);
         public Task<Model_Dao_Result> DeletePartAsync(string partId);
-        public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(string searchText, int? typeId = null);
+        public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(
+            string searchText,
+            int? typeId = null
+        );
 
         // ==================== Load Operations (6 methods) ====================
 
         public Task<Model_Dao_Result> SaveLoadsAsync(List<Model_DunnageLoad> loads);
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetActiveLabelDataAsync();
         public Task<Model_Dao_Result<int>> ClearLabelDataAsync();
-        public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(DateTime start, DateTime end);
+        public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(
+            DateTime start,
+            DateTime end
+        );
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllLoadsAsync();
         public Task<Model_Dao_Result<Model_DunnageLoad>> GetLoadByIdAsync(string loadUuid);
         public Task<Model_Dao_Result> UpdateLoadAsync(Model_DunnageLoad load);
@@ -55,7 +61,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         // ==================== Inventory Operations (6 methods) ====================
 
         public Task<bool> IsPartInventoriedAsync(string partId);
-        public Task<Model_Dao_Result<Model_InventoriedDunnage>> GetInventoryDetailsAsync(string partId);
+        public Task<Model_Dao_Result<Model_InventoriedDunnage>> GetInventoryDetailsAsync(
+            string partId
+        );
         public Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllInventoriedPartsAsync();
         public Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item);
         public Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId);
@@ -63,7 +71,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         // Overloads for ViewModel compatibility
         public Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync();
-        public Task<Model_Dao_Result> UpdateInventoriedPartAsync(int id, string inventoryMethod, string notes, string username);
+        public Task<Model_Dao_Result> UpdateInventoriedPartAsync(
+            int id,
+            string inventoryMethod,
+            string notes,
+            string username
+        );
         public Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id);
 
         // ==================== Impact Analysis (4 methods) ====================
@@ -74,20 +87,30 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result<int>> GetPartCountBySpecKeyAsync(int typeId, string specKey);
 
         // Aliases for compatibility (spec 010-dunnage-complete)
-        public Task<Model_Dao_Result<int>> GetPartCountByTypeAsync(int typeId) => GetPartCountByTypeIdAsync(typeId);
-        public Task<Model_Dao_Result<int>> GetTransactionCountByTypeAsync(int typeId) => GetTransactionCountByTypeIdAsync(typeId);
-        public Task<Model_Dao_Result<int>> GetTransactionCountByPartAsync(string partId) => GetTransactionCountByPartIdAsync(partId);
+        public Task<Model_Dao_Result<int>> GetPartCountByTypeAsync(int typeId) =>
+            GetPartCountByTypeIdAsync(typeId);
+        public Task<Model_Dao_Result<int>> GetTransactionCountByTypeAsync(int typeId) =>
+            GetTransactionCountByTypeIdAsync(typeId);
+        public Task<Model_Dao_Result<int>> GetTransactionCountByPartAsync(string partId) =>
+            GetTransactionCountByPartIdAsync(partId);
 
         // ==================== Custom Field Operations (3 methods) ====================
 
-        public Task<Model_Dao_Result> InsertCustomFieldAsync(int typeId, Model_CustomFieldDefinition field);
-        public Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetCustomFieldsByTypeAsync(int typeId);
+        public Task<Model_Dao_Result> InsertCustomFieldAsync(
+            int typeId,
+            Model_CustomFieldDefinition field
+        );
+        public Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetCustomFieldsByTypeAsync(
+            int typeId
+        );
         public Task<Model_Dao_Result> DeleteCustomFieldAsync(int fieldId);
 
         // ==================== User Preference Operations (2 methods) ====================
 
         public Task<Model_Dao_Result> UpsertUserPreferenceAsync(string key, string value);
-        public Task<Model_Dao_Result<List<Model_IconDefinition>>> GetRecentlyUsedIconsAsync(int count);
+        public Task<Model_Dao_Result<List<Model_IconDefinition>>> GetRecentlyUsedIconsAsync(
+            int count
+        );
 
         // ==================== Non-PO Entry Operations (3 methods) ====================
 
@@ -96,4 +119,3 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> DeleteNonPOEntryAsync(int id);
     }
 }
-

@@ -13,7 +13,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for GetPartComponentsQuery - retrieves components for a parent part.
 /// </summary>
-public class GetPartComponentsQueryHandler : IRequestHandler<GetPartComponentsQuery, Model_Dao_Result<List<Model_VolvoPartComponent>>>
+public class GetPartComponentsQueryHandler
+    : IRequestHandler<GetPartComponentsQuery, Model_Dao_Result<List<Model_VolvoPartComponent>>>
 {
     private readonly Dao_VolvoPartComponent _componentDao;
 
@@ -22,13 +23,18 @@ public class GetPartComponentsQueryHandler : IRequestHandler<GetPartComponentsQu
         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
     }
 
-    public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> Handle(GetPartComponentsQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> Handle(
+        GetPartComponentsQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             if (string.IsNullOrWhiteSpace(request.PartNumber))
             {
-                return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>("Part number is required");
+                return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>(
+                    "Part number is required"
+                );
             }
 
             return await _componentDao.GetByParentPartAsync(request.PartNumber);
@@ -36,7 +42,9 @@ public class GetPartComponentsQueryHandler : IRequestHandler<GetPartComponentsQu
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>(
-                $"Unexpected error retrieving components: {ex.Message}", ex);
+                $"Unexpected error retrieving components: {ex.Message}",
+                ex
+            );
         }
     }
 }

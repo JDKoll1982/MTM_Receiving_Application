@@ -51,7 +51,10 @@ public sealed partial class View_Dunnage_Dialog_AddToInventoriedListDialog : Con
         }
     }
 
-    private async void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void OnPrimaryButtonClick(
+        ContentDialog sender,
+        ContentDialogButtonClickEventArgs args
+    )
     {
         // Get deferral to perform async validation
         var deferral = args.GetDeferral();
@@ -77,7 +80,7 @@ public sealed partial class View_Dunnage_Dialog_AddToInventoriedListDialog : Con
                     Title = "Part Already in List",
                     Content = $"Part '{partId}' is already in the inventoried list.",
                     CloseButtonText = "OK",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
                 await errorDialog.ShowAsync();
                 args.Cancel = true;
@@ -96,7 +99,8 @@ public sealed partial class View_Dunnage_Dialog_AddToInventoriedListDialog : Con
                 partId,
                 inventoryMethod,
                 notes ?? string.Empty,
-                Environment.UserName);
+                Environment.UserName
+            );
 
             if (!insertResult.IsSuccess)
             {
@@ -106,7 +110,7 @@ public sealed partial class View_Dunnage_Dialog_AddToInventoriedListDialog : Con
                     Title = "Insert Failed",
                     Content = insertResult.ErrorMessage ?? "Failed to add part to inventoried list",
                     CloseButtonText = "OK",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
                 await errorDialog.ShowAsync();
                 args.Cancel = true;

@@ -11,7 +11,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for GetInitialShipmentDataQuery - returns current date and next shipment number.
 /// </summary>
-public class GetInitialShipmentDataQueryHandler : IRequestHandler<GetInitialShipmentDataQuery, Model_Dao_Result<InitialShipmentData>>
+public class GetInitialShipmentDataQueryHandler
+    : IRequestHandler<GetInitialShipmentDataQuery, Model_Dao_Result<InitialShipmentData>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
 
@@ -20,7 +21,10 @@ public class GetInitialShipmentDataQueryHandler : IRequestHandler<GetInitialShip
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
     }
 
-    public async Task<Model_Dao_Result<InitialShipmentData>> Handle(GetInitialShipmentDataQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<InitialShipmentData>> Handle(
+        GetInitialShipmentDataQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -30,13 +34,14 @@ public class GetInitialShipmentDataQueryHandler : IRequestHandler<GetInitialShip
             if (!nextNumberResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure<InitialShipmentData>(
-                    nextNumberResult.ErrorMessage ?? "Failed to retrieve next shipment number");
+                    nextNumberResult.ErrorMessage ?? "Failed to retrieve next shipment number"
+                );
             }
 
             var data = new InitialShipmentData
             {
                 CurrentDate = DateTimeOffset.Now,
-                NextShipmentNumber = nextNumberResult.Data
+                NextShipmentNumber = nextNumberResult.Data,
             };
 
             return Model_Dao_Result_Factory.Success(data);
@@ -44,7 +49,9 @@ public class GetInitialShipmentDataQueryHandler : IRequestHandler<GetInitialShip
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<InitialShipmentData>(
-                $"Unexpected error getting initial shipment data: {ex.Message}", ex);
+                $"Unexpected error getting initial shipment data: {ex.Message}",
+                ex
+            );
         }
     }
 }

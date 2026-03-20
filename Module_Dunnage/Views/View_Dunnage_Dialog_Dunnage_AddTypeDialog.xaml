@@ -13,17 +13,17 @@
     DefaultButton="Primary"
     MaxHeight="750"
     PrimaryButtonCommand="{x:Bind ViewModel.SaveTypeCommand}"
-    IsPrimaryButtonEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}">
-
+    IsPrimaryButtonEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}"
+>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="16" Padding="24">
-
             <!-- Duplicate Warning InfoBar -->
             <InfoBar
                 Severity="Warning"
                 IsOpen="{x:Bind ViewModel.ShowDuplicateWarning, Mode=OneWay}"
                 Title="Duplicate Type Name"
-                Message="A type with this name already exists.">
+                Message="A type with this name already exists."
+            >
                 <InfoBar.ActionButton>
                     <HyperlinkButton Content="View Existing Type" />
                 </InfoBar.ActionButton>
@@ -34,11 +34,15 @@
                 Severity="Informational"
                 IsOpen="{x:Bind ViewModel.ShowFieldLimitWarning, Mode=OneWay}"
                 Title="Many Custom Fields"
-                Message="You have added 10+ custom fields. Consider grouping similar fields for better usability." />
+                Message="You have added 10+ custom fields. Consider grouping similar fields for better usability."
+            />
 
             <!-- Basic Information Section -->
             <StackPanel Spacing="12">
-                <TextBlock Text="Basic Information" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBlock
+                    Text="Basic Information"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                />
 
                 <!-- Type Name -->
                 <TextBox
@@ -46,33 +50,39 @@
                     PlaceholderText="Enter dunnage type name (e.g., Pallet - 48x40)"
                     Text="{x:Bind ViewModel.TypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     BorderBrush="{x:Bind ViewModel.TypeNameError, Mode=OneWay, Converter={StaticResource ErrorToBrushConverter}}"
-                    MaxLength="100" />
+                    MaxLength="100"
+                />
 
                 <TextBlock
                     Text="{x:Bind ViewModel.TypeNameError, Mode=OneWay}"
                     Foreground="Red"
                     Visibility="{x:Bind ViewModel.TypeNameError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"
-                    Margin="0,-8,0,0" />
+                    Margin="0,-8,0,0"
+                />
 
                 <!-- Icon Picker Button -->
                 <TextBlock Text="Icon" Margin="0,8,0,0" FontWeight="SemiBold" />
-                <Button x:Name="SelectIconButton"
-                        Click="OnSelectIconClick"
-                        HorizontalAlignment="Stretch"
-                        Padding="16,12"
-                        ToolTipService.ToolTip="Click to browse and select an icon from the icon library">
+                <Button
+                    x:Name="SelectIconButton"
+                    Click="OnSelectIconClick"
+                    HorizontalAlignment="Stretch"
+                    Padding="16,12"
+                    ToolTipService.ToolTip="Click to browse and select an icon from the icon library"
+                >
                     <StackPanel Orientation="Horizontal" Spacing="12">
-                        <materialIcons:MaterialIcon 
-                            Kind="{x:Bind ViewModel.SelectedIcon, Mode=OneWay}" 
-                            Width="32" 
+                        <materialIcons:MaterialIcon
+                            Kind="{x:Bind ViewModel.SelectedIcon, Mode=OneWay}"
+                            Width="32"
                             Height="32"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        />
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Click to select icon" FontWeight="SemiBold"/>
-                            <TextBlock 
+                            <TextBlock Text="Click to select icon" FontWeight="SemiBold" />
+                            <TextBlock
                                 Text="{x:Bind ViewModel.SelectedIcon, Mode=OneWay}"
                                 FontSize="12"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            />
                         </StackPanel>
                     </StackPanel>
                 </Button>
@@ -80,7 +90,10 @@
 
             <!-- Custom Specifications Section -->
             <StackPanel Spacing="12" Margin="0,16,0,0">
-                <TextBlock Text="Custom Specifications" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBlock
+                    Text="Custom Specifications"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                />
 
                 <!-- Add New Field Form -->
                 <Border
@@ -88,7 +101,8 @@
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                >
                     <StackPanel Spacing="12">
                         <TextBlock Text="Add Custom Field" FontWeight="SemiBold" />
 
@@ -97,24 +111,31 @@
                             PlaceholderText="Enter field name (e.g., Width, Material)"
                             Text="{x:Bind ViewModel.FieldName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             BorderBrush="{x:Bind ViewModel.FieldNameError, Mode=OneWay, Converter={StaticResource ErrorToBrushConverter}}"
-                            MaxLength="100" />
+                            MaxLength="100"
+                        />
 
                         <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,-8,0,0">
                             <TextBlock
                                 Text="{x:Bind ViewModel.FieldNameError, Mode=OneWay}"
                                 Foreground="Red"
-                                Visibility="{x:Bind ViewModel.FieldNameError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+                                Visibility="{x:Bind ViewModel.FieldNameError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"
+                            />
                             <TextBlock
                                 Text="{x:Bind ViewModel.FieldCharacterCount, Mode=OneWay}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                HorizontalAlignment="Right" />
-                            <TextBlock Text="/100 characters" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                HorizontalAlignment="Right"
+                            />
+                            <TextBlock
+                                Text="/100 characters"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            />
                         </StackPanel>
 
                         <ComboBox
                             Header="Field Type"
                             SelectedItem="{x:Bind ViewModel.FieldType, Mode=TwoWay}"
-                            HorizontalAlignment="Stretch">
+                            HorizontalAlignment="Stretch"
+                        >
                             <x:String>Text</x:String>
                             <x:String>Number</x:String>
                             <x:String>Dropdown</x:String>
@@ -123,14 +144,16 @@
 
                         <CheckBox
                             Content="Required field"
-                            IsChecked="{x:Bind ViewModel.IsFieldRequired, Mode=TwoWay}" />
+                            IsChecked="{x:Bind ViewModel.IsFieldRequired, Mode=TwoWay}"
+                        />
 
                         <Button
                             Content="{x:Bind ViewModel.EditingField, Mode=OneWay, Converter={StaticResource EditingFieldToTextConverter}}"
                             Command="{x:Bind ViewModel.AddFieldCommand}"
                             IsEnabled="{x:Bind ViewModel.CanAddField, Mode=OneWay}"
                             Style="{StaticResource AccentButtonStyle}"
-                            HorizontalAlignment="Right" />
+                            HorizontalAlignment="Right"
+                        />
                     </StackPanel>
                 </Border>
 
@@ -139,10 +162,10 @@
                     Text="Custom Fields Preview"
                     FontWeight="SemiBold"
                     Visibility="{x:Bind ViewModel.CustomFields.Count, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
-                    Margin="0,8,0,0" />
+                    Margin="0,8,0,0"
+                />
 
-                <ItemsRepeater
-                    ItemsSource="{x:Bind ViewModel.CustomFields, Mode=OneWay}">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.CustomFields, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_CustomFieldDefinition">
                             <Border
@@ -151,7 +174,8 @@
                                 CornerRadius="8"
                                 Padding="12"
                                 Margin="0,4"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            >
                                 <Grid ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -160,30 +184,45 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Drag Handle -->
-                                    <FontIcon Grid.Column="0" Glyph="&#xE76F;" FontSize="16" VerticalAlignment="Center" />
+                                    <FontIcon
+                                        Grid.Column="0"
+                                        Glyph="&#xE76F;"
+                                        FontSize="16"
+                                        VerticalAlignment="Center"
+                                    />
 
                                     <!-- Field Info -->
                                     <StackPanel Grid.Column="1" Spacing="4">
-                                        <TextBlock Text="{x:Bind FieldName}" FontWeight="SemiBold" />
+                                        <TextBlock
+                                            Text="{x:Bind FieldName}"
+                                            FontWeight="SemiBold"
+                                        />
                                         <TextBlock
                                             Text="{x:Bind GetSummary()}"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            FontSize="12" />
+                                            FontSize="12"
+                                        />
                                     </StackPanel>
 
                                     <!-- Edit/Delete Buttons -->
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        Spacing="4"
+                                    >
                                         <Button
                                             Content="Edit"
                                             Command="{Binding EditFieldCommand}"
                                             CommandParameter="{x:Bind}"
-                                            Style="{StaticResource TextBlockButtonStyle}" />
+                                            Style="{StaticResource TextBlockButtonStyle}"
+                                        />
                                         <Button
                                             Content="Delete"
                                             Command="{Binding DeleteFieldCommand}"
                                             CommandParameter="{x:Bind}"
                                             Style="{StaticResource TextBlockButtonStyle}"
-                                            Foreground="Red" />
+                                            Foreground="Red"
+                                        />
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -196,9 +235,9 @@
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Visibility="{x:Bind ViewModel.CustomFields.Count, Mode=OneWay, Converter={StaticResource InverseCountToVisibilityConverter}}"
                     HorizontalAlignment="Center"
-                    Margin="0,16" />
+                    Margin="0,16"
+                />
             </StackPanel>
-
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>

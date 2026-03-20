@@ -19,7 +19,8 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <returns>Authentication result with user data or error message</returns>
         public Task<Model_AuthenticationResult> AuthenticateByWindowsUsernameAsync(
             string windowsUsername,
-            IProgress<string>? progress = null);
+            IProgress<string>? progress = null
+        );
 
         /// <summary>
         /// Authenticates a user by username and PIN (shared terminal login).
@@ -31,7 +32,8 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<Model_AuthenticationResult> AuthenticateByPinAsync(
             string username,
             string pin,
-            IProgress<string>? progress = null);
+            IProgress<string>? progress = null
+        );
 
         /// <summary>
         /// Creates a new user account with validation.
@@ -43,7 +45,8 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<Model_CreateUserResult> CreateNewUserAsync(
             Model_User user,
             string createdBy,
-            IProgress<string>? progress = null);
+            IProgress<string>? progress = null
+        );
 
         /// <summary>
         /// Validates PIN format.
@@ -51,7 +54,10 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="pin">4-digit PIN to validate</param>
         /// <param name="excludeEmployeeNumber">Unused (kept for backward compatibility)</param>
         /// <returns>Validation result with error message if invalid</returns>
-        public Task<Model_ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null);
+        public Task<Model_ValidationResult> ValidatePinAsync(
+            string pin,
+            int? excludeEmployeeNumber = null
+        );
 
         /// <summary>
         /// Detects workstation type (personal workstation or shared terminal).
@@ -59,7 +65,9 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="computerName">Computer name (defaults to Environment.MachineName)</param>
         /// <returns>Workstation configuration with type and timeout settings</returns>
-        public Task<Model_WorkstationConfig> DetectWorkstationTypeAsync(string? computerName = null);
+        public Task<Model_WorkstationConfig> DetectWorkstationTypeAsync(
+            string? computerName = null
+        );
 
         /// <summary>
         /// Retrieves list of active departments for dropdown population.
@@ -74,6 +82,11 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="username">Username involved in event</param>
         /// <param name="workstationName">Computer name where event occurred</param>
         /// <param name="details">Additional event details</param>
-        public Task LogUserActivityAsync(string eventType, string username, string workstationName, string details);
+        public Task LogUserActivityAsync(
+            string eventType,
+            string username,
+            string workstationName,
+            string details
+        );
     }
 }

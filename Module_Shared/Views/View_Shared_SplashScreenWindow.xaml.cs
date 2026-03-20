@@ -70,16 +70,23 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ViewModel_PropertyChanged(
+            object? sender,
+            System.ComponentModel.PropertyChangedEventArgs e
+        )
         {
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
-            {
-                StatusMessageTextBlock.Text = ViewModel.StatusMessage;
-                MainProgressBar.Value = ViewModel.ProgressPercentage;
-                MainProgressBar.IsIndeterminate = ViewModel.IsIndeterminate;
-                ProgressPercentageTextBlock.Text = ViewModel.IsIndeterminate ? "" : $"{ViewModel.ProgressPercentage}%";
-            });
+            DispatcherQueue.TryEnqueue(
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal,
+                () =>
+                {
+                    StatusMessageTextBlock.Text = ViewModel.StatusMessage;
+                    MainProgressBar.Value = ViewModel.ProgressPercentage;
+                    MainProgressBar.IsIndeterminate = ViewModel.IsIndeterminate;
+                    ProgressPercentageTextBlock.Text = ViewModel.IsIndeterminate
+                        ? ""
+                        : $"{ViewModel.ProgressPercentage}%";
+                }
+            );
         }
     }
 }
-

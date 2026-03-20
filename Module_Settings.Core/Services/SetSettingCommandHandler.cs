@@ -37,7 +37,8 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
         ISettingsMetadataRegistry registry,
         ISettingsCache cache,
         ISettingsEncryptionService encryptionService,
-        IService_UserSessionManager sessionManager)
+        IService_UserSessionManager sessionManager
+    )
     {
         _systemDao = systemDao;
         _userDao = userDao;
@@ -50,24 +51,33 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
         _sessionManager = sessionManager;
     }
 
-    public async Task<Model_Dao_Result> Handle(SetSettingCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        SetSettingCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var definition = _registry.GetDefinition(request.Category, request.Key);
         if (definition == null)
         {
-            return Model_Dao_Result_Factory.Failure($"Unknown setting: {request.Category}:{request.Key}");
+            return Model_Dao_Result_Factory.Failure(
+                $"Unknown setting: {request.Category}:{request.Key}"
+            );
         }
 
         var scope = definition.Scope;
         var userId = ResolveUserId(scope, request.UserId);
         if (scope == Enum_SettingsScope.User && userId == null)
         {
-            return Model_Dao_Result_Factory.Failure("User context required for user-scoped settings.");
+            return Model_Dao_Result_Factory.Failure(
+                "User context required for user-scoped settings."
+            );
         }
 
         if (!await HasPermissionAsync(definition.PermissionLevel, userId))
         {
-            return Model_Dao_Result_Factory.Failure("Insufficient permissions to modify this setting.");
+            return Model_Dao_Result_Factory.Failure(
+                "Insufficient permissions to modify this setting."
+            );
         }
 
         if (!IsValueValid(definition.DataType, request.Value))
@@ -80,38 +90,58 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
             var currentResult = await _systemDao.GetByKeyAsync(request.Category, request.Key);
             if (currentResult.Success && currentResult.Data?.IsLocked == true)
             {
-                return Model_Dao_Result_Factory.Failure("Setting is locked and cannot be modified.");
+                return Model_Dao_Result_Factory.Failure(
+                    "Setting is locked and cannot be modified."
+                );
             }
         }
 
         var actor = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
-        var storedValue = definition.IsSensitive ? _encryptionService.Encrypt(request.Value) : request.Value;
+        var storedValue = definition.IsSensitive
+            ? _encryptionService.Encrypt(request.Value)
+            : request.Value;
 
         Model_Dao_Result result;
         if (scope == Enum_SettingsScope.System)
         {
-            result = await _systemDao.UpsertAsync(request.Category, request.Key, storedValue, definition.DataType.ToString(), definition.IsSensitive, actor);
+            result = await _systemDao.UpsertAsync(
+                request.Category,
+                request.Key,
+                storedValue,
+                definition.DataType.ToString(),
+                definition.IsSensitive,
+                actor
+            );
         }
         else
         {
-            result = await _userDao.UpsertAsync(userId!.Value, request.Category, request.Key, storedValue, definition.DataType.ToString(), actor);
+            result = await _userDao.UpsertAsync(
+                userId!.Value,
+                request.Category,
+                request.Key,
+                storedValue,
+                definition.DataType.ToString(),
+                actor
+            );
         }
 
         if (result.Success)
         {
-            await _auditDao.InsertAsync(new Model_SettingsAuditEntry
-            {
-                Scope = scope.ToString(),
-                Category = request.Category,
-                SettingKey = request.Key,
-                OldValue = string.Empty,
-                NewValue = request.Value,
-                ChangeType = "Set",
-                UserId = userId,
-                ChangedBy = actor,
-                ChangedAt = DateTime.Now,
-                WorkstationName = Environment.MachineName
-            });
+            await _auditDao.InsertAsync(
+                new Model_SettingsAuditEntry
+                {
+                    Scope = scope.ToString(),
+                    Category = request.Category,
+                    SettingKey = request.Key,
+                    OldValue = string.Empty,
+                    NewValue = request.Value,
+                    ChangeType = "Set",
+                    UserId = userId,
+                    ChangedBy = actor,
+                    ChangedAt = DateTime.Now,
+                    WorkstationName = Environment.MachineName,
+                }
+            );
 
             _cache.Remove(BuildCacheKey(scope, request.Category, request.Key, userId));
         }
@@ -159,21 +189,29 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
         }
 
         var userRoleIds = userRolesResult.Data.Select(r => r.RoleId).ToHashSet();
-        var userRoleNames = rolesResult.Data
-            .Where(r => userRoleIds.Contains(r.Id))
+        var userRoleNames = rolesResult
+            .Data.Where(r => userRoleIds.Contains(r.Id))
             .Select(r => r.RoleName)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         return required switch
         {
-            Enum_SettingsPermissionLevel.Supervisor => userRoleNames.Contains("Supervisor") || userRoleNames.Contains("Admin") || userRoleNames.Contains("Developer"),
-            Enum_SettingsPermissionLevel.Admin => userRoleNames.Contains("Admin") || userRoleNames.Contains("Developer"),
+            Enum_SettingsPermissionLevel.Supervisor => userRoleNames.Contains("Supervisor")
+                || userRoleNames.Contains("Admin")
+                || userRoleNames.Contains("Developer"),
+            Enum_SettingsPermissionLevel.Admin => userRoleNames.Contains("Admin")
+                || userRoleNames.Contains("Developer"),
             Enum_SettingsPermissionLevel.Developer => userRoleNames.Contains("Developer"),
-            _ => false
+            _ => false,
         };
     }
 
-    private static string BuildCacheKey(Enum_SettingsScope scope, string category, string key, int? userId)
+    private static string BuildCacheKey(
+        Enum_SettingsScope scope,
+        string category,
+        string key,
+        int? userId
+    )
     {
         return scope == Enum_SettingsScope.System
             ? $"system:{category}:{key}"

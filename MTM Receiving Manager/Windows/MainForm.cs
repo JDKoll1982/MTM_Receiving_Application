@@ -1,11 +1,5 @@
 namespace Visual_Inventory_Assistant.Windows
 {
-    using Google.Apis.Auth.OAuth2;
-    
-    using Google.Apis.Services;
-    using Google.Apis.Sheets.v4;
-    using Visual_Inventory_Assistant.Classes;
-    using Visual_Inventory_Assistant.Windows;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -13,17 +7,23 @@ namespace Visual_Inventory_Assistant.Windows
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
+    using Google.Apis.Auth.OAuth2;
+    using Google.Apis.Services;
+    using Google.Apis.Sheets.v4;
+    using Visual_Inventory_Assistant.Classes;
+    using Visual_Inventory_Assistant.Windows;
 
     public partial class MainForm : Form
     {
         #region Fields
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr FindWindow([MarshalAs(UnmanagedType.LPWStr)] string lpClassName,
-            [MarshalAs(UnmanagedType.LPWStr)] string lpWindowName);
+        private static extern IntPtr FindWindow(
+            [MarshalAs(UnmanagedType.LPWStr)] string lpClassName,
+            [MarshalAs(UnmanagedType.LPWStr)] string lpWindowName
+        );
 
         private IList<IList<object>> _values = new List<IList<object>>();
         public int _currentRowIndex;
-
 
         #endregion
 
@@ -50,7 +50,12 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -72,7 +77,12 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while skipping to the next row: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while skipping to the next row: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -103,26 +113,40 @@ namespace Visual_Inventory_Assistant.Windows
                 MainForm_StatusText_Loading.Visible = true;
                 MainForm_StatusText_Loading.Text = "Loading Google Sheets data...";
 
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "visual-easy-inventory-3e055e946d7c.json");
+                var filePath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "visual-easy-inventory-3e055e946d7c.json"
+                );
 
-                var match = Regex.Match(ApplicationVariables.GoogleSheetsLink, @"spreadsheets/d/([a-zA-Z0-9-_]+)");
+                var match = Regex.Match(
+                    ApplicationVariables.GoogleSheetsLink,
+                    @"spreadsheets/d/([a-zA-Z0-9-_]+)"
+                );
                 if (!match.Success)
                 {
-                    MessageBox.Show("Invalid Google Sheets link.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "Invalid Google Sheets link.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return;
                 }
 
                 var spreadsheetId = match.Groups[1].Value;
                 var range = $"{ApplicationVariables.GoogleSheetsSheet}!A2:E";
 
-                var credential = GoogleCredential.FromFile(filePath)
+                var credential = GoogleCredential
+                    .FromFile(filePath)
                     .CreateScoped(SheetsService.Scope.SpreadsheetsReadonly);
 
-                var service = new SheetsService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "EasyInventory"
-                });
+                var service = new SheetsService(
+                    new BaseClientService.Initializer()
+                    {
+                        HttpClientInitializer = credential,
+                        ApplicationName = "EasyInventory",
+                    }
+                );
 
                 var request = service.Spreadsheets.Values.Get(spreadsheetId, range);
                 var response = request.Execute();
@@ -130,7 +154,12 @@ namespace Visual_Inventory_Assistant.Windows
 
                 if (_values == null || _values.Count == 0)
                 {
-                    MessageBox.Show($"{ApplicationVariables.GoogleSheetsSheet} Sheet has no data", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        $"{ApplicationVariables.GoogleSheetsSheet} Sheet has no data",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     Application.Exit();
                 }
                 else
@@ -142,7 +171,12 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while initializing Google Sheets data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while initializing Google Sheets data: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
             finally
             {
@@ -177,7 +211,12 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while loading the next row: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while loading the next row: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -195,7 +234,12 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while starting Easy Inventory: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while starting Easy Inventory: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -222,7 +266,12 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while interacting with Visual: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred while interacting with Visual: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
         #endregion
@@ -248,13 +297,18 @@ namespace Visual_Inventory_Assistant.Windows
                 int visualQuantity = visualLogger.GetQuantityFromAutomationId("4143"); // Automation ID for quantity in Visual
 
                 // Check if the quantity in MainForm_TextBox_TagQty matches the quantity in Visual
-                if (int.TryParse(MainForm_TextBox_TagQty.Text, out int tagQuantity) && tagQuantity == visualQuantity)
+                if (
+                    int.TryParse(MainForm_TextBox_TagQty.Text, out int tagQuantity)
+                    && tagQuantity == visualQuantity
+                )
                 {
                     // Show an error message if the quantities match
-                    MessageBox.Show("The tag quantity matches the quantity in Visual. Please enter a different value.",
-                                    "Error",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "The tag quantity matches the quantity in Visual. Please enter a different value.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return; // Stop further execution
                 }
 
@@ -265,7 +319,12 @@ namespace Visual_Inventory_Assistant.Windows
             catch (Exception ex)
             {
                 // Handle any unexpected errors
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -289,53 +348,59 @@ namespace Visual_Inventory_Assistant.Windows
             catch (Exception ex)
             {
                 // Handle any unexpected errors
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
-        private void MainForm_TextBox_Notes_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void MainForm_TextBox_Notes_TextChanged(object sender, EventArgs e) { }
 
         private void MainForm_MenuStrip_Email_Click(object sender, EventArgs e)
         {
             try
             {
                 // Google Sheets API setup
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "visual-easy-inventory-3e055e946d7c.json");
-                var credential = GoogleCredential.FromFile(filePath).CreateScoped(SheetsService.Scope.SpreadsheetsReadonly);
+                var filePath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "visual-easy-inventory-3e055e946d7c.json"
+                );
+                var credential = GoogleCredential
+                    .FromFile(filePath)
+                    .CreateScoped(SheetsService.Scope.SpreadsheetsReadonly);
 
-                var service = new SheetsService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "EasyInventory"
-                });
+                var service = new SheetsService(
+                    new BaseClientService.Initializer()
+                    {
+                        HttpClientInitializer = credential,
+                        ApplicationName = "EasyInventory",
+                    }
+                );
 
                 // Define the spreadsheet ID
                 string spreadsheetId = "1QO0byGw_hJ35FpQUnUaZw_16zhiHXwVgrppB4-JF2TY";
 
                 // Define the email sheets
                 var emailSheets = new List<string>
-        {
-            "E-Mail: Over Receipts",
-            "E-Mail: Work Order Closed",
-            "E-Mail: Add Remove"
-        };
+                {
+                    "E-Mail: Over Receipts",
+                    "E-Mail: Work Order Closed",
+                    "E-Mail: Add Remove",
+                };
 
                 // Create a new form to display the DataGrids
                 var displayForm = new Form
                 {
                     Text = "Email Tables",
                     Width = 800,
-                    Height = 600
+                    Height = 600,
                 };
 
                 // Create a TabControl to hold the DataGrids
-                var tabControl = new TabControl
-                {
-                    Dock = DockStyle.Fill
-                };
+                var tabControl = new TabControl { Dock = DockStyle.Fill };
 
                 // Read data from each sheet and populate a DataGrid
                 foreach (var sheetName in emailSheets)
@@ -358,9 +423,10 @@ namespace Visual_Inventory_Assistant.Windows
                         AllowUserToAddRows = false,
                         AllowUserToDeleteRows = false,
                         SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                        ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText,
+                        ClipboardCopyMode =
+                            DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText,
                         CellBorderStyle = DataGridViewCellBorderStyle.Single, // Set borders for cells
-                        GridColor = System.Drawing.Color.Black // Set grid color to black
+                        GridColor = System.Drawing.Color.Black, // Set grid color to black
                     };
 
                     // Add columns based on the header row
@@ -391,10 +457,7 @@ namespace Visual_Inventory_Assistant.Windows
                     }
 
                     // Add the DataGrid to a new tab
-                    var tabPage = new TabPage(sheetName)
-                    {
-                        Controls = { dataGrid }
-                    };
+                    var tabPage = new TabPage(sheetName) { Controls = { dataGrid } };
                     tabControl.TabPages.Add(tabPage);
                 }
 
@@ -406,10 +469,13 @@ namespace Visual_Inventory_Assistant.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"An error occurred: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
     }
 }
-
-

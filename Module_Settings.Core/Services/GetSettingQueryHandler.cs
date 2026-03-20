@@ -16,7 +16,8 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Services;
 /// <summary>
 /// Handler for GetSettingQuery.
 /// </summary>
-public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao_Result<Model_SettingsValue>>
+public class GetSettingQueryHandler
+    : IRequestHandler<GetSettingQuery, Model_Dao_Result<Model_SettingsValue>>
 {
     private readonly Dao_SettingsCoreSystem _systemDao;
     private readonly Dao_SettingsCoreUser _userDao;
@@ -37,7 +38,8 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
         ISettingsEncryptionService encryptionService,
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
-        IService_Notification notification)
+        IService_Notification notification
+    )
     {
         _systemDao = systemDao;
         _userDao = userDao;
@@ -50,19 +52,26 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
         _notification = notification;
     }
 
-    public async Task<Model_Dao_Result<Model_SettingsValue>> Handle(GetSettingQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<Model_SettingsValue>> Handle(
+        GetSettingQuery request,
+        CancellationToken cancellationToken
+    )
     {
         var definition = _registry.GetDefinition(request.Category, request.Key);
         if (definition == null)
         {
-            return Model_Dao_Result_Factory.Failure<Model_SettingsValue>($"Unknown setting: {request.Category}:{request.Key}");
+            return Model_Dao_Result_Factory.Failure<Model_SettingsValue>(
+                $"Unknown setting: {request.Category}:{request.Key}"
+            );
         }
 
         var scope = definition.Scope;
         var userId = ResolveUserId(scope, request.UserId);
         if (scope == Enum_SettingsScope.User && userId == null)
         {
-            return Model_Dao_Result_Factory.Failure<Model_SettingsValue>("User context required for user-scoped settings.");
+            return Model_Dao_Result_Factory.Failure<Model_SettingsValue>(
+                "User context required for user-scoped settings."
+            );
         }
 
         var cacheKey = BuildCacheKey(scope, request.Category, request.Key, userId);
@@ -84,9 +93,10 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
         }
 
         string resolvedValue;
-        bool isMissing = scope == Enum_SettingsScope.System
-            ? systemResult?.Success != true || systemResult.Data == null
-            : userResult?.Success != true || userResult.Data == null;
+        bool isMissing =
+            scope == Enum_SettingsScope.System
+                ? systemResult?.Success != true || systemResult.Data == null
+                : userResult?.Success != true || userResult.Data == null;
 
         if (isMissing)
         {
@@ -95,9 +105,10 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
         }
         else
         {
-            resolvedValue = scope == Enum_SettingsScope.System
-                ? systemResult!.Data!.SettingValue
-                : userResult!.Data!.SettingValue;
+            resolvedValue =
+                scope == Enum_SettingsScope.System
+                    ? systemResult!.Data!.SettingValue
+                    : userResult!.Data!.SettingValue;
         }
 
         string? decryptedValue = resolvedValue;
@@ -109,14 +120,24 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
             }
             catch (Exception ex)
             {
-                await HandleCorruptedValueAsync(definition, resolvedValue, userId, $"Sensitive value could not be decrypted: {ex.Message}");
+                await HandleCorruptedValueAsync(
+                    definition,
+                    resolvedValue,
+                    userId,
+                    $"Sensitive value could not be decrypted: {ex.Message}"
+                );
                 decryptedValue = definition.DefaultValue;
             }
         }
 
         if (!IsValueValid(definition.DataType, decryptedValue ?? string.Empty))
         {
-            await HandleCorruptedValueAsync(definition, decryptedValue ?? string.Empty, userId, "Value type mismatch");
+            await HandleCorruptedValueAsync(
+                definition,
+                decryptedValue ?? string.Empty,
+                userId,
+                "Value type mismatch"
+            );
             decryptedValue = definition.DefaultValue;
         }
 
@@ -130,7 +151,7 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
             DisplayValue = definition.IsSensitive ? "••••••" : decryptedValue ?? string.Empty,
             IsSensitive = definition.IsSensitive,
             IsLocked = systemResult?.Data?.IsLocked ?? false,
-            UserId = userId
+            UserId = userId,
         };
 
         _cache.Set(cacheKey, settingsValue);
@@ -152,41 +173,75 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
         return _sessionManager.CurrentSession?.User?.EmployeeNumber;
     }
 
-    private async Task WriteDefaultAsync(Model_SettingsDefinition definition, string defaultValue, int? userId)
+    private async Task WriteDefaultAsync(
+        Model_SettingsDefinition definition,
+        string defaultValue,
+        int? userId
+    )
     {
         var actor = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
         if (definition.Scope == Enum_SettingsScope.System)
         {
-            var valueToStore = definition.IsSensitive ? _encryptionService.Encrypt(defaultValue) : defaultValue;
-            await _systemDao.UpsertAsync(definition.Category, definition.Key, valueToStore, definition.DataType.ToString(), definition.IsSensitive, actor);
+            var valueToStore = definition.IsSensitive
+                ? _encryptionService.Encrypt(defaultValue)
+                : defaultValue;
+            await _systemDao.UpsertAsync(
+                definition.Category,
+                definition.Key,
+                valueToStore,
+                definition.DataType.ToString(),
+                definition.IsSensitive,
+                actor
+            );
         }
         else if (userId.HasValue)
         {
-            var valueToStore = definition.IsSensitive ? _encryptionService.Encrypt(defaultValue) : defaultValue;
-            await _userDao.UpsertAsync(userId.Value, definition.Category, definition.Key, valueToStore, definition.DataType.ToString(), actor);
+            var valueToStore = definition.IsSensitive
+                ? _encryptionService.Encrypt(defaultValue)
+                : defaultValue;
+            await _userDao.UpsertAsync(
+                userId.Value,
+                definition.Category,
+                definition.Key,
+                valueToStore,
+                definition.DataType.ToString(),
+                actor
+            );
         }
 
-        await _auditDao.InsertAsync(new Model_SettingsAuditEntry
-        {
-            Scope = definition.Scope.ToString(),
-            Category = definition.Category,
-            SettingKey = definition.Key,
-            OldValue = string.Empty,
-            NewValue = defaultValue,
-            ChangeType = "DefaultApplied",
-            UserId = userId,
-            ChangedBy = actor,
-            ChangedAt = DateTime.Now,
-            WorkstationName = Environment.MachineName
-        });
+        await _auditDao.InsertAsync(
+            new Model_SettingsAuditEntry
+            {
+                Scope = definition.Scope.ToString(),
+                Category = definition.Category,
+                SettingKey = definition.Key,
+                OldValue = string.Empty,
+                NewValue = defaultValue,
+                ChangeType = "DefaultApplied",
+                UserId = userId,
+                ChangedBy = actor,
+                ChangedAt = DateTime.Now,
+                WorkstationName = Environment.MachineName,
+            }
+        );
     }
 
-    private async Task HandleCorruptedValueAsync(Model_SettingsDefinition definition, string currentValue, int? userId, string reason)
+    private async Task HandleCorruptedValueAsync(
+        Model_SettingsDefinition definition,
+        string currentValue,
+        int? userId,
+        string reason
+    )
     {
         var actor = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
-        var message = $"Setting '{definition.Category}:{definition.Key}' expected {definition.DataType} but found '{currentValue}'. Reason: {reason}. Resetting to default.";
+        var message =
+            $"Setting '{definition.Category}:{definition.Key}' expected {definition.DataType} but found '{currentValue}'. Reason: {reason}. Resetting to default.";
 
-        await _errorHandler.ShowUserErrorAsync(message, "Core Settings Reset", nameof(GetSettingQueryHandler));
+        await _errorHandler.ShowUserErrorAsync(
+            message,
+            "Core Settings Reset",
+            nameof(GetSettingQueryHandler)
+        );
         _notification.ShowStatus(message, InfoBarSeverity.Warning);
 
         await WriteDefaultAsync(definition, definition.DefaultValue, userId);
@@ -219,7 +274,12 @@ public class GetSettingQueryHandler : IRequestHandler<GetSettingQuery, Model_Dao
         }
     }
 
-    private static string BuildCacheKey(Enum_SettingsScope scope, string category, string key, int? userId)
+    private static string BuildCacheKey(
+        Enum_SettingsScope scope,
+        string category,
+        string key,
+        int? userId
+    )
     {
         return scope == Enum_SettingsScope.System
             ? $"system:{category}:{key}"

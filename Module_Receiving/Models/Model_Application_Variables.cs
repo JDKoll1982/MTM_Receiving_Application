@@ -26,11 +26,12 @@ public class Model_Application_Variables
     /// <summary>
     /// Directory path for application log files
     /// </summary>
-    public string LogDirectory { get; set; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "MTM_Receiving_Application",
-        "Logs"
-    );
+    public string LogDirectory { get; set; } =
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "MTM_Receiving_Application",
+            "Logs"
+        );
 
     /// <summary>
     /// Current environment (Development, Test, Production)

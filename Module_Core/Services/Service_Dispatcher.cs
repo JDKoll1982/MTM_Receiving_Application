@@ -22,7 +22,8 @@ namespace MTM_Receiving_Application.Module_Core.Services
                     if (_dispatcherQueue == null)
                     {
                         throw new InvalidOperationException(
-                            "DispatcherQueue is not available. Service_Dispatcher must be used from the UI thread.");
+                            "DispatcherQueue is not available. Service_Dispatcher must be used from the UI thread."
+                        );
                     }
                 }
                 return _dispatcherQueue;
@@ -33,9 +34,7 @@ namespace MTM_Receiving_Application.Module_Core.Services
         /// Parameterless constructor for DI container.
         /// Dispatcher queue is lazy-initialized on first use.
         /// </summary>
-        public Service_Dispatcher()
-        {
-        }
+        public Service_Dispatcher() { }
 
         /// <summary>
         /// Constructor that accepts a dispatcher queue (for testing or explicit initialization).
@@ -43,7 +42,8 @@ namespace MTM_Receiving_Application.Module_Core.Services
         /// <param name="dispatcherQueue"></param>
         public Service_Dispatcher(DispatcherQueue dispatcherQueue)
         {
-            _dispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
+            _dispatcherQueue =
+                dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
         }
 
         public IService_DispatcherTimer CreateTimer()
@@ -57,5 +57,3 @@ namespace MTM_Receiving_Application.Module_Core.Services
         }
     }
 }
-
-

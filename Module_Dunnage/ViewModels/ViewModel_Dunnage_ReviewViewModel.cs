@@ -6,10 +6,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -31,7 +31,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
@@ -200,7 +202,10 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
             // Navigate back to Type Selection without clearing session loads
             _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
 
-            _logger.LogInfo("Navigated to Type Selection for new load, workflow data cleared", "Review");
+            _logger.LogInfo(
+                "Navigated to Type Selection for new load, workflow data cleared",
+                "Review"
+            );
         }
         catch (Exception ex)
         {
@@ -210,7 +215,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
                 "Failed to prepare for new load entry",
                 Enum_ErrorSeverity.Medium,
                 ex,
-                true);
+                true
+            );
         }
     }
 
@@ -231,11 +237,12 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
             var dialog = new ContentDialog
             {
                 Title = "Add Another Load",
-                Content = "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
+                Content =
+                    "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
                 PrimaryButtonText = "Continue",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync();
@@ -274,7 +281,10 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
             // Clear UI inputs in connected ViewModels
             ClearUIInputsForNewEntry();
 
-            _logger.LogInfo("Transient workflow data and UI inputs cleared for new entry", "Review");
+            _logger.LogInfo(
+                "Transient workflow data and UI inputs cleared for new entry",
+                "Review"
+            );
         }
         catch (Exception ex)
         {
@@ -314,7 +324,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
 
             if (!saveResult.Success)
             {
-                await _logger.LogErrorAsync($"Failed to save {LoadCount} loads: {saveResult.ErrorMessage}");
+                await _logger.LogErrorAsync(
+                    $"Failed to save {LoadCount} loads: {saveResult.ErrorMessage}"
+                );
                 await _errorHandler.HandleDaoErrorAsync(saveResult, "SaveAllAsync", true);
                 return;
             }
@@ -325,7 +337,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
             IsSuccessMessageVisible = true;
             StatusMessage = string.Empty;
 
-            await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");
+            await _logger.LogInfoAsync(
+                $"Completed SaveAllAsync: {LoadCount} loads processed successfully"
+            );
 
             // Auto-navigation removed to allow user to see success message and choose next action
         }
@@ -406,4 +420,3 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
 
     #endregion
 }
-

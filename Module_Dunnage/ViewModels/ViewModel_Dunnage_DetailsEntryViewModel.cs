@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -32,7 +32,9 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _helpService = helpService;
@@ -120,7 +122,10 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
             var specsResult = await _dunnageService.GetSpecsForTypeAsync(selectedTypeId);
             if (!specsResult.IsSuccess || specsResult.Data == null)
             {
-                _logger.LogWarning($"No specs found for type {selectedTypeId}: {specsResult.ErrorMessage}", "DetailsEntry");
+                _logger.LogWarning(
+                    $"No specs found for type {selectedTypeId}: {specsResult.ErrorMessage}",
+                    "DetailsEntry"
+                );
                 SpecInputs.Clear();
                 return;
             }
@@ -135,12 +140,21 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
             {
                 try
                 {
-                    partSpecValues = JsonSerializer.Deserialize<Dictionary<string, object>>(selectedPart.SpecValues);
-                    _logger.LogInfo($"Loaded spec values from part: {selectedPart.SpecValues}", "DetailsEntry");
+                    partSpecValues = JsonSerializer.Deserialize<Dictionary<string, object>>(
+                        selectedPart.SpecValues
+                    );
+                    _logger.LogInfo(
+                        $"Loaded spec values from part: {selectedPart.SpecValues}",
+                        "DetailsEntry"
+                    );
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Failed to parse part spec values: {ex.Message}", ex, "DetailsEntry");
+                    _logger.LogError(
+                        $"Failed to parse part spec values: {ex.Message}",
+                        ex,
+                        "DetailsEntry"
+                    );
                 }
             }
 
@@ -162,7 +176,9 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                     defaultValue = partSpecValues[spec.SpecKey]?.ToString();
                 }
 
-                var specType = specValueDict.ContainsKey("type") ? specValueDict["type"]?.ToString()?.ToLowerInvariant() ?? "text" : "text";
+                var specType = specValueDict.ContainsKey("type")
+                    ? specValueDict["type"]?.ToString()?.ToLowerInvariant() ?? "text"
+                    : "text";
 
                 // Convert default value to appropriate type
                 object? typedValue = defaultValue;
@@ -181,7 +197,10 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning($"Failed to convert value '{defaultValue}' to type '{specType}': {ex.Message}", "DetailsEntry");
+                        _logger.LogWarning(
+                            $"Failed to convert value '{defaultValue}' to type '{specType}': {ex.Message}",
+                            "DetailsEntry"
+                        );
                         typedValue = defaultValue; // Keep as string if conversion fails
                     }
                 }
@@ -190,15 +209,24 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                 {
                     SpecName = spec.SpecKey,
                     SpecType = specType,
-                    Unit = specValueDict.ContainsKey("unit") ? specValueDict["unit"]?.ToString() : null,
-                    IsRequired = specValueDict.ContainsKey("required") && bool.Parse(specValueDict["required"]?.ToString() ?? "false"),
-                    Value = typedValue
+                    Unit = specValueDict.ContainsKey("unit")
+                        ? specValueDict["unit"]?.ToString()
+                        : null,
+                    IsRequired =
+                        specValueDict.ContainsKey("required")
+                        && bool.Parse(specValueDict["required"]?.ToString() ?? "false"),
+                    Value = typedValue,
                 };
 
                 SpecInputs.Add(input);
 
-                var typeFromDb = specValueDict.ContainsKey("type") ? specValueDict["type"]?.ToString() ?? "null" : "not found";
-                _logger.LogInfo($"Processing spec: {spec.SpecKey}, Type from DB: {typeFromDb}, Normalized: {specType}", "DetailsEntry");
+                var typeFromDb = specValueDict.ContainsKey("type")
+                    ? specValueDict["type"]?.ToString() ?? "null"
+                    : "not found";
+                _logger.LogInfo(
+                    $"Processing spec: {spec.SpecKey}, Type from DB: {typeFromDb}, Normalized: {specType}",
+                    "DetailsEntry"
+                );
 
                 // Add to type-specific collection
                 if (specType == "boolean")
@@ -223,12 +251,17 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
             HasNumberSpecs = NumberSpecs.Count > 0;
             HasBooleanSpecs = BooleanSpecs.Count > 0;
 
-            _logger.LogInfo($"Created {SpecInputs.Count} spec input controls (Text: {TextSpecs.Count}, Number: {NumberSpecs.Count}, Boolean: {BooleanSpecs.Count})", "DetailsEntry");
+            _logger.LogInfo(
+                $"Created {SpecInputs.Count} spec input controls (Text: {TextSpecs.Count}, Number: {NumberSpecs.Count}, Boolean: {BooleanSpecs.Count})",
+                "DetailsEntry"
+            );
 
             // Check if part is inventoried
             if (selectedPart != null)
             {
-                var isInventoried = await _dunnageService.IsPartInventoriedAsync(selectedPart.PartId);
+                var isInventoried = await _dunnageService.IsPartInventoriedAsync(
+                    selectedPart.PartId
+                );
                 if (isInventoried)
                 {
                     IsInventoryNotificationVisible = true;
@@ -305,7 +338,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
     {
         if (IsInventoryNotificationVisible)
         {
-            InventoryNotificationMessage = $"This part requires inventory adjustment in Visual. Method: {InventoryMethod}";
+            InventoryNotificationMessage =
+                $"This part requires inventory adjustment in Visual. Method: {InventoryMethod}";
         }
     }
 
@@ -362,10 +396,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
             _workflowService.CurrentSession.Location = Location;
 
             // Convert spec inputs to dictionary
-            var specValues = SpecInputs.ToDictionary(
-                s => s.SpecName,
-                s => s.Value ?? string.Empty
-            );
+            var specValues = SpecInputs.ToDictionary(s => s.SpecName, s => s.Value ?? string.Empty);
 
             _workflowService.CurrentSession.SpecValues = specValues;
 
@@ -422,5 +453,3 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 
     #endregion
 }
-
-

@@ -20,10 +20,7 @@ public class Dao_SettingsCoreUserRoles
 
     public Task<Model_Dao_Result<List<Model_SettingsUserRole>>> GetByUserAsync(int userId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "p_user_id", userId }
-        };
+        var parameters = new Dictionary<string, object> { { "p_user_id", userId } };
 
         return Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -33,9 +30,10 @@ public class Dao_SettingsCoreUserRoles
                 Id = reader.GetInt32(reader.GetOrdinal("id")),
                 UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
                 RoleId = reader.GetInt32(reader.GetOrdinal("role_id")),
-                AssignedAt = reader.GetDateTime(reader.GetOrdinal("assigned_at"))
+                AssignedAt = reader.GetDateTime(reader.GetOrdinal("assigned_at")),
             },
-            parameters);
+            parameters
+        );
     }
 
     /// <summary>
@@ -49,13 +47,13 @@ public class Dao_SettingsCoreUserRoles
         var parameters = new Dictionary<string, object>
         {
             { "p_user_id", userId },
-            { "p_role_id", roleId }
+            { "p_role_id", roleId },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_SettingsCore_UserRoles_Assign",
-            parameters);
+            parameters
+        );
     }
 }
-

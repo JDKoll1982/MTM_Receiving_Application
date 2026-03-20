@@ -1,9 +1,9 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -18,7 +18,11 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private readonly List<Model_DunnageSpec> _specs;
     private readonly Dictionary<string, Control> _specInputs = new();
 
-    public View_Dunnage_QuickAddPartDialog(int typeId, string typeName, List<Model_DunnageSpec> specs)
+    public View_Dunnage_QuickAddPartDialog(
+        int typeId,
+        string typeName,
+        List<Model_DunnageSpec> specs
+    )
     {
         InitializeComponent();
 
@@ -41,9 +45,11 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         foreach (var spec in _specs)
         {
             // Skip dimensions as they are handled by the static fields
-            if (string.Equals(spec.SpecKey, "Width", System.StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(spec.SpecKey, "Height", System.StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(spec.SpecKey, "Depth", System.StringComparison.OrdinalIgnoreCase))
+            if (
+                string.Equals(spec.SpecKey, "Width", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(spec.SpecKey, "Height", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(spec.SpecKey, "Depth", System.StringComparison.OrdinalIgnoreCase)
+            )
             {
                 continue;
             }
@@ -79,7 +85,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             var label = new TextBlock
             {
                 Text = labelText,
-                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"]
+                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"],
             };
             stackPanel.Children.Add(label);
 
@@ -90,7 +96,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
                 var numberBox = new NumberBox
                 {
                     PlaceholderText = "0",
-                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
                 };
                 if (def.MinValue.HasValue)
                 {
@@ -105,12 +111,11 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
                 numberBox.ValueChanged += (s, e) => UpdatePartId();
                 inputControl = numberBox;
             }
-            else if (string.Equals(def.DataType, "Boolean", System.StringComparison.OrdinalIgnoreCase))
+            else if (
+                string.Equals(def.DataType, "Boolean", System.StringComparison.OrdinalIgnoreCase)
+            )
             {
-                var checkBox = new CheckBox
-                {
-                    Content = "Yes"
-                };
+                var checkBox = new CheckBox { Content = "Yes" };
                 checkBox.Checked += (s, e) => UpdatePartId();
                 checkBox.Unchecked += (s, e) => UpdatePartId();
                 inputControl = checkBox;
@@ -120,7 +125,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
                 var textBox = new TextBox
                 {
                     PlaceholderText = $"Enter {spec.SpecKey.ToLower()}",
-                    MaxLength = 100
+                    MaxLength = 100,
                 };
                 textBox.TextChanged += (s, e) => UpdatePartId();
                 inputControl = textBox;
@@ -196,7 +201,10 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             if (kvp.Value is CheckBox cb && cb.IsChecked == true)
             {
                 var specName = kvp.Key;
-                var words = specName.Split(new[] { ' ', '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+                var words = specName.Split(
+                    new[] { ' ', '_' },
+                    System.StringSplitOptions.RemoveEmptyEntries
+                );
 
                 if (words.Length > 2)
                 {

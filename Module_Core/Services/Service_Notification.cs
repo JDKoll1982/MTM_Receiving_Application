@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Core.Services;
 
@@ -32,13 +32,14 @@ public partial class Service_Notification : ObservableObject, IService_Notificat
         // Auto-dismiss after 5 seconds if informational or success
         if (severity == InfoBarSeverity.Informational || severity == InfoBarSeverity.Success)
         {
-            Task.Delay(5000).ContinueWith(_ =>
-            {
-                _dispatcher.TryEnqueue(() =>
+            Task.Delay(5000)
+                .ContinueWith(_ =>
                 {
-                    IsStatusOpen = false;
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        IsStatusOpen = false;
+                    });
                 });
-            });
         }
     }
 }

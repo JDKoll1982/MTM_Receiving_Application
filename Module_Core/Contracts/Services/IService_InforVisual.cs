@@ -34,7 +34,11 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="partID">Part identifier</param>
         /// <param name="date">Date to query (typically DateTime.Today)</param>
         /// <returns>Result containing Total quantity received, or 0 if no receipts found</returns>
-        public Task<Model_Dao_Result<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date);
+        public Task<Model_Dao_Result<decimal>> GetSameDayReceivingQuantityAsync(
+            string poNumber,
+            string partID,
+            DateTime date
+        );
 
         /// <summary>
         /// Calculates remaining quantity for a specific PO and Part.
@@ -44,7 +48,10 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="poNumber">PO number</param>
         /// <param name="partID">Part identifier</param>
         /// <returns>Result containing remaining quantity as integer</returns>
-        public Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID);
+        public Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(
+            string poNumber,
+            string partID
+        );
 
         /// <summary>
         /// Validates that the Infor Visual database connection is available.
@@ -58,7 +65,9 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="partNumber">The part ID to search for in SERVICE_DISP_LINE.</param>
         /// <returns>Result containing a list of dispatch records, sorted newest first.</returns>
-        public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByPartAsync(string partNumber);
+        public Task<
+            Model_Dao_Result<List<Model_OutsideServiceHistory>>
+        > GetOutsideServiceHistoryByPartAsync(string partNumber);
 
         /// <summary>
         /// Retrieves outside service dispatch history for a specific vendor ID.
@@ -66,21 +75,27 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="vendorId">The vendor ID to filter dispatch records by.</param>
         /// <returns>Result containing a list of dispatch records, sorted newest first.</returns>
-        public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAsync(string vendorId);
+        public Task<
+            Model_Dao_Result<List<Model_OutsideServiceHistory>>
+        > GetOutsideServiceHistoryByVendorAsync(string vendorId);
 
         /// <summary>
         /// Fuzzy-searches parts by ID using a LIKE '%term%' query against Infor Visual.
         /// Returns up to 50 candidates for display in a selection picker.
         /// </summary>
         /// <param name="term">Partial part ID entered by the user.</param>
-        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term);
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(
+            string term
+        );
 
         /// <summary>
         /// Fuzzy-searches vendors by name using a LIKE '%term%' query against Infor Visual.
         /// Returns up to 50 candidates for display in a selection picker.
         /// </summary>
         /// <param name="term">Partial vendor name entered by the user.</param>
-        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(string term);
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(
+            string term
+        );
 
         /// <summary>
         /// Returns all distinct part numbers serviced by a specific vendor,
@@ -88,14 +103,18 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// Used to populate the part selection picker after vendor confirmation.
         /// </summary>
         /// <param name="vendorId">The vendor ID to query parts for.</param>
-        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId);
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(
+            string vendorId
+        );
 
         /// <summary>
         /// Retrieves outside service dispatch history filtered by both vendor ID and part number.
         /// </summary>
         /// <param name="vendorId">The vendor ID to filter by.</param>
         /// <param name="partNumber">The part number to filter by.</param>
-        public Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAndPartAsync(string vendorId, string partNumber);
+        public Task<
+            Model_Dao_Result<List<Model_OutsideServiceHistory>>
+        > GetOutsideServiceHistoryByVendorAndPartAsync(string vendorId, string partNumber);
 
         /// <summary>
         /// Fuzzy-searches warehouse locations whose ID contains <paramref name="term"/>,
@@ -104,7 +123,10 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="term">Partial location ID entered by the user.</param>
         /// <param name="warehouseCode">Warehouse code to scope results (e.g. "002").</param>
-        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(string term, string warehouseCode);
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(
+            string term,
+            string warehouseCode
+        );
 
         // ── Exact-match validation (Bulk Inventory T031) ───────────────────────
 
@@ -124,7 +146,9 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="locationId">Exact location ID to check.</param>
         /// <param name="warehouseCode">Warehouse code that must match (e.g. "002").</param>
-        public Task<Model_Dao_Result<bool>> LocationExistsAsync(string locationId, string warehouseCode);
+        public Task<Model_Dao_Result<bool>> LocationExistsAsync(
+            string locationId,
+            string warehouseCode
+        );
     }
 }
-

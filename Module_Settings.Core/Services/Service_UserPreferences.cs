@@ -20,14 +20,17 @@ public class Service_UserPreferences : IService_UserPreferences
     public Service_UserPreferences(
         Dao_User userDao,
         IService_LoggingUtility logger,
-        IService_ErrorHandler errorHandler)
+        IService_ErrorHandler errorHandler
+    )
     {
         _userDao = userDao;
         _logger = logger;
         _errorHandler = errorHandler;
     }
 
-    public async Task<Model_Dao_Result<Model_UserPreference>> GetLatestUserPreferenceAsync(string username)
+    public async Task<Model_Dao_Result<Model_UserPreference>> GetLatestUserPreferenceAsync(
+        string username
+    )
     {
         try
         {
@@ -35,7 +38,8 @@ public class Service_UserPreferences : IService_UserPreferences
             if (string.IsNullOrWhiteSpace(normalizedUsername))
             {
                 return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
-                    "Username cannot be empty");
+                    "Username cannot be empty"
+                );
             }
 
             var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
@@ -43,8 +47,13 @@ public class Service_UserPreferences : IService_UserPreferences
             if (!userResult.IsSuccess)
             {
                 _logger.LogError(
-                   $"Failed to retrieve user {normalizedUsername}: {userResult.ErrorMessage}", null, "UserPreferences");
-                return Model_Dao_Result_Factory.Failure<Model_UserPreference>(userResult.ErrorMessage);
+                    $"Failed to retrieve user {normalizedUsername}: {userResult.ErrorMessage}",
+                    null,
+                    "UserPreferences"
+                );
+                return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
+                    userResult.ErrorMessage
+                );
             }
 
             if (userResult.Data == null)
@@ -56,19 +65,25 @@ public class Service_UserPreferences : IService_UserPreferences
             {
                 Username = userResult.Data.WindowsUsername,
                 DefaultMode = null,
-                DefaultReceivingMode = string.IsNullOrWhiteSpace(userResult.Data.DefaultReceivingMode)
+                DefaultReceivingMode = string.IsNullOrWhiteSpace(
+                    userResult.Data.DefaultReceivingMode
+                )
                     ? "guided"
                     : userResult.Data.DefaultReceivingMode,
                 DefaultDunnageMode = string.IsNullOrWhiteSpace(userResult.Data.DefaultDunnageMode)
                     ? "guided"
-                    : userResult.Data.DefaultDunnageMode
+                    : userResult.Data.DefaultDunnageMode,
             };
 
             return Model_Dao_Result_Factory.Success(preference);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting user preference for {username}", ex, "UserPreferences");
+            _logger.LogError(
+                $"Error getting user preference for {username}",
+                ex,
+                "UserPreferences"
+            );
             return Model_Dao_Result_Factory.Failure<Model_UserPreference>(ex.Message);
         }
     }
@@ -86,7 +101,9 @@ public class Service_UserPreferences : IService_UserPreferences
             var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
             if (!userResult.IsSuccess || userResult.Data == null)
             {
-                _logger.LogWarning($"Default mode update skipped: user not found ({normalizedUsername})");
+                _logger.LogWarning(
+                    $"Default mode update skipped: user not found ({normalizedUsername})"
+                );
                 return Model_Dao_Result_Factory.Success();
             }
 
@@ -94,22 +111,34 @@ public class Service_UserPreferences : IService_UserPreferences
                 ? null
                 : defaultMode.Trim().ToLowerInvariant();
 
-            var result = await _userDao.UpdateDefaultModeAsync(userResult.Data.EmployeeNumber, normalizedMode);
+            var result = await _userDao.UpdateDefaultModeAsync(
+                userResult.Data.EmployeeNumber,
+                normalizedMode
+            );
             if (!result.Success)
             {
-                _logger.LogWarning($"Default mode update failed (non-blocking): {result.ErrorMessage}");
+                _logger.LogWarning(
+                    $"Default mode update failed (non-blocking): {result.ErrorMessage}"
+                );
             }
 
             return Model_Dao_Result_Factory.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error updating default mode for {username} (non-blocking)", ex, "UserPreferences");
+            _logger.LogError(
+                $"Error updating default mode for {username} (non-blocking)",
+                ex,
+                "UserPreferences"
+            );
             return Model_Dao_Result_Factory.Success();
         }
     }
 
-    public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(string username, string? defaultMode)
+    public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(
+        string username,
+        string? defaultMode
+    )
     {
         try
         {
@@ -122,7 +151,9 @@ public class Service_UserPreferences : IService_UserPreferences
             var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
             if (!userResult.IsSuccess || userResult.Data == null)
             {
-                _logger.LogWarning($"Receiving default update skipped: user not found ({normalizedUsername})");
+                _logger.LogWarning(
+                    $"Receiving default update skipped: user not found ({normalizedUsername})"
+                );
                 return Model_Dao_Result_Factory.Success();
             }
 
@@ -130,22 +161,34 @@ public class Service_UserPreferences : IService_UserPreferences
                 ? null
                 : defaultMode.Trim().ToLowerInvariant();
 
-            var result = await _userDao.UpdateDefaultReceivingModeAsync(userResult.Data.EmployeeNumber, normalizedMode);
+            var result = await _userDao.UpdateDefaultReceivingModeAsync(
+                userResult.Data.EmployeeNumber,
+                normalizedMode
+            );
             if (!result.Success)
             {
-                _logger.LogWarning($"Receiving default update failed (non-blocking): {result.ErrorMessage}");
+                _logger.LogWarning(
+                    $"Receiving default update failed (non-blocking): {result.ErrorMessage}"
+                );
             }
 
             return Model_Dao_Result_Factory.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error updating receiving default for {username} (non-blocking)", ex, "UserPreferences");
+            _logger.LogError(
+                $"Error updating receiving default for {username} (non-blocking)",
+                ex,
+                "UserPreferences"
+            );
             return Model_Dao_Result_Factory.Success();
         }
     }
 
-    public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(string username, string? defaultMode)
+    public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(
+        string username,
+        string? defaultMode
+    )
     {
         try
         {
@@ -158,7 +201,9 @@ public class Service_UserPreferences : IService_UserPreferences
             var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
             if (!userResult.IsSuccess || userResult.Data == null)
             {
-                _logger.LogWarning($"Dunnage default update skipped: user not found ({normalizedUsername})");
+                _logger.LogWarning(
+                    $"Dunnage default update skipped: user not found ({normalizedUsername})"
+                );
                 return Model_Dao_Result_Factory.Success();
             }
 
@@ -166,17 +211,26 @@ public class Service_UserPreferences : IService_UserPreferences
                 ? null
                 : defaultMode.Trim().ToLowerInvariant();
 
-            var result = await _userDao.UpdateDefaultDunnageModeAsync(userResult.Data.EmployeeNumber, normalizedMode);
+            var result = await _userDao.UpdateDefaultDunnageModeAsync(
+                userResult.Data.EmployeeNumber,
+                normalizedMode
+            );
             if (!result.Success)
             {
-                _logger.LogWarning($"Dunnage default update failed (non-blocking): {result.ErrorMessage}");
+                _logger.LogWarning(
+                    $"Dunnage default update failed (non-blocking): {result.ErrorMessage}"
+                );
             }
 
             return Model_Dao_Result_Factory.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error updating dunnage default for {username} (non-blocking)", ex, "UserPreferences");
+            _logger.LogError(
+                $"Error updating dunnage default for {username} (non-blocking)",
+                ex,
+                "UserPreferences"
+            );
             return Model_Dao_Result_Factory.Success();
         }
     }

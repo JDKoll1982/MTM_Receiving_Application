@@ -15,7 +15,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         public View_Receiving_LoadEntry(
             ViewModel_Receiving_LoadEntry viewModel,
-            IService_Focus focusService)
+            IService_Focus focusService
+        )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
@@ -41,7 +42,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return;
             }
 
-            ViewModel.ShowStatus(validation.Message, MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning);
+            ViewModel.ShowStatus(
+                validation.Message,
+                MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
             textBox.Focus(FocusState.Programmatic);
             textBox.SelectAll();
         }

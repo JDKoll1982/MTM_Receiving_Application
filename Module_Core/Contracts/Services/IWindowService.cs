@@ -6,4 +6,3 @@ public interface IService_Window
 {
     public XamlRoot? GetXamlRoot();
 }
-

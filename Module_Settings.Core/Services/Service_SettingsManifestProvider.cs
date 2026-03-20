@@ -34,18 +34,31 @@ public class Service_SettingsManifestProvider : ISettingsManifestProvider
 
         foreach (var item in settingsArray.EnumerateArray())
         {
-            settings.Add(new Model_SettingsDefinition
-            {
-                Category = item.GetProperty("category").GetString() ?? string.Empty,
-                Key = item.GetProperty("key").GetString() ?? string.Empty,
-                DisplayName = item.GetProperty("displayName").GetString() ?? string.Empty,
-                DefaultValue = item.GetProperty("defaultValue").GetString() ?? string.Empty,
-                DataType = Enum.Parse<Enum_SettingsDataType>(item.GetProperty("dataType").GetString() ?? "String", true),
-                Scope = Enum.Parse<Enum_SettingsScope>(item.GetProperty("scope").GetString() ?? "System", true),
-                PermissionLevel = Enum.Parse<Enum_SettingsPermissionLevel>(item.GetProperty("permissionLevel").GetString() ?? "User", true),
-                IsSensitive = item.GetProperty("isSensitive").GetBoolean(),
-                ValidationRules = item.TryGetProperty("validationRules", out var rules) ? rules.GetString() : null
-            });
+            settings.Add(
+                new Model_SettingsDefinition
+                {
+                    Category = item.GetProperty("category").GetString() ?? string.Empty,
+                    Key = item.GetProperty("key").GetString() ?? string.Empty,
+                    DisplayName = item.GetProperty("displayName").GetString() ?? string.Empty,
+                    DefaultValue = item.GetProperty("defaultValue").GetString() ?? string.Empty,
+                    DataType = Enum.Parse<Enum_SettingsDataType>(
+                        item.GetProperty("dataType").GetString() ?? "String",
+                        true
+                    ),
+                    Scope = Enum.Parse<Enum_SettingsScope>(
+                        item.GetProperty("scope").GetString() ?? "System",
+                        true
+                    ),
+                    PermissionLevel = Enum.Parse<Enum_SettingsPermissionLevel>(
+                        item.GetProperty("permissionLevel").GetString() ?? "User",
+                        true
+                    ),
+                    IsSensitive = item.GetProperty("isSensitive").GetBoolean(),
+                    ValidationRules = item.TryGetProperty("validationRules", out var rules)
+                        ? rules.GetString()
+                        : null,
+                }
+            );
         }
 
         return settings;

@@ -1,17 +1,17 @@
-using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Dunnage.ViewModels;
-using Microsoft.UI.Xaml.Input;
+using System;
+using System.Collections;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Input;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using Windows.System;
 using Windows.UI.Core;
-using CommunityToolkit.WinUI.UI.Controls;
-using System.Linq;
-using System.Collections;
-using System;
-using System.Diagnostics;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views
 {
@@ -33,7 +33,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             _focusService.AttachFocusOnVisibility(this);
         }
 
-        private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Loads_CollectionChanged(
+            object? sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e
+        )
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
@@ -46,9 +49,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
                         // Select the last added item (assuming add to bottom)
                         if (e.NewItems?[0] is Model_DunnageLoad newItem)
                         {
-                            Debug.WriteLine($"[Dunnage_ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}");
+                            Debug.WriteLine(
+                                $"[Dunnage_ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}"
+                            );
                             ManualEntryDataGrid.SelectedItem = newItem;
-                            ManualEntryDataGrid.ScrollIntoView(newItem, ManualEntryDataGrid.Columns.FirstOrDefault());
+                            ManualEntryDataGrid.ScrollIntoView(
+                                newItem,
+                                ManualEntryDataGrid.Columns.FirstOrDefault()
+                            );
 
                             // Use async delay to ensure grid is fully ready before entering edit mode
                             _ = Task.Run(async () =>
@@ -73,7 +81,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             {
                 if (grid.CurrentColumn?.IsReadOnly == false)
                 {
-                    Debug.WriteLine($"[Dunnage_ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
+                    Debug.WriteLine(
+                        $"[Dunnage_ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}"
+                    );
                     grid.BeginEdit();
                 }
             });
@@ -87,9 +97,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             }
 
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
-            bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+            bool isShiftDown =
+                (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
-            Debug.WriteLine($"[Dunnage_ManualEntryView] KeyDown: Key={e.Key}, Shift={isShiftDown}, OriginalSource={e.OriginalSource}, CurrentColumn={grid.CurrentColumn?.Header}");
+            Debug.WriteLine(
+                $"[Dunnage_ManualEntryView] KeyDown: Key={e.Key}, Shift={isShiftDown}, OriginalSource={e.OriginalSource}, CurrentColumn={grid.CurrentColumn?.Header}"
+            );
         }
 
         private void ManualEntryDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
@@ -104,7 +117,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             // Handle empty grid or header clicks
             if (grid.ItemsSource is IList items && items.Count == 0)
             {
-                Debug.WriteLine("[Dunnage_ManualEntryView] Tapped: Grid empty, triggering AddRow command.");
+                Debug.WriteLine(
+                    "[Dunnage_ManualEntryView] Tapped: Grid empty, triggering AddRow command."
+                );
                 if (ViewModel.AddRowCommand.CanExecute(null))
                 {
                     ViewModel.AddRowCommand.Execute(null);
@@ -113,7 +128,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             }
             else if (grid.SelectedItem == null)
             {
-                Debug.WriteLine("[Dunnage_ManualEntryView] Tapped: SelectedItem is null (Header or empty space). Selecting first editable cell.");
+                Debug.WriteLine(
+                    "[Dunnage_ManualEntryView] Tapped: SelectedItem is null (Header or empty space). Selecting first editable cell."
+                );
                 // Header clicked or empty space
                 if (grid.ItemsSource is IList list && list.Count > 0)
                 {
@@ -126,12 +143,16 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
                 // Cell clicked - CurrentCellChanged handles the edit mode if cell changes.
                 // But if we tap the SAME cell, CurrentCellChanged might not fire.
                 // So we ensure edit mode here too.
-                Debug.WriteLine("[Dunnage_ManualEntryView] Tapped: Cell clicked. Enqueuing BeginEdit.");
+                Debug.WriteLine(
+                    "[Dunnage_ManualEntryView] Tapped: Cell clicked. Enqueuing BeginEdit."
+                );
                 grid.DispatcherQueue.TryEnqueue(() =>
                 {
                     if (grid.CurrentColumn?.IsReadOnly == false)
                     {
-                        Debug.WriteLine($"[Dunnage_ManualEntryView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
+                        Debug.WriteLine(
+                            $"[Dunnage_ManualEntryView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}"
+                        );
                         grid.BeginEdit();
                     }
                 });
@@ -144,24 +165,34 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             if (grid.ItemsSource is IList items && items.Count > 0)
             {
                 // Find first non-readonly column
-                var firstEditable = grid.Columns.OrderBy(c => c.DisplayIndex).FirstOrDefault(c => !c.IsReadOnly);
+                var firstEditable = grid
+                    .Columns.OrderBy(c => c.DisplayIndex)
+                    .FirstOrDefault(c => !c.IsReadOnly);
                 if (firstEditable != null)
                 {
-                    Debug.WriteLine($"[Dunnage_ManualEntryView] SelectFirstEditableCell: Found editable column {firstEditable.Header}. Setting CurrentColumn and calling BeginEdit.");
+                    Debug.WriteLine(
+                        $"[Dunnage_ManualEntryView] SelectFirstEditableCell: Found editable column {firstEditable.Header}. Setting CurrentColumn and calling BeginEdit."
+                    );
                     grid.CurrentColumn = firstEditable;
                     grid.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
                     grid.BeginEdit();
-                    Debug.WriteLine($"[Dunnage_ManualEntryView] SelectFirstEditableCell: BeginEdit called for column {firstEditable.Header}");
+                    Debug.WriteLine(
+                        $"[Dunnage_ManualEntryView] SelectFirstEditableCell: BeginEdit called for column {firstEditable.Header}"
+                    );
                 }
                 else
                 {
-                    Debug.WriteLine("[Dunnage_ManualEntryView] SelectFirstEditableCell: No editable column found.");
+                    Debug.WriteLine(
+                        "[Dunnage_ManualEntryView] SelectFirstEditableCell: No editable column found."
+                    );
                 }
             }
             else
             {
                 var itemCount = (grid.ItemsSource as IList)?.Count ?? 0;
-                Debug.WriteLine($"[Dunnage_ManualEntryView] SelectFirstEditableCell: Grid has no items (Count={itemCount})");
+                Debug.WriteLine(
+                    $"[Dunnage_ManualEntryView] SelectFirstEditableCell: Grid has no items (Count={itemCount})"
+                );
             }
         }
     }

@@ -69,7 +69,10 @@ public partial class Model_DunnageType : ObservableObject
         get
         {
             // Try to parse the Icon string as a MaterialIconKind enum
-            if (!string.IsNullOrEmpty(Icon) && Enum.TryParse<MaterialIconKind>(Icon, true, out var kind))
+            if (
+                !string.IsNullOrEmpty(Icon)
+                && Enum.TryParse<MaterialIconKind>(Icon, true, out var kind)
+            )
             {
                 return kind;
             }

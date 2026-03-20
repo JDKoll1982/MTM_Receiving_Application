@@ -1,10 +1,10 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -34,7 +34,9 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _helpService = helpService;
     }
@@ -137,4 +139,3 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
         }
     }
 }
-

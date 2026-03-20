@@ -22,4 +22,3 @@ public class Model_InforVisualConnection
         return $"Server={Server};Database={Database};User Id={UserId};Password={Password};TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
     }
 }
-

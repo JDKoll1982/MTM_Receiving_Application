@@ -11,7 +11,10 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
 
-public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Shared_Base, ISettingsNavigationActions, ISettingsNavigationNavState
+public sealed partial class ViewModel_Settings_Receiving_Defaults
+    : ViewModel_Shared_Base,
+        ISettingsNavigationActions,
+        ISettingsNavigationNavState
 {
     private const string SettingsCategory = "Receiving";
 
@@ -31,7 +34,9 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         IService_SettingsErrorHandler settingsErrorHandler,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _settingsCore = settingsCore;
         _sessionManager = sessionManager;
@@ -58,15 +63,25 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode, DefaultReceivingMode);
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.Defaults.DefaultReceivingMode,
+                DefaultReceivingMode
+            );
             await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation, DefaultLocation);
 
-            await _settingsErrorHandler.ShowSuccessAsync("Receiving defaults saved successfully.", "Save Successful");
+            await _settingsErrorHandler.ShowSuccessAsync(
+                "Receiving defaults saved successfully.",
+                "Save Successful"
+            );
             ShowStatus("Receiving defaults saved.");
         }
         catch (Exception ex)
         {
-            await _settingsErrorHandler.HandleErrorAsync("Failed to save receiving defaults.", "Save Error", ex);
+            await _settingsErrorHandler.HandleErrorAsync(
+                "Failed to save receiving defaults.",
+                "Save Error",
+                ex
+            );
         }
         finally
         {
@@ -94,7 +109,11 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Failed to reset receiving defaults.", Enum_ErrorSeverity.Error, ex);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to reset receiving defaults.",
+                Enum_ErrorSeverity.Error,
+                ex
+            );
         }
         finally
         {
@@ -117,8 +136,12 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     {
         try
         {
-            var mode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
-            var location = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
+            var mode = await GetStringSettingAsync(
+                ReceivingSettingsKeys.Defaults.DefaultReceivingMode
+            );
+            var location = await GetStringSettingAsync(
+                ReceivingSettingsKeys.Defaults.DefaultLocation
+            );
 
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode loaded: '{mode}'");
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location loaded: '{location}'");
@@ -126,13 +149,22 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
             DefaultReceivingMode = mode;
             DefaultLocation = location;
 
-            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode set to: '{DefaultReceivingMode}'");
-            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location set to: '{DefaultLocation}'");
+            System.Diagnostics.Debug.WriteLine(
+                $"[LoadSettings] Mode set to: '{DefaultReceivingMode}'"
+            );
+            System.Diagnostics.Debug.WriteLine(
+                $"[LoadSettings] Location set to: '{DefaultLocation}'"
+            );
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Error: {ex.Message}");
-            await _errorHandler.HandleErrorAsync("Failed to load receiving defaults.", Enum_ErrorSeverity.Warning, ex, false);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to load receiving defaults.",
+                Enum_ErrorSeverity.Warning,
+                ex,
+                false
+            );
         }
     }
 
@@ -151,10 +183,18 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
 
     private async Task SaveSettingAsync(string key, string value)
     {
-        var result = await _settingsCore.SetSettingAsync(SettingsCategory, key, value ?? string.Empty, CurrentUserId);
+        var result = await _settingsCore.SetSettingAsync(
+            SettingsCategory,
+            key,
+            value ?? string.Empty,
+            CurrentUserId
+        );
         if (!result.IsSuccess)
         {
-            await _settingsErrorHandler.HandleErrorAsync(result.ErrorMessage ?? "Unknown error occurred", $"Save {key}");
+            await _settingsErrorHandler.HandleErrorAsync(
+                result.ErrorMessage ?? "Unknown error occurred",
+                $"Save {key}"
+            );
         }
     }
 

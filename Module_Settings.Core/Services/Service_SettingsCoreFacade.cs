@@ -21,12 +21,21 @@ public class Service_SettingsCoreFacade : IService_SettingsCoreFacade
         _registry = registry;
     }
 
-    public Task<Model_Dao_Result<Model_SettingsValue>> GetSettingAsync(string category, string key, int? userId = null)
+    public Task<Model_Dao_Result<Model_SettingsValue>> GetSettingAsync(
+        string category,
+        string key,
+        int? userId = null
+    )
     {
         return _mediator.Send(new GetSettingQuery(category, key, userId));
     }
 
-    public Task<Model_Dao_Result> SetSettingAsync(string category, string key, string value, int? userId = null)
+    public Task<Model_Dao_Result> SetSettingAsync(
+        string category,
+        string key,
+        string value,
+        int? userId = null
+    )
     {
         return _mediator.Send(new SetSettingCommand(category, key, value, userId));
     }

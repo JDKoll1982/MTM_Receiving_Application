@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Dunnage.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Data;
 
@@ -18,11 +18,15 @@ public class Dao_DunnageCustomField
         _connectionString = connectionString;
     }
 
-    public virtual async Task<Model_Dao_Result<int>> InsertAsync(int typeId, Model_CustomFieldDefinition field, string user)
+    public virtual async Task<Model_Dao_Result<int>> InsertAsync(
+        int typeId,
+        Model_CustomFieldDefinition field,
+        string user
+    )
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
-            Direction = ParameterDirection.Output
+            Direction = ParameterDirection.Output,
         };
 
         var parameters = new MySqlParameter[]
@@ -33,7 +37,7 @@ public class Dao_DunnageCustomField
             new MySqlParameter("@p_display_order", field.DisplayOrder),
             new MySqlParameter("@p_is_required", field.IsRequired),
             new MySqlParameter("@p_user", user),
-            pNewId
+            pNewId,
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
@@ -54,12 +58,11 @@ public class Dao_DunnageCustomField
         return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
-    public virtual async Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetByTypeAsync(int typeId)
+    public virtual async Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetByTypeAsync(
+        int typeId
+    )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "@p_type_id", typeId }
-        };
+        var parameters = new Dictionary<string, object> { { "@p_type_id", typeId } };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_CustomFieldDefinition>(
             _connectionString,
@@ -71,10 +74,7 @@ public class Dao_DunnageCustomField
 
     public virtual async Task<Model_Dao_Result> DeleteAsync(int fieldId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "@p_field_id", fieldId }
-        };
+        var parameters = new Dictionary<string, object> { { "@p_field_id", fieldId } };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
@@ -91,7 +91,7 @@ public class Dao_DunnageCustomField
             FieldName = reader.GetString(reader.GetOrdinal("field_name")),
             FieldType = reader.GetString(reader.GetOrdinal("field_type")),
             DisplayOrder = reader.GetInt32(reader.GetOrdinal("display_order")),
-            IsRequired = reader.GetBoolean(reader.GetOrdinal("is_required"))
+            IsRequired = reader.GetBoolean(reader.GetOrdinal("is_required")),
         };
     }
 }

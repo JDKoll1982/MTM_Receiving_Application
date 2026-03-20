@@ -48,7 +48,8 @@ public partial class ViewModel_BulkInventory_Summary : ViewModel_Shared_Base
         IService_MySQL_BulkInventory bulkService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         _automation = automation;
@@ -67,7 +68,8 @@ public partial class ViewModel_BulkInventory_Summary : ViewModel_Shared_Base
         SuccessCount = completedRows.Count(r => r.Status == Enum_BulkInventoryStatus.Success);
         FailedCount = completedRows.Count(r => r.Status == Enum_BulkInventoryStatus.Failed);
         SkippedCount = completedRows.Count(r =>
-            r.Status is Enum_BulkInventoryStatus.Skipped or Enum_BulkInventoryStatus.Consolidated);
+            r.Status is Enum_BulkInventoryStatus.Skipped or Enum_BulkInventoryStatus.Consolidated
+        );
 
         FailedRows.Clear();
         foreach (var row in completedRows.Where(r => r.Status == Enum_BulkInventoryStatus.Failed))
@@ -127,21 +129,30 @@ public partial class ViewModel_BulkInventory_Summary : ViewModel_Shared_Base
 
             // Refresh counts.
             SuccessCount += selected.Count(r => r.Status == Enum_BulkInventoryStatus.Success);
-            var stillFailed = selected.Where(r => r.Status == Enum_BulkInventoryStatus.Failed).ToList();
+            var stillFailed = selected
+                .Where(r => r.Status == Enum_BulkInventoryStatus.Failed)
+                .ToList();
             FailedCount = FailedRows.Count(r => r.Status == Enum_BulkInventoryStatus.Failed);
 
             // Remove successfully re-pushed rows from the failed list.
             foreach (var row in selected.Where(r => r.Status == Enum_BulkInventoryStatus.Success))
                 FailedRows.Remove(row);
 
-            ShowStatus(stillFailed.Count == 0
-                ? "All selected rows re-pushed successfully."
-                : $"{stillFailed.Count} row(s) still failed.",
-                stillFailed.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning);
+            ShowStatus(
+                stillFailed.Count == 0
+                    ? "All selected rows re-pushed successfully."
+                    : $"{stillFailed.Count} row(s) still failed.",
+                stillFailed.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning
+            );
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(RePushSelectedAsync), nameof(ViewModel_BulkInventory_Summary));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(RePushSelectedAsync),
+                nameof(ViewModel_BulkInventory_Summary)
+            );
         }
         finally
         {

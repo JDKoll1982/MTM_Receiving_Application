@@ -27,8 +27,12 @@ public partial class Login : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred during login: {ex.Message}", "Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred during login: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -41,8 +45,12 @@ public partial class Login : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while opening the new user form: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while opening the new user form: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -53,7 +61,8 @@ public partial class Login : Form
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (e.CloseReason == CloseReason.UserClosing) Application.Exit();
+        if (e.CloseReason == CloseReason.UserClosing)
+            Application.Exit();
     }
 
     #endregion

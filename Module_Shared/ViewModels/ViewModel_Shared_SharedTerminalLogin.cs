@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 
 namespace MTM_Receiving_Application.Module_Shared.ViewModels
 {
@@ -61,7 +61,9 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
             IService_Authentication authService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+            IService_Notification notificationService
+        )
+            : base(errorHandler, logger, notificationService)
         {
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
@@ -120,7 +122,9 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     ErrorMessage = result.ErrorMessage ?? "Invalid username or PIN.";
                     StatusMessage = "Authentication failed";
 
-                    _logger.LogWarning($"PIN authentication failed for user: {Username}. Attempt {AttemptCount}");
+                    _logger.LogWarning(
+                        $"PIN authentication failed for user: {Username}. Attempt {AttemptCount}"
+                    );
 
                     return false;
                 }
@@ -134,7 +138,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     $"Login error for user {Username}",
                     Enum_ErrorSeverity.Error,
                     ex,
-                    showDialog: false);
+                    showDialog: false
+                );
 
                 return false;
             }
@@ -145,4 +150,3 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         }
     }
 }
-

@@ -5,26 +5,27 @@ using System.Linq;
 using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
 {
-    public static readonly DependencyProperty SelectedIconProperty =
-        DependencyProperty.Register(
-            nameof(SelectedIcon),
-            typeof(MaterialIconKind?),
-            typeof(View_Dunnage_Control_IconPickerControl),
-            new PropertyMetadata(MaterialIconKind.PackageVariantClosed, OnSelectedIconChanged));
+    public static readonly DependencyProperty SelectedIconProperty = DependencyProperty.Register(
+        nameof(SelectedIcon),
+        typeof(MaterialIconKind?),
+        typeof(View_Dunnage_Control_IconPickerControl),
+        new PropertyMetadata(MaterialIconKind.PackageVariantClosed, OnSelectedIconChanged)
+    );
 
     public static readonly DependencyProperty RecentlyUsedIconsProperty =
         DependencyProperty.Register(
             nameof(RecentlyUsedIcons),
             typeof(ObservableCollection<Model_IconDefinition>),
             typeof(View_Dunnage_Control_IconPickerControl),
-            new PropertyMetadata(default(ObservableCollection<Model_IconDefinition>)));
+            new PropertyMetadata(default(ObservableCollection<Model_IconDefinition>))
+        );
 
     public MaterialIconKind? SelectedIcon
     {
@@ -52,9 +53,15 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
         AllIconsGrid.ItemsSource = _filteredIcons;
     }
 
-    private static void OnSelectedIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnSelectedIconChanged(
+        DependencyObject d,
+        DependencyPropertyChangedEventArgs e
+    )
     {
-        if (d is View_Dunnage_Control_IconPickerControl control && e.NewValue is MaterialIconKind kind)
+        if (
+            d is View_Dunnage_Control_IconPickerControl control
+            && e.NewValue is MaterialIconKind kind
+        )
         {
             // Update RecentIconsGrid selection if the icon is in the list
             if (control.RecentlyUsedIcons != null)
@@ -93,4 +100,3 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
         }
     }
 }
-

@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Controls;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services.Navigation;
 
@@ -44,4 +44,3 @@ public interface IService_Navigation
     /// <param name="frame"></param>
     public void GoBack(Frame frame);
 }
-

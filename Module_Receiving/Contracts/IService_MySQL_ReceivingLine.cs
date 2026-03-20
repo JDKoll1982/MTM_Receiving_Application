@@ -13,4 +13,3 @@ public interface IService_MySQL_ReceivingLine
 
     // Add other methods if needed by ReceivingLabelViewModel
 }
-

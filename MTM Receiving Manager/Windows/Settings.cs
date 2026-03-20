@@ -27,8 +27,12 @@ public partial class SettingsForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while filling settings: {ex.Message}", "Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while filling settings: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -36,18 +40,24 @@ public partial class SettingsForm : Form
     {
         try
         {
-            if (SettingsForm_TextBox_VisualUserName.Text.Length > 0 &&
-                SettingsForm_TextBox_VisualPassword.Text.Length > 0 &&
-                SettingsForm_TextBox_VisualUserName.Text != ApplicationVariables.VisualUserName &&
-                SettingsForm_TextBox_VisualPassword.Text != ApplicationVariables.VisualPassword)
+            if (
+                SettingsForm_TextBox_VisualUserName.Text.Length > 0
+                && SettingsForm_TextBox_VisualPassword.Text.Length > 0
+                && SettingsForm_TextBox_VisualUserName.Text != ApplicationVariables.VisualUserName
+                && SettingsForm_TextBox_VisualPassword.Text != ApplicationVariables.VisualPassword
+            )
                 SettingsForm_Button_SaveVisual.Enabled = true;
             else
                 SettingsForm_Button_SaveVisual.Enabled = false;
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while handling text change: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while handling text change: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -55,16 +65,22 @@ public partial class SettingsForm : Form
     {
         try
         {
-            if (SettingsForm_TextBox_SheetsLink.Text.Length > 0 &&
-                SettingsForm_TextBox_SheetsLink.Text != ApplicationVariables.GoogleSheetsLink)
+            if (
+                SettingsForm_TextBox_SheetsLink.Text.Length > 0
+                && SettingsForm_TextBox_SheetsLink.Text != ApplicationVariables.GoogleSheetsLink
+            )
                 SettingsForm_Button_SaveGoogle.Enabled = true;
             else
                 SettingsForm_Button_SaveGoogle.Enabled = false;
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while handling text change: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while handling text change: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -77,8 +93,12 @@ public partial class SettingsForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while resetting visual settings: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while resetting visual settings: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -90,8 +110,12 @@ public partial class SettingsForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while resetting Google Sheets link: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while resetting Google Sheets link: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -100,9 +124,11 @@ public partial class SettingsForm : Form
         try
         {
             var searchDao = new SearchDao();
-            searchDao.UpdateUserVisualCredentials(ApplicationVariables.ApplicationUserName,
+            searchDao.UpdateUserVisualCredentials(
+                ApplicationVariables.ApplicationUserName,
                 SettingsForm_TextBox_VisualUserName.Text,
-                SettingsForm_TextBox_VisualPassword.Text);
+                SettingsForm_TextBox_VisualPassword.Text
+            );
             ApplicationVariables.VisualUserName = SettingsForm_TextBox_VisualUserName.Text;
             ApplicationVariables.VisualPassword = SettingsForm_TextBox_VisualPassword.Text;
             SettingsForm_Button_SaveVisual.Enabled = false;
@@ -110,8 +136,12 @@ public partial class SettingsForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while saving visual settings: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while saving visual settings: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -125,8 +155,12 @@ public partial class SettingsForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while saving Google Sheets link: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while saving Google Sheets link: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 

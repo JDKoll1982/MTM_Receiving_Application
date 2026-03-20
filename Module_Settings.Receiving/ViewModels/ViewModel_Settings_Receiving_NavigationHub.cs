@@ -1,14 +1,15 @@
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
 
-public sealed partial class ViewModel_Settings_Receiving_NavigationHub : ViewModel_SettingsNavigationHubBase
+public sealed partial class ViewModel_Settings_Receiving_NavigationHub
+    : ViewModel_SettingsNavigationHubBase
 {
     public ISettingsNavigationActions? CurrentActions { get; set; }
 
@@ -16,17 +17,31 @@ public sealed partial class ViewModel_Settings_Receiving_NavigationHub : ViewMod
         IService_SettingsPagination pagination,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(pagination, errorHandler, logger, notificationService)
     {
         NavigationTitle = "Receiving Navigation";
         CurrentStepTitle = NavigationTitle;
 
         SetSteps(
-            new Model_SettingsNavigationStep("Defaults", typeof(Views.View_Settings_Receiving_Defaults)),
-            new Model_SettingsNavigationStep("Validation", typeof(Views.View_Settings_Receiving_Validation)),
-            new Model_SettingsNavigationStep("Part Number Auto Padding", typeof(Views.View_Settings_Receiving_UserPreferences)),
-            new Model_SettingsNavigationStep("Workflow Options", typeof(Views.View_Settings_Receiving_BusinessRules)));
+            new Model_SettingsNavigationStep(
+                "Defaults",
+                typeof(Views.View_Settings_Receiving_Defaults)
+            ),
+            new Model_SettingsNavigationStep(
+                "Validation",
+                typeof(Views.View_Settings_Receiving_Validation)
+            ),
+            new Model_SettingsNavigationStep(
+                "Part Number Auto Padding",
+                typeof(Views.View_Settings_Receiving_UserPreferences)
+            ),
+            new Model_SettingsNavigationStep(
+                "Workflow Options",
+                typeof(Views.View_Settings_Receiving_BusinessRules)
+            )
+        );
     }
 
     public async Task SaveAsync()

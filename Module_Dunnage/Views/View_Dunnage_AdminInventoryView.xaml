@@ -9,68 +9,75 @@
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Dunnage.ViewModels"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+>
     <Page.Resources>
-        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
-        <converters:Converter_StringFormat x:Key="DateTimeToStringConverter"/>
+        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
+        <converters:Converter_StringFormat x:Key="DateTimeToStringConverter" />
     </Page.Resources>
 
     <Grid Padding="24">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock 
-                Text="Manage Inventoried Parts" 
-                Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock 
-                Text="Configure parts that require inventory tracking" 
+            <TextBlock
+                Text="Manage Inventoried Parts"
+                Style="{StaticResource TitleTextBlockStyle}"
+            />
+            <TextBlock
+                Text="Configure parts that require inventory tracking"
                 Style="{StaticResource BodyTextBlockStyle}"
                 Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                Margin="0,8,0,0"/>
+                Margin="0,8,0,0"
+            />
         </StackPanel>
 
         <!-- Toolbar -->
         <CommandBar Grid.Row="1" DefaultLabelPosition="Right" Margin="0,0,0,16">
-            <AppBarButton 
-                Icon="Add" 
+            <AppBarButton
+                Icon="Add"
                 Label="Add Part to List"
                 Command="{x:Bind ViewModel.ShowAddToListCommand}"
-                ToolTipService.ToolTip="Add a part to the inventory tracking list"/>
-            <AppBarSeparator/>
-            <AppBarButton 
-                Icon="Edit" 
+                ToolTipService.ToolTip="Add a part to the inventory tracking list"
+            />
+            <AppBarSeparator />
+            <AppBarButton
+                Icon="Edit"
                 Label="Edit Entry"
                 Command="{x:Bind ViewModel.ShowEditEntryCommand}"
                 IsEnabled="{x:Bind ViewModel.HasSelection, Mode=OneWay}"
-                ToolTipService.ToolTip="Edit the selected inventory entry"/>
-            <AppBarButton 
-                Icon="Delete" 
+                ToolTipService.ToolTip="Edit the selected inventory entry"
+            />
+            <AppBarButton
+                Icon="Delete"
                 Label="Remove from List"
                 Command="{x:Bind ViewModel.ShowRemoveConfirmationCommand}"
                 IsEnabled="{x:Bind ViewModel.HasSelection, Mode=OneWay}"
-                ToolTipService.ToolTip="Remove the selected part from inventory tracking"/>
-            <AppBarSeparator/>
-            <AppBarButton 
-                Icon="Back" 
+                ToolTipService.ToolTip="Remove the selected part from inventory tracking"
+            />
+            <AppBarSeparator />
+            <AppBarButton
+                Icon="Back"
                 Label="Back to Admin Hub"
                 Command="{x:Bind ViewModel.BackToHubCommand}"
-                ToolTipService.ToolTip="Return to the admin hub"/>
+                ToolTipService.ToolTip="Return to the admin hub"
+            />
         </CommandBar>
 
         <!-- DataGrid -->
-        <Border 
-            Grid.Row="2" 
+        <Border
+            Grid.Row="2"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8"
-            Padding="1">
+            Padding="1"
+        >
             <Grid>
                 <controls:DataGrid
                     ItemsSource="{x:Bind ViewModel.InventoriedParts, Mode=OneWay}"
@@ -84,98 +91,113 @@
                     CanUserSortColumns="True"
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Auto"
-                    AlternatingRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}">
-
+                    AlternatingRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}"
+                >
                     <controls:DataGrid.Columns>
                         <!-- Part ID Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Part ID" 
+                        <controls:DataGridTextColumn
+                            Header="Part ID"
                             Binding="{Binding PartId}"
                             Width="2*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
 
                         <!-- Inventory Method Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Inventory Method" 
+                        <controls:DataGridTextColumn
+                            Header="Inventory Method"
                             Binding="{Binding InventoryMethod}"
                             Width="*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
 
                         <!-- Notes Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Notes" 
+                        <controls:DataGridTextColumn
+                            Header="Notes"
                             Binding="{Binding Notes}"
                             Width="3*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
 
                         <!-- Date Added Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Date Added" 
+                        <controls:DataGridTextColumn
+                            Header="Date Added"
                             Binding="{Binding CreatedDate, Converter={StaticResource DateTimeToStringConverter}}"
                             Width="*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
 
                         <!-- Added By Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Added By" 
+                        <controls:DataGridTextColumn
+                            Header="Added By"
                             Binding="{Binding CreatedBy}"
                             Width="*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
 
                         <!-- Last Modified Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Last Modified" 
+                        <controls:DataGridTextColumn
+                            Header="Last Modified"
                             Binding="{Binding ModifiedDate, Converter={StaticResource DateTimeToStringConverter}}"
                             Width="*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
 
                         <!-- Modified By Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Modified By" 
+                        <controls:DataGridTextColumn
+                            Header="Modified By"
                             Binding="{Binding ModifiedBy}"
                             Width="*"
-                            CanUserResize="True"/>
+                            CanUserResize="True"
+                        />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
 
                 <!-- Empty State -->
-                <StackPanel 
-                    VerticalAlignment="Center" 
+                <StackPanel
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Spacing="16"
-                    Visibility="{x:Bind ViewModel.InventoriedParts.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}">
-                    <FontIcon 
-                        Glyph="&#xE7C3;" 
+                    Visibility="{x:Bind ViewModel.InventoriedParts.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"
+                >
+                    <FontIcon
+                        Glyph="&#xE7C3;"
                         FontSize="72"
-                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-                    <TextBlock 
-                        Text="No inventoried parts found" 
+                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                    />
+                    <TextBlock
+                        Text="No inventoried parts found"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-                    <TextBlock 
+                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                    />
+                    <TextBlock
                         Text="Click 'Add Part to List' to configure parts that require inventory tracking"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                    />
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- Status Bar -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" Margin="0,16,0,0">
-            <ProgressRing 
+            <ProgressRing
                 IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                Width="20" 
-                Height="20"/>
-            <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"/>
-            <TextBlock 
+                Width="20"
+                Height="20"
+            />
+            <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
+            <TextBlock
                 Text="|"
                 Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                Margin="8,0,8,0"/>
+                Margin="8,0,8,0"
+            />
             <TextBlock>
-                <Run Text="Total Parts:"/>
-                <Run Text="{x:Bind ViewModel.InventoriedParts.Count, Mode=OneWay}" FontWeight="SemiBold"/>
+                <Run Text="Total Parts:" />
+                <Run
+                    Text="{x:Bind ViewModel.InventoriedParts.Count, Mode=OneWay}"
+                    FontWeight="SemiBold"
+                />
             </TextBlock>
         </StackPanel>
     </Grid>
 </Page>
-

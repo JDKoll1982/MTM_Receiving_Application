@@ -31,7 +31,10 @@ public sealed partial class View_Shared_HelpDialog : ContentDialog
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private async void RelatedTopics_ItemClick(object sender, Microsoft.UI.Xaml.Controls.ItemClickEventArgs e)
+    private async void RelatedTopics_ItemClick(
+        object sender,
+        Microsoft.UI.Xaml.Controls.ItemClickEventArgs e
+    )
     {
         if (e.ClickedItem is Model_HelpContent relatedContent)
         {
@@ -39,4 +42,3 @@ public sealed partial class View_Shared_HelpDialog : ContentDialog
         }
     }
 }
-

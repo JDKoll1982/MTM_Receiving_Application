@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -36,7 +36,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
         _paginationService = paginationService;
@@ -87,7 +89,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     private List<Model_DunnageLoad> _allLoads = new();
 
     // T164: Dynamic button text for date filters
-    public string LastWeekButtonText => $"Last Week ({DateTime.Now.Date.AddDays(-7):MMM d} - {DateTime.Now.Date:MMM d})";
+    public string LastWeekButtonText =>
+        $"Last Week ({DateTime.Now.Date.AddDays(-7):MMM d} - {DateTime.Now.Date:MMM d})";
 
     public string TodayButtonText => $"Today ({DateTime.Now.Date:MMM d})";
 
@@ -135,7 +138,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading session data...";
 
-            if (_workflowService.CurrentSession == null || _workflowService.CurrentSession.Loads.Count == 0)
+            if (
+                _workflowService.CurrentSession == null
+                || _workflowService.CurrentSession.Loads.Count == 0
+            )
             {
                 // T156: Info message for empty session
                 await _errorHandler.HandleErrorAsync(
@@ -212,7 +218,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             CanNavigate = TotalPages > 1;
             StatusMessage = $"Loaded {TotalRecords} active label(s)";
 
-            _logger.LogInfo($"Loaded {TotalRecords} active labels from dunnage_label_data queue", "EditMode");
+            _logger.LogInfo(
+                $"Loaded {TotalRecords} active labels from dunnage_label_data queue",
+                "EditMode"
+            );
         }
         catch (Exception ex)
         {
@@ -262,7 +271,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             CanNavigate = TotalPages > 1;
             StatusMessage = $"Loaded {TotalRecords} records";
 
-            _logger.LogInfo($"Loaded {TotalRecords} historical loads from {startDate:d} to {endDate:d}", "EditMode");
+            _logger.LogInfo(
+                $"Loaded {TotalRecords} historical loads from {startDate:d} to {endDate:d}",
+                "EditMode"
+            );
         }
         catch (Exception ex)
         {
@@ -502,7 +514,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             // Validate all loads
             foreach (var load in _allLoads)
             {
-                if (string.IsNullOrWhiteSpace(load.TypeName) || string.IsNullOrWhiteSpace(load.PartId))
+                if (
+                    string.IsNullOrWhiteSpace(load.TypeName)
+                    || string.IsNullOrWhiteSpace(load.PartId)
+                )
                 {
                     StatusMessage = "All loads must have Type and Part ID";
                     return;
@@ -548,18 +563,24 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         if (xamlRoot == null)
         {
             _logger.LogError("Cannot show dialog: XamlRoot is null", null, "EditMode");
-            await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error, null, true);
+            await _errorHandler.HandleErrorAsync(
+                "Unable to display dialog",
+                Enum_ErrorSeverity.Error,
+                null,
+                true
+            );
             return;
         }
 
         var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
         {
             Title = "Change Mode?",
-            Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+            Content =
+                "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
             PrimaryButtonText = "Yes, Change Mode",
             CloseButtonText = "Cancel",
             DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var result = await dialog.ShowAsync().AsTask();
@@ -567,7 +588,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         {
             try
             {
-                _logger.LogInfo("User confirmed return to mode selection, clearing data", "EditMode");
+                _logger.LogInfo(
+                    "User confirmed return to mode selection, clearing data",
+                    "EditMode"
+                );
                 FilteredLoads.Clear();
                 _allLoads.Clear();
                 _workflowService.ClearSession();
@@ -575,8 +599,17 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to return to mode selection: {ex.Message}", ex, "EditMode");
-                await _errorHandler.HandleErrorAsync("Failed to return to mode selection", Enum_ErrorSeverity.Error, ex, true);
+                _logger.LogError(
+                    $"Failed to return to mode selection: {ex.Message}",
+                    ex,
+                    "EditMode"
+                );
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to return to mode selection",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
             }
         }
         else
@@ -614,7 +647,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     private void UpdateCanSave()
     {
-        CanSave = _allLoads.Any(l => !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId));
+        CanSave = _allLoads.Any(l =>
+            !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId)
+        );
     }
 
     #endregion
@@ -641,6 +676,3 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     #endregion
 }
-
-
-

@@ -14,17 +14,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             private set => SetValue(ViewModelProperty, value);
         }
 
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register(
-                nameof(ViewModel),
-                typeof(ViewModel_Receiving_WeightQuantity),
-                typeof(View_Receiving_WeightQuantity),
-                new PropertyMetadata(null));
+        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
+            nameof(ViewModel),
+            typeof(ViewModel_Receiving_WeightQuantity),
+            typeof(View_Receiving_WeightQuantity),
+            new PropertyMetadata(null)
+        );
         private readonly IService_Focus _focusService;
 
         public View_Receiving_WeightQuantity(
             ViewModel_Receiving_WeightQuantity viewModel,
-            IService_Focus focusService)
+            IService_Focus focusService
+        )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);

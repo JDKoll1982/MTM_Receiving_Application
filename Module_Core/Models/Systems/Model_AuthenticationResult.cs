@@ -19,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
             {
                 Success = true,
                 User = user,
-                ErrorMessage = string.Empty
+                ErrorMessage = string.Empty,
             };
         }
 
@@ -27,16 +27,18 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         {
             if (string.IsNullOrWhiteSpace(message))
             {
-                throw new ArgumentException("Error message cannot be null or whitespace.", nameof(message));
+                throw new ArgumentException(
+                    "Error message cannot be null or whitespace.",
+                    nameof(message)
+                );
             }
 
             return new Model_AuthenticationResult
             {
                 Success = false,
                 User = null,
-                ErrorMessage = message
+                ErrorMessage = message,
             };
         }
     }
 }
-

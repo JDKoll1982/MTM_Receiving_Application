@@ -41,9 +41,8 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
                 SavedEntries.Add(entry);
             }
 
-            SavedEntriesPanel.Visibility = SavedEntries.Count > 0
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            SavedEntriesPanel.Visibility =
+                SavedEntries.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -69,9 +68,8 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
             {
                 SavedEntries.Remove(entry);
 
-                SavedEntriesPanel.Visibility = SavedEntries.Count > 0
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                SavedEntriesPanel.Visibility =
+                    SavedEntries.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }
@@ -90,8 +88,9 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
 
         if (SaveForNextTimeCheckBox.IsChecked == true)
         {
-            var currentUser = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_UserSessionManager>()
-                .CurrentSession?.User?.WindowsUsername ?? "System";
+            var currentUser =
+                App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_UserSessionManager>().CurrentSession?.User?.WindowsUsername
+                ?? "System";
 
             await _dunnageService.SaveNonPOEntryAsync(reference, currentUser);
         }

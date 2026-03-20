@@ -1,11 +1,11 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
-using System;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -43,7 +43,9 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
         IService_SettingsCoreFacade settingsCore,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _settingsCore = settingsCore;
         _ = LoadSettingsAsync();
@@ -58,7 +60,10 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 
             ExportRootPath = await GetStringSettingAsync(SystemCategory, KeyExportRoot);
             InforVisualExePath = await GetStringSettingAsync(SystemCategory, KeyVisualExePath);
-            DefaultWarehouseCode = await GetStringSettingAsync(BulkInventoryCategory, KeyWarehouseCode);
+            DefaultWarehouseCode = await GetStringSettingAsync(
+                BulkInventoryCategory,
+                KeyWarehouseCode
+            );
             DefaultLotNo = await GetStringSettingAsync(BulkInventoryCategory, KeyLotNo);
 
             StatusMessage = "Settings loaded.";
@@ -69,7 +74,8 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(LoadSettingsAsync),
-                nameof(ViewModel_Settings_SharedPaths));
+                nameof(ViewModel_Settings_SharedPaths)
+            );
             StatusMessage = "Failed to load settings.";
         }
         finally
@@ -81,7 +87,8 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
         try
         {
             IsBusy = true;
@@ -100,7 +107,8 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(SaveAsync),
-                nameof(ViewModel_Settings_SharedPaths));
+                nameof(ViewModel_Settings_SharedPaths)
+            );
             StatusMessage = "Failed to save settings.";
         }
         finally

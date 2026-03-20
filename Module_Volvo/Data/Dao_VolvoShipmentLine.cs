@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -19,7 +19,8 @@ public class Dao_VolvoShipmentLine
 
     public Dao_VolvoShipmentLine(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
@@ -32,13 +33,18 @@ public class Dao_VolvoShipmentLine
         {
             { "shipment_id", line.ShipmentId },
             { "part_number", line.PartNumber },
-            { "location", string.IsNullOrWhiteSpace(line.Location) ? (object)DBNull.Value : line.Location.Trim() },
+            {
+                "location",
+                string.IsNullOrWhiteSpace(line.Location)
+                    ? (object)DBNull.Value
+                    : line.Location.Trim()
+            },
             { "quantity_per_skid", line.QuantityPerSkid },
             { "received_skid_count", line.ReceivedSkidCount },
             { "calculated_piece_count", line.CalculatedPieceCount },
             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
             { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
-            { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+            { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -52,12 +58,11 @@ public class Dao_VolvoShipmentLine
     /// Gets all lines for a shipment
     /// </summary>
     /// <param name="shipmentId"></param>
-    public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetByShipmentIdAsync(int shipmentId)
+    public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetByShipmentIdAsync(
+        int shipmentId
+    )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "shipment_id", shipmentId }
-        };
+        var parameters = new Dictionary<string, object> { { "shipment_id", shipmentId } };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -76,12 +81,17 @@ public class Dao_VolvoShipmentLine
         var parameters = new Dictionary<string, object>
         {
             { "id", line.Id },
-            { "location", string.IsNullOrWhiteSpace(line.Location) ? (object)DBNull.Value : line.Location.Trim() },
+            {
+                "location",
+                string.IsNullOrWhiteSpace(line.Location)
+                    ? (object)DBNull.Value
+                    : line.Location.Trim()
+            },
             { "received_skid_count", line.ReceivedSkidCount },
             { "calculated_piece_count", line.CalculatedPieceCount },
             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
             { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
-            { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+            { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -97,10 +107,7 @@ public class Dao_VolvoShipmentLine
     /// <param name="lineId"></param>
     public async Task<Model_Dao_Result> DeleteAsync(int lineId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "id", lineId }
-        };
+        var parameters = new Dictionary<string, object> { { "id", lineId } };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
@@ -128,7 +135,7 @@ public class Dao_VolvoShipmentLine
                 : reader.GetInt32(reader.GetOrdinal("expected_skid_count")),
             DiscrepancyNote = reader.IsDBNull(reader.GetOrdinal("discrepancy_note"))
                 ? null
-                : reader.GetString(reader.GetOrdinal("discrepancy_note"))
+                : reader.GetString(reader.GetOrdinal("discrepancy_note")),
         };
     }
 }

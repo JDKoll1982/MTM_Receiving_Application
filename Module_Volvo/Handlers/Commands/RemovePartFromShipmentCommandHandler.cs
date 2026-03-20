@@ -11,9 +11,13 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// Handler for RemovePartFromShipmentCommand.
 /// Returns success - ViewModel manages its own ObservableCollection removal.
 /// </summary>
-public class RemovePartFromShipmentCommandHandler : IRequestHandler<RemovePartFromShipmentCommand, Model_Dao_Result>
+public class RemovePartFromShipmentCommandHandler
+    : IRequestHandler<RemovePartFromShipmentCommand, Model_Dao_Result>
 {
-    public async Task<Model_Dao_Result> Handle(RemovePartFromShipmentCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        RemovePartFromShipmentCommand request,
+        CancellationToken cancellationToken
+    )
     {
         // Simple validation - part number should not be empty
         if (string.IsNullOrWhiteSpace(request.PartNumber))

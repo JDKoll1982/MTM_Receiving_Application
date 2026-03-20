@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Windowing;
+﻿using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
 using WinRT.Interop;
 
 namespace MTM_Receiving_Application.Module_Core.Helpers.UI;
@@ -44,7 +44,11 @@ public static class Helper_WindowExtensions
     /// <param name="window">The window to configure</param>
     /// <param name="disableMaximize">Whether to disable maximize button</param>
     /// <param name="disableMinimize">Whether to disable minimize button</param>
-    public static void SetFixedSize(this Window window, bool disableMaximize = true, bool disableMinimize = true)
+    public static void SetFixedSize(
+        this Window window,
+        bool disableMaximize = true,
+        bool disableMinimize = true
+    )
     {
         var appWindow = window.GetAppWindow();
 
@@ -72,7 +76,10 @@ public static class Helper_WindowExtensions
     /// </summary>
     /// <param name="window">The window to configure</param>
     /// <param name="customTitleBarElement">Optional custom title bar element</param>
-    public static void UseCustomTitleBar(this Window window, UIElement? customTitleBarElement = null)
+    public static void UseCustomTitleBar(
+        this Window window,
+        UIElement? customTitleBarElement = null
+    )
     {
         window.ExtendsContentIntoTitleBar = true;
         window.SetTitleBar(customTitleBarElement);
@@ -133,4 +140,3 @@ public static class Helper_WindowExtensions
         return AppWindow.GetFromWindowId(windowId);
     }
 }
-

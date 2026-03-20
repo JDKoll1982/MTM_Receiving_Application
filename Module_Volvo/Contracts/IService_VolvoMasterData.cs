@@ -15,7 +15,9 @@ public interface IService_VolvoMasterData
     /// </summary>
     /// <param name="includeInactive">Include deactivated parts</param>
     /// <returns>List of parts</returns>
-    public Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllPartsAsync(bool includeInactive = false);
+    public Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllPartsAsync(
+        bool includeInactive = false
+    );
 
     /// <summary>
     /// Gets a specific part by part number
@@ -30,7 +32,10 @@ public interface IService_VolvoMasterData
     /// <param name="part">Part to add</param>
     /// <param name="components">Optional component relationships</param>
     /// <returns>Success result</returns>
-    public Task<Model_Dao_Result> AddPartAsync(Model_VolvoPart part, List<Model_VolvoPartComponent>? components = null);
+    public Task<Model_Dao_Result> AddPartAsync(
+        Model_VolvoPart part,
+        List<Model_VolvoPartComponent>? components = null
+    );
 
     /// <summary>
     /// Updates an existing part in the master catalog
@@ -38,7 +43,10 @@ public interface IService_VolvoMasterData
     /// <param name="part">Part with updated values</param>
     /// <param name="components">Updated component relationships (replaces existing)</param>
     /// <returns>Success result</returns>
-    public Task<Model_Dao_Result> UpdatePartAsync(Model_VolvoPart part, List<Model_VolvoPartComponent>? components = null);
+    public Task<Model_Dao_Result> UpdatePartAsync(
+        Model_VolvoPart part,
+        List<Model_VolvoPartComponent>? components = null
+    );
 
     /// <summary>
     /// Deactivates a part (soft delete - preserves historical integrity)
@@ -52,7 +60,9 @@ public interface IService_VolvoMasterData
     /// </summary>
     /// <param name="partNumber">Part number</param>
     /// <returns>List of components</returns>
-    public Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(string partNumber);
+    public Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(
+        string partNumber
+    );
 
     /// <summary>
     /// Bulk-upserts parts into the master table.
@@ -61,6 +71,6 @@ public interface IService_VolvoMasterData
     /// <param name="parts">List of parts to import.</param>
     /// <returns>Tuple of (New, Updated, Unchanged) counts.</returns>
     public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportDataAsync(
-        System.Collections.Generic.List<(string PartNumber, int QuantityPerSkid)> parts);
-
+        System.Collections.Generic.List<(string PartNumber, int QuantityPerSkid)> parts
+    );
 }

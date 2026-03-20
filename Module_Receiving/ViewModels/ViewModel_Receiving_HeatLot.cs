@@ -1,17 +1,17 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
-using System;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -55,7 +55,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+            IService_Notification notificationService
+        )
+            : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _validationService = validationService;
@@ -71,13 +73,27 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                HeatLotHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotHeader);
-                HeatLotAutoFillText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotAutoFill);
-                HeatLotAutoFillTooltipText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotAutoFillTooltip);
-                HeatLotLoadPrefixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotLoadPrefix);
-                HeatLotFieldHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotFieldHeader);
-                HeatLotFieldPlaceholderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotFieldPlaceholder);
-                HeatLotAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.HeatLotNumber);
+                HeatLotHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotHeader
+                );
+                HeatLotAutoFillText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotAutoFill
+                );
+                HeatLotAutoFillTooltipText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotAutoFillTooltip
+                );
+                HeatLotLoadPrefixText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotLoadPrefix
+                );
+                HeatLotFieldHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotFieldHeader
+                );
+                HeatLotFieldPlaceholderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotFieldPlaceholder
+                );
+                HeatLotAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.HeatLotNumber
+                );
 
                 _logger.LogInfo("Heat/Lot UI text loaded from settings successfully");
             }
@@ -112,7 +128,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            var autoFillEnabled = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled);
+            var autoFillEnabled = await _receivingSettings.GetBoolAsync(
+                ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled
+            );
             if (autoFillEnabled)
             {
                 AutoFill();
@@ -130,7 +148,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var currentLoad = Loads[i];
                 var prevLoad = Loads[i - 1];
 
-                if (string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber) && !string.IsNullOrWhiteSpace(prevLoad.HeatLotNumber))
+                if (
+                    string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber)
+                    && !string.IsNullOrWhiteSpace(prevLoad.HeatLotNumber)
+                )
                 {
                     currentLoad.HeatLotNumber = prevLoad.HeatLotNumber;
                 }
@@ -173,10 +194,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
     }
 }
-

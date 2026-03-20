@@ -9,14 +9,15 @@
     PrimaryButtonText="Add"
     CloseButtonText="Cancel"
     DefaultButton="Primary"
-    PrimaryButtonClick="ContentDialog_PrimaryButtonClick">
-
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+>
     <StackPanel Spacing="16" Padding="24">
-        <TextBlock 
-            Text="How many rows would you like to add?" 
-            Style="{StaticResource BodyTextBlockStyle}"/>
-        
-        <NumberBox 
+        <TextBlock
+            Text="How many rows would you like to add?"
+            Style="{StaticResource BodyTextBlockStyle}"
+        />
+
+        <NumberBox
             x:Name="RowCountNumberBox"
             Header="Number of Rows"
             Minimum="1"
@@ -24,12 +25,14 @@
             Value="10"
             SpinButtonPlacementMode="Inline"
             ValidationMode="InvalidInputOverwritten"
-            AcceptsExpression="False"/>
-        
-        <InfoBar 
+            AcceptsExpression="False"
+        />
+
+        <InfoBar
             IsOpen="True"
             Severity="Informational"
             IsClosable="False"
-            Message="Maximum 100 rows can be added at once. Each row will be initialized with default values (Quantity = 1)."/>
+            Message="Maximum 100 rows can be added at once. Each row will be initialized with default values (Quantity = 1)."
+        />
     </StackPanel>
 </ContentDialog>

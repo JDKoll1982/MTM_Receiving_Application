@@ -1,5 +1,5 @@
-using Microsoft.UI.Xaml.Data;
 using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
@@ -12,13 +12,13 @@ public class Converter_NullableIntToString : IValueConverter
         {
             return string.Empty;
         }
-        
+
         // Handle nullable int
         if (value is int intValue)
         {
             return intValue.ToString();
         }
-        
+
         // Fallback
         return string.Empty;
     }

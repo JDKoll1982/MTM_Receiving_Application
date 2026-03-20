@@ -47,4 +47,3 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public bool HasLoads => Loads?.Count > 0;
     }
 }
-

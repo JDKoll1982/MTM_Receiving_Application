@@ -9,7 +9,9 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
 {
     public ViewModel_Settings_Receiving_UserPreferences ViewModel { get; }
 
-    public View_Settings_Receiving_UserPreferences(ViewModel_Settings_Receiving_UserPreferences viewModel)
+    public View_Settings_Receiving_UserPreferences(
+        ViewModel_Settings_Receiving_UserPreferences viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
@@ -20,7 +22,10 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         ViewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
-    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ViewModel_PropertyChanged(
+        object? sender,
+        System.ComponentModel.PropertyChangedEventArgs e
+    )
     {
         if (e.PropertyName == nameof(ViewModel.SelectedRule))
         {
@@ -67,7 +72,10 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         }
     }
 
-    private void MaxLengthNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void MaxLengthNumberBox_ValueChanged(
+        NumberBox sender,
+        NumberBoxValueChangedEventArgs args
+    )
     {
         if (ViewModel.SelectedRule != null)
         {
@@ -91,7 +99,7 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
             ' ' => 1,
             '_' => 2,
             '-' => 3,
-            _ => 0
+            _ => 0,
         };
     }
 
@@ -111,5 +119,3 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         }
     }
 }
-
-

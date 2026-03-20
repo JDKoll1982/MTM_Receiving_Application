@@ -3,12 +3,13 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels;
 
-public sealed partial class ViewModel_Settings_DeveloperTools_SettingsOverview : ViewModel_Shared_Base
+public sealed partial class ViewModel_Settings_DeveloperTools_SettingsOverview
+    : ViewModel_Shared_Base
 {
     public ViewModel_Settings_DeveloperTools_SettingsOverview(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
-    {
-    }
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService) { }
 }

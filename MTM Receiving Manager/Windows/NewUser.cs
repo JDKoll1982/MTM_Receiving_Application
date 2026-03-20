@@ -19,16 +19,22 @@ public partial class NewUser : Form
     {
         try
         {
-            if (NewUserForm_TextBox_UserName.Text.Length > 0 &&
-                NewUserForm_TextBox_Password.Text.Length > 0)
+            if (
+                NewUserForm_TextBox_UserName.Text.Length > 0
+                && NewUserForm_TextBox_Password.Text.Length > 0
+            )
                 NewUserForm_Button_Save.Enabled = true;
             else
                 NewUserForm_Button_Save.Enabled = false;
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while handling text change: {ex.Message}", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while handling text change: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -37,12 +43,20 @@ public partial class NewUser : Form
         try
         {
             var searchDao = new SearchDao();
-            searchDao.AddNewUser(NewUserForm_TextBox_UserName.Text, NewUserForm_TextBox_Password.Text, this);
+            searchDao.AddNewUser(
+                NewUserForm_TextBox_UserName.Text,
+                NewUserForm_TextBox_Password.Text,
+                this
+            );
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred while saving new user: {ex.Message}", "Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"An error occurred while saving new user: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 

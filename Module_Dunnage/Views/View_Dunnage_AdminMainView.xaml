@@ -6,43 +6,42 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:MTM_Receiving_Application.Module_Dunnage.Views"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+>
     <Grid Padding="24">
         <!-- Main Navigation Hub (4-card view) -->
         <Grid Visibility="{x:Bind ViewModel.IsMainNavigationVisible, Mode=OneWay}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <!-- Header -->
             <StackPanel Grid.Row="0" Margin="0,0,0,24">
-                <TextBlock 
-                    Text="Dunnage Management" 
-                    Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock 
-                    Text="Manage types, parts, specifications, and inventory" 
+                <TextBlock Text="Dunnage Management" Style="{StaticResource TitleTextBlockStyle}" />
+                <TextBlock
+                    Text="Manage types, parts, specifications, and inventory"
                     Style="{StaticResource BodyTextBlockStyle}"
                     Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                    Margin="0,8,0,0"/>
+                    Margin="0,8,0,0"
+                />
             </StackPanel>
 
             <!-- 4 Navigation Cards (2x2 Grid) -->
             <Grid Grid.Row="1" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <!-- Type Management Card -->
-                <Button 
-                    Grid.Row="0" 
+                <Button
+                    Grid.Row="0"
                     Grid.Column="0"
                     Command="{x:Bind ViewModel.NavigateToManageTypesCommand}"
                     HorizontalAlignment="Stretch"
@@ -52,29 +51,33 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
+                    CornerRadius="8"
+                >
                     <StackPanel Spacing="12">
-                        <FontIcon 
-                            Glyph="&#xE7C3;" 
+                        <FontIcon
+                            Glyph="&#xE7C3;"
                             FontSize="48"
-                            Foreground="{ThemeResource SystemAccentColor}"/>
-                        <TextBlock 
-                            Text="Manage Types" 
+                            Foreground="{ThemeResource SystemAccentColor}"
+                        />
+                        <TextBlock
+                            Text="Manage Types"
                             Style="{StaticResource SubtitleTextBlockStyle}"
-                            HorizontalAlignment="Center"/>
-                        <TextBlock 
+                            HorizontalAlignment="Center"
+                        />
+                        <TextBlock
                             Text="Add, edit, and delete dunnage types"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                             TextWrapping="Wrap"
                             HorizontalAlignment="Center"
-                            TextAlignment="Center"/>
+                            TextAlignment="Center"
+                        />
                     </StackPanel>
                 </Button>
 
                 <!-- Spec Management Card -->
-                <Button 
-                    Grid.Row="0" 
+                <Button
+                    Grid.Row="0"
                     Grid.Column="1"
                     Command="{x:Bind ViewModel.NavigateToManageSpecsCommand}"
                     HorizontalAlignment="Stretch"
@@ -84,29 +87,33 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
+                    CornerRadius="8"
+                >
                     <StackPanel Spacing="12">
-                        <FontIcon 
-                            Glyph="&#xE8FD;" 
+                        <FontIcon
+                            Glyph="&#xE8FD;"
                             FontSize="48"
-                            Foreground="{ThemeResource SystemAccentColor}"/>
-                        <TextBlock 
-                            Text="Manage Specs" 
+                            Foreground="{ThemeResource SystemAccentColor}"
+                        />
+                        <TextBlock
+                            Text="Manage Specs"
                             Style="{StaticResource SubtitleTextBlockStyle}"
-                            HorizontalAlignment="Center"/>
-                        <TextBlock 
+                            HorizontalAlignment="Center"
+                        />
+                        <TextBlock
                             Text="Define specifications for each type"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                             TextWrapping="Wrap"
                             HorizontalAlignment="Center"
-                            TextAlignment="Center"/>
+                            TextAlignment="Center"
+                        />
                     </StackPanel>
                 </Button>
 
                 <!-- Part Management Card -->
-                <Button 
-                    Grid.Row="1" 
+                <Button
+                    Grid.Row="1"
                     Grid.Column="0"
                     Command="{x:Bind ViewModel.NavigateToManagePartsCommand}"
                     HorizontalAlignment="Stretch"
@@ -116,29 +123,33 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
+                    CornerRadius="8"
+                >
                     <StackPanel Spacing="12">
-                        <FontIcon 
-                            Glyph="&#xE8F1;" 
+                        <FontIcon
+                            Glyph="&#xE8F1;"
                             FontSize="48"
-                            Foreground="{ThemeResource SystemAccentColor}"/>
-                        <TextBlock 
-                            Text="Manage Parts" 
+                            Foreground="{ThemeResource SystemAccentColor}"
+                        />
+                        <TextBlock
+                            Text="Manage Parts"
                             Style="{StaticResource SubtitleTextBlockStyle}"
-                            HorizontalAlignment="Center"/>
-                        <TextBlock 
+                            HorizontalAlignment="Center"
+                        />
+                        <TextBlock
                             Text="Add and edit dunnage part numbers"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                             TextWrapping="Wrap"
                             HorizontalAlignment="Center"
-                            TextAlignment="Center"/>
+                            TextAlignment="Center"
+                        />
                     </StackPanel>
                 </Button>
 
                 <!-- Inventoried List Card -->
-                <Button 
-                    Grid.Row="1" 
+                <Button
+                    Grid.Row="1"
                     Grid.Column="1"
                     Command="{x:Bind ViewModel.NavigateToInventoriedListCommand}"
                     HorizontalAlignment="Stretch"
@@ -148,88 +159,107 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
+                    CornerRadius="8"
+                >
                     <StackPanel Spacing="12">
-                        <FontIcon 
-                            Glyph="&#xE8EF;" 
+                        <FontIcon
+                            Glyph="&#xE8EF;"
                             FontSize="48"
-                            Foreground="{ThemeResource SystemAccentColor}"/>
-                        <TextBlock 
-                            Text="Inventoried List" 
+                            Foreground="{ThemeResource SystemAccentColor}"
+                        />
+                        <TextBlock
+                            Text="Inventoried List"
                             Style="{StaticResource SubtitleTextBlockStyle}"
-                            HorizontalAlignment="Center"/>
-                        <TextBlock 
+                            HorizontalAlignment="Center"
+                        />
+                        <TextBlock
                             Text="Manage inventory tracking settings"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                             TextWrapping="Wrap"
                             HorizontalAlignment="Center"
-                            TextAlignment="Center"/>
+                            TextAlignment="Center"
+                        />
                     </StackPanel>
                 </Button>
             </Grid>
 
             <!-- Status Bar -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,24,0,0">
-                <ProgressRing 
+                <ProgressRing
                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                    Width="20" 
-                    Height="20"/>
-                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"/>
+                    Width="20"
+                    Height="20"
+                />
+                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
             </StackPanel>
         </Grid>
 
         <!-- Type Management Section -->
         <Grid Visibility="{x:Bind ViewModel.IsManageTypesVisible, Mode=OneWay}">
-            <local:View_Dunnage_AdminTypesView/>
+            <local:View_Dunnage_AdminTypesView />
         </Grid>
 
         <!-- Spec Management Section (placeholder) -->
         <Grid Visibility="{x:Bind ViewModel.IsManageSpecsVisible, Mode=OneWay}">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
-                <FontIcon Glyph="&#xE8FD;" FontSize="72" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-                <TextBlock 
-                    Text="Spec Management" 
+                <FontIcon
+                    Glyph="&#xE8FD;"
+                    FontSize="72"
+                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                />
+                <TextBlock
+                    Text="Spec Management"
                     Style="{StaticResource TitleTextBlockStyle}"
-                    HorizontalAlignment="Center"/>
-                <TextBlock 
+                    HorizontalAlignment="Center"
+                />
+                <TextBlock
                     Text="This view will be implemented in a future phase"
                     Style="{StaticResource BodyTextBlockStyle}"
                     Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                    HorizontalAlignment="Center"/>
-                <Button 
+                    HorizontalAlignment="Center"
+                />
+                <Button
                     Content="Back to Main Menu"
                     Command="{x:Bind ViewModel.ReturnToMainNavigationCommand}"
                     Style="{StaticResource AccentButtonStyle}"
                     HorizontalAlignment="Center"
-                    Margin="0,16,0,0"/>
+                    Margin="0,16,0,0"
+                />
             </StackPanel>
         </Grid>
 
         <!-- Part Management Section -->
         <Grid Visibility="{x:Bind ViewModel.IsManagePartsVisible, Mode=OneWay}">
-            <local:View_Dunnage_AdminPartsView/>
+            <local:View_Dunnage_AdminPartsView />
         </Grid>
 
         <!-- Inventoried List Section (placeholder) -->
         <Grid Visibility="{x:Bind ViewModel.IsInventoriedListVisible, Mode=OneWay}">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
-                <FontIcon Glyph="&#xE8EF;" FontSize="72" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-                <TextBlock 
-                    Text="Inventoried List" 
+                <FontIcon
+                    Glyph="&#xE8EF;"
+                    FontSize="72"
+                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                />
+                <TextBlock
+                    Text="Inventoried List"
                     Style="{StaticResource TitleTextBlockStyle}"
-                    HorizontalAlignment="Center"/>
-                <TextBlock 
+                    HorizontalAlignment="Center"
+                />
+                <TextBlock
                     Text="This view will be implemented in a future phase"
                     Style="{StaticResource BodyTextBlockStyle}"
                     Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                    HorizontalAlignment="Center"/>
-                <Button 
+                    HorizontalAlignment="Center"
+                />
+                <Button
                     Content="Back to Main Menu"
                     Command="{x:Bind ViewModel.ReturnToMainNavigationCommand}"
                     Style="{StaticResource AccentButtonStyle}"
                     HorizontalAlignment="Center"
-                    Margin="0,16,0,0"/>
+                    Margin="0,16,0,0"
+                />
             </StackPanel>
         </Grid>
     </Grid>

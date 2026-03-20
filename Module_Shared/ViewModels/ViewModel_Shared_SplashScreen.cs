@@ -18,7 +18,9 @@ public partial class ViewModel_Shared_SplashScreen : ViewModel_Shared_Base
     public ViewModel_Shared_SplashScreen(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         StatusMessage = "Initializing...";
     }
@@ -56,5 +58,3 @@ public partial class ViewModel_Shared_SplashScreen : ViewModel_Shared_Base
         IsIndeterminate = false;
     }
 }
-
-

@@ -25,5 +25,8 @@ public interface IService_BulkInventory_FuzzySearch
     /// </summary>
     /// <param name="term">Partial location ID entered by the user.</param>
     /// <param name="warehouseCode">Warehouse code that scopes the search (e.g. "002").</param>
-    Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchLocationsAsync(string term, string warehouseCode);
+    Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchLocationsAsync(
+        string term,
+        string warehouseCode
+    );
 }

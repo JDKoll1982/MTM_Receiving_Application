@@ -9,5 +9,8 @@ public interface IService_Notification : INotifyPropertyChanged
     public InfoBarSeverity StatusSeverity { get; }
     public bool IsStatusOpen { get; set; }
 
-    public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverity.Informational);
+    public void ShowStatus(
+        string message,
+        InfoBarSeverity severity = InfoBarSeverity.Informational
+    );
 }

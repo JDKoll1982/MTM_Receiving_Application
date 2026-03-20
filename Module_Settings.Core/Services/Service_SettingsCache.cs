@@ -10,7 +10,9 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Services;
 /// </summary>
 public class Service_SettingsCache : ISettingsCache
 {
-    private readonly ConcurrentDictionary<string, Model_SettingsValue> _cache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, Model_SettingsValue> _cache = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     public bool TryGet(string cacheKey, out Model_SettingsValue? value)
     {

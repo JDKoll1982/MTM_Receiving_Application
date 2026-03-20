@@ -22,7 +22,8 @@ public class Dao_SettingsDiagnostics
         return Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
             "sp_SettingsCore_Meta_GetTables",
-            reader => reader.GetString(reader.GetOrdinal("table_name")));
+            reader => reader.GetString(reader.GetOrdinal("table_name"))
+        );
     }
 
     public Task<Model_Dao_Result<List<string>>> GetStoredProceduresAsync()
@@ -30,6 +31,7 @@ public class Dao_SettingsDiagnostics
         return Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
             "sp_SettingsCore_Meta_GetStoredProcedures",
-            reader => reader.GetString(reader.GetOrdinal("procedure_name")));
+            reader => reader.GetString(reader.GetOrdinal("procedure_name"))
+        );
     }
 }

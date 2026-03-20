@@ -14,7 +14,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for SearchVolvoPartsQuery - autocomplete search for part numbers.
 /// </summary>
-public class SearchVolvoPartsQueryHandler : IRequestHandler<SearchVolvoPartsQuery, Model_Dao_Result<List<Model_VolvoPart>>>
+public class SearchVolvoPartsQueryHandler
+    : IRequestHandler<SearchVolvoPartsQuery, Model_Dao_Result<List<Model_VolvoPart>>>
 {
     private readonly Dao_VolvoPart _partDao;
 
@@ -23,7 +24,10 @@ public class SearchVolvoPartsQueryHandler : IRequestHandler<SearchVolvoPartsQuer
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
     }
 
-    public async Task<Model_Dao_Result<List<Model_VolvoPart>>> Handle(SearchVolvoPartsQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<List<Model_VolvoPart>>> Handle(
+        SearchVolvoPartsQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -37,8 +41,10 @@ public class SearchVolvoPartsQueryHandler : IRequestHandler<SearchVolvoPartsQuer
 
             // Filter by search text (case-insensitive partial match)
             var filteredParts = (allPartsResult.Data ?? new List<Model_VolvoPart>())
-                .Where(p => string.IsNullOrWhiteSpace(request.SearchText) ||
-                           p.PartNumber.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase))
+                .Where(p =>
+                    string.IsNullOrWhiteSpace(request.SearchText)
+                    || p.PartNumber.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase)
+                )
                 .Take(request.MaxResults)
                 .ToList();
 
@@ -47,7 +53,9 @@ public class SearchVolvoPartsQueryHandler : IRequestHandler<SearchVolvoPartsQuer
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPart>>(
-                $"Unexpected error searching parts: {ex.Message}", ex);
+                $"Unexpected error searching parts: {ex.Message}",
+                ex
+            );
         }
     }
 }

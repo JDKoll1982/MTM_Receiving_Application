@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Receiving.Contracts
 {
@@ -123,7 +123,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="messageProgress">Progress reporter for status messages</param>
         /// <param name="percentProgress">Progress reporter for percentage completion</param>
         /// <returns>Result with save operation details</returns>
-        public Task<Model_SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null);
+        public Task<Model_SaveResult> SaveSessionAsync(
+            IProgress<string>? messageProgress = null,
+            IProgress<int>? percentProgress = null
+        );
 
         /// <summary>
         /// Clears all UI inputs in registered ViewModels.

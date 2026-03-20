@@ -8,7 +8,9 @@ public sealed partial class View_Settings_Dunnage_UserPreferences : Page
 {
     public ViewModel_Settings_Dunnage_UserPreferences ViewModel { get; }
 
-    public View_Settings_Dunnage_UserPreferences(ViewModel_Settings_Dunnage_UserPreferences viewModel)
+    public View_Settings_Dunnage_UserPreferences(
+        ViewModel_Settings_Dunnage_UserPreferences viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;

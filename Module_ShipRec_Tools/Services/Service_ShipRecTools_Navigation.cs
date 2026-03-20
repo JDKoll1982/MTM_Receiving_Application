@@ -16,7 +16,9 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
 {
     private readonly IService_LoggingUtility _logger;
-    private readonly Dictionary<string, Model_ToolDefinition> _toolRegistry = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Model_ToolDefinition> _toolRegistry = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     public Service_ShipRecTools_Navigation(IService_LoggingUtility logger)
     {
@@ -28,8 +30,8 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
     /// <inheritdoc />
     public IReadOnlyList<Model_ToolDefinition> GetToolsByCategory(Enum_ToolCategory category)
     {
-        return _toolRegistry.Values
-            .Where(t => t.Category == category && t.IsAvailable)
+        return _toolRegistry
+            .Values.Where(t => t.Category == category && t.IsAvailable)
             .OrderBy(t => t.Title)
             .ToList();
     }
@@ -37,8 +39,8 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
     /// <inheritdoc />
     public IReadOnlyList<Model_ToolDefinition> GetAllTools()
     {
-        return _toolRegistry.Values
-            .Where(t => t.IsAvailable)
+        return _toolRegistry
+            .Values.Where(t => t.IsAvailable)
             .OrderBy(t => t.Category)
             .ThenBy(t => t.Title)
             .ToList();
@@ -66,14 +68,17 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
 
     private void RegisterBuiltInTools()
     {
-        RegisterTool(new Model_ToolDefinition
-        {
-            ToolKey = "OutsideServiceHistory",
-            Title = "Outside Service History",
-            Description = "Query vendor history for parts sent to outside service providers. Search by part or vendor.",
-            IconGlyph = "\uE7C1",
-            Category = Enum_ToolCategory.Lookup,
-            IsAvailable = true
-        });
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "OutsideServiceHistory",
+                Title = "Outside Service History",
+                Description =
+                    "Query vendor history for parts sent to outside service providers. Search by part or vendor.",
+                IconGlyph = "\uE7C1",
+                Category = Enum_ToolCategory.Lookup,
+                IsAvailable = true,
+            }
+        );
     }
 }

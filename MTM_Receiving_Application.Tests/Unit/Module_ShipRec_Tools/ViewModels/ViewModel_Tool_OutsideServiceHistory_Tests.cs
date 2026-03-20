@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -6,8 +8,6 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.ViewModels;
@@ -31,7 +31,8 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
             _mockService.Object,
             _mockErrorHandler.Object,
             _mockLogger.Object,
-            _mockNotification.Object);
+            _mockNotification.Object
+        );
     }
 
     // ─── Initial state ───────────────────────────────────────────────────────
@@ -104,7 +105,8 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
 
         _mockErrorHandler.Verify(
             e => e.ShowUserErrorAsync(It.IsAny<string>(), "Input Required", It.IsAny<string>()),
-            Times.Once);
+            Times.Once
+        );
         _mockService.Verify(s => s.FuzzySearchPartsAsync(It.IsAny<string>()), Times.Never);
     }
 
@@ -115,18 +117,39 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-001";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-001", Label = "PART-001", Detail = "Mock part" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new()
+                        {
+                            Key = "PART-001",
+                            Label = "PART-001",
+                            Detail = "Mock part",
+                        },
+                    }
+                )
+            );
 
         var data = new List<Model_OutsideServiceHistory>
         {
-            new() { PartNumber = "PART-001", VendorID = "V-1", DispatchID = "SD-1001" },
-            new() { PartNumber = "PART-001", VendorID = "V-2", DispatchID = "SD-1002" }
+            new()
+            {
+                PartNumber = "PART-001",
+                VendorID = "V-1",
+                DispatchID = "SD-1001",
+            },
+            new()
+            {
+                PartNumber = "PART-001",
+                VendorID = "V-2",
+                DispatchID = "SD-1002",
+            },
         };
-        _mockService.Setup(s => s.GetHistoryByPartAsync("PART-001"))
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync("PART-001"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(data));
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
@@ -140,17 +163,24 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-002";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-002", Label = "PART-002" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-002", Label = "PART-002" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByPartAsync("PART-002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { PartNumber = "PART-002" }
-            }));
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync("PART-002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory> { new() { PartNumber = "PART-002" } }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -162,7 +192,8 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-NONE";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-NONE"))
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-NONE"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>()));
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
@@ -176,14 +207,22 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-001";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-001", Label = "PART-001" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync(It.IsAny<string>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-001", Label = "PART-001" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByPartAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>()));
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync(It.IsAny<string>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>())
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -197,18 +236,25 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-001", Label = "PART-001" },
-                new() { Key = "PART-002", Label = "PART-002" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-001", Label = "PART-001" },
+                        new() { Key = "PART-002", Label = "PART-002" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByPartAsync("PART-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { PartNumber = "PART-001" }
-            }));
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync("PART-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory> { new() { PartNumber = "PART-001" } }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -223,8 +269,11 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-ERR";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-ERR"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Database error"));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-ERR"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("Database error")
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -237,14 +286,24 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-ERR";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-ERR"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-ERR", Label = "PART-ERR" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-ERR"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-ERR", Label = "PART-ERR" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByPartAsync("PART-ERR"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>("Database error"));
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync("PART-ERR"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
+                    "Database error"
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -256,33 +315,50 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-001";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-001", Label = "PART-001" }
-            }));
-        _mockService.Setup(s => s.GetHistoryByPartAsync("PART-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { PartNumber = "PART-001" },
-                new() { PartNumber = "PART-001" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-001", Label = "PART-001" },
+                    }
+                )
+            );
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync("PART-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory>
+                    {
+                        new() { PartNumber = "PART-001" },
+                        new() { PartNumber = "PART-001" },
+                    }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
         _viewModel.Results.Should().HaveCount(2);
 
         _viewModel.SearchTerm = "PART-002";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync("PART-002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-002", Label = "PART-002" }
-            }));
-        _mockService.Setup(s => s.GetHistoryByPartAsync("PART-002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { PartNumber = "PART-002" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync("PART-002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-002", Label = "PART-002" },
+                    }
+                )
+            );
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync("PART-002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory> { new() { PartNumber = "PART-002" } }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -298,24 +374,54 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
         _viewModel.SetSearchByVendorCommand.Execute(null);
         _viewModel.SearchTerm = "Acme";
 
-        _mockService.Setup(s => s.FuzzySearchVendorsAsync("Acme"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "V-001", Label = "Acme Heat Treating Co." }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchVendorsAsync("Acme"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "V-001", Label = "Acme Heat Treating Co." },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetPartsByVendorAsync("V-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-001", Label = "PART-001", Detail = "2 dispatch(es)" }
-            }));
+        _mockService
+            .Setup(s => s.GetPartsByVendorAsync("V-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new()
+                        {
+                            Key = "PART-001",
+                            Label = "PART-001",
+                            Detail = "2 dispatch(es)",
+                        },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByVendorAndPartAsync("V-001", "PART-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { VendorID = "V-001", PartNumber = "PART-001", DispatchID = "SD-100" },
-                new() { VendorID = "V-001", PartNumber = "PART-001", DispatchID = "SD-101" }
-            }));
+        _mockService
+            .Setup(s => s.GetHistoryByVendorAndPartAsync("V-001", "PART-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory>
+                    {
+                        new()
+                        {
+                            VendorID = "V-001",
+                            PartNumber = "PART-001",
+                            DispatchID = "SD-100",
+                        },
+                        new()
+                        {
+                            VendorID = "V-001",
+                            PartNumber = "PART-001",
+                            DispatchID = "SD-101",
+                        },
+                    }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -329,24 +435,39 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
         _viewModel.SetSearchByVendorCommand.Execute(null);
         _viewModel.SearchTerm = "Acme";
 
-        _mockService.Setup(s => s.FuzzySearchVendorsAsync("Acme"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "V-001", Label = "Acme Heat Treating Co." }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchVendorsAsync("Acme"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "V-001", Label = "Acme Heat Treating Co." },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetPartsByVendorAsync("V-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-A", Label = "PART-A" },
-                new() { Key = "PART-B", Label = "PART-B" }
-            }));
+        _mockService
+            .Setup(s => s.GetPartsByVendorAsync("V-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-A", Label = "PART-A" },
+                        new() { Key = "PART-B", Label = "PART-B" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByVendorAndPartAsync("V-001", "PART-A"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { VendorID = "V-001", PartNumber = "PART-A" }
-            }));
+        _mockService
+            .Setup(s => s.GetHistoryByVendorAndPartAsync("V-001", "PART-A"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory>
+                    {
+                        new() { VendorID = "V-001", PartNumber = "PART-A" },
+                    }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -360,20 +481,29 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
         _viewModel.SetSearchByVendorCommand.Execute(null);
         _viewModel.SearchTerm = "Acme";
 
-        _mockService.Setup(s => s.FuzzySearchVendorsAsync("Acme"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "V-001", Label = "Acme Heat Treating Co." }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchVendorsAsync("Acme"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "V-001", Label = "Acme Heat Treating Co." },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetPartsByVendorAsync("V-001"))
+        _mockService
+            .Setup(s => s.GetPartsByVendorAsync("V-001"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>()));
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
         _viewModel.Results.Should().BeEmpty();
         _viewModel.StatusSeverity.Should().Be(InfoBarSeverity.Warning);
-        _mockService.Verify(s => s.GetHistoryByVendorAndPartAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockService.Verify(
+            s => s.GetHistoryByVendorAndPartAsync(It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -382,14 +512,22 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
         _viewModel.SetSearchByVendorCommand.Execute(null);
         _viewModel.SearchTerm = "Acme";
 
-        _mockService.Setup(s => s.FuzzySearchVendorsAsync("Acme"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "V-001", Label = "Acme Heat Treating Co." }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchVendorsAsync("Acme"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "V-001", Label = "Acme Heat Treating Co." },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetPartsByVendorAsync("V-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("DB error"));
+        _mockService
+            .Setup(s => s.GetPartsByVendorAsync("V-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>("DB error")
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -403,20 +541,33 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
         _viewModel.SetSearchByVendorCommand.Execute(null);
         _viewModel.SearchTerm = "Acme";
 
-        _mockService.Setup(s => s.FuzzySearchVendorsAsync("Acme"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "V-001", Label = "Acme" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchVendorsAsync("Acme"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "V-001", Label = "Acme" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetPartsByVendorAsync("V-001"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-A", Label = "PART-A" }
-            }));
+        _mockService
+            .Setup(s => s.GetPartsByVendorAsync("V-001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-A", Label = "PART-A" },
+                    }
+                )
+            );
 
-        _mockService.Setup(s => s.GetHistoryByVendorAndPartAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>()));
+        _mockService
+            .Setup(s => s.GetHistoryByVendorAndPartAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>())
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
 
@@ -440,16 +591,23 @@ public class ViewModel_Tool_OutsideServiceHistory_Tests
     {
         _viewModel.SearchTerm = "PART-001";
 
-        _mockService.Setup(s => s.FuzzySearchPartsAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>
-            {
-                new() { Key = "PART-001", Label = "PART-001" }
-            }));
-        _mockService.Setup(s => s.GetHistoryByPartAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-            {
-                new() { PartNumber = "PART-001" }
-            }));
+        _mockService
+            .Setup(s => s.FuzzySearchPartsAsync(It.IsAny<string>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new() { Key = "PART-001", Label = "PART-001" },
+                    }
+                )
+            );
+        _mockService
+            .Setup(s => s.GetHistoryByPartAsync(It.IsAny<string>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceHistory> { new() { PartNumber = "PART-001" } }
+                )
+            );
 
         await _viewModel.SearchCommand.ExecuteAsync(null);
         _viewModel.Results.Should().HaveCount(1);

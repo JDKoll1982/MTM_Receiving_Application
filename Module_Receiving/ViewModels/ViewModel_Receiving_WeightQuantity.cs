@@ -1,16 +1,16 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -63,7 +63,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService)
+            IService_Notification notificationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
@@ -80,15 +81,24 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                WeightQuantityHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WeightQuantityHeader);
-                WeightQuantityPlaceholderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WeightQuantityPlaceholder);
-                WeightQuantityAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.WeightQuantityInput);
+                WeightQuantityHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WeightQuantityHeader
+                );
+                WeightQuantityPlaceholderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WeightQuantityPlaceholder
+                );
+                WeightQuantityAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.WeightQuantityInput
+                );
 
                 _logger.LogInfo("Weight/Quantity UI text loaded from settings successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading Weight/Quantity UI text from settings: {ex.Message}", ex);
+                _logger.LogError(
+                    $"Error loading Weight/Quantity UI text from settings: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -132,7 +142,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (_workflowService.CurrentSession.IsNonPO)
             {
-                PoQuantityInfo = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.InfoNonPoItem);
+                PoQuantityInfo = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Messages.InfoNonPoItem
+                );
             }
             else if (_workflowService.CurrentPart != null)
             {
@@ -165,8 +177,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             try
             {
                 var totalWeight = Loads.Sum(static load => load.WeightQuantity);
-                var validation = await _validationService.CheckSameDayReceivingAsync(poNumber, partId, totalWeight);
-                if (validation.Severity == Enum_ValidationSeverity.Warning && string.IsNullOrWhiteSpace(validation.Message) is false)
+                var validation = await _validationService.CheckSameDayReceivingAsync(
+                    poNumber,
+                    partId,
+                    totalWeight
+                );
+                if (
+                    validation.Severity == Enum_ValidationSeverity.Warning
+                    && string.IsNullOrWhiteSpace(validation.Message) is false
+                )
                 {
                     HasWarning = true;
                     WarningMessage = validation.Message;
@@ -174,7 +193,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             catch (Exception ex)
             {
-                await _errorHandler.LogErrorAsync("Failed to check same-day receiving", Enum_ErrorSeverity.Warning, ex);
+                await _errorHandler.LogErrorAsync(
+                    "Failed to check same-day receiving",
+                    Enum_ErrorSeverity.Warning,
+                    ex
+                );
             }
         }
 
@@ -187,7 +210,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var result = _validationService.ValidateWeightQuantity(load.WeightQuantity);
                 if (!result.IsValid)
                 {
-                    await _errorHandler.HandleErrorAsync($"Load {load.LoadNumber}: {result.Message}", Enum_ErrorSeverity.Warning);
+                    await _errorHandler.HandleErrorAsync(
+                        $"Load {load.LoadNumber}: {result.Message}",
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
             }
@@ -198,9 +224,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var validation = await _validationService.ValidateAgainstPOQuantityAsync(
                     totalWeight,
                     _workflowService.CurrentPart.QtyOrdered,
-                    _workflowService.CurrentPart.PartID);
+                    _workflowService.CurrentPart.PartID
+                );
 
-                if (validation.Severity == Enum_ValidationSeverity.Warning && string.IsNullOrWhiteSpace(validation.Message) is false)
+                if (
+                    validation.Severity == Enum_ValidationSeverity.Warning
+                    && string.IsNullOrWhiteSpace(validation.Message) is false
+                )
                 {
                     WarningMessage = validation.Message;
                     HasWarning = true;
@@ -235,10 +265,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
     }
 }
-

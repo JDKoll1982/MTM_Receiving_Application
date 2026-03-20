@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -20,7 +20,8 @@ public class Dao_VolvoShipment
 
     public Dao_VolvoShipment(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
@@ -28,7 +29,9 @@ public class Dao_VolvoShipment
     /// </summary>
     /// <param name="shipment">Volvo shipment model to insert</param>
     /// <returns>Model_Dao_Result with shipment ID and number in Data property</returns>
-    public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> InsertAsync(Model_VolvoShipment shipment)
+    public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> InsertAsync(
+        Model_VolvoShipment shipment
+    )
     {
         try
         {
@@ -37,7 +40,7 @@ public class Dao_VolvoShipment
 
             await using var command = new MySqlCommand("sp_volvo_shipment_insert", connection)
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
             };
 
             // Input parameters
@@ -48,11 +51,11 @@ public class Dao_VolvoShipment
             // Output parameters
             var newIdParam = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             var shipmentNumberParam = new MySqlParameter("@p_shipment_number", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
 
             command.Parameters.Add(newIdParam);
@@ -67,7 +70,7 @@ public class Dao_VolvoShipment
             {
                 Success = true,
                 Data = (shipmentId, shipmentNumber),
-                AffectedRows = 1
+                AffectedRows = 1,
             };
         }
         catch (Exception ex)
@@ -77,7 +80,7 @@ public class Dao_VolvoShipment
                 Success = false,
                 ErrorMessage = $"Error inserting Volvo shipment: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -94,13 +97,14 @@ public class Dao_VolvoShipment
             var parameters = new Dictionary<string, object>
             {
                 { "id", shipment.Id },
-                { "notes", shipment.Notes ?? (object)DBNull.Value }
+                { "notes", shipment.Notes ?? (object)DBNull.Value },
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
                 "sp_volvo_shipment_update",
-                parameters);
+                parameters
+            );
 
             return result;
         }
@@ -111,7 +115,7 @@ public class Dao_VolvoShipment
                 Success = false,
                 ErrorMessage = $"Error updating Volvo shipment: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -123,13 +127,17 @@ public class Dao_VolvoShipment
     /// <param name="poNumber">Purchase order number</param>
     /// <param name="receiverNumber">Receiver number</param>
     /// <returns>Model_Dao_Result indicating success/failure</returns>
-    public async Task<Model_Dao_Result> CompleteAsync(int shipmentId, string poNumber, string receiverNumber)
+    public async Task<Model_Dao_Result> CompleteAsync(
+        int shipmentId,
+        string poNumber,
+        string receiverNumber
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "shipment_id", shipmentId },
             { "po_number", poNumber },
-            { "receiver_number", receiverNumber }
+            { "receiver_number", receiverNumber },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -146,10 +154,7 @@ public class Dao_VolvoShipment
     /// <returns>Model_Dao_Result indicating success/failure</returns>
     public async Task<Model_Dao_Result> DeleteAsync(int shipmentId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "shipment_id", shipmentId }
-        };
+        var parameters = new Dictionary<string, object> { { "shipment_id", shipmentId } };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
@@ -171,13 +176,20 @@ public class Dao_VolvoShipment
             null
         );
 
-        if (!result.Success && string.Equals(result.ErrorMessage, "No record found", StringComparison.OrdinalIgnoreCase))
+        if (
+            !result.Success
+            && string.Equals(
+                result.ErrorMessage,
+                "No record found",
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
         {
             return new Model_Dao_Result<Model_VolvoShipment>
             {
                 Success = true,
                 Data = null,
-                AffectedRows = 0
+                AffectedRows = 0,
             };
         }
 
@@ -199,12 +211,13 @@ public class Dao_VolvoShipment
             await using var command = new MySqlCommand
             {
                 Connection = connection,
-                CommandText = @"
+                CommandText =
+                    @"
                     SELECT id, shipment_date, shipment_number, po_number, receiver_number,
                            employee_number, notes, status, created_date, modified_date, is_archived
                     FROM volvo_label_data
                     WHERE id = @p_id",
-                CommandType = CommandType.Text
+                CommandType = CommandType.Text,
             };
 
             command.Parameters.AddWithValue("@p_id", shipmentId);
@@ -217,7 +230,7 @@ public class Dao_VolvoShipment
                 {
                     Success = true,
                     Data = MapFromReader(reader),
-                    AffectedRows = 1
+                    AffectedRows = 1,
                 };
             }
 
@@ -225,7 +238,7 @@ public class Dao_VolvoShipment
             {
                 Success = false,
                 Data = null,
-                ErrorMessage = "Shipment not found"
+                ErrorMessage = "Shipment not found",
             };
         }
         catch (Exception ex)
@@ -236,7 +249,7 @@ public class Dao_VolvoShipment
                 Data = null,
                 ErrorMessage = $"Error retrieving shipment: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -251,13 +264,14 @@ public class Dao_VolvoShipment
     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
         DateTime startDate,
         DateTime endDate,
-        string status = "all")
+        string status = "all"
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "start_date", startDate.Date },
             { "end_date", endDate.Date },
-            { "status", status }
+            { "status", status },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
@@ -292,7 +306,7 @@ public class Dao_VolvoShipment
             Status = reader.GetString(reader.GetOrdinal("status")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
             ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
-            IsArchived = reader.GetBoolean(reader.GetOrdinal("is_archived"))
+            IsArchived = reader.GetBoolean(reader.GetOrdinal("is_archived")),
         };
     }
 
@@ -307,17 +321,14 @@ public class Dao_VolvoShipment
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            const string query = "SELECT COALESCE(MAX(shipment_number), 0) + 1 FROM volvo_label_data";
+            const string query =
+                "SELECT COALESCE(MAX(shipment_number), 0) + 1 FROM volvo_label_data";
             await using var command = new MySqlCommand(query, connection);
 
             var result = await command.ExecuteScalarAsync();
             var nextNumber = Convert.ToInt32(result);
 
-            return new Model_Dao_Result<int>
-            {
-                Success = true,
-                Data = nextNumber
-            };
+            return new Model_Dao_Result<int> { Success = true, Data = nextNumber };
         }
         catch (Exception ex)
         {
@@ -326,7 +337,7 @@ public class Dao_VolvoShipment
                 Success = false,
                 ErrorMessage = $"Error getting next shipment number: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }

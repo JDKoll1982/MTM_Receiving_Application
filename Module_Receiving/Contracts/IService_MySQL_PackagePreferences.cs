@@ -36,4 +36,3 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<bool> DeletePreferenceAsync(string partID);
     }
 }
-

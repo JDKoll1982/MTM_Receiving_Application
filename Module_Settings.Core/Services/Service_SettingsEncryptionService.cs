@@ -16,7 +16,8 @@ public class Service_SettingsEncryptionService : ISettingsEncryptionService
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "MTM_Receiving_Application",
         "Settings",
-        "settings-key.bin");
+        "settings-key.bin"
+    );
 
     public string Encrypt(string plainText)
     {
@@ -54,7 +55,9 @@ public class Service_SettingsEncryptionService : ISettingsEncryptionService
             var ivLength = aes.BlockSize / 8;
             if (payload.Length <= ivLength)
             {
-                System.Diagnostics.Trace.TraceWarning("Settings decrypt failed: payload was shorter than IV length.");
+                System.Diagnostics.Trace.TraceWarning(
+                    "Settings decrypt failed: payload was shorter than IV length."
+                );
                 return string.Empty;
             }
 
@@ -72,17 +75,23 @@ public class Service_SettingsEncryptionService : ISettingsEncryptionService
         }
         catch (FormatException ex)
         {
-            System.Diagnostics.Trace.TraceError($"Settings decrypt failed: invalid base64 payload. {ex.Message}");
+            System.Diagnostics.Trace.TraceError(
+                $"Settings decrypt failed: invalid base64 payload. {ex.Message}"
+            );
             return string.Empty;
         }
         catch (CryptographicException ex)
         {
-            System.Diagnostics.Trace.TraceError($"Settings decrypt failed: crypto error. {ex.Message}");
+            System.Diagnostics.Trace.TraceError(
+                $"Settings decrypt failed: crypto error. {ex.Message}"
+            );
             return string.Empty;
         }
         catch (ArgumentException ex)
         {
-            System.Diagnostics.Trace.TraceError($"Settings decrypt failed: invalid payload. {ex.Message}");
+            System.Diagnostics.Trace.TraceError(
+                $"Settings decrypt failed: invalid payload. {ex.Message}"
+            );
             return string.Empty;
         }
     }
@@ -111,11 +120,15 @@ public class Service_SettingsEncryptionService : ISettingsEncryptionService
             }
             catch (CryptographicException ex)
             {
-                System.Diagnostics.Trace.TraceError($"Settings key unprotect failed. Regenerating key. {ex.Message}");
+                System.Diagnostics.Trace.TraceError(
+                    $"Settings key unprotect failed. Regenerating key. {ex.Message}"
+                );
             }
             catch (IOException ex)
             {
-                System.Diagnostics.Trace.TraceError($"Settings key read failed. Regenerating key. {ex.Message}");
+                System.Diagnostics.Trace.TraceError(
+                    $"Settings key read failed. Regenerating key. {ex.Message}"
+                );
             }
         }
 

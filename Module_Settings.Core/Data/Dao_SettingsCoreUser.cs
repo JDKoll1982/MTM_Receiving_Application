@@ -18,13 +18,17 @@ public class Dao_SettingsCoreUser
         _connectionString = connectionString;
     }
 
-    public Task<Model_Dao_Result<Model_UserSetting>> GetByKeyAsync(int userId, string category, string key)
+    public Task<Model_Dao_Result<Model_UserSetting>> GetByKeyAsync(
+        int userId,
+        string category,
+        string key
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "p_user_id", userId },
             { "p_category", category },
-            { "p_key", key }
+            { "p_key", key },
         };
 
         return Helper_Database_StoredProcedure.ExecuteSingleAsync(
@@ -39,17 +43,21 @@ public class Dao_SettingsCoreUser
                 SettingValue = reader.GetString(reader.GetOrdinal("setting_value")),
                 DataType = reader.GetString(reader.GetOrdinal("data_type")),
                 UpdatedBy = reader.GetString(reader.GetOrdinal("updated_by")),
-                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
             },
-            parameters);
+            parameters
+        );
     }
 
-    public Task<Model_Dao_Result<List<Model_UserSetting>>> GetByCategoryAsync(int userId, string category)
+    public Task<Model_Dao_Result<List<Model_UserSetting>>> GetByCategoryAsync(
+        int userId,
+        string category
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "p_user_id", userId },
-            { "p_category", category }
+            { "p_category", category },
         };
 
         return Helper_Database_StoredProcedure.ExecuteListAsync(
@@ -64,12 +72,20 @@ public class Dao_SettingsCoreUser
                 SettingValue = reader.GetString(reader.GetOrdinal("setting_value")),
                 DataType = reader.GetString(reader.GetOrdinal("data_type")),
                 UpdatedBy = reader.GetString(reader.GetOrdinal("updated_by")),
-                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
             },
-            parameters);
+            parameters
+        );
     }
 
-    public Task<Model_Dao_Result> UpsertAsync(int userId, string category, string key, string value, string dataType, string updatedBy)
+    public Task<Model_Dao_Result> UpsertAsync(
+        int userId,
+        string category,
+        string key,
+        string value,
+        string dataType,
+        string updatedBy
+    )
     {
         var parameters = new Dictionary<string, object>
         {
@@ -78,28 +94,35 @@ public class Dao_SettingsCoreUser
             { "p_key", key },
             { "p_value", value },
             { "p_data_type", dataType },
-            { "p_updated_by", updatedBy }
+            { "p_updated_by", updatedBy },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_SettingsCore_User_Upsert",
-            parameters);
+            parameters
+        );
     }
 
-    public Task<Model_Dao_Result> ResetAsync(int userId, string category, string key, string updatedBy)
+    public Task<Model_Dao_Result> ResetAsync(
+        int userId,
+        string category,
+        string key,
+        string updatedBy
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "p_user_id", userId },
             { "p_category", category },
             { "p_key", key },
-            { "p_updated_by", updatedBy }
+            { "p_updated_by", updatedBy },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_SettingsCore_User_Reset",
-            parameters);
+            parameters
+        );
     }
 }

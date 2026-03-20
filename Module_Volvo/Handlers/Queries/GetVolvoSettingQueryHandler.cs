@@ -11,7 +11,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for GetVolvoSettingQuery - retrieves application settings by key.
 /// </summary>
-public class GetVolvoSettingQueryHandler : IRequestHandler<GetVolvoSettingQuery, Model_Dao_Result<string>>
+public class GetVolvoSettingQueryHandler
+    : IRequestHandler<GetVolvoSettingQuery, Model_Dao_Result<string>>
 {
     private readonly Dao_VolvoSettings _settingsDao;
 
@@ -20,7 +21,10 @@ public class GetVolvoSettingQueryHandler : IRequestHandler<GetVolvoSettingQuery,
         _settingsDao = settingsDao ?? throw new ArgumentNullException(nameof(settingsDao));
     }
 
-    public async Task<Model_Dao_Result<string>> Handle(GetVolvoSettingQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<string>> Handle(
+        GetVolvoSettingQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -37,7 +41,9 @@ public class GetVolvoSettingQueryHandler : IRequestHandler<GetVolvoSettingQuery,
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<string>(
-                $"Unexpected error retrieving setting '{request.SettingKey}': {ex.Message}", ex);
+                $"Unexpected error retrieving setting '{request.SettingKey}': {ex.Message}",
+                ex
+            );
         }
     }
 }

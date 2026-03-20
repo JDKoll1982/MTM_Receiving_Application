@@ -15,35 +15,46 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// tables (volvo_label_history, volvo_line_history) via Dao_VolvoLabelHistory.
 /// Returns the total number of records archived (headers + lines).
 /// </summary>
-public class ClearLabelDataCommandHandler : IRequestHandler<ClearLabelDataCommand, Model_Dao_Result<int>>
+public class ClearLabelDataCommandHandler
+    : IRequestHandler<ClearLabelDataCommand, Model_Dao_Result<int>>
 {
     private readonly IDao_VolvoLabelHistory _historyDao;
     private readonly IService_VolvoAuthorization _authService;
 
     public ClearLabelDataCommandHandler(
         IDao_VolvoLabelHistory historyDao,
-        IService_VolvoAuthorization authService)
+        IService_VolvoAuthorization authService
+    )
     {
         _historyDao = historyDao ?? throw new ArgumentNullException(nameof(historyDao));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
-    public async Task<Model_Dao_Result<int>> Handle(ClearLabelDataCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<int>> Handle(
+        ClearLabelDataCommand request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             var authResult = await _authService.CanCompleteShipmentsAsync();
             if (!authResult.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<int>("You are not authorized to clear label data");
+                return Model_Dao_Result_Factory.Failure<int>(
+                    "You are not authorized to clear label data"
+                );
             }
 
-            var archivedBy = string.IsNullOrWhiteSpace(request.ArchivedBy) ? "SYSTEM" : request.ArchivedBy;
+            var archivedBy = string.IsNullOrWhiteSpace(request.ArchivedBy)
+                ? "SYSTEM"
+                : request.ArchivedBy;
             var result = await _historyDao.ClearToHistoryAsync(archivedBy);
 
             if (!result.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage ?? "Clear label data failed");
+                return Model_Dao_Result_Factory.Failure<int>(
+                    result.ErrorMessage ?? "Clear label data failed"
+                );
             }
 
             var (headersMoved, linesMoved) = result.Data;
@@ -52,7 +63,9 @@ public class ClearLabelDataCommandHandler : IRequestHandler<ClearLabelDataComman
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<int>(
-                $"Unexpected error during clear label data: {ex.Message}", ex);
+                $"Unexpected error during clear label data: {ex.Message}",
+                ex
+            );
         }
     }
 }

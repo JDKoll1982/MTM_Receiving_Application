@@ -33,7 +33,9 @@ public sealed partial class View_Settings_DeveloperTools_SettingsOverview : Page
         return Frame;
     }
 
-    public View_Settings_DeveloperTools_SettingsOverview(ViewModel_Settings_DeveloperTools_SettingsOverview viewModel)
+    public View_Settings_DeveloperTools_SettingsOverview(
+        ViewModel_Settings_DeveloperTools_SettingsOverview viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;

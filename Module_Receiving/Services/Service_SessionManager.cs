@@ -1,10 +1,10 @@
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
@@ -45,7 +45,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 };
 
                 _logger.LogInfo("Serializing session...");
@@ -74,7 +74,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                 var options = new JsonSerializerOptions
                 {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 };
 
                 return JsonSerializer.Deserialize<Model_ReceivingSession>(json, options);
@@ -127,4 +127,3 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         }
     }
 }
-

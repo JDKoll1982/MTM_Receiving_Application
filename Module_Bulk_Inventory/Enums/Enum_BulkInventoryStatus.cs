@@ -30,5 +30,5 @@ public enum Enum_BulkInventoryStatus
     /// Row was merged into another row during pre-push consolidation
     /// (same PartId + FromLocation + ToLocation — quantities summed).
     /// </summary>
-    Consolidated
+    Consolidated,
 }

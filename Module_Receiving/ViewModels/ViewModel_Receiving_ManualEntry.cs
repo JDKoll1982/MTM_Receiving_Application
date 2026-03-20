@@ -1,27 +1,35 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_ManualEntry : ViewModel_Shared_Base
     {
+        private const int InitialManualEntryRows = 10;
+
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly SemaphoreSlim _manualEntryDialogGate = new(1, 1);
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
@@ -52,6 +60,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _manualEntryColumnPoNumberText = "PO #";
 
         [ObservableProperty]
+        private string _manualEntryColumnNonPoText = "Non-PO?";
+
+        [ObservableProperty]
         private string _manualEntryColumnPartIdText = "Part ID";
 
         [ObservableProperty]
@@ -78,7 +89,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public ObservableCollection<string> PresetLocations { get; } = new();
 
-        public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
+        public ObservableCollection<Enum_PackageType> PackageTypes { get; } =
+            new(Enum.GetValues<Enum_PackageType>());
 
         public ViewModel_Receiving_ManualEntry(
             IService_ReceivingWorkflow workflowService,
@@ -89,7 +101,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Window windowService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
-            IService_Notification notificationService)
+            IService_Notification notificationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _windowService = windowService;
@@ -98,40 +111,95 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _inforVisualService = inforVisualService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
-            _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
+            _loads = new ObservableCollection<Model_ReceivingLoad>(
+                _workflowService.CurrentSession.Loads
+            );
+            _loads.CollectionChanged += Loads_CollectionChanged;
 
             foreach (var presetLocation in _validationService.PresetLocations)
             {
                 PresetLocations.Add(presetLocation);
             }
 
+            foreach (var load in Loads)
+            {
+                AttachLoadHandlers(load);
+            }
+
+            EnsureInitialManualRows();
+
             _ = LoadUITextAsync();
+        }
+
+        private void EnsureInitialManualRows()
+        {
+            if (Loads.Count > 0)
+            {
+                SelectedLoad = Loads[0];
+                return;
+            }
+
+            for (int i = 0; i < InitialManualEntryRows; i++)
+            {
+                AddNewLoad();
+            }
+
+            SelectedLoad = Loads.FirstOrDefault();
         }
 
         private async Task LoadUITextAsync()
         {
             try
             {
-                ManualEntryAddRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAddRow);
-                ManualEntryAddMultipleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAddMultiple);
-                ManualEntryRemoveRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryRemoveRow);
-                ManualEntryAutoFillText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAutoFill);
-                ManualEntrySaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntrySaveAndFinish);
+                ManualEntryAddRowText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryAddRow
+                );
+                ManualEntryAddMultipleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryAddMultiple
+                );
+                ManualEntryRemoveRowText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryRemoveRow
+                );
+                ManualEntryAutoFillText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryAutoFill
+                );
+                ManualEntrySaveAndFinishText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntrySaveAndFinish
+                );
 
-                ManualEntryColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnLoadNumber);
-                ManualEntryColumnPoNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPoNumber);
-                ManualEntryColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPartId);
-                ManualEntryColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWeightQty);
-                ManualEntryColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnHeatLot);
-                ManualEntryColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPkgType);
-                ManualEntryColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPkgsPerLoad);
-                ManualEntryColumnWtPerPkgText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg);
+                ManualEntryColumnLoadNumberText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnLoadNumber
+                );
+                ManualEntryColumnPoNumberText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnPoNumber
+                );
+                ManualEntryColumnPartIdText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnPartId
+                );
+                ManualEntryColumnWeightQtyText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnWeightQty
+                );
+                ManualEntryColumnHeatLotText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnHeatLot
+                );
+                ManualEntryColumnPkgTypeText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnPkgType
+                );
+                ManualEntryColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnPkgsPerLoad
+                );
+                ManualEntryColumnWtPerPkgText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg
+                );
 
                 _logger.LogInfo("Manual Entry UI text loaded from settings successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading Manual Entry UI text from settings: {ex.Message}", ex);
+                _logger.LogError(
+                    $"Error loading Manual Entry UI text from settings: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -161,89 +229,94 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 for (int i = 0; i < Loads.Count; i++)
                 {
                     var currentLoad = Loads[i];
+                    var previousLoad = i > 0 ? Loads[i - 1] : null;
 
                     // 1. Part ID (Material ID) - Fill Down Logic
                     // If blank, copy from immediate predecessor
-                    if (string.IsNullOrWhiteSpace(currentLoad.PartID))
+                    if (currentLoad.IsNonPOItem && string.IsNullOrWhiteSpace(currentLoad.PartID))
                     {
-                        if (i > 0)
+                        if (previousLoad != null)
                         {
-                            var prev = Loads[i - 1];
-                            if (!string.IsNullOrWhiteSpace(prev.PartID))
+                            if (!string.IsNullOrWhiteSpace(previousLoad.PartID))
                             {
-                                currentLoad.PartID = prev.PartID;
+                                currentLoad.PartID = previousLoad.PartID;
                                 filledCount++;
                             }
                         }
                     }
 
-                    // 2. Other Fields - Copy from nearest previous row with SAME PartID
-                    if (!string.IsNullOrWhiteSpace(currentLoad.PartID))
+                    // 1b. PO-backed rows can inherit the PO number from the previous PO-backed row,
+                    // but must not inherit the selected part identity automatically.
+                    if (
+                        !currentLoad.IsNonPOItem
+                        && string.IsNullOrWhiteSpace(currentLoad.PoNumber)
+                        && previousLoad != null
+                        && !previousLoad.IsNonPOItem
+                        && !string.IsNullOrWhiteSpace(previousLoad.PoNumber)
+                    )
                     {
-                        // Find source load (nearest previous row with same PartID)
-                        Model_ReceivingLoad? sourceLoad = null;
-                        for (int j = i - 1; j >= 0; j--)
+                        currentLoad.PoNumber = previousLoad.PoNumber;
+                        filledCount++;
+                    }
+
+                    // 2. Other Fields - Copy from the nearest compatible previous row.
+                    var sourceLoad = FindAutoFillSourceLoad(i, currentLoad);
+                    if (sourceLoad != null)
+                    {
+                        // Quantity: If blank (0), use Quantity from matching previous row
+                        if (currentLoad.WeightQuantity <= 0 && sourceLoad.WeightQuantity > 0)
                         {
-                            if (string.Equals(Loads[j].PartID, currentLoad.PartID, StringComparison.OrdinalIgnoreCase))
-                            {
-                                sourceLoad = Loads[j];
-                                break;
-                            }
+                            currentLoad.WeightQuantity = sourceLoad.WeightQuantity;
+                            filledCount++;
                         }
 
-                        if (sourceLoad != null)
+                        // Heat: If blank, use Heat from matching previous row
+                        if (
+                            string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber)
+                            && !string.IsNullOrWhiteSpace(sourceLoad.HeatLotNumber)
+                        )
                         {
-                            // PO Number: If blank, use PO from previous row with same Material ID
-                            if (string.IsNullOrWhiteSpace(currentLoad.PoNumber) && !string.IsNullOrWhiteSpace(sourceLoad.PoNumber))
-                            {
-                                currentLoad.PoNumber = sourceLoad.PoNumber;
-                                filledCount++;
-                            }
+                            currentLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
+                            filledCount++;
+                        }
 
-                            // Quantity: If blank (0), use Quantity from previous row with same Material ID
-                            if (currentLoad.WeightQuantity <= 0 && sourceLoad.WeightQuantity > 0)
-                            {
-                                currentLoad.WeightQuantity = sourceLoad.WeightQuantity;
-                                filledCount++;
-                            }
+                        if (
+                            string.IsNullOrWhiteSpace(currentLoad.InitialLocation)
+                            && !string.IsNullOrWhiteSpace(sourceLoad.InitialLocation)
+                        )
+                        {
+                            currentLoad.InitialLocation = sourceLoad.InitialLocation;
+                            filledCount++;
+                        }
 
-                            // Heat: If blank, use Heat from previous row with same Material ID
-                            if (string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber) && !string.IsNullOrWhiteSpace(sourceLoad.HeatLotNumber))
-                            {
-                                currentLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
-                                filledCount++;
-                            }
+                        if (currentLoad.PackagesPerLoad <= 0 && sourceLoad.PackagesPerLoad > 0)
+                        {
+                            currentLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
+                            filledCount++;
+                        }
 
-                            if (string.IsNullOrWhiteSpace(currentLoad.InitialLocation) && !string.IsNullOrWhiteSpace(sourceLoad.InitialLocation))
-                            {
-                                currentLoad.InitialLocation = sourceLoad.InitialLocation;
-                                filledCount++;
-                            }
-
-                            // Also copy other useful fields if blank, consistent with "same material" logic
-                            if (currentLoad.PackagesPerLoad <= 0 && sourceLoad.PackagesPerLoad > 0)
-                            {
-                                currentLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
-                                filledCount++;
-                            }
-
-                            if (string.IsNullOrWhiteSpace(currentLoad.PackageTypeName) && !string.IsNullOrWhiteSpace(sourceLoad.PackageTypeName))
-                            {
-                                currentLoad.PackageTypeName = sourceLoad.PackageTypeName;
-                                filledCount++;
-                            }
+                        if (
+                            string.IsNullOrWhiteSpace(currentLoad.PackageTypeName)
+                            && !string.IsNullOrWhiteSpace(sourceLoad.PackageTypeName)
+                        )
+                        {
+                            currentLoad.PackageTypeName = sourceLoad.PackageTypeName;
+                            filledCount++;
                         }
                     }
 
                     // Date: If blank (default/min value), use current date
                     // Note: Model_ReceivingLoad initializes ReceivedDate to DateTime.Now usually, but let's ensure it.
-                    if (currentLoad.ReceivedDate == default || currentLoad.ReceivedDate == DateTime.MinValue)
+                    if (
+                        currentLoad.ReceivedDate == default
+                        || currentLoad.ReceivedDate == DateTime.MinValue
+                    )
                     {
                         currentLoad.ReceivedDate = DateTime.Now;
                     }
 
                     // Employee: If blank, use employee from first row
-                    // Assuming "Employee" maps to UserId or similar. 
+                    // Assuming "Employee" maps to UserId or similar.
                     // Model_ReceivingLoad has UserId.
                     if (string.IsNullOrWhiteSpace(currentLoad.UserId))
                     {
@@ -259,16 +332,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         // If first row is also blank, maybe use current session user?
                         else if (_workflowService.CurrentSession.User != null)
                         {
-                            currentLoad.UserId = _workflowService.CurrentSession.User.WindowsUsername;
+                            currentLoad.UserId = _workflowService
+                                .CurrentSession
+                                .User
+                                .WindowsUsername;
                         }
                     }
                 }
 
                 var blankPartIDCount = Loads.Count(l => string.IsNullOrWhiteSpace(l.PartID));
-                StatusMessage = blankPartIDCount > 0
-                    ? $"Auto-fill complete. Updated {filledCount} field(s). ⚠ {blankPartIDCount} row(s) still need a Part ID."
-                    : $"Auto-fill complete. Updated {filledCount} field(s).";
-                _logger.LogInfo($"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows. Rows still missing Part ID: {blankPartIDCount}.");
+                StatusMessage =
+                    blankPartIDCount > 0
+                        ? $"Auto-fill complete. Updated {filledCount} field(s). ⚠ {blankPartIDCount} row(s) still need a Part ID."
+                        : $"Auto-fill complete. Updated {filledCount} field(s).";
+                _logger.LogInfo(
+                    $"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows. Rows still missing Part ID: {blankPartIDCount}."
+                );
 
                 // Force UI update if needed (ObservableCollection updates properties automatically if INPC is fired)
                 // Model_ReceivingLoad implements ObservableObject so it should be fine.
@@ -276,12 +355,75 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Auto-fill failed: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Auto-fill failed", Enum_ErrorSeverity.Error, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Auto-fill failed",
+                    Enum_ErrorSeverity.Error,
+                    ex
+                );
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+
+        private Model_ReceivingLoad? FindAutoFillSourceLoad(
+            int currentIndex,
+            Model_ReceivingLoad currentLoad
+        )
+        {
+            for (int i = currentIndex - 1; i >= 0; i--)
+            {
+                var candidate = Loads[i];
+
+                if (currentLoad.IsNonPOItem)
+                {
+                    if (
+                        !string.IsNullOrWhiteSpace(currentLoad.PartID)
+                        && string.Equals(
+                            candidate.PartID,
+                            currentLoad.PartID,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        return candidate;
+                    }
+
+                    continue;
+                }
+
+                if (candidate.IsNonPOItem)
+                {
+                    continue;
+                }
+
+                if (
+                    !string.IsNullOrWhiteSpace(currentLoad.PartID)
+                    && string.Equals(
+                        candidate.PartID,
+                        currentLoad.PartID,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                {
+                    return candidate;
+                }
+
+                if (
+                    !string.IsNullOrWhiteSpace(currentLoad.PoNumber)
+                    && string.Equals(
+                        candidate.PoNumber,
+                        currentLoad.PoNumber,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
         }
 
         [RelayCommand]
@@ -310,18 +452,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 PlaceholderText = "Enter number of rows (1-50)",
                 InputScope = new Microsoft.UI.Xaml.Input.InputScope
                 {
-                    Names = { new Microsoft.UI.Xaml.Input.InputScopeName(Microsoft.UI.Xaml.Input.InputScopeNameValue.Number) }
-                }
+                    Names =
+                    {
+                        new Microsoft.UI.Xaml.Input.InputScopeName(
+                            Microsoft.UI.Xaml.Input.InputScopeNameValue.Number
+                        ),
+                    },
+                },
             };
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleTitle),
+                Title = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleTitle
+                ),
                 Content = inputTextBox,
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleAdd),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleCancel),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleAdd
+                ),
+                CloseButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleCancel
+                ),
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync();
@@ -333,12 +486,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     if (available <= 0)
                     {
                         _logger.LogWarning("Add Multiple blocked: row limit already reached.");
-                        await _errorHandler.HandleErrorAsync($"Maximum of {MaxManualEntryRows} rows already reached.", Enum_ErrorSeverity.Warning);
+                        await _errorHandler.HandleErrorAsync(
+                            $"Maximum of {MaxManualEntryRows} rows already reached.",
+                            Enum_ErrorSeverity.Warning
+                        );
                         return;
                     }
 
                     int clampedCount = Math.Min(count, available);
-                    _logger.LogInfo($"Adding {clampedCount} new rows to manual entry grid (requested={count}, available={available})");
+                    _logger.LogInfo(
+                        $"Adding {clampedCount} new rows to manual entry grid (requested={count}, available={available})"
+                    );
                     for (int i = 0; i < clampedCount; i++)
                     {
                         AddNewLoad();
@@ -346,13 +504,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     if (clampedCount < count)
                     {
-                        StatusMessage = $"Added {clampedCount} row(s). Row limit of {MaxManualEntryRows} reached.";
+                        StatusMessage =
+                            $"Added {clampedCount} row(s). Row limit of {MaxManualEntryRows} reached.";
                     }
                 }
                 else
                 {
                     _logger.LogWarning($"Invalid row count entered: {inputTextBox.Text}");
-                    await _errorHandler.HandleErrorAsync("Please enter a valid number between 1 and 50.", Enum_ErrorSeverity.Warning);
+                    await _errorHandler.HandleErrorAsync(
+                        "Please enter a valid number between 1 and 50.",
+                        Enum_ErrorSeverity.Warning
+                    );
                 }
             }
         }
@@ -364,23 +526,27 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (Loads.Count >= MaxManualEntryRows)
             {
                 StatusMessage = $"Maximum of {MaxManualEntryRows} rows reached. Cannot add more.";
-                _logger.LogWarning($"Cannot add row: limit of {MaxManualEntryRows} rows already reached.");
+                _logger.LogWarning(
+                    $"Cannot add row: limit of {MaxManualEntryRows} rows already reached."
+                );
                 return false;
             }
 
             // Use Max(existing LoadNumbers) + 1 so row removal + re-add never produces a duplicate label_number.
             int nextNumber = Loads.Count == 0 ? 1 : Loads.Max(l => l.LoadNumber) + 1;
+            bool isNonPoItem = SelectedLoad?.IsNonPOItem ?? false;
 
             var newLoad = new Model_ReceivingLoad
             {
                 LoadID = System.Guid.NewGuid(),
                 ReceivedDate = System.DateTime.Now,
                 LoadNumber = nextNumber,
-                PartType = "Standard",            // Default so validation shows only "Part ID required" when row is blank
+                IsNonPOItem = isNonPoItem,
+                PartType = "Standard", // Default so validation shows only "Part ID required" when row is blank
                 PackageType = Enum_PackageType.Skid,
                 PackageTypeName = nameof(Enum_PackageType.Skid),
                 EmployeeNumber = _workflowService.CurrentSession.User?.EmployeeNumber ?? 0,
-                UserId = _workflowService.CurrentSession.User?.WindowsUsername ?? string.Empty
+                UserId = _workflowService.CurrentSession.User?.WindowsUsername ?? string.Empty,
             };
             Loads.Add(newLoad);
             _workflowService.CurrentSession.Loads.Add(newLoad);
@@ -413,11 +579,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     var confirm = new Microsoft.UI.Xaml.Controls.ContentDialog
                     {
                         Title = "Remove Row?",
-                        Content = $"Remove Load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})?\nThis cannot be undone.",
+                        Content =
+                            $"Remove Load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})?\nThis cannot be undone.",
                         PrimaryButtonText = "Remove",
                         CloseButtonText = "Cancel",
                         DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                        XamlRoot = xamlRoot
+                        XamlRoot = xamlRoot,
                     };
 
                     var dialogResult = await confirm.ShowAsync().AsTask();
@@ -429,7 +596,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            _logger.LogInfo($"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})");
+            _logger.LogInfo(
+                $"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})"
+            );
             _workflowService.CurrentSession.Loads.Remove(SelectedLoad);
             Loads.Remove(SelectedLoad);
 
@@ -458,7 +627,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (Loads.Count == 0)
                 {
-                    await _errorHandler.HandleErrorAsync("No loads to save. Please add at least one row.", Enum_ErrorSeverity.Warning);
+                    await _errorHandler.HandleErrorAsync(
+                        "No loads to save. Please add at least one row.",
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
@@ -469,7 +641,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     if (!string.IsNullOrWhiteSpace(load.PartID))
                     {
-                        var (isRestricted, restrictionType) = await _validationService.IsRestrictedPartAsync(load.PartID);
+                        var (isRestricted, restrictionType) =
+                            await _validationService.IsRestrictedPartAsync(load.PartID);
                         if (isRestricted)
                         {
                             load.IsQualityHoldRequired = true;
@@ -486,7 +659,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (loadsWithUnacknowledgedHolds.Count > 0)
                 {
                     // Show confirmation dialog for quality hold acknowledgment
-                    var acknowledged = await ShowQualityHoldConfirmationAsync(loadsWithUnacknowledgedHolds);
+                    var acknowledged = await ShowQualityHoldConfirmationAsync(
+                        loadsWithUnacknowledgedHolds
+                    );
                     if (!acknowledged)
                     {
                         _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
@@ -506,43 +681,34 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var sessionValidation = _validationService.ValidateSession(Loads.ToList());
                 if (!sessionValidation.IsValid)
                 {
-                    var errorText = sessionValidation.Errors.Count > 0
-                        ? string.Join("\n", sessionValidation.Errors)
-                        : sessionValidation.Message;
+                    var errorText =
+                        sessionValidation.Errors.Count > 0
+                            ? string.Join("\n", sessionValidation.Errors)
+                            : sessionValidation.Message;
                     await _errorHandler.HandleErrorAsync(errorText, Enum_ErrorSeverity.Warning);
-                    return;
-                }
-
-                // Validate PO number on each row (ValidateSession does not check PO number).
-                var poErrors = new System.Collections.Generic.List<string>();
-                foreach (var load in Loads)
-                {
-                    var poValidation = _validationService.ValidatePONumber(load.PoNumber ?? string.Empty);
-                    if (!poValidation.IsValid)
-                    {
-                        poErrors.Add($"Row {load.LoadNumber}: PO Number — {poValidation.Message}");
-                    }
-                }
-
-                if (poErrors.Count > 0)
-                {
-                    await _errorHandler.HandleErrorAsync(string.Join("\n", poErrors), Enum_ErrorSeverity.Warning);
                     return;
                 }
 
                 var locationErrors = new System.Collections.Generic.List<string>();
                 foreach (var load in Loads)
                 {
-                    var locationValidation = await _validationService.ValidateLocationAsync(load.InitialLocation);
+                    var locationValidation = await _validationService.ValidateLocationAsync(
+                        load.InitialLocation
+                    );
                     if (!locationValidation.IsValid)
                     {
-                        locationErrors.Add($"Row {load.LoadNumber}: Location — {locationValidation.Message}");
+                        locationErrors.Add(
+                            $"Row {load.LoadNumber}: Location — {locationValidation.Message}"
+                        );
                     }
                 }
 
                 if (locationErrors.Count > 0)
                 {
-                    await _errorHandler.HandleErrorAsync(string.Join("\n", locationErrors), Enum_ErrorSeverity.Warning);
+                    await _errorHandler.HandleErrorAsync(
+                        string.Join("\n", locationErrors),
+                        Enum_ErrorSeverity.Warning
+                    );
                     return;
                 }
 
@@ -566,26 +732,34 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var result = await _workflowService.AdvanceToNextStepAsync();
                 if (!result.Success)
                 {
-                    _logger.LogWarning($"Workflow advance failed: {string.Join(", ", result.ValidationErrors)}");
+                    _logger.LogWarning(
+                        $"Workflow advance failed: {string.Join(", ", result.ValidationErrors)}"
+                    );
 
                     if (result.ValidationErrors.Count > 0)
                     {
                         await _errorHandler.HandleErrorAsync(
                             string.Join("\n", result.ValidationErrors),
-                            Enum_ErrorSeverity.Warning);
+                            Enum_ErrorSeverity.Warning
+                        );
                     }
                     else
                     {
                         await _errorHandler.HandleErrorAsync(
                             "Unable to proceed with save",
-                            Enum_ErrorSeverity.Warning);
+                            Enum_ErrorSeverity.Warning
+                        );
                     }
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to save manual entry data: {ex.Message}");
-                await _errorHandler.HandleErrorAsync("Failed to save receiving data", Enum_ErrorSeverity.Critical, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to save receiving data",
+                    Enum_ErrorSeverity.Critical,
+                    ex
+                );
             }
             finally
             {
@@ -598,14 +772,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="loadsWithHolds">List of loads requiring quality acknowledgment</param>
         /// <returns>True if user acknowledges; false if cancelled</returns>
-        private async Task<bool> ShowQualityHoldConfirmationAsync(System.Collections.Generic.List<Model_ReceivingLoad> loadsWithHolds)
+        private async Task<bool> ShowQualityHoldConfirmationAsync(
+            System.Collections.Generic.List<Model_ReceivingLoad> loadsWithHolds
+        )
         {
             ArgumentNullException.ThrowIfNull(loadsWithHolds);
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show quality hold dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display dialog",
+                    Enum_ErrorSeverity.Error
+                );
                 return false;
             }
 
@@ -615,15 +794,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 loadsWithHolds.Select(l => $"  • {l.PartID} ({l.QualityHoldRestrictionType})")
             );
 
-            var content = $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n" +
-                         $"This is your SECOND and FINAL acknowledgment.\n\n" +
-                         $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n" +
-                         $"BEFORE YOU PROCEED:\n" +
-                         $"✓ Have you contacted Quality?\n" +
-                         $"✓ Has Quality physically inspected these loads?\n" +
-                         $"✓ Has Quality accepted these loads?\n" +
-                         $"This is a critical quality control checkpoint.\n" +
-                         $"DO NOT proceed unless Quality has accepted.";
+            var content =
+                $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n"
+                + $"This is your SECOND and FINAL acknowledgment.\n\n"
+                + $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n"
+                + $"BEFORE YOU PROCEED:\n"
+                + $"✓ Have you contacted Quality?\n"
+                + $"✓ Has Quality physically inspected these loads?\n"
+                + $"✓ Has Quality accepted these loads?\n"
+                + $"This is a critical quality control checkpoint.\n"
+                + $"DO NOT proceed unless Quality has accepted.";
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
@@ -634,12 +814,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
                     FontSize = 14,
                     Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                        Microsoft.UI.Colors.DarkRed)
+                        Microsoft.UI.Colors.DarkRed
+                    ),
                 },
                 PrimaryButtonText = "✓ YES - Save Now",
                 CloseButtonText = "✗ NO - Cancel Save",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync().AsTask();
@@ -653,18 +834,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display dialog",
+                    Enum_ErrorSeverity.Error
+                );
                 return;
             }
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle),
-                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel),
+                Title = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle
+                ),
+                Content = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent
+                ),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm
+                ),
+                CloseButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel
+                ),
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync().AsTask();
@@ -680,7 +872,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 catch (Exception ex)
                 {
                     _logger.LogError($"Failed to reset workflow: {ex.Message}");
-                    await _errorHandler.HandleErrorAsync("Failed to return to mode selection", Enum_ErrorSeverity.Error, ex);
+                    await _errorHandler.HandleErrorAsync(
+                        "Failed to return to mode selection",
+                        Enum_ErrorSeverity.Error,
+                        ex
+                    );
                 }
             }
             else
@@ -698,7 +894,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             await _helpService.ShowHelpAsync("Receiving.ManualEntry");
         }
 
-        public async Task<Model_ReceivingValidationResult> ValidateLocationAsync(Model_ReceivingLoad load)
+        public async Task<Model_ReceivingValidationResult> ValidateLocationAsync(
+            Model_ReceivingLoad load
+        )
         {
             ArgumentNullException.ThrowIfNull(load);
 
@@ -720,15 +918,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             ArgumentNullException.ThrowIfNull(load);
 
-            if (IsMockLocationMode
+            if (
+                IsMockLocationMode
                 || string.IsNullOrWhiteSpace(load.PartID)
-                || !string.IsNullOrWhiteSpace(load.InitialLocation))
+                || !string.IsNullOrWhiteSpace(load.InitialLocation)
+            )
             {
                 return;
             }
 
             var result = await _inforVisualService.GetPartByIDAsync(load.PartID.Trim());
-            if (!result.IsSuccess || result.Data is null || string.IsNullOrWhiteSpace(result.Data.DefaultLocationId))
+            if (
+                !result.IsSuccess
+                || result.Data is null
+                || string.IsNullOrWhiteSpace(result.Data.DefaultLocationId)
+            )
             {
                 return;
             }
@@ -736,14 +940,331 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             load.InitialLocation = result.Data.DefaultLocationId.Trim();
         }
 
+        private void Loads_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (Model_ReceivingLoad load in e.NewItems)
+                {
+                    AttachLoadHandlers(load);
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (Model_ReceivingLoad load in e.OldItems)
+                {
+                    DetachLoadHandlers(load);
+                }
+            }
+
+            _workflowService.CurrentSession.IsNonPO = Loads.All(load => load.IsNonPOItem);
+        }
+
+        private void AttachLoadHandlers(Model_ReceivingLoad load)
+        {
+            load.PropertyChanged += Load_PropertyChanged;
+        }
+
+        private void DetachLoadHandlers(Model_ReceivingLoad load)
+        {
+            load.PropertyChanged -= Load_PropertyChanged;
+        }
+
+        private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (
+                sender is not Model_ReceivingLoad load
+                || e.PropertyName != nameof(Model_ReceivingLoad.IsNonPOItem)
+            )
+            {
+                return;
+            }
+
+            NormalizeLoadForMode(load);
+            _workflowService.CurrentSession.IsNonPO = Loads.All(currentLoad =>
+                currentLoad.IsNonPOItem
+            );
+        }
+
+        private static void NormalizeLoadForMode(Model_ReceivingLoad load)
+        {
+            if (load.IsNonPOItem)
+            {
+                load.PoNumber = null;
+                load.PoLineNumber = string.Empty;
+                load.SelectedPartSourcePONumber = string.Empty;
+                load.PoVendor = string.Empty;
+                load.PoStatus = string.Empty;
+                load.PoDueDate = null;
+                load.QtyOrdered = 0;
+                load.RemainingQuantity = 0;
+                return;
+            }
+
+            load.PoLineNumber = string.Empty;
+            load.SelectedPartSourcePONumber = string.Empty;
+            load.PoVendor = string.Empty;
+            load.PoStatus = string.Empty;
+            load.PoDueDate = null;
+            load.QtyOrdered = 0;
+            load.RemainingQuantity = 0;
+        }
+
+        public async Task<bool> TrySelectPartForPoAsync(
+            Model_ReceivingLoad load,
+            bool forceReselection = false
+        )
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            if (load.IsNonPOItem || string.IsNullOrWhiteSpace(load.PoNumber))
+            {
+                return false;
+            }
+
+            var normalizedPo = load.PoNumber.Trim();
+            var poValidation = _validationService.ValidatePONumber(normalizedPo);
+            if (!poValidation.IsValid)
+            {
+                return false;
+            }
+
+            bool hasCurrentSelection =
+                !string.IsNullOrWhiteSpace(load.PartID)
+                && !string.IsNullOrWhiteSpace(load.PoLineNumber)
+                && string.Equals(
+                    load.SelectedPartSourcePONumber,
+                    normalizedPo,
+                    StringComparison.OrdinalIgnoreCase
+                );
+
+            if (!forceReselection && hasCurrentSelection)
+            {
+                return false;
+            }
+
+            if (
+                !string.Equals(
+                    load.SelectedPartSourcePONumber,
+                    normalizedPo,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                ClearPoSelectedPart(load);
+            }
+
+            var poResult = await _inforVisualService.GetPOWithPartsAsync(normalizedPo);
+            if (!poResult.IsSuccess || poResult.Data is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    poResult.ErrorMessage ?? "Unable to load parts for the selected PO.",
+                    Enum_ErrorSeverity.Warning
+                );
+                return false;
+            }
+
+            if (poResult.Data.Parts.Count == 0)
+            {
+                await ShowPoHasNoUsablePartsDialogAsync(normalizedPo);
+                return false;
+            }
+
+            var parts = poResult.Data.Parts.ToList();
+            foreach (var part in parts)
+            {
+                if (part.RemainingQuantity > 0)
+                {
+                    continue;
+                }
+
+                var remainingQtyResult = await _inforVisualService.GetRemainingQuantityAsync(
+                    normalizedPo,
+                    part.PartID
+                );
+                if (remainingQtyResult.IsSuccess)
+                {
+                    part.RemainingQuantity = remainingQtyResult.Data;
+                }
+            }
+
+            var pickerItems = parts.ConvertAll(part => new Model_FuzzySearchResult
+            {
+                Key = part.POLineNumber,
+                Label = part.DisplayText,
+                Detail = BuildPartSelectionDetail(part),
+            });
+
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display part selection dialog.",
+                    Enum_ErrorSeverity.Error
+                );
+                return false;
+            }
+
+            if (!await TryEnterManualEntryDialogAsync())
+            {
+                _logger.LogWarning(
+                    $"Skipped part selection dialog for {normalizedPo} because another Manual Entry dialog is already open."
+                );
+                return false;
+            }
+
+            Dialog_FuzzySearchPicker? dialog = null;
+
+            try
+            {
+                dialog = new Dialog_FuzzySearchPicker(
+                    pickerItems,
+                    "Select Part",
+                    $"Select a part for {normalizedPo}."
+                )
+                {
+                    XamlRoot = xamlRoot,
+                };
+
+                var dialogResult = await dialog.ShowAsync();
+                if (
+                    dialogResult != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary
+                    || dialog.SelectedResult is null
+                )
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                ExitManualEntryDialog();
+            }
+
+            var selectedPart = parts.Find(part =>
+                string.Equals(
+                    part.POLineNumber,
+                    dialog!.SelectedResult!.Key,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+
+            if (selectedPart is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "The selected part could not be applied to this row.",
+                    Enum_ErrorSeverity.Warning
+                );
+                return false;
+            }
+
+            ApplySelectedPoPart(load, normalizedPo, selectedPart);
+            StatusMessage = $"Selected part {selectedPart.PartID} for {normalizedPo}.";
+            return true;
+        }
+
+        private static string BuildPartSelectionDetail(Model_InforVisualPart part)
+        {
+            var location = string.IsNullOrWhiteSpace(part.DefaultLocationId)
+                ? "No default location"
+                : $"Default location: {part.DefaultLocationId.Trim()}";
+
+            return $"Ordered: {part.QtyOrdered:F0} {part.UnitOfMeasure} | Remaining: {part.RemainingQuantity} | {location}";
+        }
+
+        private void ApplySelectedPoPart(
+            Model_ReceivingLoad load,
+            string normalizedPo,
+            Model_InforVisualPart selectedPart
+        )
+        {
+            load.PoNumber = normalizedPo;
+            load.PartID = selectedPart.PartID.Trim();
+            load.PoLineNumber = selectedPart.POLineNumber.Trim();
+            load.SelectedPartSourcePONumber = normalizedPo;
+            load.PartDescription = selectedPart.Description;
+            load.UnitOfMeasure = selectedPart.UnitOfMeasure;
+            load.QtyOrdered = selectedPart.QtyOrdered;
+            load.RemainingQuantity = selectedPart.RemainingQuantity;
+
+            if (
+                string.IsNullOrWhiteSpace(load.InitialLocation)
+                && !string.IsNullOrWhiteSpace(selectedPart.DefaultLocationId)
+            )
+            {
+                load.InitialLocation = selectedPart.DefaultLocationId.Trim();
+            }
+        }
+
+        private static void ClearPoSelectedPart(Model_ReceivingLoad load)
+        {
+            load.PartID = string.Empty;
+            load.PoLineNumber = string.Empty;
+            load.SelectedPartSourcePONumber = string.Empty;
+            load.PartDescription = string.Empty;
+            load.UnitOfMeasure = "EA";
+            load.QtyOrdered = 0;
+            load.RemainingQuantity = 0;
+        }
+
+        private async Task ShowPoHasNoUsablePartsDialogAsync(string poNumber)
+        {
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    $"PO {poNumber} does not have any parts available for selection. Use Non-PO mode instead.",
+                    Enum_ErrorSeverity.Warning
+                );
+                return;
+            }
+
+            if (!await TryEnterManualEntryDialogAsync())
+            {
+                _logger.LogWarning(
+                    $"Skipped PO unusable-parts dialog for {poNumber} because another Manual Entry dialog is already open."
+                );
+                return;
+            }
+
+            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+            {
+                Title = "PO Cannot Be Used Here",
+                Content =
+                    $"PO {poNumber} does not have any parts available for selection in Manual Entry. Use Non-PO mode for this row instead.",
+                CloseButtonText = "OK",
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                XamlRoot = xamlRoot,
+            };
+
+            try
+            {
+                await dialog.ShowAsync();
+            }
+            finally
+            {
+                ExitManualEntryDialog();
+            }
+        }
+
+        private async Task<bool> TryEnterManualEntryDialogAsync()
+        {
+            return await _manualEntryDialogGate.WaitAsync(0);
+        }
+
+        private void ExitManualEntryDialog()
+        {
+            _manualEntryDialogGate.Release();
+        }
+
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
     }
 }
-
-

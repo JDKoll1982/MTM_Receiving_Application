@@ -25,8 +25,7 @@ public abstract partial class ViewModel_Tool_Base : ViewModel_Shared_Base
     protected ViewModel_Tool_Base(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
-        : base(errorHandler, logger, notificationService)
-    {
-    }
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService) { }
 }

@@ -1,24 +1,33 @@
 namespace Visual_Inventory_Assistant.Classes;
 
-using MySql.Data.MySqlClient;
 using System;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 internal class SearchDao
 {
     #region Methods
 
-    public static string GetConnectionString(string? server, string database, string uid, string? password)
+    public static string GetConnectionString(
+        string? server,
+        string database,
+        string uid,
+        string? password
+    )
     {
         try
         {
-            if (string.IsNullOrEmpty(server)) server = "172.16.1.104";
-            //server = "172.16.1.104";
-            if (string.IsNullOrEmpty(database)) database = "easy_inventory";
+            if (string.IsNullOrEmpty(server))
+                server = "localhost";
+            //server = "localhost";
+            if (string.IsNullOrEmpty(database))
+                database = "easy_inventory";
 
-            if (string.IsNullOrEmpty(uid)) uid = "EasyInventory";
+            if (string.IsNullOrEmpty(uid))
+                uid = "EasyInventory";
 
-            if (string.IsNullOrEmpty(password)) password = "";
+            if (string.IsNullOrEmpty(password))
+                password = "";
 
             var connectionString =
                 $"SERVER={server};DATABASE={database};UID={uid};PASSWORD={password};Allow User Variables=True";
@@ -26,14 +35,22 @@ internal class SearchDao
         }
         catch (MySqlException ex)
         {
-            MessageBox.Show($@"A MySQLError Occurred: {ex.Message}", "Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A MySQLError Occurred: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
             return "";
         }
         catch (Exception ex)
         {
-            MessageBox.Show($@"A System Error Occured: {ex.Message}", "Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A System Error Occured: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
             return "";
         }
     }
@@ -42,7 +59,12 @@ internal class SearchDao
     {
         try
         {
-            var connectionString = GetConnectionString(null, "easy_inventory", "EasyInventory", null);
+            var connectionString = GetConnectionString(
+                null,
+                "easy_inventory",
+                "EasyInventory",
+                null
+            );
             using var connection = new MySqlConnection(connectionString);
             connection.Open();
             var query = "SELECT * FROM main WHERE username = @username AND password = @password";
@@ -61,23 +83,40 @@ internal class SearchDao
                 }
 
                 // Close the login form and open the main form
-                loginForm.Invoke(new Action(() => { loginForm.Hide(); }));
+                loginForm.Invoke(
+                    new Action(() =>
+                    {
+                        loginForm.Hide();
+                    })
+                );
             }
             else
             {
-                MessageBox.Show(@"Invalid username or password", @"Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show(
+                    @"Invalid username or password",
+                    @"Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
         catch (MySqlException ex)
         {
-            MessageBox.Show($@"A MySQLError Occurred: {ex.Message}", @"Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A MySQLError Occurred: {ex.Message}",
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
         catch (Exception ex)
         {
-            MessageBox.Show($@"A System Error Occured: {ex.Message}", @"Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A System Error Occured: {ex.Message}",
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
@@ -85,7 +124,12 @@ internal class SearchDao
     {
         try
         {
-            var connectionString = GetConnectionString(null, "easy_inventory", "EasyInventory", null);
+            var connectionString = GetConnectionString(
+                null,
+                "easy_inventory",
+                "EasyInventory",
+                null
+            );
             using var connection = new MySqlConnection(connectionString);
             connection.Open();
 
@@ -98,7 +142,12 @@ internal class SearchDao
 
                 if (userExists)
                 {
-                    MessageBox.Show(@"User already exists", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        @"User already exists",
+                        @"Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return;
                 }
             }
@@ -115,32 +164,63 @@ internal class SearchDao
             var result = insertCommand.ExecuteNonQuery();
             if (result > 0)
             {
-                newUserForm.Invoke(new Action(() => { newUserForm.Hide(); }));
-                MessageBox.Show(@"User added successfully", @"Success", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                newUserForm.Invoke(
+                    new Action(() =>
+                    {
+                        newUserForm.Hide();
+                    })
+                );
+                MessageBox.Show(
+                    @"User added successfully",
+                    @"Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
             }
             else
             {
-                MessageBox.Show(@"Failed to add user", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    @"Failed to add user",
+                    @"Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
         catch (MySqlException ex)
         {
-            MessageBox.Show($@"A MySQLError Occurred: {ex.Message}", @"Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A MySQLError Occurred: {ex.Message}",
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"A System Error Occured: {ex.Message}", "Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $"A System Error Occured: {ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 
-    public void UpdateUserVisualCredentials(string? userName, string newVisualUserName, string newVisualPassword)
+    public void UpdateUserVisualCredentials(
+        string? userName,
+        string newVisualUserName,
+        string newVisualPassword
+    )
     {
         try
         {
-            var connectionString = GetConnectionString(null, "easy_inventory", "EasyInventory", null);
+            var connectionString = GetConnectionString(
+                null,
+                "easy_inventory",
+                "EasyInventory",
+                null
+            );
             using var connection = new MySqlConnection(connectionString);
             connection.Open();
 
@@ -153,7 +233,12 @@ internal class SearchDao
 
                 if (!userExists)
                 {
-                    MessageBox.Show(@"User does not exist", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        @"User does not exist",
+                        @"Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                     return;
                 }
             }
@@ -168,21 +253,37 @@ internal class SearchDao
 
             var result = updateCommand.ExecuteNonQuery();
             if (result > 0)
-                MessageBox.Show(@"User credentials updated successfully", @"Success", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                MessageBox.Show(
+                    @"User credentials updated successfully",
+                    @"Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
             else
-                MessageBox.Show(@"Failed to update user credentials", @"Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show(
+                    @"Failed to update user credentials",
+                    @"Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
         }
         catch (MySqlException ex)
         {
-            MessageBox.Show($@"A MySQLError Occurred: {ex.Message}", @"Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A MySQLError Occurred: {ex.Message}",
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
         catch (Exception ex)
         {
-            MessageBox.Show($@"A System Error Occured: {ex.Message}", @"Error", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(
+                $@"A System Error Occured: {ex.Message}",
+                @"Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
     }
 

@@ -35,20 +35,23 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         /// <summary>
         /// True if workstation is configured as shared terminal (PIN login required)
         /// </summary>
-        public bool IsSharedTerminal => WorkstationType == WorkstationDefaults.SharedTerminalWorkstationType;
+        public bool IsSharedTerminal =>
+            WorkstationType == WorkstationDefaults.SharedTerminalWorkstationType;
 
         /// <summary>
         /// True if workstation is personal workstation (automatic Windows login)
         /// </summary>
-        public bool IsPersonalWorkstation => WorkstationType == WorkstationDefaults.PersonalWorkstationWorkstationType;
+        public bool IsPersonalWorkstation =>
+            WorkstationType == WorkstationDefaults.PersonalWorkstationWorkstationType;
 
         /// <summary>
         /// Session timeout duration based on workstation type
         /// 15 minutes for shared terminals, 30 minutes for personal workstations
         /// </summary>
-        public TimeSpan TimeoutDuration => IsSharedTerminal
-            ? TimeSpan.FromMinutes(WorkstationDefaults.SharedTerminalTimeoutMinutes)
-            : TimeSpan.FromMinutes(WorkstationDefaults.PersonalWorkstationTimeoutMinutes);
+        public TimeSpan TimeoutDuration =>
+            IsSharedTerminal
+                ? TimeSpan.FromMinutes(WorkstationDefaults.SharedTerminalTimeoutMinutes)
+                : TimeSpan.FromMinutes(WorkstationDefaults.PersonalWorkstationTimeoutMinutes);
 
         // ====================================================================
         // Constructor
@@ -57,9 +60,7 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Model_WorkstationConfig()
-        {
-        }
+        public Model_WorkstationConfig() { }
 
         /// <summary>
         /// Constructor with computer name detection

@@ -1,8 +1,8 @@
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
-using Microsoft.UI.Xaml.Controls;
-using System.ComponentModel;
 
 namespace MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -18,7 +18,9 @@ public partial class ViewModel_Shared_MainWindow : ViewModel_Shared_Base
         IService_UserSessionManager sessionManager,
         IService_Notification notificationService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger, notificationService)
+        IService_LoggingUtility logger
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _sessionManager = sessionManager;
         NotificationService = notificationService;
@@ -44,11 +46,12 @@ public partial class ViewModel_Shared_MainWindow : ViewModel_Shared_Base
         {
             return NotificationService.StatusSeverity switch
             {
-                Module_Core.Models.Enums.InfoBarSeverity.Informational => InfoBarSeverity.Informational,
+                Module_Core.Models.Enums.InfoBarSeverity.Informational =>
+                    InfoBarSeverity.Informational,
                 Module_Core.Models.Enums.InfoBarSeverity.Success => InfoBarSeverity.Success,
                 Module_Core.Models.Enums.InfoBarSeverity.Warning => InfoBarSeverity.Warning,
                 Module_Core.Models.Enums.InfoBarSeverity.Error => InfoBarSeverity.Error,
-                _ => InfoBarSeverity.Informational
+                _ => InfoBarSeverity.Informational,
             };
         }
     }
@@ -58,4 +61,3 @@ public partial class ViewModel_Shared_MainWindow : ViewModel_Shared_Base
         UserDisplayText = user.DisplayName;
     }
 }
-

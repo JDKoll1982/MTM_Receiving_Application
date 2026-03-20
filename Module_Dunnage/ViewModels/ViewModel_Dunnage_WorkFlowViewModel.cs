@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
@@ -24,7 +25,8 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
@@ -53,7 +55,8 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(InitializeWorkflowAsync),
-                nameof(ViewModel_Dunnage_WorkFlowViewModel));
+                nameof(ViewModel_Dunnage_WorkFlowViewModel)
+            );
         }
     }
 
@@ -152,18 +155,22 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
         if (xamlRoot == null)
         {
             _logger.LogError("Cannot show dialog: XamlRoot is null");
-            await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+            await _errorHandler.HandleErrorAsync(
+                "Unable to display dialog",
+                Enum_ErrorSeverity.Error
+            );
             return;
         }
 
         var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
         {
             Title = "Clear Label Data",
-            Content = "Are you sure you want to archive and clear the active label queue? All queued rows will be moved to history. This action cannot be undone.",
+            Content =
+                "Are you sure you want to archive and clear the active label queue? All queued rows will be moved to history. This action cannot be undone.",
             PrimaryButtonText = "Clear Label Data",
             CloseButtonText = "Cancel",
             DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var result = await dialog.ShowAsync();
@@ -196,5 +203,3 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
 
     #endregion
 }
-
-

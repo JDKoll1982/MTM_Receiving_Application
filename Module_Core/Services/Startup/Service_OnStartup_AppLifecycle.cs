@@ -1,16 +1,16 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.WinUI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Shared.Views;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Views;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Startup
 {
@@ -32,7 +32,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IService_ErrorHandler errorHandler,
             IService_XLSWriter xlsWriter,
             Dao_SettingsCoreRoles rolesDao,
-            Dao_SettingsCoreUserRoles userRolesDao)
+            Dao_SettingsCoreUserRoles userRolesDao
+        )
         {
             _serviceProvider = serviceProvider;
             _authService = authService;
@@ -48,7 +49,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             try
             {
                 // 1. Show splash screen immediately (0-15%)
-                _splashScreen = _serviceProvider.GetRequiredService<View_Shared_SplashScreenWindow>();
+                _splashScreen =
+                    _serviceProvider.GetRequiredService<View_Shared_SplashScreenWindow>();
                 _splashScreen.Activate();
                 UpdateSplash(5, "Starting application...");
                 await Task.Delay(100);
@@ -68,7 +70,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 // 3. Check if Windows user exists (30%)
                 UpdateSplash(30, "Checking user account...");
                 var windowsUser = Environment.UserName;
-                var userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(windowsUser);
+                var userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(
+                    windowsUser
+                );
 
                 Model_User? authenticatedUser = null;
                 string authMethod = "";
@@ -76,10 +80,13 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 // If user doesn't exist, create account first (before workstation detection)
                 if (!userCheckResult.Success)
                 {
-                    SetSplashIndeterminate("User account not found. Waiting for account creation...");
+                    SetSplashIndeterminate(
+                        "User account not found. Waiting for account creation..."
+                    );
 
                     // Show New User Setup Dialog as child of splash screen
-                    var newUserViewModel = _serviceProvider.GetRequiredService<ViewModel_Shared_NewUserSetup>();
+                    var newUserViewModel =
+                        _serviceProvider.GetRequiredService<ViewModel_Shared_NewUserSetup>();
                     newUserViewModel.WindowsUsername = windowsUser;
                     newUserViewModel.CreatedBy = windowsUser; // Self-creation (physical presence is authorization)
 
@@ -102,7 +109,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
 
                         // Re-authenticate to get full user data
                         UpdateSplash(40, "Employee account created...");
-                        userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(windowsUser);
+                        userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(
+                            windowsUser
+                        );
 
                         if (userCheckResult.Success)
                         {
@@ -122,8 +131,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                                 Shift = newUserViewModel.Shift,
                                 Pin = newUserViewModel.Pin,
                                 IsActive = true,
-                                VisualUsername = newUserViewModel.ConfigureErpAccess ? newUserViewModel.VisualUsername : null,
-                                VisualPassword = newUserViewModel.ConfigureErpAccess ? newUserViewModel.VisualPassword : null
+                                VisualUsername = newUserViewModel.ConfigureErpAccess
+                                    ? newUserViewModel.VisualUsername
+                                    : null,
+                                VisualPassword = newUserViewModel.ConfigureErpAccess
+                                    ? newUserViewModel.VisualPassword
+                                    : null,
                             };
 
                             ApplySafeUserDefaults(authenticatedUser);
@@ -131,7 +144,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             await _errorHandler.HandleErrorAsync(
                                 $"User account was created but could not be reloaded by username '{windowsUser}'. Continuing with in-memory user for this session.",
                                 Models.Enums.Enum_ErrorSeverity.Warning,
-                                showDialog: false);
+                                showDialog: false
+                            );
 
                             UpdateSplash(45, $"Account created for {authenticatedUser.FullName}");
                         }
@@ -142,7 +156,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                         await _errorHandler.HandleErrorAsync(
                             "User account creation cancelled. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
-                            showDialog: false);
+                            showDialog: false
+                        );
 
                         // Close splash screen
                         if (_splashScreen != null)
@@ -180,10 +195,16 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 var workstationConfig = await _authService.DetectWorkstationTypeAsync();
 
                 // Debug logging
-                System.Diagnostics.Debug.WriteLine($"Workstation: {workstationConfig.ComputerName}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Workstation: {workstationConfig.ComputerName}"
+                );
                 System.Diagnostics.Debug.WriteLine($"Type: {workstationConfig.WorkstationType}");
-                System.Diagnostics.Debug.WriteLine($"Is Shared: {workstationConfig.IsSharedTerminal}");
-                System.Diagnostics.Debug.WriteLine($"Is Personal: {workstationConfig.IsPersonalWorkstation}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Is Shared: {workstationConfig.IsSharedTerminal}"
+                );
+                System.Diagnostics.Debug.WriteLine(
+                    $"Is Personal: {workstationConfig.IsPersonalWorkstation}"
+                );
 
                 // 5. Determine authentication method based on workstation type (55-80%)
                 if (workstationConfig.IsPersonalWorkstation)
@@ -202,7 +223,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     SetSplashIndeterminate("Shared terminal detected. Waiting for PIN login...");
 
                     // Show PIN login dialog as child of splash screen
-                    var loginViewModel = _serviceProvider.GetRequiredService<ViewModel_Shared_SharedTerminalLogin>();
+                    var loginViewModel =
+                        _serviceProvider.GetRequiredService<ViewModel_Shared_SharedTerminalLogin>();
                     var loginDialog = new View_Shared_SharedTerminalLoginDialog(loginViewModel);
 
                     // Set splash screen as parent
@@ -215,7 +237,11 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     var dialogResult = await loginDialog.ShowAsync();
 
                     // Check result
-                    if (loginViewModel.AuthenticatedUser != null && !loginViewModel.IsCancelled && !loginViewModel.IsLockedOut)
+                    if (
+                        loginViewModel.AuthenticatedUser != null
+                        && !loginViewModel.IsCancelled
+                        && !loginViewModel.IsLockedOut
+                    )
                     {
                         // Authentication successful - override with PIN-authenticated user
                         authenticatedUser = loginViewModel.AuthenticatedUser;
@@ -228,7 +254,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                         await _errorHandler.HandleErrorAsync(
                             "Maximum login attempts exceeded. Application closing for security.",
                             Models.Enums.Enum_ErrorSeverity.Warning,
-                            showDialog: false);
+                            showDialog: false
+                        );
 
                         // Close application
                         Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().UnregisterKey();
@@ -241,7 +268,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                         await _errorHandler.HandleErrorAsync(
                             "User cancelled login. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
-                            showDialog: false);
+                            showDialog: false
+                        );
 
                         System.Environment.Exit(0);
                         return;
@@ -252,7 +280,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                         await _errorHandler.HandleErrorAsync(
                             "Login dialog closed unexpectedly. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
-                            showDialog: false);
+                            showDialog: false
+                        );
 
                         System.Environment.Exit(0);
                         return;
@@ -284,7 +313,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     if (settingsFacade != null)
                     {
                         UpdateSplash(95, "Initializing core settings...");
-                        await settingsFacade.InitializeDefaultsAsync(authenticatedUser.EmployeeNumber);
+                        await settingsFacade.InitializeDefaultsAsync(
+                            authenticatedUser.EmployeeNumber
+                        );
                     }
                 }
                 else
@@ -293,7 +324,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     await _errorHandler.HandleErrorAsync(
                         "Authentication failed. Application closing.",
                         Models.Enums.Enum_ErrorSeverity.Warning,
-                        showDialog: false);
+                        showDialog: false
+                    );
                     System.Environment.Exit(0);
                     return;
                 }
@@ -315,7 +347,11 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             }
             catch (Exception ex)
             {
-                await _errorHandler.HandleErrorAsync("Startup failed", Models.Enums.Enum_ErrorSeverity.Critical, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Startup failed",
+                    Models.Enums.Enum_ErrorSeverity.Critical,
+                    ex
+                );
                 if (_splashScreen != null)
                 {
                     _splashScreen.IsProgrammaticClose = true;
@@ -362,46 +398,69 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Starting role assignment check for employee: {employeeNumber}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RoleAssignment] Starting role assignment check for employee: {employeeNumber}"
+                );
 
                 // Check if user already has roles assigned
                 var userRolesResult = await _userRolesDao.GetByUserAsync(employeeNumber);
-                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] GetByUserAsync result: Success={userRolesResult.Success}, Count={userRolesResult.Data?.Count ?? 0}");
-                
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RoleAssignment] GetByUserAsync result: Success={userRolesResult.Success}, Count={userRolesResult.Data?.Count ?? 0}"
+                );
+
                 if (userRolesResult.Success && userRolesResult.Data?.Count > 0)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] User already has {userRolesResult.Data.Count} role(s), skipping assignment");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[RoleAssignment] User already has {userRolesResult.Data.Count} role(s), skipping assignment"
+                    );
                     return;
                 }
 
                 // Get the "User" role
                 System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Looking up 'User' role");
                 var roleResult = await _rolesDao.GetByNameAsync("User");
-                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] GetByNameAsync result: Success={roleResult.Success}, RoleId={roleResult.Data?.Id ?? 0}, RoleName={roleResult.Data?.RoleName ?? "null"}");
-                
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RoleAssignment] GetByNameAsync result: Success={roleResult.Success}, RoleId={roleResult.Data?.Id ?? 0}, RoleName={roleResult.Data?.RoleName ?? "null"}"
+                );
+
                 if (!roleResult.Success || roleResult.Data == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] 'User' role not found: {roleResult.ErrorMessage}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[RoleAssignment] 'User' role not found: {roleResult.ErrorMessage}"
+                    );
                     return;
                 }
 
                 // Assign the role to the user
-                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Assigning role {roleResult.Data.Id} ({roleResult.Data.RoleName}) to employee {employeeNumber}");
-                var assignResult = await _userRolesDao.AssignRoleAsync(employeeNumber, roleResult.Data.Id);
-                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] AssignRoleAsync result: Success={assignResult.Success}, ErrorMessage={assignResult.ErrorMessage ?? "null"}");
-                
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RoleAssignment] Assigning role {roleResult.Data.Id} ({roleResult.Data.RoleName}) to employee {employeeNumber}"
+                );
+                var assignResult = await _userRolesDao.AssignRoleAsync(
+                    employeeNumber,
+                    roleResult.Data.Id
+                );
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RoleAssignment] AssignRoleAsync result: Success={assignResult.Success}, ErrorMessage={assignResult.ErrorMessage ?? "null"}"
+                );
+
                 if (assignResult.Success)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] ✓ Successfully assigned '{roleResult.Data.RoleName}' role to employee {employeeNumber}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[RoleAssignment] ✓ Successfully assigned '{roleResult.Data.RoleName}' role to employee {employeeNumber}"
+                    );
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"[RoleAssignment] ✗ Failed to assign role: {assignResult.ErrorMessage}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[RoleAssignment] ✗ Failed to assign role: {assignResult.ErrorMessage}"
+                    );
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[RoleAssignment] Exception during role assignment: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RoleAssignment] Exception during role assignment: {ex.Message}"
+                );
                 System.Diagnostics.Debug.WriteLine($"[RoleAssignment] StackTrace: {ex.StackTrace}");
                 // Log but don't fail startup if role assignment fails
                 // This is a non-critical operation
@@ -418,42 +477,44 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         {
             try
             {
-                var bulkService = _serviceProvider
-                    .GetService<Module_Bulk_Inventory.Contracts.Services.IService_MySQL_BulkInventory>();
+                var bulkService =
+                    _serviceProvider.GetService<Module_Bulk_Inventory.Contracts.Services.IService_MySQL_BulkInventory>();
 
                 if (bulkService is null)
                     return;
 
                 var result = await bulkService.GetByUserAsync(
                     username,
-                    Module_Bulk_Inventory.Enums.Enum_BulkInventoryStatus.InProgress);
+                    Module_Bulk_Inventory.Enums.Enum_BulkInventoryStatus.InProgress
+                );
 
                 if (!result.IsSuccess || result.Data is null || result.Data.Count == 0)
                     return;
 
                 var staleThreshold = DateTime.UtcNow.AddMinutes(-5);
-                var stale = result.Data
-                    .Where(r => r.UpdatedAt < staleThreshold)
-                    .ToList();
+                var stale = result.Data.Where(r => r.UpdatedAt < staleThreshold).ToList();
 
                 foreach (var row in stale)
                 {
                     await bulkService.CompleteRowAsync(
                         row.Id,
                         Module_Bulk_Inventory.Enums.Enum_BulkInventoryStatus.Failed,
-                        "Interrupted by app restart");
+                        "Interrupted by app restart"
+                    );
                 }
 
                 if (stale.Count > 0)
                     System.Diagnostics.Debug.WriteLine(
-                        $"[T030] Reset {stale.Count} stale InProgress bulk inventory row(s) to Failed for user '{username}'.");
+                        $"[T030] Reset {stale.Count} stale InProgress bulk inventory row(s) to Failed for user '{username}'."
+                    );
             }
             catch (Exception ex)
             {
                 // Non-critical — log and continue startup.
-                System.Diagnostics.Debug.WriteLine($"[T030] Crash-recovery reset failed: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[T030] Crash-recovery reset failed: {ex.Message}"
+                );
             }
         }
     }
 }
-

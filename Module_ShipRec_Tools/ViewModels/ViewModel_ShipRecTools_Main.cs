@@ -4,8 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -31,7 +31,8 @@ public partial class ViewModel_ShipRecTools_Main : ViewModel_Shared_Base
         IService_ShipRecTools_Navigation navigationService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         ArgumentNullException.ThrowIfNull(navigationService);
@@ -69,7 +70,12 @@ public partial class ViewModel_ShipRecTools_Main : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(NavigateToTool), nameof(ViewModel_ShipRecTools_Main));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(NavigateToTool),
+                nameof(ViewModel_ShipRecTools_Main)
+            );
         }
     }
 

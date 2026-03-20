@@ -16,4 +16,3 @@ public class Model_AppSettings
     /// </summary>
     public string Environment { get; set; } = "Development";
 }
-

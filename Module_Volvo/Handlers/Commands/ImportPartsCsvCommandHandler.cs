@@ -15,7 +15,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// Each <see cref="PartImportItem"/> in the command is inserted when new,
 /// or updated (QuantityPerSkid) when the part already exists.
 /// </summary>
-public class ImportPartsCommandHandler : IRequestHandler<ImportPartsCommand, Model_Dao_Result<ImportPartsResult>>
+public class ImportPartsCommandHandler
+    : IRequestHandler<ImportPartsCommand, Model_Dao_Result<ImportPartsResult>>
 {
     private readonly Dao_VolvoPart _partDao;
 
@@ -25,7 +26,9 @@ public class ImportPartsCommandHandler : IRequestHandler<ImportPartsCommand, Mod
     }
 
     public async Task<Model_Dao_Result<ImportPartsResult>> Handle(
-        ImportPartsCommand request, CancellationToken cancellationToken)
+        ImportPartsCommand request,
+        CancellationToken cancellationToken
+    )
     {
         int successCount = 0;
         int failureCount = 0;
@@ -39,7 +42,7 @@ public class ImportPartsCommandHandler : IRequestHandler<ImportPartsCommand, Mod
                 {
                     PartNumber = item.PartNumber.Trim().ToUpperInvariant(),
                     QuantityPerSkid = item.QuantityPerSkid,
-                    IsActive = true
+                    IsActive = true,
                 };
 
                 var existing = await _partDao.GetByIdAsync(part.PartNumber);
@@ -70,10 +73,9 @@ public class ImportPartsCommandHandler : IRequestHandler<ImportPartsCommand, Mod
         {
             SuccessCount = successCount,
             FailureCount = failureCount,
-            Errors = errors
+            Errors = errors,
         };
 
         return Model_Dao_Result_Factory.Success(result);
     }
 }
-

@@ -81,4 +81,3 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public bool GoToPage(int pageNumber);
     }
 }
-

@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Database;
@@ -17,7 +17,10 @@ public class Service_ErrorHandler : IService_ErrorHandler
     private readonly IService_LoggingUtility _loggingService;
     private readonly IService_Window _windowService;
 
-    public Service_ErrorHandler(IService_LoggingUtility loggingService, IService_Window windowService)
+    public Service_ErrorHandler(
+        IService_LoggingUtility loggingService,
+        IService_Window windowService
+    )
     {
         _loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
@@ -34,7 +37,8 @@ public class Service_ErrorHandler : IService_ErrorHandler
         string errorMessage,
         Enum_ErrorSeverity severity,
         Exception? exception = null,
-        bool showDialog = true)
+        bool showDialog = true
+    )
     {
         // Log the error
         await LogErrorAsync(errorMessage, severity, exception);
@@ -56,7 +60,8 @@ public class Service_ErrorHandler : IService_ErrorHandler
     public Task LogErrorAsync(
         string errorMessage,
         Enum_ErrorSeverity severity,
-        Exception? exception = null)
+        Exception? exception = null
+    )
     {
         return Task.Run(() =>
         {
@@ -90,7 +95,8 @@ public class Service_ErrorHandler : IService_ErrorHandler
     public async Task ShowErrorDialogAsync(
         string title,
         string message,
-        Enum_ErrorSeverity severity)
+        Enum_ErrorSeverity severity
+    )
     {
         try
         {
@@ -120,7 +126,7 @@ public class Service_ErrorHandler : IService_ErrorHandler
                 Title = title,
                 Content = message,
                 CloseButtonText = "OK",
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             // Set dialog style based on severity (could be enhanced with custom styles)
@@ -143,7 +149,8 @@ public class Service_ErrorHandler : IService_ErrorHandler
     public async Task HandleDaoErrorAsync(
         Model_Dao_Result result,
         string operationName,
-        bool showDialog = true)
+        bool showDialog = true
+    )
     {
         if (result.Success)
         {
@@ -166,9 +173,19 @@ public class Service_ErrorHandler : IService_ErrorHandler
         return ShowErrorDialogAsync(title, message, Enum_ErrorSeverity.Error);
     }
 
-    public void HandleException(Exception ex, Enum_ErrorSeverity severity, string method, string className)
+    public void HandleException(
+        Exception ex,
+        Enum_ErrorSeverity severity,
+        string method,
+        string className
+    )
     {
-        _ = HandleErrorAsync($"Exception in {className}.{method}: {ex.Message}", severity, ex, true);
+        _ = HandleErrorAsync(
+            $"Exception in {className}.{method}: {ex.Message}",
+            severity,
+            ex,
+            true
+        );
     }
 
     /// <summary>
@@ -184,8 +201,7 @@ public class Service_ErrorHandler : IService_ErrorHandler
             Enum_ErrorSeverity.Error => "Error",
             Enum_ErrorSeverity.Critical => "Critical Error",
             Enum_ErrorSeverity.Fatal => "Fatal Error",
-            _ => "Error"
+            _ => "Error",
         };
     }
 }
-

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Data;
 
@@ -21,7 +21,8 @@ public class Dao_DunnageLabelData
 
     public Dao_DunnageLabelData(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
@@ -32,7 +33,10 @@ public class Dao_DunnageLabelData
     /// </summary>
     /// <param name="loads">The list of dunnage loads to insert.</param>
     /// <param name="user">The user ID to record against each inserted row.</param>
-    public async Task<Model_Dao_Result<int>> InsertBatchAsync(List<Model_DunnageLoad> loads, string user)
+    public async Task<Model_Dao_Result<int>> InsertBatchAsync(
+        List<Model_DunnageLoad> loads,
+        string user
+    )
     {
         if (loads == null || loads.Count == 0)
         {
@@ -49,47 +53,105 @@ public class Dao_DunnageLabelData
 
             foreach (var load in loads)
             {
-                await using var command = new MySqlCommand("sp_Dunnage_LabelData_Insert", connection, transaction)
+                await using var command = new MySqlCommand(
+                    "sp_Dunnage_LabelData_Insert",
+                    connection,
+                    transaction
+                )
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
-                command.Parameters.Add(new MySqlParameter("p_load_uuid", MySqlDbType.VarChar, 36)
-                { Value = load.LoadUuid.ToString() });
+                command.Parameters.Add(
+                    new MySqlParameter("p_load_uuid", MySqlDbType.VarChar, 36)
+                    {
+                        Value = load.LoadUuid.ToString(),
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_part_id", MySqlDbType.VarChar, 50)
-                { Value = load.PartId });
+                command.Parameters.Add(
+                    new MySqlParameter("p_part_id", MySqlDbType.VarChar, 50) { Value = load.PartId }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_dunnage_type_id", MySqlDbType.Int32)
-                { Value = load.TypeId.HasValue ? (object)load.TypeId.Value : DBNull.Value });
+                command.Parameters.Add(
+                    new MySqlParameter("p_dunnage_type_id", MySqlDbType.Int32)
+                    {
+                        Value = load.TypeId.HasValue ? (object)load.TypeId.Value : DBNull.Value,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_dunnage_type_name", MySqlDbType.VarChar, 100)
-                { Value = string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName });
+                command.Parameters.Add(
+                    new MySqlParameter("p_dunnage_type_name", MySqlDbType.VarChar, 100)
+                    {
+                        Value = string.IsNullOrWhiteSpace(load.TypeName)
+                            ? DBNull.Value
+                            : (object)load.TypeName,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_dunnage_type_icon", MySqlDbType.VarChar, 100)
-                { Value = string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon });
+                command.Parameters.Add(
+                    new MySqlParameter("p_dunnage_type_icon", MySqlDbType.VarChar, 100)
+                    {
+                        Value = string.IsNullOrWhiteSpace(load.TypeIcon)
+                            ? DBNull.Value
+                            : (object)load.TypeIcon,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_quantity", MySqlDbType.Decimal)
-                { Value = load.Quantity, Precision = 10, Scale = 2 });
+                command.Parameters.Add(
+                    new MySqlParameter("p_quantity", MySqlDbType.Decimal)
+                    {
+                        Value = load.Quantity,
+                        Precision = 10,
+                        Scale = 2,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_po_number", MySqlDbType.VarChar, 50)
-                { Value = string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber });
+                command.Parameters.Add(
+                    new MySqlParameter("p_po_number", MySqlDbType.VarChar, 50)
+                    {
+                        Value = string.IsNullOrWhiteSpace(load.PoNumber)
+                            ? DBNull.Value
+                            : (object)load.PoNumber,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_received_date", MySqlDbType.DateTime)
-                { Value = load.ReceivedDate });
+                command.Parameters.Add(
+                    new MySqlParameter("p_received_date", MySqlDbType.DateTime)
+                    {
+                        Value = load.ReceivedDate,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_user_id", MySqlDbType.VarChar, 100)
-                { Value = user });
+                command.Parameters.Add(
+                    new MySqlParameter("p_user_id", MySqlDbType.VarChar, 100) { Value = user }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_location", MySqlDbType.VarChar, 100)
-                { Value = string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location });
+                command.Parameters.Add(
+                    new MySqlParameter("p_location", MySqlDbType.VarChar, 100)
+                    {
+                        Value = string.IsNullOrWhiteSpace(load.Location)
+                            ? DBNull.Value
+                            : (object)load.Location,
+                    }
+                );
 
-                command.Parameters.Add(new MySqlParameter("p_label_number", MySqlDbType.VarChar, 50)
-                { Value = string.IsNullOrWhiteSpace(load.LabelNumber) ? DBNull.Value : (object)load.LabelNumber });
+                command.Parameters.Add(
+                    new MySqlParameter("p_label_number", MySqlDbType.VarChar, 50)
+                    {
+                        Value = string.IsNullOrWhiteSpace(load.LabelNumber)
+                            ? DBNull.Value
+                            : (object)load.LabelNumber,
+                    }
+                );
 
                 var specsJson = BuildSpecsJson(load);
-                command.Parameters.Add(new MySqlParameter("p_specs_json", MySqlDbType.JSON)
-                { Value = specsJson is null ? DBNull.Value : (object)specsJson });
+                command.Parameters.Add(
+                    new MySqlParameter("p_specs_json", MySqlDbType.JSON)
+                    {
+                        Value = specsJson is null ? DBNull.Value : (object)specsJson,
+                    }
+                );
 
                 await command.ExecuteNonQueryAsync();
                 savedCount++;
@@ -101,7 +163,10 @@ public class Dao_DunnageLabelData
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to save dunnage label data: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to save dunnage label data: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -117,53 +182,63 @@ public class Dao_DunnageLabelData
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            await using var command = new MySqlCommand("sp_Dunnage_LabelData_ClearToHistory", connection)
+            await using var command = new MySqlCommand(
+                "sp_Dunnage_LabelData_ClearToHistory",
+                connection
+            )
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
             };
 
             command.Parameters.AddWithValue("p_archived_by", archivedBy ?? "SYSTEM");
 
             var rowsMovedParam = new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(rowsMovedParam);
 
             var batchIdParam = new MySqlParameter("p_archive_batch_id", MySqlDbType.VarChar, 36)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(batchIdParam);
 
             var statusParam = new MySqlParameter("p_status", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(statusParam);
 
             var errorParam = new MySqlParameter("p_error_message", MySqlDbType.VarChar, 1000)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(errorParam);
 
             await command.ExecuteNonQueryAsync();
 
             var status = statusParam.Value == DBNull.Value ? 1 : Convert.ToInt32(statusParam.Value);
-            var errorMessage = errorParam.Value == DBNull.Value ? null : errorParam.Value?.ToString();
+            var errorMessage =
+                errorParam.Value == DBNull.Value ? null : errorParam.Value?.ToString();
 
             if (status != 0)
             {
-                return Model_Dao_Result_Factory.Failure<int>(errorMessage ?? "Clear Label Data failed");
+                return Model_Dao_Result_Factory.Failure<int>(
+                    errorMessage ?? "Clear Label Data failed"
+                );
             }
 
-            var rowsMoved = rowsMovedParam.Value == DBNull.Value ? 0 : Convert.ToInt32(rowsMovedParam.Value);
+            var rowsMoved =
+                rowsMovedParam.Value == DBNull.Value ? 0 : Convert.ToInt32(rowsMovedParam.Value);
             return Model_Dao_Result_Factory.Success<int>(rowsMoved);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to clear dunnage label data to history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to clear dunnage label data to history: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -204,17 +279,31 @@ public class Dao_DunnageLabelData
             // GetValue().ToString() handles both string and Guid returns from the connector.
             LoadUuid = Guid.Parse(reader.GetValue(reader.GetOrdinal("load_uuid")).ToString()!),
             PartId = reader.GetString(reader.GetOrdinal("part_id")),
-            TypeId = reader.IsDBNull(reader.GetOrdinal("dunnage_type_id")) ? null : reader.GetInt32(reader.GetOrdinal("dunnage_type_id")),
-            TypeName = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("dunnage_type_name")),
-            DunnageType = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("dunnage_type_name")),
-            TypeIcon = reader.IsDBNull(reader.GetOrdinal("dunnage_type_icon")) ? "Help" : reader.GetString(reader.GetOrdinal("dunnage_type_icon")),
+            TypeId = reader.IsDBNull(reader.GetOrdinal("dunnage_type_id"))
+                ? null
+                : reader.GetInt32(reader.GetOrdinal("dunnage_type_id")),
+            TypeName = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("dunnage_type_name")),
+            DunnageType = reader.IsDBNull(reader.GetOrdinal("dunnage_type_name"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("dunnage_type_name")),
+            TypeIcon = reader.IsDBNull(reader.GetOrdinal("dunnage_type_icon"))
+                ? "Help"
+                : reader.GetString(reader.GetOrdinal("dunnage_type_icon")),
             Quantity = reader.GetDecimal(reader.GetOrdinal("quantity")),
-            PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? string.Empty : reader.GetString(reader.GetOrdinal("po_number")),
+            PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("po_number")),
             ReceivedDate = reader.GetDateTime(reader.GetOrdinal("received_date")),
             CreatedBy = reader.GetString(reader.GetOrdinal("user_id")),
-            Location = reader.IsDBNull(reader.GetOrdinal("location")) ? null : reader.GetString(reader.GetOrdinal("location")),
-            LabelNumber = reader.IsDBNull(reader.GetOrdinal("label_number")) ? null : reader.GetString(reader.GetOrdinal("label_number")),
-            SpecValues = DeserializeSpecValues(reader)
+            Location = reader.IsDBNull(reader.GetOrdinal("location"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("location")),
+            LabelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("label_number")),
+            SpecValues = DeserializeSpecValues(reader),
         };
     }
 
@@ -238,7 +327,9 @@ public class Dao_DunnageLabelData
         }
         catch (JsonException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[Dao_DunnageLabelData] Failed to deserialize specs_json: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine(
+                $"[Dao_DunnageLabelData] Failed to deserialize specs_json: {ex.Message}"
+            );
             return null;
         }
     }

@@ -16,9 +16,12 @@ public class Model_ReportSummaryRow
 
     public string DisplayRecordCount => RecordCount.ToString("N0", CultureInfo.InvariantCulture);
 
-    public string DisplayTotalQuantity => TotalQuantity.ToString("0.##", CultureInfo.InvariantCulture);
+    public string DisplayTotalQuantity =>
+        TotalQuantity.ToString("0.##", CultureInfo.InvariantCulture);
 
-    public string DisplayTotalWeightLbs => TotalWeightLbs.ToString("0.##", CultureInfo.InvariantCulture);
+    public string DisplayTotalWeightLbs =>
+        TotalWeightLbs.ToString("0.##", CultureInfo.InvariantCulture);
 
-    public string DisplayTotalPackages => TotalPackages.ToString("N0", CultureInfo.InvariantCulture);
+    public string DisplayTotalPackages =>
+        TotalPackages.ToString("N0", CultureInfo.InvariantCulture);
 }

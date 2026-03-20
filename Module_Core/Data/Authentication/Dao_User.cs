@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Receiving.Models;
-
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 {
@@ -25,7 +24,8 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="connectionString">MySQL connection string</param>
         public Dao_User(string connectionString)
         {
-            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _connectionString =
+                connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
         // ====================================================================
@@ -37,11 +37,13 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="windowsUsername">Windows username from Environment.UserName</param>
         /// <returns>Result containing user data or error</returns>
-        public virtual async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
+        public virtual async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(
+            string windowsUsername
+        )
         {
             var parameters = new Dictionary<string, object>
             {
-                { "@p_windows_username", windowsUsername }
+                { "@p_windows_username", windowsUsername },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
@@ -58,12 +60,15 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="username">Username (Windows username or full name)</param>
         /// <param name="pin">4-digit numeric PIN</param>
         /// <returns>Result containing user data or error</returns>
-        public virtual async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(string username, string pin)
+        public virtual async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(
+            string username,
+            string pin
+        )
         {
             var parameters = new Dictionary<string, object>
             {
                 { "@p_username", username },
-                { "@p_pin", pin }
+                { "@p_pin", pin },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
@@ -84,7 +89,10 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="user">User model with account data</param>
         /// <param name="createdBy">Windows username of account creator</param>
         /// <returns>Result containing new employee number or error</returns>
-        public virtual async Task<Model_Dao_Result<int>> CreateNewUserAsync(Model_User user, string createdBy)
+        public virtual async Task<Model_Dao_Result<int>> CreateNewUserAsync(
+            Model_User user,
+            string createdBy
+        )
         {
             try
             {
@@ -93,7 +101,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
                 await using var command = new MySqlCommand("sp_Auth_User_Create", connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 // Input parameters
@@ -104,13 +112,23 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 command.Parameters.AddWithValue("@p_department", user.Department);
                 command.Parameters.AddWithValue("@p_shift", user.Shift);
                 command.Parameters.AddWithValue("@p_created_by", createdBy);
-                command.Parameters.AddWithValue("@p_visual_username", user.VisualUsername ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@p_visual_password", user.VisualPassword ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue(
+                    "@p_visual_username",
+                    user.VisualUsername ?? (object)DBNull.Value
+                );
+                command.Parameters.AddWithValue(
+                    "@p_visual_password",
+                    user.VisualPassword ?? (object)DBNull.Value
+                );
 
                 // Output parameters
-                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                var errorMessageParam = new MySqlParameter(
+                    "@p_error_message",
+                    MySqlDbType.VarChar,
+                    500
+                )
                 {
-                    Direction = ParameterDirection.Output
+                    Direction = ParameterDirection.Output,
                 };
                 command.Parameters.Add(errorMessageParam);
 
@@ -131,10 +149,8 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                     await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                         _connectionString,
                         "sp_Auth_User_SeedDefaultModes",
-                        new Dictionary<string, object>
-                        {
-                            { "user_id", user.EmployeeNumber }
-                        });
+                        new Dictionary<string, object> { { "user_id", user.EmployeeNumber } }
+                    );
                 }
                 catch
                 {
@@ -153,8 +169,6 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             }
         }
 
-
-
         // ====================================================================
         // Validation Methods
         // ====================================================================
@@ -165,7 +179,10 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="username">Windows username to check</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
         /// <returns>Result indicating if username is unique</returns>
-        public virtual async Task<Model_Dao_Result<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
+        public virtual async Task<Model_Dao_Result<bool>> IsWindowsUsernameUniqueAsync(
+            string username,
+            int? excludeEmployeeNumber = null
+        )
         {
             try
             {
@@ -195,7 +212,10 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result_Factory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<bool>(
+                    $"Unexpected error: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -215,14 +235,15 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             string eventType,
             string username,
             string workstationName,
-            string details)
+            string details
+        )
         {
             var parameters = new Dictionary<string, object>
             {
                 { "@p_event_type", eventType },
                 { "@p_username", username ?? (object)DBNull.Value },
                 { "@p_workstation_name", workstationName ?? (object)DBNull.Value },
-                { "@p_details", details ?? (object)DBNull.Value }
+                { "@p_details", details ?? (object)DBNull.Value },
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -237,7 +258,10 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             }
             else
             {
-                return Model_Dao_Result_Factory.Failure<bool>(result.ErrorMessage, result.Exception);
+                return Model_Dao_Result_Factory.Failure<bool>(
+                    result.ErrorMessage,
+                    result.Exception
+                );
             }
         }
 
@@ -270,14 +294,15 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             string workstationName,
             string workstationType,
             bool isActive,
-            string? description)
+            string? description
+        )
         {
             var parameters = new Dictionary<string, object>
             {
                 { "@p_workstation_name", workstationName },
                 { "@p_workstation_type", workstationType },
                 { "@p_is_active", isActive },
-                { "@p_description", description ?? (object)DBNull.Value }
+                { "@p_description", description ?? (object)DBNull.Value },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -331,7 +356,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by"))
                     ? null
                     : reader.GetString(reader.GetOrdinal("created_by")),
-                ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
+                ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
             };
         }
 
@@ -340,12 +365,15 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="defaultMode"></param>
-        public virtual async Task<Model_Dao_Result> UpdateDefaultModeAsync(int userId, string? defaultMode)
+        public virtual async Task<Model_Dao_Result> UpdateDefaultModeAsync(
+            int userId,
+            string? defaultMode
+        )
         {
             var parameters = new Dictionary<string, object>
             {
                 { "@p_user_id", userId },
-                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
+                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -360,12 +388,15 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="defaultMode"></param>
-        public virtual async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(int userId, string? defaultMode)
+        public virtual async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(
+            int userId,
+            string? defaultMode
+        )
         {
             var parameters = new Dictionary<string, object>
             {
                 { "@p_user_id", userId },
-                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
+                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -380,12 +411,15 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="defaultMode"></param>
-        public virtual async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(int userId, string? defaultMode)
+        public virtual async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(
+            int userId,
+            string? defaultMode
+        )
         {
             var parameters = new Dictionary<string, object>
             {
                 { "@p_user_id", userId },
-                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
+                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -461,7 +495,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
                 await using var command = new MySqlCommand("sp_Auth_User_Update", connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 command.Parameters.AddWithValue("@p_employee_number", user.EmployeeNumber);
@@ -470,13 +504,23 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 command.Parameters.AddWithValue("@p_department", user.Department);
                 command.Parameters.AddWithValue("@p_shift", user.Shift);
                 command.Parameters.AddWithValue("@p_is_active", user.IsActive ? 1 : 0);
-                command.Parameters.AddWithValue("@p_visual_username", user.VisualUsername ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@p_visual_password", user.VisualPassword ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue(
+                    "@p_visual_username",
+                    user.VisualUsername ?? (object)DBNull.Value
+                );
+                command.Parameters.AddWithValue(
+                    "@p_visual_password",
+                    user.VisualPassword ?? (object)DBNull.Value
+                );
                 command.Parameters.AddWithValue("@p_updated_by", updatedBy);
 
-                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                var errorMessageParam = new MySqlParameter(
+                    "@p_error_message",
+                    MySqlDbType.VarChar,
+                    500
+                )
                 {
-                    Direction = ParameterDirection.Output
+                    Direction = ParameterDirection.Output,
                 };
                 command.Parameters.Add(errorMessageParam);
 
@@ -508,26 +552,43 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="visualPassword">New Visual password (null clears the field).</param>
         /// <param name="updatedBy">Windows username of the admin making the change.</param>
         public virtual async Task<Model_Dao_Result> UpdateVisualCredentialsAsync(
-            int employeeNumber, string? visualUsername, string? visualPassword, string updatedBy)
+            int employeeNumber,
+            string? visualUsername,
+            string? visualPassword,
+            string updatedBy
+        )
         {
             try
             {
                 await using var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                await using var command = new MySqlCommand("sp_Auth_User_UpdateVisualCredentials", connection)
+                await using var command = new MySqlCommand(
+                    "sp_Auth_User_UpdateVisualCredentials",
+                    connection
+                )
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 command.Parameters.AddWithValue("@p_employee_number", employeeNumber);
-                command.Parameters.AddWithValue("@p_visual_username", visualUsername ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@p_visual_password", visualPassword ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue(
+                    "@p_visual_username",
+                    visualUsername ?? (object)DBNull.Value
+                );
+                command.Parameters.AddWithValue(
+                    "@p_visual_password",
+                    visualPassword ?? (object)DBNull.Value
+                );
                 command.Parameters.AddWithValue("@p_updated_by", updatedBy);
 
-                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                var errorMessageParam = new MySqlParameter(
+                    "@p_error_message",
+                    MySqlDbType.VarChar,
+                    500
+                )
                 {
-                    Direction = ParameterDirection.Output
+                    Direction = ParameterDirection.Output,
                 };
                 command.Parameters.Add(errorMessageParam);
 
@@ -556,7 +617,10 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="employeeNumber">Employee to deactivate.</param>
         /// <param name="updatedBy">Windows username of the admin performing the action.</param>
-        public virtual async Task<Model_Dao_Result> DeactivateAsync(int employeeNumber, string updatedBy)
+        public virtual async Task<Model_Dao_Result> DeactivateAsync(
+            int employeeNumber,
+            string updatedBy
+        )
         {
             try
             {
@@ -565,15 +629,19 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
                 await using var command = new MySqlCommand("sp_Auth_User_Deactivate", connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 command.Parameters.AddWithValue("@p_employee_number", employeeNumber);
                 command.Parameters.AddWithValue("@p_updated_by", updatedBy);
 
-                var errorMessageParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+                var errorMessageParam = new MySqlParameter(
+                    "@p_error_message",
+                    MySqlDbType.VarChar,
+                    500
+                )
                 {
-                    Direction = ParameterDirection.Output
+                    Direction = ParameterDirection.Output,
                 };
                 command.Parameters.Add(errorMessageParam);
 

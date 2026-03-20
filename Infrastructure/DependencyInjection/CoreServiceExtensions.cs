@@ -30,7 +30,8 @@ public static class CoreServiceExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddCoreServices(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         // Configuration Options Registration
         services.Configure<DatabaseSettings>(configuration.GetSection("ConnectionStrings"));
@@ -47,7 +48,6 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_Window, Service_Window>();
         services.AddSingleton<IService_Help, Service_Help>();
 
-
         // Dispatcher Service (Singleton - Wraps the UI thread dispatcher)
         // Note: Dispatcher is lazy-initialized on first use since it requires UI thread
         services.AddSingleton<IService_Dispatcher>(_ =>
@@ -57,8 +57,10 @@ public static class CoreServiceExtensions
         });
 
         // Navigation Service (Singleton - Manages application navigation state)
-        services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, 
-            Module_Core.Services.Navigation.Service_Navigation>();
+        services.AddSingleton<
+            Module_Core.Contracts.Services.Navigation.IService_Navigation,
+            Module_Core.Services.Navigation.Service_Navigation
+        >();
 
         // Authentication & User Management
         RegisterAuthenticationServices(services, configuration);
@@ -67,7 +69,10 @@ public static class CoreServiceExtensions
         RegisterInforVisualServices(services, configuration);
 
         // Visual Automation
-        services.AddSingleton<IService_VisualCredentialValidator, Service_VisualCredentialValidator>();
+        services.AddSingleton<
+            IService_VisualCredentialValidator,
+            Service_VisualCredentialValidator
+        >();
         services.AddSingleton<IService_UIAutomation, Service_UIAutomation>();
 
         return services;
@@ -81,11 +86,15 @@ public static class CoreServiceExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static void RegisterAuthenticationServices(
         IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         // Get connection string for user database
-        var mySqlConnectionString = configuration.GetConnectionString("MySql")
-            ?? throw new InvalidOperationException("MySql connection string not found in configuration");
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException(
+                "MySql connection string not found in configuration"
+            );
 
         // User DAO (Singleton - Stateless data access)
         services.AddSingleton(_ => new Dao_User(mySqlConnectionString));
@@ -116,11 +125,15 @@ public static class CoreServiceExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static void RegisterInforVisualServices(
         IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         // Get Infor Visual connection string
-        var inforVisualConnectionString = configuration.GetConnectionString("InforVisual")
-            ?? throw new InvalidOperationException("InforVisual connection string not found in configuration");
+        var inforVisualConnectionString =
+            configuration.GetConnectionString("InforVisual")
+            ?? throw new InvalidOperationException(
+                "InforVisual connection string not found in configuration"
+            );
 
         // Infor Visual Connection DAO (Singleton - Stateless data access)
         services.AddSingleton(sp =>
@@ -142,7 +155,8 @@ public static class CoreServiceExtensions
         {
             var dao = sp.GetRequiredService<Dao_InforVisualConnection>();
             var logger = sp.GetService<IService_LoggingUtility>();
-            var settings = configuration.GetSection("InforVisual").Get<InforVisualSettings>()
+            var settings =
+                configuration.GetSection("InforVisual").Get<InforVisualSettings>()
                 ?? new InforVisualSettings();
             return new Service_InforVisualConnect(dao, settings.UseMockData, logger);
         });

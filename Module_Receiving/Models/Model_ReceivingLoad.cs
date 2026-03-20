@@ -1,6 +1,6 @@
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using System;
 
 namespace MTM_Receiving_Application.Module_Receiving.Models
 {
@@ -23,10 +23,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private string _partType = string.Empty;
 
         [ObservableProperty]
-        private string? _poNumber;  // Nullable for non-PO items
+        private string? _poNumber; // Nullable for non-PO items
 
         [ObservableProperty]
         private string _poLineNumber = string.Empty;
+
+        [ObservableProperty]
+        private string _selectedPartSourcePONumber = string.Empty;
 
         [ObservableProperty]
         private int _loadNumber;
@@ -35,16 +38,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private decimal _weightQuantity = 0;
 
         [ObservableProperty]
-        private string _heatLotNumber = string.Empty;  // Default to empty, set to "Nothing Entered" on save if blank
+        private string _heatLotNumber = string.Empty; // Default to empty, set to "Nothing Entered" on save if blank
 
         [ObservableProperty]
-        private string _initialLocation = string.Empty;  // Optional, validated only when populated
+        private string _initialLocation = string.Empty; // Optional, validated only when populated
 
         [ObservableProperty]
         private int _remainingQuantity;
 
         [ObservableProperty]
-        private int _packagesPerLoad = 0;  // Default to 0 (blank)
+        private int _packagesPerLoad = 0; // Default to 0 (blank)
 
         [ObservableProperty]
         private string _packageTypeName = nameof(Enum_PackageType.Skid);
@@ -112,12 +115,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
                 if (upperValue.Contains("MMC"))
                 {
                     PackageType = Enum_PackageType.Coil;
-                    PartType = "Coil";  // Set part type for validation
+                    PartType = "Coil"; // Set part type for validation
                 }
                 else if (upperValue.Contains("MMF"))
                 {
                     PackageType = Enum_PackageType.Sheet;
-                    PartType = "Sheet";  // Set part type for validation
+                    PartType = "Sheet"; // Set part type for validation
                 }
                 else
                 {
@@ -127,7 +130,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[Model_ReceivingLoad] OnPartIDChanged error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[Model_ReceivingLoad] OnPartIDChanged error: {ex.Message}"
+                );
             }
         }
 
@@ -182,14 +187,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         /// <summary>
         /// Display property for review grid showing weight per package with unit.
         /// </summary>
-        public string WeightPerPackageDisplay =>
-            $"{WeightPerPackage:F0} lbs per {PackageTypeName}";
+        public string WeightPerPackageDisplay => $"{WeightPerPackage:F0} lbs per {PackageTypeName}";
 
         /// <summary>
         /// Display property for PO number handling null values.
         /// </summary>
-        public string PONumberDisplay =>
-            string.IsNullOrEmpty(PoNumber) ? "N/A" : PoNumber;
+        public string PONumberDisplay => string.IsNullOrEmpty(PoNumber) ? "N/A" : PoNumber;
 
         /// <summary>
         /// Display property for load number (used in DataTemplates where x:Bind cannot call into the parent ViewModel).
@@ -197,4 +200,3 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public string LoadDisplayText => $"Load {LoadNumber}";
     }
 }
-

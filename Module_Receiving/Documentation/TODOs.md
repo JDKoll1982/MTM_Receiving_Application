@@ -1,6 +1,6 @@
 # Module_Receiving — Open TODOs
 
-Last Updated: 2025-07-14
+Last Updated: 2026-03-20
 
 ---
 
@@ -16,9 +16,11 @@ Every entry was found by reading source files, searching for TODO or FIXME marke
 
 File: Module_Receiving\ViewModels\ViewModel_Receiving_ManualEntry.cs
 
-The ViewModel declares all the observable properties and UI text properties required for the Manual Entry grid (add row, remove row, auto-fill, save and finish). The binding infrastructure exists and settings load correctly. However, no calls to the workflow save service were observed in the reviewed code. The completeness of the save path from this ViewModel to the database needs to be confirmed.
+The Manual Entry save path is now wired through `SaveAsync()` into `IService_ReceivingWorkflow.AdvanceToNextStepAsync()`, and the shared validation service now enforces PO-versus-Non-PO row rules before save. Manual Entry also now supports PO-driven part selection, page-level Non-PO mode, and safer Auto-Fill behavior.
 
-Blocking: Potentially yes — if Save & Finish does not persist data the Manual Entry mode is non-functional.
+Remaining caution: runtime validation against deployed reporting stored procedures/views is still needed so receiving reports surface Non-PO and PO-line semantics consistently after rows are archived.
+
+Blocking: No for core Manual Entry save wiring. Medium for downstream reporting validation until deployed SQL is confirmed.
 
 ### VM-02 — ViewModel_Receiving_ModeSelection — Default Mode Persistence Path
 

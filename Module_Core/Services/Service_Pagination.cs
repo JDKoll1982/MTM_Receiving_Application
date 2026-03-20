@@ -1,7 +1,7 @@
-﻿using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Core.Services
 {
@@ -65,10 +65,7 @@ namespace MTM_Receiving_Application.Module_Core.Services
                 return Enumerable.Empty<T>();
             }
 
-            return _source
-                .Skip((CurrentPage - 1) * PageSize)
-                .Take(PageSize)
-                .Cast<T>();
+            return _source.Skip((CurrentPage - 1) * PageSize).Take(PageSize).Cast<T>();
         }
 
         public bool NextPage()
@@ -142,4 +139,3 @@ namespace MTM_Receiving_Application.Module_Core.Services
         }
     }
 }
-

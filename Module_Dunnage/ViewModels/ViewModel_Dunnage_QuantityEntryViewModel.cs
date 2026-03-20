@@ -4,9 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -26,7 +26,9 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dispatcher = dispatcher;
@@ -64,7 +66,10 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
     {
         get
         {
-            if (!string.IsNullOrEmpty(SelectedTypeIcon) && Enum.TryParse<MaterialIconKind>(SelectedTypeIcon, true, out var kind))
+            if (
+                !string.IsNullOrEmpty(SelectedTypeIcon)
+                && Enum.TryParse<MaterialIconKind>(SelectedTypeIcon, true, out var kind)
+            )
             {
                 return kind;
             }
@@ -102,10 +107,16 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
             if (_workflowService.CurrentSession.Quantity <= 0)
             {
                 _workflowService.CurrentSession.Quantity = Quantity;
-                _logger.LogInfo($"Initialized workflow session quantity to {Quantity}", "QuantityEntry");
+                _logger.LogInfo(
+                    $"Initialized workflow session quantity to {Quantity}",
+                    "QuantityEntry"
+                );
             }
 
-            _logger.LogInfo($"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}, Quantity={_workflowService.CurrentSession.Quantity}", "QuantityEntry");
+            _logger.LogInfo(
+                $"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}, Quantity={_workflowService.CurrentSession.Quantity}",
+                "QuantityEntry"
+            );
         }
         catch (Exception ex)
         {
@@ -140,7 +151,6 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
     }
 
     /// <summary>\n    /// Shows contextual help for quantity entry\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.QuantityEntry\");\n    }
-
     #endregion
 
     #region Navigation Commands
@@ -212,4 +222,3 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
 
     #endregion
 }
-

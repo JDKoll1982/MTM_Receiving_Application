@@ -56,7 +56,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         /// <summary>
         /// List of available departments from database
         /// </summary>
-        public ObservableCollection<string> Departments { get; } = new ObservableCollection<string>();
+        public ObservableCollection<string> Departments { get; } =
+            new ObservableCollection<string>();
 
         /// <summary>
         /// The new employee number assigned after successful account creation
@@ -88,7 +89,9 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
             IService_Authentication authService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+            IService_Notification notificationService
+        )
+            : base(errorHandler, logger, notificationService)
         {
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
@@ -125,7 +128,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     "Failed to load departments",
                     Enum_ErrorSeverity.Warning,
                     ex,
-                    showDialog: false);
+                    showDialog: false
+                );
             }
             finally
             {
@@ -177,7 +181,7 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     Pin = Pin,
                     IsActive = true,
                     VisualUsername = ConfigureErpAccess ? VisualUsername : null,
-                    VisualPassword = ConfigureErpAccess ? VisualPassword : null
+                    VisualPassword = ConfigureErpAccess ? VisualPassword : null,
                 };
 
                 // Call authentication service to create new user
@@ -190,7 +194,9 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     NewEmployeeNumber = result.EmployeeNumber;
                     StatusMessage = $"Account created! Employee #: {NewEmployeeNumber}";
 
-                    _logger.LogInfo($"New user account created: {FullName} (Emp #{NewEmployeeNumber}) by {CreatedBy}");
+                    _logger.LogInfo(
+                        $"New user account created: {FullName} (Emp #{NewEmployeeNumber}) by {CreatedBy}"
+                    );
 
                     return true;
                 }
@@ -200,7 +206,9 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     ErrorMessage = result.ErrorMessage ?? "Failed to create account.";
                     StatusMessage = "Account creation failed";
 
-                    _logger.LogWarning($"Failed to create account for {WindowsUsername}: {ErrorMessage}");
+                    _logger.LogWarning(
+                        $"Failed to create account for {WindowsUsername}: {ErrorMessage}"
+                    );
 
                     return false;
                 }
@@ -214,7 +222,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     $"Account creation error for {WindowsUsername}",
                     Enum_ErrorSeverity.Error,
                     ex,
-                    showDialog: false);
+                    showDialog: false
+                );
 
                 return false;
             }
@@ -271,4 +280,3 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         }
     }
 }
-

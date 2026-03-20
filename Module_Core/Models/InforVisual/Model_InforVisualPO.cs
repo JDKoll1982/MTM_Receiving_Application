@@ -24,17 +24,18 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         /// <summary>
         /// Returns a user-friendly status description.
         /// </summary>
-        public string StatusDescription => Status switch
-        {
-            "R" => "Open",
-            "C" => "Closed",
-            "O" => "Open",
-            "P" => "Partially Received",
-            "X" => "Cancelled",
-            "F" => "Firm",
-            "" => "Unknown",
-            _ => $"Status: {Status}"
-        };
+        public string StatusDescription =>
+            Status switch
+            {
+                "R" => "Open",
+                "C" => "Closed",
+                "O" => "Open",
+                "P" => "Partially Received",
+                "X" => "Cancelled",
+                "F" => "Firm",
+                "" => "Unknown",
+                _ => $"Status: {Status}",
+            };
 
         /// <summary>
         /// Indicates if the PO is closed or cancelled.
@@ -42,4 +43,3 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public bool IsClosed => Status == "C" || Status == "X";
     }
 }
-

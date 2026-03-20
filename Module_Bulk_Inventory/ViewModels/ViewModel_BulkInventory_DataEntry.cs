@@ -46,7 +46,9 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     /// Raised by <see cref="PushBatchCommand"/> to tell the Host to navigate to the Push view.
     /// The handler receives the current rows snapshot.
     /// </summary>
-    public Action<ObservableCollection<Model_BulkInventoryTransaction>>? RequestNavigateToPush { get; set; }
+    public Action<
+        ObservableCollection<Model_BulkInventoryTransaction>
+    >? RequestNavigateToPush { get; set; }
 
     // ── Observable state ──────────────────────────────────────────────────────
 
@@ -83,7 +85,8 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
         IService_SettingsCoreFacade settings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         _bulkService = bulkService;
@@ -112,14 +115,19 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             var result = await _bulkService.GetByUserAsync(username);
             if (result.IsSuccess && result.Data is not null)
             {
-                foreach (var row in result.Data
-                             .Where(r => r.Status == Enum_BulkInventoryStatus.Pending
-                                      || r.Status == Enum_BulkInventoryStatus.Failed))
+                foreach (
+                    var row in result.Data.Where(r =>
+                        r.Status == Enum_BulkInventoryStatus.Pending
+                        || r.Status == Enum_BulkInventoryStatus.Failed
+                    )
+                )
                 {
                     Rows.Add(row);
                 }
 
-                HasInterruptedRows = result.Data.Any(r => r.Status == Enum_BulkInventoryStatus.Failed);
+                HasInterruptedRows = result.Data.Any(r =>
+                    r.Status == Enum_BulkInventoryStatus.Failed
+                );
             }
         }
 
@@ -160,7 +168,11 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             var result = await _bulkService.DeleteByIdAsync(row.Id);
             if (!result.IsSuccess)
             {
-                await _errorHandler.ShowUserErrorAsync(result.ErrorMessage, "Delete Row Error", nameof(DeleteRowAsync));
+                await _errorHandler.ShowUserErrorAsync(
+                    result.ErrorMessage,
+                    "Delete Row Error",
+                    nameof(DeleteRowAsync)
+                );
                 return;
             }
         }
@@ -186,7 +198,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             PrimaryButtonText = "Clear",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
         };
 
         var result = await dialog.ShowAsync();
@@ -215,7 +227,12 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(ClearAllAsync), nameof(ViewModel_BulkInventory_DataEntry));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(ClearAllAsync),
+                nameof(ViewModel_BulkInventory_DataEntry)
+            );
         }
         finally
         {
@@ -250,7 +267,9 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
 
         if (XamlRoot is null)
         {
-            _logger.LogWarning($"ValidateFieldAsync: Skipped — XamlRoot is null (field={field}). Dialog cannot be shown.");
+            _logger.LogWarning(
+                $"ValidateFieldAsync: Skipped — XamlRoot is null (field={field}). Dialog cannot be shown."
+            );
             return;
         }
 
@@ -259,7 +278,7 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             "PartId" => row.PartId ?? string.Empty,
             "FromLocation" => row.FromLocation ?? string.Empty,
             "ToLocation" => row.ToLocation ?? string.Empty,
-            _ => string.Empty
+            _ => string.Empty,
         };
 
         if (string.IsNullOrWhiteSpace(value))
@@ -269,7 +288,9 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             return;
         }
 
-        _logger.LogInfo($"ValidateFieldAsync: Validating field='{field}', value='{value}', rowId={row.Id}.");
+        _logger.LogInfo(
+            $"ValidateFieldAsync: Validating field='{field}', value='{value}', rowId={row.Id}."
+        );
 
         try
         {
@@ -286,9 +307,15 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                     return;
                 }
 
-                _logger.LogInfo($"ValidateFieldAsync: Part '{value}' not found via exact match — running fuzzy search.");
+                _logger.LogInfo(
+                    $"ValidateFieldAsync: Part '{value}' not found via exact match — running fuzzy search."
+                );
                 var searchResult = await _fuzzySearch.SearchPartsAsync(value);
-                if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+                if (
+                    !searchResult.IsSuccess
+                    || searchResult.Data is null
+                    || searchResult.Data.Count == 0
+                )
                 {
                     _logger.LogWarning($"ValidateFieldAsync: No fuzzy matches for Part '{value}'.");
                     row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
@@ -299,21 +326,26 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                 var dialog = new Dialog_FuzzySearchPicker(
                     searchResult.Data,
                     "Part Not Found – Select a Match",
-                    subtitle: $"'{value}' was not found. Select the correct part or Cancel.")
+                    subtitle: $"'{value}' was not found. Select the correct part or Cancel."
+                )
                 {
-                    XamlRoot = XamlRoot
+                    XamlRoot = XamlRoot,
                 };
 
                 var outcome = await dialog.ShowAsync();
                 if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
                 {
-                    _logger.LogInfo($"ValidateFieldAsync: User selected Part '{dialog.SelectedResult.Key}' via fuzzy picker.");
+                    _logger.LogInfo(
+                        $"ValidateFieldAsync: User selected Part '{dialog.SelectedResult.Key}' via fuzzy picker."
+                    );
                     row.PartId = dialog.SelectedResult.Key;
                     row.ValidationMessage = null;
                 }
                 else
                 {
-                    _logger.LogWarning($"ValidateFieldAsync: User dismissed fuzzy picker — Part '{value}' marked invalid.");
+                    _logger.LogWarning(
+                        $"ValidateFieldAsync: User dismissed fuzzy picker — Part '{value}' marked invalid."
+                    );
                     row.ValidationMessage = $"Part '{value}' not found in Infor Visual.";
                 }
             }
@@ -322,18 +354,29 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                 var exactCheck = await _inforVisual.LocationExistsAsync(value, warehouseCode);
                 if (exactCheck.IsSuccess && exactCheck.Data)
                 {
-                    _logger.LogInfo($"ValidateFieldAsync: Location '{value}' found via exact match.");
+                    _logger.LogInfo(
+                        $"ValidateFieldAsync: Location '{value}' found via exact match."
+                    );
                     row.ValidationMessage = null;
                     RefreshState();
                     return;
                 }
 
-                _logger.LogInfo($"ValidateFieldAsync: Location '{value}' not found via exact match — running fuzzy search.");
+                _logger.LogInfo(
+                    $"ValidateFieldAsync: Location '{value}' not found via exact match — running fuzzy search."
+                );
                 var searchResult = await _fuzzySearch.SearchLocationsAsync(value, warehouseCode);
-                if (!searchResult.IsSuccess || searchResult.Data is null || searchResult.Data.Count == 0)
+                if (
+                    !searchResult.IsSuccess
+                    || searchResult.Data is null
+                    || searchResult.Data.Count == 0
+                )
                 {
-                    _logger.LogWarning($"ValidateFieldAsync: No fuzzy matches for Location '{value}' in warehouse '{warehouseCode}'.");
-                    row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
+                    _logger.LogWarning(
+                        $"ValidateFieldAsync: No fuzzy matches for Location '{value}' in warehouse '{warehouseCode}'."
+                    );
+                    row.ValidationMessage =
+                        $"Location '{value}' not found in warehouse {warehouseCode}.";
                     RefreshState();
                     return;
                 }
@@ -341,15 +384,18 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                 var dialog = new Dialog_FuzzySearchPicker(
                     searchResult.Data,
                     "Location Not Found – Select a Match",
-                    subtitle: $"'{value}' was not found. Select the correct location or Cancel.")
+                    subtitle: $"'{value}' was not found. Select the correct location or Cancel."
+                )
                 {
-                    XamlRoot = XamlRoot
+                    XamlRoot = XamlRoot,
                 };
 
                 var outcome = await dialog.ShowAsync();
                 if (outcome == ContentDialogResult.Primary && dialog.SelectedResult is not null)
                 {
-                    _logger.LogInfo($"ValidateFieldAsync: User selected Location '{dialog.SelectedResult.Key}' via fuzzy picker.");
+                    _logger.LogInfo(
+                        $"ValidateFieldAsync: User selected Location '{dialog.SelectedResult.Key}' via fuzzy picker."
+                    );
                     if (field == "FromLocation")
                         row.FromLocation = dialog.SelectedResult.Key;
                     else
@@ -359,14 +405,19 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _logger.LogWarning($"ValidateFieldAsync: User dismissed fuzzy picker — Location '{value}' marked invalid.");
-                    row.ValidationMessage = $"Location '{value}' not found in warehouse {warehouseCode}.";
+                    _logger.LogWarning(
+                        $"ValidateFieldAsync: User dismissed fuzzy picker — Location '{value}' marked invalid."
+                    );
+                    row.ValidationMessage =
+                        $"Location '{value}' not found in warehouse {warehouseCode}.";
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError($"ValidateFieldAsync: Exception while validating field='{field}', value='{value}': {ex.Message}");
+            _logger.LogError(
+                $"ValidateFieldAsync: Exception while validating field='{field}', value='{value}': {ex.Message}"
+            );
             row.ValidationMessage = $"Validation error: {ex.Message}";
         }
 
@@ -396,23 +447,30 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             {
                 if (row.Id == 0)
                 {
-                    row.CreatedByUser = _sessionManager.CurrentSession?.User?.WindowsUsername ?? string.Empty;
+                    row.CreatedByUser =
+                        _sessionManager.CurrentSession?.User?.WindowsUsername ?? string.Empty;
                     var insertResult = await _bulkService.StartRowAsync(row);
                     if (insertResult.IsSuccess)
                     {
                         row.Id = insertResult.Data;
-                        _logger.LogInfo($"DataEntry: Auto-saved new row — PartId='{row.PartId}', Id={row.Id}.");
+                        _logger.LogInfo(
+                            $"DataEntry: Auto-saved new row — PartId='{row.PartId}', Id={row.Id}."
+                        );
                     }
                     else
                     {
-                        _logger.LogError($"DataEntry: Auto-save INSERT failed — {insertResult.ErrorMessage}");
+                        _logger.LogError(
+                            $"DataEntry: Auto-save INSERT failed — {insertResult.ErrorMessage}"
+                        );
                     }
                 }
                 else
                 {
                     var updateResult = await _bulkService.UpdateRowAsync(row);
                     if (!updateResult.IsSuccess)
-                        _logger.LogError($"DataEntry: Auto-save UPDATE failed for Id={row.Id} — {updateResult.ErrorMessage}");
+                        _logger.LogError(
+                            $"DataEntry: Auto-save UPDATE failed for Id={row.Id} — {updateResult.ErrorMessage}"
+                        );
                 }
             }
             else if (row.Id > 0)
@@ -425,7 +483,9 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _logger.LogError($"DataEntry: Auto-remove DELETE failed for Id={row.Id} — {deleteResult.ErrorMessage}");
+                    _logger.LogError(
+                        $"DataEntry: Auto-remove DELETE failed for Id={row.Id} — {deleteResult.ErrorMessage}"
+                    );
                 }
             }
         }
@@ -465,7 +525,9 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
                 row.Id = saveResult.Data;
         }
 
-        RequestNavigateToPush?.Invoke(new ObservableCollection<Model_BulkInventoryTransaction>(dataRows));
+        RequestNavigateToPush?.Invoke(
+            new ObservableCollection<Model_BulkInventoryTransaction>(dataRows)
+        );
     }
 
     // ── Fuzzy-search pickers ──────────────────────────────────────────────────
@@ -489,9 +551,10 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
         var dialog = new Dialog_FuzzySearchPicker(
             searchResult.Data,
             "Select Part",
-            subtitle: $"Matching parts for '{term.Trim()}':")
+            subtitle: $"Matching parts for '{term.Trim()}':"
+        )
         {
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
         };
 
         var outcome = await dialog.ShowAsync();
@@ -508,12 +571,15 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
     /// </summary>
     /// <param name="args">Tuple containing the target row and the field name (<c>"FromLocation"</c> or <c>"ToLocation"</c>).</param>
     [RelayCommand]
-    private async Task OpenLocationSearchAsync((Model_BulkInventoryTransaction Row, string Field) args)
+    private async Task OpenLocationSearchAsync(
+        (Model_BulkInventoryTransaction Row, string Field) args
+    )
     {
         if (XamlRoot is null)
             return;
 
-        var currentValue = args.Field == "FromLocation" ? args.Row.FromLocation : args.Row.ToLocation;
+        var currentValue =
+            args.Field == "FromLocation" ? args.Row.FromLocation : args.Row.ToLocation;
         var term = string.IsNullOrWhiteSpace(currentValue) ? " " : currentValue;
         var warehouseCode = await GetWarehouseCodeAsync();
 
@@ -524,11 +590,9 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             return;
         }
 
-        var dialog = new Dialog_FuzzySearchPicker(
-            searchResult.Data,
-            "Select Location")
+        var dialog = new Dialog_FuzzySearchPicker(searchResult.Data, "Select Location")
         {
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
         };
 
         var outcome = await dialog.ShowAsync();
@@ -553,14 +617,14 @@ public partial class ViewModel_BulkInventory_DataEntry : ViewModel_Shared_Base
             : FallbackWarehouseCode;
     }
 
-    private static bool IsRowWithData(Model_BulkInventoryTransaction row)
-        => !string.IsNullOrWhiteSpace(row.PartId);
+    private static bool IsRowWithData(Model_BulkInventoryTransaction row) =>
+        !string.IsNullOrWhiteSpace(row.PartId);
 
     private void RefreshState()
     {
         HasDataRows = Rows.Any(IsRowWithData);
-        HasValidationWarnings = Rows.Any(r => IsRowWithData(r) && !string.IsNullOrEmpty(r.ValidationMessage));
+        HasValidationWarnings = Rows.Any(r =>
+            IsRowWithData(r) && !string.IsNullOrEmpty(r.ValidationMessage)
+        );
     }
 }
-
-

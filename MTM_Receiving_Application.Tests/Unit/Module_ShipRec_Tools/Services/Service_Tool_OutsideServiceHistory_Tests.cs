@@ -1,11 +1,11 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.Services;
@@ -23,7 +23,8 @@ public class Service_Tool_OutsideServiceHistory_Tests
 
         _service = new Service_Tool_OutsideServiceHistory(
             _mockInforVisual.Object,
-            _mockLogger.Object);
+            _mockLogger.Object
+        );
     }
 
     [Fact]
@@ -43,10 +44,17 @@ public class Service_Tool_OutsideServiceHistory_Tests
     [Fact]
     public async Task GetHistoryByPartAsync_DelegatesToInforVisual()
     {
-        var expected = Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>
-        {
-            new() { PartNumber = "PART-001", VendorID = "V-1", DispatchID = "SD-1001" }
-        });
+        var expected = Model_Dao_Result_Factory.Success(
+            new List<Model_OutsideServiceHistory>
+            {
+                new()
+                {
+                    PartNumber = "PART-001",
+                    VendorID = "V-1",
+                    DispatchID = "SD-1001",
+                },
+            }
+        );
 
         _mockInforVisual
             .Setup(s => s.GetOutsideServiceHistoryByPartAsync("PART-001"))
@@ -64,7 +72,9 @@ public class Service_Tool_OutsideServiceHistory_Tests
     [Fact]
     public async Task GetHistoryByPartAsync_WhenInforVisualReturnsFailure_PropagatesFailure()
     {
-        var expected = Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>("SQL Server unavailable");
+        var expected = Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
+            "SQL Server unavailable"
+        );
 
         _mockInforVisual
             .Setup(s => s.GetOutsideServiceHistoryByPartAsync(It.IsAny<string>()))
@@ -96,10 +106,15 @@ public class Service_Tool_OutsideServiceHistory_Tests
     {
         _mockInforVisual
             .Setup(s => s.GetOutsideServiceHistoryByPartAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceHistory>())
+            );
 
         await _service.GetHistoryByPartAsync("LOG-PART");
 
-        _mockLogger.Verify(l => l.LogInfo(It.Is<string>(msg => msg.Contains("LOG-PART"))), Times.Once);
+        _mockLogger.Verify(
+            l => l.LogInfo(It.Is<string>(msg => msg.Contains("LOG-PART"))),
+            Times.Once
+        );
     }
 }

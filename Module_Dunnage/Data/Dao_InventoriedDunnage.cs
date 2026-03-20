@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Data;
 
@@ -30,10 +30,7 @@ public class Dao_InventoriedDunnage
 
     public virtual async Task<Model_Dao_Result<bool>> CheckAsync(string partId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "part_id", partId }
-        };
+        var parameters = new Dictionary<string, object> { { "part_id", partId } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<bool>(
             _connectionString,
@@ -43,12 +40,11 @@ public class Dao_InventoriedDunnage
         );
     }
 
-    public virtual async Task<Model_Dao_Result<Model_InventoriedDunnage>> GetByPartAsync(string partId)
+    public virtual async Task<Model_Dao_Result<Model_InventoriedDunnage>> GetByPartAsync(
+        string partId
+    )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "part_id", partId }
-        };
+        var parameters = new Dictionary<string, object> { { "part_id", partId } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_InventoriedDunnage>(
             _connectionString,
@@ -58,11 +54,16 @@ public class Dao_InventoriedDunnage
         );
     }
 
-    public virtual async Task<Model_Dao_Result<int>> InsertAsync(string partId, string inventoryMethod, string notes, string user)
+    public virtual async Task<Model_Dao_Result<int>> InsertAsync(
+        string partId,
+        string inventoryMethod,
+        string notes,
+        string user
+    )
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
-            Direction = ParameterDirection.Output
+            Direction = ParameterDirection.Output,
         };
 
         var parameters = new MySqlParameter[]
@@ -71,7 +72,7 @@ public class Dao_InventoriedDunnage
             new MySqlParameter("@p_inventory_method", inventoryMethod),
             new MySqlParameter("@p_notes", notes),
             new MySqlParameter("@p_user", user),
-            pNewId
+            pNewId,
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
@@ -92,14 +93,19 @@ public class Dao_InventoriedDunnage
         return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
-    public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string inventoryMethod, string notes, string user)
+    public virtual async Task<Model_Dao_Result> UpdateAsync(
+        int id,
+        string inventoryMethod,
+        string notes,
+        string user
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "id", id },
             { "inventory_method", inventoryMethod },
             { "notes", notes },
-            { "user", user }
+            { "user", user },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -111,10 +117,7 @@ public class Dao_InventoriedDunnage
 
     public virtual async Task<Model_Dao_Result> DeleteAsync(int id)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "id", id }
-        };
+        var parameters = new Dictionary<string, object> { { "id", id } };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
@@ -129,12 +132,20 @@ public class Dao_InventoriedDunnage
         {
             Id = reader.GetInt32(reader.GetOrdinal("id")),
             PartId = reader.GetString(reader.GetOrdinal("part_id")),
-            InventoryMethod = reader.IsDBNull(reader.GetOrdinal("inventory_method")) ? null : reader.GetString(reader.GetOrdinal("inventory_method")),
-            Notes = reader.IsDBNull(reader.GetOrdinal("notes")) ? null : reader.GetString(reader.GetOrdinal("notes")),
+            InventoryMethod = reader.IsDBNull(reader.GetOrdinal("inventory_method"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("inventory_method")),
+            Notes = reader.IsDBNull(reader.GetOrdinal("notes"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("notes")),
             CreatedBy = reader.GetString(reader.GetOrdinal("created_by")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
-            ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by")) ? null : reader.GetString(reader.GetOrdinal("modified_by")),
-            ModifiedDate = reader.IsDBNull(reader.GetOrdinal("modified_date")) ? null : reader.GetDateTime(reader.GetOrdinal("modified_date"))
+            ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("modified_by")),
+            ModifiedDate = reader.IsDBNull(reader.GetOrdinal("modified_date"))
+                ? null
+                : reader.GetDateTime(reader.GetOrdinal("modified_date")),
         };
     }
 }

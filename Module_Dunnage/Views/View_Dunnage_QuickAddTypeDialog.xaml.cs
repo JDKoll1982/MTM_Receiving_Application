@@ -1,13 +1,13 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using MTM_Receiving_Application.Module_Dunnage.Models;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Material.Icons;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -18,7 +18,8 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
     private string _selectedIconName = "Box"; // Default icon name
 
     public string TypeName { get; private set; } = string.Empty;
-    public MaterialIconKind SelectedIconKind { get; private set; } = MaterialIconKind.PackageVariantClosed;
+    public MaterialIconKind SelectedIconKind { get; private set; } =
+        MaterialIconKind.PackageVariantClosed;
     public ObservableCollection<Model_SpecItem> Specs { get; } = new();
 
     public bool IsIconSelected
@@ -46,11 +47,16 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
         if (NewSpecTypeCombo.SelectedItem is ComboBoxItem item)
         {
             var type = item.Content.ToString();
-            NumberOptionsPanel.Visibility = type == "Number" ? Visibility.Visible : Visibility.Collapsed;
+            NumberOptionsPanel.Visibility =
+                type == "Number" ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
-    public void InitializeForEdit(string typeName, string iconName, Dictionary<string, SpecDefinition> specs)
+    public void InitializeForEdit(
+        string typeName,
+        string iconName,
+        Dictionary<string, SpecDefinition> specs
+    )
     {
         Title = "Edit Dunnage Type";
         PrimaryButtonText = "Save Changes";
@@ -73,15 +79,17 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
         Specs.Clear();
         foreach (var kvp in specs)
         {
-            Specs.Add(new Model_SpecItem
-            {
-                Name = kvp.Key,
-                DataType = kvp.Value.DataType,
-                IsRequired = kvp.Value.Required,
-                Unit = kvp.Value.Unit,
-                MinValue = kvp.Value.MinValue,
-                MaxValue = kvp.Value.MaxValue
-            });
+            Specs.Add(
+                new Model_SpecItem
+                {
+                    Name = kvp.Key,
+                    DataType = kvp.Value.DataType,
+                    IsRequired = kvp.Value.Required,
+                    Unit = kvp.Value.Unit,
+                    MinValue = kvp.Value.MinValue,
+                    MaxValue = kvp.Value.MaxValue,
+                }
+            );
         }
     }
 
@@ -124,15 +132,17 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
             }
         }
 
-        Specs.Add(new Model_SpecItem
-        {
-            Name = name,
-            DataType = type,
-            IsRequired = required,
-            Unit = unit,
-            MinValue = minValue,
-            MaxValue = maxValue
-        });
+        Specs.Add(
+            new Model_SpecItem
+            {
+                Name = name,
+                DataType = type,
+                IsRequired = required,
+                Unit = unit,
+                MinValue = minValue,
+                MaxValue = maxValue,
+            }
+        );
 
         // Clear form
         NewSpecNameBox.Text = string.Empty;
@@ -153,7 +163,8 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
 
     private async void OnSelectIconClick(object sender, RoutedEventArgs e)
     {
-        var iconWindow = new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
+        var iconWindow =
+            new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
 
         // Show window and wait for it to close
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(iconWindow);

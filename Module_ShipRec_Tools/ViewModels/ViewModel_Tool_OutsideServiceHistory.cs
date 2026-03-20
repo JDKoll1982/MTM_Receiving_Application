@@ -8,8 +8,8 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -35,6 +35,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
 
     /// <summary>True when searching by Part Number (default mode).</summary>
     public bool IsSearchByPart => IsSearchByPartMode;
+
     /// <summary>True when searching by Vendor Name.</summary>
     public bool IsSearchByVendor => !IsSearchByPartMode;
 
@@ -60,7 +61,11 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     /// without taking a hard dependency on UI types.
     /// Parameters: (candidates, dialogTitle) → selected item, or null if cancelled.
     /// </summary>
-    public Func<IReadOnlyList<Model_FuzzySearchResult>, string, Task<Model_FuzzySearchResult?>>? ShowFuzzyPickerAsync { get; set; }
+    public Func<
+        IReadOnlyList<Model_FuzzySearchResult>,
+        string,
+        Task<Model_FuzzySearchResult?>
+    >? ShowFuzzyPickerAsync { get; set; }
 
     /// <summary>
     /// Set by the view's code-behind so the ViewModel can request column sort indicators to reset
@@ -74,7 +79,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         IService_Tool_OutsideServiceHistory service,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         ArgumentNullException.ThrowIfNull(service);
@@ -109,7 +115,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             await _errorHandler.ShowUserErrorAsync(
                 $"Please enter a {(IsSearchByPartMode ? "part number" : "vendor name")} to search.",
                 "Input Required",
-                nameof(SearchAsync));
+                nameof(SearchAsync)
+            );
             return;
         }
 
@@ -133,7 +140,10 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
 
             if (candidates.Count == 0)
             {
-                ShowStatus($"No {(IsSearchByPartMode ? "parts" : "vendors")} found matching '{SearchTerm}'.", InfoBarSeverity.Warning);
+                ShowStatus(
+                    $"No {(IsSearchByPartMode ? "parts" : "vendors")} found matching '{SearchTerm}'.",
+                    InfoBarSeverity.Warning
+                );
                 return;
             }
 
@@ -180,7 +190,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(SearchAsync),
-                nameof(ViewModel_Tool_OutsideServiceHistory));
+                nameof(ViewModel_Tool_OutsideServiceHistory)
+            );
         }
         finally
         {
@@ -197,7 +208,9 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         if (!historyResult.IsSuccess || historyResult.Data is null)
         {
             ShowStatus(historyResult.ErrorMessage, InfoBarSeverity.Warning);
-            _logger.LogWarning($"Outside service history failed for part '{confirmedPart.Key}': {historyResult.ErrorMessage}");
+            _logger.LogWarning(
+                $"Outside service history failed for part '{confirmedPart.Key}': {historyResult.ErrorMessage}"
+            );
             return;
         }
 
@@ -211,12 +224,15 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             Results.Add(item);
         }
 
-        var summary = Results.Count > 0
-            ? $"Found {Results.Count} dispatch record(s) for part {confirmedPart.Label}."
-            : $"No outside service history found for part {confirmedPart.Label}.";
+        var summary =
+            Results.Count > 0
+                ? $"Found {Results.Count} dispatch record(s) for part {confirmedPart.Label}."
+                : $"No outside service history found for part {confirmedPart.Label}.";
 
         ShowStatus(summary);
-        _logger.LogInfo($"Outside service history: {Results.Count} records for part '{confirmedPart.Key}'");
+        _logger.LogInfo(
+            $"Outside service history: {Results.Count} records for part '{confirmedPart.Key}'"
+        );
     }
 
     private async Task LoadHistoryByVendorAsync(Model_FuzzySearchResult confirmedVendor)
@@ -229,7 +245,9 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         if (!partsResult.IsSuccess || partsResult.Data is null)
         {
             ShowStatus(partsResult.ErrorMessage, InfoBarSeverity.Warning);
-            _logger.LogWarning($"Parts query failed for vendor '{confirmedVendor.Key}': {partsResult.ErrorMessage}");
+            _logger.LogWarning(
+                $"Parts query failed for vendor '{confirmedVendor.Key}': {partsResult.ErrorMessage}"
+            );
             return;
         }
 
@@ -237,7 +255,10 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
 
         if (parts.Count == 0)
         {
-            ShowStatus($"No parts found for vendor '{confirmedVendor.Label}'.", InfoBarSeverity.Warning);
+            ShowStatus(
+                $"No parts found for vendor '{confirmedVendor.Label}'.",
+                InfoBarSeverity.Warning
+            );
             return;
         }
 
@@ -256,7 +277,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         {
             var picked = await ShowFuzzyPickerAsync(
                 parts,
-                $"Select Part — {confirmedVendor.Label}");
+                $"Select Part — {confirmedVendor.Label}"
+            );
 
             if (picked is null)
             {
@@ -268,14 +290,21 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         }
 
         // Step 5 (vendor mode): load dispatch records for that specific vendor + part
-        ShowStatus($"Loading dispatch history for {selectedPart.Label} at {confirmedVendor.Label}…");
+        ShowStatus(
+            $"Loading dispatch history for {selectedPart.Label} at {confirmedVendor.Label}…"
+        );
 
-        var historyResult = await _service.GetHistoryByVendorAndPartAsync(confirmedVendor.Key, selectedPart.Key);
+        var historyResult = await _service.GetHistoryByVendorAndPartAsync(
+            confirmedVendor.Key,
+            selectedPart.Key
+        );
 
         if (!historyResult.IsSuccess || historyResult.Data is null)
         {
             ShowStatus(historyResult.ErrorMessage, InfoBarSeverity.Warning);
-            _logger.LogWarning($"History failed for vendor '{confirmedVendor.Key}', part '{selectedPart.Key}': {historyResult.ErrorMessage}");
+            _logger.LogWarning(
+                $"History failed for vendor '{confirmedVendor.Key}', part '{selectedPart.Key}': {historyResult.ErrorMessage}"
+            );
             return;
         }
 
@@ -289,12 +318,15 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             Results.Add(item);
         }
 
-        var summary = Results.Count > 0
-            ? $"Found {Results.Count} dispatch record(s) for {selectedPart.Label} at {confirmedVendor.Label}."
-            : $"No dispatch history found for {selectedPart.Label} at {confirmedVendor.Label}.";
+        var summary =
+            Results.Count > 0
+                ? $"Found {Results.Count} dispatch record(s) for {selectedPart.Label} at {confirmedVendor.Label}."
+                : $"No dispatch history found for {selectedPart.Label} at {confirmedVendor.Label}.";
 
         ShowStatus(summary);
-        _logger.LogInfo($"Outside service history: {Results.Count} records for vendor '{confirmedVendor.Key}', part '{selectedPart.Key}'");
+        _logger.LogInfo(
+            $"Outside service history: {Results.Count} records for vendor '{confirmedVendor.Key}', part '{selectedPart.Key}'"
+        );
     }
 
     [RelayCommand]
@@ -341,16 +373,34 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
 
         IEnumerable<Model_OutsideServiceHistory> sorted = _sortPropertyName switch
         {
-            nameof(Model_OutsideServiceHistory.PartNumber)     => _sortAscending ? _allResults.OrderBy(r => r.PartNumber)     : _allResults.OrderByDescending(r => r.PartNumber),
-            nameof(Model_OutsideServiceHistory.VendorID)       => _sortAscending ? _allResults.OrderBy(r => r.VendorID)       : _allResults.OrderByDescending(r => r.VendorID),
-            nameof(Model_OutsideServiceHistory.VendorName)     => _sortAscending ? _allResults.OrderBy(r => r.VendorName)     : _allResults.OrderByDescending(r => r.VendorName),
-            nameof(Model_OutsideServiceHistory.VendorCity)     => _sortAscending ? _allResults.OrderBy(r => r.VendorCity)     : _allResults.OrderByDescending(r => r.VendorCity),
-            nameof(Model_OutsideServiceHistory.VendorState)    => _sortAscending ? _allResults.OrderBy(r => r.VendorState)    : _allResults.OrderByDescending(r => r.VendorState),
-            nameof(Model_OutsideServiceHistory.DispatchID)     => _sortAscending ? _allResults.OrderBy(r => r.DispatchID)     : _allResults.OrderByDescending(r => r.DispatchID),
-            nameof(Model_OutsideServiceHistory.DispatchDate)   => _sortAscending ? _allResults.OrderBy(r => r.DispatchDate)   : _allResults.OrderByDescending(r => r.DispatchDate),
-            nameof(Model_OutsideServiceHistory.QuantitySent)   => _sortAscending ? _allResults.OrderBy(r => r.QuantitySent)   : _allResults.OrderByDescending(r => r.QuantitySent),
-            nameof(Model_OutsideServiceHistory.DispatchStatus) => _sortAscending ? _allResults.OrderBy(r => r.DispatchStatus) : _allResults.OrderByDescending(r => r.DispatchStatus),
-            _ => _allResults
+            nameof(Model_OutsideServiceHistory.PartNumber) => _sortAscending
+                ? _allResults.OrderBy(r => r.PartNumber)
+                : _allResults.OrderByDescending(r => r.PartNumber),
+            nameof(Model_OutsideServiceHistory.VendorID) => _sortAscending
+                ? _allResults.OrderBy(r => r.VendorID)
+                : _allResults.OrderByDescending(r => r.VendorID),
+            nameof(Model_OutsideServiceHistory.VendorName) => _sortAscending
+                ? _allResults.OrderBy(r => r.VendorName)
+                : _allResults.OrderByDescending(r => r.VendorName),
+            nameof(Model_OutsideServiceHistory.VendorCity) => _sortAscending
+                ? _allResults.OrderBy(r => r.VendorCity)
+                : _allResults.OrderByDescending(r => r.VendorCity),
+            nameof(Model_OutsideServiceHistory.VendorState) => _sortAscending
+                ? _allResults.OrderBy(r => r.VendorState)
+                : _allResults.OrderByDescending(r => r.VendorState),
+            nameof(Model_OutsideServiceHistory.DispatchID) => _sortAscending
+                ? _allResults.OrderBy(r => r.DispatchID)
+                : _allResults.OrderByDescending(r => r.DispatchID),
+            nameof(Model_OutsideServiceHistory.DispatchDate) => _sortAscending
+                ? _allResults.OrderBy(r => r.DispatchDate)
+                : _allResults.OrderByDescending(r => r.DispatchDate),
+            nameof(Model_OutsideServiceHistory.QuantitySent) => _sortAscending
+                ? _allResults.OrderBy(r => r.QuantitySent)
+                : _allResults.OrderByDescending(r => r.QuantitySent),
+            nameof(Model_OutsideServiceHistory.DispatchStatus) => _sortAscending
+                ? _allResults.OrderBy(r => r.DispatchStatus)
+                : _allResults.OrderByDescending(r => r.DispatchStatus),
+            _ => _allResults,
         };
 
         Results.Clear();
@@ -360,4 +410,3 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         }
     }
 }
-

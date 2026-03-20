@@ -17,14 +17,29 @@ public class Converter_IconCodeToGlyph : IValueConverter
             if (iconCode.StartsWith("&#x") && iconCode.EndsWith(";"))
             {
                 string hex = iconCode.Substring(3, iconCode.Length - 4);
-                if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out int code))
+                if (
+                    int.TryParse(
+                        hex,
+                        System.Globalization.NumberStyles.HexNumber,
+                        null,
+                        out int code
+                    )
+                )
                 {
                     return ((char)code).ToString();
                 }
             }
 
             // Handle raw hex format: E7B8
-            if (iconCode.Length == 4 && int.TryParse(iconCode, System.Globalization.NumberStyles.HexNumber, null, out int rawCode))
+            if (
+                iconCode.Length == 4
+                && int.TryParse(
+                    iconCode,
+                    System.Globalization.NumberStyles.HexNumber,
+                    null,
+                    out int rawCode
+                )
+            )
             {
                 return ((char)rawCode).ToString();
             }
@@ -41,4 +56,3 @@ public class Converter_IconCodeToGlyph : IValueConverter
         throw new NotImplementedException();
     }
 }
-

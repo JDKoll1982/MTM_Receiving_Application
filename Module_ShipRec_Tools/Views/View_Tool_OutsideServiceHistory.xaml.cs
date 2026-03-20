@@ -34,14 +34,16 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
 
     private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerDialogAsync(
         IReadOnlyList<Model_FuzzySearchResult> candidates,
-        string title)
+        string title
+    )
     {
         var dialog = new Dialog_FuzzySearchPicker(
             candidates,
             title,
-            subtitle: $"{candidates.Count} possible matches — select the correct one.")
+            subtitle: $"{candidates.Count} possible matches — select the correct one."
+        )
         {
-            XamlRoot = this.XamlRoot
+            XamlRoot = this.XamlRoot,
         };
 
         var result = await dialog.ShowAsync();
@@ -88,4 +90,3 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
         }
     }
 }
-

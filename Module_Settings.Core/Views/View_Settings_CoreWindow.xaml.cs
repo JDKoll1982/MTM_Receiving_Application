@@ -1,9 +1,9 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Extensions.DependencyInjection;
-using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.Views;
@@ -23,7 +23,10 @@ public sealed partial class View_Settings_CoreWindow : Window
     private readonly IService_LoggingUtility _logger;
     private Type? _currentNestedSettingsPageType;
 
-    public View_Settings_CoreWindow(ViewModel_SettingsWindow viewModel, IServiceProvider serviceProvider)
+    public View_Settings_CoreWindow(
+        ViewModel_SettingsWindow viewModel,
+        IServiceProvider serviceProvider
+    )
     {
         InitializeComponent();
         _instance = this;
@@ -49,7 +52,10 @@ public sealed partial class View_Settings_CoreWindow : Window
 
         SettingsNavView.SelectedItem = SettingsNavView.MenuItems[0];
         NavigateToCoreHub();
-        SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
+        SetHeader(
+            "Configuration",
+            "Manage core system defaults, users, and infrastructure settings."
+        );
         UpdateHeaderActions();
     }
 
@@ -58,7 +64,10 @@ public sealed partial class View_Settings_CoreWindow : Window
     /// </summary>
     public static View_Settings_CoreWindow? GetInstance() => _instance;
 
-    private void OnSettingsFrameNavigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    private void OnSettingsFrameNavigated(
+        object sender,
+        Microsoft.UI.Xaml.Navigation.NavigationEventArgs e
+    )
     {
         _logger.LogInfo("Frame navigation event triggered", "Settings.Navigation");
         UpdateHeaderForCurrentPage();
@@ -106,24 +115,36 @@ public sealed partial class View_Settings_CoreWindow : Window
     {
         if (pageType is null)
         {
-            _logger.LogWarning("UpdateHeaderForPageType called with null pageType", "Settings.Navigation");
+            _logger.LogWarning(
+                "UpdateHeaderForPageType called with null pageType",
+                "Settings.Navigation"
+            );
             return;
         }
 
         _currentNestedSettingsPageType = pageType;
-        _logger.LogInfo($"UpdateHeaderForPageType called with: {pageType.Name} (Full: {pageType.FullName})", "Settings.Navigation");
+        _logger.LogInfo(
+            $"UpdateHeaderForPageType called with: {pageType.Name} (Full: {pageType.FullName})",
+            "Settings.Navigation"
+        );
 
         var (title, description) = GetPageHeader(pageType);
 
         if (!string.IsNullOrEmpty(title))
         {
-            _logger.LogInfo($"Header mapping found - Title: '{title}', Description: '{description}'", "Settings.Navigation");
+            _logger.LogInfo(
+                $"Header mapping found - Title: '{title}', Description: '{description}'",
+                "Settings.Navigation"
+            );
             SetHeader(title, description);
             _logger.LogInfo($"SetHeader called with: {title}", "Settings.Navigation");
         }
         else
         {
-            _logger.LogWarning($"NO HEADER MAPPING FOUND for page type: {pageType.Name} (Full: {pageType.FullName})", "Settings.Navigation");
+            _logger.LogWarning(
+                $"NO HEADER MAPPING FOUND for page type: {pageType.Name} (Full: {pageType.FullName})",
+                "Settings.Navigation"
+            );
         }
 
         UpdateHeaderActions();
@@ -138,96 +159,173 @@ public sealed partial class View_Settings_CoreWindow : Window
         return pageType.Name switch
         {
             // Receiving Settings Pages
-            "View_Settings_Receiving_Defaults" =>
-                ("Receiving Defaults", "Set common default values used when creating new loads and packages."),
-            "View_Settings_Receiving_Validation" =>
-                ("Receiving Validation", "Control required fields and validation rules applied during Receiving."),
-            "View_Settings_Receiving_UserPreferences" =>
-                ("Part Number Auto Padding", "Configure how receiving part numbers are automatically padded and normalized."),
-            "View_Settings_Receiving_BusinessRules" =>
-                ("Workflow Options", "Configure workflow defaults, auto-save, and receiving behavior options."),
-            "View_Settings_Receiving_NavigationHub" =>
-                ("Receiving Navigation", "Manage Receiving module defaults and configuration pages."),
+            "View_Settings_Receiving_Defaults" => (
+                "Receiving Defaults",
+                "Set common default values used when creating new loads and packages."
+            ),
+            "View_Settings_Receiving_Validation" => (
+                "Receiving Validation",
+                "Control required fields and validation rules applied during Receiving."
+            ),
+            "View_Settings_Receiving_UserPreferences" => (
+                "Part Number Auto Padding",
+                "Configure how receiving part numbers are automatically padded and normalized."
+            ),
+            "View_Settings_Receiving_BusinessRules" => (
+                "Workflow Options",
+                "Configure workflow defaults, auto-save, and receiving behavior options."
+            ),
+            "View_Settings_Receiving_NavigationHub" => (
+                "Receiving Navigation",
+                "Manage Receiving module defaults and configuration pages."
+            ),
 
             // Dunnage Settings Pages
-            "View_Settings_Dunnage_SettingsOverview" =>
-                ("Dunnage Settings", "Review the current Dunnage configuration and jump to common sections."),
-            "View_Settings_Dunnage_UserPreferences" =>
-                ("User Preferences", "Configure how the Dunnage workflow behaves for your user account."),
-            "View_Settings_Dunnage_UiUx" =>
-                ("UI/UX Settings", "Customize the Dunnage user interface and experience."),
-            "View_Settings_Dunnage_Workflow" =>
-                ("Workflow Settings", "Configure Dunnage workflow behavior and automation."),
-            "View_Settings_Dunnage_Permissions" =>
-                ("Permissions", "Manage user permissions and access controls."),
-            "View_Settings_Dunnage_Audit" =>
-                ("Audit Log", "Review system audit logs and activity history."),
-            "View_Settings_Dunnage_NavigationHub" =>
-                ("Dunnage Navigation", "Manage Dunnage module defaults and configuration pages."),
+            "View_Settings_Dunnage_SettingsOverview" => (
+                "Dunnage Settings",
+                "Review the current Dunnage configuration and jump to common sections."
+            ),
+            "View_Settings_Dunnage_UserPreferences" => (
+                "User Preferences",
+                "Configure how the Dunnage workflow behaves for your user account."
+            ),
+            "View_Settings_Dunnage_UiUx" => (
+                "UI/UX Settings",
+                "Customize the Dunnage user interface and experience."
+            ),
+            "View_Settings_Dunnage_Workflow" => (
+                "Workflow Settings",
+                "Configure Dunnage workflow behavior and automation."
+            ),
+            "View_Settings_Dunnage_Permissions" => (
+                "Permissions",
+                "Manage user permissions and access controls."
+            ),
+            "View_Settings_Dunnage_Audit" => (
+                "Audit Log",
+                "Review system audit logs and activity history."
+            ),
+            "View_Settings_Dunnage_NavigationHub" => (
+                "Dunnage Navigation",
+                "Manage Dunnage module defaults and configuration pages."
+            ),
 
             // Reporting Settings Pages
-            "View_Settings_Reporting_SettingsOverview" =>
-                ("Reporting Settings", "Review the current Reporting configuration and jump to common sections."),
-            "View_Settings_Reporting_FileIO" =>
-                ("File I/O Settings", "Configure file export options and output locations."),
-            "View_Settings_Reporting_Csv" =>
-                ("Data Export Settings", "Configure data export format and options."),
-            "View_Settings_Reporting_EmailUx" =>
-                ("Email Settings", "Configure email delivery and formatting options."),
-            "View_Settings_Reporting_BusinessRules" =>
-                ("Business Rules", "Define business rules for report generation."),
-            "View_Settings_Reporting_Permissions" =>
-                ("Permissions", "Manage user permissions for reporting features."),
-            "View_Settings_Reporting_NavigationHub" =>
-                ("Reporting Navigation", "Manage Reporting module defaults and configuration pages."),
+            "View_Settings_Reporting_SettingsOverview" => (
+                "Reporting Settings",
+                "Review the current Reporting configuration and jump to common sections."
+            ),
+            "View_Settings_Reporting_FileIO" => (
+                "File I/O Settings",
+                "Configure file export options and output locations."
+            ),
+            "View_Settings_Reporting_Csv" => (
+                "Data Export Settings",
+                "Configure data export format and options."
+            ),
+            "View_Settings_Reporting_EmailUx" => (
+                "Email Settings",
+                "Configure email delivery and formatting options."
+            ),
+            "View_Settings_Reporting_BusinessRules" => (
+                "Business Rules",
+                "Define business rules for report generation."
+            ),
+            "View_Settings_Reporting_Permissions" => (
+                "Permissions",
+                "Manage user permissions for reporting features."
+            ),
+            "View_Settings_Reporting_NavigationHub" => (
+                "Reporting Navigation",
+                "Manage Reporting module defaults and configuration pages."
+            ),
 
             // Volvo Settings Pages
-            "View_Settings_Volvo_SettingsOverview" =>
-                ("Volvo Settings", "Review the current Volvo configuration and jump to common sections."),
-            "View_Settings_Volvo_DatabaseSettings" =>
-                ("Database Settings", "Configure Volvo database connection and options."),
-            "View_Settings_Volvo_ConnectionStrings" =>
-                ("Connection Strings", "Manage database and service connection strings."),
-            "View_Settings_Volvo_FilePaths" =>
-                ("File Paths", "Configure file locations and paths for Volvo operations."),
-            "View_Settings_Volvo_UiConfiguration" =>
-                ("UI Configuration", "Customize the Volvo user interface."),
-            "View_Settings_Volvo_ExternalizationBacklog" =>
-                ("Backlog", "Review pending items for externalization."),
-            "View_Settings_Volvo_NavigationHub" =>
-                ("Volvo Navigation", "Manage Volvo module defaults and configuration pages."),
+            "View_Settings_Volvo_SettingsOverview" => (
+                "Volvo Settings",
+                "Review the current Volvo configuration and jump to common sections."
+            ),
+            "View_Settings_Volvo_DatabaseSettings" => (
+                "Database Settings",
+                "Configure Volvo database connection and options."
+            ),
+            "View_Settings_Volvo_ConnectionStrings" => (
+                "Connection Strings",
+                "Manage database and service connection strings."
+            ),
+            "View_Settings_Volvo_FilePaths" => (
+                "File Paths",
+                "Configure file locations and paths for Volvo operations."
+            ),
+            "View_Settings_Volvo_UiConfiguration" => (
+                "UI Configuration",
+                "Customize the Volvo user interface."
+            ),
+            "View_Settings_Volvo_ExternalizationBacklog" => (
+                "Backlog",
+                "Review pending items for externalization."
+            ),
+            "View_Settings_Volvo_NavigationHub" => (
+                "Volvo Navigation",
+                "Manage Volvo module defaults and configuration pages."
+            ),
 
             // Developer Tools Pages
-            "View_Settings_DeveloperTools_SettingsOverview" =>
-                ("Developer Tools", "Access diagnostic and developer utilities."),
-            "View_Settings_DeveloperTools_FeatureA" =>
-                ("Feature A", "Developer feature A settings."),
-            "View_Settings_DeveloperTools_FeatureB" =>
-                ("Feature B", "Developer feature B settings."),
-            "View_Settings_DeveloperTools_FeatureC" =>
-                ("Feature C", "Developer feature C settings."),
-            "View_Settings_DeveloperTools_FeatureD" =>
-                ("Feature D", "Developer feature D settings."),
-            "View_SettingsDeveloperTools_DatabaseTest" =>
-                ("Database Test", "Test database connectivity and queries."),
-            "View_Settings_DeveloperTools_NavigationHub" =>
-                ("Developer Tools", "Access diagnostic and developer utilities."),
+            "View_Settings_DeveloperTools_SettingsOverview" => (
+                "Developer Tools",
+                "Access diagnostic and developer utilities."
+            ),
+            "View_Settings_DeveloperTools_FeatureA" => (
+                "Feature A",
+                "Developer feature A settings."
+            ),
+            "View_Settings_DeveloperTools_FeatureB" => (
+                "Feature B",
+                "Developer feature B settings."
+            ),
+            "View_Settings_DeveloperTools_FeatureC" => (
+                "Feature C",
+                "Developer feature C settings."
+            ),
+            "View_Settings_DeveloperTools_FeatureD" => (
+                "Feature D",
+                "Developer feature D settings."
+            ),
+            "View_SettingsDeveloperTools_DatabaseTest" => (
+                "Database Test",
+                "Test database connectivity and queries."
+            ),
+            "View_Settings_DeveloperTools_NavigationHub" => (
+                "Developer Tools",
+                "Access diagnostic and developer utilities."
+            ),
 
             // Core Settings Pages
-            "View_Settings_CoreNavigationHub" =>
-                ("Configuration", "Manage core system defaults, users, and infrastructure settings."),
-            "View_Settings_System" =>
-                ("System Settings", "Configure core system settings and defaults."),
-            "View_Settings_Users" =>
-                ("User Management", "Manage application users and accounts."),
-            "View_Settings_Theme" =>
-                ("Theme Settings", "Configure application appearance and theme."),
-            "View_Settings_Database" =>
-                ("Database Settings", "Configure database connections and options."),
-            "View_Settings_Logging" =>
-                ("Logging Settings", "Configure logging and diagnostic options."),
-            "View_Settings_SharedPaths" =>
-                ("Shared Paths", "Configure shared file paths and locations."),
+            "View_Settings_CoreNavigationHub" => (
+                "Configuration",
+                "Manage core system defaults, users, and infrastructure settings."
+            ),
+            "View_Settings_System" => (
+                "System Settings",
+                "Configure core system settings and defaults."
+            ),
+            "View_Settings_Users" => ("User Management", "Manage application users and accounts."),
+            "View_Settings_Theme" => (
+                "Theme Settings",
+                "Configure application appearance and theme."
+            ),
+            "View_Settings_Database" => (
+                "Database Settings",
+                "Configure database connections and options."
+            ),
+            "View_Settings_Logging" => (
+                "Logging Settings",
+                "Configure logging and diagnostic options."
+            ),
+            "View_Settings_SharedPaths" => (
+                "Shared Paths",
+                "Configure shared file paths and locations."
+            ),
 
             _ => (string.Empty, string.Empty),
         };
@@ -257,7 +355,10 @@ public sealed partial class View_Settings_CoreWindow : Window
     private void UpdateHeaderActions()
     {
         var selectedTag = (SettingsNavView.SelectedItem as NavigationViewItem)?.Tag?.ToString();
-        if (TryGetModuleContext(selectedTag, out var moduleNamespacePrefix, out var hubViewType) is false)
+        if (
+            TryGetModuleContext(selectedTag, out var moduleNamespacePrefix, out var hubViewType)
+            is false
+        )
         {
             BackToHubButton.Visibility = Visibility.Collapsed;
             return;
@@ -282,7 +383,10 @@ public sealed partial class View_Settings_CoreWindow : Window
             return;
         }
 
-        if (activePageType.Namespace?.StartsWith(moduleNamespacePrefix, StringComparison.Ordinal) == true)
+        if (
+            activePageType.Namespace?.StartsWith(moduleNamespacePrefix, StringComparison.Ordinal)
+            == true
+        )
         {
             BackToHubButton.Visibility = Visibility.Visible;
             return;
@@ -291,7 +395,11 @@ public sealed partial class View_Settings_CoreWindow : Window
         BackToHubButton.Visibility = Visibility.Collapsed;
     }
 
-    private static bool TryGetModuleContext(string? selectedTag, out string moduleNamespacePrefix, out Type? hubViewType)
+    private static bool TryGetModuleContext(
+        string? selectedTag,
+        out string moduleNamespacePrefix,
+        out Type? hubViewType
+    )
     {
         moduleNamespacePrefix = string.Empty;
         hubViewType = null;
@@ -305,23 +413,28 @@ public sealed partial class View_Settings_CoreWindow : Window
         {
             case "ReceivingSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Receiving.Views";
-                hubViewType = typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
+                hubViewType =
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
                 return true;
             case "DunnageSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Dunnage.Views";
-                hubViewType = typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
+                hubViewType =
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
                 return true;
             case "ReportingSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Reporting.Views";
-                hubViewType = typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
+                hubViewType =
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
                 return true;
             case "VolvoSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Volvo.Views";
                 hubViewType = typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
                 return true;
             case "DeveloperToolsSettingsHub":
-                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.DeveloperTools.Views";
-                hubViewType = typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
+                moduleNamespacePrefix =
+                    "MTM_Receiving_Application.Module_Settings.DeveloperTools.Views";
+                hubViewType =
+                    typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
                 return true;
             default:
                 return false;
@@ -334,7 +447,10 @@ public sealed partial class View_Settings_CoreWindow : Window
         var selectedTag = (SettingsNavView.SelectedItem as NavigationViewItem)?.Tag?.ToString();
         if (!TryGetModuleContext(selectedTag, out _, out var hubViewType) || hubViewType is null)
         {
-            _logger.LogWarning($"Failed to navigate back: Invalid module context for {selectedTag}", "Settings.Navigation");
+            _logger.LogWarning(
+                $"Failed to navigate back: Invalid module context for {selectedTag}",
+                "Settings.Navigation"
+            );
             return;
         }
 
@@ -349,13 +465,17 @@ public sealed partial class View_Settings_CoreWindow : Window
     private void NavigateToCoreHub()
     {
         _logger.LogInfo("Navigating to Core Hub", "Settings.Navigation");
-        SettingsFrame.Content = _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
+        SettingsFrame.Content =
+            _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
         _currentNestedSettingsPageType = typeof(View_Settings_CoreNavigationHub);
     }
 
     private void OnWindowActivated(object sender, WindowActivatedEventArgs args)
     {
-        if (args.WindowActivationState != WindowActivationState.Deactivated && !_hasSetTitleBarDragRegion)
+        if (
+            args.WindowActivationState != WindowActivationState.Deactivated
+            && !_hasSetTitleBarDragRegion
+        )
         {
             _hasSetTitleBarDragRegion = true;
             SetTitleBarDragRegion();
@@ -369,7 +489,11 @@ public sealed partial class View_Settings_CoreWindow : Window
             if (AppWindow.TitleBar != null)
             {
                 AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
-                AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Tall;
+                AppWindow.TitleBar.PreferredHeightOption = Microsoft
+                    .UI
+                    .Windowing
+                    .TitleBarHeightOption
+                    .Tall;
 
                 var transparentColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
                 AppWindow.TitleBar.ButtonBackgroundColor = transparentColor;
@@ -402,7 +526,8 @@ public sealed partial class View_Settings_CoreWindow : Window
         }
 
         // Determine if we're in light or dark mode
-        var isDarkMode = (Content as FrameworkElement)?.ActualTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
+        var isDarkMode =
+            (Content as FrameworkElement)?.ActualTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
 
         if (isDarkMode)
         {
@@ -411,7 +536,12 @@ public sealed partial class View_Settings_CoreWindow : Window
             AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
             AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
             AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
-            AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
+            AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(
+                255,
+                160,
+                160,
+                160
+            );
         }
         else
         {
@@ -420,7 +550,12 @@ public sealed partial class View_Settings_CoreWindow : Window
             AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
             AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
             AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
-            AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 96, 96, 96);
+            AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(
+                255,
+                96,
+                96,
+                96
+            );
         }
     }
 
@@ -438,7 +573,7 @@ public sealed partial class View_Settings_CoreWindow : Window
                     X = 0,
                     Y = 0,
                     Width = (int)(AppTitleBar.ActualWidth * scale),
-                    Height = titleBarHeight
+                    Height = titleBarHeight,
                 };
 
                 AppWindow.TitleBar.SetDragRectangles(new[] { dragRect });
@@ -450,7 +585,10 @@ public sealed partial class View_Settings_CoreWindow : Window
         }
     }
 
-    private void OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    private void OnSelectionChanged(
+        NavigationView sender,
+        NavigationViewSelectionChangedEventArgs args
+    )
     {
         if (_isHandlingSelectionChanged)
         {
@@ -463,43 +601,72 @@ public sealed partial class View_Settings_CoreWindow : Window
             if (args.SelectedItem is NavigationViewItem item)
             {
                 var selectedModule = item.Tag?.ToString() ?? "Unknown";
-                _logger.LogInfo($"Navigation selection changed to: {selectedModule}", "Settings.Navigation");
+                _logger.LogInfo(
+                    $"Navigation selection changed to: {selectedModule}",
+                    "Settings.Navigation"
+                );
 
                 switch (item.Tag?.ToString())
                 {
                     case "CoreSettingsHub":
-                        SettingsFrame.Content = _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
+                        SettingsFrame.Content =
+                            _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
                         _currentNestedSettingsPageType = typeof(View_Settings_CoreNavigationHub);
-                        SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
+                        SetHeader(
+                            "Configuration",
+                            "Manage core system defaults, users, and infrastructure settings."
+                        );
                         UpdateHeaderActions();
                         break;
                     case "ReceivingSettingsHub":
-                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
-                        _currentNestedSettingsPageType = typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
-                        SetHeader("Receiving Navigation", "Manage Receiving module defaults and configuration pages.");
+                        SettingsFrame.Content =
+                            _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
+                        _currentNestedSettingsPageType =
+                            typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
+                        SetHeader(
+                            "Receiving Navigation",
+                            "Manage Receiving module defaults and configuration pages."
+                        );
                         UpdateHeaderActions();
                         break;
                     case "DunnageSettingsHub":
-                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
-                        _currentNestedSettingsPageType = typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
-                        SetHeader("Dunnage Navigation", "Manage Dunnage module defaults and configuration pages.");
+                        SettingsFrame.Content =
+                            _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
+                        _currentNestedSettingsPageType =
+                            typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
+                        SetHeader(
+                            "Dunnage Navigation",
+                            "Manage Dunnage module defaults and configuration pages."
+                        );
                         UpdateHeaderActions();
                         break;
                     case "ReportingSettingsHub":
-                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
-                        _currentNestedSettingsPageType = typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
-                        SetHeader("Reporting Navigation", "Manage Reporting module defaults and configuration pages.");
+                        SettingsFrame.Content =
+                            _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
+                        _currentNestedSettingsPageType =
+                            typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
+                        SetHeader(
+                            "Reporting Navigation",
+                            "Manage Reporting module defaults and configuration pages."
+                        );
                         UpdateHeaderActions();
                         break;
                     case "VolvoSettingsHub":
-                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
-                        _currentNestedSettingsPageType = typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
-                        SetHeader("Volvo Navigation", "Manage Volvo module defaults and configuration pages.");
+                        SettingsFrame.Content =
+                            _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+                        _currentNestedSettingsPageType =
+                            typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
+                        SetHeader(
+                            "Volvo Navigation",
+                            "Manage Volvo module defaults and configuration pages."
+                        );
                         UpdateHeaderActions();
                         break;
                     case "DeveloperToolsSettingsHub":
-                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
-                        _currentNestedSettingsPageType = typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
+                        SettingsFrame.Content =
+                            _serviceProvider.GetRequiredService<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
+                        _currentNestedSettingsPageType =
+                            typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
                         SetHeader("Developer Tools", "Access diagnostic and developer utilities.");
                         UpdateHeaderActions();
                         break;

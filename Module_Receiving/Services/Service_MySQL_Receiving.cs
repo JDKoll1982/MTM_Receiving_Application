@@ -1,11 +1,11 @@
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
@@ -21,7 +21,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public Service_MySQL_Receiving(
             Dao_ReceivingLoad receivingLoadDao,
             Dao_ReceivingLabelData receivingLabelDataDao,
-            IService_LoggingUtility logger)
+            IService_LoggingUtility logger
+        )
         {
             _receivingLoadDao = receivingLoadDao;
             _receivingLabelDataDao = receivingLabelDataDao;
@@ -77,7 +78,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                _logger.LogError($"Failed to update loads: {result.ErrorMessage}", result.Exception);
+                _logger.LogError(
+                    $"Failed to update loads: {result.ErrorMessage}",
+                    result.Exception
+                );
                 throw new InvalidOperationException(result.ErrorMessage, result.Exception);
             }
         }
@@ -100,12 +104,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                _logger.LogError($"Failed to delete loads: {result.ErrorMessage}", result.Exception);
+                _logger.LogError(
+                    $"Failed to delete loads: {result.ErrorMessage}",
+                    result.Exception
+                );
                 throw new InvalidOperationException(result.ErrorMessage, result.Exception);
             }
         }
 
-        public async Task<List<Model_ReceivingLoad>> GetReceivingHistoryAsync(string partID, DateTime startDate, DateTime endDate)
+        public async Task<List<Model_ReceivingLoad>> GetReceivingHistoryAsync(
+            string partID,
+            DateTime startDate,
+            DateTime endDate
+        )
         {
             var result = await _receivingLoadDao.GetHistoryAsync(partID, startDate, endDate);
 
@@ -115,26 +126,39 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                _logger.LogError($"Failed to get receiving history: {result.ErrorMessage}", result.Exception);
+                _logger.LogError(
+                    $"Failed to get receiving history: {result.ErrorMessage}",
+                    result.Exception
+                );
                 // TODO: Consider whether to throw an exception or return an empty list. For now, returning empty list to avoid breaking calling code.
                 return new List<Model_ReceivingLoad>();
             }
         }
 
-        public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate)
+        public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(
+            DateTime startDate,
+            DateTime endDate
+        )
         {
-            _logger.LogInfo($"Retrieving all receiving loads from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+            _logger.LogInfo(
+                $"Retrieving all receiving loads from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
+            );
 
             var result = await _receivingLoadDao.GetAllAsync(startDate, endDate);
 
             if (result.IsSuccess)
             {
-                _logger.LogInfo($"Retrieved {result.Data?.Count ?? 0} receiving loads from database");
+                _logger.LogInfo(
+                    $"Retrieved {result.Data?.Count ?? 0} receiving loads from database"
+                );
                 return result;
             }
             else
             {
-                _logger.LogError($"Failed to retrieve receiving loads: {result.ErrorMessage}", result.Exception);
+                _logger.LogError(
+                    $"Failed to retrieve receiving loads: {result.ErrorMessage}",
+                    result.Exception
+                );
                 return result;
             }
         }
@@ -156,7 +180,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                _logger.LogError($"Clear Label Data failed: {result.ErrorMessage}", result.Exception);
+                _logger.LogError(
+                    $"Clear Label Data failed: {result.ErrorMessage}",
+                    result.Exception
+                );
             }
 
             return result;
@@ -173,7 +200,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                _logger.LogError($"Failed to load current label data: {result.ErrorMessage}", result.Exception);
+                _logger.LogError(
+                    $"Failed to load current label data: {result.ErrorMessage}",
+                    result.Exception
+                );
             }
 
             return result;
@@ -195,7 +225,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return result.Data;
             }
 
-            _logger.LogError($"Failed to update label data: {result.ErrorMessage}", result.Exception);
+            _logger.LogError(
+                $"Failed to update label data: {result.ErrorMessage}",
+                result.Exception
+            );
             throw new InvalidOperationException(result.ErrorMessage, result.Exception);
         }
     }

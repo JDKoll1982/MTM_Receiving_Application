@@ -18,7 +18,12 @@ public class Service_UIAutomation : IService_UIAutomation
     // ── Win32 P/Invoke ────────────────────────────────────────────────────────
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string? lpszClass, string? lpszWindow);
+    private static extern IntPtr FindWindowEx(
+        IntPtr hwndParent,
+        IntPtr hwndChildAfter,
+        string? lpszClass,
+        string? lpszWindow
+    );
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
@@ -33,7 +38,11 @@ public class Service_UIAutomation : IService_UIAutomation
     // ── Window discovery ──────────────────────────────────────────────────────
 
     /// <inheritdoc/>
-    public async Task<AutomationElement?> FindWindowAsync(string windowTitle, TimeSpan timeout, CancellationToken ct = default)
+    public async Task<AutomationElement?> FindWindowAsync(
+        string windowTitle,
+        TimeSpan timeout,
+        CancellationToken ct = default
+    )
     {
         var deadline = DateTime.UtcNow + timeout;
         while (DateTime.UtcNow < deadline)
@@ -42,7 +51,8 @@ public class Service_UIAutomation : IService_UIAutomation
 
             var element = AutomationElement.RootElement.FindFirst(
                 TreeScope.Children,
-                new PropertyCondition(AutomationElement.NameProperty, windowTitle));
+                new PropertyCondition(AutomationElement.NameProperty, windowTitle)
+            );
 
             if (element is not null)
             {
@@ -56,12 +66,12 @@ public class Service_UIAutomation : IService_UIAutomation
     }
 
     /// <inheritdoc/>
-    public IntPtr FindWindowByClassAndTitle(string className, string windowTitle)
-        => FindWindow(className, windowTitle);
+    public IntPtr FindWindowByClassAndTitle(string className, string windowTitle) =>
+        FindWindow(className, windowTitle);
 
     /// <inheritdoc/>
-    public bool WindowExists(string className, string windowTitle)
-        => FindWindow(className, windowTitle) != IntPtr.Zero;
+    public bool WindowExists(string className, string windowTitle) =>
+        FindWindow(className, windowTitle) != IntPtr.Zero;
 
     // ── Popup lifecycle ───────────────────────────────────────────────────────
 
@@ -71,7 +81,8 @@ public class Service_UIAutomation : IService_UIAutomation
         string windowTitle,
         TimeSpan settleTimeout,
         int pollMs = 100,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         var deadline = DateTime.UtcNow + settleTimeout;
         while (DateTime.UtcNow < deadline)
@@ -96,7 +107,8 @@ public class Service_UIAutomation : IService_UIAutomation
         string windowTitle,
         TimeSpan timeout,
         int pollMs = 100,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         var deadline = DateTime.UtcNow + timeout;
         while (DateTime.UtcNow < deadline)
@@ -118,7 +130,8 @@ public class Service_UIAutomation : IService_UIAutomation
         string windowTitle,
         string keySequence,
         TimeSpan timeout,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         var hwnd = FindWindow(className, windowTitle);
         if (hwnd == IntPtr.Zero)
@@ -133,7 +146,8 @@ public class Service_UIAutomation : IService_UIAutomation
 
         WinForms.SendKeys.Send(keySequence);
 
-        await WaitForWindowToCloseAsync(className, windowTitle, timeout, ct: ct).ConfigureAwait(false);
+        await WaitForWindowToCloseAsync(className, windowTitle, timeout, ct: ct)
+            .ConfigureAwait(false);
         return true;
     }
 
@@ -145,7 +159,8 @@ public class Service_UIAutomation : IService_UIAutomation
         string automationId,
         string value,
         bool sendTab = false,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         ct.ThrowIfCancellationRequested();
 
@@ -154,7 +169,8 @@ public class Service_UIAutomation : IService_UIAutomation
         if (!element.Current.IsEnabled || !element.Current.IsKeyboardFocusable)
         {
             throw new InvalidOperationException(
-                $"Field '{automationId}' is not enabled or keyboard-focusable.");
+                $"Field '{automationId}' is not enabled or keyboard-focusable."
+            );
         }
 
         var hwnd = new IntPtr(element.Current.NativeWindowHandle);
@@ -175,7 +191,8 @@ public class Service_UIAutomation : IService_UIAutomation
         AutomationElement window,
         string automationId,
         string value,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         ct.ThrowIfCancellationRequested();
 
@@ -184,7 +201,8 @@ public class Service_UIAutomation : IService_UIAutomation
         if (!element.Current.IsEnabled || !element.Current.IsKeyboardFocusable)
         {
             throw new InvalidOperationException(
-                $"Field '{automationId}' is not enabled or keyboard-focusable.");
+                $"Field '{automationId}' is not enabled or keyboard-focusable."
+            );
         }
 
         var hwnd = new IntPtr(element.Current.NativeWindowHandle);
@@ -205,8 +223,7 @@ public class Service_UIAutomation : IService_UIAutomation
     /// ⚠️ PF-08: Never pass credentials through this method — use Process.StartInfo for launch args.
     /// SendKeys is only for non-sensitive field values and navigation keystrokes.
     /// </remarks>
-    public void SendKeys(string keys)
-        => WinForms.SendKeys.Send(keys);
+    public void SendKeys(string keys) => WinForms.SendKeys.Send(keys);
 
     /// <inheritdoc/>
     public bool SetForegroundVerified(IntPtr hwnd)
@@ -217,16 +234,21 @@ public class Service_UIAutomation : IService_UIAutomation
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
-    private static AutomationElement FindElementByAutomationId(AutomationElement window, string automationId)
+    private static AutomationElement FindElementByAutomationId(
+        AutomationElement window,
+        string automationId
+    )
     {
         var element = window.FindFirst(
             TreeScope.Descendants,
-            new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
+            new PropertyCondition(AutomationElement.AutomationIdProperty, automationId)
+        );
 
         if (element is null)
         {
             throw new InvalidOperationException(
-                $"No UI element with AutomationId '{automationId}' found in the target window.");
+                $"No UI element with AutomationId '{automationId}' found in the target window."
+            );
         }
 
         return element;

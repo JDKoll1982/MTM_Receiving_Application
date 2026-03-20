@@ -11,9 +11,7 @@ public sealed partial class View_Dunnage_ReviewView : UserControl
     public ViewModel_Dunnage_Review ViewModel { get; }
     private readonly IService_Focus _focusService;
 
-    public View_Dunnage_ReviewView(
-        ViewModel_Dunnage_Review viewModel,
-        IService_Focus focusService)
+    public View_Dunnage_ReviewView(ViewModel_Dunnage_Review viewModel, IService_Focus focusService)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(focusService);

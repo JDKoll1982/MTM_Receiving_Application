@@ -1,8 +1,8 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using System;
 
 namespace MTM_Receiving_Application.Module_Core.Services
 {
@@ -83,20 +83,23 @@ namespace MTM_Receiving_Application.Module_Core.Services
             };
 
             // Hook into Visibility changes
-            view.RegisterPropertyChangedCallback(UIElement.VisibilityProperty, (_, _) =>
-            {
-                if (view.Visibility == Visibility.Visible)
+            view.RegisterPropertyChangedCallback(
+                UIElement.VisibilityProperty,
+                (_, _) =>
                 {
-                    if (targetControl != null)
+                    if (view.Visibility == Visibility.Visible)
                     {
-                        SetFocus(targetControl);
-                    }
-                    else
-                    {
-                        SetFocusFirstInput(view);
+                        if (targetControl != null)
+                        {
+                            SetFocus(targetControl);
+                        }
+                        else
+                        {
+                            SetFocusFirstInput(view);
+                        }
                     }
                 }
-            });
+            );
         }
 
         private Control? FindFirstFocusableChild(DependencyObject parent)
@@ -133,11 +136,13 @@ namespace MTM_Receiving_Application.Module_Core.Services
             }
 
             // Check for specific input types we want to prioritize
-            if (control is TextBox ||
-                control is NumberBox ||
-                control is ComboBox ||
-                control is PasswordBox ||
-                control is AutoSuggestBox)
+            if (
+                control is TextBox
+                || control is NumberBox
+                || control is ComboBox
+                || control is PasswordBox
+                || control is AutoSuggestBox
+            )
             {
                 return true;
             }
@@ -147,12 +152,14 @@ namespace MTM_Receiving_Application.Module_Core.Services
             // But since we are doing a depth-first search (or breadth-first?), the order matters.
             // The current implementation is depth-first.
 
-            if (control is Button ||
-                control is CheckBox ||
-                control is RadioButton ||
-                control is ToggleSwitch ||
-                control is ListView ||
-                control is GridView)
+            if (
+                control is Button
+                || control is CheckBox
+                || control is RadioButton
+                || control is ToggleSwitch
+                || control is ListView
+                || control is GridView
+            )
             {
                 return true;
             }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
@@ -19,7 +19,8 @@ public class Dao_ReceivingLabelData
 
     public Dao_ReceivingLabelData(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     private static string? CleanPONumber(string? poNumber)
@@ -46,15 +47,15 @@ public class Dao_ReceivingLabelData
 
         var errorMessage = result.ErrorMessage;
         return errorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
-            && (errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
-                || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase));
+            && (
+                errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
+                || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase)
+            );
     }
 
     private static string NormalizeLocation(string? location)
     {
-        return string.IsNullOrWhiteSpace(location)
-            ? DefaultInitialLocation
-            : location.Trim();
+        return string.IsNullOrWhiteSpace(location) ? DefaultInitialLocation : location.Trim();
     }
 
     private static bool IsTransientTransactionError(Exception exception)
@@ -94,8 +95,14 @@ public class Dao_ReceivingLabelData
                 // Group by PartID to get the total skids per part, then track per-part position.
                 var partTotals = orderedLoads
                     .GroupBy(load => load.PartID, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary(group => group.Key, group => group.Count(), StringComparer.OrdinalIgnoreCase);
-                var partSequenceCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    .ToDictionary(
+                        group => group.Key,
+                        group => group.Count(),
+                        StringComparer.OrdinalIgnoreCase
+                    );
+                var partSequenceCounters = new Dictionary<string, int>(
+                    StringComparer.OrdinalIgnoreCase
+                );
 
                 foreach (var load in orderedLoads)
                 {
@@ -107,15 +114,29 @@ public class Dao_ReceivingLabelData
                     int skidSequence = partSequenceCounters[load.PartID];
                     int skidTotal = partTotals[load.PartID];
 
-                    var roundedQuantity = Convert.ToInt32(Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero));
+                    var roundedQuantity = Convert.ToInt32(
+                        Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero)
+                    );
                     var cleanedPoNumber = CleanPONumber(load.PoNumber);
                     object poNumber = cleanedPoNumber is null ? DBNull.Value : cleanedPoNumber;
-                    object poVendor = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
-                    object poStatus = string.IsNullOrWhiteSpace(load.PoStatus) ? DBNull.Value : load.PoStatus;
-                    object poDueDate = load.PoDueDate.HasValue ? load.PoDueDate.Value.Date : DBNull.Value;
-                    object userId = string.IsNullOrWhiteSpace(load.UserId) ? DBNull.Value : load.UserId;
-                    object vendorName = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
-                    object qualityHoldRestrictionType = string.IsNullOrWhiteSpace(load.QualityHoldRestrictionType)
+                    object poVendor = string.IsNullOrWhiteSpace(load.PoVendor)
+                        ? DBNull.Value
+                        : load.PoVendor;
+                    object poStatus = string.IsNullOrWhiteSpace(load.PoStatus)
+                        ? DBNull.Value
+                        : load.PoStatus;
+                    object poDueDate = load.PoDueDate.HasValue
+                        ? load.PoDueDate.Value.Date
+                        : DBNull.Value;
+                    object userId = string.IsNullOrWhiteSpace(load.UserId)
+                        ? DBNull.Value
+                        : load.UserId;
+                    object vendorName = string.IsNullOrWhiteSpace(load.PoVendor)
+                        ? DBNull.Value
+                        : load.PoVendor;
+                    object qualityHoldRestrictionType = string.IsNullOrWhiteSpace(
+                        load.QualityHoldRestrictionType
+                    )
                         ? DBNull.Value
                         : load.QualityHoldRestrictionType;
 
@@ -153,7 +174,7 @@ public class Dao_ReceivingLabelData
                         { "is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged },
                         { "quality_hold_restriction_type", qualityHoldRestrictionType },
                         { "part_skid_sequence", skidSequence },
-                        { "part_skid_total", skidTotal }
+                        { "part_skid_total", skidTotal },
                     };
 
                     var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -170,7 +191,8 @@ public class Dao_ReceivingLabelData
                             continue;
                         }
 
-                        throw result.Exception ?? new InvalidOperationException(result.ErrorMessage);
+                        throw result.Exception
+                            ?? new InvalidOperationException(result.ErrorMessage);
                     }
 
                     savedCount++;
@@ -179,7 +201,6 @@ public class Dao_ReceivingLabelData
                 await transaction.CommitAsync();
                 return Model_Dao_Result_Factory.Success<int>(savedCount);
             }
-
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
@@ -190,11 +211,16 @@ public class Dao_ReceivingLabelData
                     continue;
                 }
 
-                return Model_Dao_Result_Factory.Failure<int>($"Failed to save label data loads: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<int>(
+                    $"Failed to save label data loads: {ex.Message}",
+                    ex
+                );
             }
         }
 
-        return Model_Dao_Result_Factory.Failure<int>("Failed to save label data loads after retrying transient database errors.");
+        return Model_Dao_Result_Factory.Failure<int>(
+            "Failed to save label data loads after retrying transient database errors."
+        );
     }
 
     public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy)
@@ -204,53 +230,63 @@ public class Dao_ReceivingLabelData
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            await using var command = new MySqlCommand("sp_Receiving_LabelData_ClearToHistory", connection)
+            await using var command = new MySqlCommand(
+                "sp_Receiving_LabelData_ClearToHistory",
+                connection
+            )
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
             };
 
             command.Parameters.AddWithValue("p_archived_by", archivedBy ?? "SYSTEM");
 
             var rowsMovedParam = new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(rowsMovedParam);
 
             var batchIdParam = new MySqlParameter("p_archive_batch_id", MySqlDbType.VarChar, 36)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(batchIdParam);
 
             var statusParam = new MySqlParameter("p_status", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(statusParam);
 
             var errorParam = new MySqlParameter("p_error_message", MySqlDbType.VarChar, 1000)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(errorParam);
 
             await command.ExecuteNonQueryAsync();
 
             var status = statusParam.Value == DBNull.Value ? 1 : Convert.ToInt32(statusParam.Value);
-            var errorMessage = errorParam.Value == DBNull.Value ? null : errorParam.Value?.ToString();
+            var errorMessage =
+                errorParam.Value == DBNull.Value ? null : errorParam.Value?.ToString();
 
             if (status != 0)
             {
-                return Model_Dao_Result_Factory.Failure<int>(errorMessage ?? "Clear Label Data failed");
+                return Model_Dao_Result_Factory.Failure<int>(
+                    errorMessage ?? "Clear Label Data failed"
+                );
             }
 
-            var rowsMoved = rowsMovedParam.Value == DBNull.Value ? 0 : Convert.ToInt32(rowsMovedParam.Value);
+            var rowsMoved =
+                rowsMovedParam.Value == DBNull.Value ? 0 : Convert.ToInt32(rowsMovedParam.Value);
             return Model_Dao_Result_Factory.Success<int>(rowsMoved);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to clear label data to history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to clear label data to history: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -274,15 +310,22 @@ public class Dao_ReceivingLabelData
                 }
                 return Model_Dao_Result_Factory.Success(loads);
             }
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage ?? "Failed to retrieve current label data");
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(
+                result.ErrorMessage ?? "Failed to retrieve current label data"
+            );
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving current label data: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(
+                $"Error retrieving current label data: {ex.Message}",
+                ex
+            );
         }
     }
 
-    public async Task<Model_Dao_Result<int>> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads)
+    public async Task<Model_Dao_Result<int>> UpdateCurrentLabelDataAsync(
+        List<Model_ReceivingLoad> loads
+    )
     {
         if (loads == null || loads.Count == 0)
         {
@@ -299,45 +342,52 @@ public class Dao_ReceivingLabelData
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    { "p_load_id",                          load.LoadID.ToString()                              },
-                    { "p_load_number",                      load.LoadNumber                                     },
-                    { "p_quantity",                         (int)load.WeightQuantity                            },
-                    { "p_weight_quantity",                  load.WeightQuantity                                 },
-                    { "p_part_id",                          load.PartID                                         },
-                    { "p_part_description",                 load.PartDescription                                },
-                    { "p_part_type",                        load.PartType                                       },
-                    { "p_po_number",                        (object?)load.PoNumber ?? DBNull.Value              },
-                    { "p_po_line_number",                   load.PoLineNumber                                   },
-                    { "p_po_vendor",                        load.PoVendor                                       },
-                    { "p_po_status",                        load.PoStatus                                       },
-                    { "p_po_due_date",                      (object?)load.PoDueDate ?? DBNull.Value             },
-                    { "p_qty_ordered",                      load.QtyOrdered                                     },
-                    { "p_unit_of_measure",                  load.UnitOfMeasure                                  },
-                    { "p_remaining_quantity",               load.RemainingQuantity                              },
-                    { "p_employee_number",                  load.EmployeeNumber                                 },
-                    { "p_user_id",                          (object?)load.UserId ?? DBNull.Value                },
-                    { "p_heat",                             load.HeatLotNumber                                  },
-                    { "p_received_date",                    load.ReceivedDate                                   },
-                    { "p_transaction_date",                 load.ReceivedDate.Date                              },
-                    { "p_initial_location",                 NormalizeLocation(load.InitialLocation)            },
-                    { "p_packages_per_load",                load.PackagesPerLoad                                },
-                    { "p_package_type_name",                load.PackageTypeName                                },
-                    { "p_weight_per_package",               load.WeightPerPackage                               },
-                    { "p_coils_on_skid",                    0                                                   },
-                    { "p_label_number",                     load.LoadNumber                                     },
-                    { "p_vendor_name",                      load.PoVendor                                       },
-                    { "p_is_non_po_item",                   load.IsNonPOItem ? 1 : 0                            },
-                    { "p_is_quality_hold_required",         load.IsQualityHoldRequired ? 1 : 0                 },
-                    { "p_is_quality_hold_acknowledged",     load.IsQualityHoldAcknowledged ? 1 : 0             },
-                    { "p_quality_hold_restriction_type",    load.QualityHoldRestrictionType                    },
+                    { "p_load_id", load.LoadID.ToString() },
+                    { "p_load_number", load.LoadNumber },
+                    { "p_quantity", (int)load.WeightQuantity },
+                    { "p_weight_quantity", load.WeightQuantity },
+                    { "p_part_id", load.PartID },
+                    { "p_part_description", load.PartDescription },
+                    { "p_part_type", load.PartType },
+                    { "p_po_number", (object?)load.PoNumber ?? DBNull.Value },
+                    { "p_po_line_number", load.PoLineNumber },
+                    { "p_po_vendor", load.PoVendor },
+                    { "p_po_status", load.PoStatus },
+                    { "p_po_due_date", (object?)load.PoDueDate ?? DBNull.Value },
+                    { "p_qty_ordered", load.QtyOrdered },
+                    { "p_unit_of_measure", load.UnitOfMeasure },
+                    { "p_remaining_quantity", load.RemainingQuantity },
+                    { "p_employee_number", load.EmployeeNumber },
+                    { "p_user_id", (object?)load.UserId ?? DBNull.Value },
+                    { "p_heat", load.HeatLotNumber },
+                    { "p_received_date", load.ReceivedDate },
+                    { "p_transaction_date", load.ReceivedDate.Date },
+                    { "p_initial_location", NormalizeLocation(load.InitialLocation) },
+                    { "p_packages_per_load", load.PackagesPerLoad },
+                    { "p_package_type_name", load.PackageTypeName },
+                    { "p_weight_per_package", load.WeightPerPackage },
+                    { "p_coils_on_skid", 0 },
+                    { "p_label_number", load.LoadNumber },
+                    { "p_vendor_name", load.PoVendor },
+                    { "p_is_non_po_item", load.IsNonPOItem ? 1 : 0 },
+                    { "p_is_quality_hold_required", load.IsQualityHoldRequired ? 1 : 0 },
+                    { "p_is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged ? 1 : 0 },
+                    { "p_quality_hold_restriction_type", load.QualityHoldRestrictionType },
                 };
 
                 var execResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
-                    connection, transaction, "sp_Receiving_LabelData_Update", parameters);
+                    connection,
+                    transaction,
+                    "sp_Receiving_LabelData_Update",
+                    parameters
+                );
 
                 if (!execResult.Success)
                 {
-                    throw new InvalidOperationException(execResult.ErrorMessage, execResult.Exception);
+                    throw new InvalidOperationException(
+                        execResult.ErrorMessage,
+                        execResult.Exception
+                    );
                 }
 
                 updatedCount++;
@@ -349,7 +399,10 @@ public class Dao_ReceivingLabelData
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to update label data: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to update label data: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -367,7 +420,9 @@ public class Dao_ReceivingLabelData
             PoStatus = ReadString(row, "POStatus"),
             PoDueDate = ReadNullableDateTime(row, "PODueDate"),
             QtyOrdered = ReadDecimal(row, "QtyOrdered"),
-            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "UnitOfMeasure")) ? "EA" : ReadString(row, "UnitOfMeasure"),
+            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "UnitOfMeasure"))
+                ? "EA"
+                : ReadString(row, "UnitOfMeasure"),
             RemainingQuantity = ReadInt(row, "RemainingQuantity"),
             LoadNumber = ReadInt(row, "LoadNumber"),
             WeightQuantity = ReadDecimal(row, "WeightQuantity"),
@@ -382,7 +437,7 @@ public class Dao_ReceivingLabelData
             EmployeeNumber = ReadInt(row, "EmployeeNumber"),
             IsQualityHoldRequired = ReadBool(row, "IsQualityHoldRequired"),
             IsQualityHoldAcknowledged = ReadBool(row, "IsQualityHoldAcknowledged"),
-            QualityHoldRestrictionType = ReadString(row, "QualityHoldRestrictionType")
+            QualityHoldRestrictionType = ReadString(row, "QualityHoldRestrictionType"),
         };
     }
 

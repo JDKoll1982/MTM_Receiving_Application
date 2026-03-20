@@ -19,33 +19,39 @@ public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipme
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
 
         RuleFor(x => x.ShipmentDate)
-            .NotEmpty().WithMessage("Shipment date is required")
+            .NotEmpty()
+            .WithMessage("Shipment date is required")
             .Must(date => date.Date <= DateTimeOffset.Now.Date)
             .WithMessage("Shipment date cannot be in the future");
 
-        RuleFor(x => x.Parts)
-            .NotEmpty().WithMessage("At least one part is required");
+        RuleFor(x => x.Parts).NotEmpty().WithMessage("At least one part is required");
 
         RuleFor(x => x.PONumber)
-            .NotEmpty().WithMessage("PO number is required")
-            .MaximumLength(50).WithMessage("PO number must not exceed 50 characters");
+            .NotEmpty()
+            .WithMessage("PO number is required")
+            .MaximumLength(50)
+            .WithMessage("PO number must not exceed 50 characters");
 
         RuleFor(x => x.ReceiverNumber)
-            .NotEmpty().WithMessage("Receiver number is required")
-            .MaximumLength(50).WithMessage("Receiver number must not exceed 50 characters");
+            .NotEmpty()
+            .WithMessage("Receiver number is required")
+            .MaximumLength(50)
+            .WithMessage("Receiver number must not exceed 50 characters");
 
         RuleFor(x => x.Notes)
-            .MaximumLength(1000).WithMessage("Notes must not exceed 1000 characters");
+            .MaximumLength(1000)
+            .WithMessage("Notes must not exceed 1000 characters");
 
         // Validate each part in the Parts collection
-        RuleForEach(x => x.Parts).ChildRules(part =>
-        {
-            part.RuleFor(p => p.PartNumber)
-                .NotEmpty().WithMessage("Part number is required");
+        RuleForEach(x => x.Parts)
+            .ChildRules(part =>
+            {
+                part.RuleFor(p => p.PartNumber).NotEmpty().WithMessage("Part number is required");
 
-            part.RuleFor(p => p.ReceivedSkidCount)
-                .GreaterThan(0).WithMessage("Received skid count must be greater than 0");
-        });
+                part.RuleFor(p => p.ReceivedSkidCount)
+                    .GreaterThan(0)
+                    .WithMessage("Received skid count must be greater than 0");
+            });
 
         RuleFor(x => x)
             .MustAsync(HasPendingShipmentAsync)
@@ -54,7 +60,8 @@ public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipme
 
     private async Task<bool> HasPendingShipmentAsync(
         CompleteShipmentCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var result = await _shipmentDao.GetPendingAsync();
         return result.IsSuccess && result.Data != null;

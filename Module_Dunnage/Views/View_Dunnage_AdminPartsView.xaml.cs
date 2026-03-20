@@ -25,7 +25,10 @@ public sealed partial class View_Dunnage_AdminPartsView : Page
         await ViewModel.LoadPartsCommand.ExecuteAsync(null);
     }
 
-    private async void OnSearchKeyboardAccelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    private async void OnSearchKeyboardAccelerator(
+        KeyboardAccelerator sender,
+        KeyboardAcceleratorInvokedEventArgs args
+    )
     {
         await ViewModel.SearchPartsCommand.ExecuteAsync(null);
         args.Handled = true;

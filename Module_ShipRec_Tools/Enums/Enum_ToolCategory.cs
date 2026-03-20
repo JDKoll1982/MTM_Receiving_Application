@@ -18,5 +18,5 @@ public enum Enum_ToolCategory
     /// <summary>
     /// General-purpose utility tools for day-to-day shipping/receiving tasks.
     /// </summary>
-    Utilities
+    Utilities,
 }

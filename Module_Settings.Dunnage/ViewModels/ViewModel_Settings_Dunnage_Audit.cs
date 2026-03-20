@@ -8,7 +8,9 @@ public sealed partial class ViewModel_Settings_Dunnage_Audit : ViewModel_Shared_
     public ViewModel_Settings_Dunnage_Audit(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         Title = "Dunnage Audit";
     }

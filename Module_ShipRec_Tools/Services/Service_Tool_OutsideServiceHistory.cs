@@ -20,7 +20,8 @@ public class Service_Tool_OutsideServiceHistory : IService_Tool_OutsideServiceHi
 
     public Service_Tool_OutsideServiceHistory(
         IService_InforVisual inforVisual,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger
+    )
     {
         ArgumentNullException.ThrowIfNull(inforVisual);
         ArgumentNullException.ThrowIfNull(logger);
@@ -29,46 +30,61 @@ public class Service_Tool_OutsideServiceHistory : IService_Tool_OutsideServiceHi
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByPartAsync(string partNumber)
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByPartAsync(
+        string partNumber
+    )
     {
         _logger.LogInfo($"Querying outside service history for part: {partNumber}");
         return await _inforVisual.GetOutsideServiceHistoryByPartAsync(partNumber);
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAsync(string vendorId)
+    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAsync(
+        string vendorId
+    )
     {
         _logger.LogInfo($"Querying outside service history for vendor: {vendorId}");
         return await _inforVisual.GetOutsideServiceHistoryByVendorAsync(vendorId);
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term)
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(
+        string term
+    )
     {
         _logger.LogInfo($"Fuzzy searching parts for term: '{term}'");
         return await _inforVisual.FuzzySearchPartsAsync(term);
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(string term)
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(
+        string term
+    )
     {
         _logger.LogInfo($"Fuzzy searching vendors for term: '{term}'");
         return await _inforVisual.FuzzySearchVendorsAsync(term);
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId)
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(
+        string vendorId
+    )
     {
         _logger.LogInfo($"Querying parts serviced by vendor: {vendorId}");
         return await _inforVisual.GetPartsByVendorAsync(vendorId);
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAndPartAsync(
-        string vendorId,
-        string partNumber)
+    public async Task<
+        Model_Dao_Result<List<Model_OutsideServiceHistory>>
+    > GetHistoryByVendorAndPartAsync(string vendorId, string partNumber)
     {
-        _logger.LogInfo($"Querying outside service history for vendor {vendorId}, part {partNumber}");
-        return await _inforVisual.GetOutsideServiceHistoryByVendorAndPartAsync(vendorId, partNumber);
+        _logger.LogInfo(
+            $"Querying outside service history for vendor {vendorId}, part {partNumber}"
+        );
+        return await _inforVisual.GetOutsideServiceHistoryByVendorAndPartAsync(
+            vendorId,
+            partNumber
+        );
     }
 }

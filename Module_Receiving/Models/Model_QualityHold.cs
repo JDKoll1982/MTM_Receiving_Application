@@ -53,5 +53,6 @@ public class Model_QualityHold
     /// <summary>
     /// Gets whether this quality hold has been acknowledged by quality.
     /// </summary>
-    public bool IsAcknowledged => QualityAcknowledgedAt.HasValue && !string.IsNullOrEmpty(QualityAcknowledgedBy);
+    public bool IsAcknowledged =>
+        QualityAcknowledgedAt.HasValue && !string.IsNullOrEmpty(QualityAcknowledgedBy);
 }

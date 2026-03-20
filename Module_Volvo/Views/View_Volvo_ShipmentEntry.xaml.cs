@@ -7,8 +7,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using MTM_Receiving_Application.Module_Volvo.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using MTM_Receiving_Application.Module_Volvo.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
@@ -45,7 +45,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                 Title = "No Part Selected",
                 Content = "Please select a part from the grid to remove.",
                 CloseButtonText = "OK",
-                XamlRoot = this.XamlRoot
+                XamlRoot = this.XamlRoot,
             };
             await noSelectionDialog.ShowAsync();
             return;
@@ -54,11 +54,12 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         var confirmDialog = new ContentDialog
         {
             Title = "Remove Part",
-            Content = $"Are you sure you want to remove {ViewModel.SelectedPart.PartNumber} from this shipment?",
+            Content =
+                $"Are you sure you want to remove {ViewModel.SelectedPart.PartNumber} from this shipment?",
             PrimaryButtonText = "Remove",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.XamlRoot
+            XamlRoot = this.XamlRoot,
         };
 
         var result = await confirmDialog.ShowAsync();
@@ -104,7 +105,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             PrimaryButtonText = "Remove",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var confirmResult = await confirmDialog.ShowAsync();
@@ -124,73 +125,88 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
 
         var content = new StackPanel { Spacing = 12 };
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Part: {line.PartNumber}",
-            FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-            FontSize = 16
-        });
+        content.Children.Add(
+            new TextBlock
+            {
+                Text = $"Part: {line.PartNumber}",
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                FontSize = 16,
+            }
+        );
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Received Skids: {line.ReceivedSkidCount}",
-            FontSize = 14
-        });
+        content.Children.Add(
+            new TextBlock { Text = $"Received Skids: {line.ReceivedSkidCount}", FontSize = 14 }
+        );
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Expected Skids: {line.ExpectedSkidCount:F2}",
-            FontSize = 14
-        });
+        content.Children.Add(
+            new TextBlock { Text = $"Expected Skids: {line.ExpectedSkidCount:F2}", FontSize = 14 }
+        );
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Received Pieces: {line.CalculatedPieceCount}",
-            FontSize = 14
-        });
+        content.Children.Add(
+            new TextBlock { Text = $"Received Pieces: {line.CalculatedPieceCount}", FontSize = 14 }
+        );
 
         if (line.ExpectedPieceCount.HasValue)
         {
-            content.Children.Add(new TextBlock
-            {
-                Text = $"Expected Pieces: {line.ExpectedPieceCount.Value}",
-                FontSize = 14
-            });
+            content.Children.Add(
+                new TextBlock
+                {
+                    Text = $"Expected Pieces: {line.ExpectedPieceCount.Value}",
+                    FontSize = 14,
+                }
+            );
 
             if (line.PieceDifference.HasValue)
             {
                 var diff = line.PieceDifference.Value;
                 var diffText = diff > 0 ? $"+{diff}" : diff.ToString();
-                content.Children.Add(new TextBlock
-                {
-                    Text = $"Difference: {diffText} pieces",
-                    FontSize = 14,
-                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) :
-                                 diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) :
-                                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
-                });
+                content.Children.Add(
+                    new TextBlock
+                    {
+                        Text = $"Difference: {diffText} pieces",
+                        FontSize = 14,
+                        FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                        Foreground =
+                            diff < 0
+                                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                                    Microsoft.UI.Colors.Green
+                                )
+                            : diff > 0
+                                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                                    Microsoft.UI.Colors.Red
+                                )
+                            : new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                                Microsoft.UI.Colors.Green
+                            ),
+                    }
+                );
             }
         }
 
         if (!string.IsNullOrWhiteSpace(line.DiscrepancyNote))
         {
-            content.Children.Add(new TextBlock
-            {
-                Text = "Note:",
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                Margin = new Thickness(0, 8, 0, 4),
-                FontSize = 14
-            });
+            content.Children.Add(
+                new TextBlock
+                {
+                    Text = "Note:",
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                    Margin = new Thickness(0, 8, 0, 4),
+                    FontSize = 14,
+                }
+            );
 
-            content.Children.Add(new TextBox
-            {
-                Text = line.DiscrepancyNote,
-                IsReadOnly = true,
-                TextWrapping = TextWrapping.Wrap,
-                MinHeight = 60,
-                Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent)
-            });
+            content.Children.Add(
+                new TextBox
+                {
+                    Text = line.DiscrepancyNote,
+                    IsReadOnly = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    MinHeight = 60,
+                    Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Microsoft.UI.Colors.Transparent
+                    ),
+                }
+            );
         }
 
         var dialog = new ContentDialog
@@ -199,7 +215,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             Content = content,
             CloseButtonText = "Close",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         await dialog.ShowAsync();
@@ -226,22 +242,25 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
             TextWrapping = TextWrapping.Wrap,
             Visibility = Visibility.Collapsed,
-            Margin = new Thickness(0, 0, 0, 8)
+            Margin = new Thickness(0, 0, 0, 8),
         };
 
         var searchBox = new TextBox
         {
             PlaceholderText = "Search part numbers...",
             Margin = new Thickness(0, 0, 0, 8),
-            TabIndex = 0
+            TabIndex = 0,
         };
 
         var receivedSkidsBox = new TextBox
         {
             Header = "Received Skids",
             PlaceholderText = "Enter quantity (1-99)",
-            InputScope = new InputScope { Names = { new InputScopeName(InputScopeNameValue.Number) } },
-            TabIndex = 2
+            InputScope = new InputScope
+            {
+                Names = { new InputScopeName(InputScopeNameValue.Number) },
+            },
+            TabIndex = 2,
         };
 
         var locationBox = new TextBox
@@ -249,7 +268,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             Header = "Location",
             PlaceholderText = "Auto-set from Infor Visual",
             IsReadOnly = true,
-            IsTabStop = false
+            IsTabStop = false,
         };
 
         var partsListView = new ListView
@@ -259,7 +278,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             MaxHeight = 190,
             Margin = new Thickness(0, 0, 0, 8),
             TabIndex = 1,
-            DisplayMemberPath = "PartNumber"  // Show PartNumber property for each item
+            DisplayMemberPath = "PartNumber", // Show PartNumber property for each item
         };
 
         partsListView.SelectionChanged += async (_, _) =>
@@ -285,21 +304,23 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             }
 
             // Fuzzy search: matches if characters appear in order
-            var filtered = allParts.Where(part =>
-            {
-                var partNumber = part.PartNumber.ToLower();
-                int searchIndex = 0;
-
-                foreach (char c in partNumber)
+            var filtered = allParts
+                .Where(part =>
                 {
-                    if (searchIndex < searchText.Length && c == searchText[searchIndex])
-                    {
-                        searchIndex++;
-                    }
-                }
+                    var partNumber = part.PartNumber.ToLower();
+                    int searchIndex = 0;
 
-                return searchIndex == searchText.Length || partNumber.Contains(searchText);
-            }).ToList();
+                    foreach (char c in partNumber)
+                    {
+                        if (searchIndex < searchText.Length && c == searchText[searchIndex])
+                        {
+                            searchIndex++;
+                        }
+                    }
+
+                    return searchIndex == searchText.Length || partNumber.Contains(searchText);
+                })
+                .ToList();
 
             partsListView.ItemsSource = filtered;
         };
@@ -309,7 +330,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         {
             Spacing = 8,
             Width = 420,
-            MaxHeight = 430
+            MaxHeight = 430,
         };
         content.Children.Add(errorMessage);
         content.Children.Add(searchBox);
@@ -320,7 +341,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         {
             Text = "Available Parts",
             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-            Margin = new Thickness(0, 0, 0, 4)
+            Margin = new Thickness(0, 0, 0, 4),
         };
         content.Children.Add(partsHeader);
         content.Children.Add(partsListView);
@@ -332,7 +353,7 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             PrimaryButtonText = "Add",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         dialog.Opened += (_, _) => searchBox.Focus(FocusState.Programmatic);
@@ -356,7 +377,11 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                 }
 
                 // Validate skid count
-                if (!int.TryParse(receivedSkidsBox.Text, out int skidCount) || skidCount < 1 || skidCount > 99)
+                if (
+                    !int.TryParse(receivedSkidsBox.Text, out int skidCount)
+                    || skidCount < 1
+                    || skidCount > 99
+                )
                 {
                     args.Cancel = true;
                     errorMessage.Text = "Received skid count must be a number between 1 and 99.";
@@ -365,10 +390,18 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                 }
 
                 // Check for duplicate
-                if (ViewModel.Parts.Any(p => p.PartNumber.Equals(selectedPart.PartNumber, StringComparison.OrdinalIgnoreCase)))
+                if (
+                    ViewModel.Parts.Any(p =>
+                        p.PartNumber.Equals(
+                            selectedPart.PartNumber,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                )
                 {
                     args.Cancel = true;
-                    errorMessage.Text = $"Part {selectedPart.PartNumber} is already in this shipment. Remove it first to update the quantity.";
+                    errorMessage.Text =
+                        $"Part {selectedPart.PartNumber} is already in this shipment. Remove it first to update the quantity.";
                     errorMessage.Visibility = Visibility.Visible;
                     return;
                 }
@@ -384,11 +417,13 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                     CalculatedPieceCount = calculatedPieces,
                     HasDiscrepancy = false,
                     ExpectedSkidCount = null,
-                    DiscrepancyNote = string.Empty
+                    DiscrepancyNote = string.Empty,
                 };
 
                 ViewModel.Parts.Add(newLine);
-                await ViewModel.Logger.LogInfoAsync($"User added part {selectedPart.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)");
+                await ViewModel.Logger.LogInfoAsync(
+                    $"User added part {selectedPart.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)"
+                );
             }
             finally
             {

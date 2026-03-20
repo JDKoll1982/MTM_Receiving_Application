@@ -16,8 +16,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
 
         // Legacy property support if needed, or just remove if unused
         public string ErrorMessage { get; set; } = string.Empty;
-        public int RecordsSaved { get => LoadsSaved; set => LoadsSaved = value; }
-        public bool IsSuccess { get => Success; set => Success = value; }
+        public int RecordsSaved
+        {
+            get => LoadsSaved;
+            set => LoadsSaved = value;
+        }
+        public bool IsSuccess
+        {
+            get => Success;
+            set => Success = value;
+        }
         public Model_XLSWriteResult? CSVExportResult { get; set; }
 
         // Guided mode consolidated CSV status (single CSV file)

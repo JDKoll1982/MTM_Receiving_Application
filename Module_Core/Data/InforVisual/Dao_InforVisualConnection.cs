@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Core.Data.InforVisual;
 
@@ -20,9 +20,14 @@ public class Dao_InforVisualConnection
     private readonly string _siteId;
     private readonly IService_LoggingUtility? _logger;
 
-    public Dao_InforVisualConnection(string connectionString, IService_LoggingUtility? logger = null, string siteId = "002")
+    public Dao_InforVisualConnection(
+        string connectionString,
+        IService_LoggingUtility? logger = null,
+        string siteId = "002"
+    )
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         _siteId = siteId;
         _logger = logger;
     }
@@ -47,7 +52,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Connection test failed: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<bool>(
-                $"Connection test failed: {ex.Message}", ex);
+                $"Connection test failed: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -60,7 +67,9 @@ public class Dao_InforVisualConnection
     /// Uses: 01_GetPOWithParts.sql
     /// </summary>
     /// <param name="poNumber"></param>
-    public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetPOWithPartsAsync(string poNumber)
+    public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetPOWithPartsAsync(
+        string poNumber
+    )
     {
         try
         {
@@ -78,23 +87,25 @@ public class Dao_InforVisualConnection
 
             while (await reader.ReadAsync())
             {
-                poLines.Add(new Model_InforVisualPOLine
-                {
-                    PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
-                    PoLine = Convert.ToInt32(reader["PoLine"]),
-                    PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
-                    PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
-                    DefaultLocationId = reader["DefaultLocationId"].ToString() ?? string.Empty,
-                    OrderedQty = Convert.ToDecimal(reader["OrderedQty"]),
-                    ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
-                    RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
-                    UnitOfMeasure = reader["UnitOfMeasure"].ToString() ?? "EA",
-                    DueDate = reader["DueDate"] as DateTime?,
-                    VendorCode = reader["VendorCode"].ToString() ?? string.Empty,
-                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
-                    PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
-                    SiteId = reader["SiteId"].ToString() ?? "002"
-                });
+                poLines.Add(
+                    new Model_InforVisualPOLine
+                    {
+                        PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
+                        PoLine = Convert.ToInt32(reader["PoLine"]),
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                        DefaultLocationId = reader["DefaultLocationId"].ToString() ?? string.Empty,
+                        OrderedQty = Convert.ToDecimal(reader["OrderedQty"]),
+                        ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
+                        RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
+                        UnitOfMeasure = reader["UnitOfMeasure"].ToString() ?? "EA",
+                        DueDate = reader["DueDate"] as DateTime?,
+                        VendorCode = reader["VendorCode"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        SiteId = reader["SiteId"].ToString() ?? "002",
+                    }
+                );
             }
 
             _logger?.LogInfo($"Retrieved {poLines.Count} lines for PO {poNumber}");
@@ -104,7 +115,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error retrieving PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>(
-                $"Error retrieving PO {poNumber}: {ex.Message}", ex);
+                $"Error retrieving PO {poNumber}: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -135,7 +148,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error validating PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<bool>(
-                $"Error validating PO {poNumber}: {ex.Message}", ex);
+                $"Error validating PO {poNumber}: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -148,7 +163,9 @@ public class Dao_InforVisualConnection
     /// Uses: 03_GetPartByNumber.sql
     /// </summary>
     /// <param name="partNumber"></param>
-    public async Task<Model_Dao_Result<Model_InforVisualPartInfo?>> GetPartByNumberAsync(string partNumber)
+    public async Task<Model_Dao_Result<Model_InforVisualPartInfo?>> GetPartByNumberAsync(
+        string partNumber
+    )
     {
         try
         {
@@ -169,7 +186,10 @@ public class Dao_InforVisualConnection
                 {
                     PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
                     Description = reader["Description"].ToString() ?? string.Empty,
-                    UnitCost = reader["UnitCost"] != DBNull.Value ? Convert.ToDecimal(reader["UnitCost"]) : 0,
+                    UnitCost =
+                        reader["UnitCost"] != DBNull.Value
+                            ? Convert.ToDecimal(reader["UnitCost"])
+                            : 0,
                     PrimaryUom = reader["PrimaryUom"].ToString() ?? "EA",
                     OnHandQty = Convert.ToDecimal(reader["OnHandQty"]),
                     AllocatedQty = Convert.ToDecimal(reader["AllocatedQty"]),
@@ -177,7 +197,7 @@ public class Dao_InforVisualConnection
                     DefaultSite = reader["DefaultSite"].ToString() ?? string.Empty,
                     DefaultLocationId = reader["DefaultLocationId"].ToString() ?? string.Empty,
                     PartStatus = reader["PartStatus"].ToString() ?? string.Empty,
-                    ProductLine = reader["ProductLine"].ToString() ?? string.Empty
+                    ProductLine = reader["ProductLine"].ToString() ?? string.Empty,
                 };
                 _logger?.LogInfo($"Found part: {partNumber}");
                 return Model_Dao_Result_Factory.Success<Model_InforVisualPartInfo?>(part);
@@ -190,7 +210,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error retrieving part {partNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<Model_InforVisualPartInfo?>(
-                $"Error retrieving part {partNumber}: {ex.Message}", ex);
+                $"Error retrieving part {partNumber}: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -200,14 +222,16 @@ public class Dao_InforVisualConnection
     /// </summary>
     /// <param name="searchTerm"></param>
     /// <param name="maxResults"></param>
-    public async Task<Model_Dao_Result<List<Model_InforVisualPartInfo>>> SearchPartsByDescriptionAsync(
-        string searchTerm,
-        int maxResults = 50)
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualPartInfo>>
+    > SearchPartsByDescriptionAsync(string searchTerm, int maxResults = 50)
     {
         try
         {
             _logger?.LogInfo($"Searching parts by description: '{searchTerm}' (Max: {maxResults})");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("04_SearchPartsByDescription.sql");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "04_SearchPartsByDescription.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -221,19 +245,24 @@ public class Dao_InforVisualConnection
 
             while (await reader.ReadAsync())
             {
-                parts.Add(new Model_InforVisualPartInfo
-                {
-                    PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
-                    Description = reader["Description"].ToString() ?? string.Empty,
-                    UnitCost = reader["UnitCost"] != DBNull.Value ? Convert.ToDecimal(reader["UnitCost"]) : 0,
-                    PrimaryUom = reader["PrimaryUom"].ToString() ?? "EA",
-                    OnHandQty = Convert.ToDecimal(reader["OnHandQty"]),
-                    AllocatedQty = Convert.ToDecimal(reader["AllocatedQty"]),
-                    AvailableQty = Convert.ToDecimal(reader["AvailableQty"]),
-                    DefaultSite = reader["DefaultSite"].ToString() ?? string.Empty,
-                    PartStatus = reader["PartStatus"].ToString() ?? string.Empty,
-                    ProductLine = reader["ProductLine"].ToString() ?? string.Empty
-                });
+                parts.Add(
+                    new Model_InforVisualPartInfo
+                    {
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        Description = reader["Description"].ToString() ?? string.Empty,
+                        UnitCost =
+                            reader["UnitCost"] != DBNull.Value
+                                ? Convert.ToDecimal(reader["UnitCost"])
+                                : 0,
+                        PrimaryUom = reader["PrimaryUom"].ToString() ?? "EA",
+                        OnHandQty = Convert.ToDecimal(reader["OnHandQty"]),
+                        AllocatedQty = Convert.ToDecimal(reader["AllocatedQty"]),
+                        AvailableQty = Convert.ToDecimal(reader["AvailableQty"]),
+                        DefaultSite = reader["DefaultSite"].ToString() ?? string.Empty,
+                        PartStatus = reader["PartStatus"].ToString() ?? string.Empty,
+                        ProductLine = reader["ProductLine"].ToString() ?? string.Empty,
+                    }
+                );
             }
 
             _logger?.LogInfo($"Found {parts.Count} parts matching '{searchTerm}'");
@@ -243,7 +272,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error searching parts: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPartInfo>>(
-                $"Error searching parts: {ex.Message}", ex);
+                $"Error searching parts: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -257,12 +288,16 @@ public class Dao_InforVisualConnection
     /// ⚠️ READ-ONLY — no writes to Infor Visual.
     /// </summary>
     /// <param name="partNumber">The part ID to search for in SERVICE_DISP_LINE.</param>
-    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByPartAsync(string partNumber)
+    public async Task<
+        Model_Dao_Result<List<Model_OutsideServiceHistory>>
+    > GetOutsideServiceHistoryByPartAsync(string partNumber)
     {
         try
         {
             _logger?.LogInfo($"Querying outside service history for part: {partNumber}");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("05_GetOutsideServiceHistoryByPart.sql");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "05_GetOutsideServiceHistoryByPart.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -275,28 +310,40 @@ public class Dao_InforVisualConnection
 
             while (await reader.ReadAsync())
             {
-                records.Add(new Model_OutsideServiceHistory
-                {
-                    VendorID = reader["VendorID"].ToString() ?? string.Empty,
-                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
-                    VendorCity = reader["VendorCity"] as string,
-                    VendorState = reader["VendorState"] as string,
-                    DispatchID = reader["DispatchID"]?.ToString(),
-                    DispatchDate = reader["DispatchDate"] as DateTime?,
-                    PartNumber = reader["PartNumber"] as string,
-                    QuantitySent = reader["QuantitySent"] != DBNull.Value ? Convert.ToDecimal(reader["QuantitySent"]) : null,
-                    DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim()
-                });
+                records.Add(
+                    new Model_OutsideServiceHistory
+                    {
+                        VendorID = reader["VendorID"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        VendorCity = reader["VendorCity"] as string,
+                        VendorState = reader["VendorState"] as string,
+                        DispatchID = reader["DispatchID"]?.ToString(),
+                        DispatchDate = reader["DispatchDate"] as DateTime?,
+                        PartNumber = reader["PartNumber"] as string,
+                        QuantitySent =
+                            reader["QuantitySent"] != DBNull.Value
+                                ? Convert.ToDecimal(reader["QuantitySent"])
+                                : null,
+                        DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim(),
+                    }
+                );
             }
 
-            _logger?.LogInfo($"Retrieved {records.Count} outside service records for part {partNumber}");
+            _logger?.LogInfo(
+                $"Retrieved {records.Count} outside service records for part {partNumber}"
+            );
             return Model_Dao_Result_Factory.Success(records);
         }
         catch (Exception ex)
         {
-            _logger?.LogError($"Error querying outside service history for part {partNumber}: {ex.Message}", ex);
+            _logger?.LogError(
+                $"Error querying outside service history for part {partNumber}: {ex.Message}",
+                ex
+            );
             return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
-                $"Error querying outside service history: {ex.Message}", ex);
+                $"Error querying outside service history: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -308,7 +355,8 @@ public class Dao_InforVisualConnection
     /// <param name="maxResults">Maximum number of results to return.</param>
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsByIdAsync(
         string term,
-        int maxResults = 50)
+        int maxResults = 50
+    )
     {
         try
         {
@@ -329,12 +377,14 @@ public class Dao_InforVisualConnection
             {
                 var partNumber = reader["PartNumber"].ToString() ?? string.Empty;
                 var description = reader["Description"].ToString() ?? string.Empty;
-                results.Add(new Model_FuzzySearchResult
-                {
-                    Key = partNumber,
-                    Label = partNumber,
-                    Detail = description
-                });
+                results.Add(
+                    new Model_FuzzySearchResult
+                    {
+                        Key = partNumber,
+                        Label = partNumber,
+                        Detail = description,
+                    }
+                );
             }
 
             _logger?.LogInfo($"Fuzzy part search found {results.Count} results for '{term}'");
@@ -344,7 +394,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error fuzzy-searching parts: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
-                $"Error searching parts: {ex.Message}", ex);
+                $"Error searching parts: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -354,14 +406,16 @@ public class Dao_InforVisualConnection
     /// </summary>
     /// <param name="term">Partial vendor name to search for.</param>
     /// <param name="maxResults">Maximum number of results to return.</param>
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsByNameAsync(
-        string term,
-        int maxResults = 50)
+    public async Task<
+        Model_Dao_Result<List<Model_FuzzySearchResult>>
+    > FuzzySearchVendorsByNameAsync(string term, int maxResults = 50)
     {
         try
         {
             _logger?.LogInfo($"Fuzzy-searching vendors by name: '{term}' (max {maxResults})");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("07_FuzzySearchVendorsByName.sql");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "07_FuzzySearchVendorsByName.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -383,15 +437,17 @@ public class Dao_InforVisualConnection
                 {
                     ({ } c, { } s) when !string.IsNullOrWhiteSpace(c) => $"{c}, {s}",
                     ({ } c, _) when !string.IsNullOrWhiteSpace(c) => c,
-                    _ => null
+                    _ => null,
                 };
 
-                results.Add(new Model_FuzzySearchResult
-                {
-                    Key = vendorId,
-                    Label = vendorName,
-                    Detail = detail
-                });
+                results.Add(
+                    new Model_FuzzySearchResult
+                    {
+                        Key = vendorId,
+                        Label = vendorName,
+                        Detail = detail,
+                    }
+                );
             }
 
             _logger?.LogInfo($"Fuzzy vendor search found {results.Count} results for '{term}'");
@@ -401,7 +457,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error fuzzy-searching vendors: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
-                $"Error searching vendors: {ex.Message}", ex);
+                $"Error searching vendors: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -411,12 +469,16 @@ public class Dao_InforVisualConnection
     /// ⚠️ READ-ONLY — no writes to Infor Visual.
     /// </summary>
     /// <param name="vendorId">Vendor ID to filter dispatch records by.</param>
-    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAsync(string vendorId)
+    public async Task<
+        Model_Dao_Result<List<Model_OutsideServiceHistory>>
+    > GetOutsideServiceHistoryByVendorAsync(string vendorId)
     {
         try
         {
             _logger?.LogInfo($"Querying outside service history for vendor: {vendorId}");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("08_GetOutsideServiceHistoryByVendor.sql");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "08_GetOutsideServiceHistoryByVendor.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -429,28 +491,40 @@ public class Dao_InforVisualConnection
 
             while (await reader.ReadAsync())
             {
-                records.Add(new Model_OutsideServiceHistory
-                {
-                    VendorID = reader["VendorID"].ToString() ?? string.Empty,
-                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
-                    VendorCity = reader["VendorCity"] as string,
-                    VendorState = reader["VendorState"] as string,
-                    DispatchID = reader["DispatchID"]?.ToString(),
-                    DispatchDate = reader["DispatchDate"] as DateTime?,
-                    PartNumber = reader["PartNumber"] as string,
-                    QuantitySent = reader["QuantitySent"] != DBNull.Value ? Convert.ToDecimal(reader["QuantitySent"]) : null,
-                    DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim()
-                });
+                records.Add(
+                    new Model_OutsideServiceHistory
+                    {
+                        VendorID = reader["VendorID"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        VendorCity = reader["VendorCity"] as string,
+                        VendorState = reader["VendorState"] as string,
+                        DispatchID = reader["DispatchID"]?.ToString(),
+                        DispatchDate = reader["DispatchDate"] as DateTime?,
+                        PartNumber = reader["PartNumber"] as string,
+                        QuantitySent =
+                            reader["QuantitySent"] != DBNull.Value
+                                ? Convert.ToDecimal(reader["QuantitySent"])
+                                : null,
+                        DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim(),
+                    }
+                );
             }
 
-            _logger?.LogInfo($"Retrieved {records.Count} outside service records for vendor {vendorId}");
+            _logger?.LogInfo(
+                $"Retrieved {records.Count} outside service records for vendor {vendorId}"
+            );
             return Model_Dao_Result_Factory.Success(records);
         }
         catch (Exception ex)
         {
-            _logger?.LogError($"Error querying outside service history for vendor {vendorId}: {ex.Message}", ex);
+            _logger?.LogError(
+                $"Error querying outside service history for vendor {vendorId}: {ex.Message}",
+                ex
+            );
             return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
-                $"Error querying outside service history by vendor: {ex.Message}", ex);
+                $"Error querying outside service history by vendor: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -462,12 +536,16 @@ public class Dao_InforVisualConnection
     /// ⚠️ READ-ONLY — no writes to Infor Visual.
     /// </summary>
     /// <param name="vendorId">The vendor ID to query parts for.</param>
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId)
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(
+        string vendorId
+    )
     {
         try
         {
             _logger?.LogInfo($"Querying distinct parts for vendor: {vendorId}");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("09_GetDistinctPartsByVendor.sql");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "09_GetDistinctPartsByVendor.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -487,12 +565,14 @@ public class Dao_InforVisualConnection
                     ? $"{count} dispatch(es) — last {lastDate.Value:MM/dd/yyyy}"
                     : $"{count} dispatch(es)";
 
-                results.Add(new Model_FuzzySearchResult
-                {
-                    Key = partNumber,
-                    Label = partNumber,
-                    Detail = detail
-                });
+                results.Add(
+                    new Model_FuzzySearchResult
+                    {
+                        Key = partNumber,
+                        Label = partNumber,
+                        Detail = detail,
+                    }
+                );
             }
 
             _logger?.LogInfo($"Retrieved {results.Count} distinct parts for vendor {vendorId}");
@@ -502,7 +582,9 @@ public class Dao_InforVisualConnection
         {
             _logger?.LogError($"Error querying parts for vendor {vendorId}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
-                $"Error querying parts for vendor: {ex.Message}", ex);
+                $"Error querying parts for vendor: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -513,14 +595,18 @@ public class Dao_InforVisualConnection
     /// </summary>
     /// <param name="vendorId">The vendor ID to filter by.</param>
     /// <param name="partNumber">The part number to filter by.</param>
-    public async Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetOutsideServiceHistoryByVendorAndPartAsync(
-        string vendorId,
-        string partNumber)
+    public async Task<
+        Model_Dao_Result<List<Model_OutsideServiceHistory>>
+    > GetOutsideServiceHistoryByVendorAndPartAsync(string vendorId, string partNumber)
     {
         try
         {
-            _logger?.LogInfo($"Querying outside service history for vendor {vendorId}, part {partNumber}");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("10_GetOutsideServiceByVendorAndPart.sql");
+            _logger?.LogInfo(
+                $"Querying outside service history for vendor {vendorId}, part {partNumber}"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "10_GetOutsideServiceByVendorAndPart.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -534,28 +620,40 @@ public class Dao_InforVisualConnection
 
             while (await reader.ReadAsync())
             {
-                records.Add(new Model_OutsideServiceHistory
-                {
-                    VendorID = reader["VendorID"].ToString() ?? string.Empty,
-                    VendorName = reader["VendorName"].ToString() ?? string.Empty,
-                    VendorCity = reader["VendorCity"] as string,
-                    VendorState = reader["VendorState"] as string,
-                    DispatchID = reader["DispatchID"]?.ToString(),
-                    DispatchDate = reader["DispatchDate"] as DateTime?,
-                    PartNumber = reader["PartNumber"] as string,
-                    QuantitySent = reader["QuantitySent"] != DBNull.Value ? Convert.ToDecimal(reader["QuantitySent"]) : null,
-                    DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim()
-                });
+                records.Add(
+                    new Model_OutsideServiceHistory
+                    {
+                        VendorID = reader["VendorID"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        VendorCity = reader["VendorCity"] as string,
+                        VendorState = reader["VendorState"] as string,
+                        DispatchID = reader["DispatchID"]?.ToString(),
+                        DispatchDate = reader["DispatchDate"] as DateTime?,
+                        PartNumber = reader["PartNumber"] as string,
+                        QuantitySent =
+                            reader["QuantitySent"] != DBNull.Value
+                                ? Convert.ToDecimal(reader["QuantitySent"])
+                                : null,
+                        DispatchStatus = reader["DispatchStatus"]?.ToString()?.Trim(),
+                    }
+                );
             }
 
-            _logger?.LogInfo($"Retrieved {records.Count} records for vendor {vendorId}, part {partNumber}");
+            _logger?.LogInfo(
+                $"Retrieved {records.Count} records for vendor {vendorId}, part {partNumber}"
+            );
             return Model_Dao_Result_Factory.Success(records);
         }
         catch (Exception ex)
         {
-            _logger?.LogError($"Error querying outside service history for vendor {vendorId}, part {partNumber}: {ex.Message}", ex);
+            _logger?.LogError(
+                $"Error querying outside service history for vendor {vendorId}, part {partNumber}: {ex.Message}",
+                ex
+            );
             return Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
-                $"Error querying outside service history by vendor and part: {ex.Message}", ex);
+                $"Error querying outside service history by vendor and part: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -572,15 +670,18 @@ public class Dao_InforVisualConnection
     /// <param name="term">Partial location ID entered by the user.</param>
     /// <param name="warehouseCode">Warehouse to restrict results to (e.g. "002").</param>
     /// <param name="maxResults">Maximum rows to return.</param>
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsByWarehouseAsync(
-        string term,
-        string warehouseCode,
-        int maxResults = 50)
+    public async Task<
+        Model_Dao_Result<List<Model_FuzzySearchResult>>
+    > FuzzySearchLocationsByWarehouseAsync(string term, string warehouseCode, int maxResults = 50)
     {
         try
         {
-            _logger?.LogInfo($"Fuzzy-searching locations in warehouse '{warehouseCode}' for term '{term}' (max {maxResults})");
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("11_FuzzySearchLocationsByWarehouse.sql");
+            _logger?.LogInfo(
+                $"Fuzzy-searching locations in warehouse '{warehouseCode}' for term '{term}' (max {maxResults})"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "11_FuzzySearchLocationsByWarehouse.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -597,22 +698,28 @@ public class Dao_InforVisualConnection
             {
                 var locationId = reader["LocationId"].ToString() ?? string.Empty;
                 var description = reader["Description"] as string;
-                results.Add(new Model_FuzzySearchResult
-                {
-                    Key = locationId,
-                    Label = locationId,
-                    Detail = description
-                });
+                results.Add(
+                    new Model_FuzzySearchResult
+                    {
+                        Key = locationId,
+                        Label = locationId,
+                        Detail = description,
+                    }
+                );
             }
 
-            _logger?.LogInfo($"Fuzzy location search found {results.Count} results for '{term}' in warehouse '{warehouseCode}'");
+            _logger?.LogInfo(
+                $"Fuzzy location search found {results.Count} results for '{term}' in warehouse '{warehouseCode}'"
+            );
             return Model_Dao_Result_Factory.Success(results);
         }
         catch (Exception ex)
         {
             _logger?.LogError($"Error fuzzy-searching locations: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
-                $"Error searching locations: {ex.Message}", ex);
+                $"Error searching locations: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -640,7 +747,10 @@ public class Dao_InforVisualConnection
         catch (Exception ex)
         {
             _logger?.LogError($"Error checking part existence for '{partId}': {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<bool>($"Error checking part existence: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>(
+                $"Error checking part existence: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -652,7 +762,10 @@ public class Dao_InforVisualConnection
     /// </summary>
     /// <param name="locationId">Exact location ID to check.</param>
     /// <param name="warehouseCode">Warehouse code that must match (e.g. "002").</param>
-    public async Task<Model_Dao_Result<bool>> LocationExistsAsync(string locationId, string warehouseCode)
+    public async Task<Model_Dao_Result<bool>> LocationExistsAsync(
+        string locationId,
+        string warehouseCode
+    )
     {
         try
         {
@@ -671,12 +784,16 @@ public class Dao_InforVisualConnection
         }
         catch (Exception ex)
         {
-            _logger?.LogError($"Error checking location existence for '{locationId}' in warehouse '{warehouseCode}': {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<bool>($"Error checking location existence: {ex.Message}", ex);
+            _logger?.LogError(
+                $"Error checking location existence for '{locationId}' in warehouse '{warehouseCode}': {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<bool>(
+                $"Error checking location existence: {ex.Message}",
+                ex
+            );
         }
     }
 
     #endregion
 }
-
-

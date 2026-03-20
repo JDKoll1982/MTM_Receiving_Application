@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
-using System;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
@@ -29,4 +29,3 @@ public class Converter_EnumToVisibility : IValueConverter
         throw new NotImplementedException();
     }
 }
-

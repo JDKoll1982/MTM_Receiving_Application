@@ -12,44 +12,55 @@
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     IsPrimaryButtonEnabled="False"
-    MinWidth="480">
-
+    MinWidth="480"
+>
     <ContentDialog.Resources>
-        <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter"/>
+        <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter" />
     </ContentDialog.Resources>
 
     <StackPanel Spacing="12" MinWidth="440" MaxWidth="600">
-
         <!-- Optional subtitle / context hint -->
-        <TextBlock x:Name="SubtitleText"
-                   Style="{StaticResource BodyTextBlockStyle}"
-                   Opacity="0.7"
-                   TextWrapping="Wrap"
-                   Visibility="Collapsed"/>
+        <TextBlock
+            x:Name="SubtitleText"
+            Style="{StaticResource BodyTextBlockStyle}"
+            Opacity="0.7"
+            TextWrapping="Wrap"
+            Visibility="Collapsed"
+        />
 
         <!-- Live-filter box (client-side, no round-trip) -->
-        <TextBox x:Name="FilterBox"
-                 PlaceholderText="Type to narrow results…"
-                 TextChanged="FilterBox_TextChanged"/>
+        <TextBox
+            x:Name="FilterBox"
+            PlaceholderText="Type to narrow results…"
+            TextChanged="FilterBox_TextChanged"
+        />
 
         <!-- Results list -->
-        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="4"
-                MaxHeight="340">
-            <ListView x:Name="ResultsListView"
-                      SelectionMode="Single"
-                      SelectionChanged="ResultsListView_SelectionChanged"
-                      DoubleTapped="ResultsListView_DoubleTapped">
+        <Border
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            MaxHeight="340"
+        >
+            <ListView
+                x:Name="ResultsListView"
+                SelectionMode="Single"
+                SelectionChanged="ResultsListView_SelectionChanged"
+                DoubleTapped="ResultsListView_DoubleTapped"
+            >
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Model_FuzzySearchResult">
                         <StackPanel Spacing="2" Padding="4,6">
-                            <TextBlock Text="{x:Bind Label}"
-                                       Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                            <TextBlock Text="{x:Bind Detail}"
-                                       Style="{StaticResource CaptionTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       Visibility="{x:Bind Detail, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
+                            <TextBlock
+                                Text="{x:Bind Label}"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                            />
+                            <TextBlock
+                                Text="{x:Bind Detail}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Visibility="{x:Bind Detail, Converter={StaticResource EmptyStringToVisibilityConverter}}"
+                            />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -57,8 +68,10 @@
         </Border>
 
         <!-- Result count -->
-        <TextBlock x:Name="ResultCountText"
-                   Style="{StaticResource CaptionTextBlockStyle}"
-                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        <TextBlock
+            x:Name="ResultCountText"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+        />
     </StackPanel>
 </ContentDialog>

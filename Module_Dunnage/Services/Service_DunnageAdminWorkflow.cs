@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Dunnage.Data;
+using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Data;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
+
 namespace MTM_Receiving_Application.Module_Dunnage.Services;
 
 /// <summary>
@@ -55,7 +56,10 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
         // Check if navigation is allowed
         if (!await CanNavigateAwayAsync())
         {
-            StatusMessageRaised?.Invoke(this, "Cannot navigate - unsaved changes exist. Please save or discard changes first.");
+            StatusMessageRaised?.Invoke(
+                this,
+                "Cannot navigate - unsaved changes exist. Please save or discard changes first."
+            );
             return;
         }
 
@@ -71,7 +75,7 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
             Enum_DunnageAdminSection.Parts => "Part Master Management",
             Enum_DunnageAdminSection.Specs => "Spec Definitions Management",
             Enum_DunnageAdminSection.InventoriedList => "Inventoried Dunnage List",
-            _ => "Unknown Section"
+            _ => "Unknown Section",
         };
 
         StatusMessageRaised?.Invoke(this, $"Navigated to {sectionName}");
@@ -124,5 +128,3 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
     /// </summary>
     public bool IsDirty => _isDirty;
 }
-
-

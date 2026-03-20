@@ -1,5 +1,5 @@
-using Microsoft.UI.Xaml;
 using System.Collections.Generic;
+using Microsoft.UI.Xaml;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
@@ -46,5 +46,6 @@ public class Model_SpecItem
         }
     }
 
-    public Visibility IsRequiredVisibility => IsRequired ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility IsRequiredVisibility =>
+        IsRequired ? Visibility.Visible : Visibility.Collapsed;
 }

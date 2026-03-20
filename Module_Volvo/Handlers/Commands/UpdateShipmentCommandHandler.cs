@@ -32,7 +32,8 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
         Dao_VolvoPart partDao,
         Dao_VolvoPartComponent componentDao,
         IService_VolvoAuthorization authService,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger
+    )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
@@ -42,7 +43,10 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Model_Dao_Result> Handle(UpdateShipmentCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        UpdateShipmentCommand request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -50,7 +54,8 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
             {
                 return Model_Dao_Result_Factory.Failure(
-                    shipmentResult.ErrorMessage ?? "Shipment not found");
+                    shipmentResult.ErrorMessage ?? "Shipment not found"
+                );
             }
 
             var shipment = shipmentResult.Data;
@@ -74,7 +79,8 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                     if (!deleteResult.IsSuccess)
                     {
                         return Model_Dao_Result_Factory.Failure(
-                            deleteResult.ErrorMessage ?? $"Failed to delete line {line.Id}");
+                            deleteResult.ErrorMessage ?? $"Failed to delete line {line.Id}"
+                        );
                     }
                 }
             }
@@ -86,7 +92,9 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                 if (!partResult.IsSuccess || partResult.Data == null)
                 {
                     return Model_Dao_Result_Factory.Failure(
-                        partResult.ErrorMessage ?? $"Part '{part.PartNumber}' not found in master data");
+                        partResult.ErrorMessage
+                            ?? $"Part '{part.PartNumber}' not found in master data"
+                    );
                 }
 
                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
@@ -101,7 +109,7 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                     CalculatedPieceCount = quantityPerSkid * part.ReceivedSkidCount,
                     ExpectedSkidCount = part.ExpectedSkidCount,
                     HasDiscrepancy = part.HasDiscrepancy,
-                    DiscrepancyNote = part.DiscrepancyNote
+                    DiscrepancyNote = part.DiscrepancyNote,
                 };
 
                 newLines.Add(line);
@@ -113,11 +121,16 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                 if (!insertResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure(
-                        insertResult.ErrorMessage ?? $"Failed to insert line for part {line.PartNumber}");
+                        insertResult.ErrorMessage
+                            ?? $"Failed to insert line for part {line.PartNumber}"
+                    );
                 }
             }
 
-            if (shipment.Status == VolvoShipmentStatus.Completed && !string.IsNullOrWhiteSpace(shipment.PONumber))
+            if (
+                shipment.Status == VolvoShipmentStatus.Completed
+                && !string.IsNullOrWhiteSpace(shipment.PONumber)
+            )
             {
                 await Helper_VolvoShipmentCalculations.GenerateLabelAsync(
                     _shipmentDao,
@@ -126,7 +139,8 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                     _componentDao,
                     _authService,
                     _logger,
-                    shipment.Id);
+                    shipment.Id
+                );
             }
 
             return Model_Dao_Result_Factory.Success("Shipment updated successfully");
@@ -134,7 +148,9 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure(
-                $"Unexpected error updating shipment: {ex.Message}", ex);
+                $"Unexpected error updating shipment: {ex.Message}",
+                ex
+            );
         }
     }
 }

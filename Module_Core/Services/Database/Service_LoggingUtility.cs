@@ -27,10 +27,12 @@ public class Service_LoggingUtility : IService_LoggingUtility
         EnsureLogDirectoryExists();
 
         // Start background logging thread
-        System.Threading.Tasks.Task.Factory.StartNew(ProcessLogQueue,
+        System.Threading.Tasks.Task.Factory.StartNew(
+            ProcessLogQueue,
             System.Threading.CancellationToken.None,
             System.Threading.Tasks.TaskCreationOptions.LongRunning,
-            System.Threading.Tasks.TaskScheduler.Default);
+            System.Threading.Tasks.TaskScheduler.Default
+        );
     }
 
     private void ProcessLogQueue()
@@ -193,7 +195,12 @@ public class Service_LoggingUtility : IService_LoggingUtility
         }
         catch (Exception ex)
         {
-            WriteLog("ERROR", $"Failed to archive old logs: {ex.Message}", ex, "LoggingUtility.ArchiveOldLogs");
+            WriteLog(
+                "ERROR",
+                $"Failed to archive old logs: {ex.Message}",
+                ex,
+                "LoggingUtility.ArchiveOldLogs"
+            );
         }
 
         return archivedCount;
@@ -214,19 +221,25 @@ public class Service_LoggingUtility : IService_LoggingUtility
             var logEntry = new StringBuilder();
 
             // Timestamp and severity
-            logEntry.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [{severity}] {(context != null ? $"[{context}]" : "")}");
+            logEntry.AppendLine(
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [{severity}] {(context != null ? $"[{context}]" : "")}"
+            );
             logEntry.AppendLine($"Message: {message}");
 
             // Add context information if provided
             if (!string.IsNullOrEmpty(context))
             {
-                logEntry.AppendLine($"Context: User={Environment.UserName}, Machine={Environment.MachineName}");
+                logEntry.AppendLine(
+                    $"Context: User={Environment.UserName}, Machine={Environment.MachineName}"
+                );
             }
 
             // Add exception details if provided
             if (exception != null)
             {
-                logEntry.AppendLine($"Exception: {exception.GetType().FullName}: {exception.Message}");
+                logEntry.AppendLine(
+                    $"Exception: {exception.GetType().FullName}: {exception.Message}"
+                );
                 logEntry.AppendLine($"Stack Trace:");
                 logEntry.AppendLine(exception.StackTrace);
 
@@ -234,7 +247,9 @@ public class Service_LoggingUtility : IService_LoggingUtility
                 var innerException = exception.InnerException;
                 while (innerException != null)
                 {
-                    logEntry.AppendLine($"Inner Exception: {innerException.GetType().FullName}: {innerException.Message}");
+                    logEntry.AppendLine(
+                        $"Inner Exception: {innerException.GetType().FullName}: {innerException.Message}"
+                    );
                     logEntry.AppendLine(innerException.StackTrace);
                     innerException = innerException.InnerException;
                 }
@@ -262,4 +277,3 @@ public class Service_LoggingUtility : IService_LoggingUtility
         return Task.CompletedTask;
     }
 }
-

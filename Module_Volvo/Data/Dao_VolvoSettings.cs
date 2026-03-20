@@ -1,9 +1,9 @@
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Volvo.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Volvo.Models;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -25,10 +25,7 @@ public class Dao_VolvoSettings
     /// <param name="settingKey"></param>
     public async Task<Model_Dao_Result<Model_VolvoSetting>> GetSettingAsync(string settingKey)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "setting_key", settingKey }
-        };
+        var parameters = new Dictionary<string, object> { { "setting_key", settingKey } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
@@ -42,11 +39,13 @@ public class Dao_VolvoSettings
     /// Gets all settings, optionally filtered by category
     /// </summary>
     /// <param name="category"></param>
-    public async Task<Model_Dao_Result<List<Model_VolvoSetting>>> GetAllSettingsAsync(string? category = null)
+    public async Task<Model_Dao_Result<List<Model_VolvoSetting>>> GetAllSettingsAsync(
+        string? category = null
+    )
     {
         var parameters = new Dictionary<string, object>
         {
-            { "category", category ?? string.Empty }
+            { "category", category ?? string.Empty },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
@@ -63,13 +62,17 @@ public class Dao_VolvoSettings
     /// <param name="settingKey"></param>
     /// <param name="settingValue"></param>
     /// <param name="modifiedBy"></param>
-    public async Task<Model_Dao_Result> UpsertSettingAsync(string settingKey, string settingValue, string modifiedBy)
+    public async Task<Model_Dao_Result> UpsertSettingAsync(
+        string settingKey,
+        string settingValue,
+        string modifiedBy
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "setting_key", settingKey },
             { "setting_value", settingValue },
-            { "modified_by", modifiedBy }
+            { "modified_by", modifiedBy },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -89,7 +92,7 @@ public class Dao_VolvoSettings
         var parameters = new Dictionary<string, object>
         {
             { "setting_key", settingKey },
-            { "modified_by", modifiedBy }
+            { "modified_by", modifiedBy },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -124,7 +127,7 @@ public class Dao_VolvoSettings
             ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
             ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by"))
                 ? null
-                : reader.GetString(reader.GetOrdinal("modified_by"))
+                : reader.GetString(reader.GetOrdinal("modified_by")),
         };
     }
 }

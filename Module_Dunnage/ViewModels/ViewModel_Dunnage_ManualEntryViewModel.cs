@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -31,7 +31,9 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         IService_LoggingUtility logger,
         IService_Window windowService,
         IService_Help helpService,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
@@ -126,7 +128,7 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         {
             Quantity = 1,
             CreatedDate = DateTime.Now,
-            CreatedBy = Environment.UserName
+            CreatedBy = Environment.UserName,
         };
 
         Loads.Add(newLoad);
@@ -145,13 +147,18 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null", null, "ManualEntry");
-                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error, null, true);
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display dialog",
+                    Enum_ErrorSeverity.Error,
+                    null,
+                    true
+                );
                 return;
             }
 
             var dialog = new Module_Dunnage.Views.View_Dunnage_Dialog_AddMultipleRowsDialog
             {
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync();
@@ -165,14 +172,17 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
                     {
                         Quantity = 1,
                         CreatedDate = DateTime.Now,
-                        CreatedBy = Environment.UserName
+                        CreatedBy = Environment.UserName,
                     };
                     Loads.Add(newLoad);
                 }
 
                 UpdateCanSave();
                 StatusMessage = $"Added {count} rows (Total: {Loads.Count})";
-                _logger.LogInfo($"Added {count} rows via dialog, total: {Loads.Count}", "ManualEntry");
+                _logger.LogInfo(
+                    $"Added {count} rows via dialog, total: {Loads.Count}",
+                    "ManualEntry"
+                );
             }
         }
         catch (Exception ex)
@@ -222,13 +232,19 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         foreach (var load in Loads)
         {
             // Copy PO Number
-            if (string.IsNullOrWhiteSpace(load.PoNumber) && !string.IsNullOrWhiteSpace(lastLoad.PoNumber))
+            if (
+                string.IsNullOrWhiteSpace(load.PoNumber)
+                && !string.IsNullOrWhiteSpace(lastLoad.PoNumber)
+            )
             {
                 load.PoNumber = lastLoad.PoNumber;
             }
 
             // Copy Location
-            if (string.IsNullOrWhiteSpace(load.Location) && !string.IsNullOrWhiteSpace(lastLoad.Location))
+            if (
+                string.IsNullOrWhiteSpace(load.Location)
+                && !string.IsNullOrWhiteSpace(lastLoad.Location)
+            )
             {
                 load.Location = lastLoad.Location;
             }
@@ -291,7 +307,8 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
                     $"Part ID '{SelectedLoad.PartId}' not found in master data",
                     Enum_ErrorSeverity.Warning,
                     null,
-                    true);
+                    true
+                );
                 StatusMessage = "Part not found - please check Part ID";
                 return;
             }
@@ -310,7 +327,10 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             if (part.SpecValuesDict?.Count > 0)
             {
                 SelectedLoad.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
-                _logger.LogInfo($"Auto-filled {part.SpecValuesDict.Count} spec values for Part ID: {SelectedLoad.PartId}", "ManualEntry");
+                _logger.LogInfo(
+                    $"Auto-filled {part.SpecValuesDict.Count} spec values for Part ID: {SelectedLoad.PartId}",
+                    "ManualEntry"
+                );
             }
 
             // Set default values
@@ -321,11 +341,16 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
 
             if (string.IsNullOrWhiteSpace(SelectedLoad.InventoryMethod))
             {
-                SelectedLoad.InventoryMethod = string.IsNullOrWhiteSpace(SelectedLoad.PoNumber) ? "Adjust In" : "Receive In";
+                SelectedLoad.InventoryMethod = string.IsNullOrWhiteSpace(SelectedLoad.PoNumber)
+                    ? "Adjust In"
+                    : "Receive In";
             }
 
             StatusMessage = $"Auto-filled data for Part ID: {SelectedLoad.PartId}";
-            _logger.LogInfo($"Auto-fill completed for Part ID: {SelectedLoad.PartId}", "ManualEntry");
+            _logger.LogInfo(
+                $"Auto-fill completed for Part ID: {SelectedLoad.PartId}",
+                "ManualEntry"
+            );
         }
         catch (Exception ex)
         {
@@ -406,7 +431,10 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             // Validate all loads
             foreach (var load in Loads)
             {
-                if (string.IsNullOrWhiteSpace(load.TypeName) || string.IsNullOrWhiteSpace(load.PartId))
+                if (
+                    string.IsNullOrWhiteSpace(load.TypeName)
+                    || string.IsNullOrWhiteSpace(load.PartId)
+                )
                 {
                     StatusMessage = "All loads must have Type and Part ID";
                     return;
@@ -465,18 +493,24 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         if (xamlRoot == null)
         {
             _logger.LogError("Cannot show dialog: XamlRoot is null", null, "ManualEntry");
-            await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error, null, true);
+            await _errorHandler.HandleErrorAsync(
+                "Unable to display dialog",
+                Enum_ErrorSeverity.Error,
+                null,
+                true
+            );
             return;
         }
 
         var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
         {
             Title = "Change Mode?",
-            Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+            Content =
+                "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
             PrimaryButtonText = "Yes, Change Mode",
             CloseButtonText = "Cancel",
             DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var result = await dialog.ShowAsync().AsTask();
@@ -484,15 +518,27 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         {
             try
             {
-                _logger.LogInfo("User confirmed return to mode selection, clearing loads", "ManualEntry");
+                _logger.LogInfo(
+                    "User confirmed return to mode selection, clearing loads",
+                    "ManualEntry"
+                );
                 Loads.Clear();
                 _workflowService.ClearSession();
                 _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to return to mode selection: {ex.Message}", ex, "ManualEntry");
-                await _errorHandler.HandleErrorAsync("Failed to return to mode selection", Enum_ErrorSeverity.Error, ex, true);
+                _logger.LogError(
+                    $"Failed to return to mode selection: {ex.Message}",
+                    ex,
+                    "ManualEntry"
+                );
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to return to mode selection",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
             }
         }
         else
@@ -511,7 +557,10 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         {
             var specKeys = await _dunnageService.GetAllSpecKeysAsync();
             SpecColumnHeaders = specKeys;
-            _logger.LogInfo($"Loaded {SpecColumnHeaders.Count} dynamic spec columns", "ManualEntry");
+            _logger.LogInfo(
+                $"Loaded {SpecColumnHeaders.Count} dynamic spec columns",
+                "ManualEntry"
+            );
         }
         catch (Exception ex)
         {
@@ -561,7 +610,9 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
 
     private void UpdateCanSave()
     {
-        CanSave = Loads.Any(l => !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId));
+        CanSave = Loads.Any(l =>
+            !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId)
+        );
     }
 
     #endregion
@@ -588,5 +639,3 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
 
     #endregion
 }
-
-

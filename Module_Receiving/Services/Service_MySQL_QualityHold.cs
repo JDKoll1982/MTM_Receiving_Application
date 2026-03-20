@@ -18,9 +18,7 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     private readonly Dao_QualityHold _dao;
     private readonly IService_LoggingUtility _logger;
 
-    public Service_MySQL_QualityHold(
-        Dao_QualityHold dao,
-        IService_LoggingUtility logger)
+    public Service_MySQL_QualityHold(Dao_QualityHold dao, IService_LoggingUtility logger)
     {
         _dao = dao ?? throw new ArgumentNullException(nameof(dao));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -32,7 +30,9 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     /// <param name="qualityHold"></param>
     public async Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_QualityHold qualityHold)
     {
-        _logger.LogInfo($"Inserting quality hold for Load ID: {qualityHold.LoadID}, Part: {qualityHold.PartID}, Type: {qualityHold.RestrictionType}");
+        _logger.LogInfo(
+            $"Inserting quality hold for Load ID: {qualityHold.LoadID}, Part: {qualityHold.PartID}, Type: {qualityHold.RestrictionType}"
+        );
 
         var result = await _dao.InsertQualityHoldAsync(qualityHold);
 
@@ -52,7 +52,9 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     /// Retrieves all quality holds for a specific load
     /// </summary>
     /// <param name="loadId"></param>
-    public async Task<Model_Dao_Result<List<Model_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId)
+    public async Task<Model_Dao_Result<List<Model_QualityHold>>> GetQualityHoldsByLoadIDAsync(
+        int loadId
+    )
     {
         _logger.LogInfo($"Retrieving quality holds for Load ID: {loadId}");
 
@@ -60,11 +62,15 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
 
         if (result.Success)
         {
-            _logger.LogInfo($"Retrieved {result.Data?.Count ?? 0} quality hold(s) for Load ID: {loadId}");
+            _logger.LogInfo(
+                $"Retrieved {result.Data?.Count ?? 0} quality hold(s) for Load ID: {loadId}"
+            );
         }
         else
         {
-            _logger.LogError($"Failed to retrieve quality holds for Load ID {loadId}: {result.ErrorMessage}");
+            _logger.LogError(
+                $"Failed to retrieve quality holds for Load ID {loadId}: {result.ErrorMessage}"
+            );
         }
 
         return result;
@@ -76,19 +82,33 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     /// <param name="qualityHoldId"></param>
     /// <param name="acknowledgedBy"></param>
     /// <param name="acknowledgedAt"></param>
-    public async Task<Model_Dao_Result> UpdateQualityHoldAcknowledgmentAsync(int qualityHoldId, string acknowledgedBy, DateTime acknowledgedAt)
+    public async Task<Model_Dao_Result> UpdateQualityHoldAcknowledgmentAsync(
+        int qualityHoldId,
+        string acknowledgedBy,
+        DateTime acknowledgedAt
+    )
     {
-        _logger.LogInfo($"Updating quality hold acknowledgment for ID: {qualityHoldId}, By: {acknowledgedBy}");
+        _logger.LogInfo(
+            $"Updating quality hold acknowledgment for ID: {qualityHoldId}, By: {acknowledgedBy}"
+        );
 
-        var result = await _dao.UpdateQualityHoldAcknowledgmentAsync(qualityHoldId, acknowledgedBy, acknowledgedAt);
+        var result = await _dao.UpdateQualityHoldAcknowledgmentAsync(
+            qualityHoldId,
+            acknowledgedBy,
+            acknowledgedAt
+        );
 
         if (result.Success)
         {
-            _logger.LogInfo($"Quality hold {qualityHoldId} acknowledged successfully by {acknowledgedBy}");
+            _logger.LogInfo(
+                $"Quality hold {qualityHoldId} acknowledged successfully by {acknowledgedBy}"
+            );
         }
         else
         {
-            _logger.LogError($"Failed to update quality hold {qualityHoldId}: {result.ErrorMessage}");
+            _logger.LogError(
+                $"Failed to update quality hold {qualityHoldId}: {result.ErrorMessage}"
+            );
         }
 
         return result;

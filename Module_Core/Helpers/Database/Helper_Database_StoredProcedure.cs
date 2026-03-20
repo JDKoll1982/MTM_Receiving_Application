@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 /// <summary>
-/// Helper class for executing stored procedures with retry logic, 
+/// Helper class for executing stored procedures with retry logic,
 /// performance monitoring, and standardized error handling
 /// </summary>
 public static class Helper_Database_StoredProcedure
@@ -28,7 +28,8 @@ public static class Helper_Database_StoredProcedure
     public static async Task<Model_Dao_Result> ExecuteAsync(
         string procedureName,
         MySqlParameter[] parameters,
-        string connectionString)
+        string connectionString
+    )
     {
         var result = new Model_Dao_Result();
         var stopwatch = Stopwatch.StartNew();
@@ -45,7 +46,7 @@ public static class Helper_Database_StoredProcedure
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 if (parameters != null)
@@ -58,7 +59,13 @@ public static class Helper_Database_StoredProcedure
                 // Handle output parameters if any
                 foreach (var param in command.Parameters)
                 {
-                    if (param is MySqlParameter p && (p.Direction == ParameterDirection.Output || p.Direction == ParameterDirection.InputOutput))
+                    if (
+                        param is MySqlParameter p
+                        && (
+                            p.Direction == ParameterDirection.Output
+                            || p.Direction == ParameterDirection.InputOutput
+                        )
+                    )
                     {
                         // You might want to capture output values here if needed
                         // For now, we just ensure the command executes
@@ -79,12 +86,17 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return Model_Dao_Result_Factory.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure(
+                    $"Stored procedure '{procedureName}' failed: {ex.Message}",
+                    ex
+                );
             }
         }
 
         stopwatch.Stop();
-        return Model_Dao_Result_Factory.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return Model_Dao_Result_Factory.Failure(
+            $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts"
+        );
     }
 
     /// <summary>
@@ -118,7 +130,8 @@ public static class Helper_Database_StoredProcedure
     public static async Task<Model_Dao_Result> ExecuteNonQueryAsync(
         string connectionString,
         string procedureName,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null
+    )
     {
         var result = new Model_Dao_Result();
         var stopwatch = Stopwatch.StartNew();
@@ -130,14 +143,16 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                System.Diagnostics.Debug.WriteLine($"[DB] ExecuteNonQueryAsync: {procedureName} (Attempt {attempt}/{MaxRetries})");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] ExecuteNonQueryAsync: {procedureName} (Attempt {attempt}/{MaxRetries})"
+                );
 
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 AddParameters(command, parameters);
@@ -145,14 +160,19 @@ public static class Helper_Database_StoredProcedure
                 System.Diagnostics.Debug.WriteLine($"[DB] Executing: {procedureName}");
                 foreach (MySqlParameter param in command.Parameters)
                 {
-                    var valueDisplay = param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
-                    System.Diagnostics.Debug.WriteLine($"[DB]   {param.ParameterName} = {valueDisplay} ({param.Value?.GetType().Name ?? "DBNull"})");
+                    var valueDisplay =
+                        param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DB]   {param.ParameterName} = {valueDisplay} ({param.Value?.GetType().Name ?? "DBNull"})"
+                    );
                 }
 
                 var affectedRows = await command.ExecuteNonQueryAsync();
 
                 stopwatch.Stop();
-                System.Diagnostics.Debug.WriteLine($"[DB] Success: {affectedRows} rows affected in {stopwatch.ElapsedMilliseconds}ms");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] Success: {affectedRows} rows affected in {stopwatch.ElapsedMilliseconds}ms"
+                );
                 result.Success = true;
                 result.AffectedRows = affectedRows;
                 result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
@@ -177,7 +197,8 @@ public static class Helper_Database_StoredProcedure
 
         stopwatch.Stop();
         result.Success = false;
-        result.ErrorMessage = $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts";
+        result.ErrorMessage =
+            $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts";
         result.Severity = Enum_ErrorSeverity.Critical;
         result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
         return result;
@@ -195,7 +216,8 @@ public static class Helper_Database_StoredProcedure
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null
+    )
     {
         var result = new Model_Dao_Result<T>();
         var stopwatch = Stopwatch.StartNew();
@@ -207,14 +229,16 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                System.Diagnostics.Debug.WriteLine($"[DB] ExecuteSingleAsync: {procedureName} (Attempt {attempt}/{MaxRetries})");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] ExecuteSingleAsync: {procedureName} (Attempt {attempt}/{MaxRetries})"
+                );
 
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 AddParameters(command, parameters);
@@ -222,8 +246,11 @@ public static class Helper_Database_StoredProcedure
                 System.Diagnostics.Debug.WriteLine($"[DB] Executing: {procedureName}");
                 foreach (MySqlParameter param in command.Parameters)
                 {
-                    var valueDisplay = param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
-                    System.Diagnostics.Debug.WriteLine($"[DB]   {param.ParameterName} = {valueDisplay} ({param.Value?.GetType().Name ?? "DBNull"})");
+                    var valueDisplay =
+                        param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DB]   {param.ParameterName} = {valueDisplay} ({param.Value?.GetType().Name ?? "DBNull"})"
+                    );
                 }
 
                 await using var reader = await command.ExecuteReaderAsync();
@@ -233,7 +260,9 @@ public static class Helper_Database_StoredProcedure
                     result.Data = mapper(reader);
                     result.Success = true;
                     result.AffectedRows = 1;
-                    System.Diagnostics.Debug.WriteLine($"[DB] Success: 1 record found in {stopwatch.ElapsedMilliseconds}ms");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DB] Success: 1 record found in {stopwatch.ElapsedMilliseconds}ms"
+                    );
                 }
                 else
                 {
@@ -255,21 +284,30 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                System.Diagnostics.Debug.WriteLine($"[DB] ERROR in ExecuteSingleAsync: {procedureName}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] ERROR in ExecuteSingleAsync: {procedureName}"
+                );
                 System.Diagnostics.Debug.WriteLine($"[DB] Error Type: {ex.GetType().Name}");
                 System.Diagnostics.Debug.WriteLine($"[DB] Error Message: {ex.Message}");
                 if (ex is MySqlException sqlEx)
                 {
                     var errorDesc = GetMySqlErrorDescription(sqlEx.Number);
-                    System.Diagnostics.Debug.WriteLine($"[DB] MySQL Error {sqlEx.Number}: {errorDesc}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DB] MySQL Error {sqlEx.Number}: {errorDesc}"
+                    );
                     System.Diagnostics.Debug.WriteLine($"[DB] SQL State: {sqlEx.SqlState}");
                 }
-                return Model_Dao_Result_Factory.Failure<T>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<T>(
+                    $"Stored procedure '{procedureName}' failed: {ex.Message}",
+                    ex
+                );
             }
         }
 
         stopwatch.Stop();
-        return Model_Dao_Result_Factory.Failure<T>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return Model_Dao_Result_Factory.Failure<T>(
+            $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts"
+        );
     }
 
     /// <summary>
@@ -284,7 +322,8 @@ public static class Helper_Database_StoredProcedure
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null
+    )
     {
         var result = new Model_Dao_Result<List<T>>();
         var stopwatch = Stopwatch.StartNew();
@@ -296,14 +335,16 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                System.Diagnostics.Debug.WriteLine($"[DB] ExecuteListAsync: {procedureName} (Attempt {attempt}/{MaxRetries})");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] ExecuteListAsync: {procedureName} (Attempt {attempt}/{MaxRetries})"
+                );
 
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 AddParameters(command, parameters);
@@ -311,8 +352,11 @@ public static class Helper_Database_StoredProcedure
                 System.Diagnostics.Debug.WriteLine($"[DB] Executing: {procedureName}");
                 foreach (MySqlParameter param in command.Parameters)
                 {
-                    var valueDisplay = param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
-                    System.Diagnostics.Debug.WriteLine($"[DB]   {param.ParameterName} = {valueDisplay} ({param.Value?.GetType().Name ?? "DBNull"})");
+                    var valueDisplay =
+                        param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DB]   {param.ParameterName} = {valueDisplay} ({param.Value?.GetType().Name ?? "DBNull"})"
+                    );
                 }
 
                 await using var reader = await command.ExecuteReaderAsync();
@@ -328,7 +372,9 @@ public static class Helper_Database_StoredProcedure
                 result.AffectedRows = list.Count;
 
                 stopwatch.Stop();
-                System.Diagnostics.Debug.WriteLine($"[DB] Success: {list.Count} records retrieved in {stopwatch.ElapsedMilliseconds}ms");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] Success: {list.Count} records retrieved in {stopwatch.ElapsedMilliseconds}ms"
+                );
                 result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
                 return result;
             }
@@ -340,7 +386,9 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                System.Diagnostics.Debug.WriteLine($"[DB] ERROR in ExecuteListAsync: {procedureName}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB] ERROR in ExecuteListAsync: {procedureName}"
+                );
                 System.Diagnostics.Debug.WriteLine($"[DB] Error Type: {ex.GetType().Name}");
                 System.Diagnostics.Debug.WriteLine($"[DB] Error Message: {ex.Message}");
                 if (ex is MySqlException sqlEx)
@@ -348,12 +396,17 @@ public static class Helper_Database_StoredProcedure
                     System.Diagnostics.Debug.WriteLine($"[DB] MySQL Error Code: {sqlEx.Number}");
                     System.Diagnostics.Debug.WriteLine($"[DB] SQL State: {sqlEx.SqlState}");
                 }
-                return Model_Dao_Result_Factory.Failure<List<T>>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<List<T>>(
+                    $"Stored procedure '{procedureName}' failed: {ex.Message}",
+                    ex
+                );
             }
         }
 
         stopwatch.Stop();
-        return Model_Dao_Result_Factory.Failure<List<T>>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return Model_Dao_Result_Factory.Failure<List<T>>(
+            $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts"
+        );
     }
 
     /// <summary>
@@ -365,7 +418,8 @@ public static class Helper_Database_StoredProcedure
     public static async Task<Model_Dao_Result<DataTable>> ExecuteDataTableAsync(
         string connectionString,
         string procedureName,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null
+    )
     {
         var result = new Model_Dao_Result<DataTable>();
         var stopwatch = Stopwatch.StartNew();
@@ -382,7 +436,7 @@ public static class Helper_Database_StoredProcedure
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
-                    CommandType = CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure,
                 };
 
                 AddParameters(command, parameters);
@@ -417,7 +471,8 @@ public static class Helper_Database_StoredProcedure
 
         stopwatch.Stop();
         result.Success = false;
-        result.ErrorMessage = $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts";
+        result.ErrorMessage =
+            $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts";
         result.Severity = Enum_ErrorSeverity.Critical;
         result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
         return result;
@@ -434,7 +489,8 @@ public static class Helper_Database_StoredProcedure
         MySqlConnection connection,
         MySqlTransaction transaction,
         string procedureName,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null
+    )
     {
         var result = new Model_Dao_Result();
         var stopwatch = Stopwatch.StartNew();
@@ -443,7 +499,7 @@ public static class Helper_Database_StoredProcedure
         {
             await using var command = new MySqlCommand(procedureName, connection, transaction)
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
             };
 
             AddParameters(command, parameters);
@@ -452,8 +508,11 @@ public static class Helper_Database_StoredProcedure
             System.Diagnostics.Debug.WriteLine($"[DB] Executing SP: {procedureName}");
             foreach (MySqlParameter param in command.Parameters)
             {
-                var valueDisplay = param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
-                System.Diagnostics.Debug.WriteLine($"[DB]   Parameter: {param.ParameterName} = {valueDisplay} (Type: {param.MySqlDbType})");
+                var valueDisplay =
+                    param.Value == DBNull.Value ? "NULL" : param.Value?.ToString() ?? "NULL";
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB]   Parameter: {param.ParameterName} = {valueDisplay} (Type: {param.MySqlDbType})"
+                );
             }
 
             var affectedRows = await command.ExecuteNonQueryAsync();
@@ -462,14 +521,17 @@ public static class Helper_Database_StoredProcedure
             result.Success = true;
             result.AffectedRows = affectedRows;
             result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
-            System.Diagnostics.Debug.WriteLine($"[DB] Success: {affectedRows} rows affected in {stopwatch.ElapsedMilliseconds}ms");
+            System.Diagnostics.Debug.WriteLine(
+                $"[DB] Success: {affectedRows} rows affected in {stopwatch.ElapsedMilliseconds}ms"
+            );
             return result;
         }
         catch (MySqlException sqlEx)
         {
             stopwatch.Stop();
             result.Success = false;
-            result.ErrorMessage = $"Stored procedure '{procedureName}' failed: MySQL Error {sqlEx.Number}: {sqlEx.Message}";
+            result.ErrorMessage =
+                $"Stored procedure '{procedureName}' failed: MySQL Error {sqlEx.Number}: {sqlEx.Message}";
             result.Severity = Enum_ErrorSeverity.Error;
             result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
             result.Exception = sqlEx;
@@ -487,7 +549,8 @@ public static class Helper_Database_StoredProcedure
         {
             stopwatch.Stop();
             result.Success = false;
-            result.ErrorMessage = $"Stored procedure '{procedureName}' failed in transaction: {ex.Message}";
+            result.ErrorMessage =
+                $"Stored procedure '{procedureName}' failed in transaction: {ex.Message}";
             result.Severity = Enum_ErrorSeverity.Error;
             result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
             result.Exception = ex;
@@ -517,11 +580,14 @@ public static class Helper_Database_StoredProcedure
                 string cleanName = param.Key.TrimStart('@');
                 string finalName = cleanName.StartsWith("p_") ? "@" + cleanName : "@p_" + cleanName;
 
-                var valueDisplay = param.Value == null ? "NULL" :
-                                   param.Value == DBNull.Value ? "DBNull" :
-                                   param.Value.ToString();
+                var valueDisplay =
+                    param.Value == null ? "NULL"
+                    : param.Value == DBNull.Value ? "DBNull"
+                    : param.Value.ToString();
 
-                System.Diagnostics.Debug.WriteLine($"[DB]   {param.Key} → {finalName} = {valueDisplay} ({param.Value?.GetType().Name ?? "null"})");
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DB]   {param.Key} → {finalName} = {valueDisplay} ({param.Value?.GetType().Name ?? "null"})"
+                );
 
                 command.Parameters.AddWithValue(finalName, param.Value ?? DBNull.Value);
             }
@@ -583,7 +649,8 @@ public static class Helper_Database_StoredProcedure
             1038 => "Out of sort memory, consider increasing server sort buffer size",
             1039 => "Unexpected EOF found when reading file '%s' (errno: %d - %s)",
             1040 => "Too many connections",
-            1041 => "Out of memory; check if mysqld or some other process uses all available memory",
+            1041 =>
+                "Out of memory; check if mysqld or some other process uses all available memory",
             1042 => "Can't get hostname for your address",
             1043 => "Bad handshake",
             1044 => "Access denied for user '%s'@'%s' to database '%s'",
@@ -617,7 +684,8 @@ public static class Helper_Database_StoredProcedure
             1072 => "Key column '%s' doesn't exist in table",
             1073 => "BLOB column '%s' can't be used in key specification with the used table type",
             1074 => "Column length too big for column '%s' (max = %lu); use BLOB or TEXT instead",
-            1075 => "Incorrect table definition; there can be only one auto column and it must be defined as a key",
+            1075 =>
+                "Incorrect table definition; there can be only one auto column and it must be defined as a key",
             1076 => "Ready for connections",
             1077 => "Normal shutdown",
             1078 => "Got signal %d. Aborting!",
@@ -674,7 +742,8 @@ public static class Helper_Database_StoredProcedure
             1129 => "Host '%s' is blocked because of many connection errors",
             1130 => "Host '%s' is not allowed to connect to this MySQL server",
             1131 => "Anonymous users are not allowed to change passwords",
-            1132 => "You must have privileges to update tables in the mysql database to change passwords",
+            1132 =>
+                "You must have privileges to update tables in the mysql database to change passwords",
             1133 => "Can't find any matching row in the user table",
             1134 => "Update Info: Rows matched: %ld Changed: %ld Warnings: %ld",
             1135 => "Can't create a new thread (errno %d)",
@@ -682,7 +751,8 @@ public static class Helper_Database_StoredProcedure
             1137 => "Can't reopen table: '%s'",
             1138 => "Invalid use of NULL value",
             1139 => "Got error '%s' from regexp",
-            1140 => "Mixing of GROUP columns with no GROUP columns is illegal if there is no GROUP BY clause",
+            1140 =>
+                "Mixing of GROUP columns with no GROUP columns is illegal if there is no GROUP BY clause",
             1141 => "There is no such grant defined for user '%s' on host '%s'",
             1142 => "%s command denied to user '%s'@'%s' for table '%s'",
             1143 => "%s command denied to user '%s'@'%s' for column '%s' in table '%s'",
@@ -707,7 +777,8 @@ public static class Helper_Database_StoredProcedure
             1162 => "Result string is longer than 'max_allowed_packet' bytes",
             1163 => "The used table type doesn't support BLOB/TEXT columns",
             1164 => "The used table type doesn't support AUTO_INCREMENT columns",
-            1165 => "INSERT DELAYED can't be used with table '%s' because it is locked with LOCK TABLES",
+            1165 =>
+                "INSERT DELAYED can't be used with table '%s' because it is locked with LOCK TABLES",
             1166 => "Incorrect column name '%s'",
             1167 => "The used storage engine can't index column '%s'",
             1168 => "Unable to open underlying table",
@@ -717,7 +788,8 @@ public static class Helper_Database_StoredProcedure
             1172 => "Result consisted of more than one row",
             1173 => "This table type requires a primary key",
             1174 => "This version of MySQL is not compiled with RAID support",
-            1175 => "You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column",
+            1175 =>
+                "You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column",
             1176 => "Key '%s' doesn't exist in table '%s'",
             1177 => "Can't open table",
             1178 => "The storage engine for the table doesn't support %s",
@@ -744,7 +816,7 @@ public static class Helper_Database_StoredProcedure
             2006 => "MySQL server has gone away",
             2013 => "Lost connection to MySQL server during query",
             2055 => "Lost connection to MySQL server at 'reading initial communication packet'",
-            _ => "Unknown MySQL error (Check server logs)"
+            _ => "Unknown MySQL error (Check server logs)",
         };
     }
 
@@ -782,14 +854,30 @@ public static class Helper_Database_StoredProcedure
 
         return ex.Number switch
         {
-            1040 or 1053 or 1080 or
-            1152 or 1153 or 1154 or 1155 or 1156 or 1157 or 1158 or 1159 or 1160 or 1161 or 1184 or
-            1203 or 1205 or 1213 or 1226 or
-            2002 or 2003 or 2006 or 2013 or 2055 => true,
-            _ => false
+            1040
+            or 1053
+            or 1080
+            or 1152
+            or 1153
+            or 1154
+            or 1155
+            or 1156
+            or 1157
+            or 1158
+            or 1159
+            or 1160
+            or 1161
+            or 1184
+            or 1203
+            or 1205
+            or 1213
+            or 1226
+            or 2002
+            or 2003
+            or 2006
+            or 2013
+            or 2055 => true,
+            _ => false,
         };
     }
 }
-
-
-

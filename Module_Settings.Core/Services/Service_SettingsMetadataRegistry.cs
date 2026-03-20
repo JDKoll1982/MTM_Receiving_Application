@@ -11,7 +11,9 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Services;
 /// </summary>
 public class Service_SettingsMetadataRegistry : ISettingsMetadataRegistry
 {
-    private readonly Dictionary<string, Model_SettingsDefinition> _definitions = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Model_SettingsDefinition> _definitions = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     public Service_SettingsMetadataRegistry(ISettingsManifestProvider manifestProvider)
     {

@@ -1,15 +1,14 @@
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
@@ -63,7 +62,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public string? CurrentPOVendor { get; set; }
         public string? CurrentPOStatus { get; set; }
         public DateTime? CurrentPODueDate { get; set; }
-        public Enum_DataSourceType RequestedEditDataSource { get; set; } = Enum_DataSourceType.Memory;
+        public Enum_DataSourceType RequestedEditDataSource { get; set; } =
+            Enum_DataSourceType.Memory;
 
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
@@ -73,16 +73,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_ReceivingSettings receivingSettings,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
-            IService_UserSessionManager userSessionManager)
+            IService_UserSessionManager userSessionManager
+        )
         {
-            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+            _sessionManager =
+                sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _xlsWriter = xlsWriter ?? throw new ArgumentNullException(nameof(xlsWriter));
-            _mysqlReceiving = mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
+            _mysqlReceiving =
+                mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
-            _receivingSettings = receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
+            _receivingSettings =
+                receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _viewModelRegistry = viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
-            _userSessionManager = userSessionManager ?? throw new ArgumentNullException(nameof(userSessionManager));
+            _viewModelRegistry =
+                viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
+            _userSessionManager =
+                userSessionManager ?? throw new ArgumentNullException(nameof(userSessionManager));
         }
 
         public async Task<bool> StartWorkflowAsync()
@@ -137,35 +143,74 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                var rememberLastMode = await _receivingSettings.GetBoolAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.BusinessRules.RememberLastMode, currentUserId);
-                var configuredDefaultMode = (await _receivingSettings.GetStringAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup, currentUserId)).Trim();
+                var rememberLastMode = await _receivingSettings.GetBoolAsync(
+                    MTM_Receiving_Application
+                        .Module_Receiving
+                        .Settings
+                        .ReceivingSettingsKeys
+                        .BusinessRules
+                        .RememberLastMode,
+                    currentUserId
+                );
+                var configuredDefaultMode = (
+                    await _receivingSettings.GetStringAsync(
+                        MTM_Receiving_Application
+                            .Module_Receiving
+                            .Settings
+                            .ReceivingSettingsKeys
+                            .BusinessRules
+                            .DefaultModeOnStartup,
+                        currentUserId
+                    )
+                ).Trim();
                 var rememberedMode = rememberLastMode
-                    ? (await _receivingSettings.GetStringAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.Defaults.DefaultReceivingMode, currentUserId)).Trim()
+                    ? (
+                        await _receivingSettings.GetStringAsync(
+                            MTM_Receiving_Application
+                                .Module_Receiving
+                                .Settings
+                                .ReceivingSettingsKeys
+                                .Defaults
+                                .DefaultReceivingMode,
+                            currentUserId
+                        )
+                    ).Trim()
                     : string.Empty;
-                var startupMode = string.IsNullOrWhiteSpace(rememberedMode) ? configuredDefaultMode : rememberedMode;
+                var startupMode = string.IsNullOrWhiteSpace(rememberedMode)
+                    ? configuredDefaultMode
+                    : rememberedMode;
                 var normalizedDefaultMode = startupMode.ToLowerInvariant();
 
                 if (normalizedDefaultMode == "guided")
                 {
                     CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
-                    _logger.LogInfo(string.IsNullOrWhiteSpace(rememberedMode)
-                        ? "Starting in Guided mode (settings default)"
-                        : "Starting in Guided mode (remembered last mode)");
+                    _logger.LogInfo(
+                        string.IsNullOrWhiteSpace(rememberedMode)
+                            ? "Starting in Guided mode (settings default)"
+                            : "Starting in Guided mode (remembered last mode)"
+                    );
                 }
-                else if (normalizedDefaultMode == "manualentry" || normalizedDefaultMode == "manual")
+                else if (
+                    normalizedDefaultMode == "manualentry"
+                    || normalizedDefaultMode == "manual"
+                )
                 {
                     CurrentStep = Enum_ReceivingWorkflowStep.ManualEntry;
-                    _logger.LogInfo(string.IsNullOrWhiteSpace(rememberedMode)
-                        ? "Starting in Manual Entry mode (settings default)"
-                        : "Starting in Manual Entry mode (remembered last mode)");
+                    _logger.LogInfo(
+                        string.IsNullOrWhiteSpace(rememberedMode)
+                            ? "Starting in Manual Entry mode (settings default)"
+                            : "Starting in Manual Entry mode (remembered last mode)"
+                    );
                 }
                 else if (normalizedDefaultMode == "editmode" || normalizedDefaultMode == "edit")
                 {
                     CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
                     RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
-                    _logger.LogInfo(string.IsNullOrWhiteSpace(rememberedMode)
-                        ? "Starting in Edit mode (settings default)"
-                        : "Starting in Edit mode (remembered last mode)");
+                    _logger.LogInfo(
+                        string.IsNullOrWhiteSpace(rememberedMode)
+                            ? "Starting in Edit mode (settings default)"
+                            : "Starting in Edit mode (remembered last mode)"
+                    );
                 }
                 else
                 {
@@ -191,10 +236,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 case Enum_ReceivingWorkflowStep.ManualEntry:
                     // Manual entry goes directly to saving.
                     // Validation happens on save; check for unacknowledged quality holds first.
-                    var loadsWithHolds = CurrentSession.Loads.Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged).ToList();
+                    var loadsWithHolds = CurrentSession
+                        .Loads.Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged)
+                        .ToList();
                     if (loadsWithHolds.Count > 0)
                     {
-                        validationErrors.Add($"Quality hold acknowledgment required for {loadsWithHolds.Count} load(s) before proceeding.");
+                        validationErrors.Add(
+                            $"Quality hold acknowledgment required for {loadsWithHolds.Count} load(s) before proceeding."
+                        );
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
                     CurrentStep = Enum_ReceivingWorkflowStep.Saving;
@@ -233,14 +282,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                     if (string.IsNullOrWhiteSpace(CurrentLocation))
                     {
-                        var defaultLocation = (await _receivingSettings.GetStringAsync(MTM_Receiving_Application.Module_Receiving.Settings.ReceivingSettingsKeys.Defaults.DefaultLocation)).Trim();
+                        var defaultLocation = (
+                            await _receivingSettings.GetStringAsync(
+                                MTM_Receiving_Application
+                                    .Module_Receiving
+                                    .Settings
+                                    .ReceivingSettingsKeys
+                                    .Defaults
+                                    .DefaultLocation
+                            )
+                        ).Trim();
                         if (string.IsNullOrWhiteSpace(defaultLocation) is false)
                         {
                             CurrentLocation = defaultLocation;
                         }
                     }
 
-                    var locationValidation = await _validation.ValidateLocationAsync(CurrentLocation);
+                    var locationValidation = await _validation.ValidateLocationAsync(
+                        CurrentLocation
+                    );
                     if (!locationValidation.IsValid)
                     {
                         validationErrors.Add(locationValidation.Message);
@@ -303,7 +363,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         }
                         if (string.IsNullOrWhiteSpace(load.PackageTypeName))
                         {
-                            validationErrors.Add($"Load {load.LoadNumber}: Package Type is required.");
+                            validationErrors.Add(
+                                $"Load {load.LoadNumber}: Package Type is required."
+                            );
                         }
                     }
                     if (validationErrors.Count > 0)
@@ -332,7 +394,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             await PersistSessionAsync();
             _logger.LogInfo("Session persisted.");
 
-            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
+            return Model_ReceivingWorkflowStepResult.SuccessResult(
+                CurrentStep,
+                $"Advanced to {CurrentStep}"
+            );
         }
 
         private void GenerateLoads()
@@ -371,7 +436,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     // PO Header Data
                     PoVendor = CurrentPOVendor ?? string.Empty,
                     PoStatus = CurrentPOStatus ?? string.Empty,
-                    PoDueDate = CurrentPODueDate
+                    PoDueDate = CurrentPODueDate,
                 };
                 CurrentSession.Loads.Add(load);
                 _currentBatchLoads.Add(load);
@@ -403,15 +468,24 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     break;
 
                 default:
-                    return Model_ReceivingWorkflowStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
+                    return Model_ReceivingWorkflowStepResult.ErrorResult(
+                        new List<string> { $"Cannot go back from step {CurrentStep}" }
+                    );
             }
 
-            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
+            return Model_ReceivingWorkflowStepResult.SuccessResult(
+                CurrentStep,
+                $"Returned to {CurrentStep}"
+            );
         }
+
         public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step)
         {
             CurrentStep = step;
-            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
+            return Model_ReceivingWorkflowStepResult.SuccessResult(
+                CurrentStep,
+                $"Navigated to {CurrentStep}"
+            );
         }
 
         public async Task AddCurrentPartToSessionAsync()
@@ -464,12 +538,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(CurrentSession.Loads);
+                int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(
+                    CurrentSession.Loads
+                );
                 result.DatabaseSuccess = true;
                 result.LoadsSaved = savedCount;
                 if (savedCount < CurrentSession.Loads.Count)
                 {
-                    result.Warnings.Add($"{CurrentSession.Loads.Count - savedCount} load(s) were already in the database and were skipped.");
+                    result.Warnings.Add(
+                        $"{CurrentSession.Loads.Count - savedCount} load(s) were already in the database and were skipped."
+                    );
                 }
                 result.Success = true;
             }
@@ -484,7 +562,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return result;
         }
 
-        public async Task<Model_SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null)
+        public async Task<Model_SaveResult> SaveSessionAsync(
+            IProgress<string>? messageProgress = null,
+            IProgress<int>? percentProgress = null
+        )
         {
             _logger.LogInfo("Starting session save.");
             var result = new Model_SaveResult();
@@ -497,7 +578,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             var validation = _validation.ValidateSession(CurrentSession.Loads);
             if (!validation.IsValid)
             {
-                _logger.LogWarning($"Session validation failed: {string.Join(", ", validation.Errors)}");
+                _logger.LogWarning(
+                    $"Session validation failed: {string.Join(", ", validation.Errors)}"
+                );
                 result.Success = false;
                 result.Errors = validation.Errors;
                 return result;
@@ -528,7 +611,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     // Populate Database error message if database save failed
                     if (dbResult.Errors.Count > 0)
                     {
-                        result.DatabaseErrorMessage = "Database save failed: " + string.Join("; ", dbResult.Errors);
+                        result.DatabaseErrorMessage =
+                            "Database save failed: " + string.Join("; ", dbResult.Errors);
                     }
                 }
 
@@ -585,18 +669,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
         {
-            var archivedBy = _userSessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
+            var archivedBy =
+                _userSessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
             _logger.LogInfo($"Clear Label Data requested by {archivedBy}.");
 
             var clearResult = await _mysqlReceiving.ClearLabelDataToHistoryAsync(archivedBy);
             if (clearResult.IsSuccess)
             {
                 _logger.LogInfo($"Clear Label Data succeeded. Rows moved: {clearResult.Data}");
-                return new Model_XLSDeleteResult
-                {
-                    LocalDeleted = true,
-                    NetworkDeleted = true
-                };
+                return new Model_XLSDeleteResult { LocalDeleted = true, NetworkDeleted = true };
             }
 
             _logger.LogWarning($"Clear Label Data failed: {clearResult.ErrorMessage}");
@@ -604,7 +685,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             {
                 LocalDeleted = false,
                 NetworkDeleted = false,
-                NetworkError = clearResult.ErrorMessage
+                NetworkError = clearResult.ErrorMessage,
             };
         }
 
@@ -617,5 +698,3 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         }
     }
 }
-
-

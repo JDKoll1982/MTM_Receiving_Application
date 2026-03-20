@@ -20,7 +20,8 @@ public interface IService_Volvo
     /// <param name="lines">List of shipment lines with part numbers and skid counts</param>
     /// <returns>Dictionary of part numbers to total piece counts (includes parent parts + components)</returns>
     public Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
-        List<Model_VolvoShipmentLine> lines);
+        List<Model_VolvoShipmentLine> lines
+    );
 
     /// <summary>
     /// Generates label data for a shipment by loading it from the database,
@@ -41,7 +42,8 @@ public interface IService_Volvo
     public Task<string> FormatEmailTextAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        Dictionary<string, int>? requestedLines = null);
+        Dictionary<string, int>? requestedLines = null
+    );
 
     /// <summary>
     /// Formats email data for PO requisition (structured for preview and HTML export)
@@ -53,7 +55,8 @@ public interface IService_Volvo
     public Task<Model_VolvoEmailData> FormatEmailDataAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        Dictionary<string, int>? requestedLines = null);
+        Dictionary<string, int>? requestedLines = null
+    );
 
     /// <summary>
     /// Converts structured email data to HTML format with tables for Outlook paste
@@ -71,7 +74,8 @@ public interface IService_Volvo
     /// <returns>Validation result with error message if failed</returns>
     public Task<Model_Dao_Result> ValidateShipmentAsync(
         Model_VolvoShipment shipment,
-        List<Model_VolvoShipmentLine> lines);
+        List<Model_VolvoShipmentLine> lines
+    );
 
     /// <summary>
     /// Saves shipment and lines with status='pending_po'
@@ -84,7 +88,8 @@ public interface IService_Volvo
     public Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        bool overwriteExisting = false);
+        bool overwriteExisting = false
+    );
 
     /// <summary>
     /// Gets pending shipment if one exists (status='pending_po')
@@ -96,7 +101,9 @@ public interface IService_Volvo
     /// Gets pending shipment with all line items
     /// </summary>
     /// <returns>Tuple of (shipment, lines) or null if no pending shipment</returns>
-    public Task<Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>> GetPendingShipmentWithLinesAsync();
+    public Task<
+        Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>
+    > GetPendingShipmentWithLinesAsync();
 
     /// <summary>
     /// Completes shipment with PO and Receiver numbers
@@ -106,7 +113,11 @@ public interface IService_Volvo
     /// <param name="poNumber">Purchase order number from purchasing department</param>
     /// <param name="receiverNumber">Receiver number from Infor Visual</param>
     /// <returns>Success/failure result</returns>
-    public Task<Model_Dao_Result> CompleteShipmentAsync(int shipmentId, string poNumber, string receiverNumber);
+    public Task<Model_Dao_Result> CompleteShipmentAsync(
+        int shipmentId,
+        string poNumber,
+        string receiverNumber
+    );
 
     /// <summary>
     /// Gets all active Volvo parts for dropdown population
@@ -125,14 +136,17 @@ public interface IService_Volvo
     public Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
         DateTime startDate,
         DateTime endDate,
-        string status = "all");
+        string status = "all"
+    );
 
     /// <summary>
     /// Gets all shipment lines for a specific shipment
     /// </summary>
     /// <param name="shipmentId">Shipment ID</param>
     /// <returns>List of shipment lines</returns>
-    public Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId);
+    public Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(
+        int shipmentId
+    );
 
     /// <summary>
     /// Updates an existing shipment and its lines
@@ -143,6 +157,6 @@ public interface IService_Volvo
     /// <returns>Success/failure result</returns>
     public Task<Model_Dao_Result> UpdateShipmentAsync(
         Model_VolvoShipment shipment,
-        List<Model_VolvoShipmentLine> lines);
-
+        List<Model_VolvoShipmentLine> lines
+    );
 }

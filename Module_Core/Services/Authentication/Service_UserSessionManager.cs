@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Authentication
 {
@@ -25,7 +25,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         public Service_UserSessionManager(Dao_User daoUser, IService_Dispatcher dispatcherService)
         {
             _daoUser = daoUser ?? throw new ArgumentNullException(nameof(daoUser));
-            _dispatcherService = dispatcherService ?? throw new ArgumentNullException(nameof(dispatcherService));
+            _dispatcherService =
+                dispatcherService ?? throw new ArgumentNullException(nameof(dispatcherService));
         }
 
         // ====================================================================
@@ -43,7 +44,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         public Model_UserSession CreateSession(
             Model_User user,
             Model_WorkstationConfig workstationConfig,
-            string authenticationMethod)
+            string authenticationMethod
+        )
         {
             if (user == null)
             {
@@ -63,7 +65,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 AuthenticationMethod = authenticationMethod,
                 LoginTimestamp = DateTime.Now,
                 LastActivityTimestamp = DateTime.Now,
-                TimeoutDuration = workstationConfig.TimeoutDuration
+                TimeoutDuration = workstationConfig.TimeoutDuration,
             };
 
             return CurrentSession;
@@ -84,7 +86,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         {
             if (CurrentSession == null)
             {
-                throw new InvalidOperationException("Cannot start timeout monitoring without an active session");
+                throw new InvalidOperationException(
+                    "Cannot start timeout monitoring without an active session"
+                );
             }
 
             // Stop existing timer if running
@@ -97,7 +101,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             _timeoutTimer.Tick += OnTimerTick;
             _timeoutTimer.Start();
 
-            System.Diagnostics.Debug.WriteLine($"Session timeout monitoring started. Timeout: {CurrentSession.TimeoutDuration.TotalMinutes} minutes");
+            System.Diagnostics.Debug.WriteLine(
+                $"Session timeout monitoring started. Timeout: {CurrentSession.TimeoutDuration.TotalMinutes} minutes"
+            );
         }
 
         /// <inheritdoc/>
@@ -134,7 +140,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     reason,
                     CurrentSession.User.WindowsUsername,
                     CurrentSession.WorkstationName,
-                    $"Session ended. Duration: {(DateTime.Now - CurrentSession.LoginTimestamp).TotalMinutes:F1} minutes");
+                    $"Session ended. Duration: {(DateTime.Now - CurrentSession.LoginTimestamp).TotalMinutes:F1} minutes"
+                );
 
                 System.Diagnostics.Debug.WriteLine($"Session ended. Reason: {reason}");
             }
@@ -176,14 +183,18 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             if (IsSessionTimedOut())
             {
                 System.Diagnostics.Debug.WriteLine(
-                    $"Session timeout detected. Idle time: {CurrentSession.TimeSinceLastActivity.TotalMinutes:F1} minutes");
+                    $"Session timeout detected. Idle time: {CurrentSession.TimeSinceLastActivity.TotalMinutes:F1} minutes"
+                );
 
                 // Raise timeout event
-                SessionTimedOut?.Invoke(this, new Model_SessionTimedOutEventArgs
-                {
-                    Session = CurrentSession,
-                    IdleDuration = CurrentSession.TimeSinceLastActivity
-                });
+                SessionTimedOut?.Invoke(
+                    this,
+                    new Model_SessionTimedOutEventArgs
+                    {
+                        Session = CurrentSession,
+                        IdleDuration = CurrentSession.TimeSinceLastActivity,
+                    }
+                );
 
                 // Stop monitoring (app will close)
                 StopTimeoutMonitoring();
@@ -191,4 +202,3 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         }
     }
 }
-

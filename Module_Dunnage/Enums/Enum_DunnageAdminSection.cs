@@ -28,5 +28,5 @@ public enum Enum_DunnageAdminSection
     /// <summary>
     /// Inventoried Dunnage List (CRUD on dunnage_requires_inventory_list table)
     /// </summary>
-    InventoriedList = 4
+    InventoriedList = 4,
 }

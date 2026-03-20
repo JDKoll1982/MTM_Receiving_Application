@@ -38,4 +38,3 @@ namespace MTM_Receiving_Application.Module_Core.Services
         public void Stop() => _timer.Stop();
     }
 }
-

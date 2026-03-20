@@ -16,13 +16,17 @@ public interface IService_Tool_OutsideServiceHistory
     /// Retrieves all outside service dispatch records for the specified part number.
     /// </summary>
     /// <param name="partNumber">Part ID to search for in SERVICE_DISP_LINE.</param>
-    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByPartAsync(string partNumber);
+    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByPartAsync(
+        string partNumber
+    );
 
     /// <summary>
     /// Retrieves all outside service dispatch records for the specified vendor ID.
     /// </summary>
     /// <param name="vendorId">Vendor ID to filter dispatch records by.</param>
-    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAsync(string vendorId);
+    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAsync(
+        string vendorId
+    );
 
     /// <summary>
     /// Fuzzy-searches Infor Visual for parts whose ID contains <paramref name="term"/>.
@@ -50,5 +54,8 @@ public interface IService_Tool_OutsideServiceHistory
     /// </summary>
     /// <param name="vendorId">The vendor ID selected by the user.</param>
     /// <param name="partNumber">The part number selected from the vendor's parts list.</param>
-    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAndPartAsync(string vendorId, string partNumber);
+    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAndPartAsync(
+        string vendorId,
+        string partNumber
+    );
 }

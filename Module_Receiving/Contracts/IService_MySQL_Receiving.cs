@@ -28,7 +28,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="startDate">Start date for history</param>
         /// <param name="endDate">End date for history</param>
         /// <returns>List of historical receiving loads</returns>
-        public Task<List<Model_ReceivingLoad>> GetReceivingHistoryAsync(string partID, DateTime startDate, DateTime endDate);
+        public Task<List<Model_ReceivingLoad>> GetReceivingHistoryAsync(
+            string partID,
+            DateTime startDate,
+            DateTime endDate
+        );
 
         /// <summary>
         /// Retrieves all receiving loads within a date range.
@@ -36,7 +40,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="startDate">Start date for retrieval</param>
         /// <param name="endDate">End date for retrieval</param>
         /// <returns>DAO result containing list of receiving loads</returns>
-        public Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate);
+        public Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(
+            DateTime startDate,
+            DateTime endDate
+        );
 
         /// <summary>
         /// Updates a batch of receiving loads in the database.
@@ -80,4 +87,3 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads);
     }
 }
-

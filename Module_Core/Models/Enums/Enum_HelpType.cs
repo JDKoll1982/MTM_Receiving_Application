@@ -28,6 +28,5 @@ public enum Enum_HelpType
     /// <summary>
     /// Detailed reference material
     /// </summary>
-    Reference = 4
+    Reference = 4,
 }
-

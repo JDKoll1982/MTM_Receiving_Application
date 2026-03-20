@@ -43,7 +43,8 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         Title = "Part Number Padding";
@@ -63,7 +64,11 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         catch (Exception ex)
         {
             _logger.LogError($"Error initializing part number padding settings: {ex.Message}", ex);
-            await _errorHandler.HandleErrorAsync("Failed to initialize part number padding settings", Module_Core.Models.Enums.Enum_ErrorSeverity.Medium, ex);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to initialize part number padding settings",
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                ex
+            );
         }
     }
 
@@ -71,8 +76,13 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     {
         try
         {
-            IsPaddingEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.PartNumberPadding.Enabled, true);
-            var rulesJson = await GetStringSettingAsync(ReceivingSettingsKeys.PartNumberPadding.RulesJson);
+            IsPaddingEnabled = await GetBoolSettingAsync(
+                ReceivingSettingsKeys.PartNumberPadding.Enabled,
+                true
+            );
+            var rulesJson = await GetStringSettingAsync(
+                ReceivingSettingsKeys.PartNumberPadding.RulesJson
+            );
 
             if (!string.IsNullOrWhiteSpace(rulesJson))
             {
@@ -98,7 +108,11 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         catch (Exception ex)
         {
             _logger.LogError($"Error loading part number padding settings: {ex.Message}", ex);
-            await _errorHandler.HandleErrorAsync("Failed to load part number padding settings", Module_Core.Models.Enums.Enum_ErrorSeverity.Medium, ex);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to load part number padding settings",
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                ex
+            );
         }
     }
 
@@ -111,7 +125,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             Prefix = "NEW",
             MaxLength = 10,
             PadChar = '0',
-            IsEnabled = true
+            IsEnabled = true,
         };
         PrefixRules.Add(newRule);
         SelectedRule = newRule;
@@ -172,7 +186,10 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             StatusMessage = "Saving...";
 
             // Save enabled flag
-            await SaveSettingAsync(ReceivingSettingsKeys.PartNumberPadding.Enabled, IsPaddingEnabled.ToString());
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.PartNumberPadding.Enabled,
+                IsPaddingEnabled.ToString()
+            );
 
             // Save rules as JSON
             var rulesJson = JsonSerializer.Serialize(PrefixRules.ToArray());
@@ -185,7 +202,11 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         catch (Exception ex)
         {
             _logger.LogError($"Error saving part number padding settings: {ex.Message}", ex);
-            await _errorHandler.HandleErrorAsync("Failed to save part number padding settings", Module_Core.Models.Enums.Enum_ErrorSeverity.Medium, ex);
+            await _errorHandler.HandleErrorAsync(
+                "Failed to save part number padding settings",
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                ex
+            );
             StatusMessage = "Save failed";
         }
         finally
@@ -197,7 +218,11 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     private async Task<bool> GetBoolSettingAsync(string key, bool fallback)
     {
         var result = await _settingsCore.GetSettingAsync(SettingsCategory, key, CurrentUserId);
-        if (result.IsSuccess && result.Data != null && bool.TryParse(result.Data.Value, out var parsed))
+        if (
+            result.IsSuccess
+            && result.Data != null
+            && bool.TryParse(result.Data.Value, out var parsed)
+        )
         {
             return parsed;
         }
@@ -223,7 +248,12 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
 
     private async Task SaveSettingAsync(string key, string value)
     {
-        var result = await _settingsCore.SetSettingAsync(SettingsCategory, key, value ?? string.Empty, CurrentUserId);
+        var result = await _settingsCore.SetSettingAsync(
+            SettingsCategory,
+            key,
+            value ?? string.Empty,
+            CurrentUserId
+        );
         if (!result.IsSuccess)
         {
             await _errorHandler.HandleDaoErrorAsync(result, $"Save {key}");
@@ -238,7 +268,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             Prefix = prefix,
             MaxLength = 10,
             PadChar = '0',
-            IsEnabled = true
+            IsEnabled = true,
         };
     }
 
@@ -253,10 +283,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         {
             "MMC" => "Coil",
             "MMF" => "Flatstock",
-            _ => string.Empty
+            _ => string.Empty,
         };
     }
 }
-
-
-

@@ -14,7 +14,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// <summary>
 /// Handler for SavePendingShipmentCommand - saves shipment as pending for later resumption.
 /// </summary>
-public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShipmentCommand, Model_Dao_Result<int>>
+public class SavePendingShipmentCommandHandler
+    : IRequestHandler<SavePendingShipmentCommand, Model_Dao_Result<int>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
@@ -23,14 +24,18 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
     public SavePendingShipmentCommandHandler(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
-        Dao_VolvoPart partDao)
+        Dao_VolvoPart partDao
+    )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
     }
 
-    public async Task<Model_Dao_Result<int>> Handle(SavePendingShipmentCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<int>> Handle(
+        SavePendingShipmentCommand request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -41,7 +46,7 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                 ShipmentNumber = request.ShipmentNumber,
                 Notes = request.Notes,
                 Status = "Pending",
-                EmployeeNumber = Environment.UserName // TODO: Get from session/auth
+                EmployeeNumber = Environment.UserName, // TODO: Get from session/auth
             };
 
             Model_Dao_Result<(int ShipmentId, int ShipmentNumber)> saveResult;
@@ -60,7 +65,7 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                 saveResult = new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
                 {
                     Success = true,
-                    Data = (request.ShipmentId.Value, request.ShipmentNumber)
+                    Data = (request.ShipmentId.Value, request.ShipmentNumber),
                 };
             }
             else
@@ -85,7 +90,7 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                     saveResult = new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
                     {
                         Success = true,
-                        Data = (pendingResult.Data.Id, pendingResult.Data.ShipmentNumber)
+                        Data = (pendingResult.Data.Id, pendingResult.Data.ShipmentNumber),
                     };
                 }
                 else
@@ -109,13 +114,17 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                 return Model_Dao_Result_Factory.Failure<int>(existingLinesResult.ErrorMessage);
             }
 
-            foreach (var existingLine in existingLinesResult.Data ?? Enumerable.Empty<Model_VolvoShipmentLine>())
+            foreach (
+                var existingLine in existingLinesResult.Data
+                    ?? Enumerable.Empty<Model_VolvoShipmentLine>()
+            )
             {
                 var deleteResult = await _lineDao.DeleteAsync(existingLine.Id);
                 if (!deleteResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}");
+                        $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}"
+                    );
                 }
             }
 
@@ -126,7 +135,9 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                 if (!partResult.IsSuccess || partResult.Data == null)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                        partResult.ErrorMessage
+                            ?? $"Part '{partDto.PartNumber}' not found in master data"
+                    );
                 }
 
                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
@@ -142,27 +153,26 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                     CalculatedPieceCount = calculatedPieceCount,
                     ExpectedSkidCount = partDto.ExpectedSkidCount,
                     HasDiscrepancy = partDto.HasDiscrepancy,
-                    DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+                    DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty,
                 };
 
                 var lineResult = await _lineDao.InsertAsync(line);
                 if (!lineResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+                        $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}"
+                    );
                 }
             }
 
-            return new Model_Dao_Result<int>
-            {
-                Success = true,
-                Data = shipmentId
-            };
+            return new Model_Dao_Result<int> { Success = true, Data = shipmentId };
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<int>(
-                $"Unexpected error saving pending shipment: {ex.Message}", ex);
+                $"Unexpected error saving pending shipment: {ex.Message}",
+                ex
+            );
         }
     }
 }

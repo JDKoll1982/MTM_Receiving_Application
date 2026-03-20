@@ -13,7 +13,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for GetShipmentHistoryQuery - retrieves shipment history with filters.
 /// </summary>
-public class GetShipmentHistoryQueryHandler : IRequestHandler<GetShipmentHistoryQuery, Model_Dao_Result<List<Model_VolvoShipment>>>
+public class GetShipmentHistoryQueryHandler
+    : IRequestHandler<GetShipmentHistoryQuery, Model_Dao_Result<List<Model_VolvoShipment>>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
 
@@ -22,7 +23,10 @@ public class GetShipmentHistoryQueryHandler : IRequestHandler<GetShipmentHistory
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
     }
 
-    public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> Handle(GetShipmentHistoryQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> Handle(
+        GetShipmentHistoryQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -35,7 +39,9 @@ public class GetShipmentHistoryQueryHandler : IRequestHandler<GetShipmentHistory
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_VolvoShipment>>(
-                $"Unexpected error retrieving shipment history: {ex.Message}", ex);
+                $"Unexpected error retrieving shipment history: {ex.Message}",
+                ex
+            );
         }
     }
 

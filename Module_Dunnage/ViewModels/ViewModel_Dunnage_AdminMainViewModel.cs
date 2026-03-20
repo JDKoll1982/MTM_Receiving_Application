@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -22,7 +22,9 @@ public partial class ViewModel_Dunnage_AdminMain : ViewModel_Shared_Base
         IService_DunnageAdminWorkflow adminWorkflow,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _adminWorkflow = adminWorkflow;
 
@@ -238,4 +240,3 @@ public partial class ViewModel_Dunnage_AdminMain : ViewModel_Shared_Base
 
     #endregion
 }
-

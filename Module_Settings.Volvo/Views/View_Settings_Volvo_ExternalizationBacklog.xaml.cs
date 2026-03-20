@@ -8,7 +8,9 @@ public sealed partial class View_Settings_Volvo_ExternalizationBacklog : Page
 {
     public ViewModel_Settings_Volvo_ExternalizationBacklog ViewModel { get; }
 
-    public View_Settings_Volvo_ExternalizationBacklog(ViewModel_Settings_Volvo_ExternalizationBacklog viewModel)
+    public View_Settings_Volvo_ExternalizationBacklog(
+        ViewModel_Settings_Volvo_ExternalizationBacklog viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;

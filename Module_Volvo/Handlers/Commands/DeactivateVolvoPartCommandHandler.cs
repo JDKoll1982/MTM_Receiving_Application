@@ -11,7 +11,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// <summary>
 /// Handler for DeactivateVolvoPartCommand - deactivates a part.
 /// </summary>
-public class DeactivateVolvoPartCommandHandler : IRequestHandler<DeactivateVolvoPartCommand, Model_Dao_Result>
+public class DeactivateVolvoPartCommandHandler
+    : IRequestHandler<DeactivateVolvoPartCommand, Model_Dao_Result>
 {
     private readonly Dao_VolvoPart _partDao;
 
@@ -20,7 +21,10 @@ public class DeactivateVolvoPartCommandHandler : IRequestHandler<DeactivateVolvo
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
     }
 
-    public async Task<Model_Dao_Result> Handle(DeactivateVolvoPartCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        DeactivateVolvoPartCommand request,
+        CancellationToken cancellationToken
+    )
     {
         return await _partDao.DeactivateAsync(request.PartNumber);
     }

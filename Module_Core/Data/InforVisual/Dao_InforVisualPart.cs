@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Core.Data.InforVisual;
 
@@ -14,7 +14,10 @@ public class Dao_InforVisualPart
     private readonly string _connectionString;
     private readonly IService_LoggingUtility? _logger;
 
-    public Dao_InforVisualPart(string inforVisualConnectionString, IService_LoggingUtility? logger = null)
+    public Dao_InforVisualPart(
+        string inforVisualConnectionString,
+        IService_LoggingUtility? logger = null
+    )
     {
         ValidateReadOnlyConnection(inforVisualConnectionString);
         _connectionString = inforVisualConnectionString;
@@ -35,20 +38,25 @@ public class Dao_InforVisualPart
             if (builder.ApplicationIntent != ApplicationIntent.ReadOnly)
             {
                 throw new InvalidOperationException(
-                    $"CONSTITUTIONAL VIOLATION: Infor Visual DAO requires ApplicationIntent=ReadOnly. " +
-                    $"Current ApplicationIntent: {builder.ApplicationIntent}. " +
-                    $"Writing to Infor Visual ERP database is STRICTLY PROHIBITED. " +
-                    "See Constitution Principle X: Infor Visual DAO Architecture.");
+                    $"CONSTITUTIONAL VIOLATION: Infor Visual DAO requires ApplicationIntent=ReadOnly. "
+                        + $"Current ApplicationIntent: {builder.ApplicationIntent}. "
+                        + $"Writing to Infor Visual ERP database is STRICTLY PROHIBITED. "
+                        + "See Constitution Principle X: Infor Visual DAO Architecture."
+                );
             }
         }
         catch (ArgumentException ex)
         {
             throw new InvalidOperationException(
-                $"Invalid Infor Visual connection string format: {ex.Message}", ex);
+                $"Invalid Infor Visual connection string format: {ex.Message}",
+                ex
+            );
         }
     }
 
-    public async Task<Model_Dao_Result<Model_InforVisualPartInfo>> GetByPartNumberAsync(string partNumber)
+    public async Task<Model_Dao_Result<Model_InforVisualPartInfo>> GetByPartNumberAsync(
+        string partNumber
+    )
     {
         try
         {
@@ -76,7 +84,7 @@ public class Dao_InforVisualPart
                     AvailableQty = Convert.ToDecimal(reader["AvailableQty"]),
                     DefaultSite = reader["DefaultSite"].ToString() ?? "002",
                     PartStatus = reader["PartStatus"].ToString() ?? "ACTIVE",
-                    ProductLine = reader["ProductLine"].ToString() ?? string.Empty
+                    ProductLine = reader["ProductLine"].ToString() ?? string.Empty,
                 };
                 _logger?.LogInfo($"Found part: {partNumber}");
                 return Model_Dao_Result_Factory.Success(part);
@@ -90,13 +98,14 @@ public class Dao_InforVisualPart
             _logger?.LogError($"Error retrieving part {partNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<Model_InforVisualPartInfo>(
                 $"Error retrieving part {partNumber}: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_InforVisualPartInfo>>> SearchPartsByDescriptionAsync(
-        string searchTerm,
-        int maxResults = 50)
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualPartInfo>>
+    > SearchPartsByDescriptionAsync(string searchTerm, int maxResults = 50)
     {
         try
         {
@@ -104,7 +113,9 @@ public class Dao_InforVisualPart
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("04_SearchPartsByDescription.sql");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "04_SearchPartsByDescription.sql"
+            );
 
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@SearchTerm", searchTerm);
@@ -114,20 +125,22 @@ public class Dao_InforVisualPart
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                list.Add(new Model_InforVisualPartInfo
-                {
-                    PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
-                    Description = reader["Description"].ToString() ?? string.Empty,
-                    PartType = reader["PartType"].ToString() ?? string.Empty,
-                    UnitCost = Convert.ToDecimal(reader["UnitCost"]),
-                    PrimaryUom = reader["PrimaryUom"].ToString() ?? "EA",
-                    OnHandQty = Convert.ToDecimal(reader["OnHandQty"]),
-                    AllocatedQty = Convert.ToDecimal(reader["AllocatedQty"]),
-                    AvailableQty = Convert.ToDecimal(reader["AvailableQty"]),
-                    DefaultSite = reader["DefaultSite"].ToString() ?? "002",
-                    PartStatus = reader["PartStatus"].ToString() ?? "ACTIVE",
-                    ProductLine = reader["ProductLine"].ToString() ?? string.Empty
-                });
+                list.Add(
+                    new Model_InforVisualPartInfo
+                    {
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        Description = reader["Description"].ToString() ?? string.Empty,
+                        PartType = reader["PartType"].ToString() ?? string.Empty,
+                        UnitCost = Convert.ToDecimal(reader["UnitCost"]),
+                        PrimaryUom = reader["PrimaryUom"].ToString() ?? "EA",
+                        OnHandQty = Convert.ToDecimal(reader["OnHandQty"]),
+                        AllocatedQty = Convert.ToDecimal(reader["AllocatedQty"]),
+                        AvailableQty = Convert.ToDecimal(reader["AvailableQty"]),
+                        DefaultSite = reader["DefaultSite"].ToString() ?? "002",
+                        PartStatus = reader["PartStatus"].ToString() ?? "ACTIVE",
+                        ProductLine = reader["ProductLine"].ToString() ?? string.Empty,
+                    }
+                );
             }
 
             _logger?.LogInfo($"Found {list.Count} parts matching '{searchTerm}'");
@@ -138,8 +151,8 @@ public class Dao_InforVisualPart
             _logger?.LogError($"Error searching parts: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPartInfo>>(
                 $"Error searching parts: {ex.Message}",
-                ex);
+                ex
+            );
         }
     }
 }
-

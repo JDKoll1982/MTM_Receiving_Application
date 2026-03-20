@@ -84,7 +84,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 if (ViewModel.Departments.Count == 0)
                 {
                     StatusInfoBar.Title = "No Departments Available";
-                    StatusInfoBar.Message = "No department options were returned. You can still use Other to continue.";
+                    StatusInfoBar.Message =
+                        "No department options were returned. You can still use Other to continue.";
                     StatusInfoBar.Severity = InfoBarSeverity.Warning;
                     StatusInfoBar.IsOpen = true;
                 }
@@ -142,10 +143,13 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             }
 
             // Set focus to first ERP field after a brief delay to allow UI to render
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
-            {
-                VisualUsernameTextBox.Focus(FocusState.Programmatic);
-            });
+            _ = DispatcherQueue.TryEnqueue(
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal,
+                () =>
+                {
+                    VisualUsernameTextBox.Focus(FocusState.Programmatic);
+                }
+            );
         }
 
         /// <summary>
@@ -168,7 +172,10 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private async void OnCreateAccountButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void OnCreateAccountButtonClick(
+            ContentDialog sender,
+            ContentDialogButtonClickEventArgs args
+        )
         {
             args.Cancel = true;
 
@@ -180,7 +187,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             string fullName = FullNameTextBox.Text?.Trim() ?? string.Empty;
             string department = DepartmentComboBox.SelectedItem?.ToString() ?? string.Empty;
             string customDepartment = CustomDepartmentTextBox.Text?.Trim() ?? string.Empty;
-            string shift = (ShiftComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
+            string shift =
+                (ShiftComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
             string pin = PinPasswordBox.Password?.Trim() ?? string.Empty;
             string confirmPin = ConfirmPinPasswordBox.Password?.Trim() ?? string.Empty;
 
@@ -284,7 +292,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             {
                 // Show success message with employee number
                 StatusInfoBar.Title = "Account Created Successfully!";
-                StatusInfoBar.Message = $"Your employee number is: {ViewModel.NewEmployeeNumber}. Welcome to the team!";
+                StatusInfoBar.Message =
+                    $"Your employee number is: {ViewModel.NewEmployeeNumber}. Welcome to the team!";
                 StatusInfoBar.Severity = InfoBarSeverity.Success;
                 StatusInfoBar.IsOpen = true;
 
@@ -297,7 +306,9 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             else
             {
                 // Show error message
-                ShowValidationError(ViewModel.ErrorMessage ?? "Failed to create account. Please try again.");
+                ShowValidationError(
+                    ViewModel.ErrorMessage ?? "Failed to create account. Please try again."
+                );
             }
         }
 
@@ -306,7 +317,10 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void OnCancelButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void OnCancelButtonClick(
+            ContentDialog sender,
+            ContentDialogButtonClickEventArgs args
+        )
         {
             // User cancelled account creation
             ViewModel.IsCancelled = true;

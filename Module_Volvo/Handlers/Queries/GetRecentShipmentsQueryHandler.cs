@@ -13,7 +13,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 /// <summary>
 /// Handler for GetRecentShipmentsQuery - retrieves recent shipment history.
 /// </summary>
-public class GetRecentShipmentsQueryHandler : IRequestHandler<GetRecentShipmentsQuery, Model_Dao_Result<List<Model_VolvoShipment>>>
+public class GetRecentShipmentsQueryHandler
+    : IRequestHandler<GetRecentShipmentsQuery, Model_Dao_Result<List<Model_VolvoShipment>>>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
 
@@ -22,7 +23,10 @@ public class GetRecentShipmentsQueryHandler : IRequestHandler<GetRecentShipments
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
     }
 
-    public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> Handle(GetRecentShipmentsQuery request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> Handle(
+        GetRecentShipmentsQuery request,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -35,7 +39,9 @@ public class GetRecentShipmentsQueryHandler : IRequestHandler<GetRecentShipments
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_VolvoShipment>>(
-                $"Unexpected error retrieving recent shipments: {ex.Message}", ex);
+                $"Unexpected error retrieving recent shipments: {ex.Message}",
+                ex
+            );
         }
     }
 }

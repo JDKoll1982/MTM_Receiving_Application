@@ -10,4 +10,3 @@ public class Service_Window : IService_Window
         return App.MainWindow?.Content?.XamlRoot;
     }
 }
-

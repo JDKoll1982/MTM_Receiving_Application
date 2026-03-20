@@ -5,11 +5,19 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Views.Controls;
 
 public sealed partial class View_SettingsPlaceholderControl : UserControl
 {
-    public static readonly DependencyProperty TitleTextProperty =
-        DependencyProperty.Register(nameof(TitleText), typeof(string), typeof(View_SettingsPlaceholderControl), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty TitleTextProperty = DependencyProperty.Register(
+        nameof(TitleText),
+        typeof(string),
+        typeof(View_SettingsPlaceholderControl),
+        new PropertyMetadata(string.Empty)
+    );
 
-    public static readonly DependencyProperty DescriptionTextProperty =
-        DependencyProperty.Register(nameof(DescriptionText), typeof(string), typeof(View_SettingsPlaceholderControl), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty DescriptionTextProperty = DependencyProperty.Register(
+        nameof(DescriptionText),
+        typeof(string),
+        typeof(View_SettingsPlaceholderControl),
+        new PropertyMetadata(string.Empty)
+    );
 
     public string TitleText
     {

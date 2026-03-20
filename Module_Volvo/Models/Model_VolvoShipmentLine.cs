@@ -78,18 +78,18 @@ public partial class Model_VolvoShipmentLine : ObservableObject
     /// Expected piece count (calculated from ExpectedSkidCount × QuantityPerSkid)
     /// Returns null if no expected count is set
     /// </summary>
-    public int? ExpectedPieceCount => ExpectedSkidCount.HasValue && QuantityPerSkid > 0
-        ? (int)(ExpectedSkidCount.Value * QuantityPerSkid)
-        : null;
+    public int? ExpectedPieceCount =>
+        ExpectedSkidCount.HasValue && QuantityPerSkid > 0
+            ? (int)(ExpectedSkidCount.Value * QuantityPerSkid)
+            : null;
 
     /// <summary>
     /// Calculated difference between received and expected pieces
     /// Positive = more received than expected, Negative = fewer received
     /// Returns null if no expected count is set
     /// </summary>
-    public int? PieceDifference => ExpectedPieceCount.HasValue
-        ? CalculatedPieceCount - ExpectedPieceCount.Value
-        : null;
+    public int? PieceDifference =>
+        ExpectedPieceCount.HasValue ? CalculatedPieceCount - ExpectedPieceCount.Value : null;
 
     /// <summary>
     /// Recalculate pieces when received skid count changes

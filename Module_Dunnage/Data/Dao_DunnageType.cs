@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Data;
 
@@ -30,10 +30,7 @@ public class Dao_DunnageType
 
     public virtual async Task<Model_Dao_Result<Model_DunnageType>> GetByIdAsync(int id)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "id", id }
-        };
+        var parameters = new Dictionary<string, object> { { "id", id } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageType>(
             _connectionString,
@@ -43,11 +40,15 @@ public class Dao_DunnageType
         );
     }
 
-    public virtual async Task<Model_Dao_Result<int>> InsertAsync(string typeName, string icon, string user)
+    public virtual async Task<Model_Dao_Result<int>> InsertAsync(
+        string typeName,
+        string icon,
+        string user
+    )
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
-            Direction = ParameterDirection.Output
+            Direction = ParameterDirection.Output,
         };
 
         var parameters = new MySqlParameter[]
@@ -55,7 +56,7 @@ public class Dao_DunnageType
             new MySqlParameter("@p_type_name", typeName),
             new MySqlParameter("@p_icon", icon),
             new MySqlParameter("@p_user", user),
-            pNewId
+            pNewId,
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
@@ -76,14 +77,19 @@ public class Dao_DunnageType
         return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
-    public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string typeName, string icon, string user)
+    public virtual async Task<Model_Dao_Result> UpdateAsync(
+        int id,
+        string typeName,
+        string icon,
+        string user
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "id", id },
             { "type_name", typeName },
             { "icon", icon },
-            { "user", user }
+            { "user", user },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -95,10 +101,7 @@ public class Dao_DunnageType
 
     public virtual async Task<Model_Dao_Result> DeleteAsync(int id)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "id", id }
-        };
+        var parameters = new Dictionary<string, object> { { "id", id } };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
@@ -109,10 +112,7 @@ public class Dao_DunnageType
 
     public virtual async Task<Model_Dao_Result<int>> CountPartsAsync(int typeId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "type_id", typeId }
-        };
+        var parameters = new Dictionary<string, object> { { "type_id", typeId } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
             _connectionString,
@@ -124,10 +124,7 @@ public class Dao_DunnageType
 
     public virtual async Task<Model_Dao_Result<int>> CountTransactionsAsync(int typeId)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "type_id", typeId }
-        };
+        var parameters = new Dictionary<string, object> { { "type_id", typeId } };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
             _connectionString,
@@ -143,18 +140,24 @@ public class Dao_DunnageType
     /// <param name="typeName">Type name to check</param>
     /// <param name="excludeId">ID to exclude from check (null for new types, type ID for updates)</param>
     /// <returns>True if duplicate exists, false otherwise</returns>
-    public virtual async Task<Model_Dao_Result<bool>> CheckDuplicateNameAsync(string typeName, int? excludeId = null)
+    public virtual async Task<Model_Dao_Result<bool>> CheckDuplicateNameAsync(
+        string typeName,
+        int? excludeId = null
+    )
     {
         var pExists = new MySqlParameter("@p_exists", MySqlDbType.Bit)
         {
-            Direction = ParameterDirection.Output
+            Direction = ParameterDirection.Output,
         };
 
         var parameters = new MySqlParameter[]
         {
             new MySqlParameter("@p_type_name", typeName),
-            new MySqlParameter("@p_exclude_id", excludeId.HasValue ? (object)excludeId.Value : DBNull.Value),
-            pExists
+            new MySqlParameter(
+                "@p_exclude_id",
+                excludeId.HasValue ? (object)excludeId.Value : DBNull.Value
+            ),
+            pExists,
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
@@ -181,11 +184,17 @@ public class Dao_DunnageType
         {
             Id = reader.GetInt32(reader.GetOrdinal("id")),
             TypeName = reader.GetString(reader.GetOrdinal("type_name")),
-            Icon = reader.IsDBNull(reader.GetOrdinal("icon")) ? "Help" : reader.GetString(reader.GetOrdinal("icon")),
+            Icon = reader.IsDBNull(reader.GetOrdinal("icon"))
+                ? "Help"
+                : reader.GetString(reader.GetOrdinal("icon")),
             CreatedBy = reader.GetString(reader.GetOrdinal("created_by")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
-            ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by")) ? null : reader.GetString(reader.GetOrdinal("modified_by")),
-            ModifiedDate = reader.IsDBNull(reader.GetOrdinal("modified_date")) ? null : reader.GetDateTime(reader.GetOrdinal("modified_date"))
+            ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("modified_by")),
+            ModifiedDate = reader.IsDBNull(reader.GetOrdinal("modified_date"))
+                ? null
+                : reader.GetDateTime(reader.GetOrdinal("modified_date")),
         };
     }
 }

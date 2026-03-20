@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -19,18 +19,21 @@ public class Dao_VolvoPartComponent
 
     public Dao_VolvoPartComponent(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
     /// Gets all components for a parent part (for component explosion)
     /// </summary>
     /// <param name="parentPartNumber"></param>
-    public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetByParentPartAsync(string parentPartNumber)
+    public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetByParentPartAsync(
+        string parentPartNumber
+    )
     {
         var parameters = new Dictionary<string, object>
         {
-            { "parent_part_number", parentPartNumber }
+            { "parent_part_number", parentPartNumber },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
@@ -51,7 +54,7 @@ public class Dao_VolvoPartComponent
         {
             { "parent_part_number", component.ParentPartNumber },
             { "component_part_number", component.ComponentPartNumber },
-            { "quantity", component.Quantity }
+            { "quantity", component.Quantity },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -69,7 +72,7 @@ public class Dao_VolvoPartComponent
     {
         var parameters = new Dictionary<string, object>
         {
-            { "parent_part_number", parentPartNumber }
+            { "parent_part_number", parentPartNumber },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -83,15 +86,16 @@ public class Dao_VolvoPartComponent
     /// Gets components for multiple parent parts (batch query to avoid N+1)
     /// </summary>
     /// <param name="parentPartNumbers"></param>
-    public async Task<Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>> GetComponentsByParentPartsAsync(
-        List<string> parentPartNumbers)
+    public async Task<
+        Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+    > GetComponentsByParentPartsAsync(List<string> parentPartNumbers)
     {
         if (parentPartNumbers == null || parentPartNumbers.Count == 0)
         {
             return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
             {
                 Success = true,
-                Data = new Dictionary<string, List<Model_VolvoPartComponent>>()
+                Data = new Dictionary<string, List<Model_VolvoPartComponent>>(),
             };
         }
 
@@ -116,7 +120,7 @@ public class Dao_VolvoPartComponent
             return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
             {
                 Success = true,
-                Data = result
+                Data = result,
             };
         }
         catch (Exception ex)
@@ -126,7 +130,7 @@ public class Dao_VolvoPartComponent
                 Success = false,
                 ErrorMessage = $"Error retrieving components batch: {ex.Message}",
                 Severity = Enum_ErrorSeverity.Error,
-                Exception = ex
+                Exception = ex,
             };
         }
     }
@@ -137,7 +141,9 @@ public class Dao_VolvoPartComponent
         {
             ComponentPartNumber = reader.GetString(reader.GetOrdinal("component_part_number")),
             Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
-            ComponentQuantityPerSkid = reader.GetInt32(reader.GetOrdinal("component_quantity_per_skid"))
+            ComponentQuantityPerSkid = reader.GetInt32(
+                reader.GetOrdinal("component_quantity_per_skid")
+            ),
         };
     }
 }

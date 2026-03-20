@@ -14,19 +14,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public List<string> Errors { get; set; } = new();
 
         public static Model_ReceivingValidationResult Success() => new() { IsValid = true };
-        public static Model_ReceivingValidationResult Error(string message) => new()
-        {
-            IsValid = false,
-            Severity = Enum_ValidationSeverity.Error,
-            Message = message,
-            Errors = new List<string> { message }
-        };
-        public static Model_ReceivingValidationResult Warning(string message) => new()
-        {
-            IsValid = true, // Warnings don't block
-            Severity = Enum_ValidationSeverity.Warning,
-            Message = message
-        };
+
+        public static Model_ReceivingValidationResult Error(string message) =>
+            new()
+            {
+                IsValid = false,
+                Severity = Enum_ValidationSeverity.Error,
+                Message = message,
+                Errors = new List<string> { message },
+            };
+
+        public static Model_ReceivingValidationResult Warning(string message) =>
+            new()
+            {
+                IsValid = true, // Warnings don't block
+                Severity = Enum_ValidationSeverity.Warning,
+                Message = message,
+            };
     }
 }
-

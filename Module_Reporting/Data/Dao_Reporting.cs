@@ -14,75 +14,84 @@ public class Dao_Reporting
 
     public Dao_Reporting(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "start_date", startDate.Date },
-            { "end_date", endDate.Date }
+            { "end_date", endDate.Date },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
             "sp_Reporting_ReceivingHistory_GetByDateRange",
             MapReportRowFromReader,
-            parameters);
+            parameters
+        );
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetDunnageHistoryAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "start_date", startDate.Date },
-            { "end_date", endDate.Date }
+            { "end_date", endDate.Date },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
             "sp_Reporting_DunnageHistory_GetByDateRange",
             MapReportRowFromReader,
-            parameters);
+            parameters
+        );
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "start_date", startDate.Date },
-            { "end_date", endDate.Date }
+            { "end_date", endDate.Date },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
             "sp_Reporting_VolvoHistory_GetByDateRange",
             MapReportRowFromReader,
-            parameters);
+            parameters
+        );
     }
 
     public async Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
         DateTime startDate,
-        DateTime endDate)
+        DateTime endDate
+    )
     {
         var parameters = new Dictionary<string, object>
         {
             { "start_date", startDate.Date },
-            { "end_date", endDate.Date }
+            { "end_date", endDate.Date },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
             "sp_Reporting_Availability_GetByDateRange",
             MapAvailabilityFromReader,
-            parameters);
+            parameters
+        );
     }
 
     private static Model_ReportRow MapReportRowFromReader(IDataReader reader)
@@ -91,6 +100,7 @@ public class Dao_Reporting
         {
             Id = ReadString(reader, "id") ?? string.Empty,
             PONumber = ReadNullableString(reader, "po_number"),
+            POLineNumber = ReadNullableString(reader, "po_line_number"),
             PartNumber = ReadNullableString(reader, "part_number"),
             PartDescription = ReadNullableString(reader, "part_description"),
             Quantity = ReadNullableDecimal(reader, "quantity"),
@@ -113,8 +123,9 @@ public class Dao_Reporting
             PackagesPerLoad = ReadNullableInt(reader, "packages_per_load"),
             PackageTypeName = ReadNullableString(reader, "package_type_name"),
             CoilsOnSkid = ReadNullableInt(reader, "coils_on_skid"),
+            IsNonPOItem = ReadNullableBool(reader, "is_non_po_item") ?? false,
             QuantityPerSkid = ReadNullableInt(reader, "quantity_per_skid"),
-            ReceivedSkidCount = ReadNullableInt(reader, "received_skid_count")
+            ReceivedSkidCount = ReadNullableInt(reader, "received_skid_count"),
         };
     }
 
@@ -124,7 +135,7 @@ public class Dao_Reporting
         {
             ["Receiving"] = reader.GetInt32(reader.GetOrdinal("receiving_count")),
             ["Dunnage"] = reader.GetInt32(reader.GetOrdinal("dunnage_count")),
-            ["Volvo"] = reader.GetInt32(reader.GetOrdinal("volvo_count"))
+            ["Volvo"] = reader.GetInt32(reader.GetOrdinal("volvo_count")),
         };
     }
 
@@ -188,6 +199,21 @@ public class Dao_Reporting
         return Convert.ToInt32(reader.GetValue(ordinal));
     }
 
+    private static bool? ReadNullableBool(IDataReader reader, string columnName)
+    {
+        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        {
+            return null;
+        }
+
+        if (reader.IsDBNull(ordinal))
+        {
+            return null;
+        }
+
+        return Convert.ToBoolean(reader.GetValue(ordinal));
+    }
+
     private static DateTime ReadDateTime(IDataReader reader, string columnName)
     {
         var ordinal = reader.GetOrdinal(columnName);
@@ -198,7 +224,9 @@ public class Dao_Reporting
     {
         for (var index = 0; index < reader.FieldCount; index++)
         {
-            if (string.Equals(reader.GetName(index), columnName, StringComparison.OrdinalIgnoreCase))
+            if (
+                string.Equals(reader.GetName(index), columnName, StringComparison.OrdinalIgnoreCase)
+            )
             {
                 ordinal = index;
                 return true;

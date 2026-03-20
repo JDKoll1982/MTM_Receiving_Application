@@ -12,14 +12,15 @@ public class SavePendingShipmentCommandValidator : AbstractValidator<SavePending
     public SavePendingShipmentCommandValidator()
     {
         RuleFor(x => x.ShipmentDate)
-            .NotEmpty().WithMessage("Shipment date is required")
+            .NotEmpty()
+            .WithMessage("Shipment date is required")
             .Must(date => date.Date <= DateTimeOffset.Now.Date)
             .WithMessage("Shipment date cannot be in the future");
 
-        RuleFor(x => x.Parts)
-            .NotEmpty().WithMessage("At least one part is required");
+        RuleFor(x => x.Parts).NotEmpty().WithMessage("At least one part is required");
 
         RuleFor(x => x.Notes)
-            .MaximumLength(1000).WithMessage("Notes must not exceed 1000 characters");
+            .MaximumLength(1000)
+            .WithMessage("Notes must not exceed 1000 characters");
     }
 }

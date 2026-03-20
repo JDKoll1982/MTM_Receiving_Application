@@ -24,7 +24,8 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Model_UserSession CreateSession(
             Model_User user,
             Model_WorkstationConfig workstationConfig,
-            string authenticationMethod);
+            string authenticationMethod
+        );
 
         /// <summary>
         /// Updates the last activity timestamp to prevent timeout.
@@ -59,4 +60,3 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public event EventHandler<Model_SessionTimedOutEventArgs> SessionTimedOut;
     }
 }
-

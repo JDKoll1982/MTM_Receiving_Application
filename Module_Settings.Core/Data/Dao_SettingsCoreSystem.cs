@@ -23,7 +23,7 @@ public class Dao_SettingsCoreSystem
         var parameters = new Dictionary<string, object>
         {
             { "p_category", category },
-            { "p_key", key }
+            { "p_key", key },
         };
 
         return Helper_Database_StoredProcedure.ExecuteSingleAsync(
@@ -39,17 +39,15 @@ public class Dao_SettingsCoreSystem
                 IsSensitive = reader.GetBoolean(reader.GetOrdinal("is_sensitive")),
                 IsLocked = reader.GetBoolean(reader.GetOrdinal("is_locked")),
                 UpdatedBy = reader.GetString(reader.GetOrdinal("updated_by")),
-                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
             },
-            parameters);
+            parameters
+        );
     }
 
     public Task<Model_Dao_Result<List<Model_CoreSetting>>> GetByCategoryAsync(string category)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "p_category", category }
-        };
+        var parameters = new Dictionary<string, object> { { "p_category", category } };
 
         return Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -64,12 +62,20 @@ public class Dao_SettingsCoreSystem
                 IsSensitive = reader.GetBoolean(reader.GetOrdinal("is_sensitive")),
                 IsLocked = reader.GetBoolean(reader.GetOrdinal("is_locked")),
                 UpdatedBy = reader.GetString(reader.GetOrdinal("updated_by")),
-                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
             },
-            parameters);
+            parameters
+        );
     }
 
-    public Task<Model_Dao_Result> UpsertAsync(string category, string key, string value, string dataType, bool isSensitive, string updatedBy)
+    public Task<Model_Dao_Result> UpsertAsync(
+        string category,
+        string key,
+        string value,
+        string dataType,
+        bool isSensitive,
+        string updatedBy
+    )
     {
         var parameters = new Dictionary<string, object>
         {
@@ -78,13 +84,14 @@ public class Dao_SettingsCoreSystem
             { "p_value", value },
             { "p_data_type", dataType },
             { "p_is_sensitive", isSensitive },
-            { "p_updated_by", updatedBy }
+            { "p_updated_by", updatedBy },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_SettingsCore_System_Upsert",
-            parameters);
+            parameters
+        );
     }
 
     public Task<Model_Dao_Result> ResetAsync(string category, string key, string updatedBy)
@@ -93,12 +100,13 @@ public class Dao_SettingsCoreSystem
         {
             { "p_category", category },
             { "p_key", key },
-            { "p_updated_by", updatedBy }
+            { "p_updated_by", updatedBy },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_SettingsCore_System_Reset",
-            parameters);
+            parameters
+        );
     }
 }

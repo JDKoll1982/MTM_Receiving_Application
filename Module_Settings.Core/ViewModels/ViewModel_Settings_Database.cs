@@ -10,12 +10,13 @@ namespace MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 public partial class ViewModel_Settings_Database : ViewModel_Shared_Base
 {
     [ObservableProperty]
-    private string _statusMessage = "Database configuration defaults are managed through Core Settings.";
+    private string _statusMessage =
+        "Database configuration defaults are managed through Core Settings.";
 
     public ViewModel_Settings_Database(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
-    {
-    }
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService) { }
 }

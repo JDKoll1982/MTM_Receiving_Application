@@ -27,7 +27,9 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
         IService_SettingsPagination pagination,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _pagination = pagination;
         Steps = new ObservableCollection<Model_SettingsNavigationStep>();
@@ -116,11 +118,66 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
         }
     }
 
-    public bool IsBackVisible { get => _isBackVisible; protected set { if (_isBackVisible != value) { _isBackVisible = value; OnPropertyChanged(); } } }
-    public bool IsNextVisible { get => _isNextVisible; protected set { if (_isNextVisible != value) { _isNextVisible = value; OnPropertyChanged(); } } }
-    public bool IsCancelVisible { get => _isCancelVisible; protected set { if (_isCancelVisible != value) { _isCancelVisible = value; OnPropertyChanged(); } } }
-    public bool IsSaveVisible { get => _isSaveVisible; protected set { if (_isSaveVisible != value) { _isSaveVisible = value; OnPropertyChanged(); } } }
-    public bool IsResetVisible { get => _isResetVisible; protected set { if (_isResetVisible != value) { _isResetVisible = value; OnPropertyChanged(); } } }
+    public bool IsBackVisible
+    {
+        get => _isBackVisible;
+        protected set
+        {
+            if (_isBackVisible != value)
+            {
+                _isBackVisible = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool IsNextVisible
+    {
+        get => _isNextVisible;
+        protected set
+        {
+            if (_isNextVisible != value)
+            {
+                _isNextVisible = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool IsCancelVisible
+    {
+        get => _isCancelVisible;
+        protected set
+        {
+            if (_isCancelVisible != value)
+            {
+                _isCancelVisible = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool IsSaveVisible
+    {
+        get => _isSaveVisible;
+        protected set
+        {
+            if (_isSaveVisible != value)
+            {
+                _isSaveVisible = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool IsResetVisible
+    {
+        get => _isResetVisible;
+        protected set
+        {
+            if (_isResetVisible != value)
+            {
+                _isResetVisible = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     public void SetSteps(params Model_SettingsNavigationStep[] steps)
     {

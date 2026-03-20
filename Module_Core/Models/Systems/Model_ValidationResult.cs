@@ -10,17 +10,14 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         public bool IsValid { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public static Model_ValidationResult Valid() => new()
-        {
-            IsValid = true,
-            ErrorMessage = string.Empty
-        };
+        public static Model_ValidationResult Valid() =>
+            new() { IsValid = true, ErrorMessage = string.Empty };
 
-        public static Model_ValidationResult Invalid(string? message) => new()
-        {
-            IsValid = false,
-            ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Validation failed." : message
-        };
+        public static Model_ValidationResult Invalid(string? message) =>
+            new()
+            {
+                IsValid = false,
+                ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Validation failed." : message,
+            };
     }
 }
-

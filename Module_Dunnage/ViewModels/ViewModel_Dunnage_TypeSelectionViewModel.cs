@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -35,7 +35,9 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_ViewModelRegistry viewModelRegistry,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
@@ -91,7 +93,10 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
         if (IsBusy)
         {
-            _logger.LogInfo("TypeSelection: Already busy, returning", "ViewModel_dunnage_typeselection");
+            _logger.LogInfo(
+                "TypeSelection: Already busy, returning",
+                "ViewModel_dunnage_typeselection"
+            );
             return;
         }
 
@@ -99,7 +104,10 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         {
             IsBusy = true;
             StatusMessage = "Loading dunnage types...";
-            _logger.LogInfo("TypeSelection: Starting to load types", "ViewModel_dunnage_typeselection");
+            _logger.LogInfo(
+                "TypeSelection: Starting to load types",
+                "ViewModel_dunnage_typeselection"
+            );
 
             await LoadTypesAsync();
 
@@ -107,12 +115,14 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleErrorAsync(
-                "Failed to load dunnage types",
-                Enum_ErrorSeverity.Error,
-                ex,
-                true
-            ).Wait();
+            _errorHandler
+                .HandleErrorAsync(
+                    "Failed to load dunnage types",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                )
+                .Wait();
             StatusMessage = "Error loading types";
         }
         finally
@@ -132,31 +142,39 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
         try
         {
-            _logger.LogInfo("TypeSelection: Calling service.GetAllTypesAsync()", "ViewModel_dunnage_typeselection");
+            _logger.LogInfo(
+                "TypeSelection: Calling service.GetAllTypesAsync()",
+                "ViewModel_dunnage_typeselection"
+            );
 
             var result = await _dunnageService.GetAllTypesAsync();
 
-            _logger.LogInfo($"TypeSelection: Service returned - IsSuccess: {result.IsSuccess}, Data null: {result.Data == null}, Count: {result.Data?.Count ?? 0}", "ViewModel_dunnage_typeselection");
+            _logger.LogInfo(
+                $"TypeSelection: Service returned - IsSuccess: {result.IsSuccess}, Data null: {result.Data == null}, Count: {result.Data?.Count ?? 0}",
+                "ViewModel_dunnage_typeselection"
+            );
 
             if (result.IsSuccess && result.Data != null)
             {
                 // Configure pagination for 3x3 grid (9 items per page)
                 _paginationService.PageSize = 9;
                 _paginationService.SetSource(result.Data);
-                _logger.LogInfo($"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}", "ViewModel_dunnage_typeselection");
+                _logger.LogInfo(
+                    $"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}",
+                    "ViewModel_dunnage_typeselection"
+                );
 
                 UpdatePaginationProperties();
                 UpdatePageDisplay();
 
-                _logger.LogInfo($"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}", "ViewModel_dunnage_typeselection");
+                _logger.LogInfo(
+                    $"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}",
+                    "ViewModel_dunnage_typeselection"
+                );
             }
             else
             {
-                await _errorHandler.HandleDaoErrorAsync(
-                    result,
-                    nameof(LoadTypesAsync),
-                    true
-                );
+                await _errorHandler.HandleDaoErrorAsync(result, nameof(LoadTypesAsync), true);
             }
         }
         catch (Exception ex)
@@ -215,14 +233,20 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             IsBusy = true;
             SelectedType = type;
 
-            _logger.LogInfo($"TypeSelection: Selected dunnage type: {type.TypeName} (ID: {type.Id})", "TypeSelection");
+            _logger.LogInfo(
+                $"TypeSelection: Selected dunnage type: {type.TypeName} (ID: {type.Id})",
+                "TypeSelection"
+            );
 
             // Set in workflow session
             _workflowService.CurrentSession.SelectedType = type;
             _workflowService.CurrentSession.SelectedTypeId = type.Id;
             _workflowService.CurrentSession.SelectedTypeName = type.TypeName;
 
-            _logger.LogInfo($"TypeSelection: Session updated - SelectedTypeId={_workflowService.CurrentSession.SelectedTypeId}", "TypeSelection");
+            _logger.LogInfo(
+                $"TypeSelection: Session updated - SelectedTypeId={_workflowService.CurrentSession.SelectedTypeId}",
+                "TypeSelection"
+            );
 
             // Navigate to part selection
             _logger.LogInfo("TypeSelection: Navigating to PartSelection step", "TypeSelection");
@@ -230,7 +254,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         }
         catch (Exception ex)
         {
-            _logger.LogError($"TypeSelection: Error selecting type: {ex.Message}", ex, "TypeSelection");
+            _logger.LogError(
+                $"TypeSelection: Error selecting type: {ex.Message}",
+                ex,
+                "TypeSelection"
+            );
             await _errorHandler.HandleErrorAsync(
                 "Error selecting dunnage type",
                 Enum_ErrorSeverity.Error,
@@ -254,7 +282,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             // Show dialog
             var dialog = new Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog
             {
-                XamlRoot = App.MainWindow?.Content?.XamlRoot
+                XamlRoot = App.MainWindow?.Content?.XamlRoot,
             };
 
             if (dialog.XamlRoot == null)
@@ -270,13 +298,16 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 var typeName = dialog.TypeName;
                 var iconName = dialog.SelectedIconKind.ToString();
 
-                _logger.LogInfo($"Adding new type: {typeName} with icon {iconName}", "TypeSelection");
+                _logger.LogInfo(
+                    $"Adding new type: {typeName} with icon {iconName}",
+                    "TypeSelection"
+                );
 
                 // Insert new type
                 var newType = new Model_DunnageType
                 {
                     TypeName = typeName,
-                    Icon = iconName
+                    Icon = iconName,
                     // Note: Icon storage would need to be added to database schema
                 };
 
@@ -295,14 +326,14 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                             Required = specItem.IsRequired,
                             Unit = specItem.Unit,
                             MinValue = specItem.MinValue,
-                            MaxValue = specItem.MaxValue
+                            MaxValue = specItem.MaxValue,
                         };
 
                         var specModel = new Model_DunnageSpec
                         {
                             TypeId = newType.Id,
                             SpecKey = specItem.Name,
-                            SpecValue = JsonSerializer.Serialize(specDef)
+                            SpecValue = JsonSerializer.Serialize(specDef),
                         };
                         await _dunnageService.InsertSpecAsync(specModel);
                     }
@@ -347,7 +378,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
             var dialog = new Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog
             {
-                XamlRoot = App.MainWindow?.Content?.XamlRoot
+                XamlRoot = App.MainWindow?.Content?.XamlRoot,
             };
 
             if (dialog.XamlRoot == null)
@@ -401,7 +432,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                     var updateResult = await _dunnageService.UpdateTypeAsync(type);
                     if (!updateResult.IsSuccess)
                     {
-                        await _errorHandler.HandleDaoErrorAsync(updateResult, nameof(EditTypeAsync), true);
+                        await _errorHandler.HandleDaoErrorAsync(
+                            updateResult,
+                            nameof(EditTypeAsync),
+                            true
+                        );
                         return;
                     }
                 }
@@ -429,7 +464,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                         Required = specItem.IsRequired,
                         Unit = specItem.Unit,
                         MinValue = specItem.MinValue,
-                        MaxValue = specItem.MaxValue
+                        MaxValue = specItem.MaxValue,
                     };
                     var json = JsonSerializer.Serialize(specDef);
 
@@ -438,7 +473,9 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                         // Update existing?
                         // We need to check if definition changed.
                         // For simplicity, we can just update the value if it's different.
-                        var existingModel = specsResult.Data?.FirstOrDefault(s => s.SpecKey == specItem.Name);
+                        var existingModel = specsResult.Data?.FirstOrDefault(s =>
+                            s.SpecKey == specItem.Name
+                        );
                         if (existingModel != null && existingModel.SpecValue != json)
                         {
                             existingModel.SpecValue = json;
@@ -452,7 +489,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                         {
                             TypeId = type.Id,
                             SpecKey = specItem.Name,
-                            SpecValue = json
+                            SpecValue = json,
                         };
                         await _dunnageService.InsertSpecAsync(specModel);
                     }
@@ -465,7 +502,12 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error updating dunnage type", Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync(
+                "Error updating dunnage type",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
         }
     }
 
@@ -485,10 +527,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
                 Title = "Delete Dunnage Type",
-                Content = $"Are you sure you want to delete '{type.TypeName}'? This action cannot be undone.",
+                Content =
+                    $"Are you sure you want to delete '{type.TypeName}'? This action cannot be undone.",
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
-                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
             };
 
             var result = await dialog.ShowAsync();
@@ -505,13 +548,22 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 }
                 else
                 {
-                    await _errorHandler.HandleDaoErrorAsync(deleteResult, nameof(DeleteTypeAsync), true);
+                    await _errorHandler.HandleDaoErrorAsync(
+                        deleteResult,
+                        nameof(DeleteTypeAsync),
+                        true
+                    );
                 }
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error deleting dunnage type", Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync(
+                "Error deleting dunnage type",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
         }
     }
 
@@ -541,16 +593,25 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
     private void UpdatePageDisplay()
     {
         var currentItems = _paginationService.GetCurrentPageItems<Model_DunnageType>();
-        _logger.LogInfo($"TypeSelection: UpdatePageDisplay - Got {currentItems.Count()} items from pagination service", "ViewModel_dunnage_typeselection");
+        _logger.LogInfo(
+            $"TypeSelection: UpdatePageDisplay - Got {currentItems.Count()} items from pagination service",
+            "ViewModel_dunnage_typeselection"
+        );
 
         DisplayedTypes.Clear();
         foreach (var type in currentItems)
         {
             DisplayedTypes.Add(type);
-            _logger.LogInfo($"TypeSelection: Added type to DisplayedTypes - ID: {type.Id}, Name: {type.TypeName}", "ViewModel_dunnage_typeselection");
+            _logger.LogInfo(
+                $"TypeSelection: Added type to DisplayedTypes - ID: {type.Id}, Name: {type.TypeName}",
+                "ViewModel_dunnage_typeselection"
+            );
         }
 
-        _logger.LogInfo($"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}", "ViewModel_dunnage_typeselection");
+        _logger.LogInfo(
+            $"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}",
+            "ViewModel_dunnage_typeselection"
+        );
     }
 
     #endregion
@@ -577,4 +638,3 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
     #endregion
 }
-

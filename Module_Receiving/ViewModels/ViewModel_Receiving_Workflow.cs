@@ -1,18 +1,17 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Receiving.Settings;
-
-using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI.Triggers;
+using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -139,7 +138,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private bool _isSaving = false;
         private readonly IService_Dispatcher _dispatcherService;
         private readonly IService_Window _windowService;
-        private readonly System.Collections.Generic.Dictionary<Enum_ReceivingWorkflowStep, string> _stepTitles = new();
+        private readonly System.Collections.Generic.Dictionary<
+            Enum_ReceivingWorkflowStep,
+            string
+        > _stepTitles = new();
 
         public ViewModel_Receiving_Workflow(
             IService_ReceivingWorkflow workflowService,
@@ -149,7 +151,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Window windowService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
-            IService_Notification notificationService)
+            IService_Notification notificationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _dispatcherService = dispatcherService;
@@ -182,7 +185,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ex,
                     Enum_ErrorSeverity.Medium,
                     nameof(InitializeWorkflowAsync),
-                    nameof(ViewModel_Receiving_Workflow));
+                    nameof(ViewModel_Receiving_Workflow)
+                );
             }
         }
 
@@ -190,26 +194,62 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                WorkflowHelpText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowHelp);
-                WorkflowBackText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowBack);
-                WorkflowNextText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowNext);
-                WorkflowModeSelectionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowModeSelection);
-                WorkflowResetXlsText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowResetXls);
+                WorkflowHelpText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WorkflowHelp
+                );
+                WorkflowBackText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WorkflowBack
+                );
+                WorkflowNextText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WorkflowNext
+                );
+                WorkflowModeSelectionText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WorkflowModeSelection
+                );
+                WorkflowResetXlsText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WorkflowResetXls
+                );
 
-                CompletionSuccessTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSuccessTitle);
-                CompletionFailureTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailureTitle);
-                CompletionLoadsSavedSuffixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix);
-                CompletionSaveDetailsTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle);
-                CompletionLocalXlsLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel);
-                CompletionNetworkXlsLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel);
-                CompletionXlsFileLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionXlsFileLabel);
-                CompletionDatabaseLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionDatabaseLabel);
-                CompletionSavedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaved);
-                CompletionFailedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailed);
-                CompletionStartNewEntryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionStartNewEntry);
-                CanEditAfterSave = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave);
+                CompletionSuccessTitleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionSuccessTitle
+                );
+                CompletionFailureTitleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionFailureTitle
+                );
+                CompletionLoadsSavedSuffixText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix
+                );
+                CompletionSaveDetailsTitleText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle
+                );
+                CompletionLocalXlsLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel
+                );
+                CompletionNetworkXlsLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel
+                );
+                CompletionXlsFileLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionXlsFileLabel
+                );
+                CompletionDatabaseLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionDatabaseLabel
+                );
+                CompletionSavedText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionSaved
+                );
+                CompletionFailedText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionFailed
+                );
+                CompletionStartNewEntryText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionStartNewEntry
+                );
+                CanEditAfterSave = await _receivingSettings.GetBoolAsync(
+                    ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave
+                );
 
-                SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressInitializing);
+                SaveProgressMessage = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Workflow.SaveProgressInitializing
+                );
 
                 _dispatcherService.TryEnqueue(() =>
                 {
@@ -227,11 +267,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private void OnWorkflowStepChanged(object? sender, EventArgs e)
         {
-            _logger.LogInfo($"StepChanged event received in ViewModel. Current step: {_workflowService.CurrentStep}. Updating visibility.");
+            _logger.LogInfo(
+                $"StepChanged event received in ViewModel. Current step: {_workflowService.CurrentStep}. Updating visibility."
+            );
 
             if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving && !_isSaving)
             {
-                _logger.LogInfo($"Step is Saving and not currently saving. Enqueuing PerformSaveAsync via Dispatcher.");
+                _logger.LogInfo(
+                    $"Step is Saving and not currently saving. Enqueuing PerformSaveAsync via Dispatcher."
+                );
                 _dispatcherService.TryEnqueue(async () =>
                 {
                     await PerformSaveAsync();
@@ -239,7 +283,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             else if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving && _isSaving)
             {
-                _logger.LogWarning("Step is Saving but already in progress. Skipping duplicate save.");
+                _logger.LogWarning(
+                    "Step is Saving but already in progress. Skipping duplicate save."
+                );
             }
 
             // Hide all steps
@@ -314,9 +360,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             // Update help content based on step
-            HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(_workflowService.CurrentStep);
+            HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(
+                _workflowService.CurrentStep
+            );
 
-            _logger.LogInfo($"Visibility updated. Current Step: {_workflowService.CurrentStep}, Title: {CurrentStepTitle}");
+            _logger.LogInfo(
+                $"Visibility updated. Current Step: {_workflowService.CurrentStep}, Title: {CurrentStepTitle}"
+            );
         }
 
         [RelayCommand]
@@ -330,7 +380,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 // await Task.Yield();
 
                 var result = await _workflowService.AdvanceToNextStepAsync();
-                _logger.LogInfo($"AdvanceToNextStepAsync returned. Success: {result.Success}, Step: {_workflowService.CurrentStep}");
+                _logger.LogInfo(
+                    $"AdvanceToNextStepAsync returned. Success: {result.Success}, Step: {_workflowService.CurrentStep}"
+                );
 
                 if (!result.Success)
                 {
@@ -338,14 +390,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     {
                         await _errorHandler.HandleErrorAsync(
                             string.Join("\n", result.ValidationErrors),
-                            Enum_ErrorSeverity.Error);
+                            Enum_ErrorSeverity.Error
+                        );
                     }
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in NextStepAsync: {ex.Message}", ex);
-                await _errorHandler.HandleErrorAsync($"An error occurred: {ex.Message}", Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    $"An error occurred: {ex.Message}",
+                    Enum_ErrorSeverity.Error
+                );
             }
         }
 
@@ -363,7 +419,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("PerformSaveAsync started.");
 
                 // Update UI immediately
-                SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressSavingXls);
+                SaveProgressMessage = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Workflow.SaveProgressSavingXls
+                );
                 SaveProgressValue = 30;
 
                 // Perform save
@@ -379,7 +437,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 });
 
                 _logger.LogInfo("Calling _workflowService.SaveSessionAsync...");
-                LastSaveResult = await _workflowService.SaveSessionAsync(messageProgress, percentProgress);
+                LastSaveResult = await _workflowService.SaveSessionAsync(
+                    messageProgress,
+                    percentProgress
+                );
                 _logger.LogInfo($"SaveSessionAsync returned. Success: {LastSaveResult.Success}");
 
                 // Advance to Complete step
@@ -388,7 +449,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Error in PerformSaveAsync: {ex.Message}", ex);
-                await _errorHandler.HandleErrorAsync($"Save failed: {ex.Message}", Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    $"Save failed: {ex.Message}",
+                    Enum_ErrorSeverity.Error
+                );
             }
             finally
             {
@@ -417,18 +481,31 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorUnableToDisplayDialog), Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Messages.ErrorUnableToDisplayDialog
+                    ),
+                    Enum_ErrorSeverity.Error
+                );
                 return;
             }
 
             var dialog = new ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle),
-                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogContent),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel),
+                Title = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle
+                ),
+                Content = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Workflow.ResetXlsDialogContent
+                ),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete
+                ),
+                CloseButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel
+                ),
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync();
@@ -438,11 +515,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var deleteResult = await _workflowService.ResetXLSFilesAsync();
                 if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
                 {
-                    ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess), InfoBarSeverity.Success);
+                    ShowStatus(
+                        await _receivingSettings.GetStringAsync(
+                            ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess
+                        ),
+                        InfoBarSeverity.Success
+                    );
                 }
                 else
                 {
-                    ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed), InfoBarSeverity.Warning);
+                    ShowStatus(
+                        await _receivingSettings.GetStringAsync(
+                            ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed
+                        ),
+                        InfoBarSeverity.Warning
+                    );
                 }
             }
         }
@@ -460,18 +547,31 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorUnableToDisplayDialog), Enum_ErrorSeverity.Error);
+                await _errorHandler.HandleErrorAsync(
+                    await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Messages.ErrorUnableToDisplayDialog
+                    ),
+                    Enum_ErrorSeverity.Error
+                );
                 return;
             }
 
             var dialog = new ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle),
-                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel),
+                Title = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle
+                ),
+                Content = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent
+                ),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm
+                ),
+                CloseButtonText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel
+                ),
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync();
@@ -480,7 +580,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 // Reset workflow and return to mode selection
                 await _workflowService.ResetWorkflowAsync();
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
-                ShowStatus(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StatusWorkflowCleared), InfoBarSeverity.Informational);
+                ShowStatus(
+                    await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Workflow.StatusWorkflowCleared
+                    ),
+                    InfoBarSeverity.Informational
+                );
             }
         }
 
@@ -496,10 +601,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
     }
 }
-

@@ -1,13 +1,12 @@
+using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Extensions.DependencyInjection;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using System;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.Views;
-
 
 public sealed partial class View_Settings_CoreNavigationHub : Page
 {
@@ -18,7 +17,8 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
     public View_Settings_CoreNavigationHub(
         IServiceProvider services,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger
+    )
     {
         InitializeComponent();
         _services = services;
@@ -54,11 +54,16 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         var frame = GetHostFrame();
         if (frame is null)
         {
-            _logger.LogError("Navigation frame not found - cannot navigate", null, "Settings.Navigation");
+            _logger.LogError(
+                "Navigation frame not found - cannot navigate",
+                null,
+                "Settings.Navigation"
+            );
             _ = _errorHandler.LogErrorAsync(
                 "Navigation frame not found",
                 Enum_ErrorSeverity.Warning,
-                null);
+                null
+            );
             return;
         }
 
@@ -67,11 +72,16 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
             var page = ActivatorUtilities.CreateInstance(_services, pageType) as Page;
             if (page is null)
             {
-                _logger.LogError($"Failed to create page instance: {pageType.Name}", null, "Settings.Navigation");
+                _logger.LogError(
+                    $"Failed to create page instance: {pageType.Name}",
+                    null,
+                    "Settings.Navigation"
+                );
                 _ = _errorHandler.LogErrorAsync(
                     $"Failed to create page instance of type {pageType.Name}",
                     Enum_ErrorSeverity.Error,
-                    null);
+                    null
+                );
                 return;
             }
 
@@ -81,12 +91,17 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Navigation exception for page {pageType.Name}: {ex.Message}", ex, "Settings.Navigation");
+            _logger.LogError(
+                $"Navigation exception for page {pageType.Name}: {ex.Message}",
+                ex,
+                "Settings.Navigation"
+            );
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(NavigateUsingServiceProvider),
-                nameof(View_Settings_CoreNavigationHub));
+                nameof(View_Settings_CoreNavigationHub)
+            );
         }
     }
 
@@ -97,9 +112,13 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
             var coreWindow = View_Settings_CoreWindow.GetInstance();
             if (coreWindow != null)
             {
-                var method = coreWindow.GetType().GetMethod(
-                    "UpdateHeaderForPageType",
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var method = coreWindow
+                    .GetType()
+                    .GetMethod(
+                        "UpdateHeaderForPageType",
+                        System.Reflection.BindingFlags.Public
+                            | System.Reflection.BindingFlags.Instance
+                    );
                 method?.Invoke(coreWindow, new object[] { pageType });
             }
         }

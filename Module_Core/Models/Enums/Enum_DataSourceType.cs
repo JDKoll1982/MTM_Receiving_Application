@@ -4,7 +4,6 @@
     {
         Memory,
         CurrentLabels,
-        History
+        History,
     }
 }
-

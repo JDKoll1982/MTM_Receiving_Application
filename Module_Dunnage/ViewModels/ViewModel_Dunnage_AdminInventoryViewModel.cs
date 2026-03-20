@@ -6,14 +6,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
-using MTM_Receiving_Application.Module_Dunnage.Data;
-using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Data;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Views;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -49,14 +49,17 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService,
-        Func<View_Dunnage_Dialog_AddToInventoriedListDialog> addToListDialogFactory)
+        Func<View_Dunnage_Dialog_AddToInventoriedListDialog> addToListDialogFactory
+    )
         : base(errorHandler, logger, notificationService)
     {
         _daoInventory = daoInventory ?? throw new ArgumentNullException(nameof(daoInventory));
         _daoPart = daoPart ?? throw new ArgumentNullException(nameof(daoPart));
         _adminWorkflow = adminWorkflow ?? throw new ArgumentNullException(nameof(adminWorkflow));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
-        _addToListDialogFactory = addToListDialogFactory ?? throw new ArgumentNullException(nameof(addToListDialogFactory));
+        _addToListDialogFactory =
+            addToListDialogFactory
+            ?? throw new ArgumentNullException(nameof(addToListDialogFactory));
 
         _inventoriedParts = new ObservableCollection<Model_InventoriedDunnage>();
     }
@@ -101,7 +104,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load inventoried parts",
                     "Load Error",
-                    nameof(LoadInventoriedPartsAsync));
+                    nameof(LoadInventoriedPartsAsync)
+                );
                 StatusMessage = "Failed to load inventoried parts";
             }
         }
@@ -111,7 +115,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(LoadInventoriedPartsAsync),
-                nameof(ViewModel_Dunnage_AdminInventory));
+                nameof(ViewModel_Dunnage_AdminInventory)
+            );
             StatusMessage = "Error loading inventoried parts";
         }
         finally
@@ -144,7 +149,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(ShowAddToListAsync),
-                nameof(ViewModel_Dunnage_AdminInventory));
+                nameof(ViewModel_Dunnage_AdminInventory)
+            );
         }
     }
 
@@ -159,7 +165,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
             await _errorHandler.ShowUserErrorAsync(
                 "Please select a part to edit",
                 "No Selection",
-                nameof(ShowEditEntryAsync));
+                nameof(ShowEditEntryAsync)
+            );
             return;
         }
 
@@ -170,42 +177,60 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 Title = $"Edit Inventoried Part: {SelectedInventoriedPart.PartId}",
                 PrimaryButtonText = "Save Changes",
                 CloseButtonText = "Cancel",
-                XamlRoot = _windowService.GetXamlRoot()
+                XamlRoot = _windowService.GetXamlRoot(),
             };
 
             // Create the edit form
             var stackPanel = new StackPanel { Spacing = 12 };
 
             // Part ID (readonly)
-            stackPanel.Children.Add(new TextBlock { Text = "Part ID (read-only)", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+            stackPanel.Children.Add(
+                new TextBlock
+                {
+                    Text = "Part ID (read-only)",
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                }
+            );
             var partIdBox = new TextBox
             {
                 Text = SelectedInventoriedPart.PartId,
                 IsReadOnly = true,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12)
+                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12),
             };
             stackPanel.Children.Add(partIdBox);
 
             // Inventory Method
-            stackPanel.Children.Add(new TextBlock { Text = "Inventory Method", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+            stackPanel.Children.Add(
+                new TextBlock
+                {
+                    Text = "Inventory Method",
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                }
+            );
             var methodCombo = new ComboBox
             {
                 ItemsSource = new[] { "Adjust In", "Receive In", "Both" },
                 SelectedItem = SelectedInventoriedPart.InventoryMethod ?? "Both",
                 HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12)
+                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12),
             };
             stackPanel.Children.Add(methodCombo);
 
             // Notes
-            stackPanel.Children.Add(new TextBlock { Text = "Notes (optional)", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+            stackPanel.Children.Add(
+                new TextBlock
+                {
+                    Text = "Notes (optional)",
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                }
+            );
             var notesBox = new TextBox
             {
                 Text = SelectedInventoriedPart.Notes ?? string.Empty,
                 AcceptsReturn = true,
                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
                 Height = 80,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12)
+                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12),
             };
             stackPanel.Children.Add(notesBox);
 
@@ -220,7 +245,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                     SelectedInventoriedPart.Id,
                     methodCombo.SelectedItem?.ToString() ?? "Both",
                     notesBox.Text,
-                    Environment.UserName);
+                    Environment.UserName
+                );
 
                 if (updateResult.IsSuccess)
                 {
@@ -232,7 +258,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                     await _errorHandler.ShowUserErrorAsync(
                         updateResult.ErrorMessage ?? "Failed to update part",
                         "Update Error",
-                        nameof(ShowEditEntryAsync));
+                        nameof(ShowEditEntryAsync)
+                    );
                 }
             }
         }
@@ -242,7 +269,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(ShowEditEntryAsync),
-                nameof(ViewModel_Dunnage_AdminInventory));
+                nameof(ViewModel_Dunnage_AdminInventory)
+            );
         }
     }
 
@@ -257,7 +285,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
             await _errorHandler.ShowUserErrorAsync(
                 "Please select a part to remove",
                 "No Selection",
-                nameof(ShowRemoveConfirmationAsync));
+                nameof(ShowRemoveConfirmationAsync)
+            );
             return;
         }
 
@@ -266,12 +295,13 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
             var dialog = new ContentDialog
             {
                 Title = "Remove from Inventoried List",
-                Content = $"Are you sure you want to remove '{SelectedInventoriedPart.PartId}' from the inventoried list?\n\n" +
-                         "This will not delete the part from the system, but it will no longer trigger inventory tracking notifications during data entry.",
+                Content =
+                    $"Are you sure you want to remove '{SelectedInventoriedPart.PartId}' from the inventoried list?\n\n"
+                    + "This will not delete the part from the system, but it will no longer trigger inventory tracking notifications during data entry.",
                 PrimaryButtonText = "Remove",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = _windowService.GetXamlRoot()
+                XamlRoot = _windowService.GetXamlRoot(),
             };
 
             var result = await dialog.ShowAsync();
@@ -287,7 +317,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(ShowRemoveConfirmationAsync),
-                nameof(ViewModel_Dunnage_AdminInventory));
+                nameof(ViewModel_Dunnage_AdminInventory)
+            );
         }
     }
 
@@ -319,7 +350,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to remove part from list",
                     "Remove Error",
-                    nameof(RemoveFromListAsync));
+                    nameof(RemoveFromListAsync)
+                );
                 StatusMessage = "Failed to remove part";
             }
         }
@@ -329,7 +361,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(RemoveFromListAsync),
-                nameof(ViewModel_Dunnage_AdminInventory));
+                nameof(ViewModel_Dunnage_AdminInventory)
+            );
             StatusMessage = "Error removing part";
         }
         finally
@@ -356,4 +389,3 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
         OnPropertyChanged(nameof(HasSelection));
     }
 }
-

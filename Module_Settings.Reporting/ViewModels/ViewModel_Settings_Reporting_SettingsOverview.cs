@@ -8,7 +8,9 @@ public sealed partial class ViewModel_Settings_Reporting_SettingsOverview : View
     public ViewModel_Settings_Reporting_SettingsOverview(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         Title = "Reporting Settings";
     }

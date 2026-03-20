@@ -38,6 +38,5 @@ public enum Enum_ErrorSeverity
     /// <summary>
     /// Fatal - application cannot continue
     /// </summary>
-    Fatal = 6
+    Fatal = 6,
 }
-

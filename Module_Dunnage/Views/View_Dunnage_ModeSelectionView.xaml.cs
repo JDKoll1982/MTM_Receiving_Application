@@ -29,8 +29,9 @@ public sealed partial class View_Dunnage_ModeSelectionView : UserControl
         if (viewModel == null)
         {
             throw new InvalidOperationException(
-                "ViewModel_Dunnage_ModeSelection could not be resolved from DI container. " +
-                "Ensure the ViewModel and all its dependencies are registered in ModuleServicesExtensions.cs");
+                "ViewModel_Dunnage_ModeSelection could not be resolved from DI container. "
+                    + "Ensure the ViewModel and all its dependencies are registered in ModuleServicesExtensions.cs"
+            );
         }
         ViewModel = viewModel;
         InitializeComponent();

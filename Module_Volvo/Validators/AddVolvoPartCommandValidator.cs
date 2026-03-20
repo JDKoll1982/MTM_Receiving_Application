@@ -11,10 +11,13 @@ public class AddVolvoPartCommandValidator : AbstractValidator<AddVolvoPartComman
     public AddVolvoPartCommandValidator()
     {
         RuleFor(x => x.PartNumber)
-            .NotEmpty().WithMessage("Part number is required")
-            .MaximumLength(50).WithMessage("Part number must not exceed 50 characters");
+            .NotEmpty()
+            .WithMessage("Part number is required")
+            .MaximumLength(50)
+            .WithMessage("Part number must not exceed 50 characters");
 
         RuleFor(x => x.QuantityPerSkid)
-            .GreaterThan(0).WithMessage("Quantity per skid must be greater than 0");
+            .GreaterThan(0)
+            .WithMessage("Quantity per skid must be greater than 0");
     }
 }

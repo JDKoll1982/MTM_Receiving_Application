@@ -31,7 +31,8 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         ViewModel_Dunnage_WorkFlowViewModel viewModel,
         IService_DunnageWorkflow workflowService,
         IService_Help helpService,
-        IService_Focus focusService)
+        IService_Focus focusService
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(workflowService);
@@ -60,9 +61,8 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             App.GetService<ViewModel_Dunnage_WorkFlowViewModel>(),
             App.GetService<IService_DunnageWorkflow>(),
             App.GetService<IService_Help>(),
-            App.GetService<IService_Focus>())
-    {
-    }
+            App.GetService<IService_Focus>()
+        ) { }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
     {
@@ -97,7 +97,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 Title = "Cannot Proceed",
                 Content = result.ErrorMessage,
                 CloseButtonText = "OK",
-                XamlRoot = this.XamlRoot
+                XamlRoot = this.XamlRoot,
             };
             var dialogResult = await dialog.ShowAsync();
         }
@@ -109,10 +109,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         // before we advance. The dialog also persists commonly-used reasons.
         if (string.IsNullOrWhiteSpace(_workflowService.CurrentSession.PONumber))
         {
-            var nonPoDialog = new View_Dunnage_Dialog_NonPOEntry
-            {
-                XamlRoot = this.XamlRoot
-            };
+            var nonPoDialog = new View_Dunnage_Dialog_NonPOEntry { XamlRoot = this.XamlRoot };
             await nonPoDialog.ShowAsync();
 
             if (nonPoDialog.Result is null)
@@ -132,11 +129,12 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         var confirmDialog = new ContentDialog
         {
             Title = "Review",
-            Content = "Are you ready to save this load and proceed to review?\n\nYou will be able to add more loads from the review screen.",
+            Content =
+                "Are you ready to save this load and proceed to review?\n\nYou will be able to add more loads from the review screen.",
             PrimaryButtonText = "Review",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = this.XamlRoot
+            XamlRoot = this.XamlRoot,
         };
 
         var confirmResult = await confirmDialog.ShowAsync();
@@ -152,7 +150,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                     Title = "Cannot Proceed",
                     Content = result.ErrorMessage,
                     CloseButtonText = "OK",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
                 };
                 await errorDialog.ShowAsync();
             }
@@ -179,4 +177,3 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         }
     }
 }
-

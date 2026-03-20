@@ -10,7 +10,6 @@
         Piece,
         Pallet,
         Coil,
-        Sheet
+        Sheet,
     }
 }
-

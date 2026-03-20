@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -47,11 +47,7 @@ public interface IService_ErrorHandler
     /// <param name="message">Error message to display</param>
     /// <param name="severity">Severity level (affects icon/styling)</param>
     /// <returns>Task for async operation</returns>
-    public Task ShowErrorDialogAsync(
-        string title,
-        string message,
-        Enum_ErrorSeverity severity
-    );
+    public Task ShowErrorDialogAsync(string title, string message, Enum_ErrorSeverity severity);
 
     /// <summary>
     /// Handles a Model_Dao_Result error by logging and optionally displaying.
@@ -70,6 +66,10 @@ public interface IService_ErrorHandler
 
     public Task ShowUserErrorAsync(string message, string title, string method);
 
-    public void HandleException(Exception ex, Enum_ErrorSeverity severity, string method, string className);
+    public void HandleException(
+        Exception ex,
+        Enum_ErrorSeverity severity,
+        string method,
+        string className
+    );
 }
-

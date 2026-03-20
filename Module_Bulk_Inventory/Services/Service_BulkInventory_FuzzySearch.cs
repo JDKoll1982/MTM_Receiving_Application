@@ -23,10 +23,12 @@ public class Service_BulkInventory_FuzzySearch : IService_BulkInventory_FuzzySea
     }
 
     /// <inheritdoc />
-    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchPartsAsync(string term)
-        => _inforVisual.FuzzySearchPartsAsync(term);
+    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchPartsAsync(string term) =>
+        _inforVisual.FuzzySearchPartsAsync(term);
 
     /// <inheritdoc />
-    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchLocationsAsync(string term, string warehouseCode)
-        => _inforVisual.FuzzySearchLocationsAsync(term, warehouseCode);
+    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> SearchLocationsAsync(
+        string term,
+        string warehouseCode
+    ) => _inforVisual.FuzzySearchLocationsAsync(term, warehouseCode);
 }

@@ -62,7 +62,9 @@ public partial class ViewModel_SettingsDeveloperTools_DatabaseTest : ViewModel_S
         IMediator mediator,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator;
         Title = "Settings DB Test";
@@ -98,13 +100,22 @@ public partial class ViewModel_SettingsDeveloperTools_DatabaseTest : ViewModel_S
             DaosValidated = report.DaosValidated;
             TotalDaos = report.TotalDaos;
 
-            TableResults = new ObservableCollection<Model_SettingsDbTableResult>(report.TableResults);
-            ProcedureResults = new ObservableCollection<Model_SettingsDbProcedureResult>(report.ProcedureResults);
+            TableResults = new ObservableCollection<Model_SettingsDbTableResult>(
+                report.TableResults
+            );
+            ProcedureResults = new ObservableCollection<Model_SettingsDbProcedureResult>(
+                report.ProcedureResults
+            );
             DaoResults = new ObservableCollection<Model_SettingsDbDaoResult>(report.DaoResults);
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(RunAllTestsAsync), nameof(ViewModel_SettingsDeveloperTools_DatabaseTest));
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(RunAllTestsAsync),
+                nameof(ViewModel_SettingsDeveloperTools_DatabaseTest)
+            );
         }
         finally
         {

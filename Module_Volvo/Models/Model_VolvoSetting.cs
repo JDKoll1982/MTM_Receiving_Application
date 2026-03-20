@@ -1,5 +1,5 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_Receiving_Application.Module_Volvo.Models;
 

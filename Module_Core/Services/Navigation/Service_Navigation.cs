@@ -1,7 +1,7 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using System;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.Services.Navigation;
-using System;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Navigation;
 
@@ -58,7 +58,11 @@ public class Service_Navigation : IService_Navigation
             var pageType = Type.GetType(pageTypeName);
             if (pageType == null)
             {
-                _logger.LogError($"Could not find type: {pageTypeName}", null, "Service_Navigation");
+                _logger.LogError(
+                    $"Could not find type: {pageTypeName}",
+                    null,
+                    "Service_Navigation"
+                );
                 return false;
             }
             return NavigateTo(frame, pageType, parameter);
@@ -93,4 +97,3 @@ public class Service_Navigation : IService_Navigation
         }
     }
 }
-

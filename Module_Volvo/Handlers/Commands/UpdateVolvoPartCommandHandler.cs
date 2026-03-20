@@ -12,7 +12,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 /// <summary>
 /// Handler for UpdateVolvoPartCommand - updates a part in master data.
 /// </summary>
-public class UpdateVolvoPartCommandHandler : IRequestHandler<UpdateVolvoPartCommand, Model_Dao_Result>
+public class UpdateVolvoPartCommandHandler
+    : IRequestHandler<UpdateVolvoPartCommand, Model_Dao_Result>
 {
     private readonly Dao_VolvoPart _partDao;
 
@@ -21,13 +22,16 @@ public class UpdateVolvoPartCommandHandler : IRequestHandler<UpdateVolvoPartComm
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
     }
 
-    public async Task<Model_Dao_Result> Handle(UpdateVolvoPartCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        UpdateVolvoPartCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var part = new Model_VolvoPart
         {
             PartNumber = request.PartNumber.Trim().ToUpperInvariant(),
             QuantityPerSkid = request.QuantityPerSkid,
-            IsActive = true
+            IsActive = true,
         };
 
         return await _partDao.UpdateAsync(part);

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
@@ -17,7 +17,8 @@ public class Dao_ReceivingLoad
 
     public Dao_ReceivingLoad(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString =
+            connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     private string? CleanPONumber(string? poNumber)
@@ -44,15 +45,15 @@ public class Dao_ReceivingLoad
 
         var errorMessage = result.ErrorMessage;
         return errorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
-            && (errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
-                || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase));
+            && (
+                errorMessage.Contains("1062", StringComparison.OrdinalIgnoreCase)
+                || errorMessage.Contains("PRIMARY", StringComparison.OrdinalIgnoreCase)
+            );
     }
 
     private static string NormalizeLocation(string? location)
     {
-        return string.IsNullOrWhiteSpace(location)
-            ? DefaultInitialLocation
-            : location.Trim();
+        return string.IsNullOrWhiteSpace(location) ? DefaultInitialLocation : location.Trim();
     }
 
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -74,7 +75,9 @@ public class Dao_ReceivingLoad
             var partTotals = loads
                 .GroupBy(l => l.PartID, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
-            var partSequenceCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var partSequenceCounters = new Dictionary<string, int>(
+                StringComparer.OrdinalIgnoreCase
+            );
 
             foreach (var load in loads)
             {
@@ -86,15 +89,27 @@ public class Dao_ReceivingLoad
                 int skidSequence = partSequenceCounters[load.PartID];
                 int skidTotal = partTotals[load.PartID];
 
-                var roundedQuantity = Convert.ToInt32(Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero));
+                var roundedQuantity = Convert.ToInt32(
+                    Math.Round(load.WeightQuantity, 0, MidpointRounding.AwayFromZero)
+                );
                 var cleanedPoNumber = CleanPONumber(load.PoNumber);
                 object poNumber = cleanedPoNumber is null ? DBNull.Value : cleanedPoNumber;
-                object poVendor = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
-                object poStatus = string.IsNullOrWhiteSpace(load.PoStatus) ? DBNull.Value : load.PoStatus;
-                object poDueDate = load.PoDueDate.HasValue ? load.PoDueDate.Value.Date : DBNull.Value;
+                object poVendor = string.IsNullOrWhiteSpace(load.PoVendor)
+                    ? DBNull.Value
+                    : load.PoVendor;
+                object poStatus = string.IsNullOrWhiteSpace(load.PoStatus)
+                    ? DBNull.Value
+                    : load.PoStatus;
+                object poDueDate = load.PoDueDate.HasValue
+                    ? load.PoDueDate.Value.Date
+                    : DBNull.Value;
                 object userId = string.IsNullOrWhiteSpace(load.UserId) ? DBNull.Value : load.UserId;
-                object vendorName = string.IsNullOrWhiteSpace(load.PoVendor) ? DBNull.Value : load.PoVendor;
-                object qualityHoldRestrictionType = string.IsNullOrWhiteSpace(load.QualityHoldRestrictionType)
+                object vendorName = string.IsNullOrWhiteSpace(load.PoVendor)
+                    ? DBNull.Value
+                    : load.PoVendor;
+                object qualityHoldRestrictionType = string.IsNullOrWhiteSpace(
+                    load.QualityHoldRestrictionType
+                )
                     ? DBNull.Value
                     : load.QualityHoldRestrictionType;
                 var parameters = new Dictionary<string, object>
@@ -131,7 +146,7 @@ public class Dao_ReceivingLoad
                     { "is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged },
                     { "quality_hold_restriction_type", qualityHoldRestrictionType },
                     { "part_skid_sequence", skidSequence },
-                    { "part_skid_total", skidTotal }
+                    { "part_skid_total", skidTotal },
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -198,7 +213,7 @@ public class Dao_ReceivingLoad
                     { "PackageTypeName", load.PackageTypeName },
                     { "WeightPerPackage", load.WeightPerPackage },
                     { "IsNonPOItem", load.IsNonPOItem },
-                    { "ReceivedDate", load.ReceivedDate }
+                    { "ReceivedDate", load.ReceivedDate },
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -222,7 +237,10 @@ public class Dao_ReceivingLoad
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to update loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to update loads: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -245,7 +263,7 @@ public class Dao_ReceivingLoad
             {
                 var parameters = new Dictionary<string, object>
                 {
-                    { "p_LoadID", load.LoadID.ToString() }
+                    { "p_LoadID", load.LoadID.ToString() },
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -269,11 +287,18 @@ public class Dao_ReceivingLoad
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to delete loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to delete loads: {ex.Message}",
+                ex
+            );
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetHistoryAsync(string partID, DateTime startDate, DateTime endDate)
+    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetHistoryAsync(
+        string partID,
+        DateTime startDate,
+        DateTime endDate
+    )
     {
         try
         {
@@ -282,7 +307,7 @@ public class Dao_ReceivingLoad
             {
                 { "PartID", partID },
                 { "StartDate", startDate },
-                { "EndDate", endDate }
+                { "EndDate", endDate },
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableAsync(
@@ -303,11 +328,17 @@ public class Dao_ReceivingLoad
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(
+                $"Error retrieving history: {ex.Message}",
+                ex
+            );
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync(DateTime startDate, DateTime endDate)
+    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync(
+        DateTime startDate,
+        DateTime endDate
+    )
     {
         try
         {
@@ -315,7 +346,7 @@ public class Dao_ReceivingLoad
             var parameters = new Dictionary<string, object>
             {
                 { "StartDate", startDate },
-                { "EndDate", endDate }
+                { "EndDate", endDate },
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableAsync(
@@ -336,7 +367,10 @@ public class Dao_ReceivingLoad
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving all loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(
+                $"Error retrieving all loads: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -347,59 +381,69 @@ public class Dao_ReceivingLoad
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            await using var command = new MySqlCommand("sp_Receiving_LabelData_ClearToHistory", connection)
+            await using var command = new MySqlCommand(
+                "sp_Receiving_LabelData_ClearToHistory",
+                connection
+            )
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure,
             };
 
             command.Parameters.AddWithValue("p_archived_by", archivedBy ?? "SYSTEM");
 
             var rowsMovedParam = new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(rowsMovedParam);
 
             var batchIdParam = new MySqlParameter("p_archive_batch_id", MySqlDbType.VarChar, 36)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(batchIdParam);
 
             var statusParam = new MySqlParameter("p_status", MySqlDbType.Int32)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(statusParam);
 
             var errorParam = new MySqlParameter("p_error_message", MySqlDbType.VarChar, 1000)
             {
-                Direction = ParameterDirection.Output
+                Direction = ParameterDirection.Output,
             };
             command.Parameters.Add(errorParam);
 
             await command.ExecuteNonQueryAsync();
 
             var status = statusParam.Value == DBNull.Value ? 1 : Convert.ToInt32(statusParam.Value);
-            var errorMessage = errorParam.Value == DBNull.Value ? null : errorParam.Value?.ToString();
+            var errorMessage =
+                errorParam.Value == DBNull.Value ? null : errorParam.Value?.ToString();
 
             if (status != 0)
             {
-                return Model_Dao_Result_Factory.Failure<int>(errorMessage ?? "Clear Label Data failed");
+                return Model_Dao_Result_Factory.Failure<int>(
+                    errorMessage ?? "Clear Label Data failed"
+                );
             }
 
-            var rowsMoved = rowsMovedParam.Value == DBNull.Value ? 0 : Convert.ToInt32(rowsMovedParam.Value);
+            var rowsMoved =
+                rowsMovedParam.Value == DBNull.Value ? 0 : Convert.ToInt32(rowsMovedParam.Value);
             return new Model_Dao_Result<int>
             {
                 Success = true,
                 Data = rowsMoved,
                 AffectedRows = rowsMoved,
-                ErrorMessage = string.Empty
+                ErrorMessage = string.Empty,
             };
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<int>($"Failed to clear label data to history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to clear label data to history: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -417,7 +461,9 @@ public class Dao_ReceivingLoad
             PoStatus = ReadString(row, "POStatus"),
             PoDueDate = ReadNullableDateTime(row, "PODueDate"),
             QtyOrdered = ReadDecimal(row, "QtyOrdered"),
-            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "UnitOfMeasure")) ? "EA" : ReadString(row, "UnitOfMeasure"),
+            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "UnitOfMeasure"))
+                ? "EA"
+                : ReadString(row, "UnitOfMeasure"),
             RemainingQuantity = ReadInt(row, "RemainingQuantity"),
             LoadNumber = ReadInt(row, "LoadNumber"),
             WeightQuantity = ReadDecimal(row, "WeightQuantity"),
@@ -432,7 +478,7 @@ public class Dao_ReceivingLoad
             EmployeeNumber = ReadInt(row, "EmployeeNumber"),
             IsQualityHoldRequired = ReadBool(row, "IsQualityHoldRequired"),
             IsQualityHoldAcknowledged = ReadBool(row, "IsQualityHoldAcknowledged"),
-            QualityHoldRestrictionType = ReadString(row, "QualityHoldRestrictionType")
+            QualityHoldRestrictionType = ReadString(row, "QualityHoldRestrictionType"),
         };
     }
 
@@ -522,4 +568,3 @@ public class Dao_ReceivingLoad
         return Guid.TryParse(raw, out var parsed) ? parsed : Guid.Empty;
     }
 }
-

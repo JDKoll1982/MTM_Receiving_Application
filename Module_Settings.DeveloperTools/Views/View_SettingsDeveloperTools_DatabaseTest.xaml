@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels"
-    xmlns:models="using:MTM_Receiving_Application.Module_Settings.DeveloperTools.Models">
-
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.DeveloperTools.Models"
+>
     <Grid Padding="20" RowSpacing="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -14,8 +14,7 @@
         <StackPanel Orientation="Horizontal" Spacing="12">
             <Button Content="Back" Click="OnBackClicked" />
             <TextBlock Text="Settings Database Test" Style="{StaticResource TitleTextBlockStyle}" />
-            <Button Content="Run Tests"
-                    Command="{x:Bind ViewModel.RunAllTestsCommand}" />
+            <Button Content="Run Tests" Command="{x:Bind ViewModel.RunAllTestsCommand}" />
         </StackPanel>
 
         <Pivot Grid.Row="1">

@@ -9,6 +9,8 @@ public class Model_ReportRow
 
     public string? PONumber { get; set; }
 
+    public string? POLineNumber { get; set; }
+
     public string? PartNumber { get; set; }
 
     public string? PartDescription { get; set; }
@@ -51,13 +53,44 @@ public class Model_ReportRow
 
     public string? PackageTypeName { get; set; }
 
+    public bool IsNonPOItem { get; set; }
+
     public int? CoilsOnSkid { get; set; }
 
     public int? QuantityPerSkid { get; set; }
 
     public int? ReceivedSkidCount { get; set; }
 
-    public string DisplayPo => PONumber?.Trim() ?? string.Empty;
+    public string DisplayPo
+    {
+        get
+        {
+            if (SourceModule.Equals("Receiving", StringComparison.OrdinalIgnoreCase))
+            {
+                if (IsNonPOItem)
+                {
+                    return "Non-PO";
+                }
+
+                var po = PONumber?.Trim() ?? string.Empty;
+                var poLine = POLineNumber?.Trim() ?? string.Empty;
+
+                if (!string.IsNullOrWhiteSpace(po) && !string.IsNullOrWhiteSpace(poLine))
+                {
+                    return $"{po} / Line {poLine}";
+                }
+
+                if (!string.IsNullOrWhiteSpace(poLine))
+                {
+                    return $"Line {poLine}";
+                }
+
+                return po;
+            }
+
+            return PONumber?.Trim() ?? string.Empty;
+        }
+    }
 
     public string DisplayPartOrDunnage
     {
@@ -65,7 +98,10 @@ public class Model_ReportRow
         {
             if (SourceModule.Equals("Dunnage", StringComparison.OrdinalIgnoreCase))
             {
-                if (!string.IsNullOrWhiteSpace(PartNumber) && !string.IsNullOrWhiteSpace(DunnageType))
+                if (
+                    !string.IsNullOrWhiteSpace(PartNumber)
+                    && !string.IsNullOrWhiteSpace(DunnageType)
+                )
                 {
                     return $"{PartNumber} / {DunnageType}";
                 }
@@ -77,11 +113,13 @@ public class Model_ReportRow
         }
     }
 
-    public string DisplayQuantity => Quantity?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty;
+    public string DisplayQuantity =>
+        Quantity?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty;
 
-    public string DisplayCreatedDate => CreatedDate == default
-        ? string.Empty
-        : CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+    public string DisplayCreatedDate =>
+        CreatedDate == default
+            ? string.Empty
+            : CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
 
     public string DisplayLocation => Location?.Trim() ?? string.Empty;
 

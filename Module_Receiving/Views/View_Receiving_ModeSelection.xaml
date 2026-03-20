@@ -5,115 +5,179 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
-    mc:Ignorable="d">
-
-    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20">
-
-        <Grid Padding="24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    mc:Ignorable="d"
+>
+    <Border
+        Padding="20"
+        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1"
+        CornerRadius="8"
+    >
+        <Grid Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Column="0" Spacing="12" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="12" >
-                <!-- Guided Mode Column -->
-                <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
-                            MinWidth="240" MinHeight="180"
-                            HorizontalAlignment="Stretch"
-                            Padding="20"
-                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            AutomationProperties.Name="{x:Bind ViewModel.GuidedAccessibilityName, Mode=OneWay}">
-                    <StackPanel Spacing="12">
-                        <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                        <TextBlock Text="{x:Bind ViewModel.GuidedTitleText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind ViewModel.GuidedDescriptionText, Mode=OneWay}" 
-                                       Style="{StaticResource BodyTextBlockStyle}" 
-                                       TextWrapping="Wrap" 
-                                       TextAlignment="Center"
-                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                    </StackPanel>
-                </Button>
-
-                <!-- Guided Mode Checkbox -->
-                <CheckBox Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
-                          IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
-                          Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
-                          CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                          HorizontalAlignment="Center"
-                          ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickGuidedWizard'), Mode=OneWay}"/>
-            </StackPanel>
-
-            <!-- Manual Mode Column -->
-            <StackPanel Grid.Column="1" Spacing="12" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="12">
-                <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
-                    MinWidth="240" MinHeight="180"
-                    HorizontalAlignment="Stretch"
+            <StackPanel
+                Grid.Column="0"
+                Padding="12"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Spacing="12"
+            >
+                <!--  Guided Mode Column  -->
+                <Button
+                    MinWidth="240"
+                    MinHeight="180"
                     Padding="20"
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="{x:Bind ViewModel.GuidedAccessibilityName, Mode=OneWay}"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
+                    Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
                     CornerRadius="8"
-                    AutomationProperties.Name="{x:Bind ViewModel.ManualAccessibilityName, Mode=OneWay}">
+                >
                     <StackPanel Spacing="12">
-                        <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                        <TextBlock Text="{x:Bind ViewModel.ManualTitleText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind ViewModel.ManualDescriptionText, Mode=OneWay}" 
-                               Style="{StaticResource BodyTextBlockStyle}" 
-                               TextWrapping="Wrap" 
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <FontIcon
+                            FontSize="48"
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE771;"
+                        />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind ViewModel.GuidedTitleText, Mode=OneWay}"
+                        />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind ViewModel.GuidedDescriptionText, Mode=OneWay}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap"
+                        />
                     </StackPanel>
                 </Button>
 
-                <!-- Manual Mode Checkbox -->
-                <CheckBox Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
-                      IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
-                      Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
-                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                      HorizontalAlignment="Center"
-                      ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickManualEntry'), Mode=OneWay}"/>
+                <!--  Guided Mode Checkbox  -->
+                <CheckBox
+                    HorizontalAlignment="Center"
+                    Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
+                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
+                    IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickGuidedWizard'), Mode=OneWay}"
+                />
             </StackPanel>
 
-            <!-- Edit Mode Column -->
-            <StackPanel Grid.Column="2" Spacing="12" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="12">
-                <Button Command="{x:Bind ViewModel.SelectEditModeCommand}"
-                    MinWidth="240" MinHeight="180"
-                    HorizontalAlignment="Stretch"
+            <!--  Manual Mode Column  -->
+            <StackPanel
+                Grid.Column="1"
+                Padding="12"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Spacing="12"
+            >
+                <Button
+                    MinWidth="240"
+                    MinHeight="180"
                     Padding="20"
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="{x:Bind ViewModel.ManualAccessibilityName, Mode=OneWay}"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
+                    Command="{x:Bind ViewModel.SelectManualModeCommand}"
                     CornerRadius="8"
-                    AutomationProperties.Name="{x:Bind ViewModel.EditAccessibilityName, Mode=OneWay}">
+                >
                     <StackPanel Spacing="12">
-                        <FontIcon Glyph="&#xE70F;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                        <TextBlock Text="{x:Bind ViewModel.EditTitleText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind ViewModel.EditDescriptionText, Mode=OneWay}" 
-                               Style="{StaticResource BodyTextBlockStyle}" 
-                               TextWrapping="Wrap" 
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <FontIcon
+                            FontSize="48"
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE7F0;"
+                        />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind ViewModel.ManualTitleText, Mode=OneWay}"
+                        />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind ViewModel.ManualDescriptionText, Mode=OneWay}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap"
+                        />
                     </StackPanel>
                 </Button>
 
-                <!-- Edit Mode Checkbox -->
-                <CheckBox Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
-                      IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
-                      Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
-                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                      HorizontalAlignment="Center"
-                      ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"/>
+                <!--  Manual Mode Checkbox  -->
+                <CheckBox
+                    HorizontalAlignment="Center"
+                    Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
+                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
+                    IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickManualEntry'), Mode=OneWay}"
+                />
+            </StackPanel>
+
+            <!--  Edit Mode Column  -->
+            <StackPanel
+                Grid.Column="2"
+                Padding="12"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Spacing="12"
+            >
+                <Button
+                    MinWidth="240"
+                    MinHeight="180"
+                    Padding="20"
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="{x:Bind ViewModel.EditAccessibilityName, Mode=OneWay}"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    Command="{x:Bind ViewModel.SelectEditModeCommand}"
+                    CornerRadius="8"
+                >
+                    <StackPanel Spacing="12">
+                        <FontIcon
+                            FontSize="48"
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE70F;"
+                        />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind ViewModel.EditTitleText, Mode=OneWay}"
+                        />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind ViewModel.EditDescriptionText, Mode=OneWay}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap"
+                        />
+                    </StackPanel>
+                </Button>
+
+                <!--  Edit Mode Checkbox  -->
+                <CheckBox
+                    HorizontalAlignment="Center"
+                    Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
+                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
+                    IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"
+                />
             </StackPanel>
         </Grid>
     </Border>

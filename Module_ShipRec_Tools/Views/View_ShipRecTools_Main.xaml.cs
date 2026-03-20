@@ -15,7 +15,8 @@ public sealed partial class View_ShipRecTools_Main : Page
     public View_ShipRecTools_Main(
         ViewModel_ShipRecTools_Main viewModel,
         View_ShipRecTools_ToolSelection toolSelectionView,
-        View_Tool_OutsideServiceHistory outsideServiceHistoryView)
+        View_Tool_OutsideServiceHistory outsideServiceHistoryView
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(toolSelectionView);

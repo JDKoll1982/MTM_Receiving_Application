@@ -5,8 +5,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
-using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Authentication
 {
@@ -27,7 +27,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             "Quality Control",
             "Maintenance",
             "Administration",
-            "Management"
+            "Management",
         };
 
         /// <summary>
@@ -48,7 +48,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         /// <inheritdoc/>
         public async Task<Model_AuthenticationResult> AuthenticateByWindowsUsernameAsync(
             string windowsUsername,
-            IProgress<string>? progress = null)
+            IProgress<string>? progress = null
+        )
         {
             try
             {
@@ -79,7 +80,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     "login_success",
                     windowsUsername,
                     Environment.MachineName,
-                    "Windows authentication successful");
+                    "Windows authentication successful"
+                );
 
                 progress?.Report($"Welcome, {result.Data.FullName}");
                 return Model_AuthenticationResult.SuccessResult(result.Data);
@@ -88,10 +90,17 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("Authentication by Windows username failed", Enum_ErrorSeverity.Error, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "Authentication by Windows username failed",
+                        Enum_ErrorSeverity.Error,
+                        ex,
+                        false
+                    );
                 }
 
-                return Model_AuthenticationResult.ErrorResult($"Authentication error: {ex.Message}");
+                return Model_AuthenticationResult.ErrorResult(
+                    $"Authentication error: {ex.Message}"
+                );
             }
         }
 
@@ -99,7 +108,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         public async Task<Model_AuthenticationResult> AuthenticateByPinAsync(
             string username,
             string pin,
-            IProgress<string>? progress = null)
+            IProgress<string>? progress = null
+        )
         {
             try
             {
@@ -119,7 +129,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 // Validate PIN format only (not uniqueness - that's for creation, not authentication)
                 if (pin.Length != 4 || !pin.All(char.IsDigit))
                 {
-                    return Model_AuthenticationResult.ErrorResult("PIN must be exactly 4 numeric digits");
+                    return Model_AuthenticationResult.ErrorResult(
+                        "PIN must be exactly 4 numeric digits"
+                    );
                 }
 
                 // Query database for user with PIN
@@ -132,7 +144,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                         "login_failed",
                         username,
                         Environment.MachineName,
-                        $"Invalid credentials for user: {username}");
+                        $"Invalid credentials for user: {username}"
+                    );
 
                     progress?.Report("Invalid username or PIN");
                     return Model_AuthenticationResult.ErrorResult("Invalid username or PIN");
@@ -143,7 +156,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     "login_success",
                     result.Data.WindowsUsername,
                     Environment.MachineName,
-                    $"PIN authentication successful for {result.Data.FullName}");
+                    $"PIN authentication successful for {result.Data.FullName}"
+                );
 
                 progress?.Report($"Welcome, {result.Data.FullName}");
                 return Model_AuthenticationResult.SuccessResult(result.Data);
@@ -152,10 +166,17 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("Authentication by PIN failed", Enum_ErrorSeverity.Error, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "Authentication by PIN failed",
+                        Enum_ErrorSeverity.Error,
+                        ex,
+                        false
+                    );
                 }
 
-                return Model_AuthenticationResult.ErrorResult($"Authentication error: {ex.Message}");
+                return Model_AuthenticationResult.ErrorResult(
+                    $"Authentication error: {ex.Message}"
+                );
             }
         }
 
@@ -167,7 +188,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         public async Task<Model_CreateUserResult> CreateNewUserAsync(
             Model_User user,
             string createdBy,
-            IProgress<string>? progress = null)
+            IProgress<string>? progress = null
+        )
         {
             try
             {
@@ -216,7 +238,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     "user_created",
                     user.WindowsUsername,
                     Environment.MachineName,
-                    $"New user created: {user.FullName} (Emp #{result.Data}) by {createdBy}");
+                    $"New user created: {user.FullName} (Emp #{result.Data}) by {createdBy}"
+                );
 
                 progress?.Report($"Account created successfully. Employee #{result.Data}");
                 return Model_CreateUserResult.SuccessResult(result.Data);
@@ -225,7 +248,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("Create new user failed", Enum_ErrorSeverity.Error, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "Create new user failed",
+                        Enum_ErrorSeverity.Error,
+                        ex,
+                        false
+                    );
                 }
 
                 return Model_CreateUserResult.ErrorResult($"User creation error: {ex.Message}");
@@ -237,7 +265,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public async Task<Model_ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null)
+        public async Task<Model_ValidationResult> ValidatePinAsync(
+            string pin,
+            int? excludeEmployeeNumber = null
+        )
         {
             try
             {
@@ -263,7 +294,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("PIN validation failed", Enum_ErrorSeverity.Error, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "PIN validation failed",
+                        Enum_ErrorSeverity.Error,
+                        ex,
+                        false
+                    );
                 }
 
                 return Model_ValidationResult.Invalid($"Validation error: {ex.Message}");
@@ -275,7 +311,9 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public async Task<Model_WorkstationConfig> DetectWorkstationTypeAsync(string? computerName = null)
+        public async Task<Model_WorkstationConfig> DetectWorkstationTypeAsync(
+            string? computerName = null
+        )
         {
             try
             {
@@ -291,7 +329,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 {
                     // Check if current computer is in shared terminals list
                     var isShared = sharedTerminalsResult.Data.Any(name =>
-                        string.Equals(name?.Trim(), computerName, StringComparison.OrdinalIgnoreCase));
+                        string.Equals(
+                            name?.Trim(),
+                            computerName,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
                     config.WorkstationType = isShared ? "shared_terminal" : "personal_workstation";
                     config.Description = isShared
                         ? "Shared terminal - PIN authentication required"
@@ -312,7 +355,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                         config.ComputerName,
                         config.WorkstationType,
                         isActive: true,
-                        description: config.Description);
+                        description: config.Description
+                    );
                 }
                 catch
                 {
@@ -325,14 +369,19 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("Workstation type detection failed", Enum_ErrorSeverity.Warning, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "Workstation type detection failed",
+                        Enum_ErrorSeverity.Warning,
+                        ex,
+                        false
+                    );
                 }
 
                 // Return safe default
                 return new Model_WorkstationConfig(computerName ?? Environment.MachineName)
                 {
                     WorkstationType = "personal_workstation",
-                    Description = "Personal workstation (default after error)"
+                    Description = "Personal workstation (default after error)",
                 };
             }
         }
@@ -355,7 +404,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             {
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("Get active departments failed", Enum_ErrorSeverity.Warning, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "Get active departments failed",
+                        Enum_ErrorSeverity.Warning,
+                        ex,
+                        false
+                    );
                 }
 
                 return [.. _fallbackDepartments];
@@ -367,7 +421,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public async Task LogUserActivityAsync(string eventType, string username, string workstationName, string details)
+        public async Task LogUserActivityAsync(
+            string eventType,
+            string username,
+            string workstationName,
+            string details
+        )
         {
             try
             {
@@ -378,7 +437,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 // Log errors but don't block application flow
                 if (_errorHandler != null)
                 {
-                    await _errorHandler.HandleErrorAsync("Activity logging failed", Enum_ErrorSeverity.Info, ex, false);
+                    await _errorHandler.HandleErrorAsync(
+                        "Activity logging failed",
+                        Enum_ErrorSeverity.Info,
+                        ex,
+                        false
+                    );
                 }
 
                 System.Diagnostics.Debug.WriteLine($"Failed to log activity: {ex.Message}");

@@ -10,5 +10,5 @@ public enum Enum_SettingsDataType
     Decimal = 2,
     Bool = 3,
     DateTime = 4,
-    Json = 5
+    Json = 5,
 }

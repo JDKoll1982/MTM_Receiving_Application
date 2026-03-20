@@ -8,7 +8,9 @@ public sealed partial class View_Settings_Reporting_BusinessRules : Page
 {
     public ViewModel_Settings_Reporting_BusinessRules ViewModel { get; }
 
-    public View_Settings_Reporting_BusinessRules(ViewModel_Settings_Reporting_BusinessRules viewModel)
+    public View_Settings_Reporting_BusinessRules(
+        ViewModel_Settings_Reporting_BusinessRules viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;

@@ -1,7 +1,6 @@
-
 # Things To Change V2
 
-Last Updated: 2026-03-19
+Last Updated: 2026-03-20
 
 ## AI Agent Instructions
 
@@ -30,11 +29,11 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ## Checklist
 
-- [ ] Remove the Manual Entry mock-location popup from the screen without breaking location validation or preset-location editing.
-- [ ] Seed Manual Mode with 10 blank rows on first entry and focus Row 1, PO Number.
-- [ ] Add row-level PO-driven part selection modal behavior for Manual Mode.
-- [ ] Add a row-level or page-level Non-PO mode toggle to Manual Mode.
-- [ ] Refactor Auto-Fill so it respects PO-selected parts and Non-PO behavior.
+- [x] Remove the Manual Entry mock-location popup from the screen without breaking location validation or preset-location editing.
+- [x] Seed Manual Mode with 10 blank rows on first entry and focus Row 1, PO Number.
+- [x] Add row-level PO-driven part selection modal behavior for Manual Mode.
+- [x] Add a row-level or page-level Non-PO mode toggle to Manual Mode.
+- [x] Refactor Auto-Fill so it respects PO-selected parts and Non-PO behavior.
 - [ ] Update validation and save-path assumptions for mixed PO and Non-PO Manual Mode rows.
 - [ ] Update `Module_Reporting` receiving summaries, receiving detail display, and preview/copy formatting so Manual Mode PO-selected and Non-PO rows report correctly.
 - [ ] Add or update tests and any affected module documentation after implementation.
@@ -44,39 +43,59 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 ### Primary UI
 
 - `Module_Receiving/Views/View_Receiving_ManualEntry.xaml`
-  - line 63: `InfoBar` currently displays the mock location list popup.
-  - line 88: PO Number column is a `DataGridTemplateColumn`.
+  - line 66: `ItemsSource` still binds directly to `ViewModel.Loads`.
+  - line 77: `LoadingRow="ManualEntryDataGrid_LoadingRow"` remains active for row-level quality hold highlighting.
+  - line 73: a row-level `DataGridCheckBoxColumn` now binds each row to `IsNonPOItem`.
+  - line 82: `PoNumberColumn` is now a named `DataGridTemplateColumn`, which gives the code-behind a stable focus target.
+  - lines 86-110: the PO column now shows the actual PO only for PO-backed rows and renders `Non-PO` for rows flagged `IsNonPOItem`.
   - line 102: PO edit textbox uses `LostFocus="PONumberTextBox_LostFocus"`.
-  - line 111: Part Number column is currently a plain editable `TextBox` column.
+  - line 105: `PartIdColumn` is now a named `DataGridTemplateColumn`, which is the fallback focus target when PO is not the preferred edit surface.
+  - line 111: Part Number column is still a plain editable `TextBox` column.
+  - lines 114 and 125: the Part Number cell template and edit template now both route `DoubleTapped` to `PartIdCell_DoubleTapped` so PO-backed rows can reopen part selection.
   - line 126: Part Number edit textbox uses `LostFocus="PartIDTextBox_LostFocus"`.
   - lines 185-212: Location column switches between `ComboBox` and `TextBox` based on mock-location mode.
+  - outcome: the mock-location `InfoBar` has been removed from the screen; the location column behavior remains intact.
 
 - `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs`
   - line 24: `View_Receiving_ManualEntry` code-behind class.
+  - line 47: subscribes to `Loaded` through `View_Receiving_ManualEntry_Loaded` for initial row focus.
   - line 55: subscribes to `ViewModel.Loads.CollectionChanged`.
-  - line 99: `Loads_CollectionChanged(...)` handles focus/edit activation for new rows.
-  - line 260: `SelectFirstEditableCell(DataGrid grid)` currently focuses the first editable column, not specifically the PO column.
-  - line 341: `PONumberTextBox_LostFocus(...)` formats the PO number only; it does not load PO parts.
+  - line 95: `View_Receiving_ManualEntry_Loaded(...)` now selects Row 1 and queues initial focus to the selected row's preferred entry column.
+  - line 110: `Loads_CollectionChanged(...)` now scrolls new rows into the selected row's preferred entry column.
+  - line 280: `SelectPreferredEditableCell(DataGrid grid)` now prefers PO or Part Number based on the selected row's `IsNonPOItem` value.
+  - line 307: `GetPreferredEntryColumn(...)` centralizes row-level focus rules.
+  - line 350: row-level `IsNonPOItem` changes now re-run preferred-cell selection for the selected row.
+  - line 386: `PONumberTextBox_LostFocus(...)` now formats the PO number and then calls into the ViewModel to select a PO part when needed.
   - line 381: `FormatPONumber(string input)` canonicalizes `PO-######` and `PO-######B` formats.
-  - line 424: `PartIDTextBox_LostFocus(...)` pads part number text and applies default location; this is the current seam that conflicts with the requested PO-part modal flow.
+  - line 456: `PartIDTextBox_LostFocus(...)` now only formats free-text part values and applies default location logic; it no longer opens the PO part picker on cell exit.
+  - line 510: `PartIdCell_DoubleTapped(...)` is now the explicit gesture that reopens PO part selection for PO-backed rows.
   - line 457: `LocationTextBox_LostFocus(...)` validates location and shows warning status.
 
 ### Manual Entry ViewModel
 
 - `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs`
   - lines 19-24: core dependencies are `_workflowService`, `_validationService`, `_inforVisualService`, `_windowService`, `_helpService`, `_receivingSettings`.
+  - line 19: `InitialManualEntryRows` now defines the first-entry seed count as `10`.
   - line 27: `_loads` is the backing `ObservableCollection<Model_ReceivingLoad>`.
+  - line 53: `ManualEntryColumnNonPoText` supplies the row-level Non-PO column header.
   - lines 75-77: `IsMockLocationMode` and `MockLocationListText` drive the popup that needs removal.
   - line 79: `PresetLocations` is still needed by the Location column when mock data is enabled.
-  - line 101: `_loads` is initialized from `_workflowService.CurrentSession.Loads`.
-  - lines 137-284: `AutoFillAsync()` currently fills `PartID`, `PoNumber`, `WeightQuantity`, `HeatLotNumber`, `InitialLocation`, `PackagesPerLoad`, and `PackageTypeName` by copying prior rows.
+  - line 94: `_loads` is initialized from `_workflowService.CurrentSession.Loads`.
+  - line 95: `_loads.CollectionChanged += Loads_CollectionChanged` now attaches row-level mode normalization.
+  - line 110: `EnsureInitialManualRows()` is called from the constructor.
+  - line 115: `EnsureInitialManualRows()` seeds 10 rows only when the current session is empty and selects the first row.
+  - line 173: `AutoFillAsync()` now only copy-fills `PartID` for Non-PO rows and still skips PO copy-fill for rows marked `IsNonPOItem`.
   - lines 286-290: `AddRow()` delegates to `AddNewLoad()`.
   - lines 292-357: `AddMultipleRowsAsync()` uses a `ContentDialog` to ask how many rows to create.
   - line 359: `MaxManualEntryRows` constant.
-  - lines 361-389: `AddNewLoad()` creates a new `Model_ReceivingLoad`, assigns `LoadNumber`, and appends the row to both `Loads` and `_workflowService.CurrentSession.Loads`.
+  - line 407: `AddNewLoad()` now inherits `IsNonPOItem` from the selected row to support mixed-mode repetitive entry.
   - lines 445-593: `SaveAsync()` validates each row before persisting.
-  - line 520: `SaveAsync()` currently validates PO numbers through `_validationService.ValidatePONumber(...)`.
+  - line 578: `SaveAsync()` now skips PO validation for rows marked `IsNonPOItem`.
   - line 536: `SaveAsync()` currently validates locations through `_validationService.ValidateLocationAsync(...)`.
+  - lines 770-804: `Loads_CollectionChanged(...)`, `AttachLoadHandlers(...)`, `DetachLoadHandlers(...)`, and `Load_PropertyChanged(...)` now normalize row state when `IsNonPOItem` changes.
+  - line 806: `NormalizeLoadForMode(...)` clears stale PO metadata whenever a row flips mode.
+  - line 799: `TrySelectPartForPoAsync(...)` now loads PO parts, opens the shared picker dialog, applies the selected part back onto the row, and enforces reselection when the PO changes.
+  - line 933: `ClearPoSelectedPart(...)` clears stale PO-selected part state when a row’s PO changes or Non-PO mode is enabled.
   - lines 718-736: `ApplyDefaultLocationFromPartAsync(Model_ReceivingLoad load)` already reacts to `PartID` changes and may need to stay compatible with modal-selected parts.
 
 ### Guided PO Entry Logic That Should Be Reused Conceptually
@@ -94,6 +113,7 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
   - line 20: `_partID`
   - line 26: `_poNumber`
   - line 29: `_poLineNumber`
+  - line 32: `_selectedPartSourcePONumber` tracks which PO produced the current row-level selected part.
   - line 41: `_initialLocation`
   - line 59: `_isNonPOItem`
   - line 191: `PONumberDisplay`
@@ -136,11 +156,20 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ### 1. Remove the Manual Entry location popup
 
-#### Current behavior
+#### Outcome
 
-- The popup is not a modal dialog; it is an `InfoBar` in `Module_Receiving/Views/View_Receiving_ManualEntry.xaml:63`.
-- It is shown whenever `ViewModel.IsMockLocationMode` is true.
-- The displayed text comes from `ViewModel.MockLocationListText` in `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:76`.
+- Completed on 2026-03-20.
+- The mock-location `InfoBar` has been removed from `Module_Receiving/Views/View_Receiving_ManualEntry.xaml`.
+- `ViewModel.IsMockLocationMode`, `ViewModel.MockLocationListText`, `PresetLocations`, and the Location column edit behavior were left intact so mock-location editing and validation still work.
+- `Module_Receiving/Services/Service_ReceivingValidation.cs:194-214` remains the active location validation path.
+
+#### Validation
+
+- `get_errors` returned no errors for:
+  - `Module_Receiving/Views/View_Receiving_ManualEntry.xaml`
+  - `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs`
+  - `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs`
+- `dotnet build MTM_Receiving_Application.slnx` succeeded on 2026-03-20.
 
 #### Required change
 
@@ -156,12 +185,23 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ### 2. Seed Manual Mode with 10 blank rows and focus Row 1 PO Number
 
-#### Current behavior
+#### Outcome
 
-- Manual Mode navigation starts in `ViewModel_Receiving_ModeSelection.SelectManualModeAsync()` at `Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs:141`.
-- The Manual Entry viewmodel currently loads existing rows from `_workflowService.CurrentSession.Loads` at `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:101`.
-- Row creation happens through `AddNewLoad()` at `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:361`.
-- UI focus on new rows is handled in `Loads_CollectionChanged(...)` and `SelectFirstEditableCell(...)` in `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs:99` and `:260`.
+- Completed on 2026-03-20.
+- `ViewModel_Receiving_ManualEntry` now calls `EnsureInitialManualRows()` from the constructor at `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:110`.
+- `EnsureInitialManualRows()` at `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:115` creates exactly 10 rows only when `Loads.Count == 0`.
+- Existing sessions are preserved because the seed logic exits immediately when rows already exist.
+- Initial focus is now handled by `View_Receiving_ManualEntry_Loaded(...)` at `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs:100`, which selects Row 1, scrolls it into view, and routes edit focus to `PoNumberColumn`.
+- New row focus also now prefers the PO column through `SelectPreferredEditableCell(...)` at `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs:276`.
+
+#### Validation
+
+- `get_errors` returned no errors for the touched files.
+- `dotnet build MTM_Receiving_Application.slnx` succeeded on 2026-03-20.
+- Follow-up manual validation still recommended:
+  - confirm first entry into Manual Mode shows 10 rows
+  - confirm re-entering Manual Mode with an existing session does not duplicate rows
+  - confirm Row 1 enters edit mode on the PO field when the view first appears
 
 #### Required change
 
@@ -183,11 +223,31 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ### 3. Add PO-driven Part Number modal to Manual Mode
 
-#### Current behavior
+#### Outcome
 
-- Manual Entry currently treats PO Number as formatting-only on `LostFocus` in `View_Receiving_ManualEntry.xaml.cs:341`.
-- Manual Entry currently treats Part Number as a free-entry textbox in `View_Receiving_ManualEntry.xaml:111-132`.
-- Guided PO mode already knows how to load PO parts in `ViewModel_Receiving_POEntry.LoadPOAsync()` in `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs:230-291`.
+- Completed on 2026-03-20.
+- `PONumberTextBox_LostFocus(...)` in `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs:386` now formats the PO number and then calls `ViewModel.TrySelectPartForPoAsync(load)`.
+- `TrySelectPartForPoAsync(...)` in `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:799`:
+  - loads the PO through `_inforVisualService.GetPOWithPartsAsync(...)`
+  - enriches remaining quantity per part where needed
+  - opens `Dialog_FuzzySearchPicker` with the available PO parts
+  - writes the selected part back into `PartID`
+  - writes `PoLineNumber`
+  - records `SelectedPartSourcePONumber`
+  - copies descriptive PO metadata onto the row
+  - preserves or applies default location behavior from the selected part
+- `PartIdCell_DoubleTapped(...)` in `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs:510` lets users reopen part selection by double-clicking the Part cell.
+- If the row PO changes, stale PO-selected part state is cleared through `ClearPoSelectedPart(...)` before reselection.
+- If the PO has no selectable parts, `ShowPoHasNoUsablePartsDialogAsync(...)` tells the user to use Non-PO mode instead.
+
+#### Validation
+
+- `dotnet build MTM_Receiving_Application.slnx` succeeded on 2026-03-20 after the PO picker implementation.
+- Manual verification still recommended:
+  - entering a valid PO should open the picker
+  - selecting a part should populate `PartID` and `PoLineNumber`
+  - double-clicking the Part cell should reopen the picker
+  - changing the PO should force a new part selection
 
 #### Required change
 
@@ -220,26 +280,34 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ### 4. Add Non-PO mode to Manual Entry
 
-#### Current behavior
+#### Outcome
 
-- Guided PO entry already supports Non-PO mode through `ToggleNonPO()` in `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs:293-303`.
-- `Model_ReceivingLoad` already has `IsNonPOItem` at `Module_Receiving/Models/Model_ReceivingLoad.cs:59`.
-- Manual Entry save currently validates `PoNumber` for each row in `ViewModel_Receiving_ManualEntry.SaveAsync()` at `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:520`.
+- Completed on 2026-03-20 as row-level mixed-mode UX.
+- The earlier page-level Manual Entry toggle was replaced with a per-row `Non-PO?` checkbox column.
+- Each row now owns its own `IsNonPOItem` state.
+- Switching a row to Non-PO clears PO-specific metadata for that row only.
+- Switching a row back to PO-backed mode clears stale PO-derived row state and returns focus to that row's PO field.
+- New rows inherit the selected row's `IsNonPOItem` value so repeated PO or Non-PO entry is faster.
+- `SelectPreferredEditableCell(...)` in `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs` now prefers PO or Part Number per row.
+- `SaveAsync()` now skips PO validation for rows flagged `IsNonPOItem`.
+
+#### Validation
+
+- `dotnet build MTM_Receiving_Application.slnx` succeeded on 2026-03-20 after the Non-PO implementation.
+- Manual verification still recommended:
+  - toggling `Non-PO?` on one row should not affect neighboring rows
+  - new rows should inherit the selected row's mode
+  - toggling a row to Non-PO should move focus to Part Number for that row
+  - toggling a row back to PO-backed mode should move focus to PO Number for that row
+  - save should not reject Non-PO rows for missing PO values
 
 #### Required change
 
-- Add a Non-PO checkbox to Manual Entry.
-- When checked:
-  - hide or remove the PO Number column from the Manual Entry grid
-  - skip PO validation for affected rows
-  - allow free-text part entry in the Part Number column
-  - avoid PO-part modal behavior
-- Decide whether Non-PO is page-wide for all Manual Mode rows or row-specific per load. The current request reads page-wide, but the row model already supports row-specific storage.
+- Completed. Manual Entry now uses row-specific `IsNonPOItem` behavior instead of a page-wide toggle.
 
 #### Important design note
 
-- If the checkbox is page-wide, the implementation should still write `Model_ReceivingLoad.IsNonPOItem` per row so persistence and save validation remain explicit.
-- If the checkbox is row-specific, the XAML and auto-fill logic will need more conditional behavior.
+- The implementation now uses the row-specific path, and XAML focus/edit behavior was updated accordingly.
 
 #### Impacted files
 
@@ -250,11 +318,18 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ### 5. Refactor Auto-Fill to respect PO/Non-PO rules
 
-#### Current behavior
+#### Outcome
 
-- `AutoFillAsync()` in `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:137-284` currently:
-  - fills blank `PartID` from the immediate predecessor
-  - fills blank `PoNumber`, `WeightQuantity`, `HeatLotNumber`, `InitialLocation`, `PackagesPerLoad`, and `PackageTypeName` from the nearest previous row with the same `PartID`
+- Completed on 2026-03-20 for the high-risk identity fields.
+- `AutoFillAsync()` in `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:173` now only copy-fills blank `PartID` for rows marked `IsNonPOItem`.
+- PO-backed rows no longer get `PartID` copied down from previous rows, which prevents bypassing the new explicit PO part-selection flow.
+- `AutoFillAsync()` also now skips PO number copy-fill for rows marked `IsNonPOItem`.
+- Helpful non-identity copy-fill behavior remains in place for fields such as quantity, heat/lot, location, packages per load, and package type where safe.
+
+#### Validation
+
+- Build succeeded after the Auto-Fill changes.
+- Manual verification still recommended for mixed-row scenarios where PO-backed and Non-PO rows appear in the same Manual Entry session.
 
 #### Required change
 
@@ -377,6 +452,15 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ## Validation Notes For Future Implementation
 
+- Verified on 2026-03-20:
+  - Manual Entry mock-location popup removed from the screen.
+  - Manual Mode now seeds 10 rows on first empty entry.
+  - Initial focus logic now prefers the PO column.
+  - PO entry in Manual Mode now launches a part-selection picker and writes `PoLineNumber` back onto the row.
+  - Part cells now reopen PO-backed part selection on double-click.
+  - Manual Entry now supports row-level mixed PO and Non-PO entry through the `Non-PO?` row column.
+  - Auto-Fill no longer copy-fills `PartID` into PO-backed rows.
+  - Solution build succeeded after the first-slice changes.
 - Re-run row-save validation paths in `ViewModel_Receiving_ManualEntry.SaveAsync()` after the Non-PO and modal-selection changes.
 - Confirm that any new dialog sets `XamlRoot` correctly before `ShowAsync()`.
 - Confirm that row focus still works after seeding 10 rows and after opening/closing the modal selector.

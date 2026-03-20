@@ -1,14 +1,14 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Input;
-using Windows.Graphics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Input;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using Windows.Graphics;
 
 namespace MTM_Receiving_Application
 {
@@ -38,7 +38,8 @@ namespace MTM_Receiving_Application
             IService_LoggingUtility logger,
             IService_SettingsWindowHost settingsWindowHost,
             IServiceProvider serviceProvider,
-            IService_VisualCredentialValidator credentialValidator)
+            IService_VisualCredentialValidator credentialValidator
+        )
         {
             InitializeComponent();
             ViewModel = viewModel;
@@ -106,13 +107,13 @@ namespace MTM_Receiving_Application
             // Update title bar text color based on activation state
             if (args.WindowActivationState == WindowActivationState.Deactivated)
             {
-                TitleBarTextBlock.Foreground =
-                    (Microsoft.UI.Xaml.Media.SolidColorBrush)App.Current.Resources["WindowCaptionForegroundDisabled"];
+                TitleBarTextBlock.Foreground = (Microsoft.UI.Xaml.Media.SolidColorBrush)
+                    App.Current.Resources["WindowCaptionForegroundDisabled"];
             }
             else
             {
-                TitleBarTextBlock.Foreground =
-                    (Microsoft.UI.Xaml.Media.SolidColorBrush)App.Current.Resources["WindowCaptionForeground"];
+                TitleBarTextBlock.Foreground = (Microsoft.UI.Xaml.Media.SolidColorBrush)
+                    App.Current.Resources["WindowCaptionForeground"];
             }
 
             if (args.WindowActivationState != WindowActivationState.Deactivated)
@@ -141,16 +142,40 @@ namespace MTM_Receiving_Application
 
         private static readonly Dictionary<string, (Type PageType, string Title)> _navRoutes = new()
         {
-            ["ReceivingWorkflowView"] = (typeof(Module_Receiving.Views.View_Receiving_Workflow),       string.Empty),
-            ["DunnageLabelPage"]      = (typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),       string.Empty),
-            ["VolvoShipmentEntry"]    = (typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry),          "Volvo Dunnage Requisition"),
-            ["VolvoHistory"]          = (typeof(Module_Volvo.Views.View_Volvo_History),                "Volvo Shipment History"),
-            ["ReportingMainPage"]     = (typeof(Module_Reporting.Views.View_Reporting_Main),           "End of Day Reports"),
-            ["ShipRecToolsPage"]      = (typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main),    string.Empty),
-            ["BulkInventoryPage"]     = (typeof(Module_Bulk_Inventory.Views.View_BulkInventory_Host), "Bulk Inventory"),
+            ["ReceivingWorkflowView"] = (
+                typeof(Module_Receiving.Views.View_Receiving_Workflow),
+                string.Empty
+            ),
+            ["DunnageLabelPage"] = (
+                typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),
+                string.Empty
+            ),
+            ["VolvoShipmentEntry"] = (
+                typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry),
+                "Volvo Dunnage Requisition"
+            ),
+            ["VolvoHistory"] = (
+                typeof(Module_Volvo.Views.View_Volvo_History),
+                "Volvo Shipment History"
+            ),
+            ["ReportingMainPage"] = (
+                typeof(Module_Reporting.Views.View_Reporting_Main),
+                "End of Day Reports"
+            ),
+            ["ShipRecToolsPage"] = (
+                typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main),
+                string.Empty
+            ),
+            ["BulkInventoryPage"] = (
+                typeof(Module_Bulk_Inventory.Views.View_BulkInventory_Host),
+                "Bulk Inventory"
+            ),
         };
 
-        private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private void NavView_SelectionChanged(
+            NavigationView sender,
+            NavigationViewSelectionChangedEventArgs args
+        )
         {
             if (args.IsSettingsSelected)
             {
@@ -177,32 +202,45 @@ namespace MTM_Receiving_Application
             NavigateWithDI(route.PageType);
         }
 
-        private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+        private void ContentFrame_Navigated(
+            object sender,
+            Microsoft.UI.Xaml.Navigation.NavigationEventArgs e
+        )
         {
-            _logger.LogInfo($"ContentFrame_Navigated: Navigated to {e.SourcePageType?.Name ?? "Unknown"}");
+            _logger.LogInfo(
+                $"ContentFrame_Navigated: Navigated to {e.SourcePageType?.Name ?? "Unknown"}"
+            );
 
             // Unsubscribe from previous ViewModel to prevent memory leaks and incorrect header updates
             if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
             {
-                _logger.LogInfo($"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}");
+                _logger.LogInfo(
+                    $"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}"
+                );
                 _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
                 _currentWorkflowViewModel = null;
                 _currentPropertyChangedHandler = null;
             }
 
             // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
-            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView)
+            if (
+                ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView
+            )
             {
                 var viewModel = receivingView.ViewModel;
                 if (viewModel != null)
                 {
-                    _logger.LogInfo($"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}");
+                    _logger.LogInfo(
+                        $"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}"
+                    );
 
                     // Update header with current step title (ensure UI thread)
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                        _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                        _logger.LogInfo(
+                            $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
+                        );
                     });
 
                     // Create and store the event handler
@@ -210,12 +248,16 @@ namespace MTM_Receiving_Application
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
-                            _logger.LogInfo($"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}");
+                            _logger.LogInfo(
+                                $"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}"
+                            );
                             // Ensure UI update happens on UI thread
                             DispatcherQueue.TryEnqueue(() =>
                             {
                                 PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                                _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                                _logger.LogInfo(
+                                    $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
+                                );
                             });
                         }
                     };
@@ -223,7 +265,9 @@ namespace MTM_Receiving_Application
                     // Subscribe to property changes to keep header updated
                     viewModel.PropertyChanged += _currentPropertyChangedHandler;
                     _currentWorkflowViewModel = viewModel;
-                    _logger.LogInfo("Successfully subscribed to Receiving ViewModel PropertyChanged");
+                    _logger.LogInfo(
+                        "Successfully subscribed to Receiving ViewModel PropertyChanged"
+                    );
                 }
                 else
                 {
@@ -231,18 +275,24 @@ namespace MTM_Receiving_Application
                 }
             }
             // If navigated to DunnageWorkflowView, subscribe to ViewModel changes to update header
-            else if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView)
+            else if (
+                ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView
+            )
             {
                 var viewModel = dunnageView.ViewModel;
                 if (viewModel != null)
                 {
-                    _logger.LogInfo($"Subscribing to Dunnage ViewModel. Current title: {viewModel.CurrentStepTitle}");
+                    _logger.LogInfo(
+                        $"Subscribing to Dunnage ViewModel. Current title: {viewModel.CurrentStepTitle}"
+                    );
 
                     // Update header with current step title (ensure UI thread)
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                        _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                        _logger.LogInfo(
+                            $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
+                        );
                     });
 
                     // Create and store the event handler
@@ -250,12 +300,16 @@ namespace MTM_Receiving_Application
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
-                            _logger.LogInfo($"PropertyChanged received for Dunnage CurrentStepTitle: {viewModel.CurrentStepTitle}");
+                            _logger.LogInfo(
+                                $"PropertyChanged received for Dunnage CurrentStepTitle: {viewModel.CurrentStepTitle}"
+                            );
                             // Ensure UI update happens on UI thread
                             DispatcherQueue.TryEnqueue(() =>
                             {
                                 PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                                _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                                _logger.LogInfo(
+                                    $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
+                                );
                             });
                         }
                     };
@@ -294,17 +348,18 @@ namespace MTM_Receiving_Application
         /// </summary>
         public void UpdateBulkInventoryNavVisibility()
         {
-            var visualUsername = _sessionManager.CurrentSession?.User?.VisualUsername ?? string.Empty;
-            var allowed = !string.IsNullOrWhiteSpace(visualUsername)
-                          && _credentialValidator.IsAllowed(visualUsername);
+            var visualUsername =
+                _sessionManager.CurrentSession?.User?.VisualUsername ?? string.Empty;
+            var allowed =
+                !string.IsNullOrWhiteSpace(visualUsername)
+                && _credentialValidator.IsAllowed(visualUsername);
 
-            BulkInventoryNavItem.Visibility = allowed
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            BulkInventoryNavItem.Visibility = allowed ? Visibility.Visible : Visibility.Collapsed;
 
             _logger.LogInfo(
                 $"BulkInventoryNavItem visibility set to {BulkInventoryNavItem.Visibility} "
-                + $"for VisualUsername '{visualUsername}'");
+                    + $"for VisualUsername '{visualUsername}'"
+            );
         }
 
         /// <summary>
@@ -370,7 +425,12 @@ namespace MTM_Receiving_Application
                 titleBar.ButtonForegroundColor = foregroundColor;
                 titleBar.ButtonHoverForegroundColor = foregroundColor;
                 titleBar.ButtonPressedForegroundColor = foregroundColor;
-                titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
+                titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(
+                    255,
+                    160,
+                    160,
+                    160
+                );
             }
             else
             {
@@ -396,7 +456,7 @@ namespace MTM_Receiving_Application
                     System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "MTMIcon.ico"),
                     System.IO.Path.Combine(AppContext.BaseDirectory, "MTMIcon.ico"),
                     "Assets/MTMIcon.ico",
-                    "MTMIcon.ico"
+                    "MTMIcon.ico",
                 };
 
                 string? foundIconPath = null;
@@ -412,12 +472,21 @@ namespace MTM_Receiving_Application
                 if (foundIconPath != null)
                 {
                     AppWindow.SetIcon(foundIconPath);
-                    _logger?.LogInfo($"Window icon set successfully: {foundIconPath}", "MainWindow");
+                    _logger?.LogInfo(
+                        $"Window icon set successfully: {foundIconPath}",
+                        "MainWindow"
+                    );
                 }
                 else
                 {
-                    _logger?.LogWarning($"Icon file not found. Searched paths: {string.Join(", ", iconPaths)}", "MainWindow");
-                    _logger?.LogWarning($"Current directory: {AppContext.BaseDirectory}", "MainWindow");
+                    _logger?.LogWarning(
+                        $"Icon file not found. Searched paths: {string.Join(", ", iconPaths)}",
+                        "MainWindow"
+                    );
+                    _logger?.LogWarning(
+                        $"Current directory: {AppContext.BaseDirectory}",
+                        "MainWindow"
+                    );
                 }
             }
             catch (Exception ex)
@@ -445,7 +514,10 @@ namespace MTM_Receiving_Application
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AppTitleBar_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+        private void AppTitleBar_SizeChanged(
+            object sender,
+            Microsoft.UI.Xaml.SizeChangedEventArgs e
+        )
         {
             if (ExtendsContentIntoTitleBar)
             {
@@ -470,8 +542,12 @@ namespace MTM_Receiving_Application
                 double scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale;
 
                 // Set padding columns for caption buttons
-                RightPaddingColumn.Width = new Microsoft.UI.Xaml.GridLength(AppWindow.TitleBar.RightInset / scaleAdjustment);
-                LeftPaddingColumn.Width = new Microsoft.UI.Xaml.GridLength(AppWindow.TitleBar.LeftInset / scaleAdjustment);
+                RightPaddingColumn.Width = new Microsoft.UI.Xaml.GridLength(
+                    AppWindow.TitleBar.RightInset / scaleAdjustment
+                );
+                LeftPaddingColumn.Width = new Microsoft.UI.Xaml.GridLength(
+                    AppWindow.TitleBar.LeftInset / scaleAdjustment
+                );
 
                 // Define passthrough regions for interactive elements
                 var rectArray = new System.Collections.Generic.List<RectInt32>();
@@ -480,9 +556,14 @@ namespace MTM_Receiving_Application
                 if (PaneToggleButton != null)
                 {
                     var transform = PaneToggleButton.TransformToVisual(null);
-                    var bounds = transform.TransformBounds(new Windows.Foundation.Rect(0, 0,
-                                                                 PaneToggleButton.ActualWidth,
-                                                                 PaneToggleButton.ActualHeight));
+                    var bounds = transform.TransformBounds(
+                        new Windows.Foundation.Rect(
+                            0,
+                            0,
+                            PaneToggleButton.ActualWidth,
+                            PaneToggleButton.ActualHeight
+                        )
+                    );
                     rectArray.Add(GetRect(bounds, scaleAdjustment));
                 }
 
@@ -490,9 +571,14 @@ namespace MTM_Receiving_Application
                 if (TitleBarSearchBox != null)
                 {
                     var transform = TitleBarSearchBox.TransformToVisual(null);
-                    var bounds = transform.TransformBounds(new Windows.Foundation.Rect(0, 0,
-                                                                 TitleBarSearchBox.ActualWidth,
-                                                                 TitleBarSearchBox.ActualHeight));
+                    var bounds = transform.TransformBounds(
+                        new Windows.Foundation.Rect(
+                            0,
+                            0,
+                            TitleBarSearchBox.ActualWidth,
+                            TitleBarSearchBox.ActualHeight
+                        )
+                    );
                     rectArray.Add(GetRect(bounds, scaleAdjustment));
                 }
 
@@ -501,7 +587,10 @@ namespace MTM_Receiving_Application
                 {
                     InputNonClientPointerSource nonClientInputSrc =
                         InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray.ToArray());
+                    nonClientInputSrc.SetRegionRects(
+                        NonClientRegionKind.Passthrough,
+                        rectArray.ToArray()
+                    );
                 }
             }
             catch (Exception ex)
@@ -537,7 +626,11 @@ namespace MTM_Receiving_Application
                 var page = _serviceProvider.GetService(pageType);
                 if (page == null)
                 {
-                    _logger.LogError($"Failed to resolve view type: {pageType.Name}", null, "MainWindow");
+                    _logger.LogError(
+                        $"Failed to resolve view type: {pageType.Name}",
+                        null,
+                        "MainWindow"
+                    );
                     return false;
                 }
 
@@ -550,7 +643,9 @@ namespace MTM_Receiving_Application
                 // Unsubscribe from previous ViewModel to prevent memory leaks
                 if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
                 {
-                    _logger.LogInfo($"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}");
+                    _logger.LogInfo(
+                        $"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}"
+                    );
                     _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
                     _currentWorkflowViewModel = null;
                     _currentPropertyChangedHandler = null;
@@ -582,20 +677,23 @@ namespace MTM_Receiving_Application
                         _currentWorkflowViewModel = viewModel;
                     }
                 }
-
                 // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes
                 else if (page is Module_Receiving.Views.View_Receiving_Workflow receivingView)
                 {
                     var viewModel = receivingView.ViewModel;
                     if (viewModel != null)
                     {
-                        _logger.LogInfo($"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}");
+                        _logger.LogInfo(
+                            $"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}"
+                        );
 
                         // Update header with current step title (ensure UI thread)
                         DispatcherQueue.TryEnqueue(() =>
                         {
                             PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                            _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                            _logger.LogInfo(
+                                $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
+                            );
                         });
 
                         // Create and store the event handler
@@ -603,12 +701,16 @@ namespace MTM_Receiving_Application
                         {
                             if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                             {
-                                _logger.LogInfo($"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}");
+                                _logger.LogInfo(
+                                    $"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}"
+                                );
                                 // Ensure UI update happens on UI thread
                                 DispatcherQueue.TryEnqueue(() =>
                                 {
                                     PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                                    _logger.LogInfo($"MainWindow header updated to: {viewModel.CurrentStepTitle}");
+                                    _logger.LogInfo(
+                                        $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
+                                    );
                                 });
                             }
                         };
@@ -616,7 +718,9 @@ namespace MTM_Receiving_Application
                         // Subscribe to property changes to keep header updated
                         viewModel.PropertyChanged += _currentPropertyChangedHandler;
                         _currentWorkflowViewModel = viewModel;
-                        _logger.LogInfo("Successfully subscribed to Receiving ViewModel PropertyChanged");
+                        _logger.LogInfo(
+                            "Successfully subscribed to Receiving ViewModel PropertyChanged"
+                        );
                     }
                     else
                     {
@@ -628,7 +732,11 @@ namespace MTM_Receiving_Application
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Navigation failed for {pageType.Name}: {ex.Message}", ex, "MainWindow");
+                _logger.LogError(
+                    $"Navigation failed for {pageType.Name}: {ex.Message}",
+                    ex,
+                    "MainWindow"
+                );
                 return false;
             }
         }
@@ -638,9 +746,16 @@ namespace MTM_Receiving_Application
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ContentFrame_NavigationFailed(object sender, Microsoft.UI.Xaml.Navigation.NavigationFailedEventArgs e)
+        private void ContentFrame_NavigationFailed(
+            object sender,
+            Microsoft.UI.Xaml.Navigation.NavigationFailedEventArgs e
+        )
         {
-            _logger.LogError($"Navigation failed: {e.Exception?.Message}", e.Exception, "MainWindow");
+            _logger.LogError(
+                $"Navigation failed: {e.Exception?.Message}",
+                e.Exception,
+                "MainWindow"
+            );
             e.Handled = true;
 
             // Try to resolve using DI as fallback
@@ -650,6 +765,4 @@ namespace MTM_Receiving_Application
             }
         }
     }
-
 }
-

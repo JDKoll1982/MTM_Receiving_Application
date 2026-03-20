@@ -1,17 +1,17 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -44,13 +44,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _loadEntryHeaderText = "Number of Loads (1-99)";
 
         [ObservableProperty]
-        private string _loadEntryInstructionText = "Enter the total number of skids/loads for this part.";
+        private string _loadEntryInstructionText =
+            "Enter the total number of skids/loads for this part.";
 
         [ObservableProperty]
         private string _loadEntryLocationHeaderText = "Location (Optional)";
 
         [ObservableProperty]
-        private string _loadEntryLocationInstructionText = "Leave blank to save as Nothing Entered.";
+        private string _loadEntryLocationInstructionText =
+            "Leave blank to save as Nothing Entered.";
 
         // Accessibility Properties
         [ObservableProperty]
@@ -69,7 +71,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
-            IService_Notification notificationService)
+            IService_Notification notificationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
@@ -95,14 +98,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                LoadEntryHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryHeader);
-                LoadEntryInstructionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryInstruction);
-                NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads);
+                LoadEntryHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.LoadEntryHeader
+                );
+                LoadEntryInstructionText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.LoadEntryInstruction
+                );
+                NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads
+                );
                 _logger.LogInfo("Load Entry UI text loaded from settings successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading Load Entry UI text from settings: {ex.Message}", ex);
+                _logger.LogError(
+                    $"Error loading Load Entry UI text from settings: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -140,7 +152,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var validationResult = _validationService.ValidateNumberOfLoads(NumberOfLoads);
             if (!validationResult.IsValid)
             {
-                await _errorHandler.HandleErrorAsync(validationResult.Message, Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(
+                    validationResult.Message,
+                    Enum_ErrorSeverity.Warning
+                );
                 return;
             }
 
@@ -178,25 +193,32 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return validation;
             }
 
-            var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(Location.Trim(), "002");
+            var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
+                Location.Trim(),
+                "002"
+            );
             if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null || fuzzyResult.Data.Count == 0)
             {
                 return validation;
             }
 
-            var suggestions = string.Join(", ",
-                fuzzyResult.Data
-                    .Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
+            var suggestions = string.Join(
+                ", ",
+                fuzzyResult
+                    .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
                     .Select(static result => result.Label.Trim())
                     .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .Take(5));
+                    .Take(5)
+            );
 
             if (string.IsNullOrWhiteSpace(suggestions))
             {
                 return validation;
             }
 
-            return Model_ReceivingValidationResult.Error($"{validation.Message} Closest matches: {suggestions}");
+            return Model_ReceivingValidationResult.Error(
+                $"{validation.Message} Closest matches: {suggestions}"
+            );
         }
 
         /// <summary>
@@ -211,10 +233,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
     }
 }
-

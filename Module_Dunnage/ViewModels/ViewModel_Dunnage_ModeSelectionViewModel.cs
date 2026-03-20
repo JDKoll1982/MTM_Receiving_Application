@@ -4,10 +4,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -31,7 +31,9 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _helpService = helpService;
@@ -133,10 +135,12 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         }
 
         // Check if there's any type/part selection
-        if (_workflowService.CurrentSession.SelectedTypeId > 0 ||
-            _workflowService.CurrentSession.SelectedPart != null ||
-            !string.IsNullOrEmpty(_workflowService.CurrentSession.PONumber) ||
-            !string.IsNullOrEmpty(_workflowService.CurrentSession.Location))
+        if (
+            _workflowService.CurrentSession.SelectedTypeId > 0
+            || _workflowService.CurrentSession.SelectedPart != null
+            || !string.IsNullOrEmpty(_workflowService.CurrentSession.PONumber)
+            || !string.IsNullOrEmpty(_workflowService.CurrentSession.Location)
+        )
         {
             return true;
         }
@@ -165,11 +169,12 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
             var dialog = new ContentDialog
             {
                 Title = "Confirm Mode Selection",
-                Content = "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
+                Content =
+                    "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
                 PrimaryButtonText = "Continue",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = xamlRoot
+                XamlRoot = xamlRoot,
             };
 
             var result = await dialog.ShowAsync();
@@ -233,7 +238,10 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
             string? newMode = isChecked ? "guided" : null;
 
-            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, newMode ?? "");
+            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
+                currentUser.WindowsUsername,
+                newMode ?? ""
+            );
 
             if (result.IsSuccess)
             {
@@ -253,15 +261,23 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                await _errorHandler.ShowErrorDialogAsync(
+                    "Save Error",
+                    result.ErrorMessage,
+                    Enum_ErrorSeverity.Error
+                );
                 // Revert checkbox
                 IsGuidedModeDefault = !isChecked;
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync($"Failed to set default dunnage mode: {ex.Message}",
-                Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync(
+                $"Failed to set default dunnage mode: {ex.Message}",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
             // Revert checkbox
             IsGuidedModeDefault = !isChecked;
         }
@@ -280,7 +296,10 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
             string? newMode = isChecked ? "manual" : null;
 
-            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, newMode ?? "");
+            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
+                currentUser.WindowsUsername,
+                newMode ?? ""
+            );
 
             if (result.IsSuccess)
             {
@@ -300,15 +319,23 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                await _errorHandler.ShowErrorDialogAsync(
+                    "Save Error",
+                    result.ErrorMessage,
+                    Enum_ErrorSeverity.Error
+                );
                 // Revert checkbox
                 IsManualModeDefault = !isChecked;
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync($"Failed to set default dunnage mode: {ex.Message}",
-                Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync(
+                $"Failed to set default dunnage mode: {ex.Message}",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
             // Revert checkbox
             IsManualModeDefault = !isChecked;
         }
@@ -336,7 +363,10 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
             string? newMode = isChecked ? "edit" : null;
 
-            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, newMode ?? "");
+            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
+                currentUser.WindowsUsername,
+                newMode ?? ""
+            );
 
             if (result.IsSuccess)
             {
@@ -356,15 +386,23 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                await _errorHandler.ShowErrorDialogAsync(
+                    "Save Error",
+                    result.ErrorMessage,
+                    Enum_ErrorSeverity.Error
+                );
                 // Revert checkbox
                 IsEditModeDefault = !isChecked;
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync($"Failed to set default dunnage mode: {ex.Message}",
-                Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync(
+                $"Failed to set default dunnage mode: {ex.Message}",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
             // Revert checkbox
             IsEditModeDefault = !isChecked;
         }

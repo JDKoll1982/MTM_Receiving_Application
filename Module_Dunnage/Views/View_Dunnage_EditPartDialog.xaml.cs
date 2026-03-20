@@ -1,9 +1,9 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -17,7 +17,10 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private readonly List<Model_DunnageSpec> _specs;
     private readonly Dictionary<string, Control> _specInputs = new();
 
-    public View_Dunnage_EditPartDialog(Model_DunnagePart existingPart, List<Model_DunnageSpec> specs)
+    public View_Dunnage_EditPartDialog(
+        Model_DunnagePart existingPart,
+        List<Model_DunnageSpec> specs
+    )
     {
         InitializeComponent();
 
@@ -41,9 +44,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         foreach (var spec in _specs)
         {
             // Dimensions handled by static fields
-            if (string.Equals(spec.SpecKey, "Width", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(spec.SpecKey, "Height", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(spec.SpecKey, "Depth", StringComparison.OrdinalIgnoreCase))
+            if (
+                string.Equals(spec.SpecKey, "Width", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(spec.SpecKey, "Height", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(spec.SpecKey, "Depth", StringComparison.OrdinalIgnoreCase)
+            )
             {
                 continue;
             }
@@ -73,11 +78,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
                 labelText += $" ({def.Unit})";
             }
 
-            stackPanel.Children.Add(new TextBlock
-            {
-                Text = labelText,
-                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"]
-            });
+            stackPanel.Children.Add(
+                new TextBlock
+                {
+                    Text = labelText,
+                    Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"],
+                }
+            );
 
             Control? inputControl = null;
 
@@ -86,10 +93,12 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
                 var numberBox = new NumberBox
                 {
                     PlaceholderText = "0",
-                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
                 };
-                if (def.MinValue.HasValue) numberBox.Minimum = def.MinValue.Value;
-                if (def.MaxValue.HasValue) numberBox.Maximum = def.MaxValue.Value;
+                if (def.MinValue.HasValue)
+                    numberBox.Minimum = def.MinValue.Value;
+                if (def.MaxValue.HasValue)
+                    numberBox.Maximum = def.MaxValue.Value;
                 inputControl = numberBox;
             }
             else if (string.Equals(def.DataType, "Boolean", StringComparison.OrdinalIgnoreCase))
@@ -101,7 +110,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
                 inputControl = new TextBox
                 {
                     PlaceholderText = $"Enter {spec.SpecKey.ToLower()}",
-                    MaxLength = 100
+                    MaxLength = 100,
                 };
             }
 
@@ -152,7 +161,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         }
     }
 
-    private static void TryPopulateNumberBox(NumberBox numberBox, Dictionary<string, object> dict, string key)
+    private static void TryPopulateNumberBox(
+        NumberBox numberBox,
+        Dictionary<string, object> dict,
+        string key
+    )
     {
         if (dict.TryGetValue(key, out var rawValue))
         {
@@ -168,7 +181,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             {
                 JsonValueKind.Number => el.GetDouble(),
                 JsonValueKind.String when double.TryParse(el.GetString(), out var d) => d,
-                _ => double.NaN
+                _ => double.NaN,
             };
         }
 
@@ -183,8 +196,10 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             {
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                JsonValueKind.String => el.GetString()?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false,
-                _ => false
+                JsonValueKind.String => el.GetString()
+                    ?.Equals("true", StringComparison.OrdinalIgnoreCase)
+                    ?? false,
+                _ => false,
             };
         }
 
@@ -195,7 +210,9 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     {
         if (rawValue is JsonElement el)
         {
-            return el.ValueKind == JsonValueKind.String ? el.GetString() ?? string.Empty : el.ToString();
+            return el.ValueKind == JsonValueKind.String
+                ? el.GetString() ?? string.Empty
+                : el.ToString();
         }
 
         return rawValue?.ToString() ?? string.Empty;

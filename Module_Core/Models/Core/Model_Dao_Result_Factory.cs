@@ -15,7 +15,7 @@ public static class Model_Dao_Result_Factory
             Success = false,
             ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Operation failed." : message,
             Exception = ex,
-            Severity = Enum_ErrorSeverity.Error
+            Severity = Enum_ErrorSeverity.Error,
         };
     }
 
@@ -25,7 +25,7 @@ public static class Model_Dao_Result_Factory
         {
             Success = true,
             AffectedRows = Math.Max(0, affectedRows),
-            ErrorMessage = string.Empty
+            ErrorMessage = string.Empty,
         };
     }
 
@@ -36,7 +36,7 @@ public static class Model_Dao_Result_Factory
             Success = false,
             ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Operation failed." : message,
             Exception = ex,
-            Severity = Enum_ErrorSeverity.Error
+            Severity = Enum_ErrorSeverity.Error,
         };
     }
 
@@ -47,8 +47,7 @@ public static class Model_Dao_Result_Factory
             Success = true,
             Data = data,
             AffectedRows = Math.Max(0, affectedRows),
-            ErrorMessage = string.Empty
+            ErrorMessage = string.Empty,
         };
     }
 }
-

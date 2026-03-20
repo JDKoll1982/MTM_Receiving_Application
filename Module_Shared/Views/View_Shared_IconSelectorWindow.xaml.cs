@@ -1,13 +1,13 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Material.Icons;
-using MTM_Receiving_Application.Module_Core.Helpers.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using System.Diagnostics;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 
 namespace MTM_Receiving_Application.Module_Shared.Views;
 
@@ -53,7 +53,10 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
         var windowSize = new Windows.Graphics.SizeInt32 { Width = 1000, Height = 850 };
         appWindow.Resize(windowSize);
 
-        var displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(windowId, Microsoft.UI.Windowing.DisplayAreaFallback.Primary);
+        var displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(
+            windowId,
+            Microsoft.UI.Windowing.DisplayAreaFallback.Primary
+        );
         if (displayArea != null)
         {
             var centerX = (displayArea.WorkArea.Width - windowSize.Width) / 2;
@@ -107,31 +110,66 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
             // Define common/curated icons for dunnage and packaging
             var commonIconNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "PackageVariantClosed", "PackageVariant", "Package", "CubeOutline", "Cube",
-                "Archive", "ArchiveOutline", "Box", "BoxShadow",
-                "Pallet", "ForkliftBox",
-                "TruckDelivery", "TruckCargo", "Truck",
-                "ScaleBalance", "Weight", "WeightKilogram", "WeightPound",
-                "RulerSquare", "Ruler", "Tape",
-                "Label", "LabelOutline", "Barcode", "QrcodeEdit", "QrcodeScan",
-                "BubbleSheet", "Wrap",
-                "Layers", "LayersTriple", "StackExchange", "StackOverflow",
-                "FormatWrap", "SafetyGoggles", "HardHat",
-                "Tag", "TagMultiple", "TagOutline",
-                "WoodBoard", "Cardboard", "CardboardBox",
-                "ShieldCheck", "Shield", "Security",
-                "CalendarCheck", "Calendar", "ClockOutline",
-                "AlertCircle", "Alert", "Information", "CheckCircle"
+                "PackageVariantClosed",
+                "PackageVariant",
+                "Package",
+                "CubeOutline",
+                "Cube",
+                "Archive",
+                "ArchiveOutline",
+                "Box",
+                "BoxShadow",
+                "Pallet",
+                "ForkliftBox",
+                "TruckDelivery",
+                "TruckCargo",
+                "Truck",
+                "ScaleBalance",
+                "Weight",
+                "WeightKilogram",
+                "WeightPound",
+                "RulerSquare",
+                "Ruler",
+                "Tape",
+                "Label",
+                "LabelOutline",
+                "Barcode",
+                "QrcodeEdit",
+                "QrcodeScan",
+                "BubbleSheet",
+                "Wrap",
+                "Layers",
+                "LayersTriple",
+                "StackExchange",
+                "StackOverflow",
+                "FormatWrap",
+                "SafetyGoggles",
+                "HardHat",
+                "Tag",
+                "TagMultiple",
+                "TagOutline",
+                "WoodBoard",
+                "Cardboard",
+                "CardboardBox",
+                "ShieldCheck",
+                "Shield",
+                "Security",
+                "CalendarCheck",
+                "Calendar",
+                "ClockOutline",
+                "AlertCircle",
+                "Alert",
+                "Information",
+                "CheckCircle",
             };
 
-            _commonIcons = _allIcons
-                .Where(i => commonIconNames.Contains(i.Name))
-                .ToList();
+            _commonIcons = _allIcons.Where(i => commonIconNames.Contains(i.Name)).ToList();
 
             // Start with common icons (unless "Show all" is checked)
-            _filteredIcons = ShowAllIconsCheckBox?.IsChecked == true
-                ? new List<IconInfo>(_allIcons)
-                : new List<IconInfo>(_commonIcons);
+            _filteredIcons =
+                ShowAllIconsCheckBox?.IsChecked == true
+                    ? new List<IconInfo>(_allIcons)
+                    : new List<IconInfo>(_commonIcons);
 
             UpdateGridView();
         }
@@ -189,9 +227,7 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
         }
         else
         {
-            _filteredIcons = sourceList
-                .Where(i => i.Name.ToLower().Contains(searchText))
-                .ToList();
+            _filteredIcons = sourceList.Where(i => i.Name.ToLower().Contains(searchText)).ToList();
         }
 
         _currentPage = 1;
@@ -209,9 +245,7 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
         }
         else
         {
-            _filteredIcons = sourceList
-                .Where(i => i.Name.ToLower().Contains(searchText))
-                .ToList();
+            _filteredIcons = sourceList.Where(i => i.Name.ToLower().Contains(searchText)).ToList();
         }
 
         _currentPage = 1;
@@ -277,4 +311,3 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
         }
     }
 }
-

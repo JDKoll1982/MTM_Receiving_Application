@@ -7,7 +7,6 @@
     {
         Info,
         Warning,
-        Error
+        Error,
     }
 }
-

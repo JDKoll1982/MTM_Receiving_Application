@@ -46,7 +46,10 @@ public partial class Model_HelpContent : ObservableObject
     {
         get
         {
-            if (!string.IsNullOrEmpty(Icon) && Enum.TryParse<MaterialIconKind>(Icon, true, out var kind))
+            if (
+                !string.IsNullOrEmpty(Icon)
+                && Enum.TryParse<MaterialIconKind>(Icon, true, out var kind)
+            )
             {
                 return kind;
             }
@@ -54,4 +57,3 @@ public partial class Model_HelpContent : ObservableObject
         }
     }
 }
-

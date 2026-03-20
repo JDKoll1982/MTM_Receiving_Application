@@ -1,16 +1,16 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Linq;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -26,7 +26,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
 
         [ObservableProperty]
-        private ObservableCollection<string> _packageTypes = new() { "Coils", "Sheets", "Skids", "Custom" };
+        private ObservableCollection<string> _packageTypes = new()
+        {
+            "Coils",
+            "Sheets",
+            "Skids",
+            "Custom",
+        };
 
         [ObservableProperty]
         private string _selectedPackageType = string.Empty;
@@ -39,7 +45,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private bool _isSaveAsDefault;
-        private static readonly System.Text.RegularExpressions.Regex _regex = new System.Text.RegularExpressions.Regex(@"^[\w\s\-\.\(\)]+$");
+        private static readonly System.Text.RegularExpressions.Regex _regex =
+            new System.Text.RegularExpressions.Regex(@"^[\w\s\-\.\(\)]+$");
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
@@ -81,7 +88,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService)
+            IService_Notification notificationService
+        )
             : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
@@ -99,23 +107,47 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                PackageTypeHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeHeader);
-                PackageTypeComboHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeComboHeader);
-                PackageTypeCustomHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeCustomHeader);
-                PackageTypeSaveAsDefaultText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault);
-                PackageTypeLoadNumberPrefixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeLoadNumberPrefix);
-                PackageTypePackagesPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypePackagesPerLoad);
-                PackageTypeWeightPerPackageText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeWeightPerPackage);
+                PackageTypeHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeHeader
+                );
+                PackageTypeComboHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeComboHeader
+                );
+                PackageTypeCustomHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeCustomHeader
+                );
+                PackageTypeSaveAsDefaultText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault
+                );
+                PackageTypeLoadNumberPrefixText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeLoadNumberPrefix
+                );
+                PackageTypePackagesPerLoadText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypePackagesPerLoad
+                );
+                PackageTypeWeightPerPackageText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeWeightPerPackage
+                );
 
-                PackageTypeComboAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypeCombo);
-                PackageTypeCustomAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypeCustomName);
-                PackageTypePackagesPerLoadAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypePackagesPerLoad);
+                PackageTypeComboAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PackageTypeCombo
+                );
+                PackageTypeCustomAccessibilityName = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.Accessibility.PackageTypeCustomName
+                );
+                PackageTypePackagesPerLoadAccessibilityName =
+                    await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Accessibility.PackageTypePackagesPerLoad
+                    );
 
                 _logger.LogInfo("Package Type UI text loaded from settings successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading Package Type UI text from settings: {ex.Message}", ex);
+                _logger.LogError(
+                    $"Error loading Package Type UI text from settings: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -143,7 +175,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            IsSaveAsDefault = await _receivingSettings.GetBoolAsync(ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault);
+            IsSaveAsDefault = await _receivingSettings.GetBoolAsync(
+                ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault
+            );
 
             await LoadPreferencesAsync();
 
@@ -184,7 +218,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     SelectedPackageType = "Custom";
                     CustomPackageTypeName = preference.PackageTypeName;
                 }
-                _logger?.LogInfo($"Loaded saved preference for part {partId}: {preference.PackageTypeName}");
+                _logger?.LogInfo(
+                    $"Loaded saved preference for part {partId}: {preference.PackageTypeName}"
+                );
             }
             else
             {
@@ -197,17 +233,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     if (partType.Equals("Coil", StringComparison.OrdinalIgnoreCase))
                     {
                         SelectedPackageType = "Coils";
-                        _logger?.LogInfo($"Auto-set package type to Coils based on PartType for part {partId}");
+                        _logger?.LogInfo(
+                            $"Auto-set package type to Coils based on PartType for part {partId}"
+                        );
                     }
                     else if (partType.Equals("Sheet", StringComparison.OrdinalIgnoreCase))
                     {
                         SelectedPackageType = "Sheets";
-                        _logger?.LogInfo($"Auto-set package type to Sheets based on PartType for part {partId}");
+                        _logger?.LogInfo(
+                            $"Auto-set package type to Sheets based on PartType for part {partId}"
+                        );
                     }
                     else
                     {
                         SelectedPackageType = "Skids";
-                        _logger?.LogInfo($"Auto-set package type to Skids (default) based on PartType for part {partId}");
+                        _logger?.LogInfo(
+                            $"Auto-set package type to Skids (default) based on PartType for part {partId}"
+                        );
                     }
                 }
                 // Fallback to PartID prefix detection
@@ -265,7 +307,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private void UpdateLoadsPackageType()
         {
-            var typeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
+            var typeName =
+                SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
 
             foreach (var load in Loads)
             {
@@ -288,7 +331,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
-            var typeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
+            var typeName =
+                SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
             if (string.IsNullOrWhiteSpace(typeName))
             {
                 _workflowService.RaiseStatusMessage("Please enter a package type name.");
@@ -313,7 +357,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 PartID = partId,
                 PackageTypeName = typeName,
-                CustomTypeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : null
+                CustomTypeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : null,
             };
 
             try
@@ -324,7 +368,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (System.Exception ex)
             {
                 // T020d: Add more detailed error logging
-                var msg = $"Failed to save preference. PartID: '{partId}', Type: '{typeName}', Custom: '{preference.CustomTypeName}'. Error: {ex.Message}";
+                var msg =
+                    $"Failed to save preference. PartID: '{partId}', Type: '{typeName}', Custom: '{preference.CustomTypeName}'. Error: {ex.Message}";
                 await _errorHandler.HandleErrorAsync(msg, Enum_ErrorSeverity.Warning, ex);
             }
         }
@@ -344,7 +389,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             catch (System.Exception ex)
             {
-                await _errorHandler.HandleErrorAsync("Failed to delete preference", Enum_ErrorSeverity.Warning, ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to delete preference",
+                    Enum_ErrorSeverity.Warning,
+                    ex
+                );
             }
         }
 
@@ -360,11 +409,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Help Content Helpers
 
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
     }
 }
-
-

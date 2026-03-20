@@ -1,13 +1,13 @@
-using Microsoft.UI;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Volvo.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.UI;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Volvo.Models;
 
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
@@ -23,7 +23,9 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
 
     public VolvoShipmentEditDialog(Func<string, Task<string>> resolvePartLocationAsync)
     {
-        _resolvePartLocationAsync = resolvePartLocationAsync ?? throw new ArgumentNullException(nameof(resolvePartLocationAsync));
+        _resolvePartLocationAsync =
+            resolvePartLocationAsync
+            ?? throw new ArgumentNullException(nameof(resolvePartLocationAsync));
         InitializeComponent();
         Lines = new ObservableCollection<Model_VolvoShipmentLine>();
         AvailableParts = new ObservableCollection<Model_VolvoPart>();
@@ -38,7 +40,11 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         PartsDataGrid.ItemsSource = Lines;
     }
 
-    public void LoadShipment(Model_VolvoShipment shipment, ObservableCollection<Model_VolvoShipmentLine> lines, ObservableCollection<Model_VolvoPart> availableParts)
+    public void LoadShipment(
+        Model_VolvoShipment shipment,
+        ObservableCollection<Model_VolvoShipmentLine> lines,
+        ObservableCollection<Model_VolvoPart> availableParts
+    )
     {
         Shipment = shipment;
         AvailableParts = availableParts;
@@ -59,14 +65,18 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         }
 
         // Debug: Log part count
-        System.Diagnostics.Debug.WriteLine($"[EditDialog] Loaded {_allParts.Count} parts for selection");
+        System.Diagnostics.Debug.WriteLine(
+            $"[EditDialog] Loaded {_allParts.Count} parts for selection"
+        );
 
         // IMPORTANT: Set ItemsSource AFTER parts are loaded
         if (_allParts.Count > 0)
         {
             AddPartListView.ItemsSource = null; // Clear first
             AddPartListView.ItemsSource = _allParts;
-            System.Diagnostics.Debug.WriteLine($"[EditDialog] ListView ItemsSource set with {_allParts.Count} parts");
+            System.Diagnostics.Debug.WriteLine(
+                $"[EditDialog] ListView ItemsSource set with {_allParts.Count} parts"
+            );
         }
         else
         {
@@ -78,7 +88,9 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
     {
         Shipment.ShipmentDate = ShipmentDatePicker.Date?.DateTime ?? DateTime.Now;
         Shipment.PONumber = string.IsNullOrWhiteSpace(PONumberBox.Text) ? null : PONumberBox.Text;
-        Shipment.ReceiverNumber = string.IsNullOrWhiteSpace(ReceiverNumberBox.Text) ? null : ReceiverNumberBox.Text;
+        Shipment.ReceiverNumber = string.IsNullOrWhiteSpace(ReceiverNumberBox.Text)
+            ? null
+            : ReceiverNumberBox.Text;
         Shipment.Notes = string.IsNullOrWhiteSpace(NotesBox.Text) ? null : NotesBox.Text;
 
         return Shipment;
@@ -136,21 +148,23 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         }
 
         // Fuzzy search: matches if characters appear in order
-        var filtered = _allParts.Where(part =>
-        {
-            var partNumber = part.PartNumber.ToLower();
-            int searchIndex = 0;
-
-            foreach (char c in partNumber)
+        var filtered = _allParts
+            .Where(part =>
             {
-                if (searchIndex < searchText.Length && c == searchText[searchIndex])
-                {
-                    searchIndex++;
-                }
-            }
+                var partNumber = part.PartNumber.ToLower();
+                int searchIndex = 0;
 
-            return searchIndex == searchText.Length || partNumber.Contains(searchText);
-        }).ToList();
+                foreach (char c in partNumber)
+                {
+                    if (searchIndex < searchText.Length && c == searchText[searchIndex])
+                    {
+                        searchIndex++;
+                    }
+                }
+
+                return searchIndex == searchText.Length || partNumber.Contains(searchText);
+            })
+            .ToList();
 
         AddPartListView.ItemsSource = filtered;
     }
@@ -169,7 +183,11 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         }
 
         // Validate skid count
-        if (!int.TryParse(AddPartQuantityBox.Text, out int skidCount) || skidCount < 1 || skidCount > 99)
+        if (
+            !int.TryParse(AddPartQuantityBox.Text, out int skidCount)
+            || skidCount < 1
+            || skidCount > 99
+        )
         {
             AddPartErrorMessage.Text = "Received skid count must be a number between 1 and 99.";
             AddPartErrorMessage.Visibility = Visibility.Visible;
@@ -177,9 +195,14 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         }
 
         // Check for duplicate
-        if (Lines.Any(p => p.PartNumber.Equals(selectedPart.PartNumber, StringComparison.OrdinalIgnoreCase)))
+        if (
+            Lines.Any(p =>
+                p.PartNumber.Equals(selectedPart.PartNumber, StringComparison.OrdinalIgnoreCase)
+            )
+        )
         {
-            AddPartErrorMessage.Text = $"Part {selectedPart.PartNumber} is already in this shipment. Remove it first to update the quantity.";
+            AddPartErrorMessage.Text =
+                $"Part {selectedPart.PartNumber} is already in this shipment. Remove it first to update the quantity.";
             AddPartErrorMessage.Visibility = Visibility.Visible;
             return;
         }
@@ -196,7 +219,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             CalculatedPieceCount = calculatedPieces,
             HasDiscrepancy = false,
             ExpectedSkidCount = null,
-            DiscrepancyNote = string.Empty
+            DiscrepancyNote = string.Empty,
         };
 
         Lines.Add(newLine);
@@ -230,7 +253,8 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         if (Lines.Count <= 1)
         {
             ValidationErrorBar.Title = "Cannot Remove Part";
-            ValidationErrorBar.Message = "A shipment must have at least one part. Add another part before removing this one.";
+            ValidationErrorBar.Message =
+                "A shipment must have at least one part. Add another part before removing this one.";
             ValidationErrorBar.IsOpen = true;
             return;
         }
@@ -241,7 +265,8 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         // Show success message briefly
         ValidationErrorBar.Severity = InfoBarSeverity.Success;
         ValidationErrorBar.Title = "Part Removed";
-        ValidationErrorBar.Message = $"{selectedLine.PartNumber} has been removed from the shipment.";
+        ValidationErrorBar.Message =
+            $"{selectedLine.PartNumber} has been removed from the shipment.";
         ValidationErrorBar.IsOpen = true;
 
         // Auto-hide success message after 3 seconds
@@ -274,14 +299,14 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             Header = "Expected Skids",
             Minimum = 1,
             SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
-            Value = line.ExpectedSkidCount ?? 1
+            Value = line.ExpectedSkidCount ?? 1,
         };
 
         var noteBox = new TextBox
         {
             Header = "Discrepancy Note",
             PlaceholderText = "Explain discrepancy",
-            Text = line.DiscrepancyNote ?? string.Empty
+            Text = line.DiscrepancyNote ?? string.Empty,
         };
 
         var panel = new StackPanel { Spacing = 12 };
@@ -295,7 +320,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             PrimaryButtonText = "Save",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
         };
 
         var result = await dialog.ShowAsync();
@@ -328,73 +353,88 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
 
         var content = new StackPanel { Spacing = 12 };
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Part: {line.PartNumber}",
-            FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-            FontSize = 16
-        });
+        content.Children.Add(
+            new TextBlock
+            {
+                Text = $"Part: {line.PartNumber}",
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                FontSize = 16,
+            }
+        );
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Received Skids: {line.ReceivedSkidCount}",
-            FontSize = 14
-        });
+        content.Children.Add(
+            new TextBlock { Text = $"Received Skids: {line.ReceivedSkidCount}", FontSize = 14 }
+        );
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Expected Skids: {line.ExpectedSkidCount:F2}",
-            FontSize = 14
-        });
+        content.Children.Add(
+            new TextBlock { Text = $"Expected Skids: {line.ExpectedSkidCount:F2}", FontSize = 14 }
+        );
 
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Received Pieces: {line.CalculatedPieceCount}",
-            FontSize = 14
-        });
+        content.Children.Add(
+            new TextBlock { Text = $"Received Pieces: {line.CalculatedPieceCount}", FontSize = 14 }
+        );
 
         if (line.ExpectedPieceCount.HasValue)
         {
-            content.Children.Add(new TextBlock
-            {
-                Text = $"Expected Pieces: {line.ExpectedPieceCount.Value}",
-                FontSize = 14
-            });
+            content.Children.Add(
+                new TextBlock
+                {
+                    Text = $"Expected Pieces: {line.ExpectedPieceCount.Value}",
+                    FontSize = 14,
+                }
+            );
 
             if (line.PieceDifference.HasValue)
             {
                 var diff = line.PieceDifference.Value;
                 var diffText = diff > 0 ? $"+{diff}" : diff.ToString();
-                content.Children.Add(new TextBlock
-                {
-                    Text = $"Difference: {diffText} pieces",
-                    FontSize = 14,
-                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) :
-                                 diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) :
-                                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
-                });
+                content.Children.Add(
+                    new TextBlock
+                    {
+                        Text = $"Difference: {diffText} pieces",
+                        FontSize = 14,
+                        FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                        Foreground =
+                            diff < 0
+                                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                                    Microsoft.UI.Colors.Green
+                                )
+                            : diff > 0
+                                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                                    Microsoft.UI.Colors.Red
+                                )
+                            : new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                                Microsoft.UI.Colors.Green
+                            ),
+                    }
+                );
             }
         }
 
         if (!string.IsNullOrWhiteSpace(line.DiscrepancyNote))
         {
-            content.Children.Add(new TextBlock
-            {
-                Text = "Note:",
-                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                Margin = new Thickness(0, 8, 0, 4),
-                FontSize = 14
-            });
+            content.Children.Add(
+                new TextBlock
+                {
+                    Text = "Note:",
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                    Margin = new Thickness(0, 8, 0, 4),
+                    FontSize = 14,
+                }
+            );
 
-            content.Children.Add(new TextBox
-            {
-                Text = line.DiscrepancyNote,
-                IsReadOnly = true,
-                TextWrapping = TextWrapping.Wrap,
-                MinHeight = 60,
-                Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent)
-            });
+            content.Children.Add(
+                new TextBox
+                {
+                    Text = line.DiscrepancyNote,
+                    IsReadOnly = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    MinHeight = 60,
+                    Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Microsoft.UI.Colors.Transparent
+                    ),
+                }
+            );
         }
 
         var dialog = new ContentDialog
@@ -403,7 +443,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             Content = content,
             CloseButtonText = "Close",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
         };
 
         await dialog.ShowAsync();
@@ -423,7 +463,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             PrimaryButtonText = "Remove",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
         };
 
         var confirmResult = await confirmDialog.ShowAsync();

@@ -40,7 +40,9 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
     /// Raised on completion (success or cancellation) so the Host can navigate to the
     /// Summary view. The payload is the completed rows collection.
     /// </summary>
-    public Action<IReadOnlyList<Model_BulkInventoryTransaction>>? RequestNavigateToSummary { get; set; }
+    public Action<
+        IReadOnlyList<Model_BulkInventoryTransaction>
+    >? RequestNavigateToSummary { get; set; }
 
     // ── Observable state ──────────────────────────────────────────────────────
 
@@ -61,7 +63,8 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
         IService_MySQL_BulkInventory bulkService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
+        IService_Notification notificationService
+    )
         : base(errorHandler, logger, notificationService)
     {
         _automation = automation;
@@ -85,8 +88,7 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
         _logger.LogInfo($"Push: StartPushAsync called with {rows.Count} total rows.");
 
         // ── Consolidation ─────────────────────────────────────────────────────
-        var consolidated = rows
-            .Where(r => r.Status == Enum_BulkInventoryStatus.Pending)
+        var consolidated = rows.Where(r => r.Status == Enum_BulkInventoryStatus.Pending)
             .GroupBy(r => (r.PartId, r.FromLocation, r.ToLocation, r.TransactionType))
             .Select(g =>
             {
@@ -108,7 +110,7 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
                     TransactionType = first.TransactionType,
                     Status = Enum_BulkInventoryStatus.Pending,
                     CreatedByUser = first.CreatedByUser,
-                    CreatedAt = first.CreatedAt
+                    CreatedAt = first.CreatedAt,
                 };
             })
             .ToList();
@@ -120,7 +122,9 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
             return;
         }
 
-        _logger.LogInfo($"Push: Consolidated to {consolidated.Count} unique row(s). Starting automation loop.");
+        _logger.LogInfo(
+            $"Push: Consolidated to {consolidated.Count} unique row(s). Starting automation loop."
+        );
 
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
@@ -157,7 +161,10 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
                         _skipCurrentRow = false;
                         row.Status = Enum_BulkInventoryStatus.Skipped;
                         if (row.Id > 0)
-                            await _bulkService.CompleteRowAsync(row.Id, Enum_BulkInventoryStatus.Skipped);
+                            await _bulkService.CompleteRowAsync(
+                                row.Id,
+                                Enum_BulkInventoryStatus.Skipped
+                            );
                         ProcessedCount++;
                         UpdateOverlayMessage(row, "Skipped (F6)");
                         continue;
@@ -220,7 +227,8 @@ public partial class ViewModel_BulkInventory_Push : ViewModel_Shared_Base
 
     private void UpdateOverlayMessage(Model_BulkInventoryTransaction row, string statusText)
     {
-        OverlayStatusMessage = $"[{ProcessedCount + 1}/{TotalCount}]  " +
-                               $"{row.PartId}  {row.FromLocation} → {row.ToLocation}  — {statusText}";
+        OverlayStatusMessage =
+            $"[{ProcessedCount + 1}/{TotalCount}]  "
+            + $"{row.PartId}  {row.FromLocation} → {row.ToLocation}  — {statusText}";
     }
 }

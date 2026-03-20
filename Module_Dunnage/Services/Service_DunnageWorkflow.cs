@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
@@ -31,7 +31,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_ErrorHandler errorHandler,
-            IService_ViewModelRegistry viewModelRegistry)
+            IService_ViewModelRegistry viewModelRegistry
+        )
         {
             _dunnageService = dunnageService;
             _sessionManager = sessionManager;
@@ -102,7 +103,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.TypeSelection:
                         if (CurrentSession.SelectedTypeId <= 0)
                         {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Please select a dunnage type." });
+                            return Task.FromResult(
+                                new Model_WorkflowStepResult
+                                {
+                                    IsSuccess = false,
+                                    ErrorMessage = "Please select a dunnage type.",
+                                }
+                            );
                         }
                         GoToStep(Enum_DunnageWorkflowStep.PartSelection);
                         break;
@@ -110,7 +117,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.PartSelection:
                         if (CurrentSession.SelectedPart == null)
                         {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Please select a part." });
+                            return Task.FromResult(
+                                new Model_WorkflowStepResult
+                                {
+                                    IsSuccess = false,
+                                    ErrorMessage = "Please select a part.",
+                                }
+                            );
                         }
                         GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
                         break;
@@ -118,7 +131,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.QuantityEntry:
                         if (CurrentSession.Quantity <= 0)
                         {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Quantity must be greater than zero." });
+                            return Task.FromResult(
+                                new Model_WorkflowStepResult
+                                {
+                                    IsSuccess = false,
+                                    ErrorMessage = "Quantity must be greater than zero.",
+                                }
+                            );
                         }
                         GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
                         break;
@@ -129,15 +148,30 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         break;
 
                     case Enum_DunnageWorkflowStep.Review:
-                        return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Already at Review step. Use Save to finish." });
+                        return Task.FromResult(
+                            new Model_WorkflowStepResult
+                            {
+                                IsSuccess = false,
+                                ErrorMessage = "Already at Review step. Use Save to finish.",
+                            }
+                        );
                 }
 
-                return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = true, TargetStep = CurrentStep });
+                return Task.FromResult(
+                    new Model_WorkflowStepResult { IsSuccess = true, TargetStep = CurrentStep }
+                );
             }
             catch (Exception ex)
             {
-                _errorHandler.HandleErrorAsync("Error advancing step", Enum_ErrorSeverity.Error, ex, true);
-                return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = ex.Message });
+                _errorHandler.HandleErrorAsync(
+                    "Error advancing step",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
+                return Task.FromResult(
+                    new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = ex.Message }
+                );
             }
         }
 
@@ -145,11 +179,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             // If navigating to TypeSelection from a mid-workflow step (not normal back-navigation)
             // clear accumulated session loads so stale data from a previous run is not shown at Review.
-            if (step == Enum_DunnageWorkflowStep.TypeSelection
+            if (
+                step == Enum_DunnageWorkflowStep.TypeSelection
                 && CurrentStep != Enum_DunnageWorkflowStep.ModeSelection
                 && CurrentStep != Enum_DunnageWorkflowStep.PartSelection
                 && CurrentStep != Enum_DunnageWorkflowStep.QuantityEntry
-                && CurrentStep != Enum_DunnageWorkflowStep.DetailsEntry)
+                && CurrentStep != Enum_DunnageWorkflowStep.DetailsEntry
+            )
             {
                 ClearSession();
             }
@@ -162,7 +198,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             try
             {
-                var loads = new System.Collections.Generic.List<Model_DunnageLoad>(CurrentSession.Loads);
+                var loads = new System.Collections.Generic.List<Model_DunnageLoad>(
+                    CurrentSession.Loads
+                );
 
                 if (loads.Count == 0)
                 {
@@ -173,7 +211,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     }
                     else
                     {
-                        return new Model_SaveResult { IsSuccess = false, ErrorMessage = "No data to save." };
+                        return new Model_SaveResult
+                        {
+                            IsSuccess = false,
+                            ErrorMessage = "No data to save.",
+                        };
                     }
                 }
 
@@ -183,12 +225,17 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 {
                     IsSuccess = dbResult.IsSuccess,
                     ErrorMessage = dbResult.ErrorMessage,
-                    RecordsSaved = dbResult.IsSuccess ? loads.Count : 0
+                    RecordsSaved = dbResult.IsSuccess ? loads.Count : 0,
                 };
             }
             catch (Exception ex)
             {
-                await _errorHandler.HandleErrorAsync("Error saving to database", Enum_ErrorSeverity.Error, ex, true);
+                await _errorHandler.HandleErrorAsync(
+                    "Error saving to database",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
                 return new Model_SaveResult { IsSuccess = false, ErrorMessage = ex.Message };
             }
         }
@@ -212,18 +259,31 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 var result = await _dunnageService.ClearLabelDataAsync();
                 if (result.IsSuccess)
                 {
-                    StatusMessageRaised?.Invoke(this, $"Label data cleared — {result.Data} row(s) archived");
+                    StatusMessageRaised?.Invoke(
+                        this,
+                        $"Label data cleared — {result.Data} row(s) archived"
+                    );
                 }
                 else
                 {
-                    StatusMessageRaised?.Invoke(this, $"Clear Label Data failed: {result.ErrorMessage}");
+                    StatusMessageRaised?.Invoke(
+                        this,
+                        $"Clear Label Data failed: {result.ErrorMessage}"
+                    );
                 }
                 return result;
             }
             catch (Exception ex)
             {
-                await _errorHandler.HandleErrorAsync("Error clearing label data", Enum_ErrorSeverity.Error, ex, true);
-                return Model_Dao_Result_Factory.Failure<int>($"Error clearing label data: {ex.Message}");
+                await _errorHandler.HandleErrorAsync(
+                    "Error clearing label data",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
+                return Model_Dao_Result_Factory.Failure<int>(
+                    $"Error clearing label data: {ex.Message}"
+                );
             }
         }
 
@@ -256,17 +316,26 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         TypeId = CurrentSession.SelectedTypeId,
                         Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
                         ReceivedDate = DateTime.Now,
-                        CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown"
+                        CreatedBy =
+                            _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
                     };
 
                     CurrentSession.Loads.Add(load);
-                    _logger.LogInfo($"Added load to session: Part {load.PartId}, Qty {load.Quantity}", "DunnageWorkflow");
+                    _logger.LogInfo(
+                        $"Added load to session: Part {load.PartId}, Qty {load.Quantity}",
+                        "DunnageWorkflow"
+                    );
                     StatusMessageRaised?.Invoke(this, $"Added load to session");
                 }
             }
             catch (Exception ex)
             {
-                _errorHandler.HandleErrorAsync("Error adding load to session", Enum_ErrorSeverity.Medium, ex, false);
+                _errorHandler.HandleErrorAsync(
+                    "Error adding load to session",
+                    Enum_ErrorSeverity.Medium,
+                    ex,
+                    false
+                );
             }
         }
 
@@ -295,11 +364,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 TypeId = CurrentSession.SelectedTypeId,
                 Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
                 ReceivedDate = DateTime.Now,
-                CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown"
+                CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
             };
         }
     }
 }
-
-
-

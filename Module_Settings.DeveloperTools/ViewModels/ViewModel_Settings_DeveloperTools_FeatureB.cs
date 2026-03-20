@@ -8,8 +8,7 @@ public sealed partial class ViewModel_Settings_DeveloperTools_FeatureB : ViewMod
     public ViewModel_Settings_DeveloperTools_FeatureB(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService)
-        : base(errorHandler, logger, notificationService)
-    {
-    }
+        IService_Notification notificationService
+    )
+        : base(errorHandler, logger, notificationService) { }
 }

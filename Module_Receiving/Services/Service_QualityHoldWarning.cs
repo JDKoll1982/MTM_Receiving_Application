@@ -1,10 +1,10 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services;
 
@@ -21,7 +21,8 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
     public Service_QualityHoldWarning(
         IService_Window windowService,
         IService_LoggingUtility logger,
-        IService_ReceivingSettings receivingSettings)
+        IService_ReceivingSettings receivingSettings
+    )
     {
         _windowService = windowService;
         _logger = logger;
@@ -37,8 +38,8 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
         }
 
         // Check for restricted part patterns: MMFSR or MMCSR
-        return partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase) ||
-               partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase);
+        return partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase)
+            || partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <inheritdoc/>
@@ -69,16 +70,17 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
         }
 
         // Build warning message
-        var message = $"⚠️ QUALITY HOLD REQUIRED ⚠️\n\n" +
-                     $"ACKNOWLEDGMENT 1 of 2\n\n" +
-                     $"Part ID: {partID}\n" +
-                     $"Type: {restrictionType}\n\n" +
-                     $"IMMEDIATE ACTION REQUIRED:\n" +
-                     $"• Contact Quality NOW\n" +
-                     $"• Quality MUST inspect and accept this load\n" +
-                     $"• DO NOT sign any paperwork until Quality accepts\n\n" +
-                     $"You will be asked to confirm again before saving.\n" +
-                     $"This is a critical quality control checkpoint.";
+        var message =
+            $"⚠️ QUALITY HOLD REQUIRED ⚠️\n\n"
+            + $"ACKNOWLEDGMENT 1 of 2\n\n"
+            + $"Part ID: {partID}\n"
+            + $"Type: {restrictionType}\n\n"
+            + $"IMMEDIATE ACTION REQUIRED:\n"
+            + $"• Contact Quality NOW\n"
+            + $"• Quality MUST inspect and accept this load\n"
+            + $"• DO NOT sign any paperwork until Quality accepts\n\n"
+            + $"You will be asked to confirm again before saving.\n"
+            + $"This is a critical quality control checkpoint.";
 
         var dialog = new ContentDialog
         {
@@ -87,24 +89,26 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
             {
                 Text = message,
                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-                FontSize = 14
+                FontSize = 14,
             },
             PrimaryButtonText = "I Understand - Will Contact Quality",
             CloseButtonText = "Cancel Entry",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
         };
 
         var result = await dialog.ShowAsync();
-        
+
         bool acknowledged = result == ContentDialogResult.Primary;
-        
+
         // DO NOT set IsQualityHoldAcknowledged here - this is just the first warning
         // The user must acknowledge again at save time for dual confirmation
         // Only mark as "warned" but not "acknowledged" until final save confirmation
-        
-        _logger.LogInfo($"Quality hold warning for part {partID}: {(acknowledged ? "Acknowledged" : "Cancelled")}");
-        
+
+        _logger.LogInfo(
+            $"Quality hold warning for part {partID}: {(acknowledged ? "Acknowledged" : "Cancelled")}"
+        );
+
         return acknowledged;
     }
 }

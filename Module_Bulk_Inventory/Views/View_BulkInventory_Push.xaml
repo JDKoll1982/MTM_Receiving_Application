@@ -6,8 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="900"
-    d:DesignHeight="600">
-
+    d:DesignHeight="600"
+>
     <!--
         Full-screen dark overlay shown while Visual UI Automation is running.
         ViewModel: ViewModel_BulkInventory_Push (set via ViewModel property after DI resolution)
@@ -17,12 +17,13 @@
     -->
 
     <Grid Background="{ThemeResource SystemFillColorBackgroundBrush}">
-        <Grid HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              MinWidth="580"
-              Padding="40"
-              RowSpacing="24">
-
+        <Grid
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            MinWidth="580"
+            Padding="40"
+            RowSpacing="24"
+        >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -32,33 +33,41 @@
             </Grid.RowDefinitions>
 
             <!-- Title -->
-            <TextBlock Grid.Row="0"
-                       Text="Bulk Inventory Push"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       HorizontalAlignment="Center" />
+            <TextBlock
+                Grid.Row="0"
+                Text="Bulk Inventory Push"
+                Style="{StaticResource TitleTextBlockStyle}"
+                HorizontalAlignment="Center"
+            />
 
             <!-- Current row status -->
-            <TextBlock Grid.Row="1"
-                       Text="{x:Bind ViewModel.OverlayStatusMessage, Mode=OneWay}"
-                       Style="{StaticResource BodyTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       TextWrapping="Wrap"
-                       MaxWidth="500" />
+            <TextBlock
+                Grid.Row="1"
+                Text="{x:Bind ViewModel.OverlayStatusMessage, Mode=OneWay}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                HorizontalAlignment="Center"
+                TextWrapping="Wrap"
+                MaxWidth="500"
+            />
 
             <!-- Progress ring (visible while automation is running) -->
-            <ProgressBar Grid.Row="2"
-                         Minimum="0"
-                         Maximum="{x:Bind ViewModel.TotalCount, Mode=OneWay}"
-                         Value="{x:Bind ViewModel.ProcessedCount, Mode=OneWay}"
-                         IsIndeterminate="{x:Bind ViewModel.IsAutomationRunning, Mode=OneWay}"
-                         HorizontalAlignment="Stretch"
-                         MinWidth="500" />
+            <ProgressBar
+                Grid.Row="2"
+                Minimum="0"
+                Maximum="{x:Bind ViewModel.TotalCount, Mode=OneWay}"
+                Value="{x:Bind ViewModel.ProcessedCount, Mode=OneWay}"
+                IsIndeterminate="{x:Bind ViewModel.IsAutomationRunning, Mode=OneWay}"
+                HorizontalAlignment="Stretch"
+                MinWidth="500"
+            />
 
             <!-- Row counter -->
-            <StackPanel Grid.Row="3"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Spacing="8">
+            <StackPanel
+                Grid.Row="3"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Spacing="8"
+            >
                 <TextBlock Text="{x:Bind ViewModel.ProcessedCount, Mode=OneWay}" />
                 <TextBlock Text="/" />
                 <TextBlock Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}" />
@@ -66,18 +75,23 @@
             </StackPanel>
 
             <!-- Action buttons -->
-            <StackPanel Grid.Row="4"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Spacing="12">
+            <StackPanel
+                Grid.Row="4"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Spacing="12"
+            >
+                <Button
+                    Content="Skip Row (F6)"
+                    Click="SkipRow_Click"
+                    IsEnabled="{x:Bind ViewModel.IsAutomationRunning, Mode=OneWay}"
+                />
 
-                <Button Content="Skip Row (F6)"
-                        Click="SkipRow_Click"
-                        IsEnabled="{x:Bind ViewModel.IsAutomationRunning, Mode=OneWay}" />
-
-                <Button Content="Cancel (Esc)"
-                        Command="{x:Bind ViewModel.CancelPushCommand}"
-                        IsEnabled="{x:Bind ViewModel.IsAutomationRunning, Mode=OneWay}" />
+                <Button
+                    Content="Cancel (Esc)"
+                    Command="{x:Bind ViewModel.CancelPushCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsAutomationRunning, Mode=OneWay}"
+                />
             </StackPanel>
         </Grid>
     </Grid>

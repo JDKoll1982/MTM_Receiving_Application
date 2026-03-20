@@ -1,11 +1,11 @@
+using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Extensions.DependencyInjection;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels;
-using System;
 
 namespace MTM_Receiving_Application.Module_Settings.DeveloperTools.Views;
 
@@ -38,7 +38,9 @@ public sealed partial class View_Settings_DeveloperTools_NavigationHub : Page
         return Frame;
     }
 
-    public View_Settings_DeveloperTools_NavigationHub(ViewModel_Settings_DeveloperTools_NavigationHub viewModel)
+    public View_Settings_DeveloperTools_NavigationHub(
+        ViewModel_Settings_DeveloperTools_NavigationHub viewModel
+    )
     {
         InitializeComponent();
         ViewModel = viewModel;
@@ -77,32 +79,41 @@ public sealed partial class View_Settings_DeveloperTools_NavigationHub : Page
         try
         {
             var app = (App)Application.Current;
-            var hostField = typeof(App).GetField("_host",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var hostField = typeof(App).GetField(
+                "_host",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+            );
 
             if (hostField?.GetValue(app) is not object host)
             {
                 return;
             }
 
-            var servicesProperty = host.GetType().GetProperty("Services",
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            var servicesProperty = host.GetType()
+                .GetProperty(
+                    "Services",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
+                );
 
             if (servicesProperty?.GetValue(host) is IServiceProvider services)
             {
                 if (ActivatorUtilities.CreateInstance(services, pageType) is Page page)
                 {
                     NavigationFrameControl.Content = page;
-                    
-                    
+
                     // Update the header in the parent CoreWindow with the specific page type
                     try
                     {
                         var coreWindow = View_Settings_CoreWindow.GetInstance();
                         if (coreWindow != null)
                         {
-                            var method = coreWindow.GetType().GetMethod("UpdateHeaderForPageType",
-                                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                            var method = coreWindow
+                                .GetType()
+                                .GetMethod(
+                                    "UpdateHeaderForPageType",
+                                    System.Reflection.BindingFlags.Public
+                                        | System.Reflection.BindingFlags.Instance
+                                );
                             method?.Invoke(coreWindow, new object[] { pageType });
                         }
                     }
@@ -112,16 +123,26 @@ public sealed partial class View_Settings_DeveloperTools_NavigationHub : Page
         }
         catch (Exception ex)
         {
-            _logger?.LogError($"Navigation failed for page {pageType.Name}: {ex.Message}", ex, "Settings.Navigation");
-            System.Diagnostics.Debug.WriteLine($"Navigation to {pageType.Name} failed: {ex.Message}");
+            _logger?.LogError(
+                $"Navigation failed for page {pageType.Name}: {ex.Message}",
+                ex,
+                "Settings.Navigation"
+            );
+            System.Diagnostics.Debug.WriteLine(
+                $"Navigation to {pageType.Name} failed: {ex.Message}"
+            );
         }
     }
 
     private void OnStep0Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(0);
+
     private void OnStep1Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(1);
+
     private void OnStep2Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(2);
+
     private void OnStep3Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(3);
+
     private void OnStep4Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(4);
+
     private void OnStep5Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(5);
 }
-

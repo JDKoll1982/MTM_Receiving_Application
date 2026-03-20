@@ -1,9 +1,9 @@
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Services.Database;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Services;
@@ -21,7 +21,7 @@ public class Service_InforVisualConnect_OutsideService_Tests
     public Service_InforVisualConnect_OutsideService_Tests()
     {
         // Constructor only stores the connection string; no connection is opened until a query runs.
-        _fakeDao = new Dao_InforVisualConnection("Server=172.16.1.104;Database=FAKE;");
+        _fakeDao = new Dao_InforVisualConnection("Server=localhost;Database=FAKE;");
         _mockLogger = new Mock<IService_LoggingUtility>();
     }
 
@@ -31,9 +31,15 @@ public class Service_InforVisualConnect_OutsideService_Tests
     [InlineData("")]
     [InlineData("   ")]
     [InlineData(null)]
-    public async Task GetOutsideServiceHistoryByPartAsync_EmptyOrNullPartNumber_ReturnsFailure(string? partNumber)
+    public async Task GetOutsideServiceHistoryByPartAsync_EmptyOrNullPartNumber_ReturnsFailure(
+        string? partNumber
+    )
     {
-        var service = new Service_InforVisualConnect(_fakeDao, useMockData: true, _mockLogger.Object);
+        var service = new Service_InforVisualConnect(
+            _fakeDao,
+            useMockData: true,
+            _mockLogger.Object
+        );
 
         var result = await service.GetOutsideServiceHistoryByPartAsync(partNumber!);
 
@@ -46,7 +52,11 @@ public class Service_InforVisualConnect_OutsideService_Tests
     [Fact]
     public async Task GetOutsideServiceHistoryByPartAsync_MockDataMode_ReturnsSampleRecords()
     {
-        var service = new Service_InforVisualConnect(_fakeDao, useMockData: true, _mockLogger.Object);
+        var service = new Service_InforVisualConnect(
+            _fakeDao,
+            useMockData: true,
+            _mockLogger.Object
+        );
 
         var result = await service.GetOutsideServiceHistoryByPartAsync("PART-001");
 
@@ -59,13 +69,21 @@ public class Service_InforVisualConnect_OutsideService_Tests
     [Fact]
     public async Task GetOutsideServiceHistoryByPartAsync_MockDataMode_LogsMockMessage()
     {
-        var service = new Service_InforVisualConnect(_fakeDao, useMockData: true, _mockLogger.Object);
+        var service = new Service_InforVisualConnect(
+            _fakeDao,
+            useMockData: true,
+            _mockLogger.Object
+        );
 
         await service.GetOutsideServiceHistoryByPartAsync("PART-LOG");
 
         _mockLogger.Verify(
-            l => l.LogInfo(It.Is<string>(m => m.Contains("MOCK DATA MODE") && m.Contains("PART-LOG"))),
-            Times.Once);
+            l =>
+                l.LogInfo(
+                    It.Is<string>(m => m.Contains("MOCK DATA MODE") && m.Contains("PART-LOG"))
+                ),
+            Times.Once
+        );
     }
 
     [Fact]

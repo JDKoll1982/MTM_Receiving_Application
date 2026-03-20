@@ -8,52 +8,56 @@
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
-    Width="400">
-
+    Width="400"
+>
     <StackPanel Spacing="16" Padding="8">
         <!-- Instructions -->
-        <TextBlock 
+        <TextBlock
             Text="Please enter your credentials to continue"
             TextWrapping="Wrap"
-            Style="{StaticResource BodyTextBlockStyle}"/>
+            Style="{StaticResource BodyTextBlockStyle}"
+        />
 
         <!-- Username Field -->
         <StackPanel Spacing="4">
-            <TextBlock Text="Username" Style="{StaticResource CaptionTextBlockStyle}"/>
-            <TextBox 
+            <TextBlock Text="Username" Style="{StaticResource CaptionTextBlockStyle}" />
+            <TextBox
                 x:Name="UsernameTextBox"
                 PlaceholderText="Enter your username"
                 MaxLength="50"
-                TabIndex="0"/>
+                TabIndex="0"
+            />
         </StackPanel>
 
         <!-- PIN Field -->
         <StackPanel Spacing="4">
-            <TextBlock Text="4-Digit PIN" Style="{StaticResource CaptionTextBlockStyle}"/>
-            <PasswordBox 
+            <TextBlock Text="4-Digit PIN" Style="{StaticResource CaptionTextBlockStyle}" />
+            <PasswordBox
                 x:Name="PinPasswordBox"
                 PlaceholderText="Enter 4-digit PIN"
                 MaxLength="4"
                 TabIndex="1"
-                PasswordRevealMode="Peek"/>
+                PasswordRevealMode="Peek"
+            />
         </StackPanel>
 
         <!-- Attempt Counter (Hidden initially, shown after first failure) -->
-        <TextBlock 
+        <TextBlock
             x:Name="AttemptCounterTextBlock"
             Foreground="Gold"
             Visibility="Collapsed"
             TextWrapping="Wrap"
-            Style="{StaticResource CaptionTextBlockStyle}"/>
+            Style="{StaticResource CaptionTextBlockStyle}"
+        />
 
         <!-- Error InfoBar -->
-        <InfoBar 
+        <InfoBar
             x:Name="ErrorInfoBar"
             Severity="Error"
             IsOpen="False"
             IsClosable="True"
             Title="Login Failed"
-            Message="Invalid username or PIN. Please try again."/>
-
+            Message="Invalid username or PIN. Please try again."
+        />
     </StackPanel>
 </ContentDialog>

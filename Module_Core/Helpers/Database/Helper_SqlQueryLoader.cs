@@ -22,14 +22,21 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
             {
                 // Get the executing assembly
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = $"MTM_Receiving_Application.Database.InforVisualScripts.Queries.{resourcePath}";
+                var resourceName =
+                    $"MTM_Receiving_Application.Database.InforVisualScripts.Queries.{resourcePath}";
 
                 using var stream = assembly.GetManifestResourceStream(resourceName);
                 if (stream == null)
                 {
                     // Fallback: Try to load from file system during development
                     var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    var filePath = Path.Combine(baseDir, "Database", "InforVisualScripts", "Queries", resourcePath);
+                    var filePath = Path.Combine(
+                        baseDir,
+                        "Database",
+                        "InforVisualScripts",
+                        "Queries",
+                        resourcePath
+                    );
 
                     if (File.Exists(filePath))
                     {
@@ -37,17 +44,27 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
                     }
 
                     // Try relative to solution root
-                    var solutionRoot = Directory.GetParent(baseDir)?.Parent?.Parent?.Parent?.FullName;
+                    var solutionRoot = Directory
+                        .GetParent(baseDir)
+                        ?.Parent?.Parent?.Parent?.FullName;
                     if (solutionRoot != null)
                     {
-                        filePath = Path.Combine(solutionRoot, "Database", "InforVisualScripts", "Queries", resourcePath);
+                        filePath = Path.Combine(
+                            solutionRoot,
+                            "Database",
+                            "InforVisualScripts",
+                            "Queries",
+                            resourcePath
+                        );
                         if (File.Exists(filePath))
                         {
                             return File.ReadAllText(filePath);
                         }
                     }
 
-                    throw new FileNotFoundException($"SQL query file not found: {resourcePath}. Resource name attempted: {resourceName}");
+                    throw new FileNotFoundException(
+                        $"SQL query file not found: {resourcePath}. Resource name attempted: {resourceName}"
+                    );
                 }
 
                 using var reader = new StreamReader(stream);
@@ -55,7 +72,10 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to load SQL query from {resourcePath}: {ex.Message}", ex);
+                throw new InvalidOperationException(
+                    $"Failed to load SQL query from {resourcePath}: {ex.Message}",
+                    ex
+                );
             }
         }
 
@@ -138,12 +158,16 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
                 }
 
                 // Look for SELECT, WITH, INSERT, UPDATE, DELETE as query start
-                if (!foundQueryStart &&
-                    (trimmedLine.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) ||
-                     trimmedLine.StartsWith("WITH", StringComparison.OrdinalIgnoreCase) ||
-                     trimmedLine.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase) ||
-                     trimmedLine.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase) ||
-                     trimmedLine.StartsWith("DELETE", StringComparison.OrdinalIgnoreCase)))
+                if (
+                    !foundQueryStart
+                    && (
+                        trimmedLine.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase)
+                        || trimmedLine.StartsWith("WITH", StringComparison.OrdinalIgnoreCase)
+                        || trimmedLine.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase)
+                        || trimmedLine.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase)
+                        || trimmedLine.StartsWith("DELETE", StringComparison.OrdinalIgnoreCase)
+                    )
+                )
                 {
                     foundQueryStart = true;
                 }
@@ -170,4 +194,3 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
         }
     }
 }
-

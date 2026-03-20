@@ -29,7 +29,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="loads">Loads to write</param>
         /// <param name="append">Whether to append to existing file (default true)</param>
         /// <exception cref="InvalidOperationException">If write fails</exception>
-        public Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads, bool append = true);
+        public Task WriteToFileAsync(
+            string filePath,
+            List<Model_ReceivingLoad> loads,
+            bool append = true
+        );
 
         /// <summary>
         /// Reads receiving loads from an XLS file.

@@ -2,172 +2,320 @@
     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_Workflow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
-    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
-    mc:Ignorable="d">
-
+    mc:Ignorable="d"
+>
     <Page.Resources>
-        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
-        <converters:Converter_BoolToString x:Key="BoolToStringConverter"/>
-        <converters:Converter_StringFormat x:Key="StringFormatConverter"/>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_BoolToString x:Key="BoolToStringConverter" />
+        <converters:Converter_StringFormat x:Key="StringFormatConverter" />
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Content Area -->
-        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Margin="16,12,16,16">
-            <!-- Mode Selection View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ModeSelectionHost" Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            
-            <!-- Manual Entry View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ManualEntryHost" Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <!--  Content Area  -->
+        <Grid
+            Grid.Row="1"
+            Margin="16,12,16,16"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+        >
+            <!--  Mode Selection View  -->
+            <ContentControl
+                x:Name="ModeSelectionHost"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
 
-            <!-- Edit Mode View -->
-            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="EditModeHost" Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!--  Manual Entry View  -->
+            <ContentControl
+                x:Name="ManualEntryHost"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
 
-            <!-- Guided Wizard Views -->
-            <!-- PO Entry View -->
-            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="POEntryHost" Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <!-- Load Entry View -->
-            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="LoadEntryHost" Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <!-- Weight/Quantity Entry View -->
-            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="WeightQuantityHost" Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <!-- Heat/Lot Entry View -->
-            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="HeatLotHost" Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <!-- Package Type Entry View -->
-            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PackageTypeHost" Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <!-- Review View -->
-            <ContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="ReviewHost" Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            
-            <!-- Saving Progress -->
-            <StackPanel Visibility="{x:Bind ViewModel.IsSavingVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
-                <ProgressRing IsActive="True" Width="64" Height="64"/>
-                <TextBlock Text="{x:Bind ViewModel.SaveProgressMessage, Mode=OneWay}" 
-                           Style="{StaticResource SubtitleTextBlockStyle}"
-                           HorizontalAlignment="Center"/>
-                <ProgressBar Value="{x:Bind ViewModel.SaveProgressValue, Mode=OneWay}" Maximum="100" MinWidth="300" MaxWidth="600" HorizontalAlignment="Stretch"/>
+            <!--  Edit Mode View  -->
+            <ContentControl
+                x:Name="EditModeHost"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+
+            <!--  Guided Wizard Views  -->
+            <!--  PO Entry View  -->
+            <ContentControl
+                x:Name="POEntryHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+            <!--  Load Entry View  -->
+            <ContentControl
+                x:Name="LoadEntryHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+            <!--  Weight/Quantity Entry View  -->
+            <ContentControl
+                x:Name="WeightQuantityHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+            <!--  Heat/Lot Entry View  -->
+            <ContentControl
+                x:Name="HeatLotHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+            <!--  Package Type Entry View  -->
+            <ContentControl
+                x:Name="PackageTypeHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+            <!--  Review View  -->
+            <ContentControl
+                x:Name="ReviewHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
+
+            <!--  Saving Progress  -->
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="16"
+                Visibility="{x:Bind ViewModel.IsSavingVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            >
+                <ProgressRing Width="64" Height="64" IsActive="True" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.SaveProgressMessage, Mode=OneWay}"
+                />
+                <ProgressBar
+                    MinWidth="300"
+                    MaxWidth="600"
+                    HorizontalAlignment="Stretch"
+                    Maximum="100"
+                    Value="{x:Bind ViewModel.SaveProgressValue, Mode=OneWay}"
+                />
             </StackPanel>
 
-            <!-- Completion Summary -->
-            <StackPanel Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="24" MaxWidth="900">
-                
-                <FontIcon Glyph="&#xE930;" FontSize="64" Foreground="{ThemeResource SystemFillColorSuccessBrush}" 
-                          Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <FontIcon Glyph="&#xE783;" FontSize="64" Foreground="{ThemeResource SystemFillColorCriticalBrush}" 
-                          Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+            <!--  Completion Summary  -->
+            <StackPanel
+                MaxWidth="900"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="24"
+                Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            >
+                <FontIcon
+                    FontSize="64"
+                    Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                    Glyph="&#xE930;"
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+                <FontIcon
+                    FontSize="64"
+                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                    Glyph="&#xE783;"
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                />
 
-                <TextBlock Text="{x:Bind ViewModel.CompletionSuccessTitleText, Mode=OneWay}" 
-                           Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"
-                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <TextBlock Text="{x:Bind ViewModel.CompletionFailureTitleText, Mode=OneWay}" 
-                           Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"
-                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.CompletionSuccessTitleText, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.CompletionFailureTitleText, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                />
 
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" HorizontalAlignment="Center">
-                    <Run Text="{x:Bind ViewModel.LastSaveResult.LoadsSaved, Mode=OneWay}"/>
-                    <Run Text="{x:Bind ViewModel.CompletionLoadsSavedSuffixText, Mode=OneWay}"/>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                >
+                    <Run Text="{x:Bind ViewModel.LastSaveResult.LoadsSaved, Mode=OneWay}" />
+                    <Run Text="{x:Bind ViewModel.CompletionLoadsSavedSuffixText, Mode=OneWay}" />
                 </TextBlock>
 
-                <StackPanel Spacing="8" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8">
-                    <TextBlock Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <StackPanel
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    CornerRadius="8"
+                    Spacing="8"
+                >
+                    <TextBlock
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}"
+                    />
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind ViewModel.CompletionXlsFileLabelText, Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionXlsFileLabelText, Mode=OneWay}" />
+                        <TextBlock
+                            Foreground="Green"
+                            Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        />
+                        <TextBlock
+                            Foreground="Red"
+                            Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                        />
                     </StackPanel>
 
-                    <!-- File Path Display -->
-                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.NetworkXLSPath, Mode=OneWay}" 
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               FontSize="12"
-                               TextWrapping="Wrap"
-                               IsTextSelectionEnabled="True"
-                               Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                               Margin="0,4,0,0"/>
+                    <!--  File Path Display  -->
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSelectionEnabled="True"
+                        Text="{x:Bind ViewModel.LastSaveResult.NetworkXLSPath, Mode=OneWay}"
+                        TextWrapping="Wrap"
+                        Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    />
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind ViewModel.CompletionDatabaseLabelText, Mode=OneWay}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionDatabaseLabelText, Mode=OneWay}" />
+                        <TextBlock
+                            Foreground="Green"
+                            Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        />
+                        <TextBlock
+                            Foreground="Red"
+                            Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                        />
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Failure Reason Display -->
-                <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
-                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.XLSFileErrorMessage, Mode=OneWay}" 
-                               Foreground="Red" 
-                               TextWrapping="Wrap"
-                               Visibility="{x:Bind ViewModel.LastSaveResult.XLSFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
-                    <TextBlock Text="{x:Bind ViewModel.LastSaveResult.DatabaseErrorMessage, Mode=OneWay}" 
-                               Foreground="Red" 
-                               TextWrapping="Wrap"
-                               Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                <!--  Failure Reason Display  -->
+                <StackPanel
+                    Spacing="8"
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                >
+                    <TextBlock
+                        Foreground="Red"
+                        Text="{x:Bind ViewModel.LastSaveResult.XLSFileErrorMessage, Mode=OneWay}"
+                        TextWrapping="Wrap"
+                        Visibility="{x:Bind ViewModel.LastSaveResult.XLSFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                    />
+                    <TextBlock
+                        Foreground="Red"
+                        Text="{x:Bind ViewModel.LastSaveResult.DatabaseErrorMessage, Mode=OneWay}"
+                        TextWrapping="Wrap"
+                        Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                    />
                 </StackPanel>
-                
-                
-                <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
-                    <Button Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"/>
-                    <Button Content="{x:Bind ViewModel.CompletionEditSavedEntriesText, Mode=OneWay}"
-                            Command="{x:Bind ViewModel.EditSavedEntriesCommand}"
-                            Visibility="{x:Bind ViewModel.CanEditAfterSave, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                    <Button Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}" Command="{x:Bind ViewModel.ResetXLSCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"/>
+
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="12">
+                    <Button
+                        Command="{x:Bind ViewModel.StartNewEntryCommand}"
+                        Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"
+                    />
+                    <Button
+                        Command="{x:Bind ViewModel.EditSavedEntriesCommand}"
+                        Content="{x:Bind ViewModel.CompletionEditSavedEntriesText, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.CanEditAfterSave, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    />
+                    <Button
+                        Command="{x:Bind ViewModel.ResetXLSCommand}"
+                        Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"
+                    />
                 </StackPanel>
             </StackPanel>
         </Grid>
 
-        <!-- Navigation Buttons -->
+        <!--  Navigation Buttons  -->
         <Grid Grid.Row="2" Margin="24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            
-            <!-- Left-aligned buttons -->
-            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12">
-                <Button Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}" 
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        Background="Transparent" 
-                        BorderBrush="{ThemeResource SystemAccentColor}"/>
-                <Button Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}" 
-                        Command="{x:Bind ViewModel.ResetXLSCommand}" 
-                        Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                        Background="Transparent" 
-                        BorderBrush="Transparent" 
-                        Foreground="Red"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"/>
+
+            <!--  Left-aligned buttons  -->
+            <StackPanel
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                Orientation="Horizontal"
+                Spacing="12"
+            >
+                <Button
+                    Background="Transparent"
+                    BorderBrush="{ThemeResource SystemAccentColor}"
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
+                />
+                <Button
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Command="{x:Bind ViewModel.ResetXLSCommand}"
+                    Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}"
+                    Foreground="Red"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                />
             </StackPanel>
-            
-            <!-- Center help button -->
-            <Button Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Canvas.ZIndex="1000"
-                    HorizontalAlignment="Center"
-                    Click="HelpButton_Click"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Padding="12,8"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
+
+            <!--  Center help button  -->
+            <Button
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Padding="12,8"
+                HorizontalAlignment="Center"
+                Canvas.ZIndex="1000"
+                Click="HelpButton_Click"
+                Style="{StaticResource AccentButtonStyle}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}"
+            >
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE946;" FontSize="16"/>
-                    <TextBlock Text="{x:Bind ViewModel.WorkflowHelpText, Mode=OneWay}"/>
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    <TextBlock Text="{x:Bind ViewModel.WorkflowHelpText, Mode=OneWay}" />
                 </StackPanel>
             </Button>
-            
-            <!-- Right-aligned navigation buttons -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
-                <Button Content="{x:Bind ViewModel.WorkflowBackText, Mode=OneWay}" Command="{x:Bind ViewModel.PreviousStepCommand}"/>
-                <Button Content="{x:Bind ViewModel.WorkflowNextText, Mode=OneWay}" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
+
+            <!--  Right-aligned navigation buttons  -->
+            <StackPanel
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="12"
+            >
+                <Button
+                    Command="{x:Bind ViewModel.PreviousStepCommand}"
+                    Content="{x:Bind ViewModel.WorkflowBackText, Mode=OneWay}"
+                />
+                <Button
+                    Command="{x:Bind ViewModel.NextStepCommand}"
+                    Content="{x:Bind ViewModel.WorkflowNextText, Mode=OneWay}"
+                    Style="{StaticResource AccentButtonStyle}"
+                />
             </StackPanel>
         </Grid>
     </Grid>
 </Page>
-

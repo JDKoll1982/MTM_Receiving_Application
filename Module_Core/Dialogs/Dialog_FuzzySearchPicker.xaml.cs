@@ -40,7 +40,8 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
     public Dialog_FuzzySearchPicker(
         IReadOnlyList<Model_FuzzySearchResult> items,
         string pickerTitle,
-        string? subtitle = null)
+        string? subtitle = null
+    )
     {
         ArgumentNullException.ThrowIfNull(items);
         _allItems = items;
@@ -68,8 +69,9 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
         IEnumerable<Model_FuzzySearchResult> matches = string.IsNullOrEmpty(lower)
             ? _allItems
             : _allItems.Where(i =>
-                i.Label.Contains(lower, StringComparison.OrdinalIgnoreCase) ||
-                (i.Detail?.Contains(lower, StringComparison.OrdinalIgnoreCase) ?? false));
+                i.Label.Contains(lower, StringComparison.OrdinalIgnoreCase)
+                || (i.Detail?.Contains(lower, StringComparison.OrdinalIgnoreCase) ?? false)
+            );
 
         foreach (var item in matches)
         {
@@ -89,7 +91,7 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
         {
             0 => "No matches — try a shorter term",
             1 => "1 match",
-            _ => $"{_filtered.Count} matches"
+            _ => $"{_filtered.Count} matches",
         };
     }
 

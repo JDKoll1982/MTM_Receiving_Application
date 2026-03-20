@@ -28,8 +28,9 @@ public class Dao_SettingsCoreRoles
                 Id = reader.GetInt32(reader.GetOrdinal("id")),
                 RoleName = reader.GetString(reader.GetOrdinal("role_name")),
                 Description = reader.GetString(reader.GetOrdinal("description")),
-                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at"))
-            });
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+            }
+        );
     }
 
     /// <summary>
@@ -39,10 +40,7 @@ public class Dao_SettingsCoreRoles
     /// <returns>Result containing the role or error</returns>
     public Task<Model_Dao_Result<Model_SettingsRole>> GetByNameAsync(string roleName)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "p_role_name", roleName }
-        };
+        var parameters = new Dictionary<string, object> { { "p_role_name", roleName } };
 
         return Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
@@ -52,9 +50,9 @@ public class Dao_SettingsCoreRoles
                 Id = reader.GetInt32(reader.GetOrdinal("id")),
                 RoleName = reader.GetString(reader.GetOrdinal("role_name")),
                 Description = reader.GetString(reader.GetOrdinal("description")),
-                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at"))
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
             },
-            parameters);
+            parameters
+        );
     }
 }
-

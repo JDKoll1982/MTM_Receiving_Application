@@ -27,34 +27,34 @@ public class Dao_DunnageNonPOEntry
         return Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageNonPOEntry>(
             _connectionString,
             "sp_Dunnage_NonPO_GetAll",
-            MapFromReader);
+            MapFromReader
+        );
     }
 
     public Task<Model_Dao_Result> UpsertAsync(string value, string createdBy)
     {
         var parameters = new Dictionary<string, object>
         {
-            { "p_value",      value },
+            { "p_value", value },
             { "p_created_by", createdBy },
         };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Dunnage_NonPO_Upsert",
-            parameters);
+            parameters
+        );
     }
 
     public Task<Model_Dao_Result> DeleteAsync(int id)
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "p_id", id },
-        };
+        var parameters = new Dictionary<string, object> { { "p_id", id } };
 
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Dunnage_NonPO_Delete",
-            parameters);
+            parameters
+        );
     }
 
     private static Model_DunnageNonPOEntry MapFromReader(IDataReader reader)

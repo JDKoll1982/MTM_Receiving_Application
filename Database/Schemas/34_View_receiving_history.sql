@@ -9,6 +9,7 @@ CREATE OR REPLACE VIEW view_receiving_history AS
 SELECT
     id,
     po_number,
+    po_line_number,
     part_id AS part_number,
     part_description,
     quantity,
@@ -23,6 +24,7 @@ SELECT
     coils_on_skid,
     label_number,
     vendor_name,
+    is_non_po_item,
     NULL AS notes,
     'Receiving' AS source_module
 FROM receiving_history
@@ -32,6 +34,7 @@ UNION ALL
 SELECT
     id,
     po_number,
+    po_line_number,
     part_id AS part_number,
     part_description,
     quantity,
@@ -46,6 +49,7 @@ SELECT
     coils_on_skid,
     label_number,
     vendor_name,
+    is_non_po_item,
     NULL AS notes,
     'Receiving' AS source_module
 FROM receiving_label_data

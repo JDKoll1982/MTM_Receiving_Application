@@ -15,7 +15,8 @@ public sealed partial class View_Dunnage_AdminTypesView : Page
     public View_Dunnage_AdminTypesView(
         ViewModel_Dunnage_AdminTypes viewModel,
         IService_Focus focusService,
-        IService_LoggingUtility loggingUtility)
+        IService_LoggingUtility loggingUtility
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(focusService);
@@ -51,4 +52,3 @@ public sealed partial class View_Dunnage_AdminTypesView : Page
         await ViewModel.LoadTypesCommand.ExecuteAsync(null);
     }
 }
-

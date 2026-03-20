@@ -10,40 +10,50 @@
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     PrimaryButtonClick="OnSaveClicked"
-    Width="500">
-
+    Width="500"
+>
     <StackPanel Spacing="16" Padding="8">
         <!-- Part Number -->
-        <TextBox x:Name="PartNumberTextBox"
-                 Header="Part Number"
-                 PlaceholderText="e.g., V-EMB-500"
-                 MaxLength="50"/>
+        <TextBox
+            x:Name="PartNumberTextBox"
+            Header="Part Number"
+            PlaceholderText="e.g., V-EMB-500"
+            MaxLength="50"
+        />
 
         <!-- Quantity Per Skid -->
-        <NumberBox x:Name="QuantityPerSkidNumberBox"
-                   Header="Quantity Per Skid"
-                   PlaceholderText="e.g., 88"
-                   Minimum="0"
-                   Maximum="10000"
-                   SpinButtonPlacementMode="Inline"
-                   Value="0"/>
+        <NumberBox
+            x:Name="QuantityPerSkidNumberBox"
+            Header="Quantity Per Skid"
+            PlaceholderText="e.g., 88"
+            Minimum="0"
+            Maximum="10000"
+            SpinButtonPlacementMode="Inline"
+            Value="0"
+        />
 
         <!-- Historical Integrity Warning (Edit Mode Only) -->
-        <InfoBar x:Name="EditModeWarning"
-                 Severity="Warning"
-                 IsOpen="False"
-                 IsClosable="False"
-                 Message="Changes to quantity will NOT affect past shipments. Historical piece counts are preserved."/>
+        <InfoBar
+            x:Name="EditModeWarning"
+            Severity="Warning"
+            IsOpen="False"
+            IsClosable="False"
+            Message="Changes to quantity will NOT affect past shipments. Historical piece counts are preserved."
+        />
 
         <!-- Component Section (Simplified - Future Enhancement) -->
         <Expander Header="Components (Advanced)" IsExpanded="False">
             <StackPanel Spacing="8" Padding="8">
-                <TextBlock Text="Component management will be available in a future update." 
-                          Style="{StaticResource CaptionTextBlockStyle}"
-                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                <TextBlock Text="For now, use data import to define components." 
-                          Style="{StaticResource CaptionTextBlockStyle}"
-                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <TextBlock
+                    Text="Component management will be available in a future update."
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                />
+                <TextBlock
+                    Text="For now, use data import to define components."
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                />
             </StackPanel>
         </Expander>
     </StackPanel>

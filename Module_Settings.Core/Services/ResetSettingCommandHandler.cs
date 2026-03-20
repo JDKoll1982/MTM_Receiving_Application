@@ -31,7 +31,8 @@ public class ResetSettingCommandHandler : IRequestHandler<ResetSettingCommand, M
         ISettingsMetadataRegistry registry,
         ISettingsCache cache,
         ISettingsEncryptionService encryptionService,
-        IService_UserSessionManager sessionManager)
+        IService_UserSessionManager sessionManager
+    )
     {
         _systemDao = systemDao;
         _userDao = userDao;
@@ -42,23 +43,32 @@ public class ResetSettingCommandHandler : IRequestHandler<ResetSettingCommand, M
         _sessionManager = sessionManager;
     }
 
-    public async Task<Model_Dao_Result> Handle(ResetSettingCommand request, CancellationToken cancellationToken)
+    public async Task<Model_Dao_Result> Handle(
+        ResetSettingCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var definition = _registry.GetDefinition(request.Category, request.Key);
         if (definition == null)
         {
-            return Model_Dao_Result_Factory.Failure($"Unknown setting: {request.Category}:{request.Key}");
+            return Model_Dao_Result_Factory.Failure(
+                $"Unknown setting: {request.Category}:{request.Key}"
+            );
         }
 
         var scope = definition.Scope;
         var userId = ResolveUserId(scope, request.UserId);
         if (scope == Enum_SettingsScope.User && userId == null)
         {
-            return Model_Dao_Result_Factory.Failure("User context required for user-scoped settings.");
+            return Model_Dao_Result_Factory.Failure(
+                "User context required for user-scoped settings."
+            );
         }
 
         var actor = _sessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
-        var valueToStore = definition.IsSensitive ? _encryptionService.Encrypt(definition.DefaultValue) : definition.DefaultValue;
+        var valueToStore = definition.IsSensitive
+            ? _encryptionService.Encrypt(definition.DefaultValue)
+            : definition.DefaultValue;
 
         Model_Dao_Result result;
         if (scope == Enum_SettingsScope.System)
@@ -68,28 +78,44 @@ public class ResetSettingCommandHandler : IRequestHandler<ResetSettingCommand, M
             {
                 return Model_Dao_Result_Factory.Failure("Setting is locked and cannot be reset.");
             }
-            result = await _systemDao.UpsertAsync(request.Category, request.Key, valueToStore, definition.DataType.ToString(), definition.IsSensitive, actor);
+            result = await _systemDao.UpsertAsync(
+                request.Category,
+                request.Key,
+                valueToStore,
+                definition.DataType.ToString(),
+                definition.IsSensitive,
+                actor
+            );
         }
         else
         {
-            result = await _userDao.UpsertAsync(userId!.Value, request.Category, request.Key, valueToStore, definition.DataType.ToString(), actor);
+            result = await _userDao.UpsertAsync(
+                userId!.Value,
+                request.Category,
+                request.Key,
+                valueToStore,
+                definition.DataType.ToString(),
+                actor
+            );
         }
 
         if (result.Success)
         {
-            await _auditDao.InsertAsync(new Model_SettingsAuditEntry
-            {
-                Scope = scope.ToString(),
-                Category = request.Category,
-                SettingKey = request.Key,
-                OldValue = string.Empty,
-                NewValue = definition.DefaultValue,
-                ChangeType = "Reset",
-                UserId = userId,
-                ChangedBy = actor,
-                ChangedAt = DateTime.Now,
-                WorkstationName = Environment.MachineName
-            });
+            await _auditDao.InsertAsync(
+                new Model_SettingsAuditEntry
+                {
+                    Scope = scope.ToString(),
+                    Category = request.Category,
+                    SettingKey = request.Key,
+                    OldValue = string.Empty,
+                    NewValue = definition.DefaultValue,
+                    ChangeType = "Reset",
+                    UserId = userId,
+                    ChangedBy = actor,
+                    ChangedAt = DateTime.Now,
+                    WorkstationName = Environment.MachineName,
+                }
+            );
 
             _cache.Remove(BuildCacheKey(scope, request.Category, request.Key, userId));
         }
@@ -112,7 +138,12 @@ public class ResetSettingCommandHandler : IRequestHandler<ResetSettingCommand, M
         return _sessionManager.CurrentSession?.User?.EmployeeNumber;
     }
 
-    private static string BuildCacheKey(Enum_SettingsScope scope, string category, string key, int? userId)
+    private static string BuildCacheKey(
+        Enum_SettingsScope scope,
+        string category,
+        string key,
+        int? userId
+    )
     {
         return scope == Enum_SettingsScope.System
             ? $"system:{category}:{key}"

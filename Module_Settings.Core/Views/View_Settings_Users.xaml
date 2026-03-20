@@ -5,8 +5,8 @@
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.Systems"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels"
-    Loaded="Page_Loaded">
-
+    Loaded="Page_Loaded"
+>
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BoolToVisibilityConverter" />
         <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
@@ -24,17 +24,21 @@
         <!-- Page heading -->
         <StackPanel Spacing="4">
             <TextBlock Text="Users" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="Manage user accounts and Infor Visual credentials."
-                       Style="{StaticResource BodyTextBlockStyle}" />
+            <TextBlock
+                Text="Manage user accounts and Infor Visual credentials."
+                Style="{StaticResource BodyTextBlockStyle}"
+            />
         </StackPanel>
 
         <!-- Status bar -->
-        <InfoBar Grid.Row="1"
-                 Margin="0,8,0,0"
-                 IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=OneWay}"
-                 IsClosable="True"
-                 Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
-                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
+        <InfoBar
+            Grid.Row="1"
+            Margin="0,8,0,0"
+            IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=OneWay}"
+            IsClosable="True"
+            Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
+            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+        />
 
         <!-- Two-column body -->
         <Grid Grid.Row="2" Margin="0,12,0,0" ColumnSpacing="24">
@@ -54,21 +58,26 @@
 
                 <!-- Toolbar -->
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Content="Add User"
-                            Command="{x:Bind ViewModel.AddNewUserCommand}" />
-                    <Button Content="Edit"
-                            IsEnabled="{x:Bind ViewModel.HasSelectedUser, Mode=OneWay}"
-                            Click="EditSelectedUser_Click" />
-                    <Button Content="Deactivate"
-                            IsEnabled="{x:Bind ViewModel.SelectedUserIsActive, Mode=OneWay}"
-                            Click="DeactivateSelectedUser_Click" />
+                    <Button Content="Add User" Command="{x:Bind ViewModel.AddNewUserCommand}" />
+                    <Button
+                        Content="Edit"
+                        IsEnabled="{x:Bind ViewModel.HasSelectedUser, Mode=OneWay}"
+                        Click="EditSelectedUser_Click"
+                    />
+                    <Button
+                        Content="Deactivate"
+                        IsEnabled="{x:Bind ViewModel.SelectedUserIsActive, Mode=OneWay}"
+                        Click="DeactivateSelectedUser_Click"
+                    />
                 </StackPanel>
 
                 <!-- User list -->
-                <ListView Grid.Row="1"
-                          ItemsSource="{x:Bind ViewModel.Users, Mode=OneWay}"
-                          SelectedItem="{x:Bind ViewModel.SelectedUser, Mode=TwoWay}"
-                          SelectionMode="Single">
+                <ListView
+                    Grid.Row="1"
+                    ItemsSource="{x:Bind ViewModel.Users, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedUser, Mode=TwoWay}"
+                    SelectionMode="Single"
+                >
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_User">
                             <Grid ColumnSpacing="8" Padding="0,4">
@@ -79,14 +88,18 @@
                                 <StackPanel>
                                     <TextBlock Text="{x:Bind FullName}" FontWeight="SemiBold" />
                                     <TextBlock Opacity="0.7">
-                                        <Run Text="{x:Bind Department}" /><Run Text=" · " /><Run Text="{x:Bind Shift}" />
+                                        <Run Text="{x:Bind Department}" />
+                                        <Run Text=" · " />
+                                        <Run Text="{x:Bind Shift}" />
                                     </TextBlock>
                                 </StackPanel>
-                                <TextBlock Grid.Column="1"
-                                           VerticalAlignment="Center"
-                                           FontSize="11"
-                                           Opacity="0.7"
-                                           Text="{x:Bind IsActive, Mode=OneTime, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Active|Inactive'}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    Opacity="0.7"
+                                    Text="{x:Bind IsActive, Mode=OneTime, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Active|Inactive'}"
+                                />
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -96,105 +109,134 @@
             <!-- ============================================================
                  RIGHT COLUMN — edit form
                  ============================================================ -->
-            <ScrollViewer Grid.Column="1"
-                          Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ScrollViewer
+                Grid.Column="1"
+                Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+            >
                 <StackPanel Spacing="16" MaxWidth="520">
-
                     <!-- User Details section -->
-                    <TextBlock Text="User Details" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock
+                        Text="User Details"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                    />
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Full Name" />
-                        <TextBox Text="{x:Bind ViewModel.EditingUser.FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 PlaceholderText="First Last" />
+                        <TextBox
+                            Text="{x:Bind ViewModel.EditingUser.FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="First Last"
+                        />
                     </StackPanel>
 
                     <StackPanel Spacing="4">
                         <TextBlock Text="Employee Number" />
-                        <TextBox Text="{x:Bind ViewModel.EditingUser.EmployeeNumber, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
-                                 PlaceholderText="e.g. 1001"
-                                 IsEnabled="{x:Bind ViewModel.IsAddingNew, Mode=OneWay}" />
+                        <TextBox
+                            Text="{x:Bind ViewModel.EditingUser.EmployeeNumber, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                            PlaceholderText="e.g. 1001"
+                            IsEnabled="{x:Bind ViewModel.IsAddingNew, Mode=OneWay}"
+                        />
                     </StackPanel>
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Windows Username" />
-                        <TextBox Text="{x:Bind ViewModel.EditingUser.WindowsUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 PlaceholderText="DOMAIN\username" />
+                        <TextBox
+                            Text="{x:Bind ViewModel.EditingUser.WindowsUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="DOMAIN\username"
+                        />
                     </StackPanel>
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="PIN (4 digits)" />
-                        <TextBox Text="{x:Bind ViewModel.EditingUser.Pin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 MaxLength="4"
-                                 PlaceholderText="0000" />
+                        <TextBox
+                            Text="{x:Bind ViewModel.EditingUser.Pin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            MaxLength="4"
+                            PlaceholderText="0000"
+                        />
                     </StackPanel>
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Department" />
-                        <ComboBox ItemsSource="{x:Bind ViewModel.Departments, Mode=OneWay}"
-                                  SelectedItem="{x:Bind ViewModel.EditingUser.Department, Mode=TwoWay}"
-                                  HorizontalAlignment="Stretch" />
+                        <ComboBox
+                            ItemsSource="{x:Bind ViewModel.Departments, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.EditingUser.Department, Mode=TwoWay}"
+                            HorizontalAlignment="Stretch"
+                        />
                     </StackPanel>
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Shift" />
-                        <ComboBox HorizontalAlignment="Stretch"
-                                  SelectedItem="{x:Bind ViewModel.EditingUser.Shift, Mode=TwoWay}">
+                        <ComboBox
+                            HorizontalAlignment="Stretch"
+                            SelectedItem="{x:Bind ViewModel.EditingUser.Shift, Mode=TwoWay}"
+                        >
                             <x:String>1st Shift</x:String>
                             <x:String>2nd Shift</x:String>
                             <x:String>3rd Shift</x:String>
                         </ComboBox>
                     </StackPanel>
 
-                    <StackPanel Spacing="4"
-                                Visibility="{x:Bind ViewModel.IsAddingNew, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}">
+                    <StackPanel
+                        Spacing="4"
+                        Visibility="{x:Bind ViewModel.IsAddingNew, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"
+                    >
                         <TextBlock Text="Account Active" />
                         <ToggleSwitch IsOn="{x:Bind ViewModel.EditingUser.IsActive, Mode=TwoWay}" />
                     </StackPanel>
 
                     <!-- Infor Visual Credentials section -->
-                    <TextBlock Text="Infor Visual Credentials"
-                               Style="{StaticResource SubtitleTextBlockStyle}"
-                               Margin="0,8,0,0" />
+                    <TextBlock
+                        Text="Infor Visual Credentials"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Margin="0,8,0,0"
+                    />
 
-                    <InfoBar IsOpen="{x:Bind ViewModel.IsBlockedVisualAccount, Mode=OneWay}"
-                             IsClosable="False"
-                             Severity="Warning"
-                             Message="Users with credentials SHOP2 or MTMDC cannot access Bulk Inventory." />
+                    <InfoBar
+                        IsOpen="{x:Bind ViewModel.IsBlockedVisualAccount, Mode=OneWay}"
+                        IsClosable="False"
+                        Severity="Warning"
+                        Message="Users with credentials SHOP2 or MTMDC cannot access Bulk Inventory."
+                    />
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Visual Username" />
-                        <TextBox x:Name="VisualUsernameTextBox"
-                                 Text="{x:Bind ViewModel.EditingUser.VisualUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 PlaceholderText="e.g. JSMITH" />
+                        <TextBox
+                            x:Name="VisualUsernameTextBox"
+                            Text="{x:Bind ViewModel.EditingUser.VisualUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="e.g. JSMITH"
+                        />
                     </StackPanel>
 
                     <StackPanel Spacing="8">
                         <TextBlock Text="Visual Password" />
-                        <PasswordBox x:Name="VisualPasswordBox"
-                                     PasswordChanged="VisualPasswordBox_PasswordChanged"
-                                     PlaceholderText="Enter new password to change" />
-                        <TextBlock Text="{x:Bind ViewModel.VisualPasswordMask, Mode=OneWay}"
-                                   Opacity="0.7"
-                                   FontSize="12" />
+                        <PasswordBox
+                            x:Name="VisualPasswordBox"
+                            PasswordChanged="VisualPasswordBox_PasswordChanged"
+                            PlaceholderText="Enter new password to change"
+                        />
+                        <TextBlock
+                            Text="{x:Bind ViewModel.VisualPasswordMask, Mode=OneWay}"
+                            Opacity="0.7"
+                            FontSize="12"
+                        />
                     </StackPanel>
 
-                    <Button Content="Save Visual Credentials"
-                            Command="{x:Bind ViewModel.SaveVisualCredentialsCommand}"
-                            Visibility="{x:Bind ViewModel.IsAddingNew, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                    <Button
+                        Content="Save Visual Credentials"
+                        Command="{x:Bind ViewModel.SaveVisualCredentialsCommand}"
+                        Visibility="{x:Bind ViewModel.IsAddingNew, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='Inverse'}"
+                    />
 
                     <!-- Form footer -->
                     <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
-                        <Button Content="Save"
-                                Style="{StaticResource AccentButtonStyle}"
-                                Command="{x:Bind ViewModel.SaveUserCommand}" />
-                        <Button Content="Cancel"
-                                Command="{x:Bind ViewModel.CancelEditCommand}" />
+                        <Button
+                            Content="Save"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Command="{x:Bind ViewModel.SaveUserCommand}"
+                        />
+                        <Button Content="Cancel" Command="{x:Bind ViewModel.CancelEditCommand}" />
                     </StackPanel>
-
                 </StackPanel>
             </ScrollViewer>
-
         </Grid>
     </Grid>
 </Page>

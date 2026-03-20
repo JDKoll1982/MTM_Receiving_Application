@@ -14,7 +14,10 @@ public static class SerilogConfiguration
     /// </summary>
     /// <param name="loggerConfiguration">The Serilog configuration builder.</param>
     /// <param name="appConfiguration">The application configuration (appsettings).</param>
-    public static void Configure(LoggerConfiguration loggerConfiguration, IConfiguration appConfiguration)
+    public static void Configure(
+        LoggerConfiguration loggerConfiguration,
+        IConfiguration appConfiguration
+    )
     {
         ArgumentNullException.ThrowIfNull(loggerConfiguration);
         ArgumentNullException.ThrowIfNull(appConfiguration);

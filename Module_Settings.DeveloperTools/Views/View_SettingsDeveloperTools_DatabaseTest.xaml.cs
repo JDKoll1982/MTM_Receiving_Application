@@ -36,7 +36,9 @@ public sealed partial class View_SettingsDeveloperTools_DatabaseTest : Page
         return Frame;
     }
 
-    public View_SettingsDeveloperTools_DatabaseTest(ViewModel_SettingsDeveloperTools_DatabaseTest viewModel)
+    public View_SettingsDeveloperTools_DatabaseTest(
+        ViewModel_SettingsDeveloperTools_DatabaseTest viewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
