@@ -56,5 +56,10 @@
   "chat.tools.terminal.autoApprove": {
     ".specify/scripts/bash/": true,
     ".specify/scripts/powershell/": true
-  }
+  },
+  "htmlPreviewPro.autoReload": true,
+  "htmlPreviewPro.enableHotReload": true,
+  "htmlPreviewPro.showConsole": false,
+  "htmlPreviewPro.preserveScrollPosition": true,
+  "htmlPreviewPro.defaultDevice": "desktop"
 }

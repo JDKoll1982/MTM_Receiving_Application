@@ -73,6 +73,8 @@ $listener = [System.Net.HttpListener]::new()
 $prefix = "http://localhost:$Port/"
 $listener.Prefixes.Add($prefix)
 
+Write-Host "Starting CopilotForms server on port $Port..." -ForegroundColor Yellow
+
 try {
     $listener.Start()
 }
@@ -82,6 +84,7 @@ catch {
 
 $indexUrl = "$prefix`index.html"
 
+Write-Host "LISTENING on $prefix" -ForegroundColor Green
 Write-Host ''
 Write-Host 'CopilotForms local server started.' -ForegroundColor Green
 Write-Host "Root:  $resolvedRoot" -ForegroundColor Cyan
