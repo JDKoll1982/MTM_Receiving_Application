@@ -34,9 +34,9 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 - [x] Add row-level PO-driven part selection modal behavior for Manual Mode.
 - [x] Add a row-level or page-level Non-PO mode toggle to Manual Mode.
 - [x] Refactor Auto-Fill so it respects PO-selected parts and Non-PO behavior.
-- [ ] Update validation and save-path assumptions for mixed PO and Non-PO Manual Mode rows.
-- [ ] Update `Module_Reporting` receiving summaries, receiving detail display, and preview/copy formatting so Manual Mode PO-selected and Non-PO rows report correctly.
-- [ ] Add or update tests and any affected module documentation after implementation.
+- [x] Update validation and save-path assumptions for mixed PO and Non-PO Manual Mode rows.
+- [x] Update `Module_Reporting` receiving summaries, receiving detail display, and preview/copy formatting so Manual Mode PO-selected and Non-PO rows report correctly.
+- [x] Add or update tests and any affected module documentation after implementation.
 
 ## Existing Implementation Map
 
@@ -353,6 +353,31 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 ### 6. Update `Module_Reporting` after Manual Mode row semantics change
 
+#### Outcome
+
+- Completed on 2026-03-20 for current Manual Mode PO/Non-PO reporting semantics.
+- `Module_Receiving/Services/Service_ReceivingValidation.cs:356` in `ValidateReceivingLoad(...)` now treats PO-backed rows and Non-PO rows differently at the shared validation layer.
+- `Module_Receiving/Services/Service_ReceivingValidation.cs:431` in `ValidateSession(...)` now aggregates those row-level rules before Manual Entry save proceeds.
+- `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs:616` in `SaveAsync()` now validates the mixed-mode session before save and only defaults blank Heat/Lot and Location values after validation succeeds.
+- `Module_Receiving/Data/Dao_ReceivingLabelData.cs:153` and `Module_Receiving/Data/Dao_ReceivingLabelData.cs:172` persist `po_line_number` and `is_non_po_item` on insert, and `Module_Receiving/Data/Dao_ReceivingLabelData.cs:353` and `Module_Receiving/Data/Dao_ReceivingLabelData.cs:372` preserve those same fields on update.
+- `Module_Reporting/Data/Dao_Reporting.cs` already projects `po_line_number` and `is_non_po_item` into `Model_ReportRow`.
+- `Module_Core/Models/Reporting/Model_ReportRow.cs:64` in `DisplayPo` now renders `Non-PO` for receiving rows flagged `IsNonPOItem` and includes `PO / Line` text for PO-backed rows.
+- `Module_Reporting/Services/Service_Reporting.cs:397` in `BuildReceivingSummaryTable(...)` now assigns receiving rows into an explicit `Non-PO` summary bucket instead of silently mixing them into prefix buckets or `Other`.
+- `Module_Reporting/Services/Service_Reporting.cs:167` in `FormatForEmailAsync(...)` continues to use the row display properties, so preview/copy output stays aligned with the new `DisplayPo` behavior without adding a separate detail-rendering fork.
+
+#### Validation
+
+- `get_errors` returned no errors for:
+  - `Module_Reporting/Services/Service_Reporting.cs`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Reporting/Services/Service_ReportingTests.cs`
+- `dotnet build MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj` succeeded on 2026-03-20 after the reporting summary change and new tests were added.
+- Focused test files now cover the reporting/display rules:
+  - `MTM_Receiving_Application.Tests/Unit/Module_Core/Models/Reporting/Model_ReportRowTests.cs`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingValidationTests.cs`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Reporting/Services/Service_ReportingTests.cs:25`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Reporting/Services/Service_ReportingTests.cs:73`
+- Focused `runTests` execution is currently blocked by the existing WinAppSDK test-host environment issue (`System.BadImageFormatException` during module initialization), so test execution evidence is currently limited to successful compilation of the test project.
+
 #### Current behavior
 
 - `Module_Reporting/Services/Service_Reporting.cs`
@@ -395,44 +420,35 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 #### Why reporting is impacted by the Manual Mode changes
 
-- Manual Mode is about to support a mix of PO-backed and Non-PO receiving rows.
-- Reporting currently has no explicit `IsNonPOItem` or `PoLineNumber` field on `Model_ReportRow`, so if the receiving history query/save path starts storing those semantics and they need to be shown or summarized, the reporting DTO/query layer will need to expose them.
-- If Manual Mode changes how `PartID`, `PoNumber`, `PoLineNumber`, `PackagesPerLoad`, or inferred package metadata are populated, the Receiving summary and Receiving detail table may become misleading unless reporting is updated in the same implementation wave.
+- Manual Mode now supports a mix of PO-backed and Non-PO receiving rows.
+- Reporting now has explicit `IsNonPOItem` and `POLineNumber` fields on `Model_ReportRow`, and the DAO/query path currently projects both values into the reporting DTO.
+- Receiving detail output now shows `Non-PO` or `PO / Line` through `Model_ReportRow.DisplayPo`, and receiving summaries now split Non-PO rows into a dedicated summary bucket.
 
 #### Required change
 
-- Review the Receiving history query path that feeds `Module_Reporting` and confirm whether new Manual Mode semantics require new reporting fields, especially:
-  - row-level `IsNonPOItem`
-  - row-level `PoLineNumber`
-  - any persisted indicator that a part came from PO modal selection rather than free entry
-- Update `Module_Core/Models/Reporting/Model_ReportRow.cs` if new Receiving report fields are needed for display or summarization.
-- Update `Module_Reporting/Services/Service_Reporting.cs` so Receiving rows are handled correctly when:
-  - `PONumber` is blank because a row is Non-PO
-  - a Non-PO sentinel label should be shown instead of an empty PO cell
-  - prefix-based Receiving summaries need a dedicated Non-PO bucket rather than silently falling into `Other`
-  - PO-selected parts carry package/location defaults that change the meaning of `DisplayLoadsOrSkids` or `DisplayUnitsPerSkid`
-- Update both rendering paths together if Receiving report columns change:
-  - preview path in `Module_Reporting/Views/View_Reporting_PreviewDialog.xaml`
-  - copied HTML/plain-text path in `Module_Reporting/Services/Service_Reporting.cs:149`
-- Keep the preview and copied report column order, labels, and per-module card layout aligned. Do not let preview diverge from copied output again.
+- Completed for the current Receiving Manual Mode scope:
+  - the receiving history query path already exposes row-level `IsNonPOItem` and `PoLineNumber`
+  - `Model_ReportRow` already surfaces the correct PO/Non-PO detail text through `DisplayPo`
+  - `Service_Reporting.BuildReceivingSummaryTable(...)` now provides a dedicated `Non-PO` summary column pair
+  - preview and copied HTML/plain-text output remain aligned because both continue to consume the same reporting rows and summary tables
 
 #### Most likely implementation seams
 
 - Receiving summary logic
-  - `Module_Reporting/Services/Service_Reporting.cs:325` in `BuildReceivingSummaryTable(...)`
-  - validate whether Non-PO rows should remain in `Other` or get an explicit `Non-PO` summary column pair.
+  - `Module_Reporting/Services/Service_Reporting.cs:397` in `BuildReceivingSummaryTable(...)`
+  - completed: Non-PO rows now render in an explicit `Non-PO` summary column pair.
 
 - Receiving detail display
-  - `Module_Core/Models/Reporting/Model_ReportRow.cs:60` in `DisplayPo`
-  - `Module_Core/Models/Reporting/Model_ReportRow.cs:62` in `DisplayPartOrDunnage`
-  - `Module_Core/Models/Reporting/Model_ReportRow.cs:90` in `DisplayLoadsOrSkids`
-  - add explicit display behavior for Non-PO rows if blanks are ambiguous in reports.
+  - `Module_Core/Models/Reporting/Model_ReportRow.cs:64` in `DisplayPo`
+  - `Module_Core/Models/Reporting/Model_ReportRow.cs:95` in `DisplayPartOrDunnage`
+  - `Module_Core/Models/Reporting/Model_ReportRow.cs:128` in `DisplayLoadsOrSkids`
+  - completed for current scope: Non-PO rows now display an explicit `Non-PO` indicator instead of a misleading blank PO field.
 
 - Preview + copy parity
   - `Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs:322` in `BuildPreviewState(...)`
   - `Module_Reporting/Views/View_Reporting_PreviewDialog.xaml:79` for grouped module-card rendering
-  - `Module_Reporting/Services/Service_Reporting.cs:149` in `FormatForEmailAsync(...)`
-  - if a Receiving-specific column is added, update both surfaces in the same change.
+  - `Module_Reporting/Services/Service_Reporting.cs:167` in `FormatForEmailAsync(...)`
+  - completed for current scope: preview and copied output both consume the same `DisplayPo` and summary-table data, so no extra rendering divergence was introduced.
 
 #### Impacted files
 
@@ -445,10 +461,8 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
 
 #### Validation notes / follow-up tasks
 
-- Validate that PO-backed Manual Mode rows still summarize under the correct Receiving prefix bucket after part selection is introduced.
-- Validate that Non-PO rows do not display a misleading blank PO field in either preview or copied HTML if the product decision is to show a `Non-PO` indicator.
-- Validate that any new receiving row fields added for reporting are populated by both existing Receiving flows and the new Manual Mode flow.
-- Validate that preview cards and copied HTML still match after any Receiving detail-table column changes.
+- Validate against deployed reporting stored procedures/views that archived Manual Mode rows still populate `po_line_number` and `is_non_po_item` consistently in production data.
+- If a future product decision adds Receiving-specific detail columns to the preview card, update both preview and copied HTML/plain-text output in the same change.
 
 ## Validation Notes For Future Implementation
 
@@ -460,8 +474,12 @@ This file is a living implementation-planning document for `Module_Receiving` Ma
   - Part cells now reopen PO-backed part selection on double-click.
   - Manual Entry now supports row-level mixed PO and Non-PO entry through the `Non-PO?` row column.
   - Auto-Fill no longer copy-fills `PartID` into PO-backed rows.
+  - Shared receiving validation now enforces PO-backed versus Non-PO row rules before save.
+  - Receiving reporting detail rows now show explicit `Non-PO` and `PO / Line` values.
+  - Receiving reporting summaries now show a dedicated `Non-PO` bucket.
+  - Focused reporting tests were added and the test project builds successfully.
   - Solution build succeeded after the first-slice changes.
-- Re-run row-save validation paths in `ViewModel_Receiving_ManualEntry.SaveAsync()` after the Non-PO and modal-selection changes.
+- Re-run focused reporting and Manual Mode tests once the WinAppSDK test-host `BadImageFormatException` environment issue is resolved.
 - Confirm that any new dialog sets `XamlRoot` correctly before `ShowAsync()`.
 - Confirm that row focus still works after seeding 10 rows and after opening/closing the modal selector.
 - Confirm that changing a PO clears stale `PartID` and `PoLineNumber` values on the same row.

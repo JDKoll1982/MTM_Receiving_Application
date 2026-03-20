@@ -12,7 +12,7 @@ This is a WinUI 3 C# application using:
 
 - . NET 8, MVVM architecture with CommunityToolkit.Mvvm
 - MySQL database (READ/WRITE) and SQL Server/Infor Visual (READ ONLY)
-- Modular structure:  Module_Core, Module_Receiving, Module_Dunnage, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
+- Modular structure: Module_Core, Module_Receiving, Module_Dunnage, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
 - xUnit testing, strict MVVM separation with x:Bind in XAML
 
 ## MCP Tools Available
@@ -106,6 +106,7 @@ This is a **RESET** operation. You will DELETE existing configuration files and 
 Before creating any new files, DELETE the following files if they exist:
 
 - `./.github/copilot-instructions.md`
+- `./AGENTS.md`
 - `./.vscode/settings.json` (backup first if it contains user-specific settings)
 - `./ARCHITECTURE.md`
 - `./.github/copilot-instructions.md`
@@ -114,8 +115,13 @@ Before creating any new files, DELETE the following files if they exist:
 - `./docs/COPILOT_TROUBLESHOOTING.md`
 - `./.vscode/tasks.json`
 - `./.github/PULL_REQUEST_TEMPLATE.md`
+- `./.editorconfig` (VERIFY/UPDATE but do NOT delete)
+- `./.vscode/extensions.json` (Only include extensions that are vital for the project, avoid user-specific recommendations)
+- Any existing files in `.github/instructions/` (these will be recreated with updated content, so backup if needed)
+- Any existing files in each Module\_\*/Documentation/ that are meant to be reset (e.g., TODOs.md, ThingsToChangeChecklist.md) - these will be recreated with updated content
 
-**IMPORTANT:** `.editorconfig` should NOT be deleted as it's already properly configured.
+**IMPORTANT** If at ANY TIME you are unsure about deleting a file, ask me for confirmation before proceeding. Always ensure that you have the necessary context and permissions to delete files in this repository.
+**IMPORTANT** If at ANY TIME you need to reference existing content for context, use the Serena or Filesystem MCP Servers to read the file instead of manually browsing.
 
 **After deletion, confirm with me before proceeding to file creation.**
 
@@ -222,9 +228,9 @@ Before creating this file:
 
 **Specific Requirements:**
 
-- Reference actual modules:  Module_Core, Module_Receiving, Module_Dunnage, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
+- Reference actual modules: Module_Core, Module_Receiving, Module_Dunnage, Module_Reporting, Module_Settings, Module_Shared, Module_Volvo
 - Include code examples showing ViewModel structure, XAML binding patterns, DAO structure
-- Emphasize:  ViewModels MUST be partial classes, use x:Bind NOT Binding, DAOs instance-based NOT static
+- Emphasize: ViewModels MUST be partial classes, use x:Bind NOT Binding, DAOs instance-based NOT static
 - Database rules: MySQL stored procedures only, SQL Server READ ONLY
 - **Align with constitution** (.specify/memory/constitution.md) - reference constitutional principles
 - Include model selection guidance (Claude Sonnet for complex architecture, GPT-4o for routine tasks)
@@ -275,16 +281,16 @@ Before creating this file:
 **Required Content:**
 
 - High-level architecture overview
-- Module breakdown (what each module does:  Module_Core, Module_Receiving, etc.)
+- Module breakdown (what each module does: Module_Core, Module_Receiving, etc.)
 - Dependency flow diagram (Mermaid)
 - MVVM pattern implementation
 - Database architecture (MySQL schema, SQL Server read-only integration)
-- Data flow diagrams showing:  User → View → ViewModel → Service → DAO → Database
+- Data flow diagrams showing: User → View → ViewModel → Service → DAO → Database
 - Authentication flow (personal workstation vs shared terminal)
 - Receiving workflow sequence diagram
 - Key design patterns used (DI, Repository, MVVM, Command)
 - Technology decisions and rationale
-**MCP-Enhanced Content Requirements:**
+  **MCP-Enhanced Content Requirements:**
 
 Before creating this file:
 
@@ -309,7 +315,7 @@ Before creating this file:
    - Use actual class names discovered via Serena
    - Show real dependency chains (not theoretical examples)
    - Reference actual service registrations from App.xaml.cs
-**Specific Requirements:**
+     **Specific Requirements:**
 
 - **Use PlantUML diagrams, NOT Mermaid** (per markdown-documentation.instructions.md standards)
 - Include at least 3 PlantUML diagrams:
@@ -394,7 +400,7 @@ Before creating this file:
 **Specific Requirements:**
 
 - Include 5+ real-world examples using actual module names (Module_Receiving, Module_Dunnage, etc.)
-- Provide prompt templates for:  creating ViewModels, implementing DAOs, debugging binding issues, optimizing queries
+- Provide prompt templates for: creating ViewModels, implementing DAOs, debugging binding issues, optimizing queries
 - **Directly reference and expand on Copilot-BestPractices.md sections:**
   - Model Comparison Matrix (when to use Claude Sonnet vs GPT-4o vs o1)
   - Optimal prompting strategies
@@ -444,7 +450,7 @@ Before creating this file:
 - Verify it aligns with:
   - Constitution Principle IX (Code Quality & Maintainability)
   - C# 12 and .NET 8 best practices
-  - Naming conventions (PascalCase for public, _camelCase for private fields)
+  - Naming conventions (PascalCase for public, \_camelCase for private fields)
   - Bracing rules (`csharp_prefer_braces = true:error`)
   - Async method naming (`Async` suffix required)
 - If gaps found, propose updates in separate step
@@ -496,7 +502,8 @@ Each prompt should include MCP preparation steps:
 **Model Recommendation:** Claude Sonnet (architectural understanding)
 
 **MCP Preparation (do this first):**
-1. Use Serena: mcp_oraios_serena_find_symbol with pattern "*ViewModel"
+
+1. Use Serena: mcp_oraios_serena_find_symbol with pattern "\*ViewModel"
 2. Use Serena: mcp_oraios_serena_get_symbols_overview on ReceivingViewModel.cs
 3. Use Filesystem: mcp_filesystem_read_text_file on BaseViewModel.cs
 4. Use Serena: mcp_oraios_serena_think_about_collected_information

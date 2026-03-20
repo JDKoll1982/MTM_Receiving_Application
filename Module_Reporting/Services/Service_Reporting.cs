@@ -400,15 +400,19 @@ public class Service_Reporting : IService_Reporting
     )
     {
         var rows = section.Rows.ToList();
+        var includeNonPoColumns = rows.Any(row => row.IsNonPOItem);
         var activeRules = configuredRules
             .Where(rule =>
-                rows.Any(row => ReferenceEquals(FindMatchingRule(row, configuredRules), rule))
+                rows.Any(row =>
+                    !row.IsNonPOItem
+                    && ReferenceEquals(FindMatchingRule(row, configuredRules), rule)
+                )
             )
             .ToList();
 
         var includeOtherColumns =
-            rows.Any(row => FindMatchingRule(row, configuredRules) is null)
-            || activeRules.Count == 0;
+            rows.Any(row => !row.IsNonPOItem && FindMatchingRule(row, configuredRules) is null)
+            || (activeRules.Count == 0 && !includeNonPoColumns);
 
         var columns = new List<Model_ReportSummaryColumn>
         {
@@ -422,6 +426,14 @@ public class Service_Reporting : IService_Reporting
                 new Model_ReportSummaryColumn { Header = $"{label} (Qty/Lbs)", Width = 132d }
             );
             columns.Add(new Model_ReportSummaryColumn { Header = $"{label} Count", Width = 110d });
+        }
+
+        if (includeNonPoColumns)
+        {
+            columns.Add(
+                new Model_ReportSummaryColumn { Header = "Non-PO (Qty/Lbs)", Width = 132d }
+            );
+            columns.Add(new Model_ReportSummaryColumn { Header = "Non-PO Count", Width = 110d });
         }
 
         if (includeOtherColumns)
@@ -440,6 +452,7 @@ public class Service_Reporting : IService_Reporting
                     group.ToList(),
                     activeRules,
                     configuredRules,
+                    includeNonPoColumns,
                     includeOtherColumns,
                     columns
                 )
@@ -452,6 +465,7 @@ public class Service_Reporting : IService_Reporting
                 rows,
                 activeRules,
                 configuredRules,
+                includeNonPoColumns,
                 includeOtherColumns,
                 columns,
                 isGrandTotal: true
@@ -662,6 +676,7 @@ public class Service_Reporting : IService_Reporting
         IReadOnlyCollection<Model_ReportRow> rows,
         IReadOnlyList<Model_PartNumberPrefixRule> activeRules,
         IReadOnlyList<Model_PartNumberPrefixRule> configuredRules,
+        bool includeNonPoColumns,
         bool includeOtherColumns,
         IReadOnlyList<Model_ReportSummaryColumn> columns,
         bool isGrandTotal = false
@@ -695,9 +710,30 @@ public class Service_Reporting : IService_Reporting
             );
         }
 
+        if (includeNonPoColumns)
+        {
+            var nonPoRows = rows.Where(row => row.IsNonPOItem).ToList();
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatDecimal(nonPoRows.Sum(GetSummaryValue)),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
+            cells.Add(
+                new Model_ReportSummaryTableCell
+                {
+                    Value = FormatInt(nonPoRows.Count),
+                    Width = columns[columnIndex++].Width,
+                }
+            );
+        }
+
         if (includeOtherColumns)
         {
-            var otherRows = rows.Where(row => FindMatchingRule(row, configuredRules) is null)
+            var otherRows = rows.Where(row =>
+                    !row.IsNonPOItem && FindMatchingRule(row, configuredRules) is null
+                )
                 .ToList();
             cells.Add(
                 new Model_ReportSummaryTableCell
