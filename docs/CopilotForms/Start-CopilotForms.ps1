@@ -2,8 +2,9 @@
 .SYNOPSIS
     Starts a local web server for CopilotForms and opens the index page.
 .DESCRIPTION
-    Serves files from docs/CopilotForms over http://localhost so the browser can
-    load the shared JSON configuration without using the manual local-config fallback.
+    Serves files from the repository root over http://localhost so the browser can
+    load the shared JSON configuration and navigate to .github/ prompt and instruction
+    files without using the manual local-config fallback.
     The script keeps running until you stop it with Ctrl+C.
 #>
 
@@ -15,7 +16,7 @@ param(
 
     [Parameter()]
     [ValidateNotNullOrEmpty()]
-    [string]$RootPath = $PSScriptRoot,
+    [string]$RootPath = (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent),
 
     [Parameter()]
     [switch]$NoBrowser
@@ -56,7 +57,7 @@ function Get-CopilotFormsRequestPath {
 
     $rawPath = [System.Uri]::UnescapeDataString($Url.AbsolutePath.TrimStart('/'))
     if ([string]::IsNullOrWhiteSpace($rawPath)) {
-        return 'index.html'
+        return "docs${[System.IO.Path]::DirectorySeparatorChar}CopilotForms${[System.IO.Path]::DirectorySeparatorChar}index.html"
     }
 
     return $rawPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
@@ -82,7 +83,7 @@ catch {
     throw "Unable to start local server on $prefix. Choose a different port with -Port. $($_.Exception.Message)"
 }
 
-$indexUrl = "$prefix`index.html"
+$indexUrl = "${prefix}docs/CopilotForms/index.html"
 
 Write-Host "LISTENING on $prefix" -ForegroundColor Green
 Write-Host ''

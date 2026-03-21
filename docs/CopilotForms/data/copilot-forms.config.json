@@ -835,7 +835,8 @@
               "label": "Target files or areas",
               "type": "list",
               "required": true,
-              "placeholder": "One file, folder, or type per line"
+              "placeholder": "One file, folder, or type per line",
+              "defaultItems": ["Module_Receiving"]
             },
             {
               "id": "reviewGoal",
@@ -853,7 +854,12 @@
               "id": "specificConcerns",
               "label": "Specific concerns",
               "type": "list",
-              "placeholder": "One concern per line"
+              "placeholder": "One concern per line",
+              "defaultItems": [
+                "MVVM layer violations",
+                "x:Bind usage",
+                "Missing error handling"
+              ]
             },
             {
               "id": "knownChanges",

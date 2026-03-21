@@ -1,129 +1,125 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Fix All Markdown Lint Violations",
-            "type": "shell",
-            "command": "npx",
-            "args": [
-                "markdownlint-cli",
-                "--fix",
-                "**/*.md"
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Fix All Markdown Lint Violations",
+      "type": "shell",
+      "command": "npx",
+      "args": ["markdownlint-cli", "--fix", "**/*.md"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/MTM_Receiving_Application.slnx",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "publish",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "publish",
+        "${workspaceFolder}/MTM_Receiving_Application.slnx",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/MTM_Receiving_Application.slnx"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Start CopilotForms Server",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/docs/CopilotForms/Start-CopilotForms.ps1"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "copilotforms",
+        "pattern": {
+          "regexp": "^(LISTENING|ERROR)\\s+(.+)$",
+          "message": 2
         },
-        {
-            "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/MTM_Receiving_Application.slnx",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/MTM_Receiving_Application.slnx",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watch",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/MTM_Receiving_Application.slnx"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Start CopilotForms Server",
-            "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-ExecutionPolicy", "Bypass",
-                "-File", "${workspaceFolder}/docs/CopilotForms/Start-CopilotForms.ps1"
-            ],
-            "isBackground": true,
-            "problemMatcher": {
-                "owner": "copilotforms",
-                "pattern": {
-                    "regexp": "^(LISTENING|ERROR)\\s+(.+)$",
-                    "message": 2
-                },
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": "^Starting CopilotForms",
-                    "endsPattern": "^LISTENING"
-                }
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": false,
-                "clear": true
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "detail": "Serves docs/CopilotForms/ at http://localhost:5500 for the browser-based forms"
-        },
-        {
-            "label": "CopilotForms: Open Index in Editor",
-            "type": "shell",
-            "command": "code",
-            "args": [
-                "${workspaceFolder}/docs/CopilotForms/index.html"
-            ],
-            "presentation": {
-                "echo": false,
-                "reveal": "silent",
-                "panel": "shared"
-            },
-            "problemMatcher": [],
-            "detail": "Opens docs/CopilotForms/index.html — then press Ctrl+Shift+V for HTML Preview Pro side panel"
-        },
-        {
-            "label": "CopilotForms: Launch (Server + Preview)",
-            "dependsOn": [
-                "Start CopilotForms Server",
-                "CopilotForms: Open Index in Editor"
-            ],
-            "dependsOrder": "sequence",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "detail": "Starts the local server then opens index.html in the editor — press Ctrl+Shift+V to open the HTML Preview Pro side panel"
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Starting CopilotForms",
+          "endsPattern": "^LISTENING"
         }
-    ]
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "detail": "Serves the repo root at http://localhost:8421 — opens http://localhost:8421/docs/CopilotForms/index.html"
+    },
+    {
+      "label": "CopilotForms: Open Index in Editor",
+      "type": "shell",
+      "command": "code",
+      "args": ["${workspaceFolder}/docs/CopilotForms/index.html"],
+      "presentation": {
+        "echo": false,
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Opens docs/CopilotForms/index.html — then press Ctrl+Shift+V for HTML Preview Pro side panel"
+    },
+    {
+      "label": "CopilotForms: Launch (Server + Preview)",
+      "dependsOn": [
+        "Start CopilotForms Server",
+        "CopilotForms: Open Index in Editor"
+      ],
+      "dependsOrder": "sequence",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "detail": "Starts the local server then opens index.html in the editor — press Ctrl+Shift+V to open the HTML Preview Pro side panel"
+    }
+  ]
 }
