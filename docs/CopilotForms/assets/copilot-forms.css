@@ -444,6 +444,9 @@ kbd {
 .feature-value {
   color: var(--text);
   line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 .feature-value.muted {
   color: var(--text-secondary);

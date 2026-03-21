@@ -39,6 +39,36 @@ Manufacturing receiving operations desktop application for streamlined label gen
 7. **Error Handling:** DAOs return errors, Services handle them, ViewModels display them
 8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY (`V_` prefix tables are base tables, not views)
 
+### 🛑 ASSUMPTION DOCUMENTATION — REQUIRED BEFORE PROCEEDING
+
+Whenever the AI agent is about to make a **major assumption** during coding or planning, it **MUST** first create an assumption file for the user to review before continuing. Do **NOT** proceed with implementation until the user has confirmed, corrected, or approved the assumptions.
+
+**This rule applies in ALL modes, including Noob Mode.**
+
+**Examples of major assumptions that require a file:**
+- Inferring missing or ambiguous requirements
+- Choosing one implementation approach when multiple valid ones exist
+- Assuming a stored procedure exists or has specific parameters
+- Guessing at intended behavior when the specification is unclear
+- Assuming a data structure, schema, database table, or API contract
+- Inferring the scope of a refactor, migration, or architectural change
+- Assuming which module, service, or DAO should own a new piece of logic
+
+**File location:** `.github/assumptions/`
+
+**File naming format:** `MMDDYYYY-HHMMam/pm-Assumptions.md`
+
+**Example filename:** `03212026-0101PM-Assumptions.md`
+
+**Required file contents:**
+1. A numbered list of each assumption being made
+2. Why the assumption is needed (what information is missing or ambiguous)
+3. The potential impact if the assumption turns out to be wrong
+4. Alternative interpretations the agent considered
+5. An explicit request for the user to confirm, correct, or clarify before work continues
+
+---
+
 ### Important - Follow These Guidelines
 
 1. **Reference Relevant Instruction Files:** Follow guidelines in `.github/instructions/` as applicable, making sure that you reference these as if the user had included them in their prompt.

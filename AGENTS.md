@@ -153,6 +153,38 @@ Before completing any task:
 ❌ Commit secrets, connection strings, or API keys
 ❌ Modify `bin/`, `obj/`, or `.vs/` folders
 
+### 🛑 ASSUMPTION DOCUMENTATION — REQUIRED BEFORE PROCEEDING
+
+Whenever you are about to make a **major assumption** during coding or planning, you **MUST** first create an assumption file for the user to review. Do **NOT** proceed with implementation until the user has confirmed, corrected, or approved the assumptions.
+
+**This rule applies in ALL modes, including Noob Mode.**
+
+**Examples of major assumptions that require a file:**
+
+- Inferring missing or ambiguous requirements
+- Choosing one implementation approach when multiple valid ones exist
+- Assuming a stored procedure exists or has specific parameters
+- Guessing at intended behavior when the specification is unclear
+- Assuming a data structure, schema, database table, or API contract
+- Inferring the scope of a refactor, migration, or architectural change
+- Assuming which module, service, or DAO should own a new piece of logic
+
+**File location:** `.github/assumptions/`
+
+**File naming format:** `MMDDYYYY-HHMMam/pm-Assumptions.md`
+
+**Example filename:** `03212026-0101PM-Assumptions.md`
+
+**Required file contents:**
+
+1. A numbered list of each assumption being made
+2. Why the assumption is needed (what information is missing or ambiguous)
+3. The potential impact if the assumption turns out to be wrong
+4. Alternative interpretations the agent considered
+5. An explicit request for the user to confirm, correct, or clarify before work continues
+
+---
+
 ### ASK USER FIRST
 
 ⚠️ Adding new NuGet packages
