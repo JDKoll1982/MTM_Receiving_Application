@@ -1,36 +1,40 @@
 # MVVM Guide
 
+Last Updated: 2026-03-21
+
 ## ViewModel Requirements
 
 ### Must-Have Attributes
 
 - `partial` class (required for CommunityToolkit.Mvvm)
-- Inherit from `BaseViewModel`
+- Inherit from `ViewModel_Shared_Base`
 - `[ObservableProperty]` for all bindable properties
 - `[RelayCommand]` for all commands
 
 ### ViewModel Template
 
+Class naming follows `ViewModel_<Module>_<Feature>` convention (e.g., `ViewModel_Receiving_Workflow`).
+
 ```csharp
-public partial class MyFeatureViewModel : BaseViewModel
+public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
 {
-    private readonly IMyService _service;
-    
+    private readonly IService_MySQL_Receiving _service;
+
     [ObservableProperty]
     private string _myProperty = string.Empty;
-    
+
     [ObservableProperty]
-    private ObservableCollection<MyModel> _items;
-    
-    public MyFeatureViewModel(
-        IMyService service,
+    private ObservableCollection<Model_ReceivingLine> _items;
+
+    public ViewModel_Receiving_Workflow(
+        IService_MySQL_Receiving service,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _service = service;
-        Items = new ObservableCollection<MyModel>();
+        Items = new ObservableCollection<Model_ReceivingLine>();
     }
-    
+
     [RelayCommand]
     private async Task LoadDataAsync()
     {
@@ -39,7 +43,7 @@ public partial class MyFeatureViewModel : BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Loading...";
-            
+
             var result = await _service.GetDataAsync();
             if (result.IsSuccess)
             {
@@ -54,8 +58,8 @@ public partial class MyFeatureViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, 
-                nameof(LoadDataAsync), nameof(MyFeatureViewModel));
+            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium,
+                nameof(LoadDataAsync), nameof(ViewModel_Receiving_Workflow));
         }
         finally { IsBusy = false; }
     }
@@ -88,22 +92,22 @@ public partial class MyFeatureViewModel : BaseViewModel
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Receiving">
-    
+
     <Page.DataContext>
         <viewmodels:MyFeatureViewModel />
     </Page.DataContext>
-    
+
     <Grid Padding="20">
         <StackPanel Spacing="10">
-            <TextBox 
-                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}" 
+            <TextBox
+                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"
                 PlaceholderText="Search..." />
-            
-            <Button 
-                Content="Load Data" 
-                Command="{x:Bind ViewModel.LoadDataCommand}" 
+
+            <Button
+                Content="Load Data"
+                Command="{x:Bind ViewModel.LoadDataCommand}"
                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
-            
+
             <ListView ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" />
         </StackPanel>
     </Grid>
@@ -124,10 +128,10 @@ public sealed partial class MyFeatureView : Page
         this.InitializeComponent();
         ViewModel = App.GetService<MyFeatureViewModel>();
         this.DataContext = ViewModel;
-        
+
         // ✅ OK - UI setup
         WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1400, 900);
-        
+
         // ❌ FORBIDDEN - Business logic
         // var result = await _service.GetData();
     }
@@ -139,7 +143,7 @@ public sealed partial class MyFeatureView : Page
 ### ❌ Non-partial ViewModel
 
 ```csharp
-public class MyViewModel : BaseViewModel { } // Won't compile with [ObservableProperty]
+public class ViewModel_Receiving_Workflow : ViewModel_Shared_Base { } // Won't compile with [ObservableProperty]
 ```
 
 ### ❌ Missing Mode=TwoWay

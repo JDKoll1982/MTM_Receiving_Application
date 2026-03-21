@@ -99,21 +99,22 @@ This specification outlines the integration of LeanKit (a visual project managem
 
 ### Technology Stack
 
-| Component | Technology |
-|-----------|-----------|
-| **Application Framework** | WinUI 3 (Windows App SDK 1.6+) |
-| **Programming Language** | C# 12 (.NET 8) |
-| **Architecture Pattern** | MVVM with CommunityToolkit.Mvvm |
-| **Database (Write)** | MySQL 8.0 |
-| **HTTP Client** | HttpClient with Polly for retry logic |
-| **JSON Serialization** | System.Text.Json |
-| **Background Processing** | System.Threading.Channels + Timer |
-| **Logging** | Existing IService_LoggingUtility |
-| **Configuration** | MySQL app_settings table (encrypted) |
+| Component                 | Technology                            |
+| ------------------------- | ------------------------------------- |
+| **Application Framework** | WinUI 3 (Windows App SDK 1.6+)        |
+| **Programming Language**  | C# 12 (.NET 8)                        |
+| **Architecture Pattern**  | MVVM with CommunityToolkit.Mvvm       |
+| **Database (Write)**      | MySQL 5.7                             |
+| **HTTP Client**           | HttpClient with Polly for retry logic |
+| **JSON Serialization**    | System.Text.Json                      |
+| **Background Processing** | System.Threading.Channels + Timer     |
+| **Logging**               | Existing IService_LoggingUtility      |
+| **Configuration**         | MySQL app_settings table (encrypted)  |
 
 ### Integration Scope
 
 **In Scope:**
+
 - Bidirectional sync between Waitlist and LeanKit
 - Card creation from waitlist entries
 - Status synchronization (lane movements ↔ status changes)
@@ -124,6 +125,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 - Sync status UI indicators
 
 **Out of Scope (Future Phases):**
+
 - File attachment synchronization
 - Board creation/deletion from Waitlist App
 - Custom field synchronization beyond basic mapping
@@ -139,6 +141,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 **Goal:** Establish secure connection and read LeanKit board data
 
 **Deliverables:**
+
 - Authentication module (token-based)
 - Configuration management (encrypted storage)
 - LeanKit API client (DAO layer)
@@ -149,6 +152,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 - Logging infrastructure
 
 **Success Criteria:**
+
 - Successfully authenticate with LeanKit API
 - Retrieve board structure (lanes, card types)
 - Display LeanKit cards in read-only view
@@ -160,6 +164,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 **Goal:** Create LeanKit cards from waitlist entries
 
 **Deliverables:**
+
 - Card creation service
 - Data mapping layer (Waitlist → LeanKit)
 - Card update service (status, title, description)
@@ -169,6 +174,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 - Retry logic with exponential backoff
 
 **Success Criteria:**
+
 - Create LeanKit card from waitlist entry
 - Map all required fields correctly
 - Handle API failures with retry
@@ -181,6 +187,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 **Goal:** Full two-way synchronization with conflict resolution
 
 **Deliverables:**
+
 - Background sync service (polling-based)
 - Change detection logic
 - Conflict resolution strategy
@@ -193,6 +200,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 - UI: Conflict resolution dialog
 
 **Success Criteria:**
+
 - Changes in Waitlist reflect in LeanKit
 - Changes in LeanKit reflect in Waitlist
 - Conflicts are detected and resolved
@@ -205,6 +213,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 **Goal:** Real-time updates and enhanced features
 
 **Deliverables:**
+
 - Webhook endpoint (if LeanKit supports)
 - Real-time card updates
 - Advanced field mapping (custom fields)
@@ -215,6 +224,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 - UI: Sync performance dashboard
 
 **Success Criteria:**
+
 - Near-instantaneous sync (if webhooks available)
 - Support for 100+ concurrent syncs
 - Detailed analytics on sync operations
@@ -232,6 +242,7 @@ This specification outlines the integration of LeanKit (a visual project managem
 **Components:**
 
 #### Model_LeanKit_AuthConfig
+
 ```csharp
 public class Model_LeanKit_AuthConfig
 {
@@ -247,6 +258,7 @@ public class Model_LeanKit_AuthConfig
 ```
 
 #### IService_LeanKit_Authentication
+
 ```csharp
 public interface IService_LeanKit_Authentication
 {
@@ -260,6 +272,7 @@ public interface IService_LeanKit_Authentication
 ```
 
 **Database Schema (MySQL app_settings):**
+
 ```sql
 -- Add to existing app_settings table
 INSERT IGNORE INTO app_settings (setting_key, setting_value, description, is_encrypted)
@@ -284,12 +297,13 @@ VALUES
 **Components:**
 
 #### Dao_LeanKit_Board
+
 ```csharp
 public class Dao_LeanKit_Board
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiBaseUrl;
-    
+
     public async Task<Model_Dao_Result<Model_LeanKit_Board>> GetBoardAsync(string boardId);
     public async Task<Model_Dao_Result<List<Model_LeanKit_BoardSummary>>> ListBoardsAsync();
     public async Task<Model_Dao_Result<Model_LeanKit_BoardStructure>> GetBoardStructureAsync(string boardId);
@@ -297,12 +311,13 @@ public class Dao_LeanKit_Board
 ```
 
 #### Dao_LeanKit_Card
+
 ```csharp
 public class Dao_LeanKit_Card
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiBaseUrl;
-    
+
     public async Task<Model_Dao_Result<Model_LeanKit_Card>> GetCardAsync(string cardId);
     public async Task<Model_Dao_Result<List<Model_LeanKit_Card>>> ListCardsAsync(string boardId);
     public async Task<Model_Dao_Result<string>> CreateCardAsync(Model_LeanKit_CardCreateRequest request);
@@ -312,6 +327,7 @@ public class Dao_LeanKit_Card
 ```
 
 #### Dao_LeanKit_Comment
+
 ```csharp
 public class Dao_LeanKit_Comment
 {
@@ -394,47 +410,49 @@ public class Model_LeanKit_PatchOperation
 **Components:**
 
 #### IService_LeanKit_Mapper
+
 ```csharp
 public interface IService_LeanKit_Mapper
 {
     Model_LeanKit_CardCreateRequest MapWaitlistEntryToCardCreate(
-        Model_WaitlistEntry entry, 
+        Model_WaitlistEntry entry,
         Model_LeanKit_BoardStructure boardStructure);
-    
+
     List<Model_LeanKit_PatchOperation> MapWaitlistEntryToCardUpdate(
-        Model_WaitlistEntry entry, 
+        Model_WaitlistEntry entry,
         Model_LeanKit_Card existingCard);
-    
+
     Model_WaitlistEntry MapCardToWaitlistEntry(
-        Model_LeanKit_Card card, 
+        Model_LeanKit_Card card,
         Model_WaitlistEntry? existingEntry = null);
-    
+
     string MapWaitlistStatusToLaneId(
-        string waitlistStatus, 
+        string waitlistStatus,
         Model_LeanKit_BoardStructure boardStructure);
-    
+
     string MapLaneIdToWaitlistStatus(
-        string laneId, 
+        string laneId,
         Model_LeanKit_BoardStructure boardStructure);
 }
 ```
 
 **Field Mapping Table:**
 
-| Waitlist Field | LeanKit Card Field | Transformation Logic |
-|----------------|-------------------|----------------------|
-| `EntryID` | `ExternalCardId` | Direct mapping (string) |
-| `CustomerName` | `Title` | Direct mapping |
-| `Description` | `Description` | Direct mapping with HTML sanitization |
-| `Status` | `LaneId` | Lookup: "Pending" → Backlog Lane, "In Progress" → In Progress Lane, etc. |
-| `Priority` | `Priority` | Direct mapping (1-3) |
-| `AssignedTo` | `AssignedUserIds[]` | User email → LeanKit User ID lookup |
-| `Tags` | `Tags[]` | Direct mapping (string array) |
-| `CreatedDate` | `CreatedOn` | Read-only (LeanKit manages) |
-| `ModifiedDate` | `UpdatedOn` | Read-only (LeanKit manages) |
-| `Notes` | Comments | Create separate comment via Comment API |
+| Waitlist Field | LeanKit Card Field  | Transformation Logic                                                     |
+| -------------- | ------------------- | ------------------------------------------------------------------------ |
+| `EntryID`      | `ExternalCardId`    | Direct mapping (string)                                                  |
+| `CustomerName` | `Title`             | Direct mapping                                                           |
+| `Description`  | `Description`       | Direct mapping with HTML sanitization                                    |
+| `Status`       | `LaneId`            | Lookup: "Pending" → Backlog Lane, "In Progress" → In Progress Lane, etc. |
+| `Priority`     | `Priority`          | Direct mapping (1-3)                                                     |
+| `AssignedTo`   | `AssignedUserIds[]` | User email → LeanKit User ID lookup                                      |
+| `Tags`         | `Tags[]`            | Direct mapping (string array)                                            |
+| `CreatedDate`  | `CreatedOn`         | Read-only (LeanKit manages)                                              |
+| `ModifiedDate` | `UpdatedOn`         | Read-only (LeanKit manages)                                              |
+| `Notes`        | Comments            | Create separate comment via Comment API                                  |
 
 **Status Mapping Configuration (stored in app_settings):**
+
 ```json
 {
   "statusMappings": [
@@ -471,6 +489,7 @@ public interface IService_LeanKit_Mapper
 **Components:**
 
 #### IService_LeanKit_SyncEngine
+
 ```csharp
 public interface IService_LeanKit_SyncEngine
 {
@@ -485,6 +504,7 @@ public interface IService_LeanKit_SyncEngine
 ```
 
 #### Model_SyncReport
+
 ```csharp
 public class Model_SyncReport
 {
@@ -529,7 +549,7 @@ FUNCTION SyncAllAsync():
   1. Load sync configuration (enabled, interval, last sync time)
   2. IF auto-sync disabled THEN return
   3. Log sync start
-  4. 
+  4.
   5. // Phase 1: Waitlist → LeanKit
   6. Load all waitlist entries with SyncStatus != "Synced"
   7. FOR EACH entry:
@@ -541,7 +561,7 @@ FUNCTION SyncAllAsync():
       c. ELSE create new card
       d. Mark entry as synced
       e. Log sync action
-  
+
   8. // Phase 2: LeanKit → Waitlist
   9. Load all cards from LeanKit board
   10. FOR EACH card:
@@ -552,13 +572,13 @@ FUNCTION SyncAllAsync():
            - ELSE skip (Waitlist is source of truth)
       c. ELSE create new waitlist entry (if card has ExternalCardId)
       d. Log sync action
-  
+
   11. // Phase 3: Conflict Resolution
   12. FOR EACH detected conflict:
       a. Apply resolution strategy (last-write-wins by default)
       b. Log conflict and resolution
       c. Notify user if manual intervention needed
-  
+
   13. Update last sync timestamp
   14. Generate sync report
   15. Return report
@@ -566,6 +586,7 @@ END FUNCTION
 ```
 
 **Database Schema (Sync Tracking):**
+
 ```sql
 CREATE TABLE IF NOT EXISTS leankit_sync_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -584,7 +605,7 @@ CREATE TABLE IF NOT EXISTS leankit_sync_history (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Add columns to existing waitlist_entries table
-ALTER TABLE waitlist_entries 
+ALTER TABLE waitlist_entries
 ADD COLUMN leankit_card_id VARCHAR(255) NULL,
 ADD COLUMN leankit_sync_status ENUM('NotSynced', 'Synced', 'SyncError', 'SyncPending') DEFAULT 'NotSynced',
 ADD COLUMN leankit_last_sync_at DATETIME NULL,
@@ -602,13 +623,14 @@ ADD INDEX idx_sync_status (leankit_sync_status);
 **Components:**
 
 #### IService_LeanKit_RetryPolicy
+
 ```csharp
 public interface IService_LeanKit_RetryPolicy
 {
     Task<Model_Dao_Result<T>> ExecuteWithRetryAsync<T>(
         Func<Task<Model_Dao_Result<T>>> operation,
         string operationName);
-    
+
     Task<Model_Dao_Result> ExecuteWithRetryAsync(
         Func<Task<Model_Dao_Result>> operation,
         string operationName);
@@ -616,6 +638,7 @@ public interface IService_LeanKit_RetryPolicy
 ```
 
 **Retry Strategy:**
+
 - **Max Retries:** 3 attempts
 - **Backoff:** Exponential (5s, 10s, 20s)
 - **Retryable Errors:**
@@ -628,15 +651,16 @@ public interface IService_LeanKit_RetryPolicy
   - HTTP 404 (Not Found)
 
 **Implementation (Polly-based):**
+
 ```csharp
 public class Service_LeanKit_RetryPolicy : IService_LeanKit_RetryPolicy
 {
     private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy;
-    
+
     public Service_LeanKit_RetryPolicy()
     {
         _retryPolicy = Policy
-            .HandleResult<HttpResponseMessage>(r => 
+            .HandleResult<HttpResponseMessage>(r =>
                 r.StatusCode == HttpStatusCode.TooManyRequests ||
                 r.StatusCode == HttpStatusCode.BadGateway ||
                 r.StatusCode == HttpStatusCode.ServiceUnavailable ||
@@ -663,6 +687,7 @@ public class Service_LeanKit_RetryPolicy : IService_LeanKit_RetryPolicy
 **Components:**
 
 #### View_Settings_LeanKitConfiguration
+
 - Connection settings form
 - Test connection button
 - Board selection dropdown
@@ -671,12 +696,14 @@ public class Service_LeanKit_RetryPolicy : IService_LeanKit_RetryPolicy
 - Sync interval setting
 
 #### View_Waitlist_SyncStatus
+
 - Per-entry sync status badge
 - "Sync Now" button
 - View in LeanKit link
 - Sync error details
 
 #### View_LeanKit_SyncDashboard
+
 - Sync history table
 - Sync statistics (success rate, errors)
 - Manual sync trigger
@@ -684,6 +711,7 @@ public class Service_LeanKit_RetryPolicy : IService_LeanKit_RetryPolicy
 - Last sync timestamp
 
 #### UserControl_SyncStatusBadge
+
 - Visual indicator (icon + text)
 - States: Synced, Pending, Error, Not Synced
 - Tooltip with last sync time
@@ -848,6 +876,7 @@ Scenario: Waitlist entry and LeanKit card both modified since last sync
 ```
 
 **Interactions:**
+
 - **Test Connection**: Validates API credentials and board access
 - **Generate New Token**: Opens LeanKit in browser to create token
 - **Refresh Lanes**: Fetches latest board structure from LeanKit
@@ -894,6 +923,7 @@ Legend:
 ```
 
 **Context Menu on "..." button:**
+
 ```
 ┌────────────────────────┐
 │ Edit Entry             │
@@ -1061,16 +1091,17 @@ Legend:
 **Used in:** Phase 2 & 3
 
 **Mechanism:**
+
 ```csharp
 public class Service_LeanKit_SyncEngine
 {
     private System.Threading.Timer? _syncTimer;
-    
+
     public async Task StartAutoSyncAsync()
     {
         var intervalMinutes = await _configService.GetSyncIntervalAsync();
         var intervalMs = intervalMinutes * 60 * 1000;
-        
+
         _syncTimer = new Timer(
             async _ => await SyncAllAsync(),
             null,
@@ -1082,11 +1113,13 @@ public class Service_LeanKit_SyncEngine
 ```
 
 **Pros:**
+
 - Simple to implement
 - No server-side dependencies
 - Works with any LeanKit subscription
 
 **Cons:**
+
 - Delayed updates (up to sync interval)
 - Higher API usage
 - Not truly real-time
@@ -1096,17 +1129,20 @@ public class Service_LeanKit_SyncEngine
 ### Pattern 2: Webhook-Based Sync (Future - Phase 4)
 
 **Mechanism:**
+
 ```
 LeanKit Board Change → Webhook Trigger → MTM API Endpoint → Immediate Sync
 ```
 
 **Requirements:**
+
 - LeanKit Enterprise subscription (verify availability)
 - Public-facing webhook endpoint
 - HTTPS with valid certificate
 - Webhook signature validation
 
 **Implementation (if available):**
+
 ```csharp
 [HttpPost]
 [Route("api/webhook/leankit")]
@@ -1117,7 +1153,7 @@ public async Task<IActionResult> ReceiveLeankitWebhook(
     // Validate signature
     if (!_webhookValidator.IsValid(payload, signature))
         return Unauthorized();
-    
+
     // Process webhook
     await _syncEngine.ProcessWebhookAsync(payload);
     return Ok();
@@ -1131,26 +1167,27 @@ public async Task<IActionResult> ReceiveLeankitWebhook(
 **Purpose:** Prevent data loss during concurrent modifications
 
 **Implementation:**
+
 ```csharp
 public async Task<Model_Dao_Result> UpdateWaitlistEntryAsync(
-    Model_WaitlistEntry entry, 
+    Model_WaitlistEntry entry,
     DateTime expectedLastModified)
 {
     var sql = @"
-        UPDATE waitlist_entries 
-        SET status = @Status, 
+        UPDATE waitlist_entries
+        SET status = @Status,
             modified_date = NOW(),
             leankit_sync_status = 'SyncPending'
-        WHERE id = @Id 
+        WHERE id = @Id
         AND modified_date = @ExpectedLastModified";
-    
+
     var rowsAffected = await _db.ExecuteAsync(sql, new
     {
         entry.Status,
         entry.Id,
         ExpectedLastModified = expectedLastModified
     });
-    
+
     if (rowsAffected == 0)
     {
         return new Model_Dao_Result
@@ -1160,7 +1197,7 @@ public async Task<Model_Dao_Result> UpdateWaitlistEntryAsync(
             Severity = Enum_ErrorSeverity.Warning
         };
     }
-    
+
     return new Model_Dao_Result { Success = true };
 }
 ```
@@ -1172,11 +1209,13 @@ public async Task<Model_Dao_Result> UpdateWaitlistEntryAsync(
 ### Credential Management
 
 **Storage:**
+
 - API tokens stored in MySQL `app_settings` table
 - Encrypted using AES-256
 - Encryption key stored in Windows Credential Manager (per-user)
 
 **Encryption Service:**
+
 ```csharp
 public interface IService_Encryption
 {
@@ -1188,7 +1227,7 @@ public interface IService_Encryption
 public class Service_WindowsCredentialEncryption : IService_Encryption
 {
     private const string CREDENTIAL_TARGET = "MTM_Waitlist_LeanKit_EncryptionKey";
-    
+
     public async Task<string> EncryptAsync(string plainText)
     {
         var key = GetOrCreateEncryptionKey();
@@ -1196,25 +1235,25 @@ public class Service_WindowsCredentialEncryption : IService_Encryption
         aes.Key = key;
         // ... encryption logic
     }
-    
+
     private byte[] GetOrCreateEncryptionKey()
     {
         using var cred = new Credential();
         cred.Target = CREDENTIAL_TARGET;
-        
+
         if (!cred.Load())
         {
             // Generate new key
             var key = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(key);
-            
+
             cred.Password = Convert.ToBase64String(key);
             cred.Type = CredentialType.Generic;
             cred.PersistanceType = PersistanceType.LocalComputer;
             cred.Save();
         }
-        
+
         return Convert.FromBase64String(cred.Password);
     }
 }
@@ -1223,30 +1262,32 @@ public class Service_WindowsCredentialEncryption : IService_Encryption
 ### API Rate Limiting
 
 **LeanKit Rate Limits (typical):**
+
 - 100 requests per minute per account
 - 500 requests per hour per account
 
 **Mitigation Strategy:**
+
 ```csharp
 public class Service_LeanKit_RateLimiter
 {
     private readonly SemaphoreSlim _rateLimitSemaphore = new(10); // Max 10 concurrent requests
     private readonly Queue<DateTime> _requestTimestamps = new();
-    
+
     public async Task<bool> AcquirePermitAsync()
     {
         await _rateLimitSemaphore.WaitAsync();
-        
+
         try
         {
             // Remove timestamps older than 1 minute
             var oneMinuteAgo = DateTime.UtcNow.AddMinutes(-1);
-            while (_requestTimestamps.Count > 0 && 
+            while (_requestTimestamps.Count > 0 &&
                    _requestTimestamps.Peek() < oneMinuteAgo)
             {
                 _requestTimestamps.Dequeue();
             }
-            
+
             // Check if under rate limit
             if (_requestTimestamps.Count >= 90) // Leave buffer
             {
@@ -1257,7 +1298,7 @@ public class Service_LeanKit_RateLimiter
                     await Task.Delay(waitTime);
                 }
             }
-            
+
             _requestTimestamps.Enqueue(DateTime.UtcNow);
             return true;
         }
@@ -1276,12 +1317,14 @@ public class Service_LeanKit_RateLimiter
 ### Unit Tests
 
 **Test Coverage:**
+
 - Data mapping logic (100% coverage)
 - Authentication flow
 - Retry logic
 - Conflict resolution algorithms
 
 **Example Test:**
+
 ```csharp
 [Fact]
 public async Task MapWaitlistEntryToCardCreate_ShouldMapAllFields_WhenEntryValid()
@@ -1295,7 +1338,7 @@ public async Task MapWaitlistEntryToCardCreate_ShouldMapAllFields_WhenEntryValid
         Status = "In Progress",
         Priority = 2
     };
-    
+
     var boardStructure = new Model_LeanKit_BoardStructure
     {
         Lanes = new List<Model_LeanKit_Lane>
@@ -1307,12 +1350,12 @@ public async Task MapWaitlistEntryToCardCreate_ShouldMapAllFields_WhenEntryValid
             new() { Id = "type-456", Name = "Order" }
         }
     };
-    
+
     var mapper = new Service_LeanKit_Mapper();
-    
+
     // Act
     var result = mapper.MapWaitlistEntryToCardCreate(entry, boardStructure);
-    
+
     // Assert
     result.Should().NotBeNull();
     result.Title.Should().Be("Acme Corp");
@@ -1325,12 +1368,14 @@ public async Task MapWaitlistEntryToCardCreate_ShouldMapAllFields_WhenEntryValid
 ### Integration Tests
 
 **Test Scenarios:**
+
 - Full round-trip sync (create entry → sync to LeanKit → sync back)
 - Conflict detection and resolution
 - Network failure simulation
 - API authentication failure
 
 **Example Integration Test:**
+
 ```csharp
 [Fact]
 [Trait("Category", "Integration")]
@@ -1339,13 +1384,13 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
     // Arrange
     var entry = await CreateTestWaitlistEntry();
     var syncEngine = GetIntegrationTestSyncEngine();
-    
+
     // Act
     var result = await syncEngine.SyncWaitlistEntryToLeankitAsync(entry.EntryID);
-    
+
     // Assert
     result.IsSuccess.Should().BeTrue();
-    
+
     // Verify in LeanKit
     var leankitDao = GetLeankitDao();
     var cards = await leankitDao.ListCardsAsync(_testBoardId);
@@ -1356,6 +1401,7 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 ### Manual Test Plan
 
 **Test Case 1: Initial Setup**
+
 1. Open LeanKit Configuration window
 2. Enter API token
 3. Click "Test Connection"
@@ -1366,6 +1412,7 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 8. Verify settings persisted
 
 **Test Case 2: Manual Sync**
+
 1. Create new waitlist entry
 2. Click "Sync to LeanKit" button
 3. Verify sync status changes to "Pending"
@@ -1375,6 +1422,7 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 7. Verify card exists with correct data
 
 **Test Case 3: Auto-Sync**
+
 1. Enable auto-sync (15-minute interval)
 2. Create 5 new waitlist entries
 3. Wait for sync timer to trigger
@@ -1384,6 +1432,7 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 7. Verify waitlist entry status updated
 
 **Test Case 4: Error Handling**
+
 1. Disconnect network
 2. Create waitlist entry
 3. Attempt manual sync
@@ -1399,12 +1448,14 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 ### Phase 1 Deployment (Weeks 1-2)
 
 **Prerequisites:**
+
 - LeanKit API token generated
 - Board ID confirmed
 - MySQL database updated with new schema
 
 **Deployment Steps:**
-1. Database migration (add leankit_* columns)
+
+1. Database migration (add leankit\_\* columns)
 2. Deploy application update
 3. Configure LeanKit settings (admin only)
 4. Test connection
@@ -1414,10 +1465,12 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 ### Phase 2 Deployment (Weeks 3-4)
 
 **Prerequisites:**
+
 - Phase 1 stable for 1 week
 - No critical bugs reported
 
 **Deployment Steps:**
+
 1. Database migration (add sync_history table)
 2. Deploy application update
 3. Enable one-way sync (Waitlist → LeanKit)
@@ -1428,10 +1481,12 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 ### Phase 3 Deployment (Weeks 5-7)
 
 **Prerequisites:**
+
 - Phase 2 stable with >95% sync success rate
 - Conflict resolution strategy approved
 
 **Deployment Steps:**
+
 1. Deploy bidirectional sync update
 2. Enable auto-sync with 60-minute interval (conservative)
 3. Monitor for conflicts
@@ -1441,10 +1496,12 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 ### Phase 4 Deployment (Weeks 8-10)
 
 **Prerequisites:**
+
 - LeanKit webhooks available (verify with LeanKit support)
 - Public webhook endpoint configured
 
 **Deployment Steps:**
+
 1. Deploy webhook endpoint
 2. Configure webhook in LeanKit
 3. Test webhook delivery
@@ -1459,6 +1516,7 @@ public async Task SyncWaitlistToLeankit_ShouldCreateCard_WhenEntryNew()
 The following HTML mockups demonstrate the complete LeanKit integration workflow in the MTM Waitlist Application. These can be opened in a browser and navigated interactively.
 
 ### File Structure
+
 ```
 docs/MTM_Waitlist_Application/Mockups/LeanKit_Integration/
 ├── index.html (Main navigation)
@@ -1478,9 +1536,9 @@ docs/MTM_Waitlist_Application/Mockups/LeanKit_Integration/
 
 ## Document Control
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-01-20 | AI Assistant | Initial specification document |
+| Version | Date       | Author       | Changes                        |
+| ------- | ---------- | ------------ | ------------------------------ |
+| 1.0     | 2026-01-20 | AI Assistant | Initial specification document |
 
 ---
 

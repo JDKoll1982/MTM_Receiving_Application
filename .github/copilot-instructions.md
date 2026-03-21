@@ -1,6 +1,6 @@
 ---
-description: 'MTM Receiving Application development guidelines - MVVM architecture, database patterns, naming conventions, and WinUI 3 best practices'
-applyTo: '**/*.{cs,xaml,csproj,vb,fs,sql,md,txt,ps1,sh,bash,cmd,bat,py,js,ts,jsx,tsx,html,htm,css,scss,json,yaml,yml,xml,config,toml,ini,env,props,targets}'
+description: "MTM Receiving Application development guidelines - MVVM architecture, database patterns, naming conventions, and WinUI 3 best practices"
+applyTo: "**/*.{cs,xaml,csproj,vb,fs,sql,md,txt,ps1,sh,bash,cmd,bat,py,js,ts,jsx,tsx,html,htm,css,scss,json,yaml,yml,xml,config,toml,ini,env,props,targets}"
 ---
 
 # MTM Receiving Application Development Guide
@@ -9,9 +9,14 @@ Manufacturing receiving operations desktop application for streamlined label gen
 
 ## 🚨 CRITICAL ARCHITECTURE RULES - READ FIRST
 
+### BEFORE GOING FORWARD ALWAYS ATTEMPT TO INITIALIZE THE SERENA AI ASSISTANT AND READ THE MEMORIES IN THE `.serena/memories/` FOLDER, ESPECIALLY `architectural_patterns.md` AND `forbidden_practices.md`. THESE MEMORIES CONTAIN CRUCIAL INFORMATION ABOUT THE PROJECT'S ARCHITECTURE, CODING STANDARDS, AND COMMON PITFALLS TO AVOID. FAILURE TO ADHERE TO THESE GUIDELINES MAY RESULT IN CODE THAT VIOLATES THE MVVM ARCHITECTURE, INTRODUCES TECHNICAL DEBT, OR CAUSES MAINTAINABILITY ISSUES DOWN THE LINE.
+
+- YOU ONLY NEED TO DO THIS ONCE PER SERENA SESSION. ONCE YOU HAVE READ THE MEMORIES, YOU CAN REFERENCE THEM IN YOUR PROMPTS TO THE AI TO ENSURE COMPLIANCE WITH THE PROJECT'S STANDARDS.
+
 ### FORBIDDEN - These Will Break the System
 
 **❌ NEVER DO THESE:**
+
 1. **ViewModels calling DAOs directly** - MUST go through Service layer
 2. **ViewModels accessing `Helper_Database_*` classes** - Use services only
 3. **Static DAO classes** - All DAOs MUST be instance-based
@@ -24,6 +29,7 @@ Manufacturing receiving operations desktop application for streamlined label gen
 ### REQUIRED - Every Component Must Follow
 
 **✅ ALWAYS DO THESE:**
+
 1. **MVVM Layer Flow:** View (XAML) → ViewModel → Service → DAO → Database
 2. **ViewModels:** Partial classes inheriting from `ViewModel_Shared_Base`
 3. **Services:** Interface-based with dependency injection
@@ -36,10 +42,10 @@ Manufacturing receiving operations desktop application for streamlined label gen
 ### Important - Follow These Guidelines
 
 1. **Reference Relevant Instruction Files:** Follow guidelines in `.github/instructions/` as applicable, making sure that you reference these as if the user had included them in their prompt.
-    - See the "Additional Resources" section below for a list of relevant instruction files.
-    - Reference the specific instruction files for detailed guidance on each topic.
-    - Follow the naming conventions and folder structures outlined in the project governance documents.
-    - If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
+   - See the "Additional Resources" section below for a list of relevant instruction files.
+   - Reference the specific instruction files for detailed guidance on each topic.
+   - Follow the naming conventions and folder structures outlined in the project governance documents.
+   - If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
 
 ## Technology Stack
 
@@ -47,40 +53,46 @@ Manufacturing receiving operations desktop application for streamlined label gen
 - **Language:** C# 12
 - **Platform:** .NET 8
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
-- **Database:** MySQL 8.0 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
+- **Database:** MySQL 5.7 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
 - **Testing:** xUnit with FluentAssertions
 - **DI Container:** Microsoft.Extensions.DependencyInjection
 
 ## Additional Resources
 
 ### Project Governance
-- Project Constitution: See `.github/CONSTITUTION.md` for immutable architecture rules
-- Agent Definitions: See `.github/AGENTS.md` for specialized AI agents
-- Memory Bank: See `memory-bank/` folder for project context and task tracking
+
+- Project Constitution: See `.specify\memory\constitution.md` for immutable architecture rules
+- Agent Definitions: See `AGENTS.md` for specialized AI agents
 
 ### Instruction Files
+
 The `.github/instructions/` folder contains specialized guidance for specific scenarios. Reference these when applicable:
 
 **Core Development:**
+
 - `.github/instructions/csharp.instructions.md` - C# language-specific best practices
 - `.github/instructions/dotnet-architecture-good-practices.instructions.md` - .NET architecture patterns
 - `.github/instructions/testing-strategy.instructions.md` - Comprehensive testing guide
 - `.github/instructions/code-review-generic.instructions.md` - Code review guidelines
 
 **Code Quality:**
+
 - `.github/instructions/object-calisthenics.instructions.md` - Code quality rules and patterns
 - `.github/instructions/self-explanatory-code-commenting.instructions.md` - Commenting standards
 - `.github/instructions/security-and-owask.instructions.md` - Security best practices
 
 **Database & SQL:**
+
 - `.github/instructions/sql-sp-generation.instructions.md` - MySQL stored procedure generation guidelines
 - `.github/instructions/infor-visual-database-reference.instructions.md` - Infor Visual (MTMFG) schema CSV reference files
 - `.github/instructions/infor-visual-query-authoring.instructions.md` - Writing new SQL SELECT queries against MTMFG
 
 **Performance & Optimization:**
+
 - `.github/instructions/performance-optimization.instructions.md` - Performance tuning guidance
 
 **Scripting:**
+
 - `.github/instructions/powershell.instructions.md` - PowerShell scripting standards
 - `.github/instructions/powershell-scripting-ai.instructions.md` - AI-assisted PowerShell development
 - `.github/instructions/powershell-pester-5.instructions.md` - PowerShell testing with Pester 5
@@ -88,28 +100,41 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 - `.github/instructions/python.instructions.md` - Python development standards
 
 **Workflow & Process:**
-- `.github/instructions/memory-bank.instructions.md` - Memory bank usage and maintenance
+
 - `.github/instructions/spec-driven-workflow-v1.instructions.md` - Specification-driven development
 - `.github/instructions/update-docs-on-code-change.instructions.md` - Documentation update process
 - `.github/instructions/module-doc-maintenance.instructions.md` - Module documentation standards
 
 **AI Agent & Automation:**
+
 - `.github/instructions/comprehensive-research.instructions.md` - Research workflow for documentation/code generation
 - `.github/instructions/agents.instructions.md` - AI agent configuration and usage
 - `.github/instructions/agent-skills.instructions.md` - AI agent capabilities reference
 - `.github/instructions/joyride-workspace-automation.instructions.md` - Workspace automation
-- `.github/instructions/serena-tools.instructions.md` - Serena tooling reference
+- `.github/instructions/serena-tools.instructions.md` - **Serena index** (start here; links to all Serena detail files)
+  - `serena-01-overview.instructions.md` — What Serena is, when to use it, quick start
+  - `serena-02-tools-reference.instructions.md` — Every tool with parameters and MTM examples
+  - `serena-03-language-support.instructions.md` — C# / Roslyn LSP setup and capabilities
+  - `serena-04-running.instructions.md` — Installation (uv/uvx/Docker), startup options
+  - `serena-05-clients.instructions.md` — VSCode, Claude Code, Claude Desktop configuration
+  - `serena-06-workflow.instructions.md` — Project creation, indexing, activation, onboarding
+  - `serena-07-memories.instructions.md` — Memory system, MTM memory catalog, onboarding
+  - `serena-08-configuration.instructions.md` — serena_config.yml, project.yml, contexts, modes
+  - `serena-09-dashboard-logs-security.instructions.md` — Dashboard, logs, security safeguards
+  - `serena-10-advanced-usage.instructions.md` — Prompting strategies, Agno agents, worktrees
 - `.github/instructions/taming-copilot.instructions.md` - Copilot interaction patterns
 - `.github/instructions/prompt.instructions.md` - Prompt engineering guidelines
 - `.github/instructions/instructions.instructions.md` - Meta-instructions for instruction files
 
 **Specialized:**
+
 - `.github/instructions/dotnet-upgrade.instructions.md` - .NET upgrade procedures
 - `.github/instructions/arrogant-code-review.instructions.md` - Assertive code review mode
 
 ## Naming Conventions
 
 **Classes:**
+
 - ViewModels: `ViewModel_<Module>_<Feature>` (e.g., `ViewModel_Receiving_Workflow`)
 - Views: `View_<Module>_<Feature>` (e.g., `View_Receiving_Workflow`)
 - Services: `Service_<Purpose>` with interface `IService_<Purpose>` (e.g., `IService_ReceivingWorkflow`)
@@ -119,11 +144,13 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 - Helpers: `Helper_<Category>_<Function>` (e.g., `Helper_Database_Variables`)
 
 **Methods:**
+
 - PascalCase for all methods
 - Async methods MUST end with `Async`: `LoadDataAsync()`, `SaveAsync()`
 - DAO methods: `<Action><Entity>Async` (e.g., `InsertReceivingLineAsync`)
 
 **Properties and Fields:**
+
 - PascalCase for public properties
 - `_camelCase` for private fields (with underscore prefix)
 - Observable properties use `[ObservableProperty]` on private field
@@ -133,12 +160,14 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 ### MVVM Layer Separation
 
 **REQUIRED:**
+
 - ALL ViewModels MUST inherit from `ViewModel_Shared_Base` or `ObservableObject`
 - ALL ViewModels MUST be `partial` classes
 - ALL data binding MUST use `x:Bind` (compile-time)
 - ALL data access MUST flow through Service layer
 
 **FORBIDDEN:**
+
 - ViewModels SHALL NOT directly call DAOs
 - ViewModels SHALL NOT access `Helper_Database_*` classes
 - ViewModels SHALL NOT use connection strings
@@ -309,6 +338,7 @@ public static class Dao_ReceivingLine
 ```
 
 **Database Rules:**
+
 - MySQL: Use stored procedures ONLY - never raw SQL in C#
 - SQL Server (Infor Visual): READ ONLY - include `ApplicationIntent=ReadOnly` in connection string
 - DAOs MUST return `Model_Dao_Result` or `Model_Dao_Result<T>`
@@ -376,7 +406,8 @@ services.AddTransient<ViewModel_Receiving_Workflow>();
 
 // Views as Transient
 services.AddTransient<View_Receiving_Workflow>();
-```
+
+````
 
 ## Code Quality Standards
 
@@ -392,7 +423,7 @@ if (condition)
 // ❌ FORBIDDEN - No braces
 if (condition)
     DoSomething();
-```
+````
 
 ### Accessibility Modifiers (REQUIRED)
 
@@ -452,6 +483,7 @@ var sorted = items.OrderBy(x => x);
 ### Test What You Can Mock
 
 **Decision Tree:**
+
 - Validator (FluentValidation) → ✅ Unit Test (no dependencies)
 - ViewModel with IMediator → ✅ Unit Test (mock IMediator)
 - ViewModel with concrete services → ⚠️ Integration Test
@@ -477,7 +509,7 @@ public class ViewModel_Receiving_WorkflowTests
     {
         _mockMediator = new Mock<IMediator>();
         _mockErrorHandler = new Mock<IService_ErrorHandler>();
-        
+
         _viewModel = new ViewModel_Receiving_Workflow(
             _mockMediator.Object,
             _mockErrorHandler.Object);
@@ -490,10 +522,10 @@ public class ViewModel_Receiving_WorkflowTests
         var expectedData = new List<Model_Item> { new Model_Item { Name = "Test" } };
         _mockMediator
             .Setup(m => m.Send(It.IsAny<GetItemsQuery>(), default))
-            .ReturnsAsync(new Model_Dao_Result<List<Model_Item>> 
-            { 
-                IsSuccess = true, 
-                Data = expectedData 
+            .ReturnsAsync(new Model_Dao_Result<List<Model_Item>>
+            {
+                IsSuccess = true,
+                Data = expectedData
             });
 
         // Act
@@ -534,7 +566,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
             PartID = "TEST-PART",
             Quantity = 100
         };
-        
+
         var result = await _dao.InsertReceivingLineAsync(testLine);
         _testLineId = result.Data;
     }
@@ -559,6 +591,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 ```
 
 **Testing Rules:**
+
 - No Arrange/Act/Assert comments (per repo guidance)
 - Use FluentAssertions for readable assertions
 - Test naming: `MethodName_Should<Result>_When<Condition>`
@@ -570,6 +603,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 ### Creating New ViewModel
 
 **Steps:**
+
 1. Create partial class inheriting from `ViewModel_Shared_Base`
 2. Use `[ObservableProperty]` for bindable properties
 3. Use `[RelayCommand]` for commands
@@ -581,6 +615,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 ### Creating New View
 
 **Steps:**
+
 1. Use `x:Bind` for all data binding
 2. Set `Mode` (`OneWay`, `TwoWay`, `OneTime`)
 3. Use `UpdateSourceTrigger=PropertyChanged` for TwoWay TextBox bindings
@@ -590,6 +625,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 ### Creating New Service
 
 **Steps:**
+
 1. Create interface in `Contracts/Services/IService_<Name>.cs`
 2. Implement in module's `Services/` folder
 3. Inject DAOs and dependencies via constructor
@@ -600,6 +636,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 ### Creating New DAO
 
 **Steps:**
+
 1. Make it instance-based (never static)
 2. Accept `connectionString` in constructor with null check
 3. Use stored procedures via `Helper_Database_StoredProcedure`
@@ -724,6 +761,7 @@ catch (Exception ex)
 ## Module Structure
 
 **Modules:**
+
 - `Module_Core` - Shared infrastructure, helpers, base classes
 - `Module_Shared` - Shared ViewModels, Views, models
 - `Module_Receiving` - Receiving workflow and label generation
@@ -733,6 +771,7 @@ catch (Exception ex)
 - `Module_Volvo` - Volvo-specific integration
 
 **Common Folders per Module:**
+
 - `Views/` - XAML pages and windows
 - `ViewModels/` - View-bound logic
 - `Services/` - Business logic layer
@@ -743,16 +782,19 @@ catch (Exception ex)
 ## Key Interfaces and Base Classes
 
 **Base Classes:**
+
 - `ViewModel_Shared_Base` - Base for all ViewModels with `IsBusy`, `StatusMessage`, error handling
 - `ObservableObject` - CommunityToolkit.Mvvm base (when not using `ViewModel_Shared_Base`)
 
 **Common Services:**
+
 - `IService_ErrorHandler` - Error handling and user notifications
 - `IService_LoggingUtility` - Application logging
 - `IService_Dispatcher` - UI thread marshalling
 - `IService_Window` - Window management
 
 **Key Helpers:**
+
 - `Helper_Database_Variables` - Connection string management
 - `Helper_Database_StoredProcedure` - Stored procedure execution
 - `WindowHelper_WindowSizeAndStartupLocation` - Window sizing
@@ -776,16 +818,19 @@ When debugging issues, verify:
 ## Validation
 
 **Build Command:**
+
 ```powershell
 dotnet build MTM_Receiving_Application.sln
 ```
 
 **Test Command:**
+
 ```powershell
 dotnet test MTM_Receiving_Application.sln
 ```
 
 **Check for Architecture Violations:**
+
 - Search for `ViewModel` calling `Dao_` directly (forbidden)
 - Search for static DAO classes (forbidden)
 - Search for raw SQL in C# files (forbidden for MySQL)
@@ -799,4 +844,3 @@ dotnet test MTM_Receiving_Application.sln
 
 - When creating XLSX files, implement strategies to support multi-user access.
 - Use `FileShare.ReadWrite` or shared access strategies to allow concurrent edits without conflicts.
-

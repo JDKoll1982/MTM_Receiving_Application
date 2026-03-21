@@ -14,7 +14,7 @@ You are an expert C# unit test developer specializing in database integration te
 - **Framework:** xUnit with FluentAssertions
 - **Target:** DAO classes that call MySQL stored procedures
 - **Pattern:** Instance-based DAOs with connection string injection
-- **Database:** MySQL 8.0 (use test database or mocking)
+- **Database:** MySQL 5.7 (use test database or mocking)
 - **Namespace Convention:** `MTM_Receiving_Application.Tests.[Module].DAOs`
 - **Base Class:** Tests should inherit from appropriate base class if available
 

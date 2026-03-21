@@ -25,7 +25,7 @@ This document consolidates all known requirements and design decisions for the M
 - **Language:** C# 12
 - **Platform:** .NET 8
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
-- **Primary Database:** MySQL 8.0 (READ/WRITE)
+- **Primary Database:** MySQL 5.7 (READ/WRITE)
 - **Integration Database:** SQL Server/Infor Visual (READ ONLY)
 - **Testing:** xUnit with FluentAssertions
 
@@ -132,6 +132,7 @@ This document consolidates all known requirements and design decisions for the M
 **Goal:** Minimize operator data entry
 
 **Request Types Available to Operators:**
+
 - Material delivery (coils, blanks, etc.)
 - Dunnage delivery (containers, pallets, etc.)
 - Quality inspection requests
@@ -142,6 +143,7 @@ This document consolidates all known requirements and design decisions for the M
 - Custom/Other (fallback for anything not predefined)
 
 **Data Auto-Population:**
+
 - Part IDs from database
 - Zone/location from database
 - Work order association
@@ -149,10 +151,12 @@ This document consolidates all known requirements and design decisions for the M
 - Operator adds quantity, priority, custom notes if needed
 
 **Post-Submission Editing:**
+
 - Need to decide if operators can edit/cancel after assignment
 - Balance between flexibility and handler workflow stability
 
 **Out-of-Area Requests:**
+
 - Operators may need to request help for areas outside their normal workstation
 - Need to determine how this workflow should function
 - May require additional approvals or different routing
@@ -160,6 +164,7 @@ This document consolidates all known requirements and design decisions for the M
 ### Material Handler Task Execution
 
 **Task Assignment Options:**
+
 1. **Auto-Assignment** (toggleable by management)
    - Rules: Round-robin, least busy, zone-based, skill match, or combo
    - Override capability for Leads on critical tasks
@@ -167,6 +172,7 @@ This document consolidates all known requirements and design decisions for the M
 3. **Self-Claim** from queue
 
 **Task Acceptance:**
+
 - Handlers need ability to reject tasks with valid reasons:
   - Equipment unavailable/broken
   - Missing tools/equipment
@@ -176,6 +182,7 @@ This document consolidates all known requirements and design decisions for the M
 - Rejected tasks go back to queue or escalate to Lead
 
 **Task Execution:**
+
 - Start timer when beginning task
 - Complete with:
   - Auto-calculated time
@@ -185,6 +192,7 @@ This document consolidates all known requirements and design decisions for the M
   - Location where delivered
 
 **Communication Needs:**
+
 - If handler needs more info, how to contact operator?
   - In-app note/question
   - Visual notification to operator
@@ -193,11 +201,13 @@ This document consolidates all known requirements and design decisions for the M
 ### Quality Inspection Workflow
 
 **Inspection Requests:**
+
 - Operator submits inspection request
 - Specify: What needs inspection, why (first part, suspect, periodic, audit)
 - Indicate: Can production continue while waiting?
 
 **NCM (Non-Conforming Material) Process:**
+
 - **Current Reality:** Parts marked as NCM at the press/area where they are
 - **Not Currently:** "Quality marks parts as NCM" (but could be a feature if Quality wants)
 - If Quality inspection fails, NCM flagging workflow TBD
@@ -207,16 +217,19 @@ This document consolidates all known requirements and design decisions for the M
 ### Outside Service Coordination
 
 **Operator Role:**
+
 - Can operators directly request parts be sent to Outside Service?
 - Or must this go through Outside Service Coordinator?
 - Approval workflow TBD
 
 **Material Handler Role:**
+
 - Deliver parts to staging area
 - Log the move in app
 - Coordinator handles paperwork and 3rd party coordination
 
 **Coordinator Role:**
+
 - Sees parts ready for shipment
 - Arranges pickup with 3rd party
 - Tracks parts while out
@@ -225,6 +238,7 @@ This document consolidates all known requirements and design decisions for the M
 ### Inventory Specialist Workflow
 
 **Pre-Production Material Availability:**
+
 - Ensure material is on floor before job starts
 - How do operators notify Inventory if material missing?
   - Waitlist request to Inventory Specialist?
@@ -232,6 +246,7 @@ This document consolidates all known requirements and design decisions for the M
   - Lead escalation?
 
 **Dunnage Management:**
+
 - Order dunnage when running low
 - Material Handlers may Quick Add dunnage restocking
 - Inventory tracks dunnage inventory levels
@@ -259,18 +274,21 @@ This document consolidates all known requirements and design decisions for the M
 ### Dashboard Requirements
 
 **Operators:**
+
 - Large "Create Request" button
 - Active requests with status
 - Recent/favorite requests for one-click resubmit
 - Visual notifications
 
 **Material Handlers:**
+
 - My assigned tasks with timer
 - Available tasks (if self-claim enabled)
 - Quick Add button
 - Zone/area selector (when zones enabled)
 
 **Material Handler Leads:**
+
 - Team task overview (all handlers in their area)
 - Handler availability/status (active, on break, offline)
 - Pending approvals (Quick Add, task rejections)
@@ -278,6 +296,7 @@ This document consolidates all known requirements and design decisions for the M
 - Task reassignment tools
 
 **Production Leads:**
+
 - Cross-zone task visibility
 - SLA breach alerts
 - Handler utilization
@@ -285,24 +304,28 @@ This document consolidates all known requirements and design decisions for the M
 - Bulk operations (reassign, cancel, priority change)
 
 **Quality:**
+
 - Pending inspections
 - Inspection history
 - NCM tracking
 - Pass/fail rates
 
 **Inventory Specialists:**
+
 - Material availability alerts
 - Pre-production material status
 - Dunnage inventory levels
 - Incoming material tracking
 
 **Outside Service Coordinator:**
+
 - Parts ready for shipment
 - Parts at 3rd party (status tracking)
 - Parts returning
 - 3rd party performance metrics
 
 **IT Department:**
+
 - System health monitoring
 - User management
 - Role/permission administration
@@ -542,6 +565,7 @@ This document consolidates all known requirements and design decisions for the M
 ---
 
 **Document Control:**
+
 - **Created:** January 21, 2026
 - **Purpose:** Reference document for AI agents and developers
 - **Scope:** Complete requirements knowledge base as of this date

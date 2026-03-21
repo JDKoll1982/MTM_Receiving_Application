@@ -1,14 +1,20 @@
 # Error Handling Guide
 
+Last Updated: 2026-03-21
+
 ## Error Severity Levels
 
-| Level | Value | When to Use | User Action |
-|-------|-------|-------------|-------------|
-| **Info** | 0 | Successful operations | None |
-| **Warning** | 1 | Potential issues, operation continues | Be aware |
-| **Error** | 2 | Operation failed, app continues | Retry or adjust |
-| **Critical** | 3 | Serious issue affecting functionality | Contact support |
-| **Fatal** | 4 | Application cannot continue | Restart app |
+`Enum_ErrorSeverity` values (in `Module_Core/Models/Enums/`):
+
+| Level        | Value | When to Use                           | User Action              |
+| ------------ | ----- | ------------------------------------- | ------------------------ |
+| **Info**     | 0     | Successful operations, informational  | None                     |
+| **Low**      | 1     | Minor issue, operation continues      | Be aware                 |
+| **Warning**  | 2     | Potential issue, operation continues  | Be aware                 |
+| **Medium**   | 3     | Operation failed but recoverable      | Retry or adjust          |
+| **Error**    | 4     | Operation failed, high severity       | Retry or contact support |
+| **Critical** | 5     | Serious issue affecting functionality | Contact support          |
+| **Fatal**    | 6     | Application cannot continue           | Restart app              |
 
 ## Service_ErrorHandler Usage
 
@@ -22,7 +28,7 @@ private async Task SaveAsync()
     {
         IsBusy = true;
         StatusMessage = "Saving...";
-        
+
         var result = await _service.SaveDataAsync(data);
         if (result.IsSuccess)
         {
@@ -31,17 +37,17 @@ private async Task SaveAsync()
         else
         {
             _errorHandler.ShowUserError(
-                result.ErrorMessage, 
-                "Save Error", 
+                result.ErrorMessage,
+                "Save Error",
                 nameof(SaveAsync));
         }
     }
     catch (Exception ex)
     {
         _errorHandler.HandleException(
-            ex, 
-            Enum_ErrorSeverity.Medium, 
-            nameof(SaveAsync), 
+            ex,
+            Enum_ErrorSeverity.Medium,
+            nameof(SaveAsync),
             nameof(MyViewModel));
     }
     finally
@@ -62,7 +68,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
         {
             { "p_field", entity.Field }
         };
-        
+
         return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
             _connectionString,
             "sp_entity_insert",
@@ -72,7 +78,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
     catch (Exception ex)
     {
         // NEVER throw - return failure result
-        return DaoResultFactory.Failure<int>(
+        return Model_Dao_Result_Factory.Failure<int>(
             $"Error inserting entity: {ex.Message}",
             ex);
     }
@@ -104,17 +110,16 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 
 ## Logging Standards
 
-### ILoggingService Usage
+### IService_LoggingUtility Usage
+
+Inject `IService_LoggingUtility` (not `ILoggingService`) in ViewModels and Services.
 
 ```csharp
 // Log successful operations
-await _logger.LogInfoAsync("Receiving line created successfully", "Dao_ReceivingLine");
+_logger.LogInfo("Receiving line created successfully");
 
 // Log errors with context
-await _logger.LogErrorAsync(
-    $"Failed to insert receiving line: {ex.Message}",
-    "Dao_ReceivingLine",
-    ex);
+_logger.LogError($"Failed to insert receiving line: {ex.Message}", ex);
 ```
 
 ### What to Log

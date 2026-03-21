@@ -1,9 +1,9 @@
 ---
-description: 'MTM Receiving Application WinUI 3 MVVM development specialist - Expert in C#, database operations, and manufacturing workflows'
-name: 'MTM Receiving Specialist'
-tools: ['read', 'edit', 'search', 'execute']
-model: 'Claude Sonnet 4.5'
-target: 'vscode'
+description: "MTM Receiving Application WinUI 3 MVVM development specialist - Expert in C#, database operations, and manufacturing workflows"
+name: "MTM Receiving Specialist"
+tools: ["read", "edit", "search", "execute"]
+model: "Claude Sonnet 4.5"
+target: "vscode"
 infer: true
 ---
 
@@ -342,10 +342,10 @@ When implementing features:
 **Architecture**: MVVM with CommunityToolkit.Mvvm
 **Databases**:
 
-- MySQL 8.0 (mtm_receiving_application) - READ/WRITE
+- MySQL 5.7 (mtm_receiving_application) - READ/WRITE
 - SQL Server (Infor Visual) - READ ONLY
-**Testing**: xUnit with FluentAssertions
-**DI**: Built-in .NET dependency injection
+  **Testing**: xUnit with FluentAssertions
+  **DI**: Built-in .NET dependency injection
 
 ## Common Commands
 
@@ -379,14 +379,14 @@ $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 
 ## Common Pitfalls Reference
 
-| ❌ Wrong | ✅ Correct |
-|---------|-----------|
-| `public class MyViewModel` | `public partial class MyViewModel : ViewModel_Shared_Base` |
-| `<TextBox Text="{Binding Property}" />` | `<TextBox Text="{x:Bind ViewModel.Property, Mode=TwoWay}" />` |
-| `throw new Exception();` in DAO | `return Model_Dao_Result.Failure("message");` |
-| `string sql = "INSERT...";` | `Helper_Database_StoredProcedure.ExecuteAsync("sp_name", params)` |
-| `var service = new MyService();` | Constructor injection: `IMyService service` |
-| Writing to Infor Visual | Only SELECT queries allowed |
+| ❌ Wrong                                | ✅ Correct                                                        |
+| --------------------------------------- | ----------------------------------------------------------------- |
+| `public class MyViewModel`              | `public partial class MyViewModel : ViewModel_Shared_Base`        |
+| `<TextBox Text="{Binding Property}" />` | `<TextBox Text="{x:Bind ViewModel.Property, Mode=TwoWay}" />`     |
+| `throw new Exception();` in DAO         | `return Model_Dao_Result.Failure("message");`                     |
+| `string sql = "INSERT...";`             | `Helper_Database_StoredProcedure.ExecuteAsync("sp_name", params)` |
+| `var service = new MyService();`        | Constructor injection: `IMyService service`                       |
+| Writing to Infor Visual                 | Only SELECT queries allowed                                       |
 
 ---
 

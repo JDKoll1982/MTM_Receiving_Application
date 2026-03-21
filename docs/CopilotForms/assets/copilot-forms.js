@@ -417,6 +417,7 @@ function initNlPrefill(form, config) {
 function readEl(el) {
   if (!el) return "";
   if (el.classList.contains("list-widget")) return el.readValue?.() ?? [];
+  if (el.dataset?.fieldType === "tristate") return el.dataset.value || "ai-decides";
   if (el.dataset?.fieldType === "checkbox") return el.checked;
   return (el.value ?? "").trim();
 }
@@ -425,6 +426,14 @@ function writeEl(el, val) {
   if (!el) return;
   if (el.classList.contains("list-widget")) {
     el.writeValue?.(val);
+    return;
+  }
+  if (el.dataset?.fieldType === "tristate") {
+    const v = String(val || "ai-decides");
+    el.dataset.value = v;
+    el.querySelectorAll(".tristate-btn").forEach((btn) => {
+      btn.classList.toggle("tristate-active", btn.dataset.val === v);
+    });
     return;
   }
   if (el.dataset?.fieldType === "checkbox") {
@@ -556,7 +565,7 @@ function updateProgress(form) {
 }
 
 // ── Feature summary ────────────────────────────────────────────────────────────
-function showFeatureSummary(feature) {
+function showFeatureSummary(feature, subFeature = null) {
   const el = $("feature-summary");
   if (!el) return;
   if (!feature) {
@@ -565,6 +574,7 @@ function showFeatureSummary(feature) {
   }
   el.classList.remove("hidden");
   el.innerHTML = `
+        ${subFeature ? `<div class="feature-summary-row"><span class="feature-label">Sub-feature</span><span class="feature-value">${escHtml(subFeature.name)}</span></div>` : ""}
         <div class="feature-summary-row">
             <span class="feature-label">Summary</span>
             <span class="feature-value">${escHtml(feature.summary)}</span>
@@ -575,7 +585,7 @@ function showFeatureSummary(feature) {
         </div>
         <div class="feature-summary-row">
             <span class="feature-label">Files</span>
-            <span class="feature-value muted">${(feature.relatedFiles || []).map((f) => `<code>${escHtml(f)}</code>`).join(", ") || "—"}</span>
+            <span class="feature-value muted">${((subFeature || feature).relatedFiles || feature.relatedFiles || []).map((f) => `<code>${escHtml(f)}</code>`).join(", ") || "—"}</span>
         </div>`;
 }
 
@@ -587,9 +597,85 @@ function renderList(id, items) {
     (items || []).map((i) => `<li>${escHtml(i)}</li>`).join("") || "<li>—</li>";
 }
 
+// ── Agent Flags widget (injected into every form sidebar) ─────────────────────
+function renderAgentFlags() {
+  const actionsDiv = document.querySelector(".sidebar-actions");
+  if (!actionsDiv || $("agent-flags-section")) return;
+
+  const section = make("div", {
+    id: "agent-flags-section",
+    class: "sidebar-section agent-flags-section",
+  });
+  section.appendChild(make("div", { class: "agent-flags-title" }, "Agent Flags"));
+
+  // ── Serena row ───────────────────────────────────────────────────────────────
+  const serenaRow = make("div", { class: "agent-flag-row" });
+  serenaRow.appendChild(make("span", { class: "agent-flag-label" }, "Serena"));
+
+  const tristate = make("div", {
+    id: "serena-mode",
+    class: "tristate-toggle",
+    "data-field-id": "serena-mode",
+    "data-field-type": "tristate",
+    "data-value": "ai-decides",
+  });
+
+  [
+    { val: "mandatory",  symbol: "✔", title: "Mandatory — AI must use Serena MCP tools" },
+    { val: "ai-decides", symbol: "–", title: "Up to AI — agent decides whether to use Serena" },
+    { val: "off",        symbol: "✕", title: "Off — do not use Serena" },
+  ].forEach(({ val, symbol, title }) => {
+    const btn = make(
+      "button",
+      {
+        type: "button",
+        class: "tristate-btn" + (val === "ai-decides" ? " tristate-active" : ""),
+        "data-val": val,
+        title,
+      },
+      symbol,
+    );
+    btn.addEventListener("click", () => {
+      tristate.querySelectorAll(".tristate-btn").forEach((b) =>
+        b.classList.remove("tristate-active"),
+      );
+      btn.classList.add("tristate-active");
+      tristate.dataset.value = val;
+      document.body.dispatchEvent(new Event("change"));
+    });
+    tristate.appendChild(btn);
+  });
+
+  serenaRow.appendChild(tristate);
+  section.appendChild(serenaRow);
+
+  // ── Noob Mode row ────────────────────────────────────────────────────────────
+  const noobRow = make("div", { class: "agent-flag-row" });
+  noobRow.appendChild(
+    make("label", { class: "agent-flag-label", for: "noob-mode" }, "Noob Mode"),
+  );
+  const toggleLabel = make("label", { class: "toggle-switch" });
+  const noobCb = make("input", {
+    type: "checkbox",
+    id: "noob-mode",
+    "data-field-id": "noob-mode",
+    "data-field-type": "checkbox",
+  });
+  toggleLabel.appendChild(noobCb);
+  toggleLabel.appendChild(make("span", { class: "toggle-slider" }));
+  noobRow.appendChild(toggleLabel);
+  section.appendChild(noobRow);
+
+  actionsDiv.parentElement.insertBefore(section, actionsDiv);
+}
+
 // ── Draft persistence ──────────────────────────────────────────────────────────
 function saveDraft(formId) {
-  const vals = { _featureId: $("feature-select")?.value || "" };
+  const vals = {
+    _moduleId: $("module-select")?.value || "",
+    _featureId: $("feature-select")?.value || "",
+    _subFeatureId: $("subfeature-select")?.value || "",
+  };
   allFieldEls().forEach((el) => {
     const id = el.id || el.dataset?.fieldId;
     if (id) vals[id] = readEl(el);
@@ -605,7 +691,7 @@ function getDraft(formId) {
   }
 }
 
-function applyDraft(formId) {
+function applyDraft(formId, config = null) {
   const draft = getDraft(formId);
   if (!draft) return;
   allFieldEls().forEach((el) => {
@@ -613,7 +699,13 @@ function applyDraft(formId) {
     if (id && Object.prototype.hasOwnProperty.call(draft, id))
       writeEl(el, draft[id]);
   });
-  if (draft._featureId) {
+  if (draft._featureId && config) {
+    syncCascadeFromFeatureId(
+      config,
+      draft._featureId,
+      draft._subFeatureId || "",
+    );
+  } else if (draft._featureId) {
     const sel = $("feature-select");
     if (sel) sel.value = draft._featureId;
   }
@@ -635,9 +727,13 @@ function buildMarkdown(form, feature, values) {
   lines.push(`# ${form.title} Export`, "");
   lines.push(`- Generated: ${new Date().toISOString()}`);
   lines.push(`- Form: ${form.id}`);
+  const _subFeatureId = $("subfeature-select")?.value || "";
+  const _subFeature =
+    feature?.subFeatures?.find((sf) => sf.id === _subFeatureId) || null;
   lines.push(
     `- Feature: ${feature?.name || values.featureName || "Unspecified"}`,
   );
+  lines.push(`- Sub-feature: ${_subFeature?.name || "(none selected)"}`);
   lines.push(
     `- Module: ${feature?.module || values.moduleName || "Unspecified"}`,
   );
@@ -645,6 +741,28 @@ function buildMarkdown(form, feature, values) {
   lines.push(`- Instruction File: ${form.instructionFile}`);
   lines.push(`- Output Folder: ${form.outputFolder}`);
   lines.push("");
+
+  // ── Agent Flags ──────────────────────────────────────────────────────────
+  const _serenaVal   = values["serena-mode"] || "ai-decides";
+  const _noobVal     = values["noob-mode"] ?? false;
+  const _serenaLabel = _serenaVal === "mandatory" ? "\u2714 Mandatory"
+                     : _serenaVal === "off"       ? "\u2715 Off (do not use)"
+                     :                             "\u2013 Up to AI";
+  lines.push("## Agent Flags", "");
+  lines.push(`- Serena: ${_serenaLabel}`);
+  lines.push(`- Noob Mode: ${_noobVal ? "\u2714 On" : "\u2715 Off"}`);
+  lines.push("");
+  if (_noobVal) {
+    lines.push("> **Noob Mode active** \u2014 explain all reasoning step-by-step, avoid jargon, define terms on first use, and include inline comments on every non-trivial line of generated code.");
+    lines.push("");
+  }
+  if (_serenaVal === "mandatory") {
+    lines.push("> **Serena mandatory** \u2014 you MUST use Serena MCP tools (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`, `replace_symbol_body`, etc.) for all code navigation and editing. Do not read full files when Serena can provide targeted symbol access.");
+    lines.push("");
+  } else if (_serenaVal === "off") {
+    lines.push("> **Serena disabled** \u2014 do NOT use Serena MCP tools. Use standard file read/edit tools only.");
+    lines.push("");
+  }
 
   if (feature) {
     lines.push("## Catalog Context", "");
@@ -781,8 +899,14 @@ function initOutputTabs() {
 function initPromptRunner(form) {
   const btn = $("run-prompt-btn");
   if (!btn || !form?.promptFile) return;
-  const msg = `Use @workspace and refer to the prompt file \`${form.promptFile}\`. Link the export saved to \`${form.outputFolder}\`.`;
   btn.onclick = () => {
+    const serenaVal = $("serena-mode")?.dataset?.value || "ai-decides";
+    const noobOn    = $("noob-mode")?.checked || false;
+    const serenaHint =
+      serenaVal === "mandatory" ? " Serena MCP tools are MANDATORY — use them for all code navigation and editing." :
+      serenaVal === "off"       ? " Do NOT use Serena MCP tools." : "";
+    const noobHint = noobOn ? " Noob Mode ON — explain step-by-step, avoid jargon, add inline code comments." : "";
+    const msg = `Use @workspace and refer to the prompt file \`${form.promptFile}\`. Link the export saved to \`${form.outputFolder}\`.${serenaHint}${noobHint}`;
     copyText(msg);
     showToast("Prompt text copied — paste into Copilot Chat!");
   };
@@ -791,8 +915,11 @@ function initPromptRunner(form) {
 // ── Refresh all outputs ────────────────────────────────────────────────────────
 function refreshOutputs(config, form) {
   const featureId = $("feature-select")?.value || "";
+  const subFeatureId = $("subfeature-select")?.value || "";
   const feature = config.features.find((f) => f.id === featureId) || null;
-  showFeatureSummary(feature);
+  const subFeature =
+    feature?.subFeatures?.find((sf) => sf.id === subFeatureId) || null;
+  showFeatureSummary(feature, subFeature);
 
   const values = collectValues();
   const md = buildMarkdown(form, feature, values);
@@ -805,6 +932,55 @@ function refreshOutputs(config, form) {
 
   updateProgress(form);
   saveDraft(form.id);
+}
+
+// ── Feature catalog cascade helpers ───────────────────────────────────────────
+function populateModuleSelect(config) {
+  const mSel = $("module-select");
+  if (!mSel) return;
+  mSel.innerHTML = "";
+  mSel.appendChild(createOption("── all modules ──", ""));
+  const modules = [...new Set((config.features || []).map((f) => f.module))];
+  modules.forEach((m) => mSel.appendChild(createOption(m, m)));
+}
+
+function populateFeatureSelect(config, moduleId) {
+  const fSel = $("feature-select");
+  if (!fSel) return;
+  fSel.innerHTML = "";
+  fSel.appendChild(createOption("── select feature ──", ""));
+  (config.features || [])
+    .filter((f) => !moduleId || f.module === moduleId)
+    .forEach((f) => fSel.appendChild(createOption(f.name, f.id)));
+}
+
+function populateSubFeatureSelect(config, featureId) {
+  const sfSel = $("subfeature-select");
+  const sfField = $("subfeature-field");
+  if (!sfSel) return;
+  const feat = (config.features || []).find((f) => f.id === featureId);
+  const subs = feat?.subFeatures || [];
+  sfSel.innerHTML = "";
+  if (subs.length) {
+    sfSel.appendChild(createOption("── all sub-features ──", ""));
+    subs.forEach((sf) => sfSel.appendChild(createOption(sf.name, sf.id)));
+    sfField?.classList.remove("hidden");
+  } else {
+    sfField?.classList.add("hidden");
+  }
+}
+
+function syncCascadeFromFeatureId(config, featureId, subFeatureId = "") {
+  const feat = (config.features || []).find((f) => f.id === featureId);
+  const moduleId = feat?.module || "";
+  const mSel = $("module-select");
+  if (mSel) mSel.value = moduleId;
+  populateFeatureSelect(config, moduleId);
+  const fSel = $("feature-select");
+  if (fSel && featureId) fSel.value = featureId;
+  populateSubFeatureSelect(config, featureId);
+  const sfSel = $("subfeature-select");
+  if (sfSel && subFeatureId) sfSel.value = subFeatureId;
 }
 
 // ── Status bar helper ──────────────────────────────────────────────────────────
@@ -851,15 +1027,18 @@ function renderForm(config, form) {
   renderList("before-you-start-list", form.beforeYouStart);
   renderList("end-user-tips-list", form.endUserTips);
 
-  // Feature select
-  const fSel = $("feature-select");
-  if (fSel) {
-    fSel.innerHTML = "";
-    fSel.appendChild(createOption("Custom / Not listed", ""));
-    (config.features || []).forEach((f) =>
-      fSel.appendChild(createOption(`${f.module} — ${f.name}`, f.id)),
-    );
-  }
+  // Module → Feature → Sub-feature cascade
+  populateModuleSelect(config);
+  populateFeatureSelect(config, "");
+  populateSubFeatureSelect(config, "");
+  const mSelEl = $("module-select");
+  const fSelEl = $("feature-select");
+  mSelEl?.addEventListener("change", () =>
+    populateFeatureSelect(config, mSelEl.value),
+  );
+  fSelEl?.addEventListener("change", () =>
+    populateSubFeatureSelect(config, fSelEl.value),
+  );
 
   // Dynamic fields
   const container = $("dynamic-fields");
@@ -1121,24 +1300,22 @@ async function initFormPage(config) {
 
   setStatus("Config loaded", "ok");
   renderForm(config, form);
+  renderAgentFlags();
   initNlPrefill(form, config);
 
   // Apply feature: sticky → URL → defaults → draft (last wins for draft)
   const sticky = loadSticky();
-  if (sticky) {
-    const sel = $("feature-select");
-    if (sel) sel.value = sticky;
-  }
+  if (sticky) syncCascadeFromFeatureId(config, sticky);
   applyUrlParams();
   const defs = loadDefaults();
   if (
     defs.featureId &&
     !new URLSearchParams(location.search).get("featureId")
   ) {
-    const sel = $("feature-select");
-    if (sel && !sel.value) sel.value = defs.featureId;
+    if (!$("feature-select")?.value)
+      syncCascadeFromFeatureId(config, defs.featureId);
   }
-  applyDraft(formId);
+  applyDraft(formId, config);
 
   refreshOutputs(config, form);
   initPromptRunner(form);

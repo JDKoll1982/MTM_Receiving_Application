@@ -1,5 +1,7 @@
 # Infor Visual Integration Constraints
 
+Last Updated: 2026-03-21
+
 ## CRITICAL: READ-ONLY DATABASE
 
 ⚠️ **INFOR VISUAL DATABASE IS STRICTLY READ ONLY - NO WRITES ALLOWED AT ANY TIME** ⚠️
@@ -25,16 +27,16 @@ ApplicationIntent=ReadOnly
 public class Dao_InforVisualPO
 {
     private readonly string _connectionString;
-    
+
     public Dao_InforVisualPO(string connectionString)
     {
         // VALIDATE READ-ONLY INTENT
         if (!connectionString.Contains("ApplicationIntent=ReadOnly"))
             throw new InvalidOperationException("Infor Visual connection MUST be read-only");
-        
+
         _connectionString = connectionString;
     }
-    
+
     // ✅ ALLOWED - SELECT query
     public async Task<Model_Dao_Result<Model_InforVisualPO>> GetPOByNumberAsync(string poNumber)
     {
@@ -42,14 +44,14 @@ public class Dao_InforVisualPO
             SELECT po.ID, po.VENDOR_ID, po.STATUS, po.ORDER_DATE
             FROM PURCHASE_ORDER po
             WHERE po.ID = @PoNumber";
-        
+
         using var connection = new SqlConnection(_connectionString);
         using var command = new SqlCommand(query, connection);
         command.Parameters.AddWithValue("@PoNumber", poNumber);
-        
+
         // Execute and return results
     }
-    
+
     // ❌ FORBIDDEN - Any write operation
     public async Task UpdatePOStatusAsync(string poNumber, string status)
     {

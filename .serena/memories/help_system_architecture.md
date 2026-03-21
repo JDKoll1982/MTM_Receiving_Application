@@ -1,5 +1,7 @@
 # Help System Architecture
 
+Last Updated: 2026-03-21
+
 ## Overview
 
 The MTM Receiving Application implements a centralized help system that replaces all hard-coded tooltips, placeholders, tips, and contextual help content throughout the application.
@@ -162,7 +164,7 @@ All ViewModels inject `IService_Help` via constructor:
 public partial class MyViewModel : BaseViewModel
 {
     private readonly IService_Help _helpService;
-    
+
     public MyViewModel(
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
@@ -170,7 +172,7 @@ public partial class MyViewModel : BaseViewModel
     {
         _helpService = helpService;
     }
-    
+
     [RelayCommand]
     private async Task ShowHelpAsync()
     {

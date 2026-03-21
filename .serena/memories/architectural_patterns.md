@@ -1,5 +1,7 @@
 # Architectural Patterns
 
+Last Updated: 2026-03-21
+
 ## MVVM Architecture (NON-NEGOTIABLE)
 
 ### Layer Separation Rules
@@ -92,7 +94,8 @@ public static class Dao_DunnageLoad
 
 ## Dependency Injection Registration
 
-All services and DAOs must be registered in `App.xaml.cs`:
+All services and DAOs are registered in `Infrastructure/DependencyInjection/` extension methods
+(e.g., `CoreServiceExtensions.cs`, `ModuleServicesExtensions.cs`). These are called from `App.xaml.cs`.
 
 ```csharp
 // Get connection strings
@@ -105,11 +108,11 @@ services.AddSingleton(sp => new Dao_User(connectionString));
 // Register Services (inject DAOs)
 services.AddSingleton<IService_MySQL_Receiving>(sp => new Service_MySQL_Receiving(
     sp.GetRequiredService<Dao_ReceivingLine>(),
-    sp.GetRequiredService<ILoggingService>()
+    sp.GetRequiredService<IService_LoggingUtility>()
 ));
 
 // Register ViewModels as Transient
-services.AddTransient<ReceivingViewModel>();
+services.AddTransient<ViewModel_Receiving_Workflow>();
 ```
 
 ## Model_Dao_Result Pattern
@@ -129,13 +132,13 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 
         return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
             _connectionString,
-            "sp_sp_Receiving_Line_Insert",
+            "sp_Receiving_Line_Insert",
             parameters
         );
     }
     catch (Exception ex)
     {
-        return DaoResultFactory.Failure<int>($"Error inserting line: {ex.Message}", ex);
+        return Model_Dao_Result_Factory.Failure<int>($"Error inserting line: {ex.Message}", ex);
     }
 }
 ```

@@ -1,46 +1,65 @@
 ---
 name: Generate Comprehensive Tests
-description: Creates comprehensive xUnit tests for a single file or entire module with Memory Bank tracking
+description: Creates comprehensive xUnit tests for a single file or entire module with Serena memory tracking
 argument-hint: "Module name (e.g., 'Module_Core', 'Module_Receiving') or specific file path"
 agent: agent
-tools: ['read_file', 'create_file', 'replace_string_in_file', 'list_dir', 'get_symbols_by_name', 'get_symbols_overview', 'code_search', 'file_search']
+tools:
+  [
+    "read_file",
+    "create_file",
+    "replace_string_in_file",
+    "list_dir",
+    "get_symbols_overview",
+    "code_search",
+    "file_search",
+    "mcp_oraios_serena_write_memory",
+    "mcp_oraios_serena_edit_memory",
+    "mcp_oraios_serena_read_memory",
+    "mcp_oraios_serena_list_memories",
+  ]
 ---
 
 # Generate Comprehensive Unit Tests for File or Module
 
-You are an expert C# unit test developer for .NET 10, WinUI 3, and MVVM applications using xUnit and FluentAssertions with Memory Bank integration for progress tracking.
+You are an expert C# unit test developer for .NET 8, WinUI 3, and MVVM applications using xUnit and FluentAssertions with Serena memory integration for progress tracking.
 
 ## Mission
 
 Generate comprehensive, production-quality unit tests for either:
+
 1. **Single File** - One source file specified by path
 2. **Entire Module** - All testable files in a module (e.g., Module_Core, Module_Receiving)
 
-Track progress in Memory Bank, create task entries for multi-file generation, and document testing patterns discovered.
+Track progress using Serena memories, write progress entries for multi-file generation, and document testing patterns discovered.
 
 ## Scope & Preconditions
 
 **When to Use:**
+
 - User requests test generation for a module or file
 - New code written without tests
 - Increasing test coverage for existing code
 - Establishing testing patterns for project
 
 **Preconditions:**
+
 - Source code files exist and are accessible
 - Test project structure exists (`MTM_Receiving_Application.Tests/`)
-- Memory Bank initialized (optional but recommended)
+- Serena memories available (`.serena/memories/`) — optional but recommended
 
 **If Test Project Missing:**
+
 - Inform user test project structure needed
 - Suggest creating test project first
 
 ## Inputs
 
 **Required:**
+
 - `${input:target}` - Module name (e.g., "Module_Core") OR file path (e.g., "Module_Core/Behaviors/AuditBehavior.cs")
 
 **Optional:**
+
 - `${input:focus}` - Specific subfolder or file type to focus on (e.g., "Behaviors", "Services", "ViewModels")
 - `${input:overwrite[:false]}` - Whether to overwrite existing test files (default: false, skip existing)
 
@@ -55,11 +74,13 @@ Analyze the provided target (module or file) and determine its type, then genera
 **Analyze input to determine if target is module or file:**
 
 **Module Indicators:**
-- Starts with "Module_" (e.g., "Module_Core", "Module_Receiving")
+
+- Starts with "Module\_" (e.g., "Module_Core", "Module_Receiving")
 - Is a directory name without file extension
 - User specified "all tests for Module_X"
 
 **File Indicators:**
+
 - Contains file extension (.cs)
 - Is a file path (e.g., "Module_Core/Behaviors/AuditBehavior.cs")
 - User specified specific file name
@@ -69,6 +90,7 @@ Analyze the provided target (module or file) and determine its type, then genera
 ### Step 2a: Single File Path (If File Target)
 
 If target is a single file:
+
 1. Read the source file using `get_file` or `read_file`
 2. Analyze file type (see File Type Detection section)
 3. Generate tests following layer-specific guidelines
@@ -84,6 +106,7 @@ If target is a module:
 **2b.1: Enumerate Module Files**
 
 Use `list_dir` recursively to find all `.cs` files in module folder:
+
 ```
 Module_Core/
   ├── Behaviors/
@@ -100,39 +123,42 @@ Module_Core/
 **2b.2: Filter Testable Files**
 
 Exclude from test generation:
+
 - `.xaml.cs` files (minimal logic, refactor to ViewModel)
 - Files in `obj/` or `bin/` directories
-- Auto-generated files (*.g.cs, *.Designer.cs)
+- Auto-generated files (_.g.cs, _.Designer.cs)
 - Files already with 80%+ test coverage (if detectable)
 
 **Apply focus filter if specified:**
+
 - If `${input:focus}` = "Behaviors", only test files in Behaviors/ folder
 - If `${input:focus}` = "Services", only test files in Services/ folder
 
 **2b.3: Check for Existing Tests**
 
 For each file, check if test file already exists:
+
 - Expected test path: `MTM_Receiving_Application.Tests/{Module}/{Subfolder}/{FileName}Tests.cs`
 - If exists and `overwrite` = false, skip file
 - If exists and `overwrite` = true, regenerate
 
-**2b.4: Create Task for Module Test Generation**
+**2b.4: Write Progress Entry to Serena Memory**
 
-If testing entire module, create Memory Bank task:
-- Task ID: Next available (e.g., TASK004)
-- Task Name: "Generate Unit Tests for {ModuleName}"
-- Subtasks: One per source file to test
-- Status: In Progress
+If testing entire module, write a progress note to Serena memory:
 
-**Action:** Use create-task prompt pattern to create task entry.
+- Memory name: `test_generation_{modulename}` (e.g., `test_generation_module_core`)
+- Content: List of files to test with pending/complete status
+- Use `mcp_oraios_serena_write_memory` to create the entry
 
 **2b.5: Present Generation Plan**
 
 Show user what will be generated:
+
 ```markdown
 ## Test Generation Plan: Module_Core
 
 **Files to Test (8):**
+
 - ✅ Behaviors/AuditBehavior.cs → AuditBehaviorTests.cs (exists, skip)
 - 🆕 Behaviors/LoggingBehavior.cs → LoggingBehaviorTests.cs
 - 🆕 Behaviors/ValidationBehavior.cs → ValidationBehaviorTests.cs
@@ -143,13 +169,15 @@ Show user what will be generated:
 - 🆕 Helpers/Helper_Database_StoredProcedure.cs → Helper_Database_StoredProcedureTests.cs
 
 **Summary:**
+
 - Total Files: 8
 - Existing Tests: 2 (skipped)
 - New Tests: 6 (will generate)
 
-**Memory Bank:**
-- Task TASK004 created
-- Progress tracking enabled
+**Serena Memory:**
+
+- Progress entry `test_generation_{modulename}` written
+- Pattern tracking enabled
 
 Proceed with generation? (yes/no)
 ```
@@ -184,6 +212,7 @@ Use `read_file` or `get_file` to load complete source file.
 **4.2: Identify Public API**
 
 Use `get_symbols_by_name` to identify:
+
 - Public classes
 - Public methods
 - Public properties
@@ -197,12 +226,14 @@ Follow layer-specific guidelines (see sections below) to generate comprehensive 
 **4.4: Create Test File**
 
 Use `create_file` to write test file to:
+
 - Path: `MTM_Receiving_Application.Tests/{Module}/{Subfolder}/{FileName}Tests.cs`
 - Ensure directory structure matches source structure
 
 **4.5: Update Task Progress (If Module Generation)**
 
 If generating for module with task tracking:
+
 - Mark subtask as "Complete" in task file
 - Add progress log entry
 - Update completion percentage
@@ -213,6 +244,7 @@ If generating for module with task tracking:
 **5.1: Syntax Check**
 
 Verify generated test file:
+
 - Has all required using statements
 - Compiles (check for syntax errors)
 - Follows naming conventions
@@ -221,6 +253,7 @@ Verify generated test file:
 **5.2: Coverage Check**
 
 Ensure tests cover:
+
 - All public methods (excluding properties)
 - Error handling paths
 - Edge cases
@@ -229,37 +262,40 @@ Ensure tests cover:
 **5.3: Pattern Adherence**
 
 Verify tests follow MTM patterns:
+
 - Use FluentAssertions for assertions
 - Mock all dependencies
 - No Arrange/Act/Assert comments (per repo standard)
 - Test naming: `{Method}_Should{Result}_When{Condition}`
 
-### Step 6: Update Memory Bank (If Applicable)
+### Step 6: Update Serena Memories (If Applicable)
 
 **6.1: Document New Patterns**
 
 If new testing patterns discovered:
-- Update `memory-bank/systemPatterns.md` with pattern
-- Add code examples
+
+- Use `mcp_oraios_serena_write_memory` or `mcp_oraios_serena_edit_memory` to update the `testing_patterns` memory
+- Add code examples and key points
 - Document common pitfalls
 
-**6.2: Update Progress**
+**6.2: Mark Progress Complete**
 
-Update `memory-bank/progress.md`:
-- Add to "What Works" section (test coverage improved)
-- Update test count/coverage statistics
-- Add to "Recent Accomplishments"
+Use `mcp_oraios_serena_edit_memory` to update the progress entry:
 
-**6.3: Update Task (If Module Generation)**
+- Mark each file as complete in `test_generation_{modulename}` memory
+- Add total test count and coverage notes
 
-If task was created for module:
-- Mark task as Completed
-- Add summary to progress log
-- Update `memory-bank/tasks/_index.md`
+**6.3: Finalize Progress Entry (If Module Generation)**
+
+If progress entry was created for module:
+
+- Edit the entry to mark generation as Completed
+- Add summary of total tests generated
 
 ### Step 7: Present Results
 
 **Single File Output:**
+
 ```markdown
 ## Test File Generated
 
@@ -267,18 +303,21 @@ If task was created for module:
 **Test File:** MTM_Receiving_Application.Tests/Module_Core/Behaviors/LoggingBehaviorTests.cs
 
 **Coverage:**
+
 - 8 test methods generated
 - All public methods covered
 - Error handling tested
 - Edge cases included
 
 **Next Steps:**
+
 - Review generated tests
 - Run tests: `dotnet test --filter "FullyQualifiedName~LoggingBehaviorTests"`
 - Adjust as needed
 ```
 
 **Module Output:**
+
 ```markdown
 ## Module Test Generation Complete: Module_Core
 
@@ -292,12 +331,13 @@ If task was created for module:
 
 **Total Tests Generated:** 69 tests
 
-**Memory Bank Updated:**
-- ✅ Task TASK004 marked Complete
-- ✅ systemPatterns.md updated with new patterns
-- ✅ progress.md updated with accomplishment
+**Serena Memories Updated:**
+
+- ✅ `test_generation_{modulename}` marked Complete
+- ✅ `testing_patterns` memory updated with new patterns
 
 **Next Steps:**
+
 - Run all tests: `dotnet test --filter "Category=Unit"`
 - Check coverage: `dotnet test --collect:"XPlat Code Coverage"`
 - Review and adjust generated tests as needed
@@ -430,6 +470,7 @@ Generate a complete C# file with:
 Generate a complete C# test file with:
 
 1. **File Header:**
+
    ```csharp
    // <auto-generated>
    // This test file was generated by GitHub Copilot
@@ -439,6 +480,7 @@ Generate a complete C# test file with:
    ```
 
 2. **Using Statements:**
+
    ```csharp
    using Xunit;
    using FluentAssertions;
@@ -452,6 +494,7 @@ Generate a complete C# test file with:
 3. **Namespace:** `MTM_Receiving_Application.Tests.{Module}.{Subfolder}`
 
 4. **XML Documentation:**
+
    ```csharp
    /// <summary>
    /// Unit tests for <see cref="{ClassName}"/>.
@@ -460,6 +503,7 @@ Generate a complete C# test file with:
    ```
 
 5. **Test Class Attributes:**
+
    ```csharp
    [Trait("Category", "Unit")]
    [Trait("Layer", "{Layer}")] // e.g., "Behavior", "Service", "ViewModel"
@@ -531,97 +575,77 @@ public record TestResponse
 }
 ```
 
-## Memory Bank Integration
+## Serena Memory Integration
 
-### Task Creation (Module Generation)
+### Progress Tracking (Module Generation)
 
-When generating tests for entire module, create task:
+When generating tests for an entire module, write a progress entry to Serena memory:
 
-**Task File:** `memory-bank/tasks/TASKXXX-generate-tests-{modulename}.md`
+**Memory Name:** `test_generation_{modulename}` (e.g., `test_generation_module_core`)
 
-**Structure:**
+**Write using `mcp_oraios_serena_write_memory`:**
+
 ```markdown
-# TASKXXX - Generate Unit Tests for {ModuleName}
+# Generate Unit Tests for {ModuleName}
 
-**Status:** In Progress  
-**Added:** YYYY-MM-DD  
-**Updated:** YYYY-MM-DD
+**Status:** In Progress
+**Started:** YYYY-MM-DD
 
-## Original Request
-Generate comprehensive unit tests for all testable files in {ModuleName}
+## Files to Test
 
-## Thought Process
-Module contains {X} testable files across {Y} categories (Behaviors, Services, etc.).
-Will generate tests following MTM patterns with FluentAssertions and Moq.
+- [ ] Behaviors/LoggingBehavior.cs
+- [ ] Behaviors/ValidationBehavior.cs
+- [ ] Services/Service_LoggingUtility.cs
 
-## Implementation Plan
-1. Analyze module structure and enumerate testable files
-2. Generate tests for Behaviors (3 files)
-3. Generate tests for Services (2 files)
-4. Generate tests for Models (1 file)
-5. Generate tests for Helpers (2 files)
-6. Validate all generated tests compile
-7. Update Memory Bank with patterns discovered
+## Completed
 
-## Progress Tracking
+(updated via `mcp_oraios_serena_edit_memory` as each file is generated)
 
-**Overall Status:** In Progress - 0%
+## Notes
 
-### Subtasks
-| ID | Description | Status | Updated | Notes |
-|----|-------------|--------|---------|-------|
-| 1.1 | Enumerate testable files | Not Started | YYYY-MM-DD | |
-| 1.2 | Generate LoggingBehaviorTests | Not Started | YYYY-MM-DD | |
-| 1.3 | Generate ValidationBehaviorTests | Not Started | YYYY-MM-DD | |
-| ... | ... | ... | ... | |
+(decisions and pitfalls discovered during generation)
 ```
 
 ### Pattern Documentation
 
-After generating tests, update `memory-bank/systemPatterns.md`:
+After generating tests, write to the `testing_patterns` Serena memory:
+
+**Write using `mcp_oraios_serena_write_memory` or `mcp_oraios_serena_edit_memory`:**
 
 ```markdown
-## Testing Patterns
-
-### MediatR Behavior Testing (Updated: YYYY-MM-DD)
+## MediatR Behavior Testing (Updated: YYYY-MM-DD)
 
 **Pattern for testing IPipelineBehavior:**
 
 [code example from generated tests]
 
 **Key Points:**
+
 - Test types must be public for Moq proxy generation
 - Use discard parameter for CancellationToken in MediatR 14.0
 - Mock ILogger with generic type matching behavior
 
 **Common Pitfalls:**
+
 - Private test types cause Moq errors
 - Incorrect delegate signature for MediatR 14.0
 ```
 
-### Progress Tracking
+### Progress Update
 
-Update `memory-bank/progress.md`:
+Use `mcp_oraios_serena_edit_memory` to update `test_generation_{modulename}` after completing all files:
 
 ```markdown
-## Recent Accomplishments
+## Completed
 
-### YYYY-MM-DD: Module_Core Test Coverage Complete
-**What was done:**
-- Generated 69 unit tests across 6 files
-- Coverage increased from 45% to 85%
-- Documented MediatR testing patterns
-
-**Files Created:**
 - LoggingBehaviorTests.cs (8 tests)
 - ValidationBehaviorTests.cs (12 tests)
 - Service_LoggingUtilityTests.cs (15 tests)
 - ... [list all files]
 
-**Patterns Established:**
-- MediatR behavior testing with Moq
-- FluentValidation validator testing
-- Service mocking patterns
+## Status
+
+Complete — 69 tests generated, coverage increased from 45% to 85%
 ```
 
 ## Quality Assurance
@@ -629,12 +653,14 @@ Update `memory-bank/progress.md`:
 ### Validation Checklist
 
 **Pre-Generation:**
+
 - [ ] Target (module or file) exists and is accessible
 - [ ] Test project structure exists
 - [ ] Source file(s) are valid C# code
 - [ ] No existing test files (or overwrite confirmed)
 
 **Post-Generation:**
+
 - [ ] All test files created successfully
 - [ ] Test files follow naming conventions
 - [ ] All tests have proper XML documentation
@@ -644,12 +670,11 @@ Update `memory-bank/progress.md`:
 - [ ] Edge cases and error handling tested
 - [ ] Tests compile without errors (if verifiable)
 
-**Memory Bank (If Module):**
-- [ ] Task created in memory-bank/tasks/
-- [ ] Task added to _index.md
-- [ ] Progress tracked with subtasks
-- [ ] Patterns documented in systemPatterns.md
-- [ ] Accomplishment recorded in progress.md
+**Serena Memories (If Module):**
+
+- [ ] Progress entry written to `test_generation_{modulename}` memory
+- [ ] Testing patterns documented in `testing_patterns` memory
+- [ ] Progress entry updated as complete
 
 ### Common Issues
 
@@ -670,11 +695,13 @@ Update `memory-bank/progress.md`:
 ### Single File Request
 
 **User Command:**
+
 ```
 Generate comprehensive tests for Module_Core/Behaviors/LoggingBehavior.cs
 ```
 
 **Agent Response:**
+
 1. "I'll generate comprehensive unit tests for LoggingBehavior."
 2. [Analyzes file, identifies as MediatR Behavior]
 3. [Generates 8 test methods covering all scenarios]
@@ -684,45 +711,49 @@ Generate comprehensive tests for Module_Core/Behaviors/LoggingBehavior.cs
 ### Module Request
 
 **User Command:**
+
 ```
 Generate comprehensive tests for Module_Core
 ```
 
 **Agent Response:**
+
 1. "I'll generate tests for all testable files in Module_Core."
 2. [Enumerates 8 testable files]
 3. [Checks for existing tests, finds 2]
-4. [Creates task TASK004 in Memory Bank]
+4. [Writes Serena progress entry `test_generation_module_core`]
 5. [Presents generation plan]
 6. **Waits for user confirmation**
 7. [Upon confirmation, generates 6 test files]
 8. [Updates task progress after each file]
-9. [Marks task complete]
-10. [Updates systemPatterns.md and progress.md]
+9. [Marks progress entry complete]
+10. [Updates `testing_patterns` and `test_generation_module_core` Serena memories]
 11. [Presents comprehensive summary]
 
 ### Module Request with Focus
 
 **User Command:**
+
 ```
 Generate comprehensive tests for Module_Core - focus on Behaviors
 ```
 
 **Agent Response:**
+
 1. "I'll generate tests for Behavior files in Module_Core."
 2. [Enumerates only files in Behaviors/ subfolder]
 3. [Finds 3 behavior files]
 4. [Creates focused task]
 5. [Generates tests for 3 files]
-6. [Updates Memory Bank]
+6. [Updates `testing_patterns` Serena memory]
 7. [Presents summary focused on Behaviors]
 
 ## Reference Documentation
 
 - Primary: `.github/copilot-instructions.md` (MTM architecture patterns)
 - Testing: `.github/instructions/testing-strategy.instructions.md`
-- Memory Bank: `.github/instructions/memory-bank.instructions.md`
-- Patterns: `memory-bank/systemPatterns.md` (MediatR 14.0 specifics)
+- Serena Memories: `.github/instructions/serena-07-memories.instructions.md`
+- Testing Patterns: Read Serena memory `testing_patterns` for MediatR 14.0 specifics
 
 ## Example Request
 

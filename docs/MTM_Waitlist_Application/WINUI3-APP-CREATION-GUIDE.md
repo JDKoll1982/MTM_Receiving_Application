@@ -121,7 +121,7 @@ mkdir Infrastructure/Logging
 # Module structure (replicate for each module)
 $modules = @(
     "Module_Core",
-    "Module_Login", 
+    "Module_Login",
     "Module_Operator",
     "Module_SetupTechnician",
     "Module_MaterialHandler",
@@ -177,7 +177,7 @@ mkdir .serena/memories
     <Nullable>enable</Nullable>
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    
+
     <!-- Performance Optimizations -->
     <BuildInParallel>true</BuildInParallel>
     <MaxCpuCount>0</MaxCpuCount>
@@ -189,31 +189,31 @@ mkdir .serena/memories
   <ItemGroup>
     <!-- Windows App SDK -->
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250124002" />
-    
+
     <!-- MVVM Toolkit -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-    
+
     <!-- CQRS Pattern -->
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
-    
+
     <!-- Dependency Injection -->
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-    
+
     <!-- Logging -->
     <PackageReference Include="Serilog" Version="4.1.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4" />
-    
+
     <!-- Database -->
     <PackageReference Include="MySql.Data" Version="9.1.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
-    
+
     <!-- Testing -->
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
@@ -358,7 +358,7 @@ public partial class App : Application
         InitializeComponent();
 
         _host = Host.CreateDefaultBuilder()
-            .UseSerilog((context, configuration) => 
+            .UseSerilog((context, configuration) =>
                 SerilogConfiguration.Configure(configuration, context.Configuration))
             .ConfigureServices((context, services) =>
             {
@@ -431,7 +431,7 @@ public static class CoreServiceExtensions
     {
         // Error Handling & Logging
         services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
-        
+
         // UI Services
         services.AddSingleton<IService_Notification, Service_Notification>();
         services.AddSingleton<IService_Window, Service_Window>();
@@ -479,7 +479,7 @@ public static class CoreServiceExtensions
         var connectionString = configuration.GetConnectionString("InforVisual")
             ?? throw new InvalidOperationException("InforVisual connection string not found");
 
-        services.AddSingleton(sp => 
+        services.AddSingleton(sp =>
             new Dao_InforVisualWorkOrder(connectionString));
         services.AddSingleton<IService_InforVisual, Service_InforVisual>();
     }
@@ -507,7 +507,7 @@ public static class CqrsInfrastructureExtensions
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(App).Assembly);
-            
+
             // Add pipeline behaviors (order matters: Logging → Validation → Audit)
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
@@ -652,7 +652,7 @@ using MTM_Waitlist_Application.Module_Operator.Data;
 
 namespace MTM_Waitlist_Application.Module_Operator.Models.Commands;
 
-public class CreateTaskRequestCommandHandler 
+public class CreateTaskRequestCommandHandler
     : IRequestHandler<CreateTaskRequestCommand, Model_Dao_Result<int>>
 {
     private readonly Dao_TaskRequest _dao;
@@ -663,7 +663,7 @@ public class CreateTaskRequestCommandHandler
     }
 
     public async Task<Model_Dao_Result<int>> Handle(
-        CreateTaskRequestCommand request, 
+        CreateTaskRequestCommand request,
         CancellationToken cancellationToken)
     {
         var taskRequest = new Model_TaskRequest
@@ -694,7 +694,7 @@ using FluentValidation;
 
 namespace MTM_Waitlist_Application.Module_Operator.Models.Commands;
 
-public class CreateTaskRequestCommandValidator 
+public class CreateTaskRequestCommandValidator
     : AbstractValidator<CreateTaskRequestCommand>
 {
     public CreateTaskRequestCommandValidator()
@@ -740,7 +740,7 @@ public class Dao_TaskRequest
 
     public Dao_TaskRequest(string connectionString)
     {
-        _connectionString = connectionString 
+        _connectionString = connectionString
             ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
@@ -895,14 +895,14 @@ public partial class ViewModel_Operator_CreateRequest : ViewModel_Shared_Base
             case "Material Handler":
                 RequestTypes = new ObservableCollection<string>
                 {
-                    "Coils", "Flatstock", "Component Parts", 
+                    "Coils", "Flatstock", "Component Parts",
                     "Dunnage", "Dies", "Scrap", "NCM"
                 };
                 break;
             case "Setup Technician":
                 RequestTypes = new ObservableCollection<string>
                 {
-                    "Die Protection Alarm", "Die Stuck", 
+                    "Die Protection Alarm", "Die Stuck",
                     "Die Misalignment", "Die Damage"
                 };
                 break;
@@ -1008,8 +1008,8 @@ public partial class ViewModel_Operator_CreateRequest : ViewModel_Shared_Base
 
     <Grid Padding="20">
         <StackPanel Spacing="16" MaxWidth="600">
-            <TextBlock 
-                Text="Create Task Request" 
+            <TextBlock
+                Text="Create Task Request"
                 Style="{StaticResource TitleTextBlockStyle}"/>
 
             <ComboBox
@@ -1072,7 +1072,7 @@ public partial class ViewModel_Operator_CreateRequest : ViewModel_Shared_Base
                     Command="{x:Bind ViewModel.CancelCommand}"/>
             </StackPanel>
 
-            <TextBlock 
+            <TextBlock
                 Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                 Foreground="{ThemeResource SystemAccentColor}"/>
         </StackPanel>
@@ -1143,7 +1143,7 @@ private static IServiceCollection AddOperatorModule(
 ```sql
 -- Create database
 CREATE DATABASE IF NOT EXISTS mtm_waitlist_application
-CHARACTER SET utf8mb4 
+CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 USE mtm_waitlist_application;
@@ -1433,7 +1433,7 @@ CREATE PROCEDURE sp_User_GetByBadge(
     IN p_badge_number VARCHAR(20)
 )
 BEGIN
-    SELECT 
+    SELECT
         u.user_id,
         u.badge_number,
         u.windows_username,
@@ -1507,12 +1507,12 @@ CREATE PROCEDURE sp_TaskRequest_Insert(
 )
 BEGIN
     DECLARE v_estimated_duration INT;
-    
+
     -- Get estimated duration from request type
     SELECT estimated_minutes INTO v_estimated_duration
     FROM request_types
     WHERE request_type_id = p_request_type_id;
-    
+
     INSERT INTO task_requests (
         category_id,
         request_type_id,
@@ -1538,9 +1538,9 @@ BEGIN
         v_estimated_duration,
         NOW()
     );
-    
+
     SET p_request_id = LAST_INSERT_ID();
-    
+
     SELECT p_request_id AS request_id;
 END$$
 
@@ -1561,7 +1561,7 @@ CREATE PROCEDURE sp_TaskRequest_GetByCategory(
     IN p_status VARCHAR(20)
 )
 BEGIN
-    SELECT 
+    SELECT
         tr.request_id,
         tr.category_id,
         tc.category_name,
@@ -1592,8 +1592,8 @@ BEGIN
     LEFT JOIN users u_assigned ON tr.assigned_to_user_id = u_assigned.user_id
     WHERE tc.category_name = p_category_name
         AND (p_status IS NULL OR tr.status = p_status)
-    ORDER BY 
-        CASE tr.priority 
+    ORDER BY
+        CASE tr.priority
             WHEN 'Critical' THEN 1
             WHEN 'Urgent' THEN 2
             WHEN 'Normal' THEN 3
@@ -1747,7 +1747,7 @@ public class Service_PrivilegeManager : IService_PrivilegeManager
     public async Task<bool> CanAccessModuleAsync(int userId, string moduleName)
     {
         var privileges = await GetUserPrivilegesAsync(userId);
-        return privileges.Any(p => p.StartsWith(moduleName, 
+        return privileges.Any(p => p.StartsWith(moduleName,
             StringComparison.OrdinalIgnoreCase));
     }
 
@@ -1782,7 +1782,7 @@ public class RequirePrivilegeAttribute : Attribute
 
     public RequirePrivilegeAttribute(string privilegeName)
     {
-        PrivilegeName = privilegeName 
+        PrivilegeName = privilegeName
             ?? throw new ArgumentNullException(nameof(privilegeName));
     }
 }
@@ -1816,7 +1816,7 @@ public partial class ViewModel_Operator_CreateRequest : ViewModel_Shared_Base
         if (user == null) return false;
 
         return await _privilegeManager.UserHasPrivilegeAsync(
-            user.UserId, 
+            user.UserId,
             "CREATE_TASK_REQUEST");
     }
 
@@ -1873,22 +1873,22 @@ namespace MTM_Waitlist_Application.Module_Operator.Contracts;
 public interface IService_OperatorWorkflow
 {
     event EventHandler<Enum_OperatorWorkflowStep>? StepChanged;
-    
+
     Enum_OperatorWorkflowStep CurrentStep { get; }
     Model_TaskRequest CurrentRequest { get; }
-    
+
     void GoToStep(Enum_OperatorWorkflowStep step);
     void GoNext();
     void GoBack();
     bool CanGoNext();
     bool CanGoBack();
-    
+
     void SetCategory(string category);
     void SetRequestType(string requestType);
     void SetWorkOrder(string workOrderNumber);
     void SetPartNumber(string partNumber);
     void SetDetails(string description, string zone, string priority);
-    
+
     Task<bool> ValidateCurrentStepAsync();
     Task<bool> SubmitRequestAsync();
     void CancelWorkflow();
@@ -1948,15 +1948,15 @@ public class Service_OperatorWorkflow : IService_OperatorWorkflow
 
         CurrentStep = CurrentStep switch
         {
-            Enum_OperatorWorkflowStep.CategorySelection => 
+            Enum_OperatorWorkflowStep.CategorySelection =>
                 Enum_OperatorWorkflowStep.RequestTypeSelection,
-            Enum_OperatorWorkflowStep.RequestTypeSelection => 
+            Enum_OperatorWorkflowStep.RequestTypeSelection =>
                 Enum_OperatorWorkflowStep.WorkOrderEntry,
-            Enum_OperatorWorkflowStep.WorkOrderEntry => 
+            Enum_OperatorWorkflowStep.WorkOrderEntry =>
                 Enum_OperatorWorkflowStep.PartNumberEntry,
-            Enum_OperatorWorkflowStep.PartNumberEntry => 
+            Enum_OperatorWorkflowStep.PartNumberEntry =>
                 Enum_OperatorWorkflowStep.DetailsEntry,
-            Enum_OperatorWorkflowStep.DetailsEntry => 
+            Enum_OperatorWorkflowStep.DetailsEntry =>
                 Enum_OperatorWorkflowStep.Review,
             _ => CurrentStep
         };
@@ -1968,15 +1968,15 @@ public class Service_OperatorWorkflow : IService_OperatorWorkflow
 
         CurrentStep = CurrentStep switch
         {
-            Enum_OperatorWorkflowStep.RequestTypeSelection => 
+            Enum_OperatorWorkflowStep.RequestTypeSelection =>
                 Enum_OperatorWorkflowStep.CategorySelection,
-            Enum_OperatorWorkflowStep.WorkOrderEntry => 
+            Enum_OperatorWorkflowStep.WorkOrderEntry =>
                 Enum_OperatorWorkflowStep.RequestTypeSelection,
-            Enum_OperatorWorkflowStep.PartNumberEntry => 
+            Enum_OperatorWorkflowStep.PartNumberEntry =>
                 Enum_OperatorWorkflowStep.WorkOrderEntry,
-            Enum_OperatorWorkflowStep.DetailsEntry => 
+            Enum_OperatorWorkflowStep.DetailsEntry =>
                 Enum_OperatorWorkflowStep.PartNumberEntry,
-            Enum_OperatorWorkflowStep.Review => 
+            Enum_OperatorWorkflowStep.Review =>
                 Enum_OperatorWorkflowStep.DetailsEntry,
             _ => CurrentStep
         };
@@ -2025,11 +2025,11 @@ public class Service_OperatorWorkflow : IService_OperatorWorkflow
     {
         return CurrentStep switch
         {
-            Enum_OperatorWorkflowStep.CategorySelection => 
+            Enum_OperatorWorkflowStep.CategorySelection =>
                 !string.IsNullOrWhiteSpace(_currentRequest.RequestCategory),
-            Enum_OperatorWorkflowStep.RequestTypeSelection => 
+            Enum_OperatorWorkflowStep.RequestTypeSelection =>
                 !string.IsNullOrWhiteSpace(_currentRequest.RequestType),
-            Enum_OperatorWorkflowStep.WorkOrderEntry => 
+            Enum_OperatorWorkflowStep.WorkOrderEntry =>
                 !string.IsNullOrWhiteSpace(_currentRequest.WorkOrderNumber),
             _ => await Task.FromResult(true)
         };
@@ -2115,7 +2115,7 @@ public class ViewModel_Operator_CreateRequestTests
         // Arrange
         var user = new Model_User { UserId = 1, BadgeNumber = "12345" };
         _mockSessionManager.Setup(x => x.GetCurrentUser()).Returns(user);
-        
+
         _mockMediator
             .Setup(x => x.Send(It.IsAny<CreateTaskRequestCommand>(), default))
             .ReturnsAsync(Model_Dao_Result<int>.Success(1));
@@ -2130,7 +2130,7 @@ public class ViewModel_Operator_CreateRequestTests
         // Assert
         _mockMediator.Verify(
             x => x.Send(
-                It.Is<CreateTaskRequestCommand>(c => 
+                It.Is<CreateTaskRequestCommand>(c =>
                     c.RequestCategory == "Material Handler" &&
                     c.RequestType == "Coils"),
                 default),
@@ -2276,7 +2276,7 @@ param(
     [Parameter(Mandatory=$false)]
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Debug",
-    
+
     [Parameter(Mandatory=$false)]
     [ValidateSet("x64", "ARM64")]
     [string]$Platform = "x64"
@@ -2330,7 +2330,7 @@ Write-Host "`nBuild completed successfully!" -ForegroundColor Green
 param(
     [Parameter(Mandatory=$false)]
     [string]$OutputPath = ".\publish",
-    
+
     [Parameter(Mandatory=$false)]
     [ValidateSet("x64", "ARM64")]
     [string]$Platform = "x64"
@@ -2371,10 +2371,10 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
    ```powershell
    # Pull latest changes
    git pull origin main
-   
+
    # Restore packages
    dotnet restore
-   
+
    # Run database migrations if any
    .\Scripts\Deploy-Database.ps1
    ```
@@ -2399,7 +2399,7 @@ Write-Host "`nApplication published to: $OutputPath" -ForegroundColor Green
    ```powershell
    # Run tests
    dotnet test
-   
+
    # Build and run
    dotnet build
    dotnet run

@@ -50,6 +50,201 @@
       "relatedServices": [
         "IService_ReceivingWorkflow",
         "IService_MySQL_Receiving"
+      ],
+      "subFeatures": [
+        {
+          "id": "receiving-mode-selection",
+          "name": "Mode Selection",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
+            "Module_Receiving/Views/View_Receiving_ModeSelection.xaml"
+          ]
+        },
+        {
+          "id": "receiving-load-entry",
+          "name": "Load Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
+            "Module_Receiving/Views/View_Receiving_LoadEntry.xaml"
+          ]
+        },
+        {
+          "id": "receiving-po-entry",
+          "name": "PO Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs",
+            "Module_Receiving/Views/View_Receiving_POEntry.xaml"
+          ]
+        },
+        {
+          "id": "receiving-manual-entry",
+          "name": "Manual Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
+            "Module_Receiving/Views/View_Receiving_ManualEntry.xaml"
+          ]
+        },
+        {
+          "id": "receiving-package-type",
+          "name": "Package Type Selection",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
+            "Module_Receiving/Views/View_Receiving_PackageType.xaml"
+          ]
+        },
+        {
+          "id": "receiving-heat-lot",
+          "name": "Heat / Lot Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
+            "Module_Receiving/Views/View_Receiving_HeatLot.xaml"
+          ]
+        },
+        {
+          "id": "receiving-weight-qty",
+          "name": "Weight & Quantity Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
+            "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml"
+          ]
+        },
+        {
+          "id": "receiving-review",
+          "name": "Review & Submit",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs",
+            "Module_Receiving/Views/View_Receiving_Review.xaml"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiving-edit-mode",
+      "module": "Module_Receiving",
+      "name": "Edit Mode",
+      "summary": "In-place editing of already-queued receiving lines before final save.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/Data/Dao_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
+      ],
+      "relatedServices": ["IService_MySQL_ReceivingLine"],
+      "subFeatures": [
+        {
+          "id": "receiving-edit-grid",
+          "name": "Edit Grid",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+            "Module_Receiving/Views/View_Receiving_EditMode.xaml"
+          ]
+        },
+        {
+          "id": "receiving-edit-save",
+          "name": "Save Changes",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_ReceivingLine.cs",
+            "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiving-quality-hold",
+      "module": "Module_Receiving",
+      "name": "Quality Hold",
+      "summary": "Quality-hold assignment, warning dialogs, and CRUD operations for QH records.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_QualityHold.cs",
+        "Module_Receiving/Services/Service_MySQL_QualityHold.cs",
+        "Module_Receiving/Services/Service_QualityHoldWarning.cs",
+        "Module_Receiving/Models/Model_QualityHold.cs"
+      ],
+      "relatedServices": [
+        "IService_MySQL_QualityHold",
+        "IService_QualityHoldWarning"
+      ],
+      "subFeatures": [
+        {
+          "id": "receiving-qh-warning",
+          "name": "QH Warning Dialog",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_QualityHoldWarning.cs",
+            "Module_Receiving/Contracts/IService_QualityHoldWarning.cs"
+          ]
+        },
+        {
+          "id": "receiving-qh-crud",
+          "name": "QH CRUD Operations",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_QualityHold.cs",
+            "Module_Receiving/Services/Service_MySQL_QualityHold.cs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiving-package-preferences",
+      "module": "Module_Receiving",
+      "name": "Package Preferences",
+      "summary": "Per-part package type preferences and prefix-based rules for auto-selecting package types.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+        "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
+        "Module_Receiving/Models/Model_PackageTypePreference.cs",
+        "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
+      ],
+      "relatedServices": ["IService_MySQL_PackagePreferences"],
+      "subFeatures": [
+        {
+          "id": "receiving-pkg-pref-rules",
+          "name": "Preference Rules",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+            "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
+          ]
+        },
+        {
+          "id": "receiving-pkg-pref-service",
+          "name": "Preferences Service",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
+            "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiving-label-export",
+      "module": "Module_Receiving",
+      "name": "Label / XLS Export",
+      "summary": "Writing, verifying, and cleaning up label data and XLS export files for receiving lines.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+        "Module_Receiving/Services/Service_XLSWriter.cs",
+        "Module_Receiving/Models/Model_XLSWriteResult.cs",
+        "Module_Receiving/Models/Model_XLSExistenceResult.cs",
+        "Module_Receiving/Models/Model_XLSDeleteResult.cs"
+      ],
+      "relatedServices": ["IService_XLSWriter"],
+      "subFeatures": [
+        {
+          "id": "receiving-xls-write",
+          "name": "Write to XLS",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_XLSWriter.cs",
+            "Module_Receiving/Contracts/IService_XLSWriter.cs"
+          ]
+        },
+        {
+          "id": "receiving-xls-cleanup",
+          "name": "Delete / Cleanup",
+          "relatedFiles": ["Module_Receiving/Data/Dao_ReceivingLabelData.cs"]
+        }
       ]
     },
     {

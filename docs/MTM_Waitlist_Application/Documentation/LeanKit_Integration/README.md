@@ -84,24 +84,28 @@ Open `../Specifications/LeanKit_Integration_Specification.md` in any Markdown vi
 ## Implementation Phases
 
 ### Phase 1: Foundation (Weeks 1-2)
+
 - Authentication setup
 - Read-only LeanKit integration
 - Configuration UI
 - Logging infrastructure
 
 ### Phase 2: One-Way Sync (Weeks 3-4)
+
 - Waitlist → LeanKit card creation
 - Manual sync triggers
 - Retry logic
 - Sync status indicators
 
 ### Phase 3: Bidirectional Sync (Weeks 5-7)
+
 - Full two-way synchronization
 - Background sync service
 - Conflict detection and resolution
 - Automated sync (polling-based)
 
 ### Phase 4: Advanced Features (Weeks 8-10)
+
 - Webhook support (if available)
 - Real-time notifications
 - Performance optimizations
@@ -109,26 +113,26 @@ Open `../Specifications/LeanKit_Integration_Specification.md` in any Markdown vi
 
 ## Technology Stack
 
-| Component | Technology |
-|-----------|-----------|
-| **Framework** | WinUI 3 (Windows App SDK 1.6+) |
-| **Language** | C# 12 (.NET 8) |
-| **Architecture** | MVVM with CommunityToolkit.Mvvm |
-| **Database** | MySQL 8.0 |
-| **HTTP Client** | HttpClient with Polly (retry logic) |
-| **Testing** | xUnit with FluentAssertions |
+| Component        | Technology                          |
+| ---------------- | ----------------------------------- |
+| **Framework**    | WinUI 3 (Windows App SDK 1.6+)      |
+| **Language**     | C# 12 (.NET 8)                      |
+| **Architecture** | MVVM with CommunityToolkit.Mvvm     |
+| **Database**     | MySQL 5.7                           |
+| **HTTP Client**  | HttpClient with Polly (retry logic) |
+| **Testing**      | xUnit with FluentAssertions         |
 
 ## Data Mapping
 
-| Waitlist Field | LeanKit Card Field | Notes |
-|----------------|-------------------|-------|
-| EntryID | ExternalCardId | Unique identifier link |
-| CustomerName | Title | Direct mapping |
-| Description | Description | HTML sanitization applied |
-| Status | LaneId | Configurable lane mapping |
-| Priority | Priority | 1-3 scale |
-| AssignedTo | AssignedUserIds[] | User lookup required |
-| Notes | Comments | Separate comment API |
+| Waitlist Field | LeanKit Card Field | Notes                     |
+| -------------- | ------------------ | ------------------------- |
+| EntryID        | ExternalCardId     | Unique identifier link    |
+| CustomerName   | Title              | Direct mapping            |
+| Description    | Description        | HTML sanitization applied |
+| Status         | LaneId             | Configurable lane mapping |
+| Priority       | Priority           | 1-3 scale                 |
+| AssignedTo     | AssignedUserIds[]  | User lookup required      |
+| Notes          | Comments           | Separate comment API      |
 
 ## LeanKit Board Information
 
@@ -274,16 +278,19 @@ Stored in MySQL `app_settings` table:
 ### Common Issues
 
 **Connection Failures:**
+
 - Verify API token validity
 - Check network connectivity
 - Confirm LeanKit service status
 
 **Sync Errors:**
+
 - Check sync history for details
 - Verify lane mapping configuration
 - Ensure entry data is valid
 
 **Conflicts:**
+
 - Review conflict resolution settings
 - Check timestamps for accuracy
 - Verify user permissions
@@ -308,7 +315,7 @@ Stored in MySQL `app_settings` table:
 
 - [LeanKit API Documentation](https://docs.leankit.com/display/LM/LeanKit+API+Documentation)
 - [LeanKit Node Client](https://github.com/LeanKit/leankit-node-client)
-- [MTM Waitlist Application Constitution](../../../../.github/CONSTITUTION.md)
+- [MTM Waitlist Application Constitution](../../../../.specify/memories/constitution.md)
 - [Testing Strategy](../../../../.github/instructions/testing-strategy.instructions.md)
 
 ## License
@@ -317,9 +324,9 @@ Internal use only - MTM Manufacturing
 
 ## Version History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-01-20 | AI Assistant | Initial specification and mockups |
+| Version | Date       | Author       | Changes                           |
+| ------- | ---------- | ------------ | --------------------------------- |
+| 1.0     | 2026-01-20 | AI Assistant | Initial specification and mockups |
 
 ---
 

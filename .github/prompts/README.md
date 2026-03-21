@@ -1,112 +1,92 @@
-# GitHub Copilot Prompts - Memory Bank & Testing
+# GitHub Copilot Prompts - Testing
 
-This directory contains reusable GitHub Copilot prompt files for Memory Bank management and comprehensive test generation in the MTM Receiving Application.
+This directory contains reusable GitHub Copilot prompt files for comprehensive test generation in the MTM Receiving Application. Project memory and progress tracking are handled by Serena's memory system (`.serena/memories/`).
 
 ## 📁 Prompt Files
 
-### Memory Bank Commands
-
-| Prompt File | Command | Purpose | Agent |
-|------------|---------|---------|-------|
-| `memory-bank-update.prompt.md` | `/memory-bank-update` | Review and update all Memory Bank files to capture current project state | `agent` |
-| `memory-bank-create-task.prompt.md` | `/memory-bank-create-task` | Create new task with thought process, implementation plan, and tracking | `agent` |
-| `memory-bank-update-task.prompt.md` | `/memory-bank-update-task` | Update existing task with progress, status changes, and decisions | `agent` |
-| `memory-bank-show-tasks.prompt.md` | `/memory-bank-show-tasks` | Display filtered list of tasks with status and completion info | `ask` |
-
 ### Testing Commands
 
-| Prompt File | Command | Purpose | Agent |
-|------------|---------|---------|-------|
-| `mtm-generate-all-tests.prompt.md` | `/mtm-generate-all-tests` | Generate comprehensive xUnit tests for single file or entire module | `agent` |
+| Prompt File                        | Command                   | Purpose                                                                                                                          | Agent   |
+| ---------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `mtm-generate-all-tests.prompt.md` | `/mtm-generate-all-tests` | Generate comprehensive xUnit tests for single file or entire module                                                              | `agent` |
+| `noob-mode.prompt.md`              | `/noob-mode`              | Activate plain-English mode — every action, error, and result explained in jargon-free language with color-coded risk indicators | `ask`   |
 
 ## 🎯 Quick Start
 
-### Memory Bank Commands
-
-**Update Memory Bank After Work:**
-```
-/memory-bank-update
-```
-Reviews ALL memory bank files and updates with current project state, recent changes, and next steps.
-
-**Create a New Task:**
-```
-/memory-bank-create-task Implement LoggingBehaviorTests
-```
-Creates task file with unique ID, thought process, implementation plan, and subtask tracking.
-
-**Update Task Progress:**
-```
-/memory-bank-update-task TASK001: completed subtasks 1.8 and 1.9
-```
-Adds progress log entry, updates subtask status, recalculates completion percentage.
-
-**View Tasks:**
-```
-/memory-bank-show-tasks active
-```
-Displays filtered task list (filters: all, active, pending, completed, blocked, recent).
-
 ### Testing Commands
 
+**Activate Noob Mode (plain-English explanations):**
+
+```
+/noob-mode
+```
+
+**Turn off Noob Mode:**
+
+```
+turn off noob mode
+```
+
 **Generate Tests for Single File:**
+
 ```
 /mtm-generate-all-tests Module_Core/Behaviors/LoggingBehavior.cs
 ```
 
 **Generate Tests for Entire Module:**
+
 ```
 /mtm-generate-all-tests Module_Core
 ```
 
 **Generate Tests with Focus:**
+
 ```
 /mtm-generate-all-tests Module_Core focus:Behaviors
 ```
 
-## 📖 Memory Bank System
+## 📖 Serena Memory System
 
-The Memory Bank provides persistent project context across sessions with these core files:
+Persistent project context is stored in Serena's memory system at `.serena/memories/`. Use the `mcp_oraios_serena_*` tools to read and write memories within agent sessions.
 
-### Core Files (Required)
-1. **`projectbrief.md`** - Project scope, technology stack, success criteria
-2. **`productContext.md`** - Why project exists, problems solved, user goals
-3. **`systemPatterns.md`** - Architecture, design patterns, testing patterns
-4. **`techContext.md`** - Technologies, dependencies, constraints
-5. **`activeContext.md`** - Current work focus, recent changes, next steps
-6. **`progress.md`** - What works, milestones, known issues
-7. **`tasks/` folder** - Individual task files with complete history
+### Key Memory Files
 
-### Memory Bank Hierarchy
+| Memory                     | Purpose                                         |
+| -------------------------- | ----------------------------------------------- |
+| `architectural_patterns`   | MVVM layer rules and architecture decisions     |
+| `coding_standards`         | Naming conventions and C# style                 |
+| `dao_best_practices`       | DAO pattern, `Model_Dao_Result` usage           |
+| `forbidden_practices`      | What must never be done in this codebase        |
+| `testing_patterns`         | Test patterns discovered during test generation |
+| `test_generation_{module}` | Progress tracking for module test generation    |
 
-```
-projectbrief.md (foundation)
-├── productContext.md
-├── systemPatterns.md
-└── techContext.md
-    └── activeContext.md
-        ├── progress.md
-        └── tasks/
-            ├── _index.md
-            └── TASKXXX-taskname.md
-```
+### Serena Memory Tools
+
+- `mcp_oraios_serena_read_memory` — Read a specific memory file
+- `mcp_oraios_serena_write_memory` — Create or overwrite a memory
+- `mcp_oraios_serena_edit_memory` — Edit an existing memory
+- `mcp_oraios_serena_list_memories` — List available memories
+
+See the [Serena instructions](..\instructions\serena-tools.instructions.md) for full documentation.
 
 ## 🎨 Prompt File Standards
 
 All prompt files in this directory follow these standards from `.github/instructions/prompt.instructions.md`:
 
 ### Required Frontmatter
+
 ```yaml
 ---
-name: 'command-name'
-description: 'Brief description (single sentence)'
-agent: 'ask|edit|agent'
-tools: ['tool1', 'tool2']
-argument-hint: 'Hint for user input'
+name: "command-name"
+description: "Brief description (single sentence)"
+agent: "ask|edit|agent"
+tools: ["tool1", "tool2"]
+argument-hint: "Hint for user input"
 ---
 ```
 
 ### Structure
+
 - **Mission** - Clear objective
 - **Scope & Preconditions** - When to use, prerequisites
 - **Inputs** - Required and optional parameters
@@ -117,76 +97,42 @@ argument-hint: 'Hint for user input'
 
 ## 🔧 Tool Usage
 
-### Memory Bank Prompts Use:
-- `read_file` - Load existing memory bank files
-- `replace_string_in_file` - Update specific sections
-- `create_file` - Create new task files
-- `list_dir` - Scan directory structure
-
 ### Testing Prompt Uses:
+
 - `list_dir` - Enumerate module files
-- `get_symbols_overview` - Analyze file structure
-- `get_symbols_by_name` - Identify public API
+- `get_symbols_overview` - Analyze file structure (via Serena MCP)
 - `read_file` - Load source code
 - `create_file` - Generate test files
 - `code_search` - Find existing patterns
+- `mcp_oraios_serena_write_memory` - Write progress and patterns to Serena memory
+- `mcp_oraios_serena_edit_memory` - Update existing Serena memories
+- `mcp_oraios_serena_read_memory` - Read project patterns from memory
 
-## 📝 Task Management
+## 📝 Progress Tracking with Serena Memories
 
-### Task File Format
+Progress and task tracking is handled through Serena's memory system rather than separate task files.
 
-Each task is tracked in `memory-bank/tasks/TASKID-taskname.md`:
+### Writing Progress Entries
 
-```markdown
-# TASK001 - Fix AuditBehaviorTests
-
-**Status:** Completed  
-**Added:** 2025-01-19  
-**Updated:** 2025-01-19
-
-## Original Request
-[User's original request]
-
-## Thought Process
-[Reasoning and approach]
-
-## Implementation Plan
-1. Step 1
-2. Step 2
-3. Step 3
-
-## Progress Tracking
-**Overall Status:** Completed - 100%
-
-### Subtasks
-| ID | Description | Status | Updated | Notes |
-|----|-------------|--------|---------|-------|
-| 1.1 | First step | Complete | 2025-01-19 | |
-
-## Progress Log
-### 2025-01-19
-- Completed work
-- Made decisions
-- Encountered issues
-```
-
-### Task Index
-
-Tasks are organized in `memory-bank/tasks/_index.md`:
+Use `mcp_oraios_serena_write_memory` with a descriptive name (e.g., `test_generation_module_core`):
 
 ```markdown
-## In Progress
-- [TASK003] Implement feature - 60% complete
+# Generate Unit Tests for Module_Core
 
-## Pending
-- [TASK004] Planned work
+**Status:** In Progress
+**Started:** YYYY-MM-DD
 
-## Completed
-- [TASK001] Fixed issue - Completed 2025-01-19
+## Files to Test
 
-## Blocked
-- [TASK005] Waiting on dependency
+- [ ] Behaviors/LoggingBehavior.cs
+- [x] Behaviors/AuditBehavior.cs (8 tests)
+
+## Notes
+
+- Discovered MediatR 14.0 requires discard parameter for CancellationToken
 ```
+
+Use `mcp_oraios_serena_list_memories` to see all active progress entries.
 
 ## 🧪 Test Generation
 
@@ -214,88 +160,67 @@ Tasks are organized in `memory-bank/tasks/_index.md`:
 ### Module Test Generation
 
 When targeting entire module:
+
 1. Enumerates all testable C# files
 2. Checks for existing test files
-3. Creates Memory Bank task for tracking
+3. Writes progress entry to Serena memory for tracking
 4. Generates tests file-by-file
-5. Updates task progress after each file
-6. Documents patterns in `systemPatterns.md`
-7. Updates `progress.md` with accomplishment
+5. Updates progress entry in Serena memory after each file
+6. Documents new patterns in `testing_patterns` Serena memory
 
 ## 🔗 Related Documentation
 
-- **Memory Bank Instructions**: `.github/instructions/memory-bank.instructions.md`
+- **Serena Memory Tools**: `.github/instructions/serena-07-memories.instructions.md`
+- **Serena Tools Index**: `.github/instructions/serena-tools.instructions.md`
 - **Prompt File Guidelines**: `.github/instructions/prompt.instructions.md`
 - **Testing Strategy**: `.github/instructions/testing-strategy.instructions.md`
 - **MTM Architecture**: `.github/copilot-instructions.md`
-- **System Patterns**: `memory-bank/systemPatterns.md`
+- **Serena Memories Folder**: `.serena/memories/`
 
 ## 📊 Examples
 
-### Complete Workflow: Fix Bug → Test → Document
+### Workflow: Fix Bug → Generate Tests
 
-1. **Create task for bug fix:**
-   ```
-   /memory-bank-create-task Fix validation issue in ReceivingWorkflow
-   ```
+1. **Generate tests for fixed code:**
 
-2. **Work on fix, then update progress:**
-   ```
-   /memory-bank-update-task TASK005: fixed validation logic, added edge case handling
-   ```
-
-3. **Generate tests for fixed code:**
    ```
    /mtm-generate-all-tests Module_Receiving/Services/Service_ReceivingWorkflow.cs
    ```
 
-4. **Update memory bank with patterns discovered:**
+2. **Run the generated tests:**
    ```
-   /memory-bank-update
-   ```
-
-5. **Mark task complete:**
-   ```
-   /memory-bank-update-task TASK005 - completed!
-   ```
-
-6. **Review all recent work:**
-   ```
-   /memory-bank-show-tasks recent
+   dotnet test --filter "FullyQualifiedName~Service_ReceivingWorkflowTests"
    ```
 
 ### Complete Workflow: New Module Tests
 
 1. **Generate tests for module:**
+
    ```
    /mtm-generate-all-tests Module_Core focus:Behaviors
    ```
-   *(Creates task automatically)*
+
+   _(Writes Serena progress entry automatically)_
 
 2. **Review generated tests:**
    - Check `MTM_Receiving_Application.Tests/Module_Core/Behaviors/`
    - Run: `dotnet test --filter "Module=Module_Core"`
 
-3. **Memory bank auto-updated:**
-   - Task marked complete
-   - systemPatterns.md updated with patterns
-   - progress.md shows accomplishment
+3. **Serena memories auto-updated:**
+   - `test_generation_module_core` marked complete
+   - `testing_patterns` updated with discovered patterns
 
 ## 🎓 Best Practices
 
-### Memory Bank
-- **Update frequently** - After each significant change
-- **Be specific** - Document decisions and rationale
-- **Stay current** - Keep activeContext.md reflective of NOW
-- **Track tasks** - Use for any multi-step work
-
 ### Testing
+
 - **Generate early** - Create tests as you write code
 - **Module batches** - Use module command for comprehensive coverage
 - **Review output** - Always verify generated tests make sense
 - **Run tests** - Validate they compile and pass
 
 ### Prompts
+
 - **Read documentation** - Understand prompt structure before creating new ones
 - **Follow standards** - Use consistent formatting and structure
 - **Test thoroughly** - Verify prompts work as expected
@@ -303,39 +228,34 @@ When targeting entire module:
 
 ## 🚀 Getting Started
 
-1. **Initialize Memory Bank** (first time only):
-   ```
-   /memory-bank-update
-   ```
-   Creates full structure if missing.
+1. **Generate tests for a module:**
 
-2. **Create your first task:**
-   ```
-   /memory-bank-create-task My first tracked task
-   ```
-
-3. **Generate tests for a module:**
    ```
    /mtm-generate-all-tests Module_Core
    ```
 
-4. **View progress:**
+2. **Generate tests for a specific file:**
+
    ```
-   /memory-bank-show-tasks all
+   /mtm-generate-all-tests Module_Core/Behaviors/LoggingBehavior.cs
    ```
+
+3. **View Serena memories (progress, patterns):**
+   Ask Copilot in agent mode: list Serena memories, or use `mcp_oraios_serena_list_memories`.
 
 ## 📮 Feedback & Updates
 
-These prompts follow the living documentation principle - they evolve as patterns emerge and needs change. 
+These prompts follow the living documentation principle - they evolve as patterns emerge and needs change.
 
 **To suggest improvements:**
-1. Document issue/enhancement in Memory Bank task
+
+1. Write a Serena memory note with the proposed change
 2. Test changes with actual usage
 3. Update prompt file and examples
 4. Verify all examples still work
 
 ---
 
-**Last Updated:** 2025-01-19  
-**Version:** 1.0  
+**Last Updated:** 2026-03-21  
+**Version:** 2.0  
 **Maintainer:** MTM Development Team

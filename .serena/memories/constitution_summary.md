@@ -1,6 +1,6 @@
 # Constitution Summary v1.2.0
 
-**Last Updated**: December 27, 2025
+**Last Updated**: 2026-03-21
 
 ## Core Non-Negotiable Principles
 
@@ -21,7 +21,7 @@
 
 ### III. Dependency Injection Everywhere
 
-- ALL services registered in `App.xaml.cs`
+- ALL services registered in `Infrastructure/DependencyInjection/` extension methods (called from `App.xaml.cs`)
 - Constructor injection only (NO service locators)
 - DAOs registered as Singletons
 - ViewModels registered as Transient
@@ -29,7 +29,7 @@
 ### IV. Error Handling & Logging
 
 - `IService_ErrorHandler` for ALL error displays
-- `ILoggingService` for ALL logging
+- `IService_LoggingUtility` for ALL logging
 - DAOs return failure results (NEVER throw)
 - NO silent failures
 
@@ -97,7 +97,7 @@
 - **OS**: Windows 10 1809+ / Windows 11
 - **Framework**: .NET 8.0
 - **UI**: WinUI 3 (Windows App SDK 1.8+)
-- **Application DB**: MySQL 8.0+
+- **Application DB**: MySQL 5.7+
 - **ERP DB**: SQL Server (Infor Visual MTMFG) - **READ ONLY**
 
 ## Key NuGet Packages

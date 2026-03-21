@@ -1,9 +1,12 @@
 # Coding Standards & Conventions
 
+Last Updated: 2026-03-21
+
 **MVVM Pattern:**
 
 - **ViewModels:**
-  - Inherit from `BaseViewModel` (where applicable).
+  - Inherit from `ViewModel_Shared_Base`.
+  - Must be `partial` classes (required for CommunityToolkit.Mvvm attributes).
   - Use `[ObservableProperty]` for properties.
   - Use `[RelayCommand]` for commands.
   - Inject services via constructor.
@@ -16,9 +19,9 @@
 
 - **Naming:** `Dao_<EntityName>`.
 - **Pattern:**
-  - `Dao_User` is an instance class registered in DI.
-  - Other DAOs (e.g., `Dao_ReceivingLine`) are static classes.
-  - *Note: Check existing pattern before creating new DAOs.*
+  - ALL DAOs are instance-based classes registered in DI (never static).
+  - Accept `string connectionString` in constructor.
+  - Return `Model_Dao_Result<T>` from all methods; never throw exceptions.
 - **Methods:** Async/Await for all DB operations (`<Action><Entity>Async`).
 - **Error Handling:** Use `Model_Dao_Result<T>` for return values to encapsulate success/failure and error messages.
 

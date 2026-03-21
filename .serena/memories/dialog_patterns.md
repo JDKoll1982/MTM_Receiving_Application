@@ -1,5 +1,7 @@
 # Dialog and Modal Patterns
 
+Last Updated: 2026-03-21
+
 ## Existing Dialog Infrastructure
 
 ### Dialog Types
@@ -22,7 +24,6 @@ The application uses WinUI 3 `ContentDialog` for all modal interactions.
   - Has dedicated ViewModel: `Shared_SharedTerminalLoginViewModel`
   - ViewModel injected via `App.GetService<T>()`
   - Location: `Views/Shared/`
-  
 - `Shared_NewUserSetupDialog`
   - Has dedicated ViewModel: `Shared_NewUserSetupViewModel`
   - Multi-step wizard pattern within dialog

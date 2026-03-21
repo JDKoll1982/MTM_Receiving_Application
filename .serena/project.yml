@@ -14,7 +14,7 @@
 # The first language is the default language and the respective language server will be used as a fallback.
 # Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
-- csharp
+  - csharp
 
 # the encoding used by text files in the project
 # For a list of possible encodings, see https://docs.python.org/3.11/library/codecs.html#standard-encodings
@@ -37,7 +37,7 @@ read_only: false
 
 # list of tool names to exclude. We recommend not excluding any tools, see the readme for more details.
 # Below is the complete list of tools for convenience.
-# To make sure you have the latest list of tools, and to view their descriptions, 
+# To make sure you have the latest list of tools, and to view their descriptions,
 # execute `uv run scripts/print_tool_overview.py`.
 #
 #  * `activate_project`: Activates a project by name.
@@ -78,12 +78,79 @@ excluded_tools: []
 
 # initial prompt for the project. It will always be given to the LLM upon activating the project
 # (contrary to the memories, which are loaded on demand).
-initial_prompt: ""
+initial_prompt: |
+  You are working on the **MTM Receiving Application** — a WinUI 3 / .NET 8 desktop application
+  for manufacturing receiving operations. It uses strict MVVM with CommunityToolkit.Mvvm,
+  MySQL 5.7 (READ/WRITE via stored procedures), and SQL Server/Infor Visual (READ ONLY).
+
+  ## Before Making ANY Changes
+
+  Read these memories in order:
+  1. `read_memory("forbidden_practices")` — absolute rules; violations break the system
+  2. `read_memory("architectural_patterns")` — MVVM layer flow and separation rules
+  3. `read_memory("dao_best_practices")` — Model_Dao_Result pattern and stored procedure usage
+
+  For additional context as needed:
+  - `read_memory("mvvm_guide")` — full ViewModel/Service/DAO walkthrough with examples
+  - `read_memory("coding_standards")` — naming conventions and C# style rules
+  - `read_memory("infor_visual_constraints")` — SQL Server READ ONLY enforcement
+  - `read_memory("error_handling_guide")` — IService_ErrorHandler usage
+  - `read_memory("xaml_binding_patterns")` — x:Bind patterns; never use runtime Binding
+
+  The authoritative source of truth is `.github/copilot-instructions.md`.
+
+  ## Critical Architecture Rules (Summary)
+
+  **FORBIDDEN — these will break the system:**
+  - ViewModels calling DAOs directly (must go through Service layer)
+  - Static DAO classes (all DAOs must be instance-based)
+  - DAOs throwing exceptions (return Model_Dao_Result with error details)
+  - Raw SQL in C# for MySQL (use stored procedures ONLY)
+  - Write operations to SQL Server/Infor Visual (READ ONLY — no INSERT/UPDATE/DELETE)
+  - Runtime `{Binding}` in XAML (use compile-time `{x:Bind}` only)
+  - Business logic in `.xaml.cs` code-behind
+
+  **REQUIRED layer flow:**
+  View (XAML) → ViewModel → Service → DAO → Database
+
+  ## Build Verification
+
+  After making changes, verify with:
+  - `dotnet build MTM_Receiving_Application.slnx` — must succeed before considering any task done
+  - `dotnet test MTM_Receiving_Application.slnx` — must pass for functional changes
+
+  ## Key Tech Stack
+
+  - .NET 8, C# 12, WinUI 3 (Windows App SDK 1.6+)
+  - CommunityToolkit.Mvvm (ObservableProperty, RelayCommand)
+  - MySQL 5.7 via MySqlConnector — stored procedures only
+  - SQL Server (Infor Visual MTMFG) — ApplicationIntent=ReadOnly
+  - xUnit + FluentAssertions for tests
+
+  ## Follow instructions in .github/prompts/noob-mode.prompt.md when returning results to the user, especially for large or complex changes.
+
 # the name by which the project can be referenced within Serena
 project_name: "MTM_Receiving_Application"
 
 # list of tools to include that would otherwise be disabled (particularly optional tools that are disabled by default)
-included_optional_tools: []
+# Rationale for each included tool:
+#   execute_shell_command : Enables `dotnet build` and `dotnet test` for build verification after edits.
+#                           Required even in ide context where shell tools are normally suppressed.
+#   think_about_collected_information : Reduces token waste by prompting the agent to verify it has
+#                           enough context before generating code in large multi-file refactors.
+#   think_about_task_adherence : Keeps the agent on-track when working across many MVVM layers.
+#   think_about_whether_you_are_done : Prevents premature task completion — critical when
+#                           architecture validation searches must pass before closing a task.
+#   summarize_changes     : Produces a structured diff summary at end of session; helps with
+#                           memory-bank updates and PR descriptions.
+#   prepare_for_new_conversation : Enables clean session hand-off with context preserved in memories.
+included_optional_tools:
+  - execute_shell_command
+  - think_about_collected_information
+  - think_about_task_adherence
+  - think_about_whether_you_are_done
+  - summarize_changes
+  - prepare_for_new_conversation
 
 # list of mode names to that are always to be included in the set of active modes
 # The full set of modes to be activated is base_modes + default_modes.
@@ -92,6 +159,8 @@ included_optional_tools: []
 # Set this to [] to disable base modes for this project.
 # Set this to a list of mode names to always include the respective modes for this project.
 base_modes:
+  - editing
+  - interactive
 
 # list of mode names that are to be activated by default.
 # The full set of modes to be activated is base_modes + default_modes.
@@ -115,13 +184,18 @@ symbol_info_budget:
 # Valid values: LSP, JetBrains
 # Note: the backend is fixed at startup. If a project with a different backend
 # is activated post-init, an error will be returned.
-language_backend:
+language_backend: LSP
 
 # list of regex patterns which, when matched, mark a memory entry as read‑only.
 # Extends the list from the global configuration, merging the two lists.
-read_only_memory_patterns: []
+# constitution_summary and forbidden_practices are protected from accidental AI edits;
+# they are the immutable architectural constraints for this project.
+read_only_memory_patterns:
+  - "constitution_summary"
+  - "forbidden_practices"
 
 # line ending convention to use when writing source files.
 # Possible values: unset (use global setting), "lf", "crlf", or "native" (platform default)
 # This does not affect Serena's own files (e.g. memories and configuration files), which always use native line endings.
-line_ending:
+# Set to crlf for Windows team consistency; prevents git diff pollution from line ending changes.
+line_ending: "crlf"

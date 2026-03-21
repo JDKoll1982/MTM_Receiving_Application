@@ -1,19 +1,17 @@
 # DAO Best Practices
 
-## Instance-Based Pattern (MANDATORY)
-
-### Class Structure
+Last Updated: 2026-03-21
 
 ```csharp
 public class Dao_EntityName
 {
     private readonly string _connectionString;
-    
+
     public Dao_EntityName(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
-    
+
     // Methods use _connectionString instance field
 }
 ```
@@ -67,16 +65,16 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
             { "p_quantity", line.Quantity },
             { "p_po_number", line.PONumber }
         };
-        
+
         return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
             _connectionString,
-            "sp_sp_Receiving_Line_Insert",
+            "sp_Receiving_Line_Insert",
             parameters
         );
     }
     catch (Exception ex)
     {
-        return DaoResultFactory.Failure<int>(
+        return Model_Dao_Result_Factory.Failure<int>(
             $"Error inserting receiving line: {ex.Message}",
             ex);
     }
@@ -85,9 +83,9 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 
 ### Parameter Naming
 
-- C# parameter names match stored procedure parameters
-- NO `p_` prefix in C# (added automatically by helper)
-- Example: C# `"part_id"` → SQL `@p_part_id`
+- Dictionary keys include the `p_` prefix that matches the stored procedure parameter name.
+- Example: C# `"p_part_id"` → SQL `@p_part_id`
+- The helper tolerates keys without the `p_` prefix (adds it automatically), but established codebase practice is to include it explicitly.
 
 ## Error Handling in DAOs
 
@@ -105,44 +103,44 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 {
     if (entity == null)
-        return DaoResultFactory.Failure<int>("Entity cannot be null");
-    
+        return Model_Dao_Result_Factory.Failure<int>("Entity cannot be null");
+
     try
     {
         // Database operation
     }
     catch (Exception ex)
     {
-        return DaoResultFactory.Failure<int>($"Error: {ex.Message}", ex);
+        return Model_Dao_Result_Factory.Failure<int>($"Error: {ex.Message}", ex);
     }
 }
 ```
 
-### Using DaoResultFactory
+### Using Model_Dao_Result_Factory
 
 ```csharp
 // Success
-return DaoResultFactory.Success(data, affectedRows: 1);
+return Model_Dao_Result_Factory.Success(data, affectedRows: 1);
 
 // Failure
-return DaoResultFactory.Failure<T>("Error message", exception);
+return Model_Dao_Result_Factory.Failure<T>("Error message", exception);
 ```
 
 ## DI Registration Pattern
 
-### In App.xaml.cs
+### In Infrastructure/DependencyInjection/ extension methods
 
 ```csharp
 private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
     // Get connection string
     var connectionString = Helper_Database_Variables.GetConnectionString();
-    
+
     // Register DAOs as Singletons (stateless)
     services.AddSingleton(sp => new Dao_User(connectionString));
     services.AddSingleton(sp => new Dao_ReceivingLine(connectionString));
     services.AddSingleton(sp => new Dao_ReceivingLoad(connectionString));
-    
+
     // For Infor Visual (READ-ONLY)
     var inforConnectionString = Helper_Database_Variables.GetInforVisualConnectionString();
     services.AddSingleton(sp => new Dao_InforVisualPO(inforConnectionString));
@@ -174,26 +172,26 @@ public class Dao_InforVisualPO
         // VALIDATE READ-ONLY
         if (!connectionString.Contains("ApplicationIntent=ReadOnly"))
             throw new InvalidOperationException("Infor Visual must be READ-ONLY");
-        
+
         _connectionString = connectionString;
     }
-    
+
     public async Task<Model_Dao_Result<Model_InforVisualPO>> GetPOAsync(string poNumber)
     {
         try
         {
             string query = "SELECT * FROM PURCHASE_ORDER WHERE ID = @PoNumber";
-            
+
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
-            
+
             await connection.OpenAsync();
             // Execute and map results
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<Model_InforVisualPO>($"Error: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPO>($"Error: {ex.Message}", ex);
         }
     }
 }
@@ -215,10 +213,10 @@ public async Task InsertAsync_ValidEntity_ReturnsNewId()
         Quantity = 100,
         PONumber = "TEST-PO"
     };
-    
+
     // Act
     var result = await dao.InsertAsync(line);
-    
+
     // Assert
     Assert.True(result.IsSuccess);
     Assert.True(result.Data > 0);

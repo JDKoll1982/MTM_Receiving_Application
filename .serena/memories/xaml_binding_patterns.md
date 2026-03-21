@@ -1,5 +1,7 @@
 # XAML Binding Patterns
 
+Last Updated: 2026-03-21
+
 ## Overview
 
 This memory documents the standard XAML binding patterns used throughout the MTM Receiving Application, with emphasis on the help system integration and best practices.
@@ -72,11 +74,11 @@ private void Button_Click(object sender, RoutedEventArgs e)
 **Implementation**:
 
 ```xml
-<Button 
+<Button
     Content="Save"
     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Save'), Mode=OneTime}"/>
-    
-<Button 
+
+<Button
     Content="Refresh"
     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Refresh'), Mode=OneTime}"/>
 ```
@@ -100,11 +102,11 @@ public string GetTooltip(string name) => _helpService.GetTooltip($"Tooltip.{name
 **Implementation**:
 
 ```xml
-<TextBox 
+<TextBox
     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneTime}"
     Text="{x:Bind ViewModel.PONumber, Mode=TwoWay}"/>
-    
-<TextBox 
+
+<TextBox
     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.Location'), Mode=OneTime}"
     Text="{x:Bind ViewModel.Location, Mode=TwoWay}"/>
 ```
@@ -167,7 +169,7 @@ private void DismissTip()
 **Implementation**:
 
 ```xml
-<Button 
+<Button
     Command="{x:Bind ViewModel.ShowHelpCommand}"
     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneTime}">
     <SymbolIcon Symbol="Help"/>
@@ -242,11 +244,11 @@ private void ShowWarning(string messageKey)
 ### Loading States
 
 ```xml
-<ProgressRing 
+<ProgressRing
     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
     Width="40" Height="40"/>
-    
-<TextBlock 
+
+<TextBlock
     Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
     Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}"/>
 ```
@@ -254,7 +256,7 @@ private void ShowWarning(string messageKey)
 ### Button Enable/Disable
 
 ```xml
-<Button 
+<Button
     Content="Save"
     Command="{x:Bind ViewModel.SaveCommand}"
     IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}"/>
@@ -307,11 +309,11 @@ xmlns:converters="using:MTM_Receiving_Application.Converters"
     <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibility"/>
 </Page.Resources>
 
-<TextBlock 
+<TextBlock
     Text="No items found"
     Visibility="{x:Bind ViewModel.HasNoItems, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
-    
-<Button 
+
+<Button
     Content="Clear"
     Visibility="{x:Bind ViewModel.SearchText, Mode=OneWay, Converter={StaticResource EmptyStringToVisibility}}"/>
 ```
@@ -344,7 +346,7 @@ xmlns:converters="using:MTM_Receiving_Application.Converters"
     </DataTemplate>
 </Page.Resources>
 
-<GridView 
+<GridView
     ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
     ItemTemplate="{StaticResource ItemCardTemplate}"/>
 ```

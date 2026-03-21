@@ -1,8 +1,6 @@
 # Forbidden Practices (Constitutional Violations)
 
-## Critical Violations
-
-### ❌ ViewModels Calling DAOs Directly
+Last Updated: 2026-03-21
 
 ```csharp
 // FORBIDDEN - ViewModel → DAO
@@ -55,7 +53,7 @@ string query = "SELECT * FROM PURCHASE_ORDER WHERE ID = @PoNumber";
 string sql = "INSERT INTO receiving_line ...";
 
 // REQUIRED - Stored procedures only
-await Helper_Database_StoredProcedure.ExecuteAsync("sp_sp_Receiving_Line_Insert", parameters);
+await Helper_Database_StoredProcedure.ExecuteAsync("sp_Receiving_Line_Insert", parameters);
 ```
 
 ## High-Priority Violations
@@ -72,7 +70,7 @@ public async Task<List<Model_Line>> GetAllAsync()
 // REQUIRED
 public async Task<Model_Dao_Result<List<Model_Line>>> GetAllAsync()
 {
-    return DaoResultFactory.Failure<List<Model_Line>>("Not found");
+    return Model_Dao_Result_Factory.Failure<List<Model_Line>>("Not found");
 }
 ```
 
@@ -107,10 +105,10 @@ private async Task SaveAsync()
 
 ```csharp
 // FORBIDDEN - Won't compile with CommunityToolkit.Mvvm
-public class MyViewModel : BaseViewModel { }
+public class MyViewModel : ViewModel_Shared_Base { }
 
 // REQUIRED
-public partial class MyViewModel : BaseViewModel { }
+public partial class MyViewModel : ViewModel_Shared_Base { }
 ```
 
 ### ❌ Static Factory Methods in Model Classes
@@ -122,8 +120,8 @@ public class Model_Dao_Result
     public static Model_Dao_Result Failure(string msg) { }
 }
 
-// REQUIRED - Use DaoResultFactory
-return DaoResultFactory.Failure("Error message");
+// REQUIRED - Use Model_Dao_Result_Factory
+return Model_Dao_Result_Factory.Failure("Error message");
 ```
 
 ## Medium-Priority Violations
@@ -134,7 +132,7 @@ return DaoResultFactory.Failure("Error message");
 // FORBIDDEN - Missing DI registration
 public class Dao_NewEntity { }
 
-// REQUIRED - Register in App.xaml.cs
+// REQUIRED - Register in Infrastructure/DependencyInjection/ extension methods
 services.AddSingleton(sp => new Dao_NewEntity(connectionString));
 ```
 
