@@ -127,7 +127,7 @@ initial_prompt: |
   - SQL Server (Infor Visual MTMFG) — ApplicationIntent=ReadOnly
   - xUnit + FluentAssertions for tests
 
-  ## Follow instructions in .github/prompts/noob-mode.prompt.md when returning results to the user, especially for large or complex changes.
+  ## Respond with everything that you learned from the above instructions and memories in mind, and ask if you have any questions before proceeding with any code changes.
 
 # the name by which the project can be referenced within Serena
 project_name: "MTM_Receiving_Application"
