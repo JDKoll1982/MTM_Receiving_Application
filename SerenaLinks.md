@@ -218,7 +218,7 @@ Generate comparison report identifying:
    - **Key tables**: `settings_universal` (system-wide), `settings_personal` (per-user)
    - **Reset/restore**: `sp_Settings_System_ResetToDefault`, `sp_Settings_User_Reset`, `sp_Settings_User_ResetAll`
    - **Schemas/SPs**: `Database/Schemas/24_Table_settings_personal.sql`, `27_Table_settings_universal.sql`, `Database/StoredProcedures/Settings/sp_Settings_*`
-   - *Supporting database file listing (user-provided evidence):*
+   - _Supporting database file listing (user-provided evidence):_
      Database\00-Test
      Database\00-Test\templates
      Database\00-Test\templates\01-report-template.md
@@ -489,7 +489,6 @@ Generate comparison report identifying:
      Database\Troubleshoot_MySQLErrors.md
      Database\UseToValidate_App_To_SP_Workflow.md
 
-
 9. **Role-Based Access Control in Settings** ✅ RESOLVED (Serena, 2026-03-21)
    - **Finding: The assumption is partially correct — but the role model is more granular than Admin/User/Viewer.**
    - **Four roles exist** (defined in `Enum_SettingsPermissionLevel`): `User (0)`, `Supervisor (1)`, `Admin (2)`, `Developer (3)`
@@ -629,3 +628,51 @@ Generate comparison report identifying:
     - **Finding: Mock data / ERP toggle flags exist. The `Integrations.*` group (7 keys) in `ReceivingSettingsKeys` / `ReceivingSettingsDefaults` are the ERP on/off switches (e.g., `ErpSyncEnabled`, `AutoPullPoDataEnabled`, `SyncToInforVisual`).**
     - **Status**: All `Integrations.*` keys are defined but not yet consumed by any ViewModel or Service — placeholders for future implementation.
     - **Access level**: When implemented, these will be developer-only flags (requiring `Developer` permission from `Enum_SettingsPermissionLevel`). User-accessible dry-run for label printing is not yet implemented.
+
+````mermaid
+flowchart TD
+    A[Open CopilotForms index.html] --> B[Choose UI Change Request]
+    B --> C[Select Module: Module_Receiving]
+    C --> D[Select Feature: Edit Mode]
+    D --> E[Form auto-loads known context]
+
+    E --> F[Pre-filled structured choices appear]
+    F --> F1[Screen: View_Receiving_EditMode]
+    F --> F2[ViewModel: ViewModel_Receiving_EditMode]
+    F --> F3[Workflow area: Edit existing loads]
+    F --> F4[Likely files to review already suggested]
+    F --> F5[Known constraints already shown]
+
+    F --> G[User picks UI change type]
+    G --> G1[Current layout: DataGrid]
+    G --> G2[Desired layout: Card-based list]
+    G --> G3[Affected controls: load list, paging, search, sort, edit actions]
+    G --> G4[Interaction pattern choices: single select, inline edit, card actions]
+    G --> G5[Do-not-change choices: business logic, service flow, DAO flow]
+
+    G --> H[User adds short explanation text]
+    H --> H1[What feels wrong today]
+    H --> H2[What should be different]
+    H --> H3[Any special layout or usability notes]
+
+    H --> I[Form asks only relevant follow-up questions]
+    I --> I1[Keep paging?]
+    I --> I2[Keep search and sort?]
+    I --> I3[Should cards allow inline editing?]
+    I --> I4[Desktop-only layout or responsive layout?]
+    I --> I5[Accessibility needs?]
+
+    I --> J[Form auto-builds Copilot output]
+    J --> J1[Markdown request]
+    J --> J2[JSON request]
+
+    J --> K[User reviews generated request]
+    K --> L[Optional: Save to outputs folder]
+    K --> M[Optional: Copy to clipboard]
+    K --> N[Run in Copilot Chat]
+
+    N --> O[Copilot receives a highly structured request]
+    O --> P[Copilot already knows module, feature, likely files, UI target, and constraints]
+    P --> Q[Copilot performs the requested UI change with less back-and-forth]
+    ```
+````

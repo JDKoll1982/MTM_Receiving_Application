@@ -2,6 +2,9 @@
 
 Last Updated: 2026-03-21
 
+This note captures the confirmed command guards for the reporting entry screen.
+The analysis also confirmed that `View_Reporting_Main.xaml` is the primary interactive screen and `View_Reporting_PreviewDialog.xaml` is the preview surface that appears after report generation.
+
 ---
 
 ## Main View (`ViewModel_Reporting_Main`) — Command Guards
@@ -22,6 +25,17 @@ Last Updated: 2026-03-21
 `NotifyCanExecuteChanged()` is fired on collection changes and after generation completes or fails.
 
 **Source:** `ViewModel_Reporting_Main.cs`
+
+---
+
+## Screen Context
+
+| View | Purpose |
+|---|---|
+| `View_Reporting_Main.xaml` | Main reporting selection and generation screen |
+| `View_Reporting_PreviewDialog.xaml` | Post-generation preview surface used to inspect generated output |
+
+These command guards are important because they define when the user can move from module selection to report generation and then from generated preview content to copy-ready email output.
 
 ---
 

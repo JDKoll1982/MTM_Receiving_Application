@@ -10,127 +10,129 @@ at runtime inside `Module_Receiving`. Code is the source of truth.
 
 ## Summary
 
-`Module_Settings_Receiving` **does** configure behaviour in `Module_Receiving` without a code
-change. Settings are read at startup (via `LoadSettingsAsync`) and at the point of use
-(validation calls, padding rules load). Changing a setting in the Settings UI immediately
-affects the next receiving workflow session; no restart required.
+`Module_Settings.Receiving` does configure `Module_Receiving` behaviour without a code change.
+The code scan confirmed three categories of runtime impact:
+
+1. Validation rules used while the workflow runs
+2. Business-rule toggles that change step flow or UI state
+3. Defaults and padding rules that pre-fill or transform user input
+
+The same scan also confirmed that some keys are defined but are not yet actively consumed by the receiving runtime.
 
 ---
 
 ## Group: Validation (`Receiving.Validation.*`)
 
-Settings consumed directly by **`Service_ReceivingValidation`**.
+These keys are consumed by `Service_ReceivingValidation` and by the workflow service when it decides whether the user can advance.
 
-| Setting Key | Type | Default | When `true` / non-zero | When `false` / zero |
-|---|---|---|---|---|
-| `Validation.RequirePoNumber` | bool | `true` | PO Number field is mandatory; blank value returns error `"PO number is required"` | Blank PO Number is silently accepted |
-| `Validation.RequireQuantity` | bool | `true` | Quantity field is mandatory | Blank quantity allowed |
-| `Validation.RequireHeatLot` | bool | `false` | Heat/Lot field is mandatory; blank returns error `"Heat/Lot number is required"` | Heat/Lot is optional; blank auto-filled with `"Nothing Entered"` |
-| `Validation.AllowNegativeQuantity` | bool | `false` | Negative and zero quantities allowed; only `0` exactly is rejected | Only positive quantities accepted; `<= 0` returns error |
-| `Validation.ValidatePoExists` | bool | `true` | PO number is looked up in Infor Visual; not-found returns error `"PO not found"` | PO lookup skipped; any typed PO number is accepted |
-| `Validation.ValidatePartExists` | bool | `true` | Part ID is validated against Infor Visual; not-found returns error `"Part not found"` | Part lookup skipped |
-| `Validation.WarnOnQuantityExceedsPo` | bool | `true` | Warning dialog shown when total qty > PO ordered qty | No warning; user can over-receive without prompt |
-| `Validation.WarnOnSameDayReceiving` | bool | `true` | Warning shown if the same part was already received today (Infor Visual query) | Same-day check skipped |
-| `Validation.MinLoadCount` | int | `1` | Minimum number of loads enforced; below-min shows `"Number of loads must be at least {n}"` | N/A |
-| `Validation.MaxLoadCount` | int | `99` | Maximum number of loads enforced; above-max shows `"Number of loads cannot exceed {n}"` | N/A |
-| `Validation.MinQuantity` | int | `0` | Lower bound for weight/quantity range check | N/A |
-| `Validation.MaxQuantity` | int | `999999` | Upper bound for weight/quantity range check | N/A |
+| Setting Key                          | Type | Default  | Behaviour Impact                                                                   |
+| ------------------------------------ | ---- | -------- | ---------------------------------------------------------------------------------- |
+| `Validation.RequirePoNumber`         | bool | `false`  | When enabled, guided PO entry treats a blank PO number as an error.                |
+| `Validation.RequireQuantity`         | bool | `true`   | Makes quantity a required value during receiving validation.                       |
+| `Validation.RequireHeatLot`          | bool | `false`  | Treats blank heat/lot values as invalid instead of optional.                       |
+| `Validation.AllowNegativeQuantity`   | bool | `false`  | Allows negative quantity inputs when enabled; otherwise quantity must be positive. |
+| `Validation.ValidatePoExists`        | bool | `true`   | Enables real PO lookup validation against Infor Visual.                            |
+| `Validation.ValidatePartExists`      | bool | `true`   | Enables real part validation against Infor Visual.                                 |
+| `Validation.WarnOnQuantityExceedsPo` | bool | `true`   | Controls whether over-receive becomes a warning condition.                         |
+| `Validation.WarnOnSameDayReceiving`  | bool | `true`   | Controls whether same-day receiving checks produce a warning.                      |
+| `Validation.MinLoadCount`            | int  | `1`      | Lower bound for allowed load count.                                                |
+| `Validation.MaxLoadCount`            | int  | `99`     | Upper bound for allowed load count.                                                |
+| `Validation.MinQuantity`             | int  | `0`      | Lower bound for allowed quantity.                                                  |
+| `Validation.MaxQuantity`             | int  | `999999` | Upper bound for allowed quantity.                                                  |
 
-**Consuming code:** `Service_ReceivingValidation.cs` — `ValidatePONumber`, `ValidateNumberOfLoads`,
-`ValidateWeightQuantity`, `ValidateHeatLotNumber`, `ValidateAgainstPOQuantityAsync`,
-`CheckSameDayReceivingAsync`
+**Confirmed consumers:** `Service_ReceivingValidation.cs`, `Service_ReceivingWorkflow.cs`
 
 ---
 
 ## Group: Business Rules (`Receiving.BusinessRules.*`)
 
-Settings consumed by **`ViewModel_Receiving_Workflow`** (loaded in `LoadSettingsAsync`) and
-**`Service_ReceivingWorkflow`** (startup logic).
+These keys affect startup routing, review behaviour, command confirmation, and guided-step UI state.
 
-| Setting Key | Type | Default | Behaviour |
-|---|---|---|---|
-| `BusinessRules.AutoSaveEnabled` | bool | `false` | When `true`: auto-save timer is activated; session is periodically saved to local XLS. When `false`: user must save manually. |
-| `BusinessRules.AutoSaveIntervalSeconds` | int | `60` | Interval in seconds between auto-save writes. Only relevant when `AutoSaveEnabled = true`. |
-| `BusinessRules.DefaultModeOnStartup` | string | `""` | If set to `"guided"`, `"manual"`, or `"edit"`: the ModeSelection screen is bypassed and the workflow begins at that step. Empty string: ModeSelection is shown normally. |
-| `BusinessRules.RememberLastMode` | bool | `false` | When `true`: the last-used mode is stored between sessions. On next launch, `Defaults.DefaultReceivingMode` is read and that mode is applied as if it were `DefaultModeOnStartup`. |
-| `BusinessRules.ConfirmModeChange` | bool | `true` | When `true`: a confirmation dialog is shown before switching between Guided/Manual/Edit modes mid-session. When `false`: mode switch is immediate. |
-| `BusinessRules.AutoFillHeatLotEnabled` | bool | `true` | When `true`: the Auto-Fill button is shown on the HeatLot step, allowing the user to copy the first load's value to all loads. When `false`: button is hidden. |
-| `BusinessRules.SavePackageTypeAsDefault` | bool | `true` | When `true`: the "Save as default" checkbox is shown on the PackageType step; saving stores the selection to `Defaults.DefaultReceivingMode`. When `false`: checkbox is hidden. |
-| `BusinessRules.ShowReviewTableByDefault` | bool | `true` | When `true`: Review step opens in table view. When `false`: opens in single-entry card view. |
-| `BusinessRules.AllowEditAfterSave` | bool | `true` | When `true`: an Edit button is visible on the Complete screen (XAML-bound via `BooleanToVisibilityConverter` on `CanEditAfterSave`). When `false`: button is hidden; user cannot return to edit a completed session. |
+| Setting Key                              | Type   | Default         | Behaviour Impact                                                                                 |
+| ---------------------------------------- | ------ | --------------- | ------------------------------------------------------------------------------------------------ |
+| `BusinessRules.AutoSaveEnabled`          | bool   | `false`         | Defined in settings, but no active receiving runtime consumer was confirmed in the current scan. |
+| `BusinessRules.AutoSaveIntervalSeconds`  | int    | `300`           | Defined in settings, but no active timer consumer was confirmed in the current scan.             |
+| `BusinessRules.DefaultModeOnStartup`     | string | `ModeSelection` | Can bypass Mode Selection and start the workflow in a configured mode.                           |
+| `BusinessRules.RememberLastMode`         | bool   | `true`          | Allows the workflow startup logic to reuse the last selected receiving mode.                     |
+| `BusinessRules.ConfirmModeChange`        | bool   | `true`          | Controls whether mode switching asks for confirmation before clearing in-progress work.          |
+| `BusinessRules.AutoFillHeatLotEnabled`   | bool   | `true`          | Controls whether Heat/Lot auto-fill is offered when that step opens.                             |
+| `BusinessRules.SavePackageTypeAsDefault` | bool   | `false`         | Controls whether the package-type step shows the save-as-default option.                         |
+| `BusinessRules.ShowReviewTableByDefault` | bool   | `false`         | Controls whether the Review screen opens in table view by default.                               |
+| `BusinessRules.AllowEditAfterSave`       | bool   | `true`          | Controls whether the Complete screen exposes the post-save Edit action.                          |
 
-**Consuming code:** `ViewModel_Receiving_Workflow.cs` — `LoadSettingsAsync` (lines 246–248
-for `AllowEditAfterSave`); `Service_ReceivingWorkflow.cs` — startup/mode-select logic.
+**Confirmed consumers:** `Service_ReceivingWorkflow.cs`, `ViewModel_Receiving_Workflow.cs`, `ViewModel_Receiving_Review.cs`, `ViewModel_Receiving_HeatLot.cs`, `ViewModel_Receiving_PackageType.cs`
 
 ---
 
 ## Group: Defaults (`Receiving.Defaults.*`)
 
-Settings used to **pre-populate fields** or determine the starting state of the workflow.
+These keys are used to pre-fill or restore values that shape the next receiving session.
 
-| Setting Key | Type | Default | Behaviour |
-|---|---|---|---|
-| `Defaults.DefaultReceivingMode` | string | `""` | Stores the last-used mode when `BusinessRules.RememberLastMode = true`. Read on startup to determine which step to start at. |
-| `Defaults.DefaultLocation` | string | `""` | Pre-fills the Location field on the LoadEntry step. If blank and no location is entered, the step cannot be advanced (exit guard fires). |
-| `Defaults.XlsSaveLocation` | string | `""` | Path where the local XLS file is written on save. Displayed on the Complete screen as the "Local XLS" path label. **Currently defined but not yet consumed by any ViewModel or Service** — behaviour pending implementation. |
+| Setting Key                     | Type   | Default                        | Behaviour Impact                                                                               |
+| ------------------------------- | ------ | ------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `Defaults.DefaultReceivingMode` | string | `Guided`                       | Default fallback mode value used by settings and startup logic when mode preferences are read. |
+| `Defaults.DefaultLocation`      | string | `RECV`                         | Default location used when the guided flow needs a location fallback.                          |
+| `Defaults.XlsSaveLocation`      | string | Not confirmed in defaults file | Key exists, but no active consumer was confirmed in the current receiving runtime scan.        |
 
 ---
 
 ## Group: Part Number Padding (`Receiving.PartNumberPadding.*`)
 
-Settings consumed by **`View_Receiving_ManualEntry`** (code-behind, loaded in `LoadPaddingSettingsAsync`).
+These keys are consumed by the Manual Entry view path and affect how part numbers are transformed during entry.
 
-| Setting Key | Type | Default | Behaviour |
-|---|---|---|---|
-| `PartNumberPadding.Enabled` | bool | `false` | When `true`: padding rules are applied to each Part ID typed in the Manual Entry grid. When `false`: Part IDs are used as-is. |
-| `PartNumberPadding.RulesJson` | string | `"[]"` | JSON array of `Model_PartNumberPrefixRule` objects. Each rule specifies a prefix match and the zero-padding length to apply. Rules are applied at the time of part number entry in the ManualEntry grid. Deserialization failure silently falls back to no-padding. |
+| Setting Key                   | Type   | Default                          | Behaviour Impact                                             |
+| ----------------------------- | ------ | -------------------------------- | ------------------------------------------------------------ |
+| `PartNumberPadding.Enabled`   | bool   | `true`                           | Enables prefix-based padding rules in Manual Entry.          |
+| `PartNumberPadding.RulesJson` | string | Two default rules (`MMC`, `MMF`) | Stores the JSON rule list used to pad matching part numbers. |
 
-**Consuming code:** `View_Receiving_ManualEntry.xaml.cs` — `LoadPaddingSettingsAsync()`, called on
-`Loaded` event.
+**Confirmed consumer:** `View_Receiving_ManualEntry.xaml.cs`
 
 ---
 
-## Group: UI Text (`Receiving.UiText.*`)
+## Group: UI Text, Workflow Text, Messages, and Accessibility
 
-These settings **do not control workflow behaviour**. They are localised string values that
-replace hard-coded labels in ViewModels and Views. Changing them in settings updates the
-displayed text only — no logic changes.
+The module defines a large text surface under these groups:
 
-**Examples:** Button labels (`WorkflowHelp`, `WorkflowNext`, `WorkflowBack`), column headers,
-step titles, confirmation dialog strings, completion screen labels.
+- `Receiving.UiText.*`
+- `Receiving.Workflow.*`
+- `Receiving.Messages.*`
+- `Receiving.Accessibility.*`
 
-**Consuming code:** `ViewModel_Receiving_Workflow.cs` — `LoadSettingsAsync` (reads all UiText
-keys into matching `string` properties on the ViewModel, which XAML binds to via `x:Bind`).
+These keys primarily control labels, prompts, status strings, step titles, and accessibility text.
+They do not change core business rules by themselves, but they do change what the user sees at runtime.
+
+**Confirmed consumers:** workflow and step ViewModels such as `ViewModel_Receiving_Workflow`, `ViewModel_Receiving_ModeSelection`, `ViewModel_Receiving_POEntry`, `ViewModel_Receiving_LoadEntry`, `ViewModel_Receiving_WeightQuantity`, `ViewModel_Receiving_HeatLot`, `ViewModel_Receiving_PackageType`, and `ViewModel_Receiving_Review`
 
 ---
 
 ## Group: Integrations (`Receiving.Integrations.*`)
 
-**Status: Defined in `ReceivingSettingsKeys` and `ReceivingSettingsDefaults`. Not yet consumed
-by any ViewModel or Service.** These are placeholders for future ERP sync behaviour.
+The current analysis matched your earlier clarification: these keys exist, but no active Receiving runtime consumer was confirmed during the code scan.
 
-| Setting Key | Type | Default | Intended Behaviour (not yet active) |
-|---|---|---|---|
-| `Integrations.ErpSyncEnabled` | bool | `true` | Enable/disable Infor Visual sync on save |
-| `Integrations.AutoPullPoDataEnabled` | bool | `true` | Auto-fetch PO data from Visual on PO number entry |
-| `Integrations.AutoPullPartDataEnabled` | bool | `true` | Auto-fetch part data from Visual on part ID entry |
-| `Integrations.SyncToInforVisual` | bool | `false` | Push received quantities back to Visual |
-| `Integrations.RetryFailedSyncs` | bool | `true` | Retry failed Visual sync on next save attempt |
-| `Integrations.ErpConnectionTimeout` | int | `30` | Seconds before Infor Visual connection attempt times out |
-| `Integrations.MaxSyncRetries` | int | `3` | Max number of retry attempts for failed syncs |
+| Setting Key                            | Type | Default |
+| -------------------------------------- | ---- | ------- |
+| `Integrations.ErpSyncEnabled`          | bool | `true`  |
+| `Integrations.AutoPullPoDataEnabled`   | bool | `true`  |
+| `Integrations.AutoPullPartDataEnabled` | bool | `true`  |
+| `Integrations.SyncToInforVisual`       | bool | `false` |
+| `Integrations.RetryFailedSyncs`        | bool | `true`  |
+| `Integrations.ErpConnectionTimeout`    | int  | `30`    |
+| `Integrations.MaxSyncRetries`          | int  | `3`     |
+
+Treat these as placeholders until a consumer is added.
 
 ---
 
-## Setting Group → Consuming Component Map
+## Setting Group → Confirmed Consumer Map
 
-| Group | Consumer | Read At |
-|---|---|---|
-| `Validation.*` | `Service_ReceivingValidation` | At the moment each field is validated (synchronous `.GetAwaiter().GetResult()` call) |
-| `BusinessRules.*` | `ViewModel_Receiving_Workflow`, `Service_ReceivingWorkflow` | On startup / `LoadSettingsAsync` |
-| `Defaults.*` | `Service_ReceivingWorkflow` (mode), `ViewModel_Receiving_Workflow` (location), `View_Receiving_Workflow.xaml` (XLS path label) | On startup / step entry |
-| `PartNumberPadding.*` | `View_Receiving_ManualEntry` (code-behind) | On `Loaded` event of ManualEntry view |
-| `UiText.*` | `ViewModel_Receiving_Workflow` | On startup / `LoadSettingsAsync` |
-| `Integrations.*` | *(none yet)* | N/A — not yet wired |
+| Group                                                     | Consumer                                                                                          | Read Timing                               |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `Validation.*`                                            | `Service_ReceivingValidation`                                                                     | During field and workflow validation      |
+| `BusinessRules.*`                                         | `Service_ReceivingWorkflow`, multiple Receiving ViewModels                                        | Startup or step entry                     |
+| `Defaults.*`                                              | `Service_ReceivingWorkflow`, `ViewModel_Receiving_ModeSelection`, `ViewModel_Receiving_LoadEntry` | Startup and step prefill                  |
+| `PartNumberPadding.*`                                     | `View_Receiving_ManualEntry.xaml.cs`                                                              | Manual Entry view load / input processing |
+| `UiText.*`, `Workflow.*`, `Messages.*`, `Accessibility.*` | Receiving step ViewModels                                                                         | ViewModel text-load phase                 |
+| `Integrations.*`                                          | None confirmed                                                                                    | Not yet wired                             |
 
 ---
 
@@ -138,33 +140,48 @@ by any ViewModel or Service.** These are placeholders for future ERP sync behavi
 
 The following settings change the workflow path — not just UI appearance:
 
-| Setting | Condition | Workflow Effect |
-|---|---|---|
-| `BusinessRules.DefaultModeOnStartup` | = `"guided"` / `"manual"` / `"edit"` | ModeSelection screen skipped; workflow starts at that step |
-| `BusinessRules.RememberLastMode` | = `true` | Last-used mode persisted; `Defaults.DefaultReceivingMode` drives startup step |
-| `BusinessRules.AllowEditAfterSave` | = `false` | Edit button removed from Complete screen; completed sessions cannot be reopened |
-| `BusinessRules.ConfirmModeChange` | = `false` | No confirmation dialog on mid-session mode switch; transition is instant |
-| `BusinessRules.AutoFillHeatLotEnabled` | = `false` | Auto-fill button not shown on HeatLot step; each load must have its heat/lot typed individually |
-| `BusinessRules.SavePackageTypeAsDefault` | = `false` | "Save as default" checkbox not shown on PackageType step |
-| `BusinessRules.ShowReviewTableByDefault` | = `false` | Review step opens in single-card view instead of table view |
-| `Validation.RequirePoNumber` | = `false` | PO Number field becomes optional; blank is accepted |
-| `Validation.RequireHeatLot` | = `true` | HeatLot step blocks advancement if all loads have blank heat/lot values |
-| `Validation.AllowNegativeQuantity` | = `true` | Negative weight/quantity entries accepted; only exact zero is rejected |
-| `Validation.WarnOnQuantityExceedsPo` | = `false` | Over-receive silently accepted; Infor Visual over-receive warning suppressed |
-| `Validation.WarnOnSameDayReceiving` | = `false` | Same-day duplicate receive silently accepted |
-| `Validation.ValidatePoExists` | = `false` | PO number not looked up in Infor Visual; any string accepted |
-| `Defaults.DefaultLocation` | non-empty | Location field pre-populated; LoadEntry step advancement unblocked without user input |
-| `PartNumberPadding.Enabled` | = `true` | Part IDs in Manual Entry grid are transformed by padding rules before being stored |
+| Setting                                  | Condition                            | Workflow Effect                                                                                 |
+| ---------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `BusinessRules.DefaultModeOnStartup`     | = `"guided"` / `"manual"` / `"edit"` | ModeSelection screen skipped; workflow starts at that step                                      |
+| `BusinessRules.RememberLastMode`         | = `true`                             | Last-used mode persisted; `Defaults.DefaultReceivingMode` drives startup step                   |
+| `BusinessRules.AllowEditAfterSave`       | = `false`                            | Edit button removed from Complete screen; completed sessions cannot be reopened                 |
+| `BusinessRules.ConfirmModeChange`        | = `false`                            | No confirmation dialog on mid-session mode switch; transition is instant                        |
+| `BusinessRules.AutoFillHeatLotEnabled`   | = `false`                            | Auto-fill button not shown on HeatLot step; each load must have its heat/lot typed individually |
+| `BusinessRules.SavePackageTypeAsDefault` | = `false`                            | "Save as default" checkbox not shown on PackageType step                                        |
+| `BusinessRules.ShowReviewTableByDefault` | = `false`                            | Review step opens in single-card view instead of table view                                     |
+| `Validation.RequirePoNumber`             | = `false`                            | PO Number field becomes optional; blank is accepted                                             |
+| `Validation.RequireHeatLot`              | = `true`                             | HeatLot step blocks advancement if all loads have blank heat/lot values                         |
+| `Validation.AllowNegativeQuantity`       | = `true`                             | Negative weight/quantity entries accepted; only exact zero is rejected                          |
+| `Validation.WarnOnQuantityExceedsPo`     | = `false`                            | Over-receive silently accepted; Infor Visual over-receive warning suppressed                    |
+| `Validation.WarnOnSameDayReceiving`      | = `false`                            | Same-day duplicate receive silently accepted                                                    |
+| `Validation.ValidatePoExists`            | = `false`                            | PO number not looked up in Infor Visual; any string accepted                                    |
+| `Defaults.DefaultLocation`               | non-empty                            | Location field pre-populated; LoadEntry step advancement unblocked without user input           |
+| `PartNumberPadding.Enabled`              | = `true`                             | Part IDs in Manual Entry grid are transformed by padding rules before being stored              |
 
 ---
 
 ## Source Files
 
-| File | Role |
-|---|---|
-| `Module_Receiving/Settings/ReceivingSettingsKeys.cs` | All setting key string constants |
-| `Module_Receiving/Settings/ReceivingSettingsDefaults.cs` | Default values (string dict + typed dicts) |
-| `Module_Receiving/Services/Service_ReceivingValidation.cs` | Validation group consumers |
-| `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs` | BusinessRules/UiText consumers |
-| `Module_Receiving/Services/Service_ReceivingWorkflow.cs` | BusinessRules/Defaults consumers (startup) |
-| `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs` | PartNumberPadding consumer |
+| File                                                          | Role                                       |
+| ------------------------------------------------------------- | ------------------------------------------ |
+| `Module_Receiving/Settings/ReceivingSettingsKeys.cs`          | All setting key string constants           |
+| `Module_Receiving/Settings/ReceivingSettingsDefaults.cs`      | Default values (string dict + typed dicts) |
+| `Module_Receiving/Services/Service_ReceivingValidation.cs`    | Validation group consumers                 |
+| `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs` | BusinessRules/UiText consumers             |
+| `Module_Receiving/Services/Service_ReceivingWorkflow.cs`      | BusinessRules/Defaults consumers (startup) |
+| `Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs`   | PartNumberPadding consumer                 |
+
+---
+
+## Notes On Accuracy Corrections Applied In This Update
+
+This file was aligned to the current code analysis and defaults scan.
+Notable corrections include:
+
+- `RequirePoNumber` default corrected to `false`
+- `AutoSaveIntervalSeconds` default corrected to `300`
+- `SavePackageTypeAsDefault` default corrected to `false`
+- `ShowReviewTableByDefault` default corrected to `false`
+- `DefaultReceivingMode` default corrected to `Guided`
+- `DefaultLocation` default corrected to `RECV`
+- `AutoSave*` and `Integrations.*` sections clarified where no active consumer was confirmed
