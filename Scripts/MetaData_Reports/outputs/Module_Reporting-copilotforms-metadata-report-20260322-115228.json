@@ -1,0 +1,70 @@
+{
+  "Module": "Module_Reporting",
+  "GeneratedAt": "2026-03-22T11:52:28",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Reporting",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Reporting",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 16,
+  "FeatureReports": [
+    {
+      "FeatureId": "reporting-dashboard",
+      "Name": "Reporting Dashboard",
+      "MetadataFile": "reporting-dashboard.json",
+      "ReferencedFiles": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Contracts/IService_ReportingClipboard.cs",
+        "Module_Reporting/Data/Dao_Reporting.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
+        "Module_Reporting/README.md",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/Services/Service_ReportingClipboard.cs",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_Main.xaml",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml"
+      ],
+      "ReferencedServices": [
+        "IService_Reporting",
+        "IService_ReportingClipboard",
+        "Service_Reporting",
+        "Service_ReportingClipboard"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "reporting-dashboard.json"
+  ],
+  "ActualFeatureFiles": [
+    "reporting-dashboard.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [
+    "Module_Reporting/SETTABLE_OBJECTS_REPORT.md",
+    "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+  ],
+  "UnreferencedSourceFileGroups": [
+    {
+      "Area": "SETTABLE_OBJECTS_REPORT.md",
+      "Count": 1,
+      "Items": [
+        "Module_Reporting/SETTABLE_OBJECTS_REPORT.md"
+      ]
+    },
+    {
+      "Area": "Views",
+      "Count": 2,
+      "Items": [
+        "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+      ]
+    }
+  ],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

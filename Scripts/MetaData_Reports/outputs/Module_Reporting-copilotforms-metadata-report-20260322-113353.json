@@ -1,0 +1,142 @@
+{
+  "Module": "Module_Reporting",
+  "GeneratedAt": "2026-03-22T11:33:53",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Reporting",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Reporting",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 16,
+  "FeatureReports": [
+    {
+      "FeatureId": "reporting-dashboard",
+      "Name": "Reporting Dashboard",
+      "MetadataFile": "reporting-dashboard.json",
+      "ReferencedFiles": [
+        "Module_Reporting/Services",
+        "Module_Reporting/ViewModels",
+        "Module_Reporting/Views"
+      ],
+      "ReferencedServices": [
+        "IService_ErrorHandler",
+        "IService_Reporting"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": [
+        "Module_Reporting/Contracts/IService_ErrorHandler.cs"
+      ]
+    }
+  ],
+  "IndexFeatureFiles": [
+    "reporting-dashboard.json"
+  ],
+  "ActualFeatureFiles": [
+    "reporting-dashboard.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [
+    "Module_Reporting/Contracts/IService_Reporting.cs",
+    "Module_Reporting/Contracts/IService_ReportingClipboard.cs",
+    "Module_Reporting/Data/Dao_Reporting.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
+    "Module_Reporting/README.md",
+    "Module_Reporting/Services/Service_Reporting.cs",
+    "Module_Reporting/Services/Service_ReportingClipboard.cs",
+    "Module_Reporting/SETTABLE_OBJECTS_REPORT.md",
+    "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+    "Module_Reporting/Views/View_Reporting_Main.xaml",
+    "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml",
+    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+  ],
+  "UnreferencedSourceFileGroups": [
+    {
+      "Area": "Contracts",
+      "Count": 2,
+      "Items": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Contracts/IService_ReportingClipboard.cs"
+      ]
+    },
+    {
+      "Area": "Data",
+      "Count": 1,
+      "Items": [
+        "Module_Reporting/Data/Dao_Reporting.cs"
+      ]
+    },
+    {
+      "Area": "Models",
+      "Count": 4,
+      "Items": [
+        "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewRow.cs"
+      ]
+    },
+    {
+      "Area": "README.md",
+      "Count": 1,
+      "Items": [
+        "Module_Reporting/README.md"
+      ]
+    },
+    {
+      "Area": "Services",
+      "Count": 2,
+      "Items": [
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/Services/Service_ReportingClipboard.cs"
+      ]
+    },
+    {
+      "Area": "SETTABLE_OBJECTS_REPORT.md",
+      "Count": 1,
+      "Items": [
+        "Module_Reporting/SETTABLE_OBJECTS_REPORT.md"
+      ]
+    },
+    {
+      "Area": "ViewModels",
+      "Count": 1,
+      "Items": [
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs"
+      ]
+    },
+    {
+      "Area": "Views",
+      "Count": 4,
+      "Items": [
+        "Module_Reporting/Views/View_Reporting_Main.xaml",
+        "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+      ]
+    }
+  ],
+  "UnreferencedServices": [
+    "IService_ReportingClipboard",
+    "Service_Reporting",
+    "Service_ReportingClipboard"
+  ],
+  "UnreferencedServiceGroups": [
+    {
+      "Group": "Contracts",
+      "Count": 1,
+      "Items": [
+        "IService_ReportingClipboard"
+      ]
+    },
+    {
+      "Group": "Services",
+      "Count": 2,
+      "Items": [
+        "Service_Reporting",
+        "Service_ReportingClipboard"
+      ]
+    }
+  ]
+}

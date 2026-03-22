@@ -1,0 +1,51 @@
+{
+  "id": "core-auth-session",
+  "module": "Module_Core",
+  "name": "Authentication And Session",
+  "summary": "User authentication, session lifecycle, timer-backed session handling, and user data access used across the application shell.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Contracts/Services/IService_Authentication.cs",
+    "Module_Core/Contracts/Services/IService_SessionManager.cs",
+    "Module_Core/Contracts/Services/IService_UserSessionManager.cs",
+    "Module_Core/Contracts/Services/ITimer.cs",
+    "Module_Core/Data/Authentication/Dao_User.cs",
+    "Module_Core/Services/Authentication/Service_Authentication.cs",
+    "Module_Core/Services/Authentication/Service_UserSessionManager.cs",
+    "Module_Core/Services/Service_DispatcherTimerWrapper.cs",
+    "Module_Core/Models/Systems/Model_AuthenticationResult.cs",
+    "Module_Core/Models/Systems/Model_CreateUserResult.cs",
+    "Module_Core/Models/Systems/Model_SessionTimedOutEventArgs.cs",
+    "Module_Core/Models/Systems/Model_User.cs",
+    "Module_Core/Models/Systems/Model_UserSession.cs"
+  ],
+  "relatedServices": [
+    "IService_Authentication",
+    "IService_SessionManager",
+    "IService_UserSessionManager",
+    "ITimer",
+    "Service_DispatcherTimerWrapper",
+    "Service_Authentication",
+    "Service_UserSessionManager"
+  ],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "User authentication",
+      "Session lifetime management",
+      "Session timeout handling"
+    ],
+    "userActions": [
+      "Sign in successfully",
+      "Stay in an active session",
+      "Recover correctly when a session expires"
+    ],
+    "validationHints": [
+      "Confirm authentication still returns the intended user/session result",
+      "Confirm session timeout and user-session handling remain aligned"
+    ]
+  }
+}

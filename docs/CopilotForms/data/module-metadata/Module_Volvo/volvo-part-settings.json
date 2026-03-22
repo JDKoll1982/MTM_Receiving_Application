@@ -1,0 +1,81 @@
+{
+  "id": "volvo-part-settings",
+  "module": "Module_Volvo",
+  "name": "Part Settings",
+  "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part add/edit operations used by the settings screens.",
+  "owner": "Integration Team",
+  "relatedFiles": [
+    "Module_Volvo/Contracts/IService_VolvoMasterData.cs",
+    "Module_Volvo/Interfaces/IDao_VolvoPart.cs",
+    "Module_Volvo/Services/Service_VolvoMasterData.cs",
+    "Module_Volvo/ViewModels/ViewModel_Volvo_Settings.cs",
+    "Module_Volvo/Views/View_Volvo_Settings.xaml",
+    "Module_Volvo/Views/View_Volvo_Settings.xaml.cs",
+    "Module_Volvo/Views/VolvoPartAddEditDialog.xaml",
+    "Module_Volvo/Views/VolvoPartAddEditDialog.xaml.cs",
+    "Module_Volvo/Data/Dao_VolvoPart.cs",
+    "Module_Volvo/Data/Dao_VolvoPartComponent.cs",
+    "Module_Volvo/Data/Dao_VolvoSettings.cs",
+    "Module_Volvo/Models/Model_VolvoPart.cs",
+    "Module_Volvo/Models/Model_VolvoPartComponent.cs",
+    "Module_Volvo/Models/Model_VolvoSetting.cs",
+    "Module_Volvo/Requests/Queries/GetAllVolvoPartsQuery.cs",
+    "Module_Volvo/Requests/Queries/GetPartComponentsQuery.cs",
+    "Module_Volvo/Requests/Queries/GetVolvoSettingQuery.cs",
+    "Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs",
+    "Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandler.cs",
+    "Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandler.cs",
+    "Module_Volvo/Handlers/Queries/GetVolvoSettingQueryHandler.cs",
+    "Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs",
+    "Module_Volvo/Requests/Commands/AddVolvoPartCommand.cs",
+    "Module_Volvo/Requests/Commands/UpdateVolvoPartCommand.cs",
+    "Module_Volvo/Requests/Commands/DeactivateVolvoPartCommand.cs",
+    "Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs",
+    "Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandler.cs",
+    "Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandler.cs",
+    "Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandler.cs",
+    "Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandler.cs",
+    "Module_Volvo/Validators/AddVolvoPartCommandValidator.cs",
+    "Module_Volvo/Validators/UpdateVolvoPartCommandValidator.cs",
+    "Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs",
+    "Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs"
+  ],
+  "relatedServices": [
+    "IService_VolvoMasterData",
+    "Service_VolvoMasterData"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Part settings",
+      "Volvo master data",
+      "Part add and edit dialogs",
+      "CSV part import"
+    ],
+    "screens": [
+      "View_Volvo_Settings.xaml",
+      "VolvoPartAddEditDialog.xaml"
+    ],
+    "currentUiPatterns": ["Form", "Table"],
+    "desiredUiPatterns": ["Split layout", "Form", "Card list"],
+    "uiElements": [
+      "Part settings controls",
+      "Part edit action",
+      "CSV import action"
+    ],
+    "userActions": [
+      "Update or review a Volvo part setting",
+      "Add or edit a Volvo part",
+      "Import parts from CSV"
+    ],
+    "validationHints": [
+      "Confirm part search, add, update, deactivate, and import flows still affect the intended part records"
+    ]
+  }
+}

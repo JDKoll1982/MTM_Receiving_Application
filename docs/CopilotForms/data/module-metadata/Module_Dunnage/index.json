@@ -2,5 +2,10 @@
   "module": "Module_Dunnage",
   "owner": "Operations Team",
   "lastUpdated": "2026-03-21",
-  "featureFiles": ["dunnage-management.json"]
+  "featureFiles": [
+    "dunnage-management.json",
+    "dunnage-guided-workflow.json",
+    "dunnage-admin-maintenance.json",
+    "dunnage-edit-and-dialogs.json"
+  ]
 }

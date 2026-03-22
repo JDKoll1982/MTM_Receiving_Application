@@ -1,0 +1,27 @@
+{
+  "id": "shared-shell-foundation",
+  "module": "Module_Shared",
+  "name": "Shared Shell Foundation",
+  "summary": "Base shared viewmodel infrastructure and shared shell windows used to support the main window and reusable icon selection UI.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Shared/ViewModels/ViewModel_Shared_Base.cs",
+    "Module_Shared/ViewModels/ViewModel_Shared_MainWindow.cs",
+    "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml",
+    "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Shared shell support", "Reusable icon selection"],
+    "screens": ["View_Shared_IconSelectorWindow.xaml"],
+    "currentUiPatterns": ["Dialog", "Form"],
+    "desiredUiPatterns": ["Dialog", "Form"],
+    "validationHints": [
+      "Confirm shared shell viewmodels and reusable icon selection behavior remain aligned"
+    ]
+  }
+}

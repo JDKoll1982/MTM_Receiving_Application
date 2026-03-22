@@ -1,0 +1,12 @@
+{
+  "module": "Module_Shared",
+  "owner": "Platform Team",
+  "lastUpdated": "2026-03-22",
+  "featureFiles": [
+    "shared-shell-foundation.json",
+    "shared-help-dialog.json",
+    "shared-new-user-setup.json",
+    "shared-terminal-login.json",
+    "shared-splash-screen.json"
+  ]
+}

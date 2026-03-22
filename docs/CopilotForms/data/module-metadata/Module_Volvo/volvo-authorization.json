@@ -1,0 +1,29 @@
+{
+  "id": "volvo-authorization",
+  "module": "Module_Volvo",
+  "name": "Authorization",
+  "summary": "Volvo-specific authorization checks that gate shipment and master-data operations based on user permissions.",
+  "owner": "Integration Team",
+  "relatedFiles": [
+    "Module_Volvo/Services/IService_VolvoAuthorization.cs",
+    "Module_Volvo/Services/Service_VolvoAuthorization.cs"
+  ],
+  "relatedServices": [
+    "IService_VolvoAuthorization",
+    "Service_VolvoAuthorization"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Volvo permission checks"],
+    "userActions": ["Perform shipment actions only when authorized"],
+    "validationHints": [
+      "Confirm authorization checks still gate the intended Volvo actions"
+    ]
+  }
+}

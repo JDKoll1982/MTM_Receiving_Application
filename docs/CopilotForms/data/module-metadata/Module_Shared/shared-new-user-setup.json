@@ -1,0 +1,27 @@
+{
+  "id": "shared-new-user-setup",
+  "module": "Module_Shared",
+  "name": "New User Setup",
+  "summary": "Shared first-run setup dialog used to guide a new user through initial application setup tasks.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Shared/ViewModels/ViewModel_Shared_NewUserSetup.cs",
+    "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml",
+    "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml.cs"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["First-run user setup"],
+    "screens": ["View_Shared_NewUserSetupDialog.xaml"],
+    "currentUiPatterns": ["Dialog", "Form"],
+    "desiredUiPatterns": ["Dialog", "Form"],
+    "userActions": ["Complete first-run setup steps successfully"],
+    "validationHints": [
+      "Confirm new-user setup still guides first-run configuration correctly"
+    ]
+  }
+}

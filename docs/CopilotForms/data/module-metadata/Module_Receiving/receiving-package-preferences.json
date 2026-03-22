@@ -10,7 +10,10 @@
     "Module_Receiving/Models/Model_PackageTypePreference.cs",
     "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
   ],
-  "relatedServices": ["IService_MySQL_PackagePreferences"],
+  "relatedServices": [
+    "IService_MySQL_PackagePreferences",
+    "Service_MySQL_PackagePreferences"
+  ],
   "promptDefaults": {
     "reviewScope": "Single feature",
     "testKind": "Mixed",
@@ -75,7 +78,8 @@
       "name": "Preferences Service",
       "relatedFiles": [
         "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
-        "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs"
+        "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
       ]
     }
   ]

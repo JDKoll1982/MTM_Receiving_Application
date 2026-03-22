@@ -1,0 +1,65 @@
+{
+  "id": "dunnage-edit-and-dialogs",
+  "module": "Module_Dunnage",
+  "name": "Edit Mode And Dialogs",
+  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, and supporting DAO flows used outside the main guided path.",
+  "owner": "Operations Team",
+  "relatedFiles": [
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
+    "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml.cs",
+    "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
+    "Module_Dunnage/Data/Dao_DunnageNonPOEntry.cs",
+    "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
+    "Module_Dunnage/Enums/Enum_DunnageAdminSection.cs"
+  ],
+  "relatedServices": [
+    "IService_DunnageAdminWorkflow",
+    "IService_MySQL_Dunnage"
+  ],
+  "promptDefaults": {
+    "audience": "Receiving Clerk",
+    "docAudience": "Receiving Clerk",
+    "mockupAudience": "Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Edit existing dunnage records",
+      "Non-PO entry",
+      "Add-row and inventory dialogs",
+      "Admin shell support"
+    ],
+    "screens": [
+      "View_Dunnage_EditModeView.xaml",
+      "View_Dunnage_Dialog_NonPOEntry.xaml",
+      "View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
+      "View_Dunnage_Dialog_AddToInventoriedListDialog.xaml"
+    ],
+    "currentUiPatterns": ["DataGrid", "Dialog", "Form"],
+    "desiredUiPatterns": ["Split layout", "Dialog", "Form"],
+    "uiElements": [
+      "Edit-mode results area",
+      "Non-PO entry form",
+      "Add multiple rows dialog",
+      "Add to inventoried list dialog"
+    ],
+    "userActions": [
+      "Edit saved dunnage records",
+      "Capture non-PO dunnage entries",
+      "Add rows or inventory items through dialogs"
+    ],
+    "validationHints": [
+      "Confirm edit-mode and non-PO dialog flows still target the correct records",
+      "Confirm add-row and inventory dialogs still support the admin workflow correctly"
+    ]
+  }
+}

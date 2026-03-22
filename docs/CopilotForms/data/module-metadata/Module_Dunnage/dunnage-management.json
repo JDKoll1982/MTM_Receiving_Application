@@ -2,14 +2,32 @@
   "id": "dunnage-management",
   "module": "Module_Dunnage",
   "name": "Dunnage Management",
-  "summary": "Dunnage setup, lookup, and transaction tracking workflows.",
+  "summary": "Dunnage workflow, admin maintenance, and MySQL-backed setup and transaction tracking for types, parts, specs, inventory, and load review.",
   "owner": "Operations Team",
   "relatedFiles": [
-    "Module_Dunnage/ViewModels",
-    "Module_Dunnage/Views",
-    "Module_Dunnage/Services"
+    "Module_Dunnage/Contracts/IService_DunnageWorkflow.cs",
+    "Module_Dunnage/Contracts/IService_DunnageAdminWorkflow.cs",
+    "Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs",
+    "Module_Dunnage/Services/Service_DunnageWorkflow.cs",
+    "Module_Dunnage/Services/Service_DunnageAdminWorkflow.cs",
+    "Module_Dunnage/Services/Service_MySQL_Dunnage.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminMainViewModel.cs",
+    "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml",
+    "Module_Dunnage/Models/Model_DunnageSession.cs",
+    "Module_Dunnage/Models/Model_DunnageLoad.cs",
+    "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs",
+    "Module_Dunnage/Enums/Enum_DunnageAdminSection.cs"
   ],
-  "relatedServices": ["IService_Dunnage", "IService_LoggingUtility"],
+  "relatedServices": [
+    "IService_DunnageWorkflow",
+    "IService_DunnageAdminWorkflow",
+    "IService_MySQL_Dunnage",
+    "Service_DunnageWorkflow",
+    "Service_DunnageAdminWorkflow",
+    "Service_MySQL_Dunnage"
+  ],
   "promptDefaults": {
     "audience": "Receiving Clerk",
     "docAudience": "Receiving Clerk",
@@ -18,47 +36,73 @@
     "testKind": "Mixed"
   },
   "uiHints": {
-    "workflowAreas": ["Type selection", "Part selection", "Quantity entry"],
+    "workflowAreas": [
+      "Guided dunnage workflow",
+      "Manual and edit dunnage entry",
+      "Dunnage admin navigation",
+      "Type, part, spec, and inventory maintenance"
+    ],
     "screens": [
       "Type Selection step",
       "Part Selection step",
-      "Quantity Entry step"
+      "Quantity Entry step",
+      "Workflow review step",
+      "Admin hub",
+      "Admin types view",
+      "Admin parts view",
+      "Admin inventory view"
     ],
     "currentUiPatterns": ["Wizard step", "Form"],
     "desiredUiPatterns": ["Wizard step", "Card list", "Form"],
     "uiElements": [
+      "Mode selection",
       "Paging controls",
       "Part actions",
       "Quantity entry field",
+      "Admin navigation cards",
       "Validation message area"
     ],
-    "userActions": ["Pick a type", "Pick a part", "Enter a valid quantity"],
+    "userActions": [
+      "Pick a type",
+      "Pick a part",
+      "Enter a valid quantity",
+      "Review and save a dunnage session",
+      "Navigate between admin sections without losing changes"
+    ],
     "preserveRules": [
       "Keep quantity validation unchanged",
-      "Keep selection guards unchanged"
+      "Keep selection guards unchanged",
+      "Keep workflow step transitions unchanged",
+      "Keep admin dirty-state navigation guards unchanged"
     ],
     "acceptanceCriteria": [
       "Users can still move through the same steps",
       "Selection and quantity guards still work",
+      "Admin section navigation still respects unsaved-change blocking",
       "The UI is easier to understand"
     ],
     "reviewFocusAreas": [
       "Step-flow regressions",
       "Quantity validation",
+      "Admin navigation state",
+      "MySQL service alignment",
       "Selection guard behavior"
     ],
     "testScenarios": [
       "The user can move from type selection to part selection",
       "Invalid quantity is still blocked correctly",
+      "Admin navigation blocks when unsaved changes are present",
       "Valid quantity still completes the workflow"
     ],
     "docTopics": [
       "Dunnage workflow overview",
+      "Admin navigation behavior",
       "Type and part selection behavior",
       "Quantity validation rules"
     ],
     "validationHints": [
       "Confirm the same guarded steps still work",
+      "Confirm admin navigation still blocks when the section is dirty",
       "Confirm quantity validation still behaves correctly"
     ],
     "mockupSections": [
@@ -76,6 +120,7 @@
     "loggingEvents": [
       "Type selection",
       "Part selection",
+      "Admin section navigation",
       "Quantity validation failure"
     ]
   },
@@ -105,6 +150,51 @@
         "screens": ["Quantity Entry step"],
         "uiElements": ["Quantity field", "Validation message", "Save action"],
         "userActions": ["Enter a valid quantity and finish the workflow"]
+      }
+    },
+    {
+      "id": "dunnage-admin-navigation",
+      "name": "Admin Navigation",
+      "relatedFiles": [
+        "Module_Dunnage/Services/Service_DunnageAdminWorkflow.cs",
+        "Module_Dunnage/Contracts/IService_DunnageAdminWorkflow.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminMainViewModel.cs",
+        "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml"
+      ],
+      "uiHints": {
+        "screens": [
+          "Admin hub",
+          "Admin types view",
+          "Admin parts view",
+          "Admin inventory view"
+        ],
+        "uiElements": [
+          "Navigation cards",
+          "Unsaved-changes warning",
+          "Section status message"
+        ],
+        "userActions": [
+          "Move between admin sections",
+          "Avoid losing unsaved changes"
+        ]
+      }
+    },
+    {
+      "id": "dunnage-database-operations",
+      "name": "MySQL Dunnage Operations",
+      "relatedFiles": [
+        "Module_Dunnage/Services/Service_MySQL_Dunnage.cs",
+        "Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs",
+        "Module_Dunnage/Data/Dao_DunnageLoad.cs",
+        "Module_Dunnage/Data/Dao_DunnageType.cs",
+        "Module_Dunnage/Data/Dao_DunnagePart.cs"
+      ],
+      "uiHints": {
+        "workflowAreas": ["Save dunnage loads", "Manage dunnage setup records"],
+        "userActions": [
+          "Save dunnage loads",
+          "Maintain type and part definitions"
+        ]
       }
     }
   ]

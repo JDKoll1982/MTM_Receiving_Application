@@ -1,0 +1,92 @@
+{
+  "Module": "Module_Reporting",
+  "GeneratedAt": "2026-03-22T11:53:32",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Reporting",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Reporting",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 16,
+  "FeatureReports": [
+    {
+      "FeatureId": "reporting-availability",
+      "Name": "Availability Check",
+      "MetadataFile": "reporting-availability.json",
+      "ReferencedFiles": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Data/Dao_Reporting.cs",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_Main.xaml",
+        "Module_Reporting/Views/View_Reporting_Main.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_Reporting",
+        "Service_Reporting"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "reporting-generation",
+      "Name": "Report Generation",
+      "MetadataFile": "reporting-generation.json",
+      "ReferencedFiles": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Data/Dao_Reporting.cs",
+        "Module_Reporting/README.md",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/SETTABLE_OBJECTS_REPORT.md",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_Main.xaml",
+        "Module_Reporting/Views/View_Reporting_Main.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_Reporting",
+        "Service_Reporting"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "reporting-preview-copy",
+      "Name": "Preview And Copy",
+      "MetadataFile": "reporting-preview-copy.json",
+      "ReferencedFiles": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Contracts/IService_ReportingClipboard.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/Services/Service_ReportingClipboard.cs",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_Reporting",
+        "IService_ReportingClipboard",
+        "Service_Reporting",
+        "Service_ReportingClipboard"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "reporting-availability.json",
+    "reporting-generation.json",
+    "reporting-preview-copy.json"
+  ],
+  "ActualFeatureFiles": [
+    "reporting-availability.json",
+    "reporting-generation.json",
+    "reporting-preview-copy.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

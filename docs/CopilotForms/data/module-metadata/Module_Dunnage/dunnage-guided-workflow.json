@@ -1,0 +1,81 @@
+{
+  "id": "dunnage-guided-workflow",
+  "module": "Module_Dunnage",
+  "name": "Guided Workflow",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, and final review.",
+  "owner": "Operations Team",
+  "relatedFiles": [
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_TypeSelectionViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_PartSelectionViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_QuantityEntryViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs",
+    "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_QuantityEntryView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_QuantityEntryView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml.cs",
+    "Module_Dunnage/Models/Model_DunnageLine.cs",
+    "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
+    "Module_Dunnage/Models/Model_DunnageType.cs",
+    "Module_Dunnage/Models/Model_DunnagePart.cs",
+    "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs"
+  ],
+  "relatedServices": ["IService_DunnageWorkflow", "IService_MySQL_Dunnage"],
+  "promptDefaults": {
+    "audience": "Receiving Clerk",
+    "docAudience": "Receiving Clerk",
+    "mockupAudience": "Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Mode selection",
+      "Guided dunnage entry",
+      "Manual and detail entry",
+      "Review before save"
+    ],
+    "screens": [
+      "View_Dunnage_ModeSelectionView.xaml",
+      "View_Dunnage_TypeSelectionView.xaml",
+      "View_Dunnage_PartSelectionView.xaml",
+      "View_Dunnage_QuantityEntryView.xaml",
+      "View_Dunnage_ManualEntryView.xaml",
+      "View_Dunnage_DetailsEntryView.xaml",
+      "View_Dunnage_ReviewView.xaml"
+    ],
+    "currentUiPatterns": ["Wizard step", "Form"],
+    "desiredUiPatterns": ["Wizard step", "Form", "Card list"],
+    "uiElements": [
+      "Mode selector",
+      "Type selector",
+      "Part selector",
+      "Quantity field",
+      "Manual entry fields",
+      "Review summary"
+    ],
+    "userActions": [
+      "Choose the correct dunnage mode",
+      "Move through guided steps",
+      "Capture manual or detailed information",
+      "Review and finish the workflow"
+    ],
+    "validationHints": [
+      "Confirm the guided workflow still advances correctly between steps",
+      "Confirm manual and detail entry remain aligned with review behavior"
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "volvo-label-and-email",
+  "module": "Module_Volvo",
+  "name": "Label And Email Output",
+  "summary": "Volvo label CSV generation, email formatting, recipient modeling, and label-data cleanup operations derived from shipment content.",
+  "owner": "Integration Team",
+  "relatedFiles": [
+    "Module_Volvo/Services/Service_Volvo.cs",
+    "Module_Volvo/Helpers/Helper_VolvoShipmentCalculations.cs",
+    "Module_Volvo/Models/Model_VolvoEmailData.cs",
+    "Module_Volvo/Models/Model_EmailRecipient.cs",
+    "Module_Volvo/Requests/Queries/FormatEmailDataQuery.cs",
+    "Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs",
+    "Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandler.cs",
+    "Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs",
+    "Module_Volvo/Requests/Commands/ClearLabelDataCommand.cs",
+    "Module_Volvo/Handlers/Commands/ClearLabelDataCommandHandler.cs"
+  ],
+  "relatedServices": [
+    "IService_Volvo",
+    "Service_Volvo"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Generate label output",
+      "Format email data",
+      "Clear generated label data"
+    ],
+    "currentUiPatterns": ["Form"],
+    "desiredUiPatterns": ["Form", "Split layout"],
+    "uiElements": [
+      "Label generation action",
+      "Email output action",
+      "Clear label data action"
+    ],
+    "userActions": [
+      "Generate shipment label output",
+      "Prepare email-ready output",
+      "Clear generated label data when needed"
+    ],
+    "validationHints": [
+      "Confirm label and email output still reflect the selected shipment data accurately"
+    ]
+  }
+}

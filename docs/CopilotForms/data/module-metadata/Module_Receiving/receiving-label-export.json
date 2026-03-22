@@ -11,7 +11,10 @@
     "Module_Receiving/Models/Model_LabelDataAvailabilityResult.cs",
     "Module_Receiving/Models/Model_LabelDataClearResult.cs"
   ],
-  "relatedServices": ["IService_ReceivingLabelData"],
+  "relatedServices": [
+    "IService_ReceivingLabelData",
+    "Service_ReceivingLabelData"
+  ],
   "promptDefaults": {
     "reviewScope": "Single feature",
     "testKind": "Mixed",

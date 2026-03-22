@@ -48,7 +48,7 @@ Keep CopilotForms module metadata accurate after code changes by inspecting the 
    - validation hints
    - prompt defaults
    - sub-feature hints
-6. Preserve the existing metadata structure for that module unless the user explicitly asks for a structural migration.
+6. Preserve the existing metadata structure for that module unless the user explicitly asks for a structural migration, or if during your inspection you find that the current structure is misleading or no longer fits the codebase.
 7. Validate that the edited JSON or Markdown files remain syntactically valid.
 8. Summarize exactly what metadata changed and why.
 

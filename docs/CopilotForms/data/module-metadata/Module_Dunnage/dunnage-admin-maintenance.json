@@ -1,0 +1,89 @@
+{
+  "id": "dunnage-admin-maintenance",
+  "module": "Module_Dunnage",
+  "name": "Admin Maintenance",
+  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current.",
+  "owner": "Operations Team",
+  "relatedFiles": [
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminInventoryViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminPartsViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminTypesViewModel.cs",
+    "Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml",
+    "Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml",
+    "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml.cs",
+    "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
+    "Module_Dunnage/Data/Dao_DunnageSpec.cs",
+    "Module_Dunnage/Data/Dao_DunnageUserPreference.cs",
+    "Module_Dunnage/Data/Dao_InventoriedDunnage.cs",
+    "Module_Dunnage/Models/Model_CustomFieldDefinition.cs",
+    "Module_Dunnage/Models/Model_DunnagePart.cs",
+    "Module_Dunnage/Models/Model_DunnageSpec.cs",
+    "Module_Dunnage/Models/Model_DunnageType.cs",
+    "Module_Dunnage/Models/Model_IconDefinition.cs",
+    "Module_Dunnage/Models/Model_InventoriedDunnage.cs",
+    "Module_Dunnage/Models/Model_SpecInput.cs",
+    "Module_Dunnage/Models/Model_SpecItem.cs",
+    "Module_Dunnage/Models/SpecDefinition.cs",
+    "Module_Dunnage/SETTABLE_OBJECTS_REPORT.md"
+  ],
+  "relatedServices": [
+    "IService_DunnageAdminWorkflow",
+    "IService_MySQL_Dunnage"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Admin type maintenance",
+      "Admin part and spec maintenance",
+      "Admin inventory maintenance",
+      "Quick-add and edit dialogs"
+    ],
+    "screens": [
+      "View_Dunnage_AdminTypesView.xaml",
+      "View_Dunnage_AdminPartsView.xaml",
+      "View_Dunnage_AdminInventoryView.xaml",
+      "View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml",
+      "View_Dunnage_EditPartDialog.xaml",
+      "View_Dunnage_QuickAddPartDialog.xaml",
+      "View_Dunnage_QuickAddTypeDialog.xaml"
+    ],
+    "currentUiPatterns": ["Form", "Table", "Dialog"],
+    "desiredUiPatterns": ["Form", "Split layout", "Dialog"],
+    "uiElements": [
+      "Admin tables",
+      "Type and part edit forms",
+      "Inventory maintenance controls",
+      "Icon picker",
+      "Quick-add dialogs"
+    ],
+    "userActions": [
+      "Maintain dunnage master data",
+      "Edit inventory and part definitions",
+      "Add new types and parts quickly"
+    ],
+    "validationHints": [
+      "Confirm admin maintenance flows still edit the intended records",
+      "Confirm quick-add dialogs still feed the correct admin screens"
+    ]
+  }
+}

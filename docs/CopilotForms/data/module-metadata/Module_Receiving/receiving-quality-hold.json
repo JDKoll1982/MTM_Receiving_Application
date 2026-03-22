@@ -5,6 +5,7 @@
   "summary": "Quality-hold assignment, warning dialogs, and CRUD operations for QH records.",
   "owner": "Receiving Team",
   "relatedFiles": [
+    "Module_Receiving/Contracts/IService_MySQL_QualityHold.cs",
     "Module_Receiving/Data/Dao_QualityHold.cs",
     "Module_Receiving/Services/Service_MySQL_QualityHold.cs",
     "Module_Receiving/Services/Service_QualityHoldWarning.cs",
@@ -12,7 +13,9 @@
   ],
   "relatedServices": [
     "IService_MySQL_QualityHold",
-    "IService_QualityHoldWarning"
+    "IService_QualityHoldWarning",
+    "Service_MySQL_QualityHold",
+    "Service_QualityHoldWarning"
   ],
   "promptDefaults": {
     "reviewScope": "Single feature",

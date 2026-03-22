@@ -1,0 +1,44 @@
+{
+  "id": "reporting-availability",
+  "module": "Module_Reporting",
+  "name": "Availability Check",
+  "summary": "Date-range availability checks that count reportable receiving, dunnage, and Volvo data before generation begins.",
+  "owner": "Reporting Team",
+  "relatedFiles": [
+    "Module_Reporting/Contracts/IService_Reporting.cs",
+    "Module_Reporting/Services/Service_Reporting.cs",
+    "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+    "Module_Reporting/Views/View_Reporting_Main.xaml",
+    "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+    "Module_Reporting/Data/Dao_Reporting.cs"
+  ],
+  "relatedServices": [
+    "IService_Reporting",
+    "Service_Reporting"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Check report availability"],
+    "screens": ["View_Reporting_Main.xaml"],
+    "currentUiPatterns": ["Form"],
+    "desiredUiPatterns": ["Form", "Split layout"],
+    "uiElements": [
+      "Start date",
+      "End date",
+      "Check Availability button",
+      "Module availability indicators"
+    ],
+    "userActions": [
+      "Check which modules have reportable data before generating output"
+    ],
+    "validationHints": [
+      "Confirm availability counts and enabled states still match the chosen date range"
+    ]
+  }
+}

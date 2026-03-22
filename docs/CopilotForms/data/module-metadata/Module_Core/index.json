@@ -1,0 +1,14 @@
+{
+  "module": "Module_Core",
+  "owner": "Platform Team",
+  "lastUpdated": "2026-03-22",
+  "featureFiles": [
+    "core-auth-session.json",
+    "core-database-inforvisual.json",
+    "core-error-help-logging.json",
+    "core-navigation-ui.json",
+    "core-converters-theme.json",
+    "core-startup-system-config.json",
+    "core-cqrs-reporting-models.json"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "Module": "Module_Shared",
+  "GeneratedAt": "2026-03-22T11:59:58",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Shared",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Shared",
+  "MetadataStatus": "MissingMetadataFolder",
+  "SourceFileCount": 16,
+  "FeatureReports": [],
+  "IndexFeatureFiles": [],
+  "ActualFeatureFiles": [],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [
+    "Module_Shared/ViewModels/ViewModel_Shared_Base.cs",
+    "Module_Shared/ViewModels/ViewModel_Shared_HelpDialog.cs",
+    "Module_Shared/ViewModels/ViewModel_Shared_MainWindow.cs",
+    "Module_Shared/ViewModels/ViewModel_Shared_NewUserSetup.cs",
+    "Module_Shared/ViewModels/ViewModel_Shared_SharedTerminalLogin.cs",
+    "Module_Shared/ViewModels/ViewModel_Shared_SplashScreen.cs",
+    "Module_Shared/Views/View_Shared_HelpDialog.xaml",
+    "Module_Shared/Views/View_Shared_HelpDialog.xaml.cs",
+    "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml",
+    "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs",
+    "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml",
+    "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml.cs",
+    "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml",
+    "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml.cs",
+    "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml",
+    "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml.cs"
+  ],
+  "UnreferencedSourceFileGroups": [
+    {
+      "Area": "ViewModels",
+      "Count": 6,
+      "Items": [
+        "Module_Shared/ViewModels/ViewModel_Shared_Base.cs",
+        "Module_Shared/ViewModels/ViewModel_Shared_HelpDialog.cs",
+        "Module_Shared/ViewModels/ViewModel_Shared_MainWindow.cs",
+        "Module_Shared/ViewModels/ViewModel_Shared_NewUserSetup.cs",
+        "Module_Shared/ViewModels/ViewModel_Shared_SharedTerminalLogin.cs",
+        "Module_Shared/ViewModels/ViewModel_Shared_SplashScreen.cs"
+      ]
+    },
+    {
+      "Area": "Views",
+      "Count": 10,
+      "Items": [
+        "Module_Shared/Views/View_Shared_HelpDialog.xaml",
+        "Module_Shared/Views/View_Shared_HelpDialog.xaml.cs",
+        "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml",
+        "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs",
+        "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml",
+        "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml.cs",
+        "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml",
+        "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml.cs",
+        "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml",
+        "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml.cs"
+      ]
+    }
+  ],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

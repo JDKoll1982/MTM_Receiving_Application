@@ -1,0 +1,25 @@
+{
+  "id": "shared-help-dialog",
+  "module": "Module_Shared",
+  "name": "Help Dialog",
+  "summary": "Shared help dialog presentation used to surface contextual help content to the user.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Shared/ViewModels/ViewModel_Shared_HelpDialog.cs",
+    "Module_Shared/Views/View_Shared_HelpDialog.xaml",
+    "Module_Shared/Views/View_Shared_HelpDialog.xaml.cs"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Shared contextual help"],
+    "screens": ["View_Shared_HelpDialog.xaml"],
+    "currentUiPatterns": ["Dialog"],
+    "desiredUiPatterns": ["Dialog"],
+    "userActions": ["Read contextual help content when guidance is needed"],
+    "validationHints": ["Confirm help dialog presentation remains intact"]
+  }
+}

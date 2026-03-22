@@ -1,0 +1,47 @@
+{
+  "id": "core-converters-theme",
+  "module": "Module_Core",
+  "name": "Converters And Theme Assets",
+  "summary": "Shared value converters, material icon resources, and UI-theme support assets used across XAML screens.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Converters/Converter_BooleanToVisibility.cs",
+    "Module_Core/Converters/Converter_BoolToString.cs",
+    "Module_Core/Converters/Converter_DateTimeToString.cs",
+    "Module_Core/Converters/Converter_DecimalToDouble.cs",
+    "Module_Core/Converters/Converter_DecimalToInt.cs",
+    "Module_Core/Converters/Converter_DecimalToString.cs",
+    "Module_Core/Converters/Converter_DoubleToDecimal.cs",
+    "Module_Core/Converters/Converter_EmptyStringToVisibility.cs",
+    "Module_Core/Converters/Converter_EnumToVisibility.cs",
+    "Module_Core/Converters/Converter_IconCodeToGlyph.cs",
+    "Module_Core/Converters/Converter_InfoBarSeverity.cs",
+    "Module_Core/Converters/Converter_IntToString.cs",
+    "Module_Core/Converters/Converter_IntToVisibility.cs",
+    "Module_Core/Converters/Converter_InverseBool.cs",
+    "Module_Core/Converters/Converter_LoadNumberToOneBased.cs",
+    "Module_Core/Converters/Converter_NullableDoubleToString.cs",
+    "Module_Core/Converters/Converter_NullableIntToString.cs",
+    "Module_Core/Converters/Converter_PartIDToQualityHoldBrush.cs",
+    "Module_Core/Converters/Converter_PartIDToQualityHoldTextColor.cs",
+    "Module_Core/Converters/Converter_StringFormat.cs",
+    "Module_Core/Converters/NullableDoubleToDoubleConverter.cs",
+    "Module_Core/Helpers/UI/Helper_MaterialIcons.cs",
+    "Module_Core/Themes/MaterialIcons.xaml"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Shared XAML formatting",
+      "Visibility and type conversion",
+      "Theme icon rendering"
+    ],
+    "validationHints": [
+      "Confirm shared converters and theme assets still support dependent XAML screens correctly"
+    ]
+  }
+}

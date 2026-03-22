@@ -2,15 +2,39 @@
   "id": "receiving-edit-mode",
   "module": "Module_Receiving",
   "name": "Edit Mode",
-  "summary": "In-place editing of already-queued receiving lines before final save.",
+  "summary": "In-place editing of current-memory, current-label, and history-backed receiving loads with search, paging, validation, and save coordination.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
     "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+    "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
+    "Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs",
+    "Module_Receiving/Contracts/IService_MySQL_Receiving.cs",
     "Module_Receiving/Data/Dao_ReceivingLine.cs",
-    "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
+    "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs",
+    "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+    "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+    "Module_Receiving/Services/Service_ReceivingSettings.cs",
+    "Module_Receiving/Services/Service_ReceivingValidation.cs",
+    "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+    "Module_Receiving/Models/Model_ReceivingLine.cs",
+    "Module_Receiving/Models/Model_EditModeColumn.cs",
+    "Module_Receiving/Settings/ReceivingSettingsKeys.cs"
   ],
-  "relatedServices": ["IService_MySQL_ReceivingLine"],
+  "relatedServices": [
+    "IService_MySQL_ReceivingLine",
+    "IService_MySQL_Receiving",
+    "IService_ReceivingLabelData",
+    "IService_ReceivingSettings",
+    "IService_ReceivingValidation",
+    "IService_ReceivingWorkflow",
+    "Service_MySQL_ReceivingLine",
+    "Service_MySQL_Receiving",
+    "Service_ReceivingLabelData",
+    "Service_ReceivingSettings",
+    "Service_ReceivingValidation",
+    "Service_ReceivingWorkflow"
+  ],
   "promptDefaults": {
     "audience": "Receiving Clerk",
     "docAudience": "Receiving Clerk",
@@ -22,7 +46,9 @@
   "uiHints": {
     "workflowAreas": [
       "Edit existing loads",
-      "Search and page through saved receiving entries"
+      "Search and page through saved receiving entries",
+      "Switch between current memory, current labels, and history",
+      "Persist edit-grid preferences"
     ],
     "screens": ["View_Receiving_EditMode.xaml"],
     "currentUiPatterns": [
@@ -37,10 +63,14 @@
       "Master-detail cards"
     ],
     "uiElements": [
+      "Data source selector",
+      "Date filter",
       "Results grid",
       "Search box",
       "Search-by selector",
       "Sort controls",
+      "Column chooser",
+      "Page size selector",
       "Pagination controls",
       "Select All action",
       "Save Changes action",
@@ -49,6 +79,7 @@
     "userActions": [
       "Scan existing loads quickly",
       "Find a load by search",
+      "Switch between memory, label queue, and history data",
       "Review one load at a time",
       "Edit a selected record",
       "Save changes confidently"
@@ -70,45 +101,59 @@
     ],
     "acceptanceCriteria": [
       "Users can review entries more easily than in the current grid",
+      "Data-source switching still loads the intended records",
+      "Saved column visibility and page-size preferences still apply",
       "Search still works",
       "Paging still works unless the request says otherwise",
       "Existing save behavior still works",
       "No business logic or data flow changes"
     ],
     "reviewFocusAreas": [
+      "Data-source switching",
       "Grid-to-card regressions",
       "Search and paging behavior",
+      "Saved grid preferences",
       "Save path stability",
       "Selection and row-action correctness"
     ],
     "testScenarios": [
+      "Switching between current memory, current labels, and history loads the correct record source",
       "Search still finds matching results",
       "Paging still moves through records correctly",
+      "Saved column visibility and page-size preferences restore correctly",
       "Editing a record preserves the correct values",
       "Save Changes keeps the current business flow intact"
     ],
     "docTopics": [
       "Edit mode overview",
+      "Data-source switching behavior",
       "Search and paging behavior",
+      "Column visibility and page-size preferences",
       "Row editing expectations",
       "Save Changes behavior"
     ],
     "validationHints": [
+      "Confirm each data source still loads the intended records",
       "Confirm search still works",
       "Confirm paging still works",
+      "Confirm saved grid preferences still apply",
       "Confirm saving still uses the existing logic",
       "Confirm row actions still work correctly"
     ],
     "mockupSections": [
+      "Data source and date filter toolbar",
       "Search and filter toolbar",
       "Results area",
       "Record action area",
       "Save footer"
     ],
     "mockupFields": [
+      "Data source",
+      "Date range",
       "Search text",
       "Search-by selector",
       "Sort controls",
+      "Page size",
       "Row actions",
       "Save Changes action"
     ],
@@ -118,8 +163,10 @@
       "receiving line tables"
     ],
     "loggingEvents": [
+      "Data source changes",
       "Search requests",
       "Paging changes",
+      "Column visibility changes",
       "Row edit actions",
       "Save Changes requests"
     ]
@@ -130,7 +177,10 @@
       "name": "Edit Grid",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
-        "Module_Receiving/Views/View_Receiving_EditMode.xaml"
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
+        "Module_Receiving/Models/Model_EditModeColumn.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_EditMode.xaml"],
@@ -163,7 +213,11 @@
       "name": "Save Changes",
       "relatedFiles": [
         "Module_Receiving/Data/Dao_ReceivingLine.cs",
-        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
+        "Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs",
+        "Module_Receiving/Models/Model_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+        "Module_Receiving/Services/Service_ReceivingValidation.cs"
       ],
       "uiHints": {
         "workflowAreas": ["Save edited records"],
@@ -175,6 +229,33 @@
         "userActions": [
           "Save edits confidently",
           "Understand whether the save succeeded"
+        ]
+      }
+    },
+    {
+      "id": "receiving-edit-data-sources",
+      "name": "Data Source Switching",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+        "Module_Receiving/Contracts/IService_MySQL_Receiving.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs"
+      ],
+      "uiHints": {
+        "workflowAreas": [
+          "Switch edit mode source",
+          "Filter historical receiving data"
+        ],
+        "uiElements": [
+          "Current Memory option",
+          "Current Labels option",
+          "History option",
+          "Date range filter"
+        ],
+        "userActions": [
+          "Choose the correct source for edits",
+          "Narrow historical results by date"
         ]
       }
     }

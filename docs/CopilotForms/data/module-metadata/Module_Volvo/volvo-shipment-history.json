@@ -1,0 +1,55 @@
+{
+  "id": "volvo-shipment-history",
+  "module": "Module_Volvo",
+  "name": "Shipment History",
+  "summary": "Shipment history lookup, recent shipment browsing, detail retrieval, and label history access for previously recorded Volvo shipments.",
+  "owner": "Integration Team",
+  "relatedFiles": [
+    "Module_Volvo/Views/View_Volvo_History.xaml",
+    "Module_Volvo/Views/View_Volvo_History.xaml.cs",
+    "Module_Volvo/ViewModels/ViewModel_Volvo_History.cs",
+    "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
+    "Module_Volvo/Data/IDao_VolvoLabelHistory.cs",
+    "Module_Volvo/Requests/Queries/GetRecentShipmentsQuery.cs",
+    "Module_Volvo/Requests/Queries/GetShipmentHistoryQuery.cs",
+    "Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs",
+    "Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandler.cs",
+    "Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandler.cs",
+    "Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandler.cs",
+    "Module_Volvo/Models/Model_VolvoShipment.cs",
+    "Module_Volvo/Models/Model_VolvoShipmentLine.cs"
+  ],
+  "relatedServices": [
+    "IService_Volvo",
+    "Service_Volvo"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Shipment history",
+      "Recent shipment lookup",
+      "Shipment detail review"
+    ],
+    "screens": ["View_Volvo_History.xaml"],
+    "currentUiPatterns": ["Table"],
+    "desiredUiPatterns": ["Split layout", "Card list", "Table"],
+    "uiElements": [
+      "Shipment selection area",
+      "History results",
+      "View detail action"
+    ],
+    "userActions": [
+      "Find and review a shipment history record",
+      "Open shipment details from history"
+    ],
+    "validationHints": [
+      "Confirm shipment history and recent shipment queries still return the expected records"
+    ]
+  }
+}

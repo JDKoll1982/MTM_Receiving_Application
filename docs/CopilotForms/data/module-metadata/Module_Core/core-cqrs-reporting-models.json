@@ -1,0 +1,38 @@
+{
+  "id": "core-cqrs-reporting-models",
+  "module": "Module_Core",
+  "name": "CQRS And Shared Models",
+  "summary": "Shared DAO result models, validation/result infrastructure, and reporting document models used by higher-level features and CQRS-style processing.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Models/Core/Model_Dao_Result.cs",
+    "Module_Core/Models/Core/Model_Dao_Result_Factory.cs",
+    "Module_Core/Models/Core/Model_Dao_Result_Generic.cs",
+    "Module_Core/Models/Reporting/Model_FormattedReportDocument.cs",
+    "Module_Core/Models/Reporting/Model_ReportRow.cs",
+    "Module_Core/Models/Reporting/Model_ReportSection.cs",
+    "Module_Core/Models/Reporting/Model_ReportSummaryColumn.cs",
+    "Module_Core/Models/Reporting/Model_ReportSummaryRow.cs",
+    "Module_Core/Models/Reporting/Model_ReportSummaryTable.cs",
+    "Module_Core/Models/Reporting/Model_ReportSummaryTableCell.cs",
+    "Module_Core/Models/Reporting/Model_ReportSummaryTableRow.cs",
+    "Module_Core/Models/Systems/Model_ValidationResult.cs",
+    "Module_Core/README_CQRS_INFRASTRUCTURE.md",
+    "Module_Core/SETTABLE_OBJECTS_REPORT.md"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Shared result modeling",
+      "CQRS support infrastructure",
+      "Reporting document shaping"
+    ],
+    "validationHints": [
+      "Confirm shared result and reporting models remain compatible with dependent modules"
+    ]
+  }
+}

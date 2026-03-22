@@ -1,0 +1,36 @@
+{
+  "id": "core-startup-system-config",
+  "module": "Module_Core",
+  "name": "Startup And System Config",
+  "summary": "Startup lifecycle orchestration, application and workstation defaults, and system-level configuration models shared across the app.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Contracts/Services/IService_OnStartup_AppLifecycle.cs",
+    "Module_Core/Defaults/WorkstationDefaults.cs",
+    "Module_Core/Services/Startup/Service_OnStartup_AppLifecycle.cs",
+    "Module_Core/Models/Systems/Model_AppSettings.cs",
+    "Module_Core/Models/Systems/Model_WorkstationConfig.cs",
+    "Module_Core/Models/Enums/Enum_DataSourceType.cs",
+    "Module_Core/Models/Enums/Enum_LabelType.cs",
+    "Module_Core/Models/Enums/Enum_PackageType.cs",
+    "Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs"
+  ],
+  "relatedServices": [
+    "IService_OnStartup_AppLifecycle",
+    "Service_OnStartup_AppLifecycle"
+  ],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Application startup",
+      "System configuration",
+      "Workstation defaults"
+    ],
+    "validationHints": [
+      "Confirm startup lifecycle and workstation defaults still initialize the app as expected"
+    ]
+  }
+}

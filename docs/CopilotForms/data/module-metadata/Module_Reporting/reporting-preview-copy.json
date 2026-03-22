@@ -1,0 +1,56 @@
+{
+  "id": "reporting-preview-copy",
+  "module": "Module_Reporting",
+  "name": "Preview And Copy",
+  "summary": "Preview-card shaping, column selection, and clipboard-ready email formatting for generated report output.",
+  "owner": "Reporting Team",
+  "relatedFiles": [
+    "Module_Reporting/Contracts/IService_Reporting.cs",
+    "Module_Reporting/Contracts/IService_ReportingClipboard.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
+    "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
+    "Module_Reporting/Services/Service_Reporting.cs",
+    "Module_Reporting/Services/Service_ReportingClipboard.cs",
+    "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml",
+    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+  ],
+  "relatedServices": [
+    "IService_Reporting",
+    "IService_ReportingClipboard",
+    "Service_Reporting",
+    "Service_ReportingClipboard"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Review generated output",
+      "Format and copy email-ready output"
+    ],
+    "screens": ["View_Reporting_PreviewDialog.xaml"],
+    "currentUiPatterns": ["Toolbar + results list"],
+    "desiredUiPatterns": ["Card list", "Split layout", "Form"],
+    "uiElements": [
+      "Preview cards",
+      "Preview column selector",
+      "Copy Email Format action"
+    ],
+    "userActions": [
+      "Review the generated output",
+      "Choose preview columns",
+      "Copy the generated output"
+    ],
+    "validationHints": [
+      "Confirm selected preview columns control both the on-screen table and copied output",
+      "Confirm copy-email behavior still works"
+    ]
+  }
+}

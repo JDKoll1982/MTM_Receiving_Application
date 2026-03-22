@@ -1,0 +1,27 @@
+{
+  "id": "shared-terminal-login",
+  "module": "Module_Shared",
+  "name": "Shared Terminal Login",
+  "summary": "Shared terminal login dialog used for shared-workstation authentication and access continuation flows.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Shared/ViewModels/ViewModel_Shared_SharedTerminalLogin.cs",
+    "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml",
+    "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml.cs"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Shared terminal access"],
+    "screens": ["View_Shared_SharedTerminalLoginDialog.xaml"],
+    "currentUiPatterns": ["Dialog", "Form"],
+    "desiredUiPatterns": ["Dialog", "Form"],
+    "userActions": ["Authenticate at a shared terminal and continue safely"],
+    "validationHints": [
+      "Confirm shared terminal login continues to present and capture credentials correctly"
+    ]
+  }
+}

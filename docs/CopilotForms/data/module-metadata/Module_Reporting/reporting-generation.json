@@ -1,0 +1,46 @@
+{
+  "id": "reporting-generation",
+  "module": "Module_Reporting",
+  "name": "Report Generation",
+  "summary": "Generation of reporting sections and summary tables for selected modules, including the reporting dashboard host and supporting output inventory documentation.",
+  "owner": "Reporting Team",
+  "relatedFiles": [
+    "Module_Reporting/Contracts/IService_Reporting.cs",
+    "Module_Reporting/Data/Dao_Reporting.cs",
+    "Module_Reporting/Services/Service_Reporting.cs",
+    "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+    "Module_Reporting/Views/View_Reporting_Main.xaml",
+    "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+    "Module_Reporting/README.md",
+    "Module_Reporting/SETTABLE_OBJECTS_REPORT.md"
+  ],
+  "relatedServices": [
+    "IService_Reporting",
+    "Service_Reporting"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Generate reports"],
+    "screens": ["View_Reporting_Main.xaml"],
+    "currentUiPatterns": ["Form", "Toolbar + results list"],
+    "desiredUiPatterns": ["Card list", "Split layout", "Form"],
+    "uiElements": [
+      "Module selection area",
+      "Generate Reports button",
+      "Status area"
+    ],
+    "userActions": [
+      "Choose report modules",
+      "Generate reports"
+    ],
+    "validationHints": [
+      "Confirm reports still generate correctly for the selected modules"
+    ]
+  }
+}

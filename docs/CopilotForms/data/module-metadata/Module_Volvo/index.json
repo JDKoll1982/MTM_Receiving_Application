@@ -2,5 +2,11 @@
   "module": "Module_Volvo",
   "owner": "Integration Team",
   "lastUpdated": "2026-03-21",
-  "featureFiles": ["volvo-integration.json"]
+  "featureFiles": [
+    "volvo-shipment-entry.json",
+    "volvo-shipment-history.json",
+    "volvo-part-settings.json",
+    "volvo-label-and-email.json",
+    "volvo-authorization.json"
+  ]
 }

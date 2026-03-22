@@ -1,0 +1,55 @@
+{
+  "id": "core-error-help-logging",
+  "module": "Module_Core",
+  "name": "Error Help And Logging",
+  "summary": "Centralized error handling, help content generation, notifications, logging, and validation/audit pipeline behaviors used throughout the application.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Behaviors/AuditBehavior.cs",
+    "Module_Core/Behaviors/LoggingBehavior.cs",
+    "Module_Core/Behaviors/ValidationBehavior.cs",
+    "Module_Core/Contracts/Services/IService_ErrorHandler.cs",
+    "Module_Core/Contracts/Services/IService_Help.cs",
+    "Module_Core/Contracts/Services/IService_LoggingUtility.cs",
+    "Module_Core/Contracts/Services/IService_Notification.cs",
+    "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs",
+    "Module_Core/Services/Database/Service_ErrorHandler.cs",
+    "Module_Core/Services/Database/Service_LoggingUtility.cs",
+    "Module_Core/Services/Help/Service_Help.cs",
+    "Module_Core/Services/Service_Notification.cs",
+    "Module_Core/Models/Core/Model_HelpContent.cs",
+    "Module_Core/Models/Enums/Enum_ErrorSeverity.cs",
+    "Module_Core/Models/Enums/Enum_HelpSeverity.cs",
+    "Module_Core/Models/Enums/Enum_HelpType.cs",
+    "Module_Core/Models/Enums/Enum_InfoBarSeverity.cs",
+    "Module_Core/Models/Enums/Enum_ValidationSeverity.cs"
+  ],
+  "relatedServices": [
+    "IService_ErrorHandler",
+    "IService_Help",
+    "IService_LoggingUtility",
+    "IService_Notification",
+    "Service_ErrorHandler",
+    "Service_LoggingUtility",
+    "Service_Help",
+    "Service_Notification"
+  ],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Application error handling",
+      "Contextual help",
+      "Logging and validation pipeline"
+    ],
+    "userActions": [
+      "See useful help when needed",
+      "Receive the correct error and notification messages"
+    ],
+    "validationHints": [
+      "Confirm error, help, notification, and logging behavior remain coordinated across the application"
+    ]
+  }
+}

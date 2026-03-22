@@ -2,15 +2,54 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary receiving flow for queueing, editing, and archiving receiving label data.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, persisted session restore, and final save orchestration.",
   "owner": "Receiving Team",
   "relatedFiles": [
+    "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
+    "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
+    "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
     "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
     "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+    "Module_Receiving/Services/Service_ReceivingSettings.cs",
+    "Module_Receiving/Services/Service_ReceivingValidation.cs",
+    "Module_Receiving/Services/Service_SessionManager.cs",
+    "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+    "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+    "Module_Receiving/Data/Dao_ReceivingLoad.cs",
     "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
-    "Module_Receiving/Views/View_Receiving_Workflow.xaml"
+    "Module_Receiving/Models/Model_Application_Variables.cs",
+    "Module_Receiving/Models/Model_ReceivingSession.cs",
+    "Module_Receiving/Models/Model_ReceivingLoad.cs",
+    "Module_Receiving/Models/Model_ReceivingValidationResult.cs",
+    "Module_Receiving/Models/Model_UserPreference.cs",
+    "Module_Receiving/Models/Model_WorkflowStepResult.cs",
+    "Module_Receiving/Models/Model_ReceivingWorkflowStepResult.cs",
+    "Module_Receiving/Models/Model_SaveResult.cs",
+    "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+    "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+    "Module_Receiving/Views/View_Receiving_Workflow.xaml",
+    "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs"
   ],
-  "relatedServices": ["IService_ReceivingWorkflow", "IService_MySQL_Receiving"],
+  "relatedServices": [
+    "IService_ReceivingWorkflow",
+    "IService_ReceivingSettings",
+    "IService_ReceivingValidation",
+    "IService_MySQL_Receiving",
+    "Service_ReceivingWorkflow",
+    "Service_ReceivingSettings",
+    "Service_ReceivingValidation",
+    "Service_SessionManager",
+    "Service_MySQL_Receiving",
+    "Service_ReceivingLabelData"
+  ],
   "promptDefaults": {
     "audience": "Receiving Clerk",
     "docAudience": "Receiving Clerk",
@@ -23,7 +62,9 @@
     "workflowAreas": [
       "Guided receiving workflow",
       "Startup routing",
-      "Step-by-step wizard"
+      "Step-by-step wizard",
+      "Session restore and resume",
+      "Settings-driven default mode and validation behavior"
     ],
     "screens": [
       "View_Receiving_Workflow.xaml",
@@ -45,6 +86,7 @@
       "Step title",
       "Primary Next button",
       "Primary Back button",
+      "Mode-specific startup routing",
       "Help text",
       "Review area",
       "Save action"
@@ -52,6 +94,7 @@
     "userActions": [
       "Move through the workflow one step at a time",
       "Understand what to do next quickly",
+      "Resume an existing receiving session after restart",
       "Review entries before saving",
       "Recover from mistakes without confusion"
     ],
@@ -75,10 +118,14 @@
     "reviewFocusAreas": [
       "Workflow regressions",
       "Validation behavior",
+      "Session restore behavior",
+      "Default mode startup behavior",
       "Navigation clarity",
       "Save-path stability"
     ],
     "testScenarios": [
+      "The workflow restores an existing session when one is persisted",
+      "Configured or remembered startup mode sends the user to the intended first screen",
       "The user can move step to step when required values are present",
       "Validation blocks progress when required values are missing",
       "The review step shows the correct information before save",
@@ -87,10 +134,14 @@
     "docTopics": [
       "Workflow overview",
       "Step-by-step operator flow",
+      "Session persistence and restore behavior",
+      "Receiving settings and default-mode behavior",
       "Validation behavior",
       "Review and save expectations"
     ],
     "validationHints": [
+      "Confirm session restore still returns the user to a valid step",
+      "Confirm default-mode and remember-last-mode settings still route correctly on startup",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
       "Confirm review and save behavior are unchanged"
@@ -110,12 +161,14 @@
       "Review summary"
     ],
     "databaseObjects": [
+      "sp_Receiving_Load_Update",
       "sp_Receiving_LabelData_Insert",
       "sp_Receiving_LabelData_Update",
       "receiving label data tables"
     ],
     "loggingEvents": [
       "Step transitions",
+      "Session persistence and restore",
       "Validation failures",
       "Save requests",
       "Save failures"
@@ -131,7 +184,10 @@
       "name": "Mode Selection",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
-        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml"
+        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
+        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Services/Service_ReceivingSettings.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_ModeSelection.xaml"],
@@ -159,7 +215,8 @@
       "name": "Load Entry",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
-        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml"
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_LoadEntry.xaml"],
@@ -182,7 +239,8 @@
       "name": "PO Entry",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs",
-        "Module_Receiving/Views/View_Receiving_POEntry.xaml"
+        "Module_Receiving/Views/View_Receiving_POEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_POEntry.xaml"],
@@ -205,7 +263,8 @@
       "name": "Manual Entry",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
-        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml"
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_ManualEntry.xaml"],
@@ -229,7 +288,8 @@
       "name": "Package Type Selection",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
-        "Module_Receiving/Views/View_Receiving_PackageType.xaml"
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml",
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_PackageType.xaml"],
@@ -252,7 +312,8 @@
       "name": "Heat / Lot Entry",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
-        "Module_Receiving/Views/View_Receiving_HeatLot.xaml"
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml",
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_HeatLot.xaml"],
@@ -275,7 +336,9 @@
       "name": "Weight & Quantity Entry",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
-        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml"
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml",
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs",
+        "Module_Receiving/Models/Model_ReceivingValidationResult.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_WeightQuantity.xaml"],
@@ -298,7 +361,10 @@
       "name": "Review & Submit",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs",
-        "Module_Receiving/Views/View_Receiving_Review.xaml"
+        "Module_Receiving/Views/View_Receiving_Review.xaml",
+        "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+        "Module_Receiving/Models/Model_SaveResult.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs"
       ],
       "uiHints": {
         "screens": ["View_Receiving_Review.xaml"],
@@ -313,6 +379,27 @@
         "userActions": [
           "Review entries before save",
           "Submit confidently after checking the summary"
+        ]
+      }
+    },
+    {
+      "id": "receiving-session-state",
+      "name": "Session State",
+      "relatedFiles": [
+        "Module_Receiving/Services/Service_SessionManager.cs",
+        "Module_Receiving/Models/Model_ReceivingSession.cs",
+        "Module_Receiving/Models/Model_ReceivingLoad.cs",
+        "Module_Receiving/Models/Model_UserPreference.cs",
+        "Module_Receiving/Models/Model_WorkflowStepResult.cs"
+      ],
+      "uiHints": {
+        "workflowAreas": ["Session persistence", "Session restore"],
+        "userActions": [
+          "Resume unfinished receiving work after restart",
+          "Avoid re-entering already captured load data"
+        ],
+        "testScenarios": [
+          "A saved session restores the pending loads and returns the user to a reviewable workflow state"
         ]
       }
     }

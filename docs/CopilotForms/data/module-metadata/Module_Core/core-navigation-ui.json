@@ -1,0 +1,63 @@
+{
+  "id": "core-navigation-ui",
+  "module": "Module_Core",
+  "name": "Navigation And UI Services",
+  "summary": "Core navigation, dispatcher, focus, pagination, windowing, UI automation, fuzzy-search dialog, and view-model registry services that support interactive screens.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Contracts/Services/IService_Dispatcher.cs",
+    "Module_Core/Contracts/Services/IService_Focus.cs",
+    "Module_Core/Contracts/Services/IService_Pagination.cs",
+    "Module_Core/Contracts/Services/IService_UIAutomation.cs",
+    "Module_Core/Contracts/Services/IService_ViewModelRegistry.cs",
+    "Module_Core/Contracts/Services/IWindowService.cs",
+    "Module_Core/Contracts/Services/Navigation/IService_Navigation.cs",
+    "Module_Core/Contracts/ViewModels/IResettableViewModel.cs",
+    "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml",
+    "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
+    "Module_Core/Helpers/UI/Helper_WindowExtensions.cs",
+    "Module_Core/Helpers/UI/WindowHelper_WindowSizeAndStartupLocation.cs",
+    "Module_Core/Services/Navigation/Service_Navigation.cs",
+    "Module_Core/Services/Service_Dispatcher.cs",
+    "Module_Core/Services/Service_Focus.cs",
+    "Module_Core/Services/Service_Pagination.cs",
+    "Module_Core/Services/Service_Window.cs",
+    "Module_Core/Services/UI/Service_ViewModelRegistry.cs",
+    "Module_Core/Services/VisualAutomation/Service_UIAutomation.cs",
+    "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs"
+  ],
+  "relatedServices": [
+    "IService_Dispatcher",
+    "IService_Focus",
+    "IService_Pagination",
+    "IService_UIAutomation",
+    "IService_ViewModelRegistry",
+    "IWindowService",
+    "IService_Navigation",
+    "Service_Dispatcher",
+    "Service_Focus",
+    "Service_Pagination",
+    "Service_Window",
+    "Service_ViewModelRegistry",
+    "Service_UIAutomation",
+    "Service_Navigation"
+  ],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Navigation",
+      "Window management",
+      "Dialog interaction",
+      "Focus and pagination support"
+    ],
+    "screens": ["Dialog_FuzzySearchPicker.xaml"],
+    "currentUiPatterns": ["Dialog", "Form"],
+    "desiredUiPatterns": ["Dialog", "Split layout", "Form"],
+    "validationHints": [
+      "Confirm navigation, windowing, and dialog support behavior remain consistent for dependent modules"
+    ]
+  }
+}

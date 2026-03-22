@@ -1,0 +1,302 @@
+{
+  "Module": "Module_Core",
+  "GeneratedAt": "2026-03-22T11:58:50",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Core",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Core",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 114,
+  "FeatureReports": [
+    {
+      "FeatureId": "core-auth-session",
+      "Name": "Authentication And Session",
+      "MetadataFile": "core-auth-session.json",
+      "ReferencedFiles": [
+        "Module_Core/Contracts/Services/IService_Authentication.cs",
+        "Module_Core/Contracts/Services/IService_SessionManager.cs",
+        "Module_Core/Contracts/Services/IService_UserSessionManager.cs",
+        "Module_Core/Contracts/Services/ITimer.cs",
+        "Module_Core/Data/Authentication/Dao_User.cs",
+        "Module_Core/Models/Systems/Model_AuthenticationResult.cs",
+        "Module_Core/Models/Systems/Model_CreateUserResult.cs",
+        "Module_Core/Models/Systems/Model_SessionTimedOutEventArgs.cs",
+        "Module_Core/Models/Systems/Model_User.cs",
+        "Module_Core/Models/Systems/Model_UserSession.cs",
+        "Module_Core/Services/Authentication/Service_Authentication.cs",
+        "Module_Core/Services/Authentication/Service_UserSessionManager.cs",
+        "Module_Core/Services/Service_DispatcherTimerWrapper.cs"
+      ],
+      "ReferencedServices": [
+        "IService_Authentication",
+        "IService_SessionManager",
+        "IService_UserSessionManager",
+        "ITimer",
+        "Service_Authentication",
+        "Service_UserSessionManager"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": [
+        "Module_Core/Contracts/IService_Authentication.cs",
+        "Module_Core/Contracts/IService_SessionManager.cs",
+        "Module_Core/Contracts/IService_UserSessionManager.cs",
+        "Module_Core/Contracts/ITimer.cs",
+        "Module_Core/Contracts/Service_Authentication.cs",
+        "Module_Core/Contracts/Service_UserSessionManager.cs"
+      ]
+    },
+    {
+      "FeatureId": "core-converters-theme",
+      "Name": "Converters And Theme Assets",
+      "MetadataFile": "core-converters-theme.json",
+      "ReferencedFiles": [
+        "Module_Core/Converters/Converter_BooleanToVisibility.cs",
+        "Module_Core/Converters/Converter_BoolToString.cs",
+        "Module_Core/Converters/Converter_DateTimeToString.cs",
+        "Module_Core/Converters/Converter_DecimalToDouble.cs",
+        "Module_Core/Converters/Converter_DecimalToInt.cs",
+        "Module_Core/Converters/Converter_DecimalToString.cs",
+        "Module_Core/Converters/Converter_DoubleToDecimal.cs",
+        "Module_Core/Converters/Converter_EmptyStringToVisibility.cs",
+        "Module_Core/Converters/Converter_EnumToVisibility.cs",
+        "Module_Core/Converters/Converter_IconCodeToGlyph.cs",
+        "Module_Core/Converters/Converter_InfoBarSeverity.cs",
+        "Module_Core/Converters/Converter_IntToString.cs",
+        "Module_Core/Converters/Converter_IntToVisibility.cs",
+        "Module_Core/Converters/Converter_InverseBool.cs",
+        "Module_Core/Converters/Converter_LoadNumberToOneBased.cs",
+        "Module_Core/Converters/Converter_NullableDoubleToString.cs",
+        "Module_Core/Converters/Converter_NullableIntToString.cs",
+        "Module_Core/Converters/Converter_PartIDToQualityHoldBrush.cs",
+        "Module_Core/Converters/Converter_PartIDToQualityHoldTextColor.cs",
+        "Module_Core/Converters/Converter_StringFormat.cs",
+        "Module_Core/Converters/NullableDoubleToDoubleConverter.cs",
+        "Module_Core/Helpers/UI/Helper_MaterialIcons.cs",
+        "Module_Core/Themes/MaterialIcons.xaml"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "core-cqrs-reporting-models",
+      "Name": "CQRS And Shared Models",
+      "MetadataFile": "core-cqrs-reporting-models.json",
+      "ReferencedFiles": [
+        "Module_Core/Models/Core/Model_Dao_Result_Factory.cs",
+        "Module_Core/Models/Core/Model_Dao_Result_Generic.cs",
+        "Module_Core/Models/Core/Model_Dao_Result.cs",
+        "Module_Core/Models/Reporting/Model_FormattedReportDocument.cs",
+        "Module_Core/Models/Reporting/Model_ReportRow.cs",
+        "Module_Core/Models/Reporting/Model_ReportSection.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryColumn.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryRow.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryTable.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryTableCell.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryTableRow.cs",
+        "Module_Core/Models/Systems/Model_ValidationResult.cs",
+        "Module_Core/README_CQRS_INFRASTRUCTURE.md",
+        "Module_Core/SETTABLE_OBJECTS_REPORT.md"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "core-database-inforvisual",
+      "Name": "Database And Infor Visual",
+      "MetadataFile": "core-database-inforvisual.json",
+      "ReferencedFiles": [
+        "Module_Core/Contracts/Services/IService_InforVisual.cs",
+        "Module_Core/Contracts/Services/IService_VisualCredentialValidator.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualPart.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualPO.cs",
+        "Module_Core/Defaults/InforVisualDefaults.cs",
+        "Module_Core/Helpers/Database/Helper_Database_StoredProcedure.cs",
+        "Module_Core/Helpers/Database/Helper_Database_Variables.cs",
+        "Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs",
+        "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualConnection.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPart.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPartInfo.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPO.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPOLine.cs",
+        "Module_Core/Models/InforVisual/Model_OutsideServiceHistory.cs",
+        "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+        "Module_Core/Services/Database/Service_VisualCredentialValidator.cs"
+      ],
+      "ReferencedServices": [
+        "IService_InforVisual",
+        "IService_VisualCredentialValidator",
+        "Service_InforVisualConnect",
+        "Service_VisualCredentialValidator"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": [
+        "Module_Core/Contracts/IService_InforVisual.cs",
+        "Module_Core/Contracts/IService_VisualCredentialValidator.cs",
+        "Module_Core/Contracts/Service_InforVisualConnect.cs",
+        "Module_Core/Contracts/Service_VisualCredentialValidator.cs"
+      ]
+    },
+    {
+      "FeatureId": "core-error-help-logging",
+      "Name": "Error Help And Logging",
+      "MetadataFile": "core-error-help-logging.json",
+      "ReferencedFiles": [
+        "Module_Core/Behaviors/AuditBehavior.cs",
+        "Module_Core/Behaviors/LoggingBehavior.cs",
+        "Module_Core/Behaviors/ValidationBehavior.cs",
+        "Module_Core/Contracts/Services/IService_ErrorHandler.cs",
+        "Module_Core/Contracts/Services/IService_Help.cs",
+        "Module_Core/Contracts/Services/IService_LoggingUtility.cs",
+        "Module_Core/Contracts/Services/IService_Notification.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs",
+        "Module_Core/Models/Core/Model_HelpContent.cs",
+        "Module_Core/Models/Enums/Enum_ErrorSeverity.cs",
+        "Module_Core/Models/Enums/Enum_HelpSeverity.cs",
+        "Module_Core/Models/Enums/Enum_HelpType.cs",
+        "Module_Core/Models/Enums/Enum_InfoBarSeverity.cs",
+        "Module_Core/Models/Enums/Enum_ValidationSeverity.cs",
+        "Module_Core/Services/Database/Service_ErrorHandler.cs",
+        "Module_Core/Services/Database/Service_LoggingUtility.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Services/Service_Notification.cs"
+      ],
+      "ReferencedServices": [
+        "IService_ErrorHandler",
+        "IService_Help",
+        "IService_LoggingUtility",
+        "IService_Notification",
+        "Service_ErrorHandler",
+        "Service_Help",
+        "Service_LoggingUtility",
+        "Service_Notification"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": [
+        "Module_Core/Contracts/IService_ErrorHandler.cs",
+        "Module_Core/Contracts/IService_Help.cs",
+        "Module_Core/Contracts/IService_LoggingUtility.cs",
+        "Module_Core/Contracts/IService_Notification.cs",
+        "Module_Core/Contracts/Service_ErrorHandler.cs",
+        "Module_Core/Contracts/Service_Help.cs",
+        "Module_Core/Contracts/Service_LoggingUtility.cs"
+      ]
+    },
+    {
+      "FeatureId": "core-navigation-ui",
+      "Name": "Navigation And UI Services",
+      "MetadataFile": "core-navigation-ui.json",
+      "ReferencedFiles": [
+        "Module_Core/Contracts/Services/IService_Dispatcher.cs",
+        "Module_Core/Contracts/Services/IService_Focus.cs",
+        "Module_Core/Contracts/Services/IService_Pagination.cs",
+        "Module_Core/Contracts/Services/IService_UIAutomation.cs",
+        "Module_Core/Contracts/Services/IService_ViewModelRegistry.cs",
+        "Module_Core/Contracts/Services/IWindowService.cs",
+        "Module_Core/Contracts/Services/Navigation/IService_Navigation.cs",
+        "Module_Core/Contracts/ViewModels/IResettableViewModel.cs",
+        "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml",
+        "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
+        "Module_Core/Helpers/UI/Helper_WindowExtensions.cs",
+        "Module_Core/Helpers/UI/WindowHelper_WindowSizeAndStartupLocation.cs",
+        "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs",
+        "Module_Core/Services/Navigation/Service_Navigation.cs",
+        "Module_Core/Services/Service_Dispatcher.cs",
+        "Module_Core/Services/Service_Focus.cs",
+        "Module_Core/Services/Service_Pagination.cs",
+        "Module_Core/Services/Service_Window.cs",
+        "Module_Core/Services/UI/Service_ViewModelRegistry.cs",
+        "Module_Core/Services/VisualAutomation/Service_UIAutomation.cs"
+      ],
+      "ReferencedServices": [
+        "IService_Dispatcher",
+        "IService_Focus",
+        "IService_Navigation",
+        "IService_Pagination",
+        "IService_UIAutomation",
+        "IService_ViewModelRegistry",
+        "IWindowService",
+        "Service_Dispatcher",
+        "Service_Focus",
+        "Service_Navigation",
+        "Service_Pagination",
+        "Service_UIAutomation",
+        "Service_ViewModelRegistry",
+        "Service_Window"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": [
+        "Module_Core/Contracts/IService_Dispatcher.cs",
+        "Module_Core/Contracts/IService_Focus.cs",
+        "Module_Core/Contracts/IService_Navigation.cs",
+        "Module_Core/Contracts/IService_Pagination.cs",
+        "Module_Core/Contracts/IService_UIAutomation.cs",
+        "Module_Core/Contracts/IService_ViewModelRegistry.cs",
+        "Module_Core/Contracts/IWindowService.cs",
+        "Module_Core/Contracts/Service_Navigation.cs",
+        "Module_Core/Contracts/Service_UIAutomation.cs",
+        "Module_Core/Contracts/Service_ViewModelRegistry.cs"
+      ]
+    },
+    {
+      "FeatureId": "core-startup-system-config",
+      "Name": "Startup And System Config",
+      "MetadataFile": "core-startup-system-config.json",
+      "ReferencedFiles": [
+        "Module_Core/Contracts/Services/IService_OnStartup_AppLifecycle.cs",
+        "Module_Core/Defaults/WorkstationDefaults.cs",
+        "Module_Core/Models/Enums/Enum_DataSourceType.cs",
+        "Module_Core/Models/Enums/Enum_LabelType.cs",
+        "Module_Core/Models/Enums/Enum_PackageType.cs",
+        "Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs",
+        "Module_Core/Models/Systems/Model_AppSettings.cs",
+        "Module_Core/Models/Systems/Model_WorkstationConfig.cs",
+        "Module_Core/Services/Startup/Service_OnStartup_AppLifecycle.cs"
+      ],
+      "ReferencedServices": [
+        "IService_OnStartup_AppLifecycle",
+        "Service_OnStartup_AppLifecycle"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": [
+        "Module_Core/Contracts/IService_OnStartup_AppLifecycle.cs",
+        "Module_Core/Contracts/Service_OnStartup_AppLifecycle.cs"
+      ]
+    }
+  ],
+  "IndexFeatureFiles": [
+    "core-auth-session.json",
+    "core-database-inforvisual.json",
+    "core-error-help-logging.json",
+    "core-navigation-ui.json",
+    "core-converters-theme.json",
+    "core-startup-system-config.json",
+    "core-cqrs-reporting-models.json"
+  ],
+  "ActualFeatureFiles": [
+    "core-auth-session.json",
+    "core-converters-theme.json",
+    "core-cqrs-reporting-models.json",
+    "core-database-inforvisual.json",
+    "core-error-help-logging.json",
+    "core-navigation-ui.json",
+    "core-startup-system-config.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [
+    "Service_DispatcherTimerWrapper"
+  ],
+  "UnreferencedServiceGroups": [
+    {
+      "Group": "Services",
+      "Count": 1,
+      "Items": [
+        "Service_DispatcherTimerWrapper"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "shared-splash-screen",
+  "module": "Module_Shared",
+  "name": "Splash Screen",
+  "summary": "Shared splash screen window and viewmodel shown during early application startup and module loading.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Shared/ViewModels/ViewModel_Shared_SplashScreen.cs",
+    "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml",
+    "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml.cs"
+  ],
+  "relatedServices": [],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Application startup splash"],
+    "screens": ["View_Shared_SplashScreenWindow.xaml"],
+    "currentUiPatterns": ["Window"],
+    "desiredUiPatterns": ["Window"],
+    "userActions": ["See startup progress while the application initializes"],
+    "validationHints": [
+      "Confirm splash-screen display and startup messaging remain stable"
+    ]
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "Module": "Module_Receiving",
+  "GeneratedAt": "2026-03-22T11:45:36",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Receiving",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Receiving",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 72,
+  "FeatureReports": [
+    {
+      "FeatureId": "receiving-edit-mode",
+      "Name": "Edit Mode",
+      "MetadataFile": "receiving-edit-mode.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Data/Dao_ReceivingLine.cs",
+        "Module_Receiving/Models/Model_EditModeColumn.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+        "Module_Receiving/Services/Service_ReceivingSettings.cs",
+        "Module_Receiving/Services/Service_ReceivingValidation.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml"
+      ],
+      "ReferencedServices": [
+        "IService_MySQL_Receiving",
+        "IService_MySQL_ReceivingLine",
+        "IService_ReceivingLabelData",
+        "IService_ReceivingSettings",
+        "IService_ReceivingValidation",
+        "IService_ReceivingWorkflow",
+        "Service_MySQL_Receiving",
+        "Service_MySQL_ReceivingLine",
+        "Service_ReceivingLabelData",
+        "Service_ReceivingSettings",
+        "Service_ReceivingValidation",
+        "Service_ReceivingWorkflow"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "receiving-label-export",
+      "Name": "Label Data Export",
+      "MetadataFile": "receiving-label-export.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Contracts/IService_ReceivingLabelData.cs",
+        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+        "Module_Receiving/Models/Model_LabelDataAvailabilityResult.cs",
+        "Module_Receiving/Models/Model_LabelDataClearResult.cs",
+        "Module_Receiving/Models/Model_LabelDataSaveResult.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs"
+      ],
+      "ReferencedServices": [
+        "IService_ReceivingLabelData",
+        "Service_ReceivingLabelData"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "receiving-package-preferences",
+      "Name": "Package Preferences",
+      "MetadataFile": "receiving-package-preferences.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs",
+        "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+        "Module_Receiving/Models/Model_PackageTypePreference.cs",
+        "Module_Receiving/Models/Model_PartNumberPrefixRule.cs",
+        "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs"
+      ],
+      "ReferencedServices": [
+        "IService_MySQL_PackagePreferences",
+        "Service_MySQL_PackagePreferences"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "receiving-quality-hold",
+      "Name": "Quality Hold",
+      "MetadataFile": "receiving-quality-hold.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Contracts/IService_QualityHoldWarning.cs",
+        "Module_Receiving/Data/Dao_QualityHold.cs",
+        "Module_Receiving/Models/Model_QualityHold.cs",
+        "Module_Receiving/Services/Service_MySQL_QualityHold.cs",
+        "Module_Receiving/Services/Service_QualityHoldWarning.cs"
+      ],
+      "ReferencedServices": [
+        "IService_MySQL_QualityHold",
+        "IService_QualityHoldWarning",
+        "Service_MySQL_QualityHold",
+        "Service_QualityHoldWarning"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "receiving-supporting-files",
+      "Name": "Supporting Files",
+      "MetadataFile": "receiving-supporting-files.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Contracts/IService_MySQL_QualityHold.cs",
+        "Module_Receiving/Contracts/IService_MySQL_Receiving.cs",
+        "Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs",
+        "Module_Receiving/Models/Model_Application_Variables.cs",
+        "Module_Receiving/Models/Model_ReceivingLine.cs",
+        "Module_Receiving/Models/Model_ReceivingValidationResult.cs",
+        "Module_Receiving/Models/Model_UserPreference.cs",
+        "Module_Receiving/Models/Model_WorkflowStepResult.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_MySQL_QualityHold",
+        "IService_MySQL_Receiving",
+        "IService_MySQL_ReceivingLine"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "receiving-workflow",
+      "Name": "Receiving Workflow",
+      "MetadataFile": "receiving-workflow.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
+        "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
+        "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
+        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+        "Module_Receiving/Data/Dao_ReceivingLoad.cs",
+        "Module_Receiving/Models/Model_ReceivingLoad.cs",
+        "Module_Receiving/Models/Model_ReceivingSession.cs",
+        "Module_Receiving/Models/Model_ReceivingWorkflowStepResult.cs",
+        "Module_Receiving/Models/Model_SaveResult.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+        "Module_Receiving/Services/Service_ReceivingSettings.cs",
+        "Module_Receiving/Services/Service_ReceivingValidation.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Services/Service_SessionManager.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml",
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml",
+        "Module_Receiving/Views/View_Receiving_POEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_Review.xaml",
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml"
+      ],
+      "ReferencedServices": [
+        "IService_MySQL_Receiving",
+        "IService_ReceivingSettings",
+        "IService_ReceivingValidation",
+        "IService_ReceivingWorkflow",
+        "Service_MySQL_Receiving",
+        "Service_ReceivingLabelData",
+        "Service_ReceivingSettings",
+        "Service_ReceivingValidation",
+        "Service_ReceivingWorkflow",
+        "Service_SessionManager"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "receiving-workflow.json",
+    "receiving-edit-mode.json",
+    "receiving-quality-hold.json",
+    "receiving-package-preferences.json",
+    "receiving-label-export.json",
+    "receiving-supporting-files.json"
+  ],
+  "ActualFeatureFiles": [
+    "receiving-edit-mode.json",
+    "receiving-label-export.json",
+    "receiving-package-preferences.json",
+    "receiving-quality-hold.json",
+    "receiving-supporting-files.json",
+    "receiving-workflow.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

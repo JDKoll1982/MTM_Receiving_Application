@@ -1,0 +1,53 @@
+{
+  "id": "core-database-inforvisual",
+  "module": "Module_Core",
+  "name": "Database And Infor Visual",
+  "summary": "Database helpers, Infor Visual connection and query infrastructure, credential validation, defaults, and shared Infor Visual models.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Core/Contracts/Services/IService_InforVisual.cs",
+    "Module_Core/Contracts/Services/IService_VisualCredentialValidator.cs",
+    "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+    "Module_Core/Data/InforVisual/Dao_InforVisualPart.cs",
+    "Module_Core/Data/InforVisual/Dao_InforVisualPO.cs",
+    "Module_Core/Defaults/InforVisualDefaults.cs",
+    "Module_Core/Helpers/Database/Helper_Database_StoredProcedure.cs",
+    "Module_Core/Helpers/Database/Helper_Database_Variables.cs",
+    "Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs",
+    "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+    "Module_Core/Services/Database/Service_VisualCredentialValidator.cs",
+    "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualConnection.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualPart.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualPartInfo.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualPO.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualPOLine.cs",
+    "Module_Core/Models/InforVisual/Model_OutsideServiceHistory.cs"
+  ],
+  "relatedServices": [
+    "IService_InforVisual",
+    "IService_VisualCredentialValidator",
+    "Service_InforVisualConnect",
+    "Service_VisualCredentialValidator"
+  ],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "SQL Server"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Infor Visual connectivity",
+      "Credential validation",
+      "Database helper infrastructure"
+    ],
+    "preserveRules": [
+      "Keep SQL Server access read-only where required",
+      "Keep stored-procedure helper behavior unchanged unless explicitly requested"
+    ],
+    "validationHints": [
+      "Confirm Infor Visual connection and credential checks still target the intended data source",
+      "Confirm database helper behavior remains aligned with existing DAO usage"
+    ]
+  }
+}
