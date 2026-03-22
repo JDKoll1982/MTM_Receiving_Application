@@ -15,10 +15,10 @@ These files exist so the main `copilot-forms.config.json` file does not keep gro
 - `receiving-edit-mode.json` - edit mode metadata
 - `receiving-quality-hold.json` - quality hold metadata
 - `receiving-package-preferences.json` - package preference metadata
-- `receiving-label-export.json` - label/XLS export metadata
+- `receiving-label-export.json` - label data export metadata
 
 ## Notes
 
-- The current live forms still read from the main config.
-- These files are the first step toward moving feature metadata out of the main config.
+- The current live forms load split module metadata through the runtime's `project.moduleMetadataIndexes` support.
+- These files are now part of the active metadata path, not just a staging area.
 - New metadata work for `Module_Receiving` should be added here first.

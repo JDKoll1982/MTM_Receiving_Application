@@ -1,0 +1,17 @@
+{
+  "formId": "feature-removal-request",
+  "featureId": "receiving-workflow",
+  "removalTitle": "",
+  "workflowArea": "",
+  "removalMode": "Hard removal",
+  "removalReason": "",
+  "replacementPath": "",
+  "scope": "Single feature",
+  "userVisiblePieces": [],
+  "underlyingArtifacts": [],
+  "dependencyRisks": "",
+  "dataHandlingNotes": "",
+  "preserveRules": "",
+  "acceptanceCriteria": [],
+  "validationPlan": []
+}

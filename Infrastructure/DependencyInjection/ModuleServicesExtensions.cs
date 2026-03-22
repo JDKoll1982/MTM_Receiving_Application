@@ -103,12 +103,12 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_SessionManager(logger);
         });
-        services.AddSingleton<IService_XLSWriter>(sp =>
+        services.AddSingleton<IService_ReceivingLabelData>(sp =>
         {
             var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             var settingsCore = sp.GetRequiredService<IService_SettingsCoreFacade>();
-            return new Service_XLSWriter(sessionManager, logger, settingsCore);
+            return new Service_ReceivingLabelData(sessionManager, logger, settingsCore);
         });
         services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
         services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();

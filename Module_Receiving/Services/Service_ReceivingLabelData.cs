@@ -11,10 +11,10 @@ using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
     /// <summary>
-    /// Placeholder stub — XLS file workflow is being replaced by MySQL.
+    /// Placeholder stub — label-data file workflow is being replaced by MySQL.
     /// TODO: Replace all methods with database-backed implementations.
     /// </summary>
-    public class Service_XLSWriter : IService_XLSWriter
+    public class Service_ReceivingLabelData : IService_ReceivingLabelData
     {
         private const string NotImplementedMessage =
             "Not implemented yet: spreadsheet workflow is being replaced by MySQL.";
@@ -22,7 +22,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_SettingsCoreFacade _settingsCore;
 
-        public Service_XLSWriter(
+        public Service_ReceivingLabelData(
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_SettingsCoreFacade settingsCore
@@ -34,58 +34,58 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         }
 
-        public async Task<Model_XLSWriteResult> WriteToXLSAsync(List<Model_ReceivingLoad> loads)
+        public async Task<Model_LabelDataSaveResult> SaveLabelDataAsync(
+            List<Model_ReceivingLoad> loads
+        )
         {
             await _logger.LogWarningAsync(
-                $"{nameof(WriteToXLSAsync)} called — {NotImplementedMessage}"
+                $"{nameof(SaveLabelDataAsync)} called — {NotImplementedMessage}"
             );
-            return new Model_XLSWriteResult { ErrorMessage = NotImplementedMessage };
+            return new Model_LabelDataSaveResult { ErrorMessage = NotImplementedMessage };
         }
 
-        public async Task WriteToFileAsync(
+        public async Task SaveLabelDataToPathAsync(
             string filePath,
             List<Model_ReceivingLoad> loads,
             bool append = true
         )
         {
             await _logger.LogWarningAsync(
-                $"{nameof(WriteToFileAsync)} called — {NotImplementedMessage}"
+                $"{nameof(SaveLabelDataToPathAsync)} called — {NotImplementedMessage}"
             );
         }
 
-        public async Task<List<Model_ReceivingLoad>> ReadFromXLSAsync(string filePath)
+        public async Task<List<Model_ReceivingLoad>> LoadLabelDataAsync(string filePath)
         {
             await _logger.LogWarningAsync(
-                $"{nameof(ReadFromXLSAsync)} called — {NotImplementedMessage}"
+                $"{nameof(LoadLabelDataAsync)} called — {NotImplementedMessage}"
             );
             return new List<Model_ReceivingLoad>();
         }
 
-        public async Task<Model_XLSDeleteResult> ClearXLSFilesAsync()
+        public async Task<Model_LabelDataClearResult> ClearLabelDataAsync()
         {
             await _logger.LogWarningAsync(
-                $"{nameof(ClearXLSFilesAsync)} called — {NotImplementedMessage}"
+                $"{nameof(ClearLabelDataAsync)} called — {NotImplementedMessage}"
             );
-            return new Model_XLSDeleteResult { NetworkError = NotImplementedMessage };
+            return new Model_LabelDataClearResult { ArchiveQueueError = NotImplementedMessage };
         }
 
-        public async Task<Model_XLSExistenceResult> CheckXLSFilesExistAsync()
+        public async Task<Model_LabelDataAvailabilityResult> CheckLabelDataAvailabilityAsync()
         {
             await _logger.LogWarningAsync(
-                $"{nameof(CheckXLSFilesExistAsync)} called — {NotImplementedMessage}"
+                $"{nameof(CheckLabelDataAvailabilityAsync)} called — {NotImplementedMessage}"
             );
-            return new Model_XLSExistenceResult
+            return new Model_LabelDataAvailabilityResult
             {
-                NetworkExists = false,
-                NetworkAccessible = false,
+                ArchiveQueueAvailable = false,
+                ArchiveQueueAccessible = false,
             };
         }
 
-        public Task<string> GetNetworkXLSPathAsync()
+        public Task<string> GetLabelDataPathAsync()
         {
-            _logger.LogWarning(
-                $"{nameof(GetNetworkXLSPathAsync)} called — {NotImplementedMessage}"
-            );
+            _logger.LogWarning($"{nameof(GetLabelDataPathAsync)} called — {NotImplementedMessage}");
             return Task.FromResult(string.Empty);
         }
     }

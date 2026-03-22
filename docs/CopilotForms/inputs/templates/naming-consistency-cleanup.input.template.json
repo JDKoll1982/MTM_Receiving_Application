@@ -1,0 +1,14 @@
+{
+  "formId": "naming-consistency-cleanup",
+  "featureId": "receiving-label-export",
+  "cleanupTitle": "",
+  "scope": "Single feature",
+  "namingProblem": "",
+  "targetNaming": "",
+  "artifactsToRename": [],
+  "currentMismatchExamples": [],
+  "candidateFiles": [],
+  "preserveBehavior": "",
+  "docsOrUiAlsoNeedUpdate": [],
+  "verificationSteps": []
+}

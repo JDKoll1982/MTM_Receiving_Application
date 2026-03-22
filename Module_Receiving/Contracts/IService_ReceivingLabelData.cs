@@ -7,60 +7,60 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 namespace MTM_Receiving_Application.Module_Receiving.Contracts
 {
     /// <summary>
-    /// Service for writing receiving data to XLS files.
-    /// Uses the configured network path.
+    /// Service for reading and writing receiving label data.
+    /// Uses the configured label-data source path when needed.
     /// </summary>
-    public interface IService_XLSWriter
+    public interface IService_ReceivingLabelData
     {
         /// <summary>
-        /// Writes receiving loads to the network XLS file.
+        /// Saves receiving loads to the current label-data store.
         /// </summary>
         /// <param name="loads">List of loads to write</param>
         /// <returns>Result object indicating success/failure</returns>
         /// <exception cref="ArgumentException">If loads list is null or empty</exception>
         /// <exception cref="InvalidOperationException">If write fails</exception>
-        public Task<Model_XLSWriteResult> WriteToXLSAsync(List<Model_ReceivingLoad> loads);
+        public Task<Model_LabelDataSaveResult> SaveLabelDataAsync(List<Model_ReceivingLoad> loads);
 
         /// <summary>
-        /// Writes loads to a specific XLS file path.
+        /// Saves loads to a specific label-data path.
         /// Used internally but exposed for testing.
         /// </summary>
-        /// <param name="filePath">Absolute path to XLS file</param>
+        /// <param name="filePath">Absolute path to the label-data source</param>
         /// <param name="loads">Loads to write</param>
         /// <param name="append">Whether to append to existing file (default true)</param>
         /// <exception cref="InvalidOperationException">If write fails</exception>
-        public Task WriteToFileAsync(
+        public Task SaveLabelDataToPathAsync(
             string filePath,
             List<Model_ReceivingLoad> loads,
             bool append = true
         );
 
         /// <summary>
-        /// Reads receiving loads from an XLS file.
+        /// Loads receiving loads from the current label-data source.
         /// </summary>
-        /// <param name="filePath">Absolute path to XLS file</param>
+        /// <param name="filePath">Absolute path to the label-data source</param>
         /// <returns>List of receiving loads</returns>
         /// <exception cref="System.IO.FileNotFoundException">If file does not exist</exception>
         /// <exception cref="InvalidOperationException">If read fails</exception>
-        public Task<List<Model_ReceivingLoad>> ReadFromXLSAsync(string filePath);
+        public Task<List<Model_ReceivingLoad>> LoadLabelDataAsync(string filePath);
 
         /// <summary>
-        /// Clears XLS files (used for reset on startup).
+        /// Clears label data (used for reset on startup).
         /// </summary>
-        /// <returns>Result indicating which files were cleared</returns>
-        public Task<Model_XLSDeleteResult> ClearXLSFilesAsync();
+        /// <returns>Result indicating which label-data targets were cleared</returns>
+        public Task<Model_LabelDataClearResult> ClearLabelDataAsync();
 
         /// <summary>
-        /// Checks if XLS files exist.
+        /// Checks whether the label-data source is available.
         /// </summary>
-        /// <returns>Result indicating existence of network files</returns>
-        public Task<Model_XLSExistenceResult> CheckXLSFilesExistAsync();
+        /// <returns>Result indicating label-data availability</returns>
+        public Task<Model_LabelDataAvailabilityResult> CheckLabelDataAvailabilityAsync();
 
         /// <summary>
-        /// Gets the configured network XLS file path.
+        /// Gets the configured label-data source path.
         /// Respects user-configured path from settings if available.
         /// </summary>
-        /// <returns>UNC path to network XLS</returns>
-        public Task<string> GetNetworkXLSPathAsync();
+        /// <returns>Path to the label-data source</returns>
+        public Task<string> GetLabelDataPathAsync();
     }
 }

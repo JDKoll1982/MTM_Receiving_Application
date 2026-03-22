@@ -1,0 +1,15 @@
+{
+  "formId": "performance-issue-optimization",
+  "featureId": "receiving-workflow",
+  "performanceTitle": "",
+  "workflowArea": "",
+  "affectedScreen": "",
+  "performanceSymptoms": [],
+  "observedImpact": "",
+  "targetOutcome": "",
+  "timingOrMeasurements": "",
+  "datasetOrContext": "",
+  "suspectedHotspots": [],
+  "constraints": "",
+  "verificationSteps": []
+}

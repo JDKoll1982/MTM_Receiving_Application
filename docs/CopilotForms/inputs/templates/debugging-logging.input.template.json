@@ -1,0 +1,15 @@
+{
+  "formId": "debugging-logging",
+  "featureId": "receiving-workflow",
+  "bugTitle": "",
+  "priority": "High",
+  "observedBehavior": "",
+  "expectedBehavior": "",
+  "reproSteps": [],
+  "errorMessages": "",
+  "loggingNeed": "",
+  "loggingMode": "Add logging",
+  "sensitiveDataRules": "",
+  "filesToInspect": [],
+  "verificationSteps": []
+}

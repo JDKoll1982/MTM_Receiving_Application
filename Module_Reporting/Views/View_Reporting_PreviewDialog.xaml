@@ -11,20 +11,20 @@
     Title="Report Preview"
     CloseButtonText="Close"
     DefaultButton="Close"
-    HorizontalContentAlignment="Center"
-    VerticalContentAlignment="Center"
-    HorizontalAlignment="Center"
-    VerticalAlignment="Center"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
 >
     <ContentDialog.Resources>
-        <x:Double x:Key="ContentDialogMinWidth">900</x:Double>
-        <x:Double x:Key="ContentDialogMaxWidth">1100</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">1320</x:Double>
+        <x:Double x:Key="ContentDialogMaxWidth">2200</x:Double>
     </ContentDialog.Resources>
 
     <ScrollViewer
         VerticalScrollBarVisibility="Auto"
         HorizontalScrollBarVisibility="Disabled"
-        MaxHeight="780"
+        MaxHeight="900"
     >
         <StackPanel Spacing="16" Padding="20,18,20,20">
             <Grid ColumnSpacing="16">
@@ -110,11 +110,7 @@
                                     />
                                 </Border>
 
-                                <StackPanel
-                                    Padding="14"
-                                    Spacing="14"
-                                    Width="{Binding ViewModel.PreviewCardWidth, ElementName=DialogRoot}"
-                                >
+                                <StackPanel Padding="14" Spacing="14" HorizontalAlignment="Stretch">
                                     <StackPanel Spacing="6">
                                         <TextBlock
                                             Text="Summary"
@@ -122,11 +118,10 @@
                                             Style="{StaticResource BodyStrongTextBlockStyle}"
                                         />
 
-                                        <Viewbox
-                                            Stretch="Uniform"
-                                            StretchDirection="DownOnly"
-                                            HorizontalAlignment="Left"
-                                            Width="{Binding ViewModel.PreviewTableViewportWidth, ElementName=DialogRoot}"
+                                        <ScrollViewer
+                                            HorizontalScrollBarVisibility="Auto"
+                                            VerticalScrollBarVisibility="Disabled"
+                                            HorizontalAlignment="Stretch"
                                         >
                                             <Border
                                                 BorderBrush="#D0DAE5"
@@ -208,7 +203,40 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </Border>
-                                        </Viewbox>
+                                        </ScrollViewer>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="6">
+                                        <TextBlock
+                                            Text="Detail Columns"
+                                            FontWeight="SemiBold"
+                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        />
+
+                                        <GridView
+                                            ItemsSource="{x:Bind AvailableColumns}"
+                                            SelectionMode="None"
+                                            IsItemClickEnabled="False"
+                                            IsSwipeEnabled="False"
+                                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                            ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                            HorizontalAlignment="Stretch"
+                                        >
+                                            <GridView.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" />
+                                                </ItemsPanelTemplate>
+                                            </GridView.ItemsPanel>
+                                            <GridView.ItemTemplate>
+                                                <DataTemplate x:DataType="previewModels:Model_ReportingPreviewColumnOption">
+                                                    <CheckBox
+                                                        Content="{x:Bind Header}"
+                                                        IsChecked="{x:Bind IsIncluded, Mode=TwoWay}"
+                                                        Margin="0,0,12,8"
+                                                    />
+                                                </DataTemplate>
+                                            </GridView.ItemTemplate>
+                                        </GridView>
                                     </StackPanel>
 
                                     <StackPanel Spacing="6">
@@ -224,11 +252,10 @@
                                             TextWrapping="WrapWholeWords"
                                         />
 
-                                        <Viewbox
-                                            Stretch="Uniform"
-                                            StretchDirection="DownOnly"
-                                            HorizontalAlignment="Left"
-                                            Width="{Binding ViewModel.PreviewTableViewportWidth, ElementName=DialogRoot}"
+                                        <ScrollViewer
+                                            HorizontalScrollBarVisibility="Auto"
+                                            VerticalScrollBarVisibility="Disabled"
+                                            HorizontalAlignment="Stretch"
                                         >
                                             <Border
                                                 BorderBrush="#D0DAE5"
@@ -239,147 +266,65 @@
                                                 Width="{x:Bind DetailTableWidth}"
                                             >
                                                 <StackPanel>
-                                                    <Grid Background="{x:Bind AccentBackgroundBrush}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="80" />
-                                                            <ColumnDefinition Width="170" />
-                                                            <ColumnDefinition Width="150" />
-                                                            <ColumnDefinition Width="90" />
-                                                            <ColumnDefinition Width="110" />
-                                                            <ColumnDefinition Width="170" />
-                                                            <ColumnDefinition Width="130" />
-                                                        </Grid.ColumnDefinitions>
+                                                    <Border Background="{x:Bind AccentBackgroundBrush}">
+                                                        <ItemsControl ItemsSource="{x:Bind IncludedColumns}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="previewModels:Model_ReportingPreviewColumnOption">
+                                                                    <Border Width="{x:Bind Width}" BorderBrush="#D0DAE5" BorderThickness="0,0,1,0">
+                                                                        <TextBlock
+                                                                            Text="{x:Bind Header}"
+                                                                            Foreground="White"
+                                                                            FontWeight="SemiBold"
+                                                                            Padding="12,10"
+                                                                            HorizontalAlignment="Center"
+                                                                            TextAlignment="Center"
+                                                                            TextWrapping="WrapWholeWords"
+                                                                        />
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </Border>
 
-                                                        <TextBlock
-                                                            Grid.Column="0"
-                                                            Text="Quantity"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                        <TextBlock
-                                                            Grid.Column="1"
-                                                            Text="Item"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                        <TextBlock
-                                                            Grid.Column="2"
-                                                            Text="Reference"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                        <TextBlock
-                                                            Grid.Column="3"
-                                                            Text="Employee"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                        <TextBlock
-                                                            Grid.Column="4"
-                                                            Text="Date"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                        <TextBlock
-                                                            Grid.Column="5"
-                                                            Text="Location"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                        <TextBlock
-                                                            Grid.Column="6"
-                                                            Text="Packages/Loads"
-                                                            Foreground="White"
-                                                            FontWeight="SemiBold"
-                                                            Padding="12,10"
-                                                            HorizontalAlignment="Center"
-                                                        />
-                                                    </Grid>
-
-                                                    <ItemsControl ItemsSource="{x:Bind Rows}">
+                                                    <ItemsControl ItemsSource="{x:Bind PreviewRows}">
                                                         <ItemsControl.ItemTemplate>
-                                                            <DataTemplate x:DataType="models:Model_ReportRow">
+                                                            <DataTemplate x:DataType="previewModels:Model_ReportingPreviewRow">
                                                                 <Border
                                                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                                     BorderThickness="0,0,0,1"
                                                                     Background="#FAFCFF"
                                                                 >
-                                                                    <Grid>
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="80" />
-                                                                            <ColumnDefinition Width="170" />
-                                                                            <ColumnDefinition Width="150" />
-                                                                            <ColumnDefinition Width="90" />
-                                                                            <ColumnDefinition Width="110" />
-                                                                            <ColumnDefinition Width="170" />
-                                                                            <ColumnDefinition Width="130" />
-                                                                        </Grid.ColumnDefinitions>
-
-                                                                        <TextBlock
-                                                                            Grid.Column="0"
-                                                                            Text="{x:Bind DisplayQuantity}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                        />
-                                                                        <TextBlock
-                                                                            Grid.Column="1"
-                                                                            Text="{x:Bind DisplayPartOrDunnage}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                            TextWrapping="WrapWholeWords"
-                                                                        />
-                                                                        <TextBlock
-                                                                            Grid.Column="2"
-                                                                            Text="{x:Bind DisplayPo}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                            TextWrapping="WrapWholeWords"
-                                                                        />
-                                                                        <TextBlock
-                                                                            Grid.Column="3"
-                                                                            Text="{x:Bind EmployeeNumber}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                        />
-                                                                        <TextBlock
-                                                                            Grid.Column="4"
-                                                                            Text="{x:Bind DisplayCreatedDate}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                        />
-                                                                        <TextBlock
-                                                                            Grid.Column="5"
-                                                                            Text="{x:Bind DisplayLocation}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                            TextWrapping="WrapWholeWords"
-                                                                        />
-                                                                        <TextBlock
-                                                                            Grid.Column="6"
-                                                                            Text="{x:Bind DisplayLoadsOrSkids}"
-                                                                            Padding="12,10"
-                                                                            HorizontalAlignment="Center"
-                                                                        />
-                                                                    </Grid>
+                                                                    <ItemsControl ItemsSource="{x:Bind Cells}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <StackPanel Orientation="Horizontal" />
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate x:DataType="previewModels:Model_ReportingPreviewCell">
+                                                                                <Border Width="{x:Bind Width}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
+                                                                                    <TextBlock
+                                                                                        Text="{x:Bind Value}"
+                                                                                        Padding="12,10"
+                                                                                        TextAlignment="{x:Bind TextAlignment}"
+                                                                                        TextWrapping="WrapWholeWords"
+                                                                                    />
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
                                                                 </Border>
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </Border>
-                                        </Viewbox>
+                                        </ScrollViewer>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

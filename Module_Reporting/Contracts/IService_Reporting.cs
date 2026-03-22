@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
+using MTM_Receiving_Application.Module_Reporting.Models;
 
 namespace MTM_Receiving_Application.Module_Reporting.Contracts;
 
@@ -33,8 +34,7 @@ public interface IService_Reporting
     );
 
     public Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatForEmailAsync(
-        List<Model_ReportSection> sections,
-        List<Model_ReportSummaryTable> summaryTables,
+        List<Model_ReportingPreviewModuleCard> previewModuleCards,
         string summaryTitle
     );
 

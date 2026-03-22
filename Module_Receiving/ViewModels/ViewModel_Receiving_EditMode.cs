@@ -23,7 +23,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         // ------------------------------------------------------------------ services
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
-        private readonly IService_XLSWriter _xlsWriter;
+        private readonly IService_ReceivingLabelData _labelDataService;
         private readonly IService_Pagination _paginationService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -34,7 +34,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly List<Model_ReceivingLoad> _allLoads = new();
         private List<Model_ReceivingLoad> _filteredLoads = new();
         private readonly List<Model_ReceivingLoad> _deletedLoads = new();
-        private string? _currentXlsPath;
+        private string? _currentLabelDataPath;
 
         // ------------------------------------------------------------------ bindable collections
         [ObservableProperty]
@@ -212,7 +212,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ViewModel_Receiving_EditMode(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
-            IService_XLSWriter xlsWriter,
+            IService_ReceivingLabelData labelDataService,
             IService_Pagination paginationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
@@ -227,7 +227,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
-            _xlsWriter = xlsWriter;
+            _labelDataService = labelDataService;
             _paginationService = paginationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
@@ -1156,17 +1156,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Attempts to load data from the default XLS location.
+        /// Attempts to load data from the default label-data location.
         /// </summary>
-        private async Task<bool> TryLoadFromDefaultXlsAsync()
+        private async Task<bool> TryLoadFromDefaultLabelDataAsync()
         {
             try
             {
-                string networkPath = await _xlsWriter.GetNetworkXLSPathAsync();
+                string networkPath = await _labelDataService.GetLabelDataPathAsync();
                 if (File.Exists(networkPath))
                 {
                     _logger.LogInfo($"Attempting to load from network labels: {networkPath}");
-                    var loadedData = await _xlsWriter.ReadFromXLSAsync(networkPath);
+                    var loadedData = await _labelDataService.LoadLabelDataAsync(networkPath);
 
                     if (loadedData.Count > 0)
                     {
@@ -1182,7 +1182,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             $"Successfully loaded {_allLoads.Count} loads from network labels"
                         );
                         CurrentDataSource = Enum_DataSourceType.CurrentLabels;
-                        _currentXlsPath = networkPath;
+                        _currentLabelDataPath = networkPath;
                         SelectAllButtonText = "Select All";
 
                         FilterStartDate = DateTimeOffset.Now.AddYears(-1);

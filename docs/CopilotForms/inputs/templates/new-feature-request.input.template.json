@@ -1,0 +1,15 @@
+{
+  "formId": "new-feature-request",
+  "featureId": "receiving-workflow",
+  "featureRequestTitle": "",
+  "audience": "Receiving Clerk",
+  "problemToSolve": "",
+  "desiredCapability": "",
+  "scope": "Single feature",
+  "entryPoints": [],
+  "userSteps": [],
+  "candidateFiles": [],
+  "constraints": "",
+  "acceptanceCriteria": [],
+  "validationPlan": []
+}

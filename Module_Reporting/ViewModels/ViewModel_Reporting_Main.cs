@@ -76,10 +76,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private string _previewSummaryTitle = string.Empty;
 
     [ObservableProperty]
-    private double _previewCardWidth = 940d;
+    private double _previewCardWidth = 1320d;
 
     [ObservableProperty]
-    private double _previewTableViewportWidth = 908d;
+    private double _previewTableViewportWidth = 1260d;
 
     [ObservableProperty]
     private bool _hasIncludedPreviewModuleCards;
@@ -285,8 +285,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             ShowStatus("Copying formatted report...", InfoBarSeverity.Informational);
 
             var formatResult = await _reportingService.FormatForEmailAsync(
-                IncludedPreviewModuleCards.Select(card => card.DetailSection).ToList(),
-                IncludedPreviewModuleCards.Select(card => card.SummaryTable).ToList(),
+                IncludedPreviewModuleCards.ToList(),
                 PreviewSummaryTitle
             );
 
@@ -398,13 +397,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
         RefreshIncludedPreviewModuleCards();
 
-        var widestTableWidth = PreviewModuleCards
-            .Select(card => Math.Max(card.SummaryTable.TableWidth, card.DetailTableWidth))
-            .DefaultIfEmpty(900d)
-            .Max();
-
-        PreviewCardWidth = Math.Max(980d, widestTableWidth + 56d);
-        PreviewTableViewportWidth = Math.Max(920d, PreviewCardWidth - 32d);
+        UpdatePreviewLayout();
         PreviewSummaryTitle = $"End of Day Report Preview for {GetDateRangeText()}";
         CopyEmailFormatCommand.NotifyCanExecuteChanged();
     }
@@ -430,7 +423,73 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         };
 
         previewModuleCard.PropertyChanged += OnPreviewModuleCardPropertyChanged;
+        previewModuleCard.InitializeColumns(CreateDetailColumnOptions());
         return previewModuleCard;
+    }
+
+    private void UpdatePreviewLayout()
+    {
+        var widestTableWidth = PreviewModuleCards
+            .Select(card => Math.Max(card.SummaryTable.TableWidth, Math.Max(card.DetailTableWidth, 720d)))
+            .DefaultIfEmpty(1260d)
+            .Max();
+
+        PreviewCardWidth = Math.Clamp(widestTableWidth + 84d, 1320d, 2200d);
+        PreviewTableViewportWidth = Math.Max(PreviewCardWidth - 48d, 1240d);
+    }
+
+    private static List<Model_ReportingPreviewColumnOption> CreateDetailColumnOptions()
+    {
+        return
+        [
+            CreateColumn(nameof(Model_ReportRow.Id), "ID", 150d),
+            CreateColumn(nameof(Model_ReportRow.SourceModule), "Source Module", 130d),
+            CreateColumn(nameof(Model_ReportRow.PONumber), "PO Number", 140d),
+            CreateColumn(nameof(Model_ReportRow.POLineNumber), "PO Line #", 110d),
+            CreateColumn(nameof(Model_ReportRow.PartNumber), "Part Number", 170d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.PartDescription), "Part Description", 240d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.DunnageType), "Dunnage Type", 180d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.SpecsCombined), "Specs Combined", 260d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.Quantity), "Quantity", 110d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.WeightLbs), "Weight Lbs", 110d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.HeatLotNumber), "Heat/Lot", 140d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.CreatedDate), "Created Date", 120d),
+            CreateColumn(nameof(Model_ReportRow.EmployeeNumber), "Employee", 120d),
+            CreateColumn(nameof(Model_ReportRow.CreatedByUsername), "Created By", 160d),
+            CreateColumn(nameof(Model_ReportRow.ShipmentNumber), "Shipment #", 120d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.ReceiverNumber), "Receiver #", 120d),
+            CreateColumn(nameof(Model_ReportRow.Status), "Status", 130d),
+            CreateColumn(nameof(Model_ReportRow.PartCount), "Part Count", 110d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.Location), "Location", 170d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.Notes), "Notes", 240d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.LoadNumber), "Load #", 100d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.LabelNumber), "Label #", 100d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.PackagesPerLoad), "Packages/Load", 130d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.PackageTypeName), "Package Type", 140d, wrapText: true),
+            CreateColumn(nameof(Model_ReportRow.IsNonPOItem), "Non-PO", 90d),
+            CreateColumn(nameof(Model_ReportRow.CoilsOnSkid), "Coils/Skid", 110d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.QuantityPerSkid), "Qty/Skid", 110d, isNumeric: true),
+            CreateColumn(nameof(Model_ReportRow.ReceivedSkidCount), "Received Skids", 130d, isNumeric: true),
+        ];
+    }
+
+    private static Model_ReportingPreviewColumnOption CreateColumn(
+        string key,
+        string header,
+        double width,
+        bool wrapText = false,
+        bool isNumeric = false
+    )
+    {
+        return new Model_ReportingPreviewColumnOption
+        {
+            Key = key,
+            Header = header,
+            Width = width,
+            WrapText = wrapText,
+            IsNumeric = isNumeric,
+            IsIncluded = true,
+        };
     }
 
     private string GetDateRangeText() => $"{StartDate:M/d/yyyy} - {EndDate:M/d/yyyy}";
@@ -445,6 +504,12 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
 
             RefreshIncludedPreviewModuleCards();
+        }
+
+        if (e.PropertyName == nameof(Model_ReportingPreviewModuleCard.DetailTableWidth))
+        {
+            UpdatePreviewLayout();
+            CopyEmailFormatCommand.NotifyCanExecuteChanged();
         }
     }
 
@@ -466,6 +531,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         foreach (var previewModuleCard in PreviewModuleCards)
         {
             previewModuleCard.PropertyChanged -= OnPreviewModuleCardPropertyChanged;
+            previewModuleCard.DetachColumnHandlers();
         }
     }
 
@@ -587,8 +653,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         PreviewModuleCards.Clear();
         IncludedPreviewModuleCards.Clear();
         PreviewSummaryTitle = string.Empty;
-        PreviewCardWidth = 940d;
-        PreviewTableViewportWidth = 908d;
+        PreviewCardWidth = 1320d;
+        PreviewTableViewportWidth = 1260d;
         HasIncludedPreviewModuleCards = false;
         CopyEmailFormatCommand.NotifyCanExecuteChanged();
     }

@@ -134,9 +134,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public void ClearUIInputs();
 
         /// <summary>
-        /// Saves all loads in session to XLS only.
+        /// Saves all loads in session to the current label-data store only.
         /// </summary>
-        public Task<Model_SaveResult> SaveToXLSOnlyAsync();
+        public Task<Model_SaveResult> SaveToLabelDataOnlyAsync();
 
         /// <summary>
         /// Saves all loads in session to database only.
@@ -149,9 +149,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task ResetWorkflowAsync();
 
         ///  <summary>
-        /// Resets the XLS files (deletes them).
+        /// Resets the label-data store.
         /// </summary>
-        public Task<Model_XLSDeleteResult> ResetXLSFilesAsync();
+        public Task<Model_LabelDataClearResult> ResetLabelDataAsync();
 
         /// <summary>
         /// Persists current session state to JSON.

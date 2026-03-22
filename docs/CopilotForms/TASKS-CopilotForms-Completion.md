@@ -113,6 +113,20 @@ Finish the CopilotForms improvement work in one clean pass while keeping the cur
 - [x] Ensure new metadata files stay easy to extend.
 - [x] Remove duplicated data from the main config after migration is complete.
 
+## Phase 7 - First-Wave Scenario Expansion
+
+- [x] Add `New Feature Request` form and supporting prompt, instruction, and templates.
+- [x] Add `Feature Removal Request` form and supporting prompt, instruction, and templates.
+- [x] Add `Performance Issue / Optimization` form and supporting prompt, instruction, and templates.
+- [x] Add `Configuration / Environment Issue` form and supporting prompt, instruction, and templates.
+- [x] Add `Naming / Consistency Cleanup` form and supporting prompt, instruction, and templates.
+- [x] Add `UI Change + Logic Change` mixed form and supporting prompt, instruction, and templates.
+- [x] Add `Debugging + Logging` mixed form and supporting prompt, instruction, and templates.
+- [x] Add `Logic Change + Test Generation` mixed form and supporting prompt, instruction, and templates.
+- [x] Update CopilotForms landing page so the new scenarios are discoverable.
+- [x] Update CopilotForms documentation to reflect the expanded scenario set.
+- [x] Fix stale split-metadata wording in module metadata documentation.
+
 ## Suggested Order From Here
 
 1. Wire the new split metadata file approach into the runtime.

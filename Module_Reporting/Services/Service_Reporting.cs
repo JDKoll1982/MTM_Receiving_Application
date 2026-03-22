@@ -13,6 +13,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Data;
+using MTM_Receiving_Application.Module_Reporting.Models;
 
 namespace MTM_Receiving_Application.Module_Reporting.Services;
 
@@ -53,12 +54,9 @@ public class Service_Reporting : IService_Reporting
         );
         var result = await _dao.GetReceivingHistoryAsync(startDate, endDate);
 
-        if (result.IsSuccess && result.Data != null)
+        if (result.IsSuccess)
         {
-            foreach (var row in result.Data)
-            {
-                row.PONumber = NormalizePONumber(row.PONumber);
-            }
+            result.Data?.ForEach(row => row.PONumber = NormalizePONumber(row.PONumber));
         }
 
         return result;
@@ -165,16 +163,15 @@ public class Service_Reporting : IService_Reporting
     }
 
     public async Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatForEmailAsync(
-        List<Model_ReportSection> sections,
-        List<Model_ReportSummaryTable> summaryTables,
+        List<Model_ReportingPreviewModuleCard> previewModuleCards,
         string summaryTitle
     )
     {
         try
         {
-            _logger.LogInfo($"Formatting {sections.Count} report sections for email");
+            _logger.LogInfo($"Formatting {previewModuleCards.Count} report sections for email");
 
-            if (sections.Count == 0)
+            if (previewModuleCards.Count == 0)
             {
                 return Model_Dao_Result_Factory.Success(
                     new Model_FormattedReportDocument
@@ -197,19 +194,11 @@ public class Service_Reporting : IService_Reporting
             );
             plainText.AppendLine(summaryTitle);
 
-            var summaryLookup = summaryTables.ToDictionary(
-                table => table.ModuleName,
-                StringComparer.OrdinalIgnoreCase
-            );
-
-            foreach (var section in sections)
+            foreach (var previewModuleCard in previewModuleCards)
             {
-                var summaryTable = summaryLookup.TryGetValue(
-                    section.ModuleName,
-                    out var matchedSummaryTable
-                )
-                    ? matchedSummaryTable
-                    : null;
+                var section = previewModuleCard.DetailSection;
+                var summaryTable = previewModuleCard.SummaryTable;
+                var includedColumns = previewModuleCard.IncludedColumns.ToList();
                 var (accentBackground, accentForeground) = GetModuleAccent(section.ModuleName);
 
                 AppendSectionStart(
@@ -284,51 +273,64 @@ public class Service_Reporting : IService_Reporting
                     plainText.AppendLine(section.Description);
                 }
 
-                html.AppendLine(
-                    "<table style='border-collapse: collapse; width: 100%; table-layout: fixed; margin: 6px 0 10px 0;'>"
-                );
-                html.AppendLine("<thead>");
-                html.AppendLine(
-                    $"<tr style='background-color: {accentBackground}; color: {accentForeground}; font-weight: 700;'>"
-                );
-                AppendHeaderCell(html, "Quantity", "14%");
-                AppendHeaderCell(html, "Item", "22%");
-                AppendHeaderCell(html, "Reference", "18%");
-                AppendHeaderCell(html, "Employee", "10%");
-                AppendHeaderCell(html, "Date", "14%");
-                AppendHeaderCell(html, "Location", "12%");
-                AppendHeaderCell(html, "Packages/Loads", "10%");
-                html.AppendLine("</tr>");
-                html.AppendLine("</thead>");
-                html.AppendLine("<tbody>");
-
-                plainText.AppendLine("Detailed Activity");
-                plainText.AppendLine(
-                    "Quantity\tItem\tReference\tEmployee\tDate\tLocation\tPackages/Loads"
-                );
-
-                foreach (var row in section.Rows)
+                if (includedColumns.Count == 0)
                 {
-                    html.AppendLine("<tr style='background-color: #ffffff;'>");
-                    AppendBodyCell(html, row.DisplayQuantity, "right");
-                    AppendBodyCell(html, row.DisplayPartOrDunnage);
-                    AppendBodyCell(html, row.DisplayPo);
-                    AppendBodyCell(html, row.EmployeeNumber);
-                    AppendBodyCell(
-                        html,
-                        row.CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture)
+                    html.AppendLine(
+                        "<div style='font-size: 10pt; color: #6b7280; margin: 6px 0 10px 0;'>No detail columns selected for this module.</div>"
                     );
-                    AppendBodyCell(html, row.DisplayLocation);
-                    AppendBodyCell(html, row.DisplayLoadsOrSkids, "right");
-                    html.AppendLine("</tr>");
+                    plainText.AppendLine("Detailed Activity");
+                    plainText.AppendLine("No detail columns selected for this module.");
+                }
+                else
+                {
+                    html.AppendLine(
+                        "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 6px 0 10px 0;'>"
+                    );
+                    html.AppendLine("<thead>");
+                    html.AppendLine(
+                        $"<tr style='background-color: {accentBackground}; color: {accentForeground}; font-weight: 700;'>"
+                    );
 
-                    plainText.AppendLine(
-                        $"{row.DisplayQuantity}\t{row.DisplayPartOrDunnage}\t{row.DisplayPo}\t{row.EmployeeNumber}\t{row.CreatedDate:M/d/yyyy}\t{row.DisplayLocation}\t{row.DisplayLoadsOrSkids}"
-                    );
+                    foreach (var includedColumn in includedColumns)
+                    {
+                        AppendHeaderCell(html, includedColumn.Header, null);
+                    }
+
+                    html.AppendLine("</tr>");
+                    html.AppendLine("</thead>");
+                    html.AppendLine("<tbody>");
+
+                    plainText.AppendLine("Detailed Activity");
+                    plainText
+                        .AppendJoin('\t', includedColumns.Select(column => column.Header))
+                        .AppendLine();
+
+                    foreach (var row in section.Rows)
+                    {
+                        html.AppendLine("<tr style='background-color: #ffffff;'>");
+
+                        foreach (var includedColumn in includedColumns)
+                        {
+                            AppendBodyCell(
+                                html,
+                                row.GetColumnValue(includedColumn.Key),
+                                includedColumn.IsNumeric ? "right" : "left"
+                            );
+                        }
+
+                        html.AppendLine("</tr>");
+                        plainText
+                            .AppendJoin(
+                                '\t',
+                                includedColumns.Select(column => row.GetColumnValue(column.Key))
+                            )
+                            .AppendLine();
+                    }
+
+                    html.AppendLine("</tbody>");
+                    html.AppendLine("</table>");
                 }
 
-                html.AppendLine("</tbody>");
-                html.AppendLine("</table>");
                 AppendSectionEnd(html);
             }
 

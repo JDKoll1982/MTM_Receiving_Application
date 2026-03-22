@@ -46,6 +46,7 @@ Whenever the AI agent is about to make a **major assumption** during coding or p
 **This rule applies in ALL modes, including Noob Mode.**
 
 **Examples of major assumptions that require a file:**
+
 - Inferring missing or ambiguous requirements
 - Choosing one implementation approach when multiple valid ones exist
 - Assuming a stored procedure exists or has specific parameters
@@ -61,6 +62,7 @@ Whenever the AI agent is about to make a **major assumption** during coding or p
 **Example filename:** `03212026-0101PM-Assumptions.md`
 
 **Required file contents:**
+
 1. A numbered list of each assumption being made
 2. Why the assumption is needed (what information is missing or ambiguous)
 3. The potential impact if the assumption turns out to be wrong
@@ -76,6 +78,10 @@ Whenever the AI agent is about to make a **major assumption** during coding or p
    - Reference the specific instruction files for detailed guidance on each topic.
    - Follow the naming conventions and folder structures outlined in the project governance documents.
    - If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
+2. **Review Module Metadata After Any Code Change:** At the end of every chat request, if the codebase was changed in any way, review the CopilotForms metadata for each edited module and update it if needed.
+   - Check `docs/CopilotForms/data/copilot-forms.config.json` for inline module metadata.
+   - Check `docs/CopilotForms/data/module-metadata/<ModuleName>/` for split module metadata.
+   - Update metadata when files, workflows, screens, services, ownership, validation hints, prompt defaults, or sub-feature hints changed enough that the metadata is no longer accurate.
 
 ## Technology Stack
 

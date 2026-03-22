@@ -20,7 +20,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IService_Authentication _authService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_ErrorHandler _errorHandler;
-        private readonly IService_XLSWriter _xlsWriter;
+        private readonly IService_ReceivingLabelData _labelDataService;
         private readonly Dao_SettingsCoreRoles _rolesDao;
         private readonly Dao_SettingsCoreUserRoles _userRolesDao;
         private View_Shared_SplashScreenWindow? _splashScreen;
@@ -30,7 +30,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
             IService_ErrorHandler errorHandler,
-            IService_XLSWriter xlsWriter,
+            IService_ReceivingLabelData labelDataService,
             Dao_SettingsCoreRoles rolesDao,
             Dao_SettingsCoreUserRoles userRolesDao
         )
@@ -39,7 +39,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             _authService = authService;
             _sessionManager = sessionManager;
             _errorHandler = errorHandler;
-            _xlsWriter = xlsWriter;
+            _labelDataService = labelDataService;
             _rolesDao = rolesDao;
             _userRolesDao = userRolesDao;
         }

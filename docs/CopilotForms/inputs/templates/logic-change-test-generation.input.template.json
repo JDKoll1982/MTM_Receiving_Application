@@ -1,0 +1,14 @@
+{
+  "formId": "logic-change-test-generation",
+  "featureId": "receiving-workflow",
+  "workflowIntent": "",
+  "actualBehavior": "",
+  "desiredRuleSet": [],
+  "testKind": "Unit",
+  "testTargets": [],
+  "testScenarios": [],
+  "testDependencies": "",
+  "testConstraints": "",
+  "doNotRegress": "",
+  "verificationSteps": []
+}

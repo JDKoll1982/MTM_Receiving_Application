@@ -19,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     public class Service_ReceivingWorkflow : IService_ReceivingWorkflow
     {
         private readonly IService_SessionManager _sessionManager;
-        private readonly IService_XLSWriter _xlsWriter;
+        private readonly IService_ReceivingLabelData _labelDataService;
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -67,7 +67,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
-            IService_XLSWriter xlsWriter,
+            IService_ReceivingLabelData labelDataService,
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
             IService_ReceivingSettings receivingSettings,
@@ -78,7 +78,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             _sessionManager =
                 sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
-            _xlsWriter = xlsWriter ?? throw new ArgumentNullException(nameof(xlsWriter));
+            _labelDataService =
+                labelDataService ?? throw new ArgumentNullException(nameof(labelDataService));
             _mysqlReceiving =
                 mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
@@ -94,6 +95,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public async Task<bool> StartWorkflowAsync()
         {
             _logger.LogInfo("Starting receiving workflow.");
+            var currentUser = _userSessionManager?.CurrentSession?.User;
+
             // Try to load existing session
             var existingSession = await _sessionManager.LoadSessionAsync();
 
@@ -101,19 +104,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             {
                 _logger.LogInfo("Restoring existing session.");
                 CurrentSession = existingSession;
+                CurrentSession.User ??= currentUser;
                 // Determine which step to restore to based on session state
                 CurrentStep = Enum_ReceivingWorkflowStep.Review; // Default to review if session exists
                 return true; // Session restored
             }
 
             // Start fresh
-            CurrentSession = new Model_ReceivingSession();
+            CurrentSession = new Model_ReceivingSession { User = currentUser };
             NumberOfLoads = 1;
             CurrentLocation = string.Empty;
             RequestedEditDataSource = Enum_DataSourceType.Memory;
 
             // Check if user has a default receiving mode set
-            var currentUser = _userSessionManager?.CurrentSession?.User;
             var currentUserId = currentUser?.EmployeeNumber;
 
             if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultReceivingMode))
@@ -510,15 +513,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _viewModelRegistry.ClearAllInputs();
         }
 
-        public async Task<Model_SaveResult> SaveToXLSOnlyAsync()
+        public async Task<Model_SaveResult> SaveToLabelDataOnlyAsync()
         {
-            _logger.LogInfo($"{nameof(SaveToXLSOnlyAsync)} redirected to label queue save.");
+            _logger.LogInfo($"{nameof(SaveToLabelDataOnlyAsync)} redirected to label queue save.");
             var result = await SaveToDatabaseOnlyAsync();
 
-            result.LocalXLSSuccess = result.DatabaseSuccess;
-            result.NetworkXLSSuccess = result.DatabaseSuccess;
-            result.LocalXLSPath = "MySQL.receiving_label_data";
-            result.NetworkXLSPath = "MySQL.receiving_history (archive on clear)";
+            result.LabelQueueSuccess = result.DatabaseSuccess;
+            result.ArchiveQueueSuccess = result.DatabaseSuccess;
+            result.LabelQueuePath = "MySQL.receiving_label_data";
+            result.ArchiveQueuePath = "MySQL.receiving_history (archive on clear)";
 
             return result;
         }
@@ -601,10 +604,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                 result.DatabaseSuccess = dbResult.DatabaseSuccess;
                 result.LoadsSaved = dbResult.LoadsSaved;
-                result.LocalXLSSuccess = dbResult.DatabaseSuccess;
-                result.NetworkXLSSuccess = dbResult.DatabaseSuccess;
-                result.LocalXLSPath = "MySQL.receiving_label_data";
-                result.NetworkXLSPath = "MySQL.receiving_history (archive on clear)";
+                result.LabelQueueSuccess = dbResult.DatabaseSuccess;
+                result.ArchiveQueueSuccess = dbResult.DatabaseSuccess;
+                result.LabelQueuePath = "MySQL.receiving_label_data";
+                result.ArchiveQueuePath = "MySQL.receiving_history (archive on clear)";
                 if (!dbResult.Success)
                 {
                     result.Errors.AddRange(dbResult.Errors);
@@ -643,7 +646,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogError("Unexpected error during save session", ex);
                 result.Success = false;
                 result.Errors.Add($"Unexpected error: {ex.Message}");
-                result.XLSFileErrorMessage = "Unexpected error during save: " + ex.Message;
+                result.LabelDataErrorMessage = "Unexpected error during save: " + ex.Message;
                 result.DatabaseErrorMessage = "Unexpected error during save: " + ex.Message;
                 return result;
             }
@@ -651,7 +654,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task ResetWorkflowAsync()
         {
-            CurrentSession = new Model_ReceivingSession();
+            CurrentSession = new Model_ReceivingSession
+            {
+                User = _userSessionManager.CurrentSession?.User,
+            };
             NumberOfLoads = 1;
             CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
             CurrentPONumber = null;
@@ -667,7 +673,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<Model_XLSDeleteResult> ResetXLSFilesAsync()
+        public async Task<Model_LabelDataClearResult> ResetLabelDataAsync()
         {
             var archivedBy =
                 _userSessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
@@ -677,15 +683,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             if (clearResult.IsSuccess)
             {
                 _logger.LogInfo($"Clear Label Data succeeded. Rows moved: {clearResult.Data}");
-                return new Model_XLSDeleteResult { LocalDeleted = true, NetworkDeleted = true };
+                return new Model_LabelDataClearResult
+                {
+                    LabelQueueCleared = true,
+                    ArchiveQueueCleared = true,
+                };
             }
 
             _logger.LogWarning($"Clear Label Data failed: {clearResult.ErrorMessage}");
-            return new Model_XLSDeleteResult
+            return new Model_LabelDataClearResult
             {
-                LocalDeleted = false,
-                NetworkDeleted = false,
-                NetworkError = clearResult.ErrorMessage,
+                LabelQueueCleared = false,
+                ArchiveQueueCleared = false,
+                ArchiveQueueError = clearResult.ErrorMessage,
             };
         }
 

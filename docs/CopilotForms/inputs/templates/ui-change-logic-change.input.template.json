@@ -1,0 +1,16 @@
+{
+  "formId": "ui-change-logic-change",
+  "featureId": "receiving-workflow",
+  "requestTitle": "",
+  "audience": "Receiving Clerk",
+  "currentUiProblem": "",
+  "currentLogicProblem": "",
+  "desiredUiOutcome": "",
+  "desiredLogicOutcome": "",
+  "uiElements": [],
+  "logicConcernTypes": [],
+  "candidateFiles": [],
+  "constraints": "",
+  "acceptanceCriteria": [],
+  "verificationNeeds": []
+}

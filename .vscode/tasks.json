@@ -62,7 +62,9 @@
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "${workspaceFolder}/docs/CopilotForms/Start-CopilotForms.ps1"
+        "${workspaceFolder}/docs/CopilotForms/Start-CopilotForms.ps1",
+        "-OpenTarget",
+        "${input:copilotFormsOpenTarget}"
       ],
       "isBackground": true,
       "problemMatcher": {
@@ -89,7 +91,7 @@
         "kind": "build",
         "isDefault": false
       },
-      "detail": "Serves the repo root at http://localhost:8421 — opens http://localhost:8421/docs/CopilotForms/index.html"
+      "detail": "Serves the repo root at http://localhost:8421 and asks whether to open CopilotForms in a VS Code tab or the web browser"
     },
     {
       "label": "CopilotForms: Open Index in Editor",
@@ -120,6 +122,28 @@
         "isDefault": false
       },
       "detail": "Starts the local server then opens index.html in the editor — press Ctrl+Shift+V to open the HTML Preview Pro side panel"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "copilotFormsOpenTarget",
+      "type": "pickString",
+      "description": "Where should CopilotForms open when the server starts?",
+      "default": "editor",
+      "options": [
+        {
+          "label": "VS Code interactive preview",
+          "value": "editor"
+        },
+        {
+          "label": "Web browser",
+          "value": "browser"
+        },
+        {
+          "label": "Do not open automatically",
+          "value": "none"
+        }
+      ]
     }
   ]
 }

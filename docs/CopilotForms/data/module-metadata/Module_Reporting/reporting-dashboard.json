@@ -29,11 +29,13 @@
       "Module selection area",
       "Generate Reports button",
       "Preview cards",
+      "Preview column selector",
       "Copy Email Format action"
     ],
     "userActions": [
       "Choose report modules",
       "Generate reports",
+      "Choose which columns stay in the preview",
       "Copy preview output"
     ],
     "preserveRules": [
@@ -61,6 +63,7 @@
     ],
     "validationHints": [
       "Confirm reports still generate correctly",
+      "Confirm selected preview columns control both the on-screen table and copied output",
       "Confirm copy-email behavior still works"
     ],
     "mockupSections": [
@@ -73,6 +76,7 @@
       "Module selectors",
       "Generate Reports button",
       "Preview cards",
+      "Per-module column checkboxes",
       "Copy Email Format action"
     ],
     "loggingEvents": [
@@ -94,8 +98,8 @@
       "id": "reporting-preview-copy",
       "name": "Preview And Copy",
       "uiHints": {
-        "uiElements": ["Preview cards", "Copy Email Format action"],
-        "userActions": ["Review and copy the generated output"]
+        "uiElements": ["Preview cards", "Preview column selector", "Copy Email Format action"],
+        "userActions": ["Review the generated output", "Choose preview columns", "Copy the generated output"]
       }
     }
   ]

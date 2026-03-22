@@ -172,16 +172,16 @@
                     />
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind ViewModel.CompletionXlsFileLabelText, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind ViewModel.CompletionLabelDataLabelText, Mode=OneWay}" />
                         <TextBlock
                             Foreground="Green"
                             Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}"
-                            Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                         />
                         <TextBlock
                             Foreground="Red"
                             Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}"
-                            Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                            Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
                         />
                     </StackPanel>
 
@@ -191,9 +191,9 @@
                         FontSize="12"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         IsTextSelectionEnabled="True"
-                        Text="{x:Bind ViewModel.LastSaveResult.NetworkXLSPath, Mode=OneWay}"
+                        Text="{x:Bind ViewModel.LastSaveResult.ArchiveQueuePath, Mode=OneWay}"
                         TextWrapping="Wrap"
-                        Visibility="{x:Bind ViewModel.LastSaveResult.LocalXLSSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                     />
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -218,9 +218,9 @@
                 >
                     <TextBlock
                         Foreground="Red"
-                        Text="{x:Bind ViewModel.LastSaveResult.XLSFileErrorMessage, Mode=OneWay}"
+                        Text="{x:Bind ViewModel.LastSaveResult.LabelDataErrorMessage, Mode=OneWay}"
                         TextWrapping="Wrap"
-                        Visibility="{x:Bind ViewModel.LastSaveResult.XLSFileSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
+                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelDataSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
                     />
                     <TextBlock
                         Foreground="Red"
@@ -243,9 +243,9 @@
                         Visibility="{x:Bind ViewModel.CanEditAfterSave, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                     />
                     <Button
-                        Command="{x:Bind ViewModel.ResetXLSCommand}"
-                        Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"
+                        Command="{x:Bind ViewModel.ResetLabelDataCommand}"
+                        Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
                     />
                 </StackPanel>
             </StackPanel>
@@ -274,10 +274,10 @@
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
-                    Command="{x:Bind ViewModel.ResetXLSCommand}"
-                    Content="{x:Bind ViewModel.WorkflowResetXlsText, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.ResetLabelDataCommand}"
+                    Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
                     Foreground="Red"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetXLS'), Mode=OneWay}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
                 />
             </StackPanel>

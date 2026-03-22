@@ -50,7 +50,7 @@ and enum dependencies that shape the receiving experience.
 | `IService_MySQL_Receiving`     | Batch save, history lookup, label-data reads and updates             |
 | `IService_ReceivingValidation` | Field validation, PO/part checks, same-day warnings, location checks |
 | `IService_MySQL_ReceivingLine` | Insert or update line-level label data                               |
-| `IService_XLSWriter`           | Write, read, clear, and verify XLS label files                       |
+| `IService_ReceivingLabelData`  | Read, clear, and verify label-data store access                      |
 | `IService_QualityHoldWarning`  | Detect and surface quality hold restrictions                         |
 | `IService_ReceivingSettings`   | Read runtime settings and text values by key                         |
 | `Service_SessionManager`       | Session persistence and restore support                              |
@@ -73,15 +73,15 @@ The DAO layer follows the project rule set: instance-based classes, stored-proce
 
 ## Core Models
 
-| Model                                                                       | Purpose                            | Key Fields                                                                                                                                                |
-| --------------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Model_ReceivingLoad`                                                       | Main in-memory receiving record    | `LoadID`, `PartID`, `PoNumber`, `LoadNumber`, `WeightQuantity`, `HeatLotNumber`, `InitialLocation`, `PackagesPerLoad`, `PackageType`, quality-hold fields |
-| `Model_ReceivingSession`                                                    | Session container for the workflow | Session ID, user, load list, totals                                                                                                                       |
-| `Model_ReceivingLine`                                                       | Label-data record shape            | Quantity, part, PO, employee, heat, location, vendor, part description                                                                                    |
-| `Model_QualityHold`                                                         | Quality restriction record         | Load ID, restriction type, acknowledgment metadata                                                                                                        |
-| `Model_SaveResult`                                                          | Save outcome                       | Success state, counts, messages, file paths                                                                                                               |
-| `Model_ReceivingValidationResult`                                           | Validation outcome                 | Success / warning state and message                                                                                                                       |
-| `Model_XLSWriteResult`, `Model_XLSDeleteResult`, `Model_XLSExistenceResult` | XLS file operation outcomes        | File paths, existence flags, delete counts                                                                                                                |
+| Model                                                                                          | Purpose                            | Key Fields                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Model_ReceivingLoad`                                                                          | Main in-memory receiving record    | `LoadID`, `PartID`, `PoNumber`, `LoadNumber`, `WeightQuantity`, `HeatLotNumber`, `InitialLocation`, `PackagesPerLoad`, `PackageType`, quality-hold fields |
+| `Model_ReceivingSession`                                                                       | Session container for the workflow | Session ID, user, load list, totals                                                                                                                       |
+| `Model_ReceivingLine`                                                                          | Label-data record shape            | Quantity, part, PO, employee, heat, location, vendor, part description                                                                                    |
+| `Model_QualityHold`                                                                            | Quality restriction record         | Load ID, restriction type, acknowledgment metadata                                                                                                        |
+| `Model_SaveResult`                                                                             | Save outcome                       | Success state, counts, messages, label-data paths, queue/archive status                                                                                   |
+| `Model_ReceivingValidationResult`                                                              | Validation outcome                 | Success / warning state and message                                                                                                                       |
+| `Model_LabelDataSaveResult`, `Model_LabelDataClearResult`, `Model_LabelDataAvailabilityResult` | Label-data operation outcomes      | Label queue status, archive queue status, availability, and clear results                                                                                 |
 
 ---
 

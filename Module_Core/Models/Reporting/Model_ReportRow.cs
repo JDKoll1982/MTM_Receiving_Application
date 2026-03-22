@@ -61,6 +61,49 @@ public class Model_ReportRow
 
     public int? ReceivedSkidCount { get; set; }
 
+    public string GetColumnValue(string columnKey)
+    {
+        return columnKey switch
+        {
+            nameof(Id) => Id,
+            nameof(SourceModule) => SourceModule,
+            nameof(PONumber) => PONumber?.Trim() ?? string.Empty,
+            nameof(POLineNumber) => POLineNumber?.Trim() ?? string.Empty,
+            nameof(PartNumber) => PartNumber?.Trim() ?? string.Empty,
+            nameof(PartDescription) => PartDescription?.Trim() ?? string.Empty,
+            nameof(Quantity) => Quantity?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(WeightLbs) => WeightLbs?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(HeatLotNumber) => HeatLotNumber?.Trim() ?? string.Empty,
+            nameof(CreatedDate) => DisplayCreatedDate,
+            nameof(EmployeeNumber) => EmployeeNumber?.Trim() ?? string.Empty,
+            nameof(CreatedByUsername) => CreatedByUsername?.Trim() ?? string.Empty,
+            nameof(DunnageType) => DunnageType?.Trim() ?? string.Empty,
+            nameof(SpecsCombined) => SpecsCombined?.Trim() ?? string.Empty,
+            nameof(ShipmentNumber) => ShipmentNumber?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(ReceiverNumber) => ReceiverNumber?.Trim() ?? string.Empty,
+            nameof(Status) => Status?.Trim() ?? string.Empty,
+            nameof(PartCount) => PartCount?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(Location) => DisplayLocation,
+            nameof(Notes) => DisplayNotes,
+            nameof(LoadNumber) => LoadNumber?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(LabelNumber) => LabelNumber?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(PackagesPerLoad) => PackagesPerLoad?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(PackageTypeName) => PackageTypeName?.Trim() ?? string.Empty,
+            nameof(IsNonPOItem) => IsNonPOItem ? "Yes" : "No",
+            nameof(CoilsOnSkid) => CoilsOnSkid?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(QuantityPerSkid) => QuantityPerSkid?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(ReceivedSkidCount) => ReceivedSkidCount?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(DisplayPo) => DisplayPo,
+            nameof(DisplayPartOrDunnage) => DisplayPartOrDunnage,
+            nameof(DisplayQuantity) => DisplayQuantity,
+            nameof(DisplayLocation) => DisplayLocation,
+            nameof(DisplayNotes) => DisplayNotes,
+            nameof(DisplayLoadsOrSkids) => DisplayLoadsOrSkids,
+            nameof(DisplayUnitsPerSkid) => DisplayUnitsPerSkid,
+            _ => string.Empty,
+        };
+    }
+
     public string DisplayPo
     {
         get

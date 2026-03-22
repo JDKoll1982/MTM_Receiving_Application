@@ -19,7 +19,11 @@ param(
     [string]$RootPath = (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent),
 
     [Parameter()]
-    [switch]$NoBrowser
+    [switch]$NoBrowser,
+
+    [Parameter()]
+    [ValidateSet('browser', 'editor', 'none')]
+    [string]$OpenTarget = 'browser'
 )
 
 Set-StrictMode -Version Latest
@@ -84,6 +88,28 @@ catch {
 }
 
 $indexUrl = "${prefix}docs/CopilotForms/index.html"
+$indexFilePath = Join-Path $resolvedRoot 'docs\CopilotForms\index.html'
+
+function Open-CopilotFormsInVsCodePreview {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$FilePath
+    )
+
+    Start-Process 'code' -ArgumentList @('-r', $FilePath) | Out-Null
+    Start-Sleep -Milliseconds 900
+
+    try {
+        $shell = New-Object -ComObject WScript.Shell
+        $null = $shell.AppActivate('Visual Studio Code')
+        Start-Sleep -Milliseconds 250
+        $shell.SendKeys('^+v')
+    }
+    catch {
+        Write-Warning "Opened the HTML file in VS Code, but could not trigger the interactive preview automatically. Press Ctrl+Shift+V to open HTML Preview Pro side preview manually. $($_.Exception.Message)"
+    }
+}
 
 Write-Host "LISTENING on $prefix" -ForegroundColor Green
 Write-Host ''
@@ -93,8 +119,15 @@ Write-Host "URL:   $indexUrl" -ForegroundColor Cyan
 Write-Host 'Stop:  Press Ctrl+C' -ForegroundColor Yellow
 Write-Host ''
 
-if (-not $NoBrowser.IsPresent) {
+if ($NoBrowser.IsPresent) {
+    $OpenTarget = 'none'
+}
+
+if ($OpenTarget -eq 'browser') {
     Start-Process $indexUrl | Out-Null
+}
+elseif ($OpenTarget -eq 'editor') {
+    Open-CopilotFormsInVsCodePreview -FilePath $indexFilePath
 }
 
 try {

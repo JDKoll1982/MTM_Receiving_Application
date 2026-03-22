@@ -6,11 +6,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     {
         public bool Success { get; set; }
         public int LoadsSaved { get; set; }
-        public bool LocalXLSSuccess { get; set; }
-        public bool NetworkXLSSuccess { get; set; }
+        public bool LabelQueueSuccess { get; set; }
+        public bool ArchiveQueueSuccess { get; set; }
         public bool DatabaseSuccess { get; set; }
-        public string? LocalXLSPath { get; set; }
-        public string? NetworkXLSPath { get; set; }
+        public string? LabelQueuePath { get; set; }
+        public string? ArchiveQueuePath { get; set; }
         public List<string> Errors { get; set; } = new();
         public List<string> Warnings { get; set; } = new();
 
@@ -26,14 +26,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             get => Success;
             set => Success = value;
         }
-        public Model_XLSWriteResult? CSVExportResult { get; set; }
+        public Model_LabelDataSaveResult? LabelDataSaveResult { get; set; }
 
-        // Guided mode consolidated CSV status (single CSV file)
-        public bool XLSFileSuccess => LocalXLSSuccess;
-        public string XLSFileErrorMessage { get; set; } = string.Empty;
+        public bool LabelDataSuccess => LabelQueueSuccess;
+        public string LabelDataErrorMessage { get; set; } = string.Empty;
         public string DatabaseErrorMessage { get; set; } = string.Empty;
 
-        public bool IsFullSuccess => LocalXLSSuccess && NetworkXLSSuccess && DatabaseSuccess;
-        public bool IsPartialSuccess => (LocalXLSSuccess || DatabaseSuccess) && !IsFullSuccess;
+        public bool IsFullSuccess => LabelQueueSuccess && ArchiveQueueSuccess && DatabaseSuccess;
+        public bool IsPartialSuccess => (LabelQueueSuccess || DatabaseSuccess) && !IsFullSuccess;
     }
 }

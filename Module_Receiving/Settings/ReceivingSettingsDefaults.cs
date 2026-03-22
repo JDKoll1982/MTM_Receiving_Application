@@ -28,7 +28,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.WorkflowBack] = "Back",
             [ReceivingSettingsKeys.UiText.WorkflowNext] = "Next",
             [ReceivingSettingsKeys.UiText.WorkflowModeSelection] = "Mode Selection",
-            [ReceivingSettingsKeys.UiText.WorkflowResetXls] = "Clear Label Data",
+            [ReceivingSettingsKeys.UiText.WorkflowResetLabelData] = "Clear Label Data",
 
             // Completion
             [ReceivingSettingsKeys.UiText.CompletionSuccessTitle] = "Success!",
@@ -36,9 +36,9 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix] =
                 " loads saved successfully.",
             [ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle] = "Save Details:",
-            [ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel] = "Label Queue:",
-            [ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel] = "Archive Queue:",
-            [ReceivingSettingsKeys.UiText.CompletionXlsFileLabel] = "Label Data:",
+            [ReceivingSettingsKeys.UiText.CompletionLabelQueueLabel] = "Label Queue:",
+            [ReceivingSettingsKeys.UiText.CompletionArchiveQueueLabel] = "Archive Queue:",
+            [ReceivingSettingsKeys.UiText.CompletionLabelDataLabel] = "Label Data:",
             [ReceivingSettingsKeys.UiText.CompletionDatabaseLabel] = "Database:",
             [ReceivingSettingsKeys.UiText.CompletionSaved] = "Saved",
             [ReceivingSettingsKeys.UiText.CompletionFailed] = "Failed",
@@ -183,22 +183,23 @@ public static class ReceivingSettingsDefaults
 
             // Workflow save progress defaults
             [ReceivingSettingsKeys.Workflow.SaveProgressInitializing] = "Initializing...",
-            [ReceivingSettingsKeys.Workflow.SaveProgressSavingXls] = "Saving to label queue...",
+            [ReceivingSettingsKeys.Workflow.SaveProgressSavingLabelData] =
+                "Saving to label queue...",
 
             // Workflow dialogs
-            [ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle] = "Clear Label Data",
-            [ReceivingSettingsKeys.Workflow.ResetXlsDialogContent] =
+            [ReceivingSettingsKeys.Workflow.ResetLabelDataDialogTitle] = "Clear Label Data",
+            [ReceivingSettingsKeys.Workflow.ResetLabelDataDialogContent] =
                 "Are you sure you want to move all current label data to history and clear the active label queue? This action cannot be undone.",
-            [ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete] = "Clear",
-            [ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel] = "Cancel",
+            [ReceivingSettingsKeys.Workflow.ResetLabelDataDialogDelete] = "Clear",
+            [ReceivingSettingsKeys.Workflow.ResetLabelDataDialogCancel] = "Cancel",
             [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogTitle] = "Database Save Failed",
             [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogDeleteAnyway] = "Delete Anyway",
             [ReceivingSettingsKeys.Workflow.DbSaveFailedDialogCancel] = "Cancel",
 
             // Status
-            [ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess] =
+            [ReceivingSettingsKeys.Workflow.StatusLabelDataClearedSuccess] =
                 "Label data cleared successfully. Rows were archived to history.",
-            [ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed] =
+            [ReceivingSettingsKeys.Workflow.StatusLabelDataClearedFailed] =
                 "Failed to clear label data to history.",
             [ReceivingSettingsKeys.Workflow.StatusWorkflowCleared] =
                 "Workflow cleared. Please select a mode.",

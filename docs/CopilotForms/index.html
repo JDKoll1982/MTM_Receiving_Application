@@ -88,12 +88,47 @@
             &#x2715;
           </button>
         </div>
+        <div class="hero-shortcuts">
+          <span>Shortcut: press <kbd>/</kbd> to focus search</span>
+          <span>Press <kbd>Esc</kbd> to clear search</span>
+        </div>
       </header>
 
       <div class="index-body">
         <section>
-          <p class="section-label">All Forms</p>
-          <div class="card-grid">
+          <div class="section-heading-row">
+            <p id="forms-section" class="section-label">All Forms</p>
+            <div class="index-jump-links">
+              <a href="#forms-section">Forms</a>
+              <a href="#recent-exports-section">Recent Exports</a>
+            </div>
+          </div>
+          <div class="index-toolbar" aria-label="Form navigation tools">
+            <div
+              id="form-results-summary"
+              class="results-summary"
+              aria-live="polite"
+            >
+              Showing all forms
+            </div>
+            <div
+              id="form-filter-chips"
+              class="filter-chip-row"
+              role="group"
+              aria-label="Filter forms"
+            ></div>
+            <div class="sort-control">
+              <label for="form-sort">Sort</label>
+              <select id="form-sort">
+                <option value="recommended">Recommended</option>
+                <option value="az">Name A-Z</option>
+                <option value="za">Name Z-A</option>
+                <option value="category">Category</option>
+                <option value="recent">Recently used</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-grid" id="form-card-grid">
             <article class="form-card" data-form-id="ui-change">
               <span class="card-tag tag-build">UI</span>
               <h2>UI Change</h2>
@@ -124,6 +159,112 @@
                 intended workflow.
               </p>
               <a class="card-link" href="forms/logic-correction.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="new-feature-request">
+              <span class="card-tag tag-build">Feature</span>
+              <h2>New Feature Request</h2>
+              <p>
+                Capture brand-new capability requests with workflow, scope,
+                constraints, and validation expectations.
+              </p>
+              <a class="card-link" href="forms/new-feature-request.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="feature-removal-request">
+              <span class="card-tag tag-review">Removal</span>
+              <h2>Feature Removal Request</h2>
+              <p>
+                Capture feature retirement or removal work with clear scope,
+                preserve rules, and cleanup expectations.
+              </p>
+              <a class="card-link" href="forms/feature-removal-request.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article
+              class="form-card"
+              data-form-id="performance-issue-optimization"
+            >
+              <span class="card-tag tag-review">Performance</span>
+              <h2>Performance Issue / Optimization</h2>
+              <p>
+                Capture slow workflows, UI lag, heavy database paths, and
+                performance targets with measurement context.
+              </p>
+              <a
+                class="card-link"
+                href="forms/performance-issue-optimization.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article
+              class="form-card"
+              data-form-id="configuration-environment-issue"
+            >
+              <span class="card-tag tag-debug">Config</span>
+              <h2>Configuration / Environment Issue</h2>
+              <p>
+                Capture appsettings, machine setup, startup wiring, and
+                environment-only failures in one focused form.
+              </p>
+              <a
+                class="card-link"
+                href="forms/configuration-environment-issue.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article
+              class="form-card"
+              data-form-id="naming-consistency-cleanup"
+            >
+              <span class="card-tag tag-review">Naming</span>
+              <h2>Naming / Consistency Cleanup</h2>
+              <p>
+                Capture semantic cleanup and rename work where behavior should
+                stay the same but names should better match reality.
+              </p>
+              <a class="card-link" href="forms/naming-consistency-cleanup.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="ui-change-logic-change">
+              <span class="card-tag tag-build">UI + Logic</span>
+              <h2>UI Change + Logic Change</h2>
+              <p>
+                Capture requests where the screen and the rules need to change
+                together.
+              </p>
+              <a class="card-link" href="forms/ui-change-logic-change.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="debugging-logging">
+              <span class="card-tag tag-debug">Debug + Logs</span>
+              <h2>Debugging + Logging</h2>
+              <p>
+                Capture a bug plus the logging improvements needed to diagnose
+                and support it better.
+              </p>
+              <a class="card-link" href="forms/debugging-logging.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article
+              class="form-card"
+              data-form-id="logic-change-test-generation"
+            >
+              <span class="card-tag tag-build">Logic + Tests</span>
+              <h2>Logic Change + Test Generation</h2>
+              <p>
+                Capture behavior fixes that should land together with tests that
+                lock in the intended rules.
+              </p>
+              <a
+                class="card-link"
+                href="forms/logic-change-test-generation.html"
                 >Open form &#x2192;</a
               >
             </article>
@@ -205,10 +346,26 @@
               >
             </article>
           </div>
+          <div id="form-empty-state" class="empty-state hidden">
+            <h2>No forms match the current filters</h2>
+            <p>
+              Try clearing the search, switching categories, or changing the
+              sort order.
+            </p>
+            <button
+              id="reset-form-filters"
+              class="btn btn-secondary btn-sm"
+              type="button"
+            >
+              Reset filters
+            </button>
+          </div>
         </section>
 
         <section>
-          <p class="section-label">Recent Exports</p>
+          <p id="recent-exports-section" class="section-label">
+            Recent Exports
+          </p>
           <div id="recent-exports-list" class="recent-list"></div>
         </section>
 
@@ -302,3 +459,4 @@
     <div id="toast-container" aria-live="polite"></div>
   </body>
 </html>
+

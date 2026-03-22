@@ -1,0 +1,14 @@
+{
+  "formId": "configuration-environment-issue",
+  "featureId": "shared-infrastructure",
+  "configIssueTitle": "",
+  "environmentType": "Local developer machine",
+  "configAreas": [],
+  "observedBehavior": "",
+  "expectedBehavior": "",
+  "reproSteps": [],
+  "configSources": [],
+  "filesToInspect": [],
+  "constraints": "",
+  "verificationSteps": []
+}

@@ -1127,11 +1127,26 @@ select {
 .search-clear:hover {
   color: var(--text);
 }
+.hero-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
 .index-body {
   padding: 28px 40px 48px;
   display: flex;
   flex-direction: column;
   gap: 32px;
+}
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
 }
 .section-label {
   font-size: 0.75rem;
@@ -1139,7 +1154,80 @@ select {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-muted);
-  margin-bottom: 14px;
+  margin-bottom: 0;
+}
+.index-jump-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+.index-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+}
+.results-summary {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+.filter-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.filter-chip-active {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  box-shadow: var(--shadow-xs);
+}
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sort-control label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.sort-control select {
+  min-width: 180px;
+  max-width: 220px;
 }
 
 /* ── Form card grid ─────────────────────────────────────────────────────────── */
@@ -1221,6 +1309,26 @@ select {
   background: var(--surface-raised);
   color: var(--text-secondary);
   border: 1px solid var(--border);
+}
+.form-card.hidden-by-filter {
+  display: none;
+}
+
+.empty-state {
+  padding: 24px 20px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+}
+.empty-state h2 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
 }
 
 /* ── Recent exports ─────────────────────────────────────────────────────────── */
@@ -1483,6 +1591,17 @@ select {
   }
   .info-grid {
     grid-template-columns: 1fr;
+  }
+  .section-heading-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .index-toolbar {
+    padding: 14px;
+  }
+  .sort-control select {
+    width: 100%;
+    max-width: none;
   }
   .card-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

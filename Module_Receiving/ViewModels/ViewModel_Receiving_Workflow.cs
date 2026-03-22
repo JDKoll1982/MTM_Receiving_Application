@@ -88,7 +88,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _workflowModeSelectionText = "Mode Selection";
 
         [ObservableProperty]
-        private string _workflowResetXlsText = "Clear Label Data";
+        private string _workflowResetLabelDataText = "Clear Label Data";
 
         [ObservableProperty]
         private string _completionSuccessTitleText = "Success!";
@@ -103,13 +103,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _completionSaveDetailsTitleText = "Save Details:";
 
         [ObservableProperty]
-        private string _completionLocalXlsLabelText = "Label Queue:";
+        private string _completionLabelQueueLabelText = "Label Queue:";
 
         [ObservableProperty]
-        private string _completionNetworkXlsLabelText = "Archive Queue:";
+        private string _completionArchiveQueueLabelText = "Archive Queue:";
 
         [ObservableProperty]
-        private string _completionXlsFileLabelText = "Label Data:";
+        private string _completionLabelDataLabelText = "Label Data:";
 
         [ObservableProperty]
         private string _completionDatabaseLabelText = "Database:";
@@ -206,8 +206,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 WorkflowModeSelectionText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.WorkflowModeSelection
                 );
-                WorkflowResetXlsText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.WorkflowResetXls
+                WorkflowResetLabelDataText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.WorkflowResetLabelData
                 );
 
                 CompletionSuccessTitleText = await _receivingSettings.GetStringAsync(
@@ -222,14 +222,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 CompletionSaveDetailsTitleText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle
                 );
-                CompletionLocalXlsLabelText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.CompletionLocalXlsLabel
+                CompletionLabelQueueLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionLabelQueueLabel
                 );
-                CompletionNetworkXlsLabelText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.CompletionNetworkXlsLabel
+                CompletionArchiveQueueLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionArchiveQueueLabel
                 );
-                CompletionXlsFileLabelText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.CompletionXlsFileLabel
+                CompletionLabelDataLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.CompletionLabelDataLabel
                 );
                 CompletionDatabaseLabelText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.CompletionDatabaseLabel
@@ -420,7 +420,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 // Update UI immediately
                 SaveProgressMessage = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Workflow.SaveProgressSavingXls
+                    ReceivingSettingsKeys.Workflow.SaveProgressSavingLabelData
                 );
                 SaveProgressValue = 30;
 
@@ -475,7 +475,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         [RelayCommand]
-        private async Task ResetXLSAsync()
+        private async Task ResetLabelDataAsync()
         {
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
@@ -493,16 +493,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var dialog = new ContentDialog
             {
                 Title = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Workflow.ResetXlsDialogTitle
+                    ReceivingSettingsKeys.Workflow.ResetLabelDataDialogTitle
                 ),
                 Content = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Workflow.ResetXlsDialogContent
+                    ReceivingSettingsKeys.Workflow.ResetLabelDataDialogContent
                 ),
                 PrimaryButtonText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Workflow.ResetXlsDialogDelete
+                    ReceivingSettingsKeys.Workflow.ResetLabelDataDialogDelete
                 ),
                 CloseButtonText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Workflow.ResetXlsDialogCancel
+                    ReceivingSettingsKeys.Workflow.ResetLabelDataDialogCancel
                 ),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = xamlRoot,
@@ -512,12 +512,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (result == ContentDialogResult.Primary)
             {
                 // Clear active label data by moving it to history.
-                var deleteResult = await _workflowService.ResetXLSFilesAsync();
-                if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
+                var deleteResult = await _workflowService.ResetLabelDataAsync();
+                if (deleteResult.LabelQueueCleared || deleteResult.ArchiveQueueCleared)
                 {
                     ShowStatus(
                         await _receivingSettings.GetStringAsync(
-                            ReceivingSettingsKeys.Workflow.StatusXlsDeletedSuccess
+                            ReceivingSettingsKeys.Workflow.StatusLabelDataClearedSuccess
                         ),
                         InfoBarSeverity.Success
                     );
@@ -526,7 +526,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     ShowStatus(
                         await _receivingSettings.GetStringAsync(
-                            ReceivingSettingsKeys.Workflow.StatusXlsDeletedFailed
+                            ReceivingSettingsKeys.Workflow.StatusLabelDataClearedFailed
                         ),
                         InfoBarSeverity.Warning
                     );

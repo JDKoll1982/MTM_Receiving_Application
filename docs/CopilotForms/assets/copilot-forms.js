@@ -14,6 +14,8 @@ const KEY_THEME = `${S}theme`;
 const KEY_STICKY = `${S}lastFeature`;
 const KEY_RECENT = `${S}recent`;
 const MAX_RECENT = 20;
+const ALL_FEATURES_ID = "__all_features__";
+const ALL_SUBFEATURES_ID = "__all_subfeatures__";
 
 // ── DOM helper ────────────────────────────────────────────────────────────────
 function $(id) {
@@ -285,6 +287,86 @@ function uniqueList(...groups) {
   return [...new Set(groups.flat().filter(Boolean))];
 }
 
+function getFeaturesForModule(config, moduleId = "") {
+  return (config.features || []).filter(
+    (feature) => !moduleId || feature.module === moduleId,
+  );
+}
+
+function aggregateUiHints(items = []) {
+  const merged = {};
+  const allKeys = new Set(
+    items.flatMap((item) => Object.keys(item?.uiHints || {})),
+  );
+
+  allKeys.forEach((key) => {
+    const values = items.flatMap((item) => {
+      const next = item?.uiHints?.[key];
+      if (Array.isArray(next)) return next;
+      return next ? [next] : [];
+    });
+    if (values.length) {
+      merged[key] = uniqueList(values);
+    }
+  });
+
+  return merged;
+}
+
+function buildAggregateFeature(features = [], moduleId = "") {
+  if (!features.length) return null;
+  const owners = uniqueList(features.map((feature) => feature.owner));
+  return {
+    id: ALL_FEATURES_ID,
+    name: moduleId ? `All Features in ${moduleId}` : "All Features",
+    module: moduleId || "",
+    summary: moduleId
+      ? `Aggregate context across ${features.length} features in ${moduleId}.`
+      : `Aggregate context across ${features.length} features in the catalog.`,
+    owner:
+      owners.length === 1
+        ? owners[0]
+        : owners.length > 1
+          ? owners.join(", ")
+          : "Multiple owners",
+    relatedFiles: uniqueList(
+      features.flatMap((feature) => feature.relatedFiles || []),
+    ),
+    relatedServices: uniqueList(
+      features.flatMap((feature) => feature.relatedServices || []),
+    ),
+    uiHints: aggregateUiHints(features),
+    promptDefaults: {},
+    subFeatures: uniqueList(
+      features.flatMap((feature) => feature.subFeatures || []),
+    ),
+  };
+}
+
+function buildAggregateSubFeature(
+  subFeatures = [],
+  feature = null,
+  moduleId = "",
+) {
+  if (!subFeatures.length) return null;
+  return {
+    id: ALL_SUBFEATURES_ID,
+    name:
+      feature && feature.id !== ALL_FEATURES_ID
+        ? `All Sub-Features in ${feature.name}`
+        : moduleId
+          ? `All Sub-Features in ${moduleId}`
+          : "All Sub-Features",
+    relatedFiles: uniqueList(
+      subFeatures.flatMap((subFeature) => subFeature.relatedFiles || []),
+      feature?.relatedFiles || [],
+    ),
+    uiHints: aggregateUiHints(subFeatures),
+    promptDefaults:
+      feature?.id === ALL_FEATURES_ID ? {} : feature?.promptDefaults || {},
+  };
+}
+
 function mergePromptDefaults(feature, subFeature) {
   return {
     ...(feature?.promptDefaults || {}),
@@ -357,12 +439,42 @@ function mergeFeatureUiHints(feature, subFeature) {
 }
 
 function getSelectedFeatureContext(config) {
+  const moduleId = $("module-select")?.value || "";
   const featureId = $("feature-select")?.value || "";
   const subFeatureId = $("subfeature-select")?.value || "";
-  const feature =
-    (config.features || []).find((f) => f.id === featureId) || null;
-  const subFeature =
-    feature?.subFeatures?.find((sf) => sf.id === subFeatureId) || null;
+  const moduleFeatures = getFeaturesForModule(config, moduleId);
+
+  let selectedFeatures = [];
+  let feature = null;
+
+  if (featureId === ALL_FEATURES_ID) {
+    selectedFeatures = moduleFeatures;
+    feature = buildAggregateFeature(selectedFeatures, moduleId);
+  } else {
+    feature =
+      (config.features || []).find(
+        (nextFeature) => nextFeature.id === featureId,
+      ) || null;
+    selectedFeatures = feature ? [feature] : [];
+  }
+
+  let subFeature = null;
+  if (subFeatureId === ALL_SUBFEATURES_ID) {
+    const selectedSubFeatures = selectedFeatures.flatMap(
+      (nextFeature) => nextFeature.subFeatures || [],
+    );
+    subFeature = buildAggregateSubFeature(
+      selectedSubFeatures,
+      feature,
+      moduleId,
+    );
+  } else if (subFeatureId) {
+    subFeature =
+      selectedFeatures
+        .flatMap((nextFeature) => nextFeature.subFeatures || [])
+        .find((nextSubFeature) => nextSubFeature.id === subFeatureId) || null;
+  }
+
   return {
     feature,
     subFeature,
@@ -988,6 +1100,7 @@ function applyDraft(formId, config = null) {
       config,
       draft._featureId,
       draft._subFeatureId || "",
+      draft._moduleId || "",
     );
   } else if (draft._featureId) {
     const sel = $("feature-select");
@@ -1044,9 +1157,15 @@ function buildHumanSummary(form, feature, subFeature, values) {
     "docOutcome",
   ]);
 
+  const targetName =
+    subFeature?.name || feature?.name || "an unspecified feature";
+  const includeModule =
+    feature?.module &&
+    !targetName.toLowerCase().includes(feature.module.toLowerCase());
+
   const lines = [];
   lines.push(
-    `This ${form.title.toLowerCase()} is for ${subFeature?.name || feature?.name || "an unspecified feature"}${feature?.module ? ` in ${feature.module}` : ""}.`,
+    `This ${form.title.toLowerCase()} is for ${targetName}${includeModule ? ` in ${feature.module}` : ""}.`,
   );
   if (title) {
     lines.push(`Short title: ${title}.`);
@@ -1060,16 +1179,34 @@ function buildHumanSummary(form, feature, subFeature, values) {
   return lines.join(" ").trim();
 }
 
+function buildMetadataReviewInfo(feature, values) {
+  const moduleName =
+    feature?.module || values.moduleName || "the edited module";
+  const paths = ["docs/CopilotForms/data/copilot-forms.config.json"];
+
+  if (moduleName && moduleName !== "the edited module") {
+    paths.push(`docs/CopilotForms/data/module-metadata/${moduleName}/`);
+  } else {
+    paths.push("docs/CopilotForms/data/module-metadata/<ModuleName>/");
+  }
+
+  return {
+    moduleName,
+    paths,
+    instruction:
+      "As part of this request, review and update the CopilotForms metadata for the edited module if it is stale.",
+  };
+}
+
 // ── Build markdown output ──────────────────────────────────────────────────────
 function buildMarkdown(form, feature, values) {
   const lines = [];
   lines.push(`# ${form.title} Export`, "");
   lines.push(`- Generated: ${new Date().toISOString()}`);
   lines.push(`- Form: ${form.id}`);
-  const _subFeatureId = $("subfeature-select")?.value || "";
-  const _subFeature =
-    feature?.subFeatures?.find((sf) => sf.id === _subFeatureId) || null;
+  const { subFeature: _subFeature } = getSelectedFeatureContext(_config);
   const humanSummary = buildHumanSummary(form, feature, _subFeature, values);
+  const metadataReview = buildMetadataReviewInfo(feature, values);
   lines.push(
     `- Feature: ${feature?.name || values.featureName || "Unspecified"}`,
   );
@@ -1138,6 +1275,14 @@ function buildMarkdown(form, feature, values) {
     lines.push("");
   }
 
+  lines.push("## Required Metadata Follow-Up", "");
+  lines.push(`- ${metadataReview.instruction}`);
+  lines.push(`- Module to review: ${metadataReview.moduleName}`);
+  metadataReview.paths.forEach((path) =>
+    lines.push(`- Metadata path: ${path}`),
+  );
+  lines.push("");
+
   lines.push("## Structured Request", "");
 
   for (const group of form.fieldGroups || []) {
@@ -1167,15 +1312,13 @@ function buildMarkdown(form, feature, values) {
   lines.push("```", "");
   lines.push("## Copilot Execution Note", "");
   lines.push(
-    "Use the linked prompt file with `@workspace`. Treat this export as the source of truth.",
+    "Use the linked prompt file in Copilot Chat if prompt files are available in your setup. If not, paste this export into chat and mention the prompt file path manually. Treat this export as the source of truth.",
   );
   return lines.join("\n");
 }
 
 function buildJson(form, feature, values) {
-  const subFeatureId = $("subfeature-select")?.value || "";
-  const subFeature =
-    feature?.subFeatures?.find((sf) => sf.id === subFeatureId) || null;
+  const { subFeature } = getSelectedFeatureContext(_config);
   return JSON.stringify(
     {
       generatedAt: new Date().toISOString(),
@@ -1184,6 +1327,7 @@ function buildJson(form, feature, values) {
       outputFolder: form.outputFolder,
       promptFile: form.promptFile,
       humanSummary: buildHumanSummary(form, feature, subFeature, values),
+      metadataReview: buildMetadataReviewInfo(feature, values),
       feature: feature || null,
       subFeature: subFeature || null,
       values,
@@ -1214,37 +1358,86 @@ async function copyText(content) {
 // ── File System Access API save ────────────────────────────────────────────────
 let _dirHandle = null;
 
-async function saveToOutputs(filename, content, outputFolder) {
+function splitPathSegments(path) {
+  return String(path || "")
+    .replaceAll("\\", "/")
+    .split("/")
+    .filter(Boolean);
+}
+
+function getRepoRootFolderName(repoRoot) {
+  const segments = splitPathSegments(repoRoot);
+  return segments.length ? segments[segments.length - 1] : "";
+}
+
+function getRelativeOutputSegments(outputFolder, selectedFolderName, repoRoot) {
+  const outputSegments = splitPathSegments(outputFolder);
+  const repoRootName = getRepoRootFolderName(repoRoot);
+  const loweredSelectedName = String(selectedFolderName || "").toLowerCase();
+
+  if (!outputSegments.length) {
+    return [];
+  }
+
+  if (loweredSelectedName === String(repoRootName).toLowerCase()) {
+    return outputSegments;
+  }
+
+  const matchedIndex = outputSegments.findIndex(
+    (segment) => segment.toLowerCase() === loweredSelectedName,
+  );
+
+  if (matchedIndex >= 0) {
+    return outputSegments.slice(matchedIndex + 1);
+  }
+
+  return outputSegments;
+}
+
+async function ensureDirectoryPath(rootHandle, relativeSegments) {
+  let currentHandle = rootHandle;
+  for (const segment of relativeSegments) {
+    currentHandle = await currentHandle.getDirectoryHandle(segment, {
+      create: true,
+    });
+  }
+  return currentHandle;
+}
+
+async function saveToOutputs(filename, content, outputFolder, repoRoot) {
   if (!window.showDirectoryPicker) {
     downloadText(filename, content);
     showToast("File System API not available — downloaded instead", "info");
-    return;
+    return true;
   }
   try {
     if (!_dirHandle) {
       showToast(
-        "Select the outputs/ directory to enable direct saving…",
+        "Select the repo root, docs/CopilotForms folder, or outputs folder to enable direct saving…",
         "info",
       );
       _dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
     }
-    const sub = outputFolder.split("/").pop();
-    let subDir;
-    try {
-      subDir = await _dirHandle.getDirectoryHandle(sub, { create: true });
-    } catch {
-      subDir = _dirHandle;
-    }
-    const fh = await subDir.getFileHandle(filename, { create: true });
+    const relativeSegments = getRelativeOutputSegments(
+      outputFolder,
+      _dirHandle.name,
+      repoRoot,
+    );
+    const targetDir = await ensureDirectoryPath(_dirHandle, relativeSegments);
+    const fh = await targetDir.getFileHandle(filename, { create: true });
     const w = await fh.createWritable();
     await w.write(content);
     await w.close();
-    showToast(`Saved → ${sub}/${filename}`);
+    const relativePath = [...relativeSegments, filename].join("/");
+    showToast(`Saved → ${relativePath}`);
+    return true;
   } catch (err) {
-    if (err.name !== "AbortError") {
-      downloadText(filename, content);
-      showToast("Could not save directly — downloaded instead", "warn");
+    if (err.name === "AbortError") {
+      return false;
     }
+    downloadText(filename, content);
+    showToast("Could not save directly — downloaded instead", "warn");
+    return true;
   }
 }
 
@@ -1279,7 +1472,9 @@ function initPromptRunner(form) {
     const noobHint = noobOn
       ? " Noob Mode ON — explain step-by-step, avoid jargon, add inline code comments."
       : "";
-    const msg = `Use @workspace and refer to the prompt file \`${form.promptFile}\`. Link the export saved to \`${form.outputFolder}\`.${serenaHint}${noobHint}`;
+    const metadataHint =
+      " Also review and update the CopilotForms metadata for the edited module as part of the same request.";
+    const msg = `Use the prompt file \`${form.promptFile}\` in Copilot Chat if prompt files are available. If you cannot use prompt files directly, paste the saved export into chat and mention the prompt file path manually. Link the export saved to \`${form.outputFolder}\`.${metadataHint}${serenaHint}${noobHint}`;
     copyText(msg);
     showToast("Prompt text copied — paste into Copilot Chat!");
   };
@@ -1287,11 +1482,7 @@ function initPromptRunner(form) {
 
 // ── Refresh all outputs ────────────────────────────────────────────────────────
 function refreshOutputs(config, form) {
-  const featureId = $("feature-select")?.value || "";
-  const subFeatureId = $("subfeature-select")?.value || "";
-  const feature = config.features.find((f) => f.id === featureId) || null;
-  const subFeature =
-    feature?.subFeatures?.find((sf) => sf.id === subFeatureId) || null;
+  const { feature, subFeature } = getSelectedFeatureContext(config);
   showFeatureSummary(feature, subFeature);
 
   const values = collectValues();
@@ -1322,36 +1513,66 @@ function populateFeatureSelect(config, moduleId) {
   if (!fSel) return;
   fSel.innerHTML = "";
   fSel.appendChild(createOption("── select feature ──", ""));
-  (config.features || [])
-    .filter((f) => !moduleId || f.module === moduleId)
-    .forEach((f) => fSel.appendChild(createOption(f.name, f.id)));
+  const features = getFeaturesForModule(config, moduleId);
+  if (features.length) {
+    fSel.appendChild(createOption("── all features ──", ALL_FEATURES_ID));
+  }
+  features.forEach((feature) =>
+    fSel.appendChild(createOption(feature.name, feature.id)),
+  );
 }
 
-function populateSubFeatureSelect(config, featureId) {
+function populateSubFeatureSelect(config, featureId, moduleId = "") {
   const sfSel = $("subfeature-select");
   const sfField = $("subfeature-field");
   if (!sfSel) return;
-  const feat = (config.features || []).find((f) => f.id === featureId);
-  const subs = feat?.subFeatures || [];
+  const features =
+    featureId === ALL_FEATURES_ID
+      ? getFeaturesForModule(config, moduleId)
+      : (config.features || []).filter((feature) => feature.id === featureId);
+  const subs = features.flatMap((feature) =>
+    (feature.subFeatures || []).map((subFeature) => ({
+      ...subFeature,
+      _featureName: feature.name,
+    })),
+  );
   sfSel.innerHTML = "";
   if (subs.length) {
-    sfSel.appendChild(createOption("── all sub-features ──", ""));
-    subs.forEach((sf) => sfSel.appendChild(createOption(sf.name, sf.id)));
+    sfSel.appendChild(createOption("── select sub-feature ──", ""));
+    sfSel.appendChild(
+      createOption("── all sub-features ──", ALL_SUBFEATURES_ID),
+    );
+    subs.forEach((subFeature) =>
+      sfSel.appendChild(
+        createOption(
+          featureId === ALL_FEATURES_ID
+            ? `${subFeature._featureName} — ${subFeature.name}`
+            : subFeature.name,
+          subFeature.id,
+        ),
+      ),
+    );
     sfField?.classList.remove("hidden");
   } else {
     sfField?.classList.add("hidden");
   }
 }
 
-function syncCascadeFromFeatureId(config, featureId, subFeatureId = "") {
+function syncCascadeFromFeatureId(
+  config,
+  featureId,
+  subFeatureId = "",
+  moduleIdOverride = "",
+) {
   const feat = (config.features || []).find((f) => f.id === featureId);
-  const moduleId = feat?.module || "";
+  const moduleId =
+    moduleIdOverride || feat?.module || $("module-select")?.value || "";
   const mSel = $("module-select");
   if (mSel) mSel.value = moduleId;
   populateFeatureSelect(config, moduleId);
   const fSel = $("feature-select");
   if (fSel && featureId) fSel.value = featureId;
-  populateSubFeatureSelect(config, featureId);
+  populateSubFeatureSelect(config, featureId, moduleId);
   const sfSel = $("subfeature-select");
   if (sfSel && subFeatureId) sfSel.value = subFeatureId;
 }
@@ -1403,15 +1624,16 @@ function renderForm(config, form) {
   // Module → Feature → Sub-feature cascade
   populateModuleSelect(config);
   populateFeatureSelect(config, "");
-  populateSubFeatureSelect(config, "");
+  populateSubFeatureSelect(config, "", "");
   const mSelEl = $("module-select");
   const fSelEl = $("feature-select");
-  mSelEl?.addEventListener("change", () =>
-    populateFeatureSelect(config, mSelEl.value),
-  );
-  fSelEl?.addEventListener("change", () =>
-    populateSubFeatureSelect(config, fSelEl.value),
-  );
+  mSelEl?.addEventListener("change", () => {
+    populateFeatureSelect(config, mSelEl.value);
+    populateSubFeatureSelect(config, "", mSelEl.value);
+  });
+  fSelEl?.addEventListener("change", () => {
+    populateSubFeatureSelect(config, fSelEl.value, mSelEl?.value || "");
+  });
 
   // Dynamic fields
   const container = $("dynamic-fields");
@@ -1662,6 +1884,142 @@ function renderRecents() {
   });
 }
 
+function getRecentFormUsageMap() {
+  return getRecents().reduce((acc, entry, index) => {
+    if (!(entry.formId in acc)) {
+      acc[entry.formId] = index;
+    }
+    return acc;
+  }, {});
+}
+
+function getCardCategory(card) {
+  const tag = card.querySelector(".card-tag");
+  if (!tag) return "other";
+  if (tag.classList.contains("tag-build")) return "build";
+  if (tag.classList.contains("tag-debug")) return "debug";
+  if (tag.classList.contains("tag-review")) return "review";
+  if (tag.classList.contains("tag-data")) return "data";
+  if (tag.classList.contains("tag-docs")) return "docs";
+  return "other";
+}
+
+function formatCategoryLabel(category) {
+  switch (category) {
+    case "all":
+      return "All";
+    case "build":
+      return "Build";
+    case "debug":
+      return "Debug";
+    case "review":
+      return "Review";
+    case "data":
+      return "Data";
+    case "docs":
+      return "Docs";
+    default:
+      return category.replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+}
+
+function updateIndexSummary(visibleCount, totalCount, activeFilter, query) {
+  const summary = $("form-results-summary");
+  if (!summary) return;
+  const parts = [`Showing ${visibleCount} of ${totalCount} forms`];
+  if (activeFilter && activeFilter !== "all") {
+    parts.push(`filter: ${activeFilter}`);
+  }
+  if (query) {
+    parts.push(`search: \"${query}\"`);
+  }
+  summary.textContent = parts.join(" · ");
+}
+
+function renderFilterChips(cards, activeFilter) {
+  const host = $("form-filter-chips");
+  if (!host) return;
+  const categories = [
+    "all",
+    ...new Set(cards.map((card) => getCardCategory(card))),
+  ];
+  host.innerHTML = "";
+  categories.forEach((category) => {
+    const chip = make(
+      "button",
+      {
+        type: "button",
+        class: `filter-chip${category === activeFilter ? " filter-chip-active" : ""}`,
+        "data-filter": category,
+        "aria-pressed": String(category === activeFilter),
+      },
+      formatCategoryLabel(category),
+    );
+    host.appendChild(chip);
+  });
+}
+
+function applyIndexFilters(cards, fMap, state) {
+  const query = state.query.trim();
+  const recentUsage = getRecentFormUsageMap();
+  const scored = cards.map((card, originalIndex) => {
+    const form = fMap[card.dataset.formId] || {};
+    const category = getCardCategory(card);
+    const score = scoreForm(form, query);
+    const visible =
+      (!query || score > 0) &&
+      (state.filter === "all" || state.filter === category);
+
+    return {
+      card,
+      category,
+      originalIndex,
+      score,
+      title: (form.title || card.querySelector("h2")?.textContent || "").trim(),
+      recentRank:
+        recentUsage[card.dataset.formId] !== undefined
+          ? recentUsage[card.dataset.formId]
+          : Number.MAX_SAFE_INTEGER,
+      visible,
+    };
+  });
+
+  const visibleItems = scored.filter((item) => item.visible);
+  visibleItems.sort((a, b) => {
+    switch (state.sort) {
+      case "az":
+        return a.title.localeCompare(b.title);
+      case "za":
+        return b.title.localeCompare(a.title);
+      case "category": {
+        const byCategory = a.category.localeCompare(b.category);
+        return byCategory || a.title.localeCompare(b.title);
+      }
+      case "recent": {
+        const byRecent = a.recentRank - b.recentRank;
+        return byRecent || a.title.localeCompare(b.title);
+      }
+      case "recommended":
+      default: {
+        const byScore = b.score - a.score;
+        return byScore || a.originalIndex - b.originalIndex;
+      }
+    }
+  });
+
+  scored.forEach((item) => {
+    item.card.classList.toggle("hidden-by-filter", !item.visible);
+    item.card.style.order = "";
+  });
+  visibleItems.forEach((item, index) => {
+    item.card.style.order = String(index);
+  });
+
+  $("search-clear")?.classList.toggle("hidden", !query);
+  $("form-empty-state")?.classList.toggle("hidden", visibleItems.length !== 0);
+  updateIndexSummary(visibleItems.length, cards.length, state.filter, query);
+}
+
 function initIndexPage(config) {
   const search = $("form-search");
   const cards = [...document.querySelectorAll(".form-card[data-form-id]")];
@@ -1670,35 +2028,81 @@ function initIndexPage(config) {
     fMap[f.id] = f;
   });
 
+  const state = {
+    query: search?.value || "",
+    filter: "all",
+    sort: $("form-sort")?.value || "recommended",
+  };
+
+  const refresh = () => {
+    renderFilterChips(cards, state.filter);
+    applyIndexFilters(cards, fMap, state);
+  };
+
   if (search) {
     search.addEventListener("input", () => {
-      const q = search.value.trim();
-      $("search-clear")?.classList.toggle("hidden", !q);
-      if (!q) {
-        cards.forEach((c) => {
-          c.style.display = "";
-          c.style.order = "";
-        });
-        return;
-      }
-      const scored = cards.map((c) => ({
-        c,
-        score: scoreForm(fMap[c.dataset.formId] || {}, q),
-      }));
-      scored.sort((a, b) => b.score - a.score);
-      scored.forEach(({ c, score }, i) => {
-        c.style.display = score === 0 ? "none" : "";
-        c.style.order = String(i);
-      });
+      state.query = search.value;
+      refresh();
     });
     $("search-clear")?.addEventListener("click", () => {
       search.value = "";
-      search.dispatchEvent(new Event("input"));
+      state.query = "";
+      refresh();
       search.focus();
     });
   }
+
+  $("form-filter-chips")?.addEventListener("click", (event) => {
+    const chip = event.target.closest("button[data-filter]");
+    if (!chip) return;
+    state.filter = chip.dataset.filter || "all";
+    refresh();
+  });
+
+  $("form-sort")?.addEventListener("change", (event) => {
+    state.sort = event.target.value || "recommended";
+    refresh();
+  });
+
+  $("reset-form-filters")?.addEventListener("click", () => {
+    state.query = "";
+    state.filter = "all";
+    state.sort = "recommended";
+    if (search) search.value = "";
+    if ($("form-sort")) $("form-sort").value = "recommended";
+    refresh();
+    search?.focus();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const tag = event.target?.tagName?.toLowerCase();
+    const isEditable =
+      tag === "input" ||
+      tag === "textarea" ||
+      tag === "select" ||
+      event.target?.isContentEditable;
+
+    if (event.key === "/" && !isEditable) {
+      event.preventDefault();
+      search?.focus();
+      search?.select();
+    }
+
+    if (
+      event.key === "Escape" &&
+      document.activeElement === search &&
+      search?.value
+    ) {
+      event.preventDefault();
+      search.value = "";
+      state.query = "";
+      refresh();
+    }
+  });
+
   $("theme-toggle")?.addEventListener("click", toggleTheme);
   renderRecents();
+  refresh();
 }
 
 // ── Form page init ─────────────────────────────────────────────────────────────
@@ -1782,13 +2186,8 @@ async function initFormPage(
     if (!content) return;
     await copyText(content);
     showToast("Markdown copied!");
-    addRecent(
-      form.id,
-      form.title,
-      config.features?.find((f) => f.id === $("feature-select")?.value)?.name ||
-        "",
-      content,
-    );
+    const { feature } = getSelectedFeatureContext(config);
+    addRecent(form.id, form.title, feature?.name || "", content);
   });
 
   // Copy JSON
@@ -1800,24 +2199,56 @@ async function initFormPage(
   });
 
   // Download markdown
-  $("download-markdown")?.addEventListener("click", () => {
-    downloadText(`${formId}.export.md`, $("markdown-output")?.value || "");
-    showToast("Downloaded!", "info");
+  $("download-markdown")?.addEventListener("click", async () => {
+    const content = $("markdown-output")?.value || "";
+    if (!content) return;
+    const featureId = $("feature-select")?.value || "custom";
+    const date = new Date().toISOString().slice(0, 10);
+    const filename = `${featureId}-${formId}-${date}.export.md`;
+    const saved = await saveToOutputs(
+      filename,
+      content,
+      form.outputFolder,
+      config.project?.repoRoot,
+    );
+    if (!saved) {
+      downloadText(filename, content);
+      showToast("Downloaded!", "info");
+    }
   });
 
   // Download JSON
-  $("download-json")?.addEventListener("click", () => {
-    downloadText(`${formId}.export.json`, $("json-output")?.value || "");
-    showToast("Downloaded!", "info");
+  $("download-json")?.addEventListener("click", async () => {
+    const content = $("json-output")?.value || "";
+    if (!content) return;
+    const featureId = $("feature-select")?.value || "custom";
+    const date = new Date().toISOString().slice(0, 10);
+    const filename = `${featureId}-${formId}-${date}.export.json`;
+    const saved = await saveToOutputs(
+      filename,
+      content,
+      form.outputFolder,
+      config.project?.repoRoot,
+    );
+    if (!saved) {
+      downloadText(filename, content);
+      showToast("Downloaded!", "info");
+    }
   });
 
   // Save to outputs folder
   $("save-to-outputs")?.addEventListener("click", async () => {
     const content = $("markdown-output")?.value || "";
+    if (!content) return;
     const featureId = $("feature-select")?.value || "custom";
     const date = new Date().toISOString().slice(0, 10);
     const filename = `${featureId}-${formId}-${date}.export.md`;
-    await saveToOutputs(filename, content, form.outputFolder);
+    await saveToOutputs(
+      filename,
+      content,
+      form.outputFolder,
+      config.project?.repoRoot,
+    );
     addRecent(
       form.id,
       form.title,

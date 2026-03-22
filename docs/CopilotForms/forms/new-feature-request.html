@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Copilot Forms &mdash; New Feature Request</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230066cc'/%3E%3Cpath d='M18 20h28v6H24v10h18v6H24v12h-6V20z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="../assets/copilot-forms.css" />
+    <script src="../assets/copilot-forms.js" defer></script>
+  </head>
+
+  <body data-form-id="new-feature-request" data-base-path="..">
+    <nav class="topbar">
+      <div class="topbar-brand">
+        <span class="topbar-eyebrow">MTM Receiving Application</span>
+        <span class="topbar-separator">&#x203A;</span>
+        <a class="topbar-link" href="../index.html">Copilot Forms</a>
+        <span class="topbar-separator">&#x203A;</span>
+        <span id="form-title-breadcrumb" class="topbar-current"
+          >New Feature Request</span
+        >
+      </div>
+      <div class="topbar-actions">
+        <button
+          id="defaults-btn"
+          class="btn btn-ghost btn-sm"
+          type="button"
+          title="Set your defaults"
+        >
+          &#x2699; Defaults
+        </button>
+        <button
+          id="theme-toggle"
+          class="icon-btn"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <svg class="icon-sun" viewBox="0 0 20 20" fill="currentColor">
+            <circle cx="10" cy="10" r="4" />
+            <path
+              stroke="currentColor"
+              stroke-width="1.5"
+              d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M14.36 5.64l1.42-1.42M4.22 15.78l1.42-1.42"
+            />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+            />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="app-layout">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div id="status-box" class="status-banner">
+            <p id="status-message">Loading shared config&hellip;</p>
+          </div>
+          <div class="field">
+            <label for="module-select">Module</label
+            ><select id="module-select"></select>
+          </div>
+          <div class="field">
+            <label for="feature-select">Feature</label
+            ><select id="feature-select"></select>
+          </div>
+          <div id="subfeature-field" class="field hidden">
+            <label for="subfeature-select">Sub-feature</label
+            ><select id="subfeature-select"></select>
+          </div>
+          <div id="feature-summary" class="feature-summary hidden"></div>
+          <div class="progress-container">
+            <div class="progress-header">
+              <span class="progress-label">Required fields</span
+              ><span id="progress-text" class="progress-count">0 / 0</span>
+            </div>
+            <div class="progress-bar-track">
+              <div id="progress-bar" class="progress-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="link-group">
+            <a id="prompt-file-link" class="chip-link" href="#" title=""
+              >Prompt</a
+            >
+            <a id="instruction-file-link" class="chip-link" href="#" title=""
+              >Instruction</a
+            >
+          </div>
+          <p class="output-folder-label">
+            Output folder: <code id="output-folder"></code>
+          </p>
+        </div>
+
+        <div class="sidebar-section">
+          <button
+            class="collapsible-trigger"
+            type="button"
+            aria-expanded="true"
+          >
+            When to use this form<svg
+              class="chevron"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <ul id="when-to-use-list" class="guide-list"></ul>
+        </div>
+        <div class="sidebar-section">
+          <button
+            class="collapsible-trigger"
+            type="button"
+            aria-expanded="false"
+          >
+            Before you start<svg
+              class="chevron"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <ul id="before-you-start-list" class="guide-list hidden"></ul>
+        </div>
+        <div class="sidebar-section">
+          <button
+            class="collapsible-trigger"
+            type="button"
+            aria-expanded="false"
+          >
+            Tips for a good request<svg
+              class="chevron"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <ul id="end-user-tips-list" class="guide-list hidden"></ul>
+        </div>
+
+        <div class="sidebar-actions">
+          <button
+            id="load-config-button"
+            class="btn btn-secondary btn-sm"
+            type="button"
+          >
+            Load Local Config
+          </button>
+          <button id="clear-draft" class="btn btn-ghost btn-sm" type="button">
+            Clear Draft
+          </button>
+          <input
+            id="load-config-input"
+            type="file"
+            accept="application/json"
+            hidden
+          />
+        </div>
+      </aside>
+
+      <main class="form-panel">
+        <div class="form-header">
+          <h1 id="form-title">New Feature Request</h1>
+          <p id="form-summary" class="form-description"></p>
+        </div>
+        <form id="copilot-form"><div id="dynamic-fields"></div></form>
+      </main>
+
+      <aside class="output-panel">
+        <div class="output-header">
+          <h2>Copilot Output</h2>
+          <div class="output-tab-bar">
+            <button class="output-tab active" data-tab="markdown" type="button">
+              Markdown
+            </button>
+            <button class="output-tab" data-tab="json" type="button">
+              JSON
+            </button>
+          </div>
+        </div>
+
+        <div id="tab-markdown" class="output-content">
+          <div class="output-actions">
+            <button
+              id="copy-markdown"
+              class="btn btn-primary btn-sm"
+              type="button"
+            >
+              Copy <kbd>Ctrl+Shift+C</kbd>
+            </button>
+            <button
+              id="save-to-outputs"
+              class="btn btn-secondary btn-sm"
+              type="button"
+            >
+              Save to outputs/
+            </button>
+            <button
+              id="download-markdown"
+              class="btn btn-ghost btn-sm"
+              type="button"
+            >
+              Download
+            </button>
+          </div>
+          <textarea id="markdown-output" class="output-box" readonly></textarea>
+        </div>
+
+        <div id="tab-json" class="output-content hidden">
+          <div class="output-actions">
+            <button id="copy-json" class="btn btn-primary btn-sm" type="button">
+              Copy JSON
+            </button>
+            <button
+              id="download-json"
+              class="btn btn-ghost btn-sm"
+              type="button"
+            >
+              Download
+            </button>
+          </div>
+          <textarea id="json-output" class="output-box" readonly></textarea>
+        </div>
+
+        <div class="prompt-runner">
+          <button id="run-prompt-btn" class="btn btn-accent" type="button">
+            Run in Copilot Chat &rarr;
+          </button>
+          <p class="prompt-runner-hint">
+            Copies the chat message text to clipboard
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <div
+      id="defaults-modal"
+      class="modal hidden"
+      aria-hidden="true"
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="defaults-modal-title"
+    >
+      <div class="modal-backdrop"></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="defaults-modal-title">My Defaults</h2>
+          <button
+            id="defaults-close"
+            class="icon-btn"
+            type="button"
+            aria-label="Close"
+          >
+            &#x2715;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="default-feature">Default feature</label
+            ><select id="default-feature"></select>
+          </div>
+          <div class="field">
+            <label for="default-priority">Default priority</label
+            ><select id="default-priority"></select>
+          </div>
+          <div class="field">
+            <label for="default-audience">Default audience</label
+            ><select id="default-audience"></select>
+          </div>
+          <div class="field">
+            <label for="default-scope">Default scope</label
+            ><select id="default-scope"></select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-defaults" class="btn btn-ghost" type="button">
+            Cancel
+          </button>
+          <button id="save-defaults" class="btn btn-primary" type="button">
+            Save defaults
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" aria-live="polite"></div>
+  </body>
+</html>

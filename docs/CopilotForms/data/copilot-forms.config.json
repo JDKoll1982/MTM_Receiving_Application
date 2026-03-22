@@ -697,6 +697,1055 @@
       ]
     },
     {
+      "id": "new-feature-request",
+      "title": "New Feature Request",
+      "summary": "Describe a new capability you want added, with guided picks that keep the request concrete and implementation-ready.",
+      "whenToUse": [
+        "Use this when the capability does not exist yet and needs to be added.",
+        "Use this when the request spans new UI, workflow behavior, service logic, or supporting data flow.",
+        "Do not use this when the feature already exists and only needs a bug fix or small update."
+      ],
+      "beforeYouStart": [
+        "Pick the closest module or feature first so the form can suggest nearby files and constraints.",
+        "Describe the user problem before describing the implementation idea.",
+        "Think about what success looks like for the user, not just the developer."
+      ],
+      "endUserTips": [
+        "Focus on the new user capability in plain English.",
+        "Use the suggested files and constraints when they fit, but keep the request outcome-focused.",
+        "Be explicit about what is in scope versus what should wait."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/new-feature-request",
+      "promptFile": ".github/prompts/copilotforms-new-feature-request.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-new-feature-request.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Feature Goal",
+          "fields": [
+            {
+              "id": "featureRequestTitle",
+              "label": "Short feature title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Add receiving exception review step"
+            },
+            {
+              "id": "audience",
+              "label": "Who is this mainly for?",
+              "type": "select",
+              "optionSource": "audiences",
+              "required": true
+            },
+            {
+              "id": "problemToSolve",
+              "label": "What user problem should this new feature solve?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the current gap or manual workaround in plain English."
+            },
+            {
+              "id": "desiredCapability",
+              "label": "What should the user be able to do after this is built?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the new capability from the user point of view."
+            },
+            {
+              "id": "scope",
+              "label": "How broad is this request allowed to be?",
+              "type": "select",
+              "optionSource": "changeScopes",
+              "required": true
+            }
+          ]
+        },
+        {
+          "title": "Workflow And Design Detail",
+          "fields": [
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this closest to?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "entryPoints",
+              "label": "Where should the user reach this from?",
+              "type": "list",
+              "placeholder": "One entry point per line"
+            },
+            {
+              "id": "userSteps",
+              "label": "What should the user flow roughly look like?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One step per line"
+            },
+            {
+              "id": "dataOrRulesNeeded",
+              "label": "What data, rules, or dependencies does this need?",
+              "type": "textarea",
+              "placeholder": "Describe data inputs, validations, service needs, or external dependencies."
+            },
+            {
+              "id": "uiOrWorkflowNotes",
+              "label": "Any UI or workflow notes that matter?",
+              "type": "textarea",
+              "placeholder": "Describe screens, dialogs, layout expectations, or branch logic."
+            }
+          ]
+        },
+        {
+          "title": "Engineering Boundaries",
+          "fields": [
+            {
+              "id": "candidateFiles",
+              "label": "Suggested nearby files or areas to inspect first",
+              "type": "list",
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            },
+            {
+              "id": "constraints",
+              "label": "What constraints or architecture rules must be respected?",
+              "type": "textarea",
+              "placeholder": "Mention boundaries like MVVM flow, service ownership, DAO rules, or compatibility limits."
+            },
+            {
+              "id": "outOfScope",
+              "label": "What should stay out of scope for this request?",
+              "type": "list",
+              "placeholder": "One out-of-scope item per line"
+            },
+            {
+              "id": "acceptanceCriteria",
+              "label": "How will we know this new feature is done?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One acceptance check per line"
+            },
+            {
+              "id": "validationPlan",
+              "label": "What testing or verification should happen?",
+              "type": "list",
+              "placeholder": "List tests, manual checks, or rollout verification steps."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feature-removal-request",
+      "title": "Feature Removal Request",
+      "summary": "Describe a feature, screen, workflow step, or supporting path that should be removed or retired, with guardrails that keep the cleanup safe and explicit.",
+      "whenToUse": [
+        "Use this when an existing capability should be removed, retired, or replaced.",
+        "Use this when the main request is cleanup of obsolete workflow, UI, logic, routing, or supporting files.",
+        "Do not use this when the feature should stay and only needs a bug fix or redesign."
+      ],
+      "beforeYouStart": [
+        "Be clear about what exists today and why it should be removed.",
+        "List any user paths, data, or integrations that may still depend on it.",
+        "Decide whether this is a hard removal, soft retirement, or replacement."
+      ],
+      "endUserTips": [
+        "State the removal reason in plain English before describing implementation cleanup.",
+        "Be explicit about what must disappear versus what must remain or be redirected.",
+        "If another workflow replaces this one, name that replacement clearly."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/feature-removal-request",
+      "promptFile": ".github/prompts/copilotforms-feature-removal-request.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-feature-removal-request.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Removal Goal",
+          "fields": [
+            {
+              "id": "removalTitle",
+              "label": "Short removal title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Remove legacy receiving export shortcut"
+            },
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this closest to?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "removalMode",
+              "label": "What kind of removal is this?",
+              "type": "select",
+              "required": true,
+              "options": [
+                "Hard removal",
+                "Soft retirement",
+                "Replace with another workflow",
+                "Hide from UI but keep backend support",
+                "Unknown"
+              ]
+            },
+            {
+              "id": "removalReason",
+              "label": "Why should this feature be removed or retired?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe why this capability is obsolete, harmful, duplicated, or no longer wanted."
+            },
+            {
+              "id": "replacementPath",
+              "label": "What should users do instead, if anything?",
+              "type": "textarea",
+              "placeholder": "Name the replacement workflow, screen, or expected behavior if one exists."
+            },
+            {
+              "id": "scope",
+              "label": "How broad can this removal be?",
+              "type": "select",
+              "optionSource": "changeScopes",
+              "required": true
+            }
+          ]
+        },
+        {
+          "title": "What Must Change",
+          "fields": [
+            {
+              "id": "userVisiblePieces",
+              "label": "What user-visible pieces should be removed?",
+              "type": "list",
+              "placeholder": "Screens, buttons, menu items, workflow steps, messages, and so on."
+            },
+            {
+              "id": "underlyingArtifacts",
+              "label": "Suggested files, services, or paths that may need cleanup",
+              "type": "list",
+              "required": true,
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            },
+            {
+              "id": "dependencyRisks",
+              "label": "What may still depend on this feature?",
+              "type": "textarea",
+              "placeholder": "Describe routes, commands, tests, docs, data flows, or integrations that may still reference it."
+            },
+            {
+              "id": "dataHandlingNotes",
+              "label": "Are there any data, settings, or migration concerns?",
+              "type": "textarea",
+              "placeholder": "Describe saved settings, persisted records, feature flags, or migration notes if relevant."
+            },
+            {
+              "id": "preserveRules",
+              "label": "What must stay intact while removing this?",
+              "type": "textarea",
+              "placeholder": "Name nearby workflows, screens, or architecture boundaries that must not be damaged."
+            }
+          ]
+        },
+        {
+          "title": "Definition Of Done",
+          "fields": [
+            {
+              "id": "acceptanceCriteria",
+              "label": "How will we know the removal is complete?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One acceptance check per line"
+            },
+            {
+              "id": "validationPlan",
+              "label": "What validation or cleanup checks should happen?",
+              "type": "list",
+              "placeholder": "Compile, tests, search checks, docs cleanup, manual checks, and so on."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "performance-issue-optimization",
+      "title": "Performance Issue / Optimization",
+      "summary": "Describe slowness, lag, or resource-heavy behavior with enough structure to guide measurement, diagnosis, and safe optimization.",
+      "whenToUse": [
+        "Use this when the main issue is slowness, lag, heavy resource usage, or poor responsiveness.",
+        "Use this for UI stalls, slow workflows, expensive queries, or repeated work that should be reduced.",
+        "Do not use this when the main problem is incorrect behavior rather than performance."
+      ],
+      "beforeYouStart": [
+        "Pick the closest module or feature first so the form can suggest likely hotspots.",
+        "Describe where the slowdown is visible and how bad it feels.",
+        "Capture any timing, dataset size, or machine details that affect the issue."
+      ],
+      "endUserTips": [
+        "State what feels slow in plain English before guessing why.",
+        "If you have timing numbers, include them. If not, describe the user impact.",
+        "Be clear about what acceptable performance would look like."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/performance-issue-optimization",
+      "promptFile": ".github/prompts/copilotforms-performance-issue-optimization.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-performance-issue-optimization.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Performance Symptom",
+          "fields": [
+            {
+              "id": "performanceTitle",
+              "label": "Short performance issue title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Receiving history grid stalls on first load"
+            },
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "affectedScreen",
+              "label": "Which screen or step feels slow?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "performanceSymptoms",
+              "label": "What kind of performance problem is this?",
+              "type": "checkbox-group",
+              "options": [
+                "Slow initial load",
+                "Slow repeated action",
+                "UI freezes or stutters",
+                "Large dataset slowdown",
+                "Search or filter lag",
+                "Save or submit delay",
+                "High logging overhead",
+                "Excessive database round-trips"
+              ]
+            },
+            {
+              "id": "observedImpact",
+              "label": "What is the user seeing today?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the slowness, lag, or stall in plain English."
+            },
+            {
+              "id": "targetOutcome",
+              "label": "What should acceptable performance look like?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the expected responsiveness, timing, or user experience target."
+            }
+          ]
+        },
+        {
+          "title": "Evidence And Hotspots",
+          "fields": [
+            {
+              "id": "frequency",
+              "label": "How often does this happen?",
+              "type": "select",
+              "optionSource": "debugFrequencies"
+            },
+            {
+              "id": "timingOrMeasurements",
+              "label": "What timing numbers or measurements do you have?",
+              "type": "textarea",
+              "placeholder": "Load times, stopwatch numbers, trace notes, or profiler clues."
+            },
+            {
+              "id": "datasetOrContext",
+              "label": "What data size or runtime context affects this?",
+              "type": "textarea",
+              "placeholder": "Describe record counts, machine conditions, or environment differences."
+            },
+            {
+              "id": "suspectedHotspots",
+              "label": "Suggested files, layers, or hotspots to inspect",
+              "type": "list",
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            },
+            {
+              "id": "constraints",
+              "label": "What must stay true while optimizing this?",
+              "type": "textarea",
+              "placeholder": "Mention behavior, architecture, or compatibility boundaries that must not change."
+            }
+          ]
+        },
+        {
+          "title": "Validation",
+          "fields": [
+            {
+              "id": "verificationSteps",
+              "label": "How should we prove the performance work helped?",
+              "type": "list",
+              "required": true,
+              "placeholder": "List timing checks, scenario re-tests, or measurement comparisons."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "configuration-environment-issue",
+      "title": "Configuration / Environment Issue",
+      "summary": "Describe problems caused by configuration, machine setup, environment differences, or startup wiring with enough detail to diagnose safely.",
+      "whenToUse": [
+        "Use this when the issue depends on config values, environment setup, appsettings, startup registration, or machine-specific behavior.",
+        "Use this when the workflow is fine in one environment but breaks in another.",
+        "Do not use this for pure business logic issues that are independent of environment or configuration."
+      ],
+      "beforeYouStart": [
+        "State which environment or machine shows the problem.",
+        "Capture the exact error or mismatch if possible.",
+        "Think about what config source is expected to control this behavior."
+      ],
+      "endUserTips": [
+        "Facts about environment differences matter more than guesses.",
+        "Mention whether this is local only, shared, or production-like.",
+        "Do not paste secrets; describe the setting source instead."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/configuration-environment-issue",
+      "promptFile": ".github/prompts/copilotforms-configuration-environment-issue.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-configuration-environment-issue.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Environment Context",
+          "fields": [
+            {
+              "id": "configIssueTitle",
+              "label": "Short configuration or environment issue title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Receiving app fails to load module metadata locally"
+            },
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is closest to the issue?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "environmentType",
+              "label": "Where does this happen?",
+              "type": "select",
+              "required": true,
+              "options": [
+                "Local developer machine",
+                "Shared test environment",
+                "Production-like environment",
+                "Specific user machine",
+                "VS Code task or local tooling",
+                "Unknown"
+              ]
+            },
+            {
+              "id": "configAreas",
+              "label": "What kind of config or setup seems involved?",
+              "type": "checkbox-group",
+              "options": [
+                "appsettings values",
+                "Environment variables",
+                "Connection strings",
+                "Dependency injection or startup wiring",
+                "Filesystem paths",
+                "Feature flags or defaults",
+                "VS Code tasks or scripts",
+                "External tools or services"
+              ]
+            },
+            {
+              "id": "observedBehavior",
+              "label": "What is happening today?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the failure or mismatch exactly as observed."
+            },
+            {
+              "id": "expectedBehavior",
+              "label": "What should happen instead?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the expected startup, load, or environment-dependent behavior."
+            }
+          ]
+        },
+        {
+          "title": "Evidence And Scope",
+          "fields": [
+            {
+              "id": "reproSteps",
+              "label": "How can someone reproduce this?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One step per line"
+            },
+            {
+              "id": "errorMessages",
+              "label": "Exact errors, warnings, or startup clues",
+              "type": "textarea",
+              "placeholder": "Paste exact messages, stack traces, or console output if available."
+            },
+            {
+              "id": "configSources",
+              "label": "Which config files, values, or tools seem involved?",
+              "type": "list",
+              "placeholder": "List config files, task names, environment vars, or startup areas."
+            },
+            {
+              "id": "filesToInspect",
+              "label": "Suggested files or layers to inspect first",
+              "type": "list",
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            },
+            {
+              "id": "constraints",
+              "label": "What setup or behavior must not be broken while fixing this?",
+              "type": "textarea",
+              "placeholder": "Mention secrets handling, environment safety, or compatibility limits."
+            }
+          ]
+        },
+        {
+          "title": "Validation",
+          "fields": [
+            {
+              "id": "verificationSteps",
+              "label": "How should we prove the config or environment fix worked?",
+              "type": "list",
+              "required": true,
+              "placeholder": "List startup checks, environment comparisons, or safe verification steps."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "naming-consistency-cleanup",
+      "title": "Naming / Consistency Cleanup",
+      "summary": "Describe rename and consistency cleanup work where behavior should stay the same but names, labels, or structure should better match reality.",
+      "whenToUse": [
+        "Use this when file, type, method, variable, or feature names no longer match what the code really does.",
+        "Use this for semantic cleanup, consistency fixes, and no-behavior-change renaming work.",
+        "Do not use this when the main request is to change business logic."
+      ],
+      "beforeYouStart": [
+        "Describe what is misleading today and what the name should communicate instead.",
+        "List the main artifacts that need consistency cleanup.",
+        "Be explicit if this should avoid behavior changes."
+      ],
+      "endUserTips": [
+        "State the naming problem in plain English.",
+        "Use concrete old-versus-new examples where possible.",
+        "Be clear about whether this includes code comments, docs, or UI labels too."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/naming-consistency-cleanup",
+      "promptFile": ".github/prompts/copilotforms-naming-consistency-cleanup.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-naming-consistency-cleanup.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Cleanup Goal",
+          "fields": [
+            {
+              "id": "cleanupTitle",
+              "label": "Short cleanup title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Rename label export artifacts to label data storage"
+            },
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this closest to?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "scope",
+              "label": "How broad can the cleanup be?",
+              "type": "select",
+              "optionSource": "changeScopes",
+              "required": true
+            },
+            {
+              "id": "namingProblem",
+              "label": "What is misleading or inconsistent today?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe how the current names no longer reflect the real logic or ownership."
+            },
+            {
+              "id": "targetNaming",
+              "label": "What should the naming communicate instead?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the desired naming direction and terminology."
+            }
+          ]
+        },
+        {
+          "title": "Artifacts To Align",
+          "fields": [
+            {
+              "id": "artifactsToRename",
+              "label": "Which files, types, methods, or labels should be aligned?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One artifact per line"
+            },
+            {
+              "id": "currentMismatchExamples",
+              "label": "Current mismatch examples",
+              "type": "list",
+              "placeholder": "Example: File says export but logic stores to database"
+            },
+            {
+              "id": "candidateFiles",
+              "label": "Suggested files or areas to inspect first",
+              "type": "list",
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            },
+            {
+              "id": "preserveBehavior",
+              "label": "What behavior must stay the same while renaming?",
+              "type": "textarea",
+              "placeholder": "Describe what must remain functionally unchanged."
+            },
+            {
+              "id": "docsOrUiAlsoNeedUpdate",
+              "label": "Should docs or UI text be kept in sync too?",
+              "type": "checkbox-group",
+              "options": [
+                "Code only",
+                "Documentation",
+                "CopilotForms metadata",
+                "UI labels or messages",
+                "Tests"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Validation",
+          "fields": [
+            {
+              "id": "verificationSteps",
+              "label": "How should we prove the cleanup stayed safe?",
+              "type": "list",
+              "required": true,
+              "placeholder": "List compile, test, rename-coverage, or regression checks."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ui-change-logic-change",
+      "title": "UI Change + Logic Change",
+      "summary": "Describe requests where the screen and the behavior need to change together, so the UI update and rule changes stay aligned.",
+      "whenToUse": [
+        "Use this when the workflow experience and the underlying rules both need to change.",
+        "Use this when a pure UI-only or pure logic-only form would split one request too artificially.",
+        "Do not use this when only one side needs work."
+      ],
+      "beforeYouStart": [
+        "Describe the current user experience and the current rule mismatch separately.",
+        "Be clear about what the user should see and what the system should decide.",
+        "Think about what must remain stable while both layers change together."
+      ],
+      "endUserTips": [
+        "Treat the visual behavior and the business behavior as two parts of one request.",
+        "Use the guided picks for both UI and logic concerns.",
+        "Make the acceptance criteria prove both the screen and the rules changed correctly."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/ui-change-logic-change",
+      "promptFile": ".github/prompts/copilotforms-ui-change-logic-change.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-ui-change-logic-change.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Combined Request Summary",
+          "fields": [
+            {
+              "id": "requestTitle",
+              "label": "Short request title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Update manual entry screen and default-fill rules"
+            },
+            {
+              "id": "audience",
+              "label": "Who is this mainly for?",
+              "type": "select",
+              "optionSource": "audiences",
+              "required": true
+            },
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "affectedScreen",
+              "label": "Which screen or step is most affected?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "currentUiProblem",
+              "label": "What feels wrong on the screen today?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the current visual or interaction problem."
+            },
+            {
+              "id": "currentLogicProblem",
+              "label": "What rule or behavior is wrong today?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the current workflow or logic problem."
+            }
+          ]
+        },
+        {
+          "title": "Target Outcome",
+          "fields": [
+            {
+              "id": "desiredUiOutcome",
+              "label": "What should the user see or do more easily?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the target screen experience."
+            },
+            {
+              "id": "desiredLogicOutcome",
+              "label": "What should the system do differently?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the target workflow rules or decisions."
+            },
+            {
+              "id": "uiElements",
+              "label": "Which parts of the screen are involved?",
+              "type": "checkbox-group",
+              "featureHintKey": "uiElements"
+            },
+            {
+              "id": "logicConcernTypes",
+              "label": "What kind of logic concerns are involved?",
+              "type": "checkbox-group",
+              "optionSource": "logicConcernTypes"
+            },
+            {
+              "id": "constraints",
+              "label": "What must stay the same while changing both layers?",
+              "type": "textarea",
+              "placeholder": "Mention architecture boundaries, stable behaviors, or compatibility constraints."
+            },
+            {
+              "id": "candidateFiles",
+              "label": "Suggested files or layers to inspect first",
+              "type": "list",
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            }
+          ]
+        },
+        {
+          "title": "Definition Of Done",
+          "fields": [
+            {
+              "id": "acceptanceCriteria",
+              "label": "Which scenarios should prove the combined change worked?",
+              "type": "list",
+              "required": true,
+              "placeholder": "List end-to-end checks that prove both UI and logic changed correctly.",
+              "autoFillFeatureKey": "acceptanceCriteria"
+            },
+            {
+              "id": "verificationNeeds",
+              "label": "What validation or testing should happen?",
+              "type": "list",
+              "placeholder": "List manual checks, tests, or logging that should confirm the change."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "debugging-logging",
+      "title": "Debugging + Logging",
+      "summary": "Describe a bug that needs diagnosis plus logging improvements so the investigation and observability work stay together.",
+      "whenToUse": [
+        "Use this when you need to debug a problem and adjust logging at the same time.",
+        "Use this when current logs are missing, noisy, or not useful enough to diagnose the issue safely.",
+        "Do not use this when the bug is clear and no logging changes are needed."
+      ],
+      "beforeYouStart": [
+        "Capture the current symptom and any exact error messages first.",
+        "Think about what logging is missing or unhelpful today.",
+        "Be explicit about what must never be written to logs."
+      ],
+      "endUserTips": [
+        "Lead with facts about the bug, then explain how logging should help.",
+        "If you only need temporary diagnostic logs, say that.",
+        "Use the verification section to prove both the fix and the logging quality."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/debugging-logging",
+      "promptFile": ".github/prompts/copilotforms-debugging-logging.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-debugging-logging.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Bug Summary",
+          "fields": [
+            {
+              "id": "bugTitle",
+              "label": "Short bug title",
+              "type": "text",
+              "required": true,
+              "placeholder": "Receiving submit silently fails after validation"
+            },
+            {
+              "id": "priority",
+              "label": "How urgent is this?",
+              "type": "select",
+              "optionSource": "priorities",
+              "required": true
+            },
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "affectedScreen",
+              "label": "Which screen or step shows the problem?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "observedBehavior",
+              "label": "What is the user actually seeing?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the failure exactly as observed."
+            },
+            {
+              "id": "expectedBehavior",
+              "label": "What should have happened instead?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the expected result."
+            }
+          ]
+        },
+        {
+          "title": "Repro And Logging Need",
+          "fields": [
+            {
+              "id": "reproSteps",
+              "label": "How can someone reproduce this?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One step per line"
+            },
+            {
+              "id": "errorMessages",
+              "label": "Exact errors, warnings, or current log clues",
+              "type": "textarea",
+              "placeholder": "Paste exact messages, current log output, or stack traces."
+            },
+            {
+              "id": "loggingNeed",
+              "label": "What logging is missing or unhelpful today?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe what needs to be added, reduced, or clarified in the logs."
+            },
+            {
+              "id": "loggingMode",
+              "label": "What kind of logging change is needed?",
+              "type": "select",
+              "optionSource": "loggingModes",
+              "required": true
+            },
+            {
+              "id": "sensitiveDataRules",
+              "label": "What must never be written to the logs?",
+              "type": "textarea",
+              "placeholder": "Describe secrets, PII, or sensitive workflow data that must stay out of logs."
+            },
+            {
+              "id": "filesToInspect",
+              "label": "Suggested files or services to inspect first",
+              "type": "list",
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            }
+          ]
+        },
+        {
+          "title": "Definition Of Done",
+          "fields": [
+            {
+              "id": "verificationSteps",
+              "label": "How should we prove the bug is fixed and the logs are better?",
+              "type": "list",
+              "required": true,
+              "placeholder": "List repro checks, log checks, and any cleanup expectations."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "logic-change-test-generation",
+      "title": "Logic Change + Test Generation",
+      "summary": "Describe a behavior correction that should be implemented together with tests that lock in the intended rule set.",
+      "whenToUse": [
+        "Use this when the main work is a logic fix and the request should include tests as part of the same change.",
+        "Use this when the desired behavior is clear enough to turn directly into test scenarios.",
+        "Do not use this when the request is only to add tests without changing behavior."
+      ],
+      "beforeYouStart": [
+        "Describe the intended workflow or rule before describing the broken behavior.",
+        "Think about the few test scenarios that best prove the rule change.",
+        "Be explicit about which dependencies should stay mocked or real."
+      ],
+      "endUserTips": [
+        "Treat the rule change and the test plan as one request.",
+        "Use plain English for the intended behavior first, then list the key scenarios.",
+        "Make sure the do-not-regress section covers nearby flows that should stay stable."
+      ],
+      "outputFolder": "docs/CopilotForms/outputs/logic-change-test-generation",
+      "promptFile": ".github/prompts/copilotforms-logic-change-test-generation.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms-logic-change-test-generation.instructions.md",
+      "fieldGroups": [
+        {
+          "title": "Behavior Change",
+          "fields": [
+            {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "affectedScreen",
+              "label": "Which screen or step is involved?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "logicConcernTypes",
+              "label": "What kind of logic problem is this?",
+              "type": "checkbox-group",
+              "optionSource": "logicConcernTypes"
+            },
+            {
+              "id": "workflowIntent",
+              "label": "What is this feature supposed to do?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the intended behavior in plain language."
+            },
+            {
+              "id": "actualBehavior",
+              "label": "What does it do today instead?",
+              "type": "textarea",
+              "required": true,
+              "placeholder": "Describe the current incorrect behavior."
+            },
+            {
+              "id": "desiredRuleSet",
+              "label": "What rules should the feature follow instead?",
+              "type": "list",
+              "required": true,
+              "placeholder": "One desired rule per line"
+            }
+          ]
+        },
+        {
+          "title": "Test Plan",
+          "fields": [
+            {
+              "id": "testKind",
+              "label": "What kind of tests should be added?",
+              "type": "select",
+              "required": true,
+              "options": ["Unit", "Integration", "Mixed"]
+            },
+            {
+              "id": "testTargets",
+              "label": "Suggested files, classes, or layers to test",
+              "type": "list",
+              "required": true,
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
+            },
+            {
+              "id": "testScenarios",
+              "label": "Which scenarios absolutely need coverage?",
+              "type": "list",
+              "required": true,
+              "placeholder": "The form can prefill likely scenarios from the selected feature.",
+              "autoFillFeatureKey": "testScenarios"
+            },
+            {
+              "id": "testDependencies",
+              "label": "Which dependencies should be mocked or kept real?",
+              "type": "textarea",
+              "placeholder": "Describe services, DAOs, databases, or framework dependencies."
+            },
+            {
+              "id": "testConstraints",
+              "label": "What testing rules or limits matter here?",
+              "type": "textarea",
+              "placeholder": "Mention test patterns, naming rules, or no-regression boundaries."
+            }
+          ]
+        },
+        {
+          "title": "Safety Checks",
+          "fields": [
+            {
+              "id": "doNotRegress",
+              "label": "What must not break while making the logic and test changes?",
+              "type": "textarea",
+              "placeholder": "List nearby flows that must remain stable."
+            },
+            {
+              "id": "verificationSteps",
+              "label": "How should we prove the logic change and tests are done?",
+              "type": "list",
+              "required": true,
+              "placeholder": "List behavioral checks, test runs, and regression checks.",
+              "autoFillFeatureKey": "acceptanceCriteria"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "improvement-refactor",
       "title": "Improvement Refactor Request",
       "summary": "Describe a cleanup or refactor request in plain English, with guided choices that help keep the scope realistic.",

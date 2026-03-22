@@ -232,26 +232,42 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     var previousLoad = i > 0 ? Loads[i - 1] : null;
 
                     // 1. Part ID (Material ID) - Fill Down Logic
-                    // If blank, copy from immediate predecessor
-                    if (currentLoad.IsNonPOItem && string.IsNullOrWhiteSpace(currentLoad.PartID))
+                    // If blank, copy from the row immediately above.
+                    if (string.IsNullOrWhiteSpace(currentLoad.PartID))
                     {
                         if (previousLoad != null)
                         {
                             if (!string.IsNullOrWhiteSpace(previousLoad.PartID))
                             {
                                 currentLoad.PartID = previousLoad.PartID;
+
+                                if (
+                                    !currentLoad.IsNonPOItem
+                                    && previousLoad?.IsNonPOItem == false
+                                    && !string.IsNullOrWhiteSpace(previousLoad.PoLineNumber)
+                                    && (
+                                        string.IsNullOrWhiteSpace(currentLoad.PoNumber)
+                                        || string.Equals(
+                                            currentLoad.PoNumber,
+                                            previousLoad.PoNumber,
+                                            StringComparison.OrdinalIgnoreCase
+                                        )
+                                    )
+                                )
+                                {
+                                    CopyPoPartSelectionState(currentLoad, previousLoad);
+                                }
+
                                 filledCount++;
                             }
                         }
                     }
 
-                    // 1b. PO-backed rows can inherit the PO number from the previous PO-backed row,
-                    // but must not inherit the selected part identity automatically.
+                    // 1b. PO-backed rows can inherit the PO number from the previous PO-backed row.
                     if (
                         !currentLoad.IsNonPOItem
                         && string.IsNullOrWhiteSpace(currentLoad.PoNumber)
-                        && previousLoad != null
-                        && !previousLoad.IsNonPOItem
+                        && previousLoad?.IsNonPOItem == false
                         && !string.IsNullOrWhiteSpace(previousLoad.PoNumber)
                     )
                     {
@@ -424,6 +440,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             return null;
+        }
+
+        private static void CopyPoPartSelectionState(
+            Model_ReceivingLoad targetLoad,
+            Model_ReceivingLoad sourceLoad
+        )
+        {
+            targetLoad.PoLineNumber = sourceLoad.PoLineNumber;
+            targetLoad.SelectedPartSourcePONumber = sourceLoad.SelectedPartSourcePONumber;
+            targetLoad.PartDescription = sourceLoad.PartDescription;
+            targetLoad.UnitOfMeasure = sourceLoad.UnitOfMeasure;
+            targetLoad.QtyOrdered = sourceLoad.QtyOrdered;
+            targetLoad.RemainingQuantity = sourceLoad.RemainingQuantity;
         }
 
         [RelayCommand]
@@ -678,6 +707,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 // Validate every row before handing off to the workflow.
                 // This catches missing/invalid fields up front and reports row-specific errors
                 // so the user knows exactly which row to fix rather than getting a generic message.
+                var unresolvedPoSelectionErrors = await ResolvePendingPoSelectionsAsync();
+                if (unresolvedPoSelectionErrors.Count > 0)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        string.Join("\n", unresolvedPoSelectionErrors),
+                        Enum_ErrorSeverity.Warning
+                    );
+                    return;
+                }
+
                 var sessionValidation = _validationService.ValidateSession(Loads.ToList());
                 if (!sessionValidation.IsValid)
                 {
@@ -765,6 +804,84 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private async Task<System.Collections.Generic.List<string>> ResolvePendingPoSelectionsAsync()
+        {
+            var errors = new System.Collections.Generic.List<string>();
+
+            foreach (var load in Loads)
+            {
+                if (load.IsNonPOItem || string.IsNullOrWhiteSpace(load.PoNumber))
+                {
+                    continue;
+                }
+
+                var normalizedPo = load.PoNumber.Trim();
+                var hasResolvedPoSelection =
+                    !string.IsNullOrWhiteSpace(load.PoLineNumber)
+                    && string.Equals(
+                        load.SelectedPartSourcePONumber,
+                        normalizedPo,
+                        StringComparison.OrdinalIgnoreCase
+                    );
+
+                if (hasResolvedPoSelection || string.IsNullOrWhiteSpace(load.PartID))
+                {
+                    continue;
+                }
+
+                if (
+                    !string.Equals(
+                        load.SelectedPartSourcePONumber,
+                        normalizedPo,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                {
+                    ClearPoSelectedPart(load);
+                }
+
+                var poResult = await _inforVisualService.GetPOWithPartsAsync(normalizedPo);
+                if (!poResult.IsSuccess || poResult.Data is null)
+                {
+                    errors.Add(
+                        $"Row {load.LoadNumber}: Unable to verify PO {normalizedPo} before save."
+                    );
+                    continue;
+                }
+
+                var matchingParts = poResult
+                    .Data
+                    .Parts.Where(part =>
+                        string.Equals(
+                            part.PartID?.Trim(),
+                            load.PartID.Trim(),
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    .ToList();
+
+                if (matchingParts.Count == 1)
+                {
+                    ApplySelectedPoPart(load, normalizedPo, matchingParts[0]);
+                    continue;
+                }
+
+                if (matchingParts.Count == 0)
+                {
+                    errors.Add(
+                        $"Row {load.LoadNumber}: Part {load.PartID.Trim()} was not found on {normalizedPo}."
+                    );
+                    continue;
+                }
+
+                errors.Add(
+                    $"Row {load.LoadNumber}: Part {load.PartID.Trim()} matches multiple lines on {normalizedPo}. Re-select the part for this row before saving."
+                );
+            }
+
+            return errors;
         }
 
         /// <summary>

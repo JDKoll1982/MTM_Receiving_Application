@@ -213,11 +213,13 @@
         "desiredUiPatterns": ["Form", "Split layout", "Card list"],
         "uiElements": [
           "Manual entry fields",
+          "Auto-Fill action",
           "Validation help",
           "Primary save action"
         ],
         "userActions": [
           "Enter receiving data manually",
+          "Auto-fill blank fields from the row above",
           "Save a valid manual record confidently"
         ]
       }
