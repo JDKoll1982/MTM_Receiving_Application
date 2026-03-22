@@ -1,9 +1,12 @@
 -- Core Settings schema (idempotent)
-
 DROP TABLE IF EXISTS settings_user_roles;
+
 DROP TABLE IF EXISTS settings_roles;
+
 DROP TABLE IF EXISTS settings_activity;
+
 DROP TABLE IF EXISTS settings_personal;
+
 DROP TABLE IF EXISTS settings_universal;
 
 CREATE TABLE settings_universal (
@@ -22,7 +25,7 @@ CREATE TABLE settings_universal (
 CREATE TABLE settings_personal (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    category VARCHAR(100) NOT NULL,
+    Get-Content -Path ".github/instructions/sql-schema-generation.instructions.md" -Raw
     setting_key VARCHAR(150) NOT NULL,
     setting_value TEXT NOT NULL,
     data_type VARCHAR(50) NOT NULL,

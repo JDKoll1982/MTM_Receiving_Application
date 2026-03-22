@@ -15,6 +15,8 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
 
+. (Join-Path $PSScriptRoot 'SqlObjectCatalogTools.ps1')
+
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -108,10 +110,10 @@ $xaml = @"
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="[4/4] Test Data" Foreground="#666"/>
-                        <TextBlock Grid.Column="1" Name="TestDataCount" Text="0/0" Foreground="#2196F3"/>
+                        <TextBlock Grid.Column="0" Text="[4/4] Seed Data" Foreground="#666"/>
+                        <TextBlock Grid.Column="1" Name="SeedDataCount" Text="0/0" Foreground="#2196F3"/>
                     </Grid>
-                    <ProgressBar Name="TestDataProgress" Height="8" Margin="0,5" Maximum="100"/>
+                    <ProgressBar Name="SeedDataProgress" Height="8" Margin="0,5" Maximum="100"/>
                 </StackPanel>
 
                 <TextBlock Name="CurrentFileText" Text="" Margin="0,15,0,0"
@@ -148,8 +150,8 @@ $xaml = @"
                     <TextBlock Grid.Row="1" Grid.Column="1" Name="SummaryStoredProcs" Margin="10,2" FontWeight="Bold"/>
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Migrations Applied:" Margin="0,2"/>
                     <TextBlock Grid.Row="2" Grid.Column="1" Name="SummaryMigrations"  Margin="10,2" FontWeight="Bold"/>
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Test Data Files:"   Margin="0,2"/>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Name="SummaryTestData"    Margin="10,2" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Seed Data Files:"   Margin="0,2"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Name="SummarySeedData"    Margin="10,2" FontWeight="Bold"/>
                 </Grid>
             </StackPanel>
         </Border>
@@ -182,15 +184,15 @@ $storedProcProgress = $window.FindName("StoredProcProgress")
 $storedProcCount = $window.FindName("StoredProcCount")
 $migrationProgress = $window.FindName("MigrationProgress")
 $migrationCount = $window.FindName("MigrationCount")
-$testDataProgress = $window.FindName("TestDataProgress")
-$testDataCount = $window.FindName("TestDataCount")
+$seedDataProgress = $window.FindName("SeedDataProgress")
+$seedDataCount = $window.FindName("SeedDataCount")
 $errorBorder = $window.FindName("ErrorBorder")
 $errorText = $window.FindName("ErrorText")
 $summaryBorder = $window.FindName("SummaryBorder")
 $summarySchemas = $window.FindName("SummarySchemas")
 $summaryStoredProcs = $window.FindName("SummaryStoredProcs")
 $summaryMigrations = $window.FindName("SummaryMigrations")
-$summaryTestData = $window.FindName("SummaryTestData")
+$summarySeedData = $window.FindName("SummarySeedData")
 $deployButton = $window.FindName("DeployButton")
 $closeButton = $window.FindName("CloseButton")
 
@@ -398,6 +400,8 @@ $deployButton.Add_Click({
 
             $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
             $script:DatabaseRoot = Join-Path $ProjectRoot "Database"
+            $script:CatalogPath = Join-Path $PSScriptRoot 'sql-object-catalog.json'
+            $script:ValidationOutputsPath = Join-Path $PSScriptRoot 'outputs'
             $script:ExcludePatterns = @("test_*.sql", "*_test.sql", "*.test.sql")
 
             if (-not (Test-Path $script:DatabaseRoot)) {
@@ -407,7 +411,7 @@ $deployButton.Add_Click({
             $script:SchemaCountTotal = 0
             $script:StoredProcCountTotal = 0
             $script:MigrationCountTotal = 0
-            $script:TestDataCountTotal = 0
+            $script:SeedDataCountTotal = 0
 
             $script:timer = New-Object System.Windows.Threading.DispatcherTimer
             $script:timer.Interval = [TimeSpan]::FromMilliseconds(10)
@@ -520,11 +524,11 @@ $deployButton.Add_Click({
                             }
                         }
                         elseif ($script:step -eq 7) {
-                            $tdPath = Join-Path $script:DatabaseRoot "TestData"
-                            Write-Host "DEBUG: Checking test data path: $tdPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Loading test data..."
+                            $tdPath = Join-Path $script:DatabaseRoot "SeedData"
+                            Write-Host "DEBUG: Checking seed data path: $tdPath" -ForegroundColor Yellow
+                            $overallStatusText.Text = "Loading seed data..."
                             $script:currentFiles = @(Get-SqlFiles -BasePath $tdPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) test data files" -ForegroundColor Yellow
+                            Write-Host "DEBUG: Found $($script:currentFiles.Count) seed data files" -ForegroundColor Yellow
                             $script:currentIndex = 0
                             $script:step = if ($script:currentFiles.Count -eq 0) { 9 } else { 8 }
                         }
@@ -532,16 +536,16 @@ $deployButton.Add_Click({
                             if ($script:currentIndex -lt $script:currentFiles.Count) {
                                 $file = $script:currentFiles[$script:currentIndex]
                                 $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying test data: $($file.Name)" -ForegroundColor Yellow
-                                $testDataProgress.Value = $pct
-                                $testDataCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                                Write-Host "DEBUG: Deploying seed data: $($file.Name)" -ForegroundColor Yellow
+                                $seedDataProgress.Value = $pct
+                                $seedDataCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
                                 $currentFileText.Text = "Deploying: $($file.Name)"
                                 try {
                                     Execute-SqlFile -FilePath $file.FullName
-                                    $script:TestDataCountTotal++
+                                    $script:SeedDataCountTotal++
                                 }
                                 catch {
-                                    Write-Host "DEBUG: Test data warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
+                                    Write-Host "DEBUG: Seed data warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
                                 }
                                 $script:currentIndex++
                             }
@@ -550,15 +554,51 @@ $deployButton.Add_Click({
                             }
                         }
                         elseif ($script:step -eq 9) {
+                            Write-Host "DEBUG: Building SQL object catalog and validation report" -ForegroundColor Green
+                            $overallStatusText.Text = "Validating deployed SQL objects..."
+                            $currentFileText.Text = "Refreshing SQL object catalog..."
+
+                            $reportPaths = New-ValidationOutputPaths -OutputsDirectory $script:ValidationOutputsPath
+
+                            try {
+                                $catalog = Save-SqlObjectCatalog -RepoRoot $ProjectRoot -DatabaseRoot $script:DatabaseRoot -OutputPath $script:CatalogPath
+                                $currentFileText.Text = "Writing validation report..."
+                                $validationResult = Test-SqlObjectCatalogAgainstDatabase -Catalog $catalog -MySqlExe (Find-MySqlExe) -Server $Server -Port $Port -Database $Database -User $User -Password $Password
+                                Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
+                            }
+                            catch {
+                                $validationResult = [ordered]@{
+                                    generatedAt = (Get-Date).ToString('o')
+                                    database    = $Database
+                                    resultCount = 1
+                                    results     = @(
+                                        [ordered]@{
+                                            relativePath = 'validation'
+                                            objectType   = 'validation'
+                                            objectName   = 'catalog'
+                                            issueCount   = 1
+                                            issues       = @(
+                                                [ordered]@{
+                                                    severity = 'error'
+                                                    code     = 'VALIDATION_FAILURE'
+                                                    message  = $_.Exception.Message
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                                Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
+                            }
+
                             Write-Host "DEBUG: Deployment complete!" -ForegroundColor Green
                             $script:timer.Stop()
                             $overallStatusText.Text = "Deployment completed successfully!"
-                            $currentFileText.Text = ""
+                            $currentFileText.Text = "Validation report: $($reportPaths.markdown)"
                             $summaryBorder.Visibility = "Visible"
                             $summarySchemas.Text = "$($script:SchemaCountTotal) file(s)"
                             $summaryStoredProcs.Text = "$($script:StoredProcCountTotal) procedure(s)"
                             $summaryMigrations.Text = "$($script:MigrationCountTotal) file(s)"
-                            $summaryTestData.Text = "$($script:TestDataCountTotal) file(s)"
+                            $summarySeedData.Text = "$($script:SeedDataCountTotal) file(s)"
                             $deployButton.Content = "Deploy Again"
                             $deployButton.IsEnabled = $true
                         }
