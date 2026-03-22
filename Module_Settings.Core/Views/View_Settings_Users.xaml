@@ -190,13 +190,6 @@
                         Margin="0,8,0,0"
                     />
 
-                    <InfoBar
-                        IsOpen="{x:Bind ViewModel.IsBlockedVisualAccount, Mode=OneWay}"
-                        IsClosable="False"
-                        Severity="Warning"
-                        Message="Users with credentials SHOP2 or MTMDC cannot access Bulk Inventory."
-                    />
-
                     <StackPanel Spacing="8">
                         <TextBlock Text="Visual Username" />
                         <TextBox

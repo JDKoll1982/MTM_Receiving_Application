@@ -10,17 +10,13 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
 /// <summary>
-/// ViewModel for shared path settings: export root, Infor Visual executable path,
-/// default warehouse code, and default lot number.
+/// ViewModel for shared path settings: export root and Infor Visual executable path.
 /// </summary>
 public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 {
     private const string SystemCategory = "System";
-    private const string BulkInventoryCategory = "BulkInventory";
     private const string KeyExportRoot = "Core.SharedPaths.ExportRoot";
     private const string KeyVisualExePath = "Core.SharedPaths.InforVisualExePath";
-    private const string KeyWarehouseCode = "BulkInventory.Defaults.WarehouseCode";
-    private const string KeyLotNo = "BulkInventory.Defaults.LotNo";
 
     private readonly IService_SettingsCoreFacade _settingsCore;
 
@@ -32,12 +28,6 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 
     [ObservableProperty]
     private string _inforVisualExePath = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultWarehouseCode = string.Empty;
-
-    [ObservableProperty]
-    private string _defaultLotNo = string.Empty;
 
     public ViewModel_Settings_SharedPaths(
         IService_SettingsCoreFacade settingsCore,
@@ -60,11 +50,6 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 
             ExportRootPath = await GetStringSettingAsync(SystemCategory, KeyExportRoot);
             InforVisualExePath = await GetStringSettingAsync(SystemCategory, KeyVisualExePath);
-            DefaultWarehouseCode = await GetStringSettingAsync(
-                BulkInventoryCategory,
-                KeyWarehouseCode
-            );
-            DefaultLotNo = await GetStringSettingAsync(BulkInventoryCategory, KeyLotNo);
 
             StatusMessage = "Settings loaded.";
         }
@@ -96,8 +81,6 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 
             await SaveSettingAsync(SystemCategory, KeyExportRoot, ExportRootPath);
             await SaveSettingAsync(SystemCategory, KeyVisualExePath, InforVisualExePath);
-            await SaveSettingAsync(BulkInventoryCategory, KeyWarehouseCode, DefaultWarehouseCode);
-            await SaveSettingAsync(BulkInventoryCategory, KeyLotNo, DefaultLotNo);
 
             StatusMessage = "Settings saved.";
         }

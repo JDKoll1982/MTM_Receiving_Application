@@ -33,7 +33,6 @@ Run all tracked repo paths:
 Tracked paths used by `-AllModules`, and also valid to run individually with `-ModuleName`:
 
 - `Infrastructure`
-- `Module_Bulk_Inventory`
 - `Module_Core`
 - `Module_Dunnage`
 - `Module_Receiving`

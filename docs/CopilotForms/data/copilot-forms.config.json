@@ -100,19 +100,6 @@
   },
   "features": [
     {
-      "id": "bulk-inventory-processing",
-      "module": "Module_Bulk_Inventory",
-      "name": "Bulk Inventory Processing",
-      "summary": "Bulk inventory workflows, automations, and reconciliation logic.",
-      "owner": "Inventory Team",
-      "relatedFiles": [
-        "Module_Bulk_Inventory/ViewModels",
-        "Module_Bulk_Inventory/Services",
-        "Module_Bulk_Inventory/Data"
-      ],
-      "relatedServices": ["IService_BulkInventory", "IService_LoggingUtility"]
-    },
-    {
       "id": "settings-core",
       "module": "Module_Settings.Core",
       "name": "Settings Core",

@@ -1,0 +1,227 @@
+{
+  "Module": "Module_Settings.Core",
+  "GeneratedAt": "2026-03-22T12:03:21",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.Core",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.Core",
+  "MetadataStatus": "MissingMetadataFolder",
+  "SourceFileCount": 71,
+  "FeatureReports": [],
+  "IndexFeatureFiles": [],
+  "ActualFeatureFiles": [],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [
+    "Module_Settings.Core/Contracts/Services/IService_SettingsErrorHandler.cs",
+    "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreRoles.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreUserRoles.cs",
+    "Module_Settings.Core/Defaults/settings.manifest.json",
+    "Module_Settings.Core/Enums/Enum_SettingsDataType.cs",
+    "Module_Settings.Core/Enums/Enum_SettingsPermissionLevel.cs",
+    "Module_Settings.Core/Enums/Enum_SettingsScope.cs",
+    "Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs",
+    "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
+    "Module_Settings.Core/Interfaces/IService_UserPreferences.cs",
+    "Module_Settings.Core/Interfaces/ISettingsCache.cs",
+    "Module_Settings.Core/Interfaces/ISettingsEncryptionService.cs",
+    "Module_Settings.Core/Interfaces/ISettingsManifestProvider.cs",
+    "Module_Settings.Core/Interfaces/ISettingsMetadataRegistry.cs",
+    "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
+    "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs",
+    "Module_Settings.Core/Models/Model_CoreSetting.cs",
+    "Module_Settings.Core/Models/Model_SettingsAuditEntry.cs",
+    "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+    "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
+    "Module_Settings.Core/Models/Model_SettingsRole.cs",
+    "Module_Settings.Core/Models/Model_SettingsUserRole.cs",
+    "Module_Settings.Core/Models/Model_SettingsValue.cs",
+    "Module_Settings.Core/Models/Model_UserSetting.cs",
+    "Module_Settings.Core/Services/GetSettingQuery.cs",
+    "Module_Settings.Core/Services/GetSettingQueryHandler.cs",
+    "Module_Settings.Core/Services/ResetSettingCommand.cs",
+    "Module_Settings.Core/Services/ResetSettingCommandHandler.cs",
+    "Module_Settings.Core/Services/Service_SettingsCache.cs",
+    "Module_Settings.Core/Services/Service_SettingsCoreFacade.cs",
+    "Module_Settings.Core/Services/Service_SettingsEncryptionService.cs",
+    "Module_Settings.Core/Services/Service_SettingsErrorHandler.cs",
+    "Module_Settings.Core/Services/Service_SettingsManifestProvider.cs",
+    "Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs",
+    "Module_Settings.Core/Services/Service_SettingsPagination.cs",
+    "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
+    "Module_Settings.Core/Services/Service_UserPreferences.cs",
+    "Module_Settings.Core/Services/SetSettingCommand.cs",
+    "Module_Settings.Core/Services/SetSettingCommandHandler.cs",
+    "Module_Settings.Core/SETTABLE_OBJECTS_INVENTORY.md",
+    "Module_Settings.Core/Validators/SetSettingCommandValidator.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Logging.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_SharedPaths.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_System.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Theme.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
+    "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
+    "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
+    "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
+    "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Database.xaml",
+    "Module_Settings.Core/Views/View_Settings_Database.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Logging.xaml",
+    "Module_Settings.Core/Views/View_Settings_Logging.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml",
+    "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_System.xaml",
+    "Module_Settings.Core/Views/View_Settings_System.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Theme.xaml",
+    "Module_Settings.Core/Views/View_Settings_Theme.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Users.xaml",
+    "Module_Settings.Core/Views/View_Settings_Users.xaml.cs"
+  ],
+  "UnreferencedSourceFileGroups": [
+    {
+      "Area": "Contracts",
+      "Count": 2,
+      "Items": [
+        "Module_Settings.Core/Contracts/Services/IService_SettingsErrorHandler.cs",
+        "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs"
+      ]
+    },
+    {
+      "Area": "Data",
+      "Count": 5,
+      "Items": [
+        "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreRoles.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUserRoles.cs"
+      ]
+    },
+    {
+      "Area": "Defaults",
+      "Count": 1,
+      "Items": [
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ]
+    },
+    {
+      "Area": "Enums",
+      "Count": 3,
+      "Items": [
+        "Module_Settings.Core/Enums/Enum_SettingsDataType.cs",
+        "Module_Settings.Core/Enums/Enum_SettingsPermissionLevel.cs",
+        "Module_Settings.Core/Enums/Enum_SettingsScope.cs"
+      ]
+    },
+    {
+      "Area": "Interfaces",
+      "Count": 9,
+      "Items": [
+        "Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs",
+        "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
+        "Module_Settings.Core/Interfaces/IService_UserPreferences.cs",
+        "Module_Settings.Core/Interfaces/ISettingsCache.cs",
+        "Module_Settings.Core/Interfaces/ISettingsEncryptionService.cs",
+        "Module_Settings.Core/Interfaces/ISettingsManifestProvider.cs",
+        "Module_Settings.Core/Interfaces/ISettingsMetadataRegistry.cs",
+        "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
+        "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs"
+      ]
+    },
+    {
+      "Area": "Models",
+      "Count": 8,
+      "Items": [
+        "Module_Settings.Core/Models/Model_CoreSetting.cs",
+        "Module_Settings.Core/Models/Model_SettingsAuditEntry.cs",
+        "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+        "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
+        "Module_Settings.Core/Models/Model_SettingsRole.cs",
+        "Module_Settings.Core/Models/Model_SettingsUserRole.cs",
+        "Module_Settings.Core/Models/Model_SettingsValue.cs",
+        "Module_Settings.Core/Models/Model_UserSetting.cs"
+      ]
+    },
+    {
+      "Area": "Services",
+      "Count": 15,
+      "Items": [
+        "Module_Settings.Core/Services/GetSettingQuery.cs",
+        "Module_Settings.Core/Services/GetSettingQueryHandler.cs",
+        "Module_Settings.Core/Services/ResetSettingCommand.cs",
+        "Module_Settings.Core/Services/ResetSettingCommandHandler.cs",
+        "Module_Settings.Core/Services/Service_SettingsCache.cs",
+        "Module_Settings.Core/Services/Service_SettingsCoreFacade.cs",
+        "Module_Settings.Core/Services/Service_SettingsEncryptionService.cs",
+        "Module_Settings.Core/Services/Service_SettingsErrorHandler.cs",
+        "Module_Settings.Core/Services/Service_SettingsManifestProvider.cs",
+        "Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs",
+        "Module_Settings.Core/Services/Service_SettingsPagination.cs",
+        "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
+        "Module_Settings.Core/Services/Service_UserPreferences.cs",
+        "Module_Settings.Core/Services/SetSettingCommand.cs",
+        "Module_Settings.Core/Services/SetSettingCommandHandler.cs"
+      ]
+    },
+    {
+      "Area": "SETTABLE_OBJECTS_INVENTORY.md",
+      "Count": 1,
+      "Items": [
+        "Module_Settings.Core/SETTABLE_OBJECTS_INVENTORY.md"
+      ]
+    },
+    {
+      "Area": "Validators",
+      "Count": 1,
+      "Items": [
+        "Module_Settings.Core/Validators/SetSettingCommandValidator.cs"
+      ]
+    },
+    {
+      "Area": "ViewModels",
+      "Count": 8,
+      "Items": [
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Logging.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_SharedPaths.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_System.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Theme.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs"
+      ]
+    },
+    {
+      "Area": "Views",
+      "Count": 18,
+      "Items": [
+        "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
+        "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Database.xaml",
+        "Module_Settings.Core/Views/View_Settings_Database.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Logging.xaml",
+        "Module_Settings.Core/Views/View_Settings_Logging.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml",
+        "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_System.xaml",
+        "Module_Settings.Core/Views/View_Settings_System.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Theme.xaml",
+        "Module_Settings.Core/Views/View_Settings_Theme.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Users.xaml",
+        "Module_Settings.Core/Views/View_Settings_Users.xaml.cs"
+      ]
+    }
+  ],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

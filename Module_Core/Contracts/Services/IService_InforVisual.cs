@@ -128,12 +128,12 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             string warehouseCode
         );
 
-        // ── Exact-match validation (Bulk Inventory T031) ───────────────────────
+        // ── Exact-match validation helpers ─────────────────────────────────────
 
         /// <summary>
         /// Returns <see langword="true"/> when a <c>PART</c> row with
         /// <c>ID = <paramref name="partId"/></c> exists in Infor Visual.
-        /// Used by <c>ValidateAllCommand</c> in the Bulk Inventory module.
+        /// Used by workflows that validate part IDs against Infor Visual.
         /// </summary>
         /// <param name="partId">Exact part ID to check.</param>
         public Task<Model_Dao_Result<bool>> PartExistsAsync(string partId);
@@ -142,7 +142,7 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// Returns <see langword="true"/> when a <c>LOCATION</c> row with
         /// <c>ID = <paramref name="locationId"/></c> and
         /// <c>WAREHOUSE_ID = <paramref name="warehouseCode"/></c> exists in Infor Visual.
-        /// Used by <c>ValidateAllCommand</c> in the Bulk Inventory module.
+        /// Used by workflows that validate warehouse locations against Infor Visual.
         /// </summary>
         /// <param name="locationId">Exact location ID to check.</param>
         /// <param name="warehouseCode">Warehouse code that must match (e.g. "002").</param>

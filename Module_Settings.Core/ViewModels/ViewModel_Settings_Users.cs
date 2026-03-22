@@ -40,7 +40,6 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(VisualPasswordMask))]
-    [NotifyPropertyChangedFor(nameof(IsBlockedVisualAccount))]
     private Model_User? _editingUser;
 
     [ObservableProperty]
@@ -64,16 +63,6 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     /// <summary>Masked indicator — never exposes the real password string.</summary>
     public string VisualPasswordMask =>
         string.IsNullOrEmpty(EditingUser?.VisualPassword) ? string.Empty : "••••••••";
-
-    /// <summary>True when the Visual username matches a blocked shared account (SHOP2 or MTMDC).</summary>
-    public bool IsBlockedVisualAccount
-    {
-        get
-        {
-            var name = EditingUser?.VisualUsername?.Trim().ToUpperInvariant();
-            return name is "SHOP2" or "MTMDC";
-        }
-    }
 
     // ====================================================================
     // Constructor
@@ -383,6 +372,5 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     partial void OnEditingUserChanged(Model_User? value)
     {
         OnPropertyChanged(nameof(VisualPasswordMask));
-        OnPropertyChanged(nameof(IsBlockedVisualAccount));
     }
 }

@@ -27,7 +27,6 @@ $ErrorActionPreference = 'Stop'
 
 $script:TrackedModulePaths = @(
     'Infrastructure',
-    'Module_Bulk_Inventory',
     'Module_Core',
     'Module_Dunnage',
     'Module_Receiving',

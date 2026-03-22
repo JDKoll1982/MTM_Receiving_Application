@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_Auth_User_Deactivate
 -- Description: Soft-delete — sets is_active = 0 + audit log row
--- Feature: User Management UI (Module_Bulk_Inventory Phase 0)
+-- Feature: User Management UI
 -- Created: 2026-03-08
 -- ============================================================================
 

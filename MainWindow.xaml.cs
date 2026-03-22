@@ -22,7 +22,6 @@ namespace MTM_Receiving_Application
         private readonly IService_LoggingUtility _logger;
         private readonly IService_SettingsWindowHost _settingsWindowHost;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IService_VisualCredentialValidator _credentialValidator;
         private bool _hasNavigatedOnStartup = false;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
@@ -37,8 +36,7 @@ namespace MTM_Receiving_Application
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_SettingsWindowHost settingsWindowHost,
-            IServiceProvider serviceProvider,
-            IService_VisualCredentialValidator credentialValidator
+            IServiceProvider serviceProvider
         )
         {
             InitializeComponent();
@@ -47,7 +45,6 @@ namespace MTM_Receiving_Application
             _logger = logger;
             _settingsWindowHost = settingsWindowHost;
             _serviceProvider = serviceProvider;
-            _credentialValidator = credentialValidator;
 
             // Configure Frame to use DI for view activation
             ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
@@ -165,10 +162,6 @@ namespace MTM_Receiving_Application
             ["ShipRecToolsPage"] = (
                 typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main),
                 string.Empty
-            ),
-            ["BulkInventoryPage"] = (
-                typeof(Module_Bulk_Inventory.Views.View_BulkInventory_Host),
-                "Bulk Inventory"
             ),
         };
 
@@ -339,27 +332,6 @@ namespace MTM_Receiving_Application
                 UserDisplayTextBlock.Text = user.DisplayName;
                 UserPicture.DisplayName = user.DisplayName;
             }
-        }
-
-        /// <summary>
-        /// Shows or hides the Bulk Inventory nav item based on whether the current user's
-        /// Visual credentials pass the credential guard (blocks SHOP2, MTMDC).
-        /// Call this after session creation and after any credential update.
-        /// </summary>
-        public void UpdateBulkInventoryNavVisibility()
-        {
-            var visualUsername =
-                _sessionManager.CurrentSession?.User?.VisualUsername ?? string.Empty;
-            var allowed =
-                !string.IsNullOrWhiteSpace(visualUsername)
-                && _credentialValidator.IsAllowed(visualUsername);
-
-            BulkInventoryNavItem.Visibility = allowed ? Visibility.Visible : Visibility.Collapsed;
-
-            _logger.LogInfo(
-                $"BulkInventoryNavItem visibility set to {BulkInventoryNavItem.Visibility} "
-                    + $"for VisualUsername '{visualUsername}'"
-            );
         }
 
         /// <summary>

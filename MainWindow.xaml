@@ -168,20 +168,6 @@
 
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem
-                    x:Name="BulkInventoryNavItem"
-                    Content="Bulk Inventory"
-                    Tag="BulkInventoryPage"
-                    Margin="0,0,0,4"
-                    IsEnabled="False"
-                >
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="Under Development — Coming Soon" />
-                    </ToolTipService.ToolTip>
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8B7;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem
                     Content="End of Day Reports"
                     Tag="ReportingMainPage"
                     Margin="0,0,0,4"

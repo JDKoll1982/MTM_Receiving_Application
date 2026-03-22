@@ -82,47 +82,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Bulk Inventory Defaults section -->
-                <StackPanel Spacing="8">
-                    <TextBlock
-                        Text="Bulk Inventory Defaults"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                    />
-
-                    <StackPanel Spacing="4">
-                        <TextBlock
-                            Text="Default Warehouse Code"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                        />
-                        <TextBlock
-                            Text="Warehouse code pre-filled on new bulk inventory transactions."
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                        />
-                        <TextBox
-                            Text="{x:Bind ViewModel.DefaultWarehouseCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            PlaceholderText="e.g. 002"
-                            MaxLength="10"
-                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                        />
-                    </StackPanel>
-
-                    <StackPanel Spacing="4">
-                        <TextBlock
-                            Text="Default Lot Number"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                        />
-                        <TextBlock
-                            Text="Lot number pre-filled on new bulk inventory transactions."
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                        />
-                        <TextBox
-                            Text="{x:Bind ViewModel.DefaultLotNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            PlaceholderText="e.g. 1"
-                            MaxLength="20"
-                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                        />
-                    </StackPanel>
-                </StackPanel>
 
                 <!-- Save button -->
                 <Button

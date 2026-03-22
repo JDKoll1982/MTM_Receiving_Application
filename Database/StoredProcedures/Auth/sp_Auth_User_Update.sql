@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_Auth_User_Update
 -- Description: Full user record update (all editable fields) with audit log
--- Feature: User Management UI (Module_Bulk_Inventory Phase 0)
+-- Feature: User Management UI
 -- Created: 2026-03-08
 -- ============================================================================
 

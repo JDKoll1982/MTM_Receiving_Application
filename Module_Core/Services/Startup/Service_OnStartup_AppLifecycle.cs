@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
@@ -295,19 +294,14 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     _sessionManager.CreateSession(authenticatedUser, workstationConfig, authMethod);
                     _sessionManager.StartTimeoutMonitoring();
 
-                    // Update MainWindow user display and credential guard
+                    // Update MainWindow user display
                     if (App.MainWindow is MainWindow mainWin)
                     {
                         mainWin.DispatcherQueue.TryEnqueue(() =>
                         {
                             mainWin.UpdateUserDisplay();
-                            mainWin.UpdateBulkInventoryNavVisibility();
                         });
                     }
-
-                    // T030 — Crash recovery: reset any stale InProgress rows to Failed.
-                    // Rows stuck in InProgress for > 5 minutes indicate a previous crash.
-                    await ResetStaleInProgressRowsAsync(authenticatedUser.WindowsUsername);
 
                     var settingsFacade = _serviceProvider.GetService<IService_SettingsCoreFacade>();
                     if (settingsFacade != null)
@@ -464,56 +458,6 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 System.Diagnostics.Debug.WriteLine($"[RoleAssignment] StackTrace: {ex.StackTrace}");
                 // Log but don't fail startup if role assignment fails
                 // This is a non-critical operation
-            }
-        }
-
-        /// <summary>
-        /// Resets any bulk inventory rows stuck in <c>InProgress</c> for more than 5 minutes
-        /// to <c>Failed</c> with an "Interrupted by app restart" message.
-        /// These rows indicate the app crashed during a previous automation session.
-        /// </summary>
-        /// <param name="username">Windows username of the current user.</param>
-        private async Task ResetStaleInProgressRowsAsync(string username)
-        {
-            try
-            {
-                var bulkService =
-                    _serviceProvider.GetService<Module_Bulk_Inventory.Contracts.Services.IService_MySQL_BulkInventory>();
-
-                if (bulkService is null)
-                    return;
-
-                var result = await bulkService.GetByUserAsync(
-                    username,
-                    Module_Bulk_Inventory.Enums.Enum_BulkInventoryStatus.InProgress
-                );
-
-                if (!result.IsSuccess || result.Data is null || result.Data.Count == 0)
-                    return;
-
-                var staleThreshold = DateTime.UtcNow.AddMinutes(-5);
-                var stale = result.Data.Where(r => r.UpdatedAt < staleThreshold).ToList();
-
-                foreach (var row in stale)
-                {
-                    await bulkService.CompleteRowAsync(
-                        row.Id,
-                        Module_Bulk_Inventory.Enums.Enum_BulkInventoryStatus.Failed,
-                        "Interrupted by app restart"
-                    );
-                }
-
-                if (stale.Count > 0)
-                    System.Diagnostics.Debug.WriteLine(
-                        $"[T030] Reset {stale.Count} stale InProgress bulk inventory row(s) to Failed for user '{username}'."
-                    );
-            }
-            catch (Exception ex)
-            {
-                // Non-critical — log and continue startup.
-                System.Diagnostics.Debug.WriteLine(
-                    $"[T030] Crash-recovery reset failed: {ex.Message}"
-                );
             }
         }
     }

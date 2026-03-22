@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_Auth_User_GetAll
 -- Description: Return all auth_users rows ordered by full_name
--- Feature: User Management UI (Module_Bulk_Inventory Phase 0)
+-- Feature: User Management UI
 -- Created: 2026-03-08
 -- ============================================================================
 

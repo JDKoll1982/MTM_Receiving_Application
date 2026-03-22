@@ -1,12 +1,12 @@
 # Project Overview
 
-Last Updated: 2026-03-21
+Last Updated: 2026-03-22
 
 **Project Name:** MTM Receiving Application
 
 **Purpose:**
 A modern WinUI 3 / .NET 8 desktop application for manufacturing receiving operations. It handles
-authentication, label generation (receiving, dunnage, Volvo), reporting, bulk inventory management,
+authentication, label generation (receiving, dunnage, Volvo), reporting,
 and integrates with MySQL (application data) and SQL Server / Infor Visual ERP (read-only lookup).
 
 ## Key Features
@@ -16,7 +16,6 @@ and integrates with MySQL (application data) and SQL Server / Infor Visual ERP (
 - **Label Generation:** Receiving, Dunnage, and Volvo labels.
 - **Receiving Workflow:** Guided multi-step process for PO/part lookup, quantity entry, and label output.
 - **Reporting:** Configurable reports over MySQL data.
-- **Bulk Inventory Management:** Batch operations for inventory adjustments.
 - **ShipRec Tools:** Shipping/receiving utility operations.
 - **Settings:** Layered settings UI split across multiple modules.
 - **ERP Integration:** Read-only lookup of purchase orders, parts, and vendors from Infor Visual (MTMFG SQL Server).
@@ -30,7 +29,6 @@ and integrates with MySQL (application data) and SQL Server / Infor Visual ERP (
 | `Module_Receiving`               | Receiving workflow, PO lookup, label generation                          |
 | `Module_Dunnage`                 | Dunnage label workflow and management                                    |
 | `Module_Volvo`                   | Volvo-specific label generation and integration                          |
-| `Module_Bulk_Inventory`          | Bulk inventory transaction entry                                         |
 | `Module_ShipRec_Tools`           | Shipping and receiving utility tools                                     |
 | `Module_Reporting`               | Report configuration, generation, and viewing                            |
 | `Module_Settings.Core`           | Core application settings (users, workstations)                          |

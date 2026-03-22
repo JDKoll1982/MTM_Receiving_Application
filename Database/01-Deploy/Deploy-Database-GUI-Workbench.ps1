@@ -231,22 +231,39 @@ function Get-SqlFiles {
     $fileMap = [ordered]@{}
 
     if (Test-Path $BasePath) {
-        $args = @{ Path = $BasePath; Filter = '*.sql'; ErrorAction = 'SilentlyContinue' }
-        if ($Recurse) { $args['Recurse'] = $true }
-        Get-ChildItem @args |
+        $fileQueryArgs = @{ Path = $BasePath; Filter = '*.sql'; ErrorAction = 'SilentlyContinue' }
+        if ($Recurse) { $fileQueryArgs['Recurse'] = $true }
+        Get-ChildItem @fileQueryArgs |
         Where-Object { $n = $_.Name; -not ($ExcludedPatterns | Where-Object { $n -like $_ }) } |
         ForEach-Object { $fileMap[$_.FullName.Substring($BasePath.Length).TrimStart('\')] = $_ }
     }
 
     if (Test-Path $updatedPath) {
-        $args = @{ Path = $updatedPath; Filter = '*.sql'; ErrorAction = 'SilentlyContinue' }
-        if ($Recurse) { $args['Recurse'] = $true }
-        Get-ChildItem @args |
+        $updatedFileQueryArgs = @{ Path = $updatedPath; Filter = '*.sql'; ErrorAction = 'SilentlyContinue' }
+        if ($Recurse) { $updatedFileQueryArgs['Recurse'] = $true }
+        Get-ChildItem @updatedFileQueryArgs |
         Where-Object { $n = $_.Name; -not ($ExcludedPatterns | Where-Object { $n -like $_ }) } |
         ForEach-Object { $fileMap[$_.FullName.Substring($updatedPath.Length).TrimStart('\')] = $_ }
     }
 
     return $fileMap.Values
+}
+
+function New-MySqlDefaultsFile {
+    $tempDefaultsFile = [System.IO.Path]::ChangeExtension([System.IO.Path]::GetTempFileName(), '.cnf')
+    $defaultsContent = @"
+[client]
+user=$User
+password=$Password
+"@
+
+    [System.IO.File]::WriteAllText(
+        $tempDefaultsFile,
+        $defaultsContent,
+        [System.Text.UTF8Encoding]::new($false)
+    )
+
+    return $tempDefaultsFile
 }
 
 # Run a single SQL statement via -e.  No DELIMITER directives involved, so
@@ -256,10 +273,13 @@ function Execute-SqlCommand {
         [string]$SqlCommand,
         [switch]$NoDatabase
     )
+    $defaultsFile = $null
+
     try {
         $exe = Find-MySqlExe
+        $defaultsFile = New-MySqlDefaultsFile
         $dbPart = if ($NoDatabase) { "" } else { $Database }
-        $argStr = "-h$Server -P$Port -u$User -p$Password --default-character-set=utf8mb4 $dbPart -e `"$SqlCommand`""
+        $argStr = "--defaults-extra-file=`"$defaultsFile`" -h$Server -P$Port --default-character-set=utf8mb4 $dbPart -e `"$SqlCommand`""
 
         $psi = New-Object System.Diagnostics.ProcessStartInfo
         $psi.FileName = $exe
@@ -279,7 +299,11 @@ function Execute-SqlCommand {
         if ($proc.ExitCode -ne 0) { throw "MySQL error: $stderr" }
         return $true
     }
-    catch { throw $_ }
+    finally {
+        if ($null -ne $defaultsFile -and (Test-Path $defaultsFile -ErrorAction SilentlyContinue)) {
+            Remove-Item $defaultsFile -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 # Execute a .sql file by piping its content to mysql via stdin.
@@ -301,8 +325,11 @@ function Execute-SqlFile {
 
     $exe = Find-MySqlExe
     $tempSql = $null
+    $defaultsFile = $null
 
     try {
+        $defaultsFile = New-MySqlDefaultsFile
+
         if ($DisableForeignKeyChecks) {
             $tempSql = [System.IO.Path]::ChangeExtension([System.IO.Path]::GetTempFileName(), '.sql')
             $body = [System.IO.File]::ReadAllText($FilePath)
@@ -319,7 +346,7 @@ function Execute-SqlFile {
         }
 
         $sqlContent = [System.IO.File]::ReadAllText($targetFile, [System.Text.UTF8Encoding]::new($false))
-        $mysqlArgs = "-h$Server -P$Port -u$User -p$Password --default-character-set=utf8mb4 $Database"
+        $mysqlArgs = "--defaults-extra-file=`"$defaultsFile`" -h$Server -P$Port --default-character-set=utf8mb4 $Database"
 
         $psi = New-Object System.Diagnostics.ProcessStartInfo
         $psi.FileName = $exe
@@ -352,6 +379,10 @@ function Execute-SqlFile {
         return $true
     }
     finally {
+        if ($null -ne $defaultsFile -and (Test-Path $defaultsFile -ErrorAction SilentlyContinue)) {
+            Remove-Item $defaultsFile -ErrorAction SilentlyContinue
+        }
+
         if ($null -ne $tempSql -and (Test-Path $tempSql -ErrorAction SilentlyContinue)) {
             Remove-Item $tempSql -ErrorAction SilentlyContinue
         }

@@ -6,9 +6,18 @@ All notable changes to the MTM Receiving Application are documented here.
 
 ## [Unreleased] — spreadsheet-removal branch
 
+### Removed
+
+#### Bulk Inventory module removal
+
+- Removed the entire `Module_Bulk_Inventory` feature area, including its views, viewmodels, services, DAOs, models, and enums.
+- Removed the Bulk Inventory navigation entry from the main window and deleted the startup recovery path that referenced bulk inventory rows.
+- Removed Bulk Inventory-only shared settings defaults and CopilotForms metadata/runtime references tied to the retired module.
+
 ### Added
 
 #### Receiving History Import (`Database/Scripts/Import-ReceivingHistory.ps1`)
+
 - New PowerShell script to import receiving history from the Google Sheets CSV export into the MySQL `receiving_history` table.
 - Silently discards blank rows and embedded Google Sheets header rows (e.g. rows where Employee = `Label #`).
 - Validates each row before import — skips rows with blank Material ID, invalid quantity, non-numeric employee, or unrecognised date format; prints a summary of skipped rows.
@@ -21,6 +30,7 @@ All notable changes to the MTM Receiving Application are documented here.
 - Batch executes all `CALL` statements in a single `mysql.exe` invocation for performance.
 
 #### Google Sheets Cleanup Script (`docs/GoogleSheetsVersion/ReceivingHistoryCleanup.gs`)
+
 - Google Apps Script that adds an **MTM Receiving** menu to the receiving history Google Sheet.
 - **Batched processing** — processes up to 1,000 rows per run; saves the next start row to `Dropdowns!C2` so the run can be resumed without losing progress. Resets to row 2 automatically when the last row is reached.
 - All reads and writes are batched (3 API calls per batch regardless of batch size) to stay within the Google Apps Script 6-minute time limit.
@@ -28,6 +38,7 @@ All notable changes to the MTM Receiving Application are documented here.
 - **Reset Progress** and **Clear All Highlights** menu items included.
 
 #### Database
+
 - `is_non_po_item TINYINT(1) NOT NULL DEFAULT 0` column added to `receiving_history` table (`Database/Scripts/Migrate-AddIsNonPOItem.sql`).
 - `sp_Receiving_History_Import` stored procedure updated to accept and store the new `p_IsNonPOItem` parameter.
 - `Database/Schemas/10_Table_receiving_history.sql` updated to include the new column for fresh installs.
@@ -39,6 +50,7 @@ All notable changes to the MTM Receiving Application are documented here.
 #### Edit Mode (`Module_Receiving`)
 
 **Bug Fixes**
+
 - Removed duplicate XAML block that appeared after the closing `</UserControl>` tag.
 - `ReceivedDate` and `PODueDate` columns were bound to `Converter_DecimalToString`; replaced with new `Converter_DateTimeToString`.
 - Column bindings for `PONumber`, `POLineNumber`, `POVendor`, `POStatus`, `PODueDate` used incorrect property casing and showed nothing at runtime; corrected throughout XAML and ViewModel.
@@ -46,22 +58,23 @@ All notable changes to the MTM Receiving Application are documented here.
 
 **New Features**
 
-| Feature | Details |
-|---|---|
-| **Search bar** | Free-text search box with a **Search by** dropdown (All Fields, Part ID, PO Number, Heat/Lot, Employee #, Part Description, Vendor). Updates results live as you type. |
-| **Result summary** | Displays record count below the search bar; shows `X of Y matching "term"` when a search is active. |
-| **Column sort** | Click any column header to sort ascending; click again to reverse. An arrow indicator shows the active sort column and direction. |
-| **Sort persistence** | Last-used sort column and direction are saved per user across sessions. |
-| **Column chooser** | Toolbar **Columns** button opens a dialog listing all available columns with checkboxes. Includes **Select All** and **Clear All** quick-action buttons. |
-| **Column visibility persistence** | Selected visible columns are saved per user to the MySQL settings table. |
-| **Page-size selector** | Choose 20 / 50 / 100 / 200 rows per page from a dropdown in the footer. |
-| **Page-size persistence** | Selected page size is saved per user across sessions. |
-| **Loading overlay** | Semi-transparent overlay with a `ProgressRing` and status text covers the grid during data loads. |
-| **Enter key on page-jump box** | Pressing Enter in the "Go to page" TextBox navigates immediately. |
-| **Search clear button** | An ✕ button appears inside the search box when text is present; clears the search in one click. |
-| **Help button** | Added to the toolbar, right-aligned. |
+| Feature                           | Details                                                                                                                                                                |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Search bar**                    | Free-text search box with a **Search by** dropdown (All Fields, Part ID, PO Number, Heat/Lot, Employee #, Part Description, Vendor). Updates results live as you type. |
+| **Result summary**                | Displays record count below the search bar; shows `X of Y matching "term"` when a search is active.                                                                    |
+| **Column sort**                   | Click any column header to sort ascending; click again to reverse. An arrow indicator shows the active sort column and direction.                                      |
+| **Sort persistence**              | Last-used sort column and direction are saved per user across sessions.                                                                                                |
+| **Column chooser**                | Toolbar **Columns** button opens a dialog listing all available columns with checkboxes. Includes **Select All** and **Clear All** quick-action buttons.               |
+| **Column visibility persistence** | Selected visible columns are saved per user to the MySQL settings table.                                                                                               |
+| **Page-size selector**            | Choose 20 / 50 / 100 / 200 rows per page from a dropdown in the footer.                                                                                                |
+| **Page-size persistence**         | Selected page size is saved per user across sessions.                                                                                                                  |
+| **Loading overlay**               | Semi-transparent overlay with a `ProgressRing` and status text covers the grid during data loads.                                                                      |
+| **Enter key on page-jump box**    | Pressing Enter in the "Go to page" TextBox navigates immediately.                                                                                                      |
+| **Search clear button**           | An ✕ button appears inside the search box when text is present; clears the search in one click.                                                                        |
+| **Help button**                   | Added to the toolbar, right-aligned.                                                                                                                                   |
 
 #### Receiving History Schema
+
 - `receiving_history` table columns aligned with `receiving_label_data` structure so both tables share a common schema.
 - `load_guid CHAR(36)` column added to preserve GUID-based tracking for app-generated records while allowing imported historical rows to store `NULL`.
 - All affected stored procedures (`sp_Receiving_Load_Insert`, `sp_Receiving_Load_Update`, `sp_Receiving_Load_Delete`, `sp_Receiving_Load_GetAll`, `sp_Receiving_History_Get`) updated to use the new column names.

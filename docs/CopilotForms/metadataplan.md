@@ -11,7 +11,6 @@ Bring CopilotForms metadata up to date across the tracked repo paths using the r
 Tracked paths covered by this plan:
 
 - `Infrastructure`
-- `Module_Bulk_Inventory`
 - `Module_Core`
 - `Module_Dunnage`
 - `Module_Receiving`
@@ -72,7 +71,6 @@ Create new split metadata for the highest-value missing modules first, prioritiz
 2. `Module_Shared`
 3. `Module_Settings.Core`
 4. `Module_ShipRec_Tools`
-5. `Module_Bulk_Inventory`
 
 For each new module metadata folder:
 
@@ -128,8 +126,7 @@ Recommended execution order:
 6. `Module_Shared`
 7. `Module_Settings.Core`
 8. `Module_ShipRec_Tools`
-9. `Module_Bulk_Inventory`
-10. Remaining tracked paths by value and clarity
+9. Remaining tracked paths by value and clarity
 
 ## Completion Criteria
 
