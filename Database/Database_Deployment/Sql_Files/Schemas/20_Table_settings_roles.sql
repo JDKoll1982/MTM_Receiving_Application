@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS settings_roles;
+
+CREATE TABLE settings_roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

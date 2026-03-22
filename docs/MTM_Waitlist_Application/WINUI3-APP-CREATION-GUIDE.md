@@ -1446,7 +1446,7 @@ BEGIN
     FROM users u
     WHERE u.badge_number = p_badge_number
         AND u.is_active = 1;
-END$$
+END $$
 
 DELIMITER ;
 ```
@@ -1480,7 +1480,7 @@ BEGIN
         AND r.is_active = 1
         AND p.is_active = 1
     ORDER BY p.module_name, p.privilege_name;
-END$$
+END $$
 
 DELIMITER ;
 ```
@@ -1542,7 +1542,7 @@ BEGIN
     SET p_request_id = LAST_INSERT_ID();
 
     SELECT p_request_id AS request_id;
-END$$
+END $$
 
 DELIMITER ;
 ```
@@ -1600,7 +1600,7 @@ BEGIN
             ELSE 4
         END,
         tr.created_at ASC;
-END$$
+END $$
 
 DELIMITER ;
 ```
