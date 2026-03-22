@@ -2183,6 +2183,7 @@
       "fieldGroups": [
         {
           "title": "Test Target",
+          "description": "Use the mirrored test structure under MTM_Receiving_Application.Tests/Unit. Existing unit tests live under the matching module and subfolder path, and new test files should be created there to mirror the production code location.",
           "fields": [
             {
               "id": "workflowArea",
@@ -2210,7 +2211,8 @@
               "label": "Suggested files, classes, or modules to test",
               "type": "list",
               "required": true,
-              "placeholder": "The form can prefill likely files from the selected feature.",
+              "placeholder": "Example: Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs -> MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_Workflow_Tests.cs",
+              "helpText": "Find or create unit tests under MTM_Receiving_Application.Tests/Unit using the same module and folder path as the application code. Mirror the source location, then add or edit the matching *_Tests.cs file there.",
               "autoFillFeatureKey": "relatedFiles"
             },
             {
@@ -2224,6 +2226,7 @@
         },
         {
           "title": "Coverage Details",
+          "description": "Call out whether the work belongs in Unit or Integration tests. In this repo, most mocked logic tests belong under MTM_Receiving_Application.Tests/Unit, while database-backed checks should stay out of unit test requests.",
           "fields": [
             {
               "id": "testDependencies",
@@ -2243,7 +2246,8 @@
               "id": "testConstraints",
               "label": "What testing rules or limits matter here?",
               "type": "textarea",
-              "placeholder": "Naming patterns, no database access, use FluentAssertions, and so on."
+              "placeholder": "Naming patterns, no database access, use FluentAssertions, create tests under MTM_Receiving_Application.Tests/Unit/<matching module path>, and so on.",
+              "helpText": "If you know the exact test file location, spell it out here. Example: create or edit MTM_Receiving_Application.Tests/Unit/Module_Core/Helpers/Helper_Name_Tests.cs to cover Module_Core/Helpers/Helper_Name.cs."
             }
           ]
         }

@@ -1,6 +1,6 @@
 {
   "dotnet.defaultSolution": "MTM_Receiving_Application.slnx",
-  "dotnet.unitTests.runSettingsPath": "",
+  "dotnet.unitTests.runSettingsPath": "MTM_Receiving_Application.Tests/.runsettings",
   "dotnetAcquisitionExtension.enableTelemetry": false,
   "omnisharp.enableEditorConfigSupport": true,
   "dotnet.unitTestDebuggingOptions": {},

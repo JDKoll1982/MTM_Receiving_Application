@@ -359,14 +359,15 @@ dotnet test --filter "FullyQualifiedName~Module_Receiving"  # Module-specific
 # Run with detailed output
 dotnet test -v:detailed
 
-# Run with coverage
-dotnet test --collect:"XPlat Code Coverage"
+# Run with coverage limited to the publishable MTM_Receiving_Application assembly
+dotnet test --settings MTM_Receiving_Application.Tests/.runsettings --collect:"XPlat Code Coverage"
 ```
 
 ### Visual Studio / VS Code
 
 - **Test Explorer**: View and run tests from the test explorer panel
 - **Run from editor**: Click the green arrow next to `[Fact]` attributes
+- **Coverage scope**: VS Code should use `MTM_Receiving_Application.Tests/.runsettings` so coverage is reported only for the publishable `MTM_Receiving_Application` assembly, not the test project or generated files
 
 ---
 

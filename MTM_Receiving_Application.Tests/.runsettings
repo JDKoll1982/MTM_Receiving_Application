@@ -7,6 +7,20 @@
             <Platform>x64</Platform>
         </EnvironmentVariables>
     </RunConfiguration>
+    <DataCollectionRunSettings>
+        <DataCollectors>
+            <DataCollector friendlyName="XPlat code coverage">
+                <Configuration>
+                    <!-- Limit coverage to the publishable application assembly only -->
+                    <Include>[MTM_Receiving_Application]*</Include>
+                    <Exclude>[MTM_Receiving_Application.Tests]*</Exclude>
+                    <IncludeTestAssembly>false</IncludeTestAssembly>
+                    <ExcludeByFile>**/*.g.cs,**/*.g.i.cs,**/*.designer.cs,**/obj/**,**/bin/**,**/MTM_Receiving_Application.Tests/**,**/.nuget/**,**/packages/**,**/WindowsAppRuntimeAutoInitializer.cs,**/UndockedRegFreeWinRT-AutoInitializer.cs</ExcludeByFile>
+                    <SkipAutoProps>true</SkipAutoProps>
+                </Configuration>
+            </DataCollector>
+        </DataCollectors>
+    </DataCollectionRunSettings>
     <MSBuild>
         <MSBuildProperties>
             <Platform>x64</Platform>
