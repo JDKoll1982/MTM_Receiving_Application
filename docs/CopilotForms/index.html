@@ -1,180 +1,304 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Copilot Forms</title>
-    <link rel="stylesheet" href="assets/copilot-forms.css">
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230066cc'/%3E%3Cpath d='M18 20h28v6H24v10h18v6H24v12h-6V20z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="assets/copilot-forms.css" />
     <script src="assets/copilot-forms.js" defer></script>
-</head>
+  </head>
 
-<body data-page="index" data-base-path=".">
+  <body data-page="index" data-base-path=".">
     <nav class="topbar">
-        <div class="topbar-brand">
-            <span class="topbar-eyebrow">MTM Receiving Application</span>
-            <span class="topbar-separator">&#x203A;</span>
-            <span class="topbar-current">Copilot Forms</span>
-        </div>
-        <div class="topbar-actions">
-            <button id="defaults-btn" class="btn btn-ghost btn-sm" type="button" title="Set your defaults">&#x2699; Defaults</button>
-            <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme">
-                <svg class="icon-sun" viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="4"/><path stroke="currentColor" stroke-width="1.5" d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M14.36 5.64l1.42-1.42M4.22 15.78l1.42-1.42"/></svg>
-                <svg class="icon-moon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
-            </button>
-        </div>
+      <div class="topbar-brand">
+        <span class="topbar-eyebrow">MTM Receiving Application</span>
+        <span class="topbar-separator">&#x203A;</span>
+        <span class="topbar-current">Copilot Forms</span>
+      </div>
+      <div class="topbar-actions">
+        <button
+          id="defaults-btn"
+          class="btn btn-ghost btn-sm"
+          type="button"
+          title="Set your defaults"
+        >
+          &#x2699; Defaults
+        </button>
+        <button
+          id="theme-toggle"
+          class="icon-btn"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <svg class="icon-sun" viewBox="0 0 20 20" fill="currentColor">
+            <circle cx="10" cy="10" r="4" />
+            <path
+              stroke="currentColor"
+              stroke-width="1.5"
+              d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M14.36 5.64l1.42-1.42M4.22 15.78l1.42-1.42"
+            />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+            />
+          </svg>
+        </button>
+      </div>
     </nav>
 
     <div class="index-page">
-        <header class="index-hero">
-            <p class="index-eyebrow">MTM Receiving Application</p>
-            <h1>Copilot Forms</h1>
-            <p class="lead">Structured request capture for UI work, debugging, logic fixes, and refactoring.</p>
-            <div class="search-wrapper">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-                </svg>
-                <input type="text" id="form-search" placeholder="Search forms (e.g. crash, refactor, test)" autocomplete="off">
-                <button id="search-clear" class="search-clear hidden" type="button" title="Clear search">&#x2715;</button>
-            </div>
-        </header>
-
-        <div class="index-body">
-            <section>
-                <p class="section-label">All Forms</p>
-                <div class="card-grid">
-                    <article class="form-card" data-form-id="ui-change">
-                        <span class="card-tag tag-build">UI</span>
-                        <h2>UI Change</h2>
-                        <p>Capture layout, copy, workflow, accessibility, and interaction updates.</p>
-                        <a class="card-link" href="forms/ui-change.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="debugging">
-                        <span class="card-tag tag-debug">Debug</span>
-                        <h2>Debugging</h2>
-                        <p>Capture symptoms, repro steps, expected behavior, logs, and suspected causes.</p>
-                        <a class="card-link" href="forms/debugging.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="logic-correction">
-                        <span class="card-tag tag-build">Logic</span>
-                        <h2>Logic Correction</h2>
-                        <p>Describe where feature behavior does not match the user's intended workflow.</p>
-                        <a class="card-link" href="forms/logic-correction.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="improvement-refactor">
-                        <span class="card-tag tag-review">Refactor</span>
-                        <h2>Improvement Refactor</h2>
-                        <p>Capture maintainability, clarity, performance, and structure improvements.</p>
-                        <a class="card-link" href="forms/improvement-refactor.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="logging-refactor">
-                        <span class="card-tag tag-review">Logging</span>
-                        <h2>Logging Refactor</h2>
-                        <p>Capture logging additions, removals, verbosity changes, or structured logging cleanup.</p>
-                        <a class="card-link" href="forms/logging-refactor.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="code-review">
-                        <span class="card-tag tag-review">Review</span>
-                        <h2>Code Review</h2>
-                        <p>Capture a review request focused on defects, risks, regressions, and missing validation.</p>
-                        <a class="card-link" href="forms/code-review.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="database-issue">
-                        <span class="card-tag tag-data">Database</span>
-                        <h2>Database Issue</h2>
-                        <p>Capture stored procedure, query, schema, or database workflow problems.</p>
-                        <a class="card-link" href="forms/database-issue.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="test-generation">
-                        <span class="card-tag tag-build">Tests</span>
-                        <h2>Test Generation</h2>
-                        <p>Capture which code needs tests, what should be mocked, and what behaviors must be covered.</p>
-                        <a class="card-link" href="forms/test-generation.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="documentation-change">
-                        <span class="card-tag tag-docs">Docs</span>
-                        <h2>Documentation Change</h2>
-                        <p>Capture new or missing documentation needs, audience, and accuracy constraints.</p>
-                        <a class="card-link" href="forms/documentation-change.html">Open form &#x2192;</a>
-                    </article>
-                    <article class="form-card" data-form-id="ui-mockup">
-                        <span class="card-tag tag-build">Mockup</span>
-                        <h2>UI Mockup</h2>
-                        <p>Capture enough screen detail for Copilot to generate a visual mockup artifact.</p>
-                        <a class="card-link" href="forms/ui-mockup.html">Open form &#x2192;</a>
-                    </article>
-                </div>
-            </section>
-
-            <section>
-                <p class="section-label">Recent Exports</p>
-                <div id="recent-exports-list" class="recent-list"></div>
-            </section>
-
-            <div class="info-grid">
-                <div class="info-card">
-                    <h2>Shared Data Source</h2>
-                    <p>Forms read from <code>data/copilot-forms.config.json</code>. Update that file as features evolve.</p>
-                    <ul>
-                        <li>Feature catalog</li>
-                        <li>Module ownership</li>
-                        <li>Suggested files to inspect</li>
-                        <li>Prompt and instruction pairing</li>
-                        <li>User-facing guidance per request type</li>
-                    </ul>
-                </div>
-                <div class="info-card">
-                    <h2>Suggested Workflow</h2>
-                    <ol>
-                        <li>Fill out a form</li>
-                        <li>Copy Markdown <kbd>Ctrl+Shift+C</kbd></li>
-                        <li>Save export to <code>outputs/</code> folder</li>
-                        <li>Link that export in chat</li>
-                        <li>Run the matching prompt from <code>.github/prompts/</code></li>
-                    </ol>
-                </div>
-            </div>
+      <header class="index-hero">
+        <p class="index-eyebrow">MTM Receiving Application</p>
+        <h1>Copilot Forms</h1>
+        <p class="lead">
+          Structured request capture for UI work, debugging, logic fixes, and
+          refactoring.
+        </p>
+        <div class="search-wrapper">
+          <svg
+            class="search-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <input
+            type="text"
+            id="form-search"
+            placeholder="Search forms (e.g. crash, refactor, test)"
+            autocomplete="off"
+          />
+          <button
+            id="search-clear"
+            class="search-clear hidden"
+            type="button"
+            title="Clear search"
+          >
+            &#x2715;
+          </button>
         </div>
+      </header>
 
-        <footer class="index-footer">
-            MTM Receiving Application &mdash; CopilotForms v2 &middot; Config: <code>data/copilot-forms.config.json</code>
-        </footer>
+      <div class="index-body">
+        <section>
+          <p class="section-label">All Forms</p>
+          <div class="card-grid">
+            <article class="form-card" data-form-id="ui-change">
+              <span class="card-tag tag-build">UI</span>
+              <h2>UI Change</h2>
+              <p>
+                Capture layout, copy, workflow, accessibility, and interaction
+                updates.
+              </p>
+              <a class="card-link" href="forms/ui-change.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="debugging">
+              <span class="card-tag tag-debug">Debug</span>
+              <h2>Debugging</h2>
+              <p>
+                Capture symptoms, repro steps, expected behavior, logs, and
+                suspected causes.
+              </p>
+              <a class="card-link" href="forms/debugging.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="logic-correction">
+              <span class="card-tag tag-build">Logic</span>
+              <h2>Logic Correction</h2>
+              <p>
+                Describe where feature behavior does not match the user's
+                intended workflow.
+              </p>
+              <a class="card-link" href="forms/logic-correction.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="improvement-refactor">
+              <span class="card-tag tag-review">Refactor</span>
+              <h2>Improvement Refactor</h2>
+              <p>
+                Capture maintainability, clarity, performance, and structure
+                improvements.
+              </p>
+              <a class="card-link" href="forms/improvement-refactor.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="logging-refactor">
+              <span class="card-tag tag-review">Logging</span>
+              <h2>Logging Refactor</h2>
+              <p>
+                Capture logging additions, removals, verbosity changes, or
+                structured logging cleanup.
+              </p>
+              <a class="card-link" href="forms/logging-refactor.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="code-review">
+              <span class="card-tag tag-review">Review</span>
+              <h2>Code Review</h2>
+              <p>
+                Capture a review request focused on defects, risks, regressions,
+                and missing validation.
+              </p>
+              <a class="card-link" href="forms/code-review.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="database-issue">
+              <span class="card-tag tag-data">Database</span>
+              <h2>Database Issue</h2>
+              <p>
+                Capture stored procedure, query, schema, or database workflow
+                problems.
+              </p>
+              <a class="card-link" href="forms/database-issue.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="test-generation">
+              <span class="card-tag tag-build">Tests</span>
+              <h2>Test Generation</h2>
+              <p>
+                Capture which code needs tests, what should be mocked, and what
+                behaviors must be covered.
+              </p>
+              <a class="card-link" href="forms/test-generation.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="documentation-change">
+              <span class="card-tag tag-docs">Docs</span>
+              <h2>Documentation Change</h2>
+              <p>
+                Capture new or missing documentation needs, audience, and
+                accuracy constraints.
+              </p>
+              <a class="card-link" href="forms/documentation-change.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+            <article class="form-card" data-form-id="ui-mockup">
+              <span class="card-tag tag-build">Mockup</span>
+              <h2>UI Mockup</h2>
+              <p>
+                Capture enough screen detail for Copilot to generate a visual
+                mockup artifact.
+              </p>
+              <a class="card-link" href="forms/ui-mockup.html"
+                >Open form &#x2192;</a
+              >
+            </article>
+          </div>
+        </section>
+
+        <section>
+          <p class="section-label">Recent Exports</p>
+          <div id="recent-exports-list" class="recent-list"></div>
+        </section>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <h2>Shared Data Source</h2>
+            <p>
+              Forms read from <code>data/copilot-forms.config.json</code>.
+              Update that file as features evolve.
+            </p>
+            <ul>
+              <li>Feature catalog</li>
+              <li>Module ownership</li>
+              <li>Suggested files to inspect</li>
+              <li>Prompt and instruction pairing</li>
+              <li>User-facing guidance per request type</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h2>Suggested Workflow</h2>
+            <ol>
+              <li>Fill out a form</li>
+              <li>Copy Markdown <kbd>Ctrl+Shift+C</kbd></li>
+              <li>Save export to <code>outputs/</code> folder</li>
+              <li>Link that export in chat</li>
+              <li>
+                Run the matching prompt from <code>.github/prompts/</code>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <footer class="index-footer">
+        MTM Receiving Application &mdash; CopilotForms v2 &middot; Config:
+        <code>data/copilot-forms.config.json</code>
+      </footer>
     </div>
 
     <!-- Defaults modal -->
-    <div id="defaults-modal" class="modal hidden" aria-hidden="true" aria-modal="true" role="dialog" aria-labelledby="defaults-modal-title">
-        <div class="modal-backdrop"></div>
-        <div class="modal-panel">
-            <div class="modal-header">
-                <h2 id="defaults-modal-title">My Defaults</h2>
-                <button id="defaults-close" class="icon-btn" type="button" aria-label="Close">&#x2715;</button>
-            </div>
-            <div class="modal-body">
-                <div class="field">
-                    <label for="default-feature">Default feature</label>
-                    <select id="default-feature"></select>
-                </div>
-                <div class="field">
-                    <label for="default-priority">Default priority</label>
-                    <select id="default-priority"></select>
-                </div>
-                <div class="field">
-                    <label for="default-audience">Default audience</label>
-                    <select id="default-audience"></select>
-                </div>
-                <div class="field">
-                    <label for="default-scope">Default scope</label>
-                    <select id="default-scope"></select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="cancel-defaults" class="btn btn-ghost" type="button">Cancel</button>
-                <button id="save-defaults" class="btn btn-primary" type="button">Save defaults</button>
-            </div>
+    <div
+      id="defaults-modal"
+      class="modal hidden"
+      aria-hidden="true"
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="defaults-modal-title"
+    >
+      <div class="modal-backdrop"></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="defaults-modal-title">My Defaults</h2>
+          <button
+            id="defaults-close"
+            class="icon-btn"
+            type="button"
+            aria-label="Close"
+          >
+            &#x2715;
+          </button>
         </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="default-feature">Default feature</label>
+            <select id="default-feature"></select>
+          </div>
+          <div class="field">
+            <label for="default-priority">Default priority</label>
+            <select id="default-priority"></select>
+          </div>
+          <div class="field">
+            <label for="default-audience">Default audience</label>
+            <select id="default-audience"></select>
+          </div>
+          <div class="field">
+            <label for="default-scope">Default scope</label>
+            <select id="default-scope"></select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-defaults" class="btn btn-ghost" type="button">
+            Cancel
+          </button>
+          <button id="save-defaults" class="btn btn-primary" type="button">
+            Save defaults
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="toast-container" aria-live="polite"></div>
-</body>
-
+  </body>
 </html>

@@ -1,0 +1,6 @@
+{
+  "module": "Module_Reporting",
+  "owner": "Reporting Team",
+  "lastUpdated": "2026-03-21",
+  "featureFiles": ["reporting-dashboard.json"]
+}

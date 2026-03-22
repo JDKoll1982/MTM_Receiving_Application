@@ -1,0 +1,111 @@
+{
+  "id": "dunnage-management",
+  "module": "Module_Dunnage",
+  "name": "Dunnage Management",
+  "summary": "Dunnage setup, lookup, and transaction tracking workflows.",
+  "owner": "Operations Team",
+  "relatedFiles": [
+    "Module_Dunnage/ViewModels",
+    "Module_Dunnage/Views",
+    "Module_Dunnage/Services"
+  ],
+  "relatedServices": ["IService_Dunnage", "IService_LoggingUtility"],
+  "promptDefaults": {
+    "audience": "Receiving Clerk",
+    "docAudience": "Receiving Clerk",
+    "mockupAudience": "Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Type selection", "Part selection", "Quantity entry"],
+    "screens": [
+      "Type Selection step",
+      "Part Selection step",
+      "Quantity Entry step"
+    ],
+    "currentUiPatterns": ["Wizard step", "Form"],
+    "desiredUiPatterns": ["Wizard step", "Card list", "Form"],
+    "uiElements": [
+      "Paging controls",
+      "Part actions",
+      "Quantity entry field",
+      "Validation message area"
+    ],
+    "userActions": ["Pick a type", "Pick a part", "Enter a valid quantity"],
+    "preserveRules": [
+      "Keep quantity validation unchanged",
+      "Keep selection guards unchanged"
+    ],
+    "acceptanceCriteria": [
+      "Users can still move through the same steps",
+      "Selection and quantity guards still work",
+      "The UI is easier to understand"
+    ],
+    "reviewFocusAreas": [
+      "Step-flow regressions",
+      "Quantity validation",
+      "Selection guard behavior"
+    ],
+    "testScenarios": [
+      "The user can move from type selection to part selection",
+      "Invalid quantity is still blocked correctly",
+      "Valid quantity still completes the workflow"
+    ],
+    "docTopics": [
+      "Dunnage workflow overview",
+      "Type and part selection behavior",
+      "Quantity validation rules"
+    ],
+    "validationHints": [
+      "Confirm the same guarded steps still work",
+      "Confirm quantity validation still behaves correctly"
+    ],
+    "mockupSections": [
+      "Step header",
+      "Selection list",
+      "Quantity form",
+      "Validation and navigation footer"
+    ],
+    "mockupFields": [
+      "Type selector",
+      "Part selector",
+      "Quantity field",
+      "Validation message"
+    ],
+    "loggingEvents": [
+      "Type selection",
+      "Part selection",
+      "Quantity validation failure"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "dunnage-type-selection",
+      "name": "Type Selection",
+      "uiHints": {
+        "screens": ["Type Selection step"],
+        "uiElements": ["Type options", "Continue action"],
+        "userActions": ["Choose the correct dunnage type quickly"]
+      }
+    },
+    {
+      "id": "dunnage-part-selection",
+      "name": "Part Selection",
+      "uiHints": {
+        "screens": ["Part Selection step"],
+        "uiElements": ["Part list", "Part action controls"],
+        "userActions": ["Choose the correct part"]
+      }
+    },
+    {
+      "id": "dunnage-quantity-entry",
+      "name": "Quantity Entry",
+      "uiHints": {
+        "screens": ["Quantity Entry step"],
+        "uiElements": ["Quantity field", "Validation message", "Save action"],
+        "userActions": ["Enter a valid quantity and finish the workflow"]
+      }
+    }
+  ]
+}

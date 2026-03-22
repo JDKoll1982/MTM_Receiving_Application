@@ -1,0 +1,102 @@
+{
+  "id": "reporting-dashboard",
+  "module": "Module_Reporting",
+  "name": "Reporting Dashboard",
+  "summary": "Report generation, filtering, and user-facing export flows.",
+  "owner": "Reporting Team",
+  "relatedFiles": [
+    "Module_Reporting/ViewModels",
+    "Module_Reporting/Views",
+    "Module_Reporting/Services"
+  ],
+  "relatedServices": ["IService_Reporting", "IService_ErrorHandler"],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": ["Generate reports", "Review generated output"],
+    "screens": [
+      "View_Reporting_Main.xaml",
+      "View_Reporting_PreviewDialog.xaml"
+    ],
+    "currentUiPatterns": ["Form", "Toolbar + results list"],
+    "desiredUiPatterns": ["Card list", "Split layout", "Form"],
+    "uiElements": [
+      "Module selection area",
+      "Generate Reports button",
+      "Preview cards",
+      "Copy Email Format action"
+    ],
+    "userActions": [
+      "Choose report modules",
+      "Generate reports",
+      "Copy preview output"
+    ],
+    "preserveRules": [
+      "Keep report generation behavior unchanged",
+      "Keep copy-email behavior unchanged"
+    ],
+    "acceptanceCriteria": [
+      "Generate Reports still works",
+      "Copy Email Format still works after generation",
+      "The reporting screen is easier to understand"
+    ],
+    "reviewFocusAreas": [
+      "Report generation correctness",
+      "Preview accuracy",
+      "Copy action stability"
+    ],
+    "testScenarios": [
+      "Generate Reports produces the expected output",
+      "Copy Email Format still uses the generated preview content"
+    ],
+    "docTopics": [
+      "Reporting dashboard overview",
+      "Generate Reports behavior",
+      "Preview and copy-email actions"
+    ],
+    "validationHints": [
+      "Confirm reports still generate correctly",
+      "Confirm copy-email behavior still works"
+    ],
+    "mockupSections": [
+      "Report filters",
+      "Generate action area",
+      "Preview results",
+      "Copy action area"
+    ],
+    "mockupFields": [
+      "Module selectors",
+      "Generate Reports button",
+      "Preview cards",
+      "Copy Email Format action"
+    ],
+    "loggingEvents": [
+      "Generate Reports clicked",
+      "Report generation completed",
+      "Copy preview action used"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "reporting-generate",
+      "name": "Generate Reports",
+      "uiHints": {
+        "uiElements": ["Filters", "Generate Reports button"],
+        "userActions": ["Generate the correct set of reports"]
+      }
+    },
+    {
+      "id": "reporting-preview-copy",
+      "name": "Preview And Copy",
+      "uiHints": {
+        "uiElements": ["Preview cards", "Copy Email Format action"],
+        "userActions": ["Review and copy the generated output"]
+      }
+    }
+  ]
+}

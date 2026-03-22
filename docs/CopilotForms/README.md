@@ -1,6 +1,6 @@
 # Copilot Forms
 
-Last Updated: 2026-03-18
+Last Updated: 2026-03-21
 
 This folder contains browser-based forms that help users produce structured, Copilot-friendly change requests.
 
@@ -21,12 +21,15 @@ The forms are designed for these common request types:
 
 Each form reads from a shared JSON catalog so Copilot or a maintainer can update the feature list as modules, workflows, and ownership change.
 
+Detailed feature metadata can now be split into module-specific files under `data/module-metadata/` so the main config stays smaller and easier to maintain.
+
 ## Folder Layout
 
 - `index.html`: landing page with links to each form
 - `forms/`: scenario-specific HTML pages
 - `assets/`: shared JavaScript and CSS
 - `data/`: shared JSON catalog and schema
+- `data/module-metadata/`: split per-module feature metadata loaded at runtime
 - `inputs/templates/`: machine-editable request templates for bulk authoring or AI-assisted drafting
 - `outputs/templates/`: export format references
 - `outputs/<scenario>/`: suggested place to save generated Markdown or JSON exports
@@ -65,7 +68,16 @@ Edit `data/copilot-forms.config.json` when:
 - A feature is removed or deprecated
 - Prompt or instruction file names change
 
-The HTML forms read that catalog at runtime. If the browser blocks local JSON loading, use the built-in `Load Local Config` button and select `data/copilot-forms.config.json` manually.
+Edit `data/module-metadata/<ModuleName>/` when:
+
+- A split module feature needs richer metadata
+- New sub-feature hints are added
+- Feature-aware prompt defaults or validation hints are updated
+- An analyzed module is moved out of the main config and into split files
+
+The HTML forms read that catalog at runtime. The runtime can also load split metadata indexes listed in `project.moduleMetadataIndexes` inside the main config.
+
+If the browser blocks local JSON loading, use the built-in `Load Local Config` button and select `data/copilot-forms.config.json` manually.
 
 ## Prompt And Instruction Pairing
 

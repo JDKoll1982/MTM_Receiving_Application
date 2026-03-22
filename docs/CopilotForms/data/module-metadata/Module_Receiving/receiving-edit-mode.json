@@ -1,0 +1,182 @@
+{
+  "id": "receiving-edit-mode",
+  "module": "Module_Receiving",
+  "name": "Edit Mode",
+  "summary": "In-place editing of already-queued receiving lines before final save.",
+  "owner": "Receiving Team",
+  "relatedFiles": [
+    "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+    "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+    "Module_Receiving/Data/Dao_ReceivingLine.cs",
+    "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
+  ],
+  "relatedServices": ["IService_MySQL_ReceivingLine"],
+  "promptDefaults": {
+    "audience": "Receiving Clerk",
+    "docAudience": "Receiving Clerk",
+    "mockupAudience": "Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Edit existing loads",
+      "Search and page through saved receiving entries"
+    ],
+    "screens": ["View_Receiving_EditMode.xaml"],
+    "currentUiPatterns": [
+      "DataGrid",
+      "Toolbar + results list",
+      "Paged results list"
+    ],
+    "desiredUiPatterns": [
+      "Card list",
+      "Compact card list",
+      "Split layout",
+      "Master-detail cards"
+    ],
+    "uiElements": [
+      "Results grid",
+      "Search box",
+      "Search-by selector",
+      "Sort controls",
+      "Pagination controls",
+      "Select All action",
+      "Save Changes action",
+      "Row edit actions"
+    ],
+    "userActions": [
+      "Scan existing loads quickly",
+      "Find a load by search",
+      "Review one load at a time",
+      "Edit a selected record",
+      "Save changes confidently"
+    ],
+    "accessibilityNeeds": [
+      "Make the screen easier to scan",
+      "Reduce visual clutter",
+      "Make actions clearer for non-technical users",
+      "Keep important actions visible without scrolling"
+    ],
+    "preserveRules": [
+      "Keep business logic unchanged",
+      "Keep validation rules unchanged",
+      "Keep service layer unchanged",
+      "Keep DAO/data flow unchanged",
+      "Keep save behavior unchanged",
+      "Keep search behavior unless explicitly changed",
+      "Keep paging unless explicitly changed"
+    ],
+    "acceptanceCriteria": [
+      "Users can review entries more easily than in the current grid",
+      "Search still works",
+      "Paging still works unless the request says otherwise",
+      "Existing save behavior still works",
+      "No business logic or data flow changes"
+    ],
+    "reviewFocusAreas": [
+      "Grid-to-card regressions",
+      "Search and paging behavior",
+      "Save path stability",
+      "Selection and row-action correctness"
+    ],
+    "testScenarios": [
+      "Search still finds matching results",
+      "Paging still moves through records correctly",
+      "Editing a record preserves the correct values",
+      "Save Changes keeps the current business flow intact"
+    ],
+    "docTopics": [
+      "Edit mode overview",
+      "Search and paging behavior",
+      "Row editing expectations",
+      "Save Changes behavior"
+    ],
+    "validationHints": [
+      "Confirm search still works",
+      "Confirm paging still works",
+      "Confirm saving still uses the existing logic",
+      "Confirm row actions still work correctly"
+    ],
+    "mockupSections": [
+      "Search and filter toolbar",
+      "Results area",
+      "Record action area",
+      "Save footer"
+    ],
+    "mockupFields": [
+      "Search text",
+      "Search-by selector",
+      "Sort controls",
+      "Row actions",
+      "Save Changes action"
+    ],
+    "databaseObjects": [
+      "sp_ReceivingLine_Update",
+      "sp_ReceivingLine_GetPaged",
+      "receiving line tables"
+    ],
+    "loggingEvents": [
+      "Search requests",
+      "Paging changes",
+      "Row edit actions",
+      "Save Changes requests"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "receiving-edit-grid",
+      "name": "Edit Grid",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_EditMode.xaml"],
+        "currentUiPatterns": ["DataGrid"],
+        "desiredUiPatterns": [
+          "Card list",
+          "Compact card list",
+          "Master-detail cards"
+        ],
+        "uiElements": [
+          "Results grid",
+          "Row actions",
+          "Search box",
+          "Sort controls",
+          "Pagination controls"
+        ],
+        "userActions": [
+          "Scan a record quickly",
+          "Compare one record to another",
+          "Open actions for a single record"
+        ],
+        "testScenarios": [
+          "The user can still scan and review rows quickly",
+          "The chosen card or row action opens the correct record"
+        ]
+      }
+    },
+    {
+      "id": "receiving-edit-save",
+      "name": "Save Changes",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
+      ],
+      "uiHints": {
+        "workflowAreas": ["Save edited records"],
+        "uiElements": [
+          "Save Changes action",
+          "Validation message area",
+          "Success or failure feedback"
+        ],
+        "userActions": [
+          "Save edits confidently",
+          "Understand whether the save succeeded"
+        ]
+      }
+    }
+  ]
+}

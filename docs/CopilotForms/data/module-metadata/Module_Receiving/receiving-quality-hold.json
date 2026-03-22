@@ -1,0 +1,86 @@
+{
+  "id": "receiving-quality-hold",
+  "module": "Module_Receiving",
+  "name": "Quality Hold",
+  "summary": "Quality-hold assignment, warning dialogs, and CRUD operations for QH records.",
+  "owner": "Receiving Team",
+  "relatedFiles": [
+    "Module_Receiving/Data/Dao_QualityHold.cs",
+    "Module_Receiving/Services/Service_MySQL_QualityHold.cs",
+    "Module_Receiving/Services/Service_QualityHoldWarning.cs",
+    "Module_Receiving/Models/Model_QualityHold.cs"
+  ],
+  "relatedServices": [
+    "IService_MySQL_QualityHold",
+    "IService_QualityHoldWarning"
+  ],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": ["Quality hold assignment", "Quality hold warning flow"],
+    "screens": ["Quality hold warning dialog", "Quality hold maintenance flow"],
+    "currentUiPatterns": ["Dialog", "Form"],
+    "desiredUiPatterns": ["Dialog", "Form", "Split layout"],
+    "uiElements": [
+      "Warning dialog",
+      "Hold reason field",
+      "Confirm action",
+      "CRUD actions"
+    ],
+    "userActions": [
+      "Understand why a quality hold is required",
+      "Create or update a quality hold record"
+    ],
+    "preserveRules": [
+      "Keep quality hold business rules unchanged",
+      "Keep warning behavior unchanged unless explicitly requested"
+    ],
+    "acceptanceCriteria": [
+      "Quality hold warnings still appear at the correct time",
+      "CRUD operations still work for quality hold records"
+    ],
+    "reviewFocusAreas": [
+      "Warning dialog correctness",
+      "CRUD stability",
+      "Stored procedure alignment"
+    ],
+    "testScenarios": [
+      "A quality hold warning appears when expected",
+      "A quality hold record can be created and updated correctly"
+    ],
+    "docTopics": [
+      "Quality hold warning behavior",
+      "Quality hold maintenance rules"
+    ],
+    "validationHints": [
+      "Confirm warning timing is unchanged",
+      "Confirm CRUD behavior still works correctly"
+    ],
+    "databaseObjects": [
+      "sp_QualityHold_Insert",
+      "sp_QualityHold_Update",
+      "quality hold tables"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "receiving-qh-warning",
+      "name": "QH Warning Dialog",
+      "relatedFiles": [
+        "Module_Receiving/Services/Service_QualityHoldWarning.cs",
+        "Module_Receiving/Contracts/IService_QualityHoldWarning.cs"
+      ]
+    },
+    {
+      "id": "receiving-qh-crud",
+      "name": "QH CRUD Operations",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_QualityHold.cs",
+        "Module_Receiving/Services/Service_MySQL_QualityHold.cs"
+      ]
+    }
+  ]
+}

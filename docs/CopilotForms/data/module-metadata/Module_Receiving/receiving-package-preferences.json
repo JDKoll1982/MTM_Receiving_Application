@@ -1,0 +1,82 @@
+{
+  "id": "receiving-package-preferences",
+  "module": "Module_Receiving",
+  "name": "Package Preferences",
+  "summary": "Per-part package type preferences and prefix-based rules for auto-selecting package types.",
+  "owner": "Receiving Team",
+  "relatedFiles": [
+    "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+    "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
+    "Module_Receiving/Models/Model_PackageTypePreference.cs",
+    "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
+  ],
+  "relatedServices": ["IService_MySQL_PackagePreferences"],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": ["Package type defaults", "Prefix-based package rules"],
+    "screens": ["Package preference maintenance flow"],
+    "currentUiPatterns": ["Form", "Table"],
+    "desiredUiPatterns": ["Form", "Card list", "Split layout"],
+    "uiElements": [
+      "Part number input",
+      "Prefix rule fields",
+      "Preferred package type selector",
+      "Save action"
+    ],
+    "userActions": [
+      "Set preferred package types",
+      "Understand which prefix rule will apply"
+    ],
+    "preserveRules": [
+      "Keep package selection rules stable unless explicitly changed"
+    ],
+    "acceptanceCriteria": [
+      "Preference rules still resolve the correct package type",
+      "Preference service behavior remains correct"
+    ],
+    "reviewFocusAreas": [
+      "Rule precedence",
+      "Stored procedure alignment",
+      "Prefix rule correctness"
+    ],
+    "testScenarios": [
+      "A matching prefix rule selects the expected package type",
+      "The preferences service returns the expected default"
+    ],
+    "docTopics": [
+      "Package preference rule order",
+      "Prefix-based package defaults"
+    ],
+    "validationHints": [
+      "Confirm the same package type is selected for the same prefix rules",
+      "Confirm service behavior remains unchanged"
+    ],
+    "databaseObjects": [
+      "sp_PackageTypePreference_Get",
+      "sp_PackageTypePreference_Save",
+      "package preference tables"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "receiving-pkg-pref-rules",
+      "name": "Preference Rules",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+        "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
+      ]
+    },
+    {
+      "id": "receiving-pkg-pref-service",
+      "name": "Preferences Service",
+      "relatedFiles": [
+        "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
+        "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs"
+      ]
+    }
+  ]
+}

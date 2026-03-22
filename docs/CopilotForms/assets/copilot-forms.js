@@ -211,6 +211,235 @@ function createListWidget(fieldCfg, initVals = []) {
   return wrap;
 }
 
+function createCheckboxGroupWidget(fieldCfg, options = [], initVals = []) {
+  const wrap = make("div", {
+    class: "checkbox-group-widget",
+    id: fieldCfg.id,
+    "data-field-id": fieldCfg.id,
+    "data-field-type": "checkbox-group",
+  });
+
+  const optionsWrap = make("div", { class: "checkbox-group-options" });
+  wrap.appendChild(optionsWrap);
+
+  function renderOptions(nextOptions = [], selected = []) {
+    const selectedSet = new Set(Array.isArray(selected) ? selected : []);
+    optionsWrap.innerHTML = "";
+
+    nextOptions.forEach((opt, index) => {
+      const safeId = `${fieldCfg.id}-${index}`;
+      const label = make("label", { class: "checkbox-chip", for: safeId });
+      const input = make("input", {
+        type: "checkbox",
+        id: safeId,
+        value: opt,
+      });
+      input.checked = selectedSet.has(opt);
+      input.addEventListener("change", () => {
+        wrap.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      label.appendChild(input);
+      label.appendChild(make("span", { class: "checkbox-chip-text" }, opt));
+      optionsWrap.appendChild(label);
+    });
+  }
+
+  wrap.readValue = () =>
+    [...optionsWrap.querySelectorAll('input[type="checkbox"]:checked')].map(
+      (input) => input.value,
+    );
+
+  wrap.writeValue = (vals) => {
+    const selected = new Set(Array.isArray(vals) ? vals : []);
+    optionsWrap.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+      input.checked = selected.has(input.value);
+    });
+  };
+
+  wrap.setOptions = (vals, selected = wrap.readValue()) => {
+    renderOptions(vals, selected);
+  };
+
+  renderOptions(options, initVals);
+  return wrap;
+}
+
+function populateSelectOptions(
+  selectEl,
+  options = [],
+  placeholder = "Select…",
+) {
+  if (!selectEl) return;
+  const currentValue = selectEl.value;
+  selectEl.innerHTML = "";
+  selectEl.appendChild(createOption(placeholder, ""));
+  [...new Set(options.filter(Boolean))].forEach((opt) => {
+    selectEl.appendChild(createOption(opt, opt));
+  });
+  if ([...selectEl.options].some((opt) => opt.value === currentValue)) {
+    selectEl.value = currentValue;
+  }
+}
+
+function uniqueList(...groups) {
+  return [...new Set(groups.flat().filter(Boolean))];
+}
+
+function mergePromptDefaults(feature, subFeature) {
+  return {
+    ...(feature?.promptDefaults || {}),
+    ...(subFeature?.promptDefaults || {}),
+  };
+}
+
+function mergeFeatureUiHints(feature, subFeature) {
+  const featureHints = feature?.uiHints || {};
+  const subHints = subFeature?.uiHints || {};
+
+  const merged = {};
+  const allKeys = new Set([
+    ...Object.keys(featureHints),
+    ...Object.keys(subHints),
+  ]);
+
+  allKeys.forEach((key) => {
+    const featureValue = featureHints[key];
+    const subValue = subHints[key];
+    if (Array.isArray(featureValue) || Array.isArray(subValue)) {
+      merged[key] = uniqueList(subValue || [], featureValue || []);
+    } else if (subValue !== undefined || featureValue !== undefined) {
+      merged[key] = subValue ?? featureValue;
+    }
+  });
+
+  return {
+    ...merged,
+    workflowAreas: uniqueList(
+      subHints.workflowAreas,
+      featureHints.workflowAreas,
+      subFeature?.name,
+      feature?.name,
+    ),
+    screens: uniqueList(
+      subHints.screens,
+      subFeature?.name,
+      featureHints.screens,
+    ),
+    currentUiPatterns: uniqueList(
+      subHints.currentUiPatterns,
+      featureHints.currentUiPatterns,
+    ),
+    desiredUiPatterns: uniqueList(
+      subHints.desiredUiPatterns,
+      featureHints.desiredUiPatterns,
+    ),
+    uiElements: uniqueList(subHints.uiElements, featureHints.uiElements),
+    userActions: uniqueList(subHints.userActions, featureHints.userActions),
+    accessibilityNeeds: uniqueList(
+      subHints.accessibilityNeeds,
+      featureHints.accessibilityNeeds,
+    ),
+    preserveRules: uniqueList(
+      subHints.preserveRules,
+      featureHints.preserveRules,
+    ),
+    acceptanceCriteria: uniqueList(
+      subHints.acceptanceCriteria,
+      featureHints.acceptanceCriteria,
+    ),
+    relatedFiles: uniqueList(
+      subHints.relatedFiles,
+      subFeature?.relatedFiles,
+      featureHints.relatedFiles,
+      feature?.relatedFiles,
+    ),
+  };
+}
+
+function getSelectedFeatureContext(config) {
+  const featureId = $("feature-select")?.value || "";
+  const subFeatureId = $("subfeature-select")?.value || "";
+  const feature =
+    (config.features || []).find((f) => f.id === featureId) || null;
+  const subFeature =
+    feature?.subFeatures?.find((sf) => sf.id === subFeatureId) || null;
+  return {
+    feature,
+    subFeature,
+    hints: mergeFeatureUiHints(feature, subFeature),
+    promptDefaults: mergePromptDefaults(feature, subFeature),
+  };
+}
+
+function applyFeatureHints(config, form) {
+  if (!config || !form) return;
+
+  const { hints, promptDefaults } = getSelectedFeatureContext(config);
+  const shared = config.shared || {};
+
+  document.querySelectorAll("[data-feature-hint-key]").forEach((el) => {
+    const key = el.dataset.featureHintKey;
+    const baseValues = el.dataset.optionSource
+      ? shared[el.dataset.optionSource] || []
+      : [];
+    const values = uniqueList(hints[key] || [], baseValues);
+    if (el.dataset.fieldType === "select") {
+      populateSelectOptions(el, values, el.dataset.placeholder || "Select…");
+    } else if (el.dataset.fieldType === "checkbox-group") {
+      el.setOptions?.(values);
+    }
+  });
+
+  document.querySelectorAll("[data-autofill-feature-key]").forEach((el) => {
+    const key = el.dataset.autofillFeatureKey;
+    const values = hints[key] || [];
+    const existing = readEl(el);
+    const priorAutoFill = el.dataset.autoFilledValue
+      ? JSON.parse(el.dataset.autoFilledValue)
+      : null;
+    const isEmpty = Array.isArray(existing) ? existing.length === 0 : !existing;
+    const matchesPriorAutoFill =
+      JSON.stringify(existing ?? null) ===
+      JSON.stringify(priorAutoFill ?? null);
+
+    if (!values.length) {
+      if (matchesPriorAutoFill) {
+        writeEl(el, Array.isArray(existing) ? [] : "");
+        delete el.dataset.autoFilledValue;
+      }
+      return;
+    }
+
+    if (isEmpty || matchesPriorAutoFill) {
+      writeEl(el, values);
+      el.dataset.autoFilledValue = JSON.stringify(values);
+    }
+  });
+
+  Object.entries(promptDefaults).forEach(([fieldId, value]) => {
+    const el =
+      $(fieldId) || document.querySelector(`[data-field-id="${fieldId}"]`);
+    if (!el) return;
+    const existing = readEl(el);
+    const isEmpty = Array.isArray(existing) ? existing.length === 0 : !existing;
+    if (isEmpty) {
+      writeEl(el, value);
+    }
+  });
+
+  const helper = $("feature-aware-hint");
+  if (helper) {
+    const hasHints =
+      hints.screens.length ||
+      hints.uiElements.length ||
+      hints.relatedFiles.length;
+    helper.textContent = hasHints
+      ? "Helpful choices were loaded for this feature so the user can pick more and type less."
+      : "Pick a feature to load smarter choices and suggested files.";
+    helper.classList.toggle("hidden", false);
+  }
+}
+
 // ── Natural-language pre-fill ──────────────────────────────────────────────────
 function renderNlWidget() {
   const form = $("copilot-form");
@@ -309,6 +538,7 @@ function parseNlIntoFields(form, config, text) {
   const lower = text.toLowerCase();
   const shared = config.shared || {};
   const result = {};
+  const currentContext = getSelectedFeatureContext(config);
 
   const featureSel = $("feature-select");
   if (featureSel && !featureSel.value) {
@@ -332,15 +562,31 @@ function parseNlIntoFields(form, config, text) {
   for (const group of form.fieldGroups || []) {
     for (const fc of group.fields) {
       if (fc.type === "select") {
-        const opts = Array.isArray(fc.options)
-          ? fc.options
-          : shared[fc.optionSource] || [];
+        const opts = uniqueList(
+          fc.featureHintKey
+            ? currentContext.hints[fc.featureHintKey] || []
+            : [],
+          Array.isArray(fc.options)
+            ? fc.options
+            : shared[fc.optionSource] || [],
+        );
         for (const opt of opts) {
           if (lower.includes(opt.toLowerCase())) {
             result[fc.id] = opt;
             break;
           }
         }
+      } else if (fc.type === "checkbox-group") {
+        const opts = uniqueList(
+          fc.featureHintKey
+            ? currentContext.hints[fc.featureHintKey] || []
+            : [],
+          Array.isArray(fc.options)
+            ? fc.options
+            : shared[fc.optionSource] || [],
+        );
+        const matches = opts.filter((opt) => lower.includes(opt.toLowerCase()));
+        if (matches.length) result[fc.id] = matches;
       } else if (fc.type === "list") {
         const items = extractListItems(text, fc);
         if (items.length) result[fc.id] = items;
@@ -417,7 +663,10 @@ function initNlPrefill(form, config) {
 function readEl(el) {
   if (!el) return "";
   if (el.classList.contains("list-widget")) return el.readValue?.() ?? [];
-  if (el.dataset?.fieldType === "tristate") return el.dataset.value || "ai-decides";
+  if (el.classList.contains("checkbox-group-widget"))
+    return el.readValue?.() ?? [];
+  if (el.dataset?.fieldType === "tristate")
+    return el.dataset.value || "ai-decides";
   if (el.dataset?.fieldType === "checkbox") return el.checked;
   return (el.value ?? "").trim();
 }
@@ -425,6 +674,10 @@ function readEl(el) {
 function writeEl(el, val) {
   if (!el) return;
   if (el.classList.contains("list-widget")) {
+    el.writeValue?.(val);
+    return;
+  }
+  if (el.classList.contains("checkbox-group-widget")) {
     el.writeValue?.(val);
     return;
   }
@@ -492,6 +745,21 @@ function createField(fc, shared) {
     );
     w.id = fc.id;
     wrap.appendChild(w);
+    if (fc.featureHintKey) w.dataset.featureHintKey = fc.featureHintKey;
+    if (fc.autoFillFeatureKey)
+      w.dataset.autofillFeatureKey = fc.autoFillFeatureKey;
+  } else if (fc.type === "checkbox-group") {
+    const opts = Array.isArray(fc.options)
+      ? fc.options
+      : shared[fc.optionSource] || [];
+    const w = createCheckboxGroupWidget(
+      fc,
+      opts,
+      Array.isArray(fc.defaultItems) ? fc.defaultItems : [],
+    );
+    if (fc.featureHintKey) w.dataset.featureHintKey = fc.featureHintKey;
+    if (fc.optionSource) w.dataset.optionSource = fc.optionSource;
+    wrap.appendChild(w);
   } else if (fc.type === "textarea") {
     const ta = make("textarea", {
       id: fc.id,
@@ -501,6 +769,8 @@ function createField(fc, shared) {
       placeholder: fc.placeholder || "",
     });
     if (fc.required) ta.required = true;
+    if (fc.autoFillFeatureKey)
+      ta.dataset.autofillFeatureKey = fc.autoFillFeatureKey;
     wrap.appendChild(ta);
   } else if (fc.type === "select") {
     const sel = make("select", {
@@ -508,11 +778,14 @@ function createField(fc, shared) {
       "data-field-id": fc.id,
       "data-field-type": "select",
     });
+    sel.dataset.placeholder = fc.placeholder || "Select…";
     sel.appendChild(createOption(fc.placeholder || "Select…", ""));
     const opts = Array.isArray(fc.options)
       ? fc.options
       : shared[fc.optionSource] || [];
     opts.forEach((v) => sel.appendChild(createOption(v, v)));
+    if (fc.featureHintKey) sel.dataset.featureHintKey = fc.featureHintKey;
+    if (fc.optionSource) sel.dataset.optionSource = fc.optionSource;
     if (fc.required) sel.required = true;
     wrap.appendChild(sel);
   } else {
@@ -606,7 +879,9 @@ function renderAgentFlags() {
     id: "agent-flags-section",
     class: "sidebar-section agent-flags-section",
   });
-  section.appendChild(make("div", { class: "agent-flags-title" }, "Agent Flags"));
+  section.appendChild(
+    make("div", { class: "agent-flags-title" }, "Agent Flags"),
+  );
 
   // ── Serena row ───────────────────────────────────────────────────────────────
   const serenaRow = make("div", { class: "agent-flag-row" });
@@ -621,24 +896,33 @@ function renderAgentFlags() {
   });
 
   [
-    { val: "mandatory",  symbol: "✔", title: "Mandatory — AI must use Serena MCP tools" },
-    { val: "ai-decides", symbol: "–", title: "Up to AI — agent decides whether to use Serena" },
-    { val: "off",        symbol: "✕", title: "Off — do not use Serena" },
+    {
+      val: "mandatory",
+      symbol: "✔",
+      title: "Mandatory — AI must use Serena MCP tools",
+    },
+    {
+      val: "ai-decides",
+      symbol: "–",
+      title: "Up to AI — agent decides whether to use Serena",
+    },
+    { val: "off", symbol: "✕", title: "Off — do not use Serena" },
   ].forEach(({ val, symbol, title }) => {
     const btn = make(
       "button",
       {
         type: "button",
-        class: "tristate-btn" + (val === "ai-decides" ? " tristate-active" : ""),
+        class:
+          "tristate-btn" + (val === "ai-decides" ? " tristate-active" : ""),
         "data-val": val,
         title,
       },
       symbol,
     );
     btn.addEventListener("click", () => {
-      tristate.querySelectorAll(".tristate-btn").forEach((b) =>
-        b.classList.remove("tristate-active"),
-      );
+      tristate
+        .querySelectorAll(".tristate-btn")
+        .forEach((b) => b.classList.remove("tristate-active"));
       btn.classList.add("tristate-active");
       tristate.dataset.value = val;
       document.body.dispatchEvent(new Event("change"));
@@ -721,6 +1005,61 @@ function collectValues() {
   return out;
 }
 
+function getFieldValue(values, ids = []) {
+  for (const id of ids) {
+    const value = values[id];
+    if (Array.isArray(value) && value.length) return value.join("; ");
+    if (value) return String(value);
+  }
+  return "";
+}
+
+function buildHumanSummary(form, feature, subFeature, values) {
+  const title = getFieldValue(values, [
+    "requestTitle",
+    "bugTitle",
+    "docTitle",
+    "reviewTitle",
+    "databaseTitle",
+    "testRequestTitle",
+    "mockupTitle",
+  ]);
+  const problem = getFieldValue(values, [
+    "changeSummary",
+    "observedBehavior",
+    "workflowIntent",
+    "motivation",
+    "reason",
+    "reviewGoal",
+    "databaseProblem",
+    "testIntent",
+    "docProblem",
+    "mockupPurpose",
+  ]);
+  const desiredOutcome = getFieldValue(values, [
+    "successLooksLike",
+    "expectedBehavior",
+    "targetOutcome",
+    "preferredOutcome",
+    "docOutcome",
+  ]);
+
+  const lines = [];
+  lines.push(
+    `This ${form.title.toLowerCase()} is for ${subFeature?.name || feature?.name || "an unspecified feature"}${feature?.module ? ` in ${feature.module}` : ""}.`,
+  );
+  if (title) {
+    lines.push(`Short title: ${title}.`);
+  }
+  if (problem) {
+    lines.push(`Main problem or request: ${problem}`);
+  }
+  if (desiredOutcome) {
+    lines.push(`Desired result: ${desiredOutcome}`);
+  }
+  return lines.join(" ").trim();
+}
+
 // ── Build markdown output ──────────────────────────────────────────────────────
 function buildMarkdown(form, feature, values) {
   const lines = [];
@@ -730,6 +1069,7 @@ function buildMarkdown(form, feature, values) {
   const _subFeatureId = $("subfeature-select")?.value || "";
   const _subFeature =
     feature?.subFeatures?.find((sf) => sf.id === _subFeatureId) || null;
+  const humanSummary = buildHumanSummary(form, feature, _subFeature, values);
   lines.push(
     `- Feature: ${feature?.name || values.featureName || "Unspecified"}`,
   );
@@ -741,26 +1081,41 @@ function buildMarkdown(form, feature, values) {
   lines.push(`- Instruction File: ${form.instructionFile}`);
   lines.push(`- Output Folder: ${form.outputFolder}`);
   lines.push("");
+  lines.push("## Human Summary", "");
+  lines.push(
+    humanSummary ||
+      "_Not enough information was provided to build a plain-English summary yet._",
+  );
+  lines.push("");
 
   // ── Agent Flags ──────────────────────────────────────────────────────────
-  const _serenaVal   = values["serena-mode"] || "ai-decides";
-  const _noobVal     = values["noob-mode"] ?? false;
-  const _serenaLabel = _serenaVal === "mandatory" ? "\u2714 Mandatory"
-                     : _serenaVal === "off"       ? "\u2715 Off (do not use)"
-                     :                             "\u2013 Up to AI";
+  const _serenaVal = values["serena-mode"] || "ai-decides";
+  const _noobVal = values["noob-mode"] ?? false;
+  const _serenaLabel =
+    _serenaVal === "mandatory"
+      ? "\u2714 Mandatory"
+      : _serenaVal === "off"
+        ? "\u2715 Off (do not use)"
+        : "\u2013 Up to AI";
   lines.push("## Agent Flags", "");
   lines.push(`- Serena: ${_serenaLabel}`);
   lines.push(`- Noob Mode: ${_noobVal ? "\u2714 On" : "\u2715 Off"}`);
   lines.push("");
   if (_noobVal) {
-    lines.push("> **Noob Mode active** \u2014 explain all reasoning step-by-step, avoid jargon, define terms on first use, and include inline comments on every non-trivial line of generated code.");
+    lines.push(
+      "> **Noob Mode active** \u2014 explain all reasoning step-by-step, avoid jargon, define terms on first use, and include inline comments on every non-trivial line of generated code.",
+    );
     lines.push("");
   }
   if (_serenaVal === "mandatory") {
-    lines.push("> **Serena mandatory** \u2014 you MUST use Serena MCP tools (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`, `replace_symbol_body`, etc.) for all code navigation and editing. Do not read full files when Serena can provide targeted symbol access.");
+    lines.push(
+      "> **Serena mandatory** \u2014 you MUST use Serena MCP tools (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`, `replace_symbol_body`, etc.) for all code navigation and editing. Do not read full files when Serena can provide targeted symbol access.",
+    );
     lines.push("");
   } else if (_serenaVal === "off") {
-    lines.push("> **Serena disabled** \u2014 do NOT use Serena MCP tools. Use standard file read/edit tools only.");
+    lines.push(
+      "> **Serena disabled** \u2014 do NOT use Serena MCP tools. Use standard file read/edit tools only.",
+    );
     lines.push("");
   }
 
@@ -776,6 +1131,14 @@ function buildMarkdown(form, feature, values) {
     );
     lines.push("");
   }
+
+  if ((feature?.relatedFiles || []).length) {
+    lines.push("## Suggested Starting Points", "");
+    (feature.relatedFiles || []).forEach((file) => lines.push(`- ${file}`));
+    lines.push("");
+  }
+
+  lines.push("## Structured Request", "");
 
   for (const group of form.fieldGroups || []) {
     lines.push(`## ${group.title}`, "");
@@ -810,6 +1173,9 @@ function buildMarkdown(form, feature, values) {
 }
 
 function buildJson(form, feature, values) {
+  const subFeatureId = $("subfeature-select")?.value || "";
+  const subFeature =
+    feature?.subFeatures?.find((sf) => sf.id === subFeatureId) || null;
   return JSON.stringify(
     {
       generatedAt: new Date().toISOString(),
@@ -817,7 +1183,9 @@ function buildJson(form, feature, values) {
       title: form.title,
       outputFolder: form.outputFolder,
       promptFile: form.promptFile,
+      humanSummary: buildHumanSummary(form, feature, subFeature, values),
       feature: feature || null,
+      subFeature: subFeature || null,
       values,
     },
     null,
@@ -901,11 +1269,16 @@ function initPromptRunner(form) {
   if (!btn || !form?.promptFile) return;
   btn.onclick = () => {
     const serenaVal = $("serena-mode")?.dataset?.value || "ai-decides";
-    const noobOn    = $("noob-mode")?.checked || false;
+    const noobOn = $("noob-mode")?.checked || false;
     const serenaHint =
-      serenaVal === "mandatory" ? " Serena MCP tools are MANDATORY — use them for all code navigation and editing." :
-      serenaVal === "off"       ? " Do NOT use Serena MCP tools." : "";
-    const noobHint = noobOn ? " Noob Mode ON — explain step-by-step, avoid jargon, add inline code comments." : "";
+      serenaVal === "mandatory"
+        ? " Serena MCP tools are MANDATORY — use them for all code navigation and editing."
+        : serenaVal === "off"
+          ? " Do NOT use Serena MCP tools."
+          : "";
+    const noobHint = noobOn
+      ? " Noob Mode ON — explain step-by-step, avoid jargon, add inline code comments."
+      : "";
     const msg = `Use @workspace and refer to the prompt file \`${form.promptFile}\`. Link the export saved to \`${form.outputFolder}\`.${serenaHint}${noobHint}`;
     copyText(msg);
     showToast("Prompt text copied — paste into Copilot Chat!");
@@ -1044,6 +1417,13 @@ function renderForm(config, form) {
   const container = $("dynamic-fields");
   if (!container) return;
   container.innerHTML = "";
+  container.appendChild(
+    make(
+      "div",
+      { id: "feature-aware-hint", class: "feature-aware-hint hidden" },
+      "Pick a feature to load smarter choices and suggested files.",
+    ),
+  );
   const defaults = loadDefaults();
   const defaultMap = {
     priority: defaults.priority,
@@ -1174,12 +1554,54 @@ function initKeyboardShortcuts() {
 }
 
 // ── Load config ────────────────────────────────────────────────────────────────
-async function loadConfig(basePath) {
-  const r = await fetch(`${basePath}/data/copilot-forms.config.json`, {
+function resolvePath(basePath, relativePath) {
+  return new URL(
+    `${basePath}/${relativePath}`.replace(/\\/g, "/"),
+    window.location.href,
+  ).toString();
+}
+
+async function loadJsonFile(basePath, relativePath) {
+  const r = await fetch(resolvePath(basePath, relativePath), {
     cache: "no-store",
   });
-  if (!r.ok) throw new Error(`Config load failed (${r.status})`);
+  if (!r.ok)
+    throw new Error(`Config load failed (${r.status}) for ${relativePath}`);
   return r.json();
+}
+
+async function enrichConfigWithModuleMetadata(config, basePath) {
+  const manifestPaths = config.project?.moduleMetadataIndexes || [];
+  if (!manifestPaths.length) return config;
+
+  const externalFeatures = [];
+  for (const manifestPath of manifestPaths) {
+    const manifest = await loadJsonFile(basePath, manifestPath);
+    const manifestFolder = manifestPath.split("/").slice(0, -1).join("/");
+    for (const featureFile of manifest.featureFiles || []) {
+      const feature = await loadJsonFile(
+        basePath,
+        `${manifestFolder}/${featureFile}`,
+      );
+      externalFeatures.push(feature);
+    }
+  }
+
+  const externalIds = new Set(externalFeatures.map((feature) => feature.id));
+  return {
+    ...config,
+    features: [
+      ...externalFeatures,
+      ...(config.features || []).filter(
+        (feature) => !externalIds.has(feature.id),
+      ),
+    ],
+  };
+}
+
+async function loadConfig(basePath) {
+  const config = await loadJsonFile(basePath, "data/copilot-forms.config.json");
+  return enrichConfigWithModuleMetadata(config, basePath);
 }
 
 // ── Local config fallback ──────────────────────────────────────────────────────
@@ -1280,7 +1702,10 @@ function initIndexPage(config) {
 }
 
 // ── Form page init ─────────────────────────────────────────────────────────────
-async function initFormPage(config) {
+async function initFormPage(
+  config,
+  basePath = document.body.dataset.basePath || ".",
+) {
   _config = config;
 
   let formId =
@@ -1316,6 +1741,7 @@ async function initFormPage(config) {
       syncCascadeFromFeatureId(config, defs.featureId);
   }
   applyDraft(formId, config);
+  applyFeatureHints(config, form);
 
   refreshOutputs(config, form);
   initPromptRunner(form);
@@ -1334,6 +1760,21 @@ async function initFormPage(config) {
   document.body.addEventListener("listchange", () =>
     refreshOutputs(config, form),
   );
+
+  $("module-select")?.addEventListener("change", () => {
+    applyFeatureHints(config, form);
+    refreshOutputs(config, form);
+  });
+
+  $("feature-select")?.addEventListener("change", () => {
+    applyFeatureHints(config, form);
+    refreshOutputs(config, form);
+  });
+
+  $("subfeature-select")?.addEventListener("change", () => {
+    applyFeatureHints(config, form);
+    refreshOutputs(config, form);
+  });
 
   // Copy markdown
   $("copy-markdown")?.addEventListener("click", async () => {
@@ -1413,10 +1854,13 @@ async function initFormPage(config) {
     showToast("Defaults saved!");
   });
 
-  wireLocalConfig((cfg) => {
-    _config = cfg;
-    renderForm(cfg, (cfg.forms || []).find((f) => f.id === formId) || form);
-    refreshOutputs(cfg, form);
+  wireLocalConfig(async (cfg) => {
+    const enrichedConfig = await enrichConfigWithModuleMetadata(cfg, basePath);
+    _config = enrichedConfig;
+    const nextForm =
+      (enrichedConfig.forms || []).find((f) => f.id === formId) || form;
+    renderForm(enrichedConfig, nextForm);
+    refreshOutputs(enrichedConfig, nextForm);
   });
 }
 
@@ -1433,14 +1877,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (isIndexPage) {
       initIndexPage(config);
     } else {
-      await initFormPage(config);
+      await initFormPage(config, basePath);
     }
   } catch (err) {
     setStatus(`Failed to load config: ${err.message}`, "error");
     if (!isIndexPage) {
       wireLocalConfig(async (cfg) => {
         setStatus("Loaded from local file", "ok");
-        await initFormPage(cfg);
+        await initFormPage(cfg, basePath);
       });
     }
     console.error("CopilotForms bootstrap error:", err);

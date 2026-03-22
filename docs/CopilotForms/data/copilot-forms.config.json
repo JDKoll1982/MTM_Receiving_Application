@@ -4,6 +4,12 @@
     "name": "MTM Receiving Application",
     "repoRoot": "c:/Users/johnk/source/repos/MTM_Receiving_Application",
     "defaultBranch": "orgin",
+    "moduleMetadataIndexes": [
+      "data/module-metadata/Module_Receiving/index.json",
+      "data/module-metadata/Module_Dunnage/index.json",
+      "data/module-metadata/Module_Reporting/index.json",
+      "data/module-metadata/Module_Volvo/index.json"
+    ],
     "notes": [
       "WinUI 3 desktop app with MVVM, CQRS, and database-backed workflows.",
       "Use this catalog as the single editable source for feature names and suggested code entry points."
@@ -32,221 +38,67 @@
       "IT Administrator",
       "Developer",
       "Mixed users"
+    ],
+    "uiPresentationTypes": [
+      "DataGrid",
+      "Card list",
+      "Table",
+      "Wizard step",
+      "Form",
+      "Dialog",
+      "Split layout",
+      "Tabs",
+      "Toolbar + results list"
+    ],
+    "commonAccessibilityNeeds": [
+      "Make the screen easier to scan",
+      "Improve keyboard navigation",
+      "Reduce visual clutter",
+      "Make actions clearer for non-technical users",
+      "Use larger click targets",
+      "Keep important actions visible without scrolling"
+    ],
+    "debugFrequencies": [
+      "Always",
+      "Often",
+      "Sometimes",
+      "Rarely",
+      "Only after a specific workflow path",
+      "Only with certain data",
+      "Only in one environment"
+    ],
+    "symptomTypes": [
+      "Wrong data shown",
+      "Nothing happens",
+      "Error message appears",
+      "Screen does not refresh",
+      "Selection behaves incorrectly",
+      "Save does not work",
+      "Search or filtering is wrong",
+      "Navigation goes to the wrong place",
+      "Validation blocks the wrong thing"
+    ],
+    "logicConcernTypes": [
+      "Wrong workflow branch",
+      "Wrong default value used",
+      "Validation rule mismatch",
+      "Save rule mismatch",
+      "Warning should block but does not",
+      "Warning should not block but does",
+      "Conditional visibility is wrong",
+      "State transition is wrong",
+      "Business rule sequence is wrong"
+    ],
+    "reviewFocusAreas": [
+      "Correctness and regressions",
+      "Architecture boundaries",
+      "Error handling",
+      "Performance and scalability",
+      "Security and secrets",
+      "Missing test coverage"
     ]
   },
   "features": [
-    {
-      "id": "receiving-workflow",
-      "module": "Module_Receiving",
-      "name": "Receiving Workflow",
-      "summary": "Primary receiving flow for queueing, editing, and archiving receiving label data.",
-      "owner": "Receiving Team",
-      "relatedFiles": [
-        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
-        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
-        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
-        "Module_Receiving/Views/View_Receiving_Workflow.xaml"
-      ],
-      "relatedServices": [
-        "IService_ReceivingWorkflow",
-        "IService_MySQL_Receiving"
-      ],
-      "subFeatures": [
-        {
-          "id": "receiving-mode-selection",
-          "name": "Mode Selection",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
-            "Module_Receiving/Views/View_Receiving_ModeSelection.xaml"
-          ]
-        },
-        {
-          "id": "receiving-load-entry",
-          "name": "Load Entry",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
-            "Module_Receiving/Views/View_Receiving_LoadEntry.xaml"
-          ]
-        },
-        {
-          "id": "receiving-po-entry",
-          "name": "PO Entry",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs",
-            "Module_Receiving/Views/View_Receiving_POEntry.xaml"
-          ]
-        },
-        {
-          "id": "receiving-manual-entry",
-          "name": "Manual Entry",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
-            "Module_Receiving/Views/View_Receiving_ManualEntry.xaml"
-          ]
-        },
-        {
-          "id": "receiving-package-type",
-          "name": "Package Type Selection",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
-            "Module_Receiving/Views/View_Receiving_PackageType.xaml"
-          ]
-        },
-        {
-          "id": "receiving-heat-lot",
-          "name": "Heat / Lot Entry",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
-            "Module_Receiving/Views/View_Receiving_HeatLot.xaml"
-          ]
-        },
-        {
-          "id": "receiving-weight-qty",
-          "name": "Weight & Quantity Entry",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
-            "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml"
-          ]
-        },
-        {
-          "id": "receiving-review",
-          "name": "Review & Submit",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs",
-            "Module_Receiving/Views/View_Receiving_Review.xaml"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "receiving-edit-mode",
-      "module": "Module_Receiving",
-      "name": "Edit Mode",
-      "summary": "In-place editing of already-queued receiving lines before final save.",
-      "owner": "Receiving Team",
-      "relatedFiles": [
-        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
-        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
-        "Module_Receiving/Data/Dao_ReceivingLine.cs",
-        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
-      ],
-      "relatedServices": ["IService_MySQL_ReceivingLine"],
-      "subFeatures": [
-        {
-          "id": "receiving-edit-grid",
-          "name": "Edit Grid",
-          "relatedFiles": [
-            "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
-            "Module_Receiving/Views/View_Receiving_EditMode.xaml"
-          ]
-        },
-        {
-          "id": "receiving-edit-save",
-          "name": "Save Changes",
-          "relatedFiles": [
-            "Module_Receiving/Data/Dao_ReceivingLine.cs",
-            "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "receiving-quality-hold",
-      "module": "Module_Receiving",
-      "name": "Quality Hold",
-      "summary": "Quality-hold assignment, warning dialogs, and CRUD operations for QH records.",
-      "owner": "Receiving Team",
-      "relatedFiles": [
-        "Module_Receiving/Data/Dao_QualityHold.cs",
-        "Module_Receiving/Services/Service_MySQL_QualityHold.cs",
-        "Module_Receiving/Services/Service_QualityHoldWarning.cs",
-        "Module_Receiving/Models/Model_QualityHold.cs"
-      ],
-      "relatedServices": [
-        "IService_MySQL_QualityHold",
-        "IService_QualityHoldWarning"
-      ],
-      "subFeatures": [
-        {
-          "id": "receiving-qh-warning",
-          "name": "QH Warning Dialog",
-          "relatedFiles": [
-            "Module_Receiving/Services/Service_QualityHoldWarning.cs",
-            "Module_Receiving/Contracts/IService_QualityHoldWarning.cs"
-          ]
-        },
-        {
-          "id": "receiving-qh-crud",
-          "name": "QH CRUD Operations",
-          "relatedFiles": [
-            "Module_Receiving/Data/Dao_QualityHold.cs",
-            "Module_Receiving/Services/Service_MySQL_QualityHold.cs"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "receiving-package-preferences",
-      "module": "Module_Receiving",
-      "name": "Package Preferences",
-      "summary": "Per-part package type preferences and prefix-based rules for auto-selecting package types.",
-      "owner": "Receiving Team",
-      "relatedFiles": [
-        "Module_Receiving/Data/Dao_PackageTypePreference.cs",
-        "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
-        "Module_Receiving/Models/Model_PackageTypePreference.cs",
-        "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
-      ],
-      "relatedServices": ["IService_MySQL_PackagePreferences"],
-      "subFeatures": [
-        {
-          "id": "receiving-pkg-pref-rules",
-          "name": "Preference Rules",
-          "relatedFiles": [
-            "Module_Receiving/Data/Dao_PackageTypePreference.cs",
-            "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
-          ]
-        },
-        {
-          "id": "receiving-pkg-pref-service",
-          "name": "Preferences Service",
-          "relatedFiles": [
-            "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
-            "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "receiving-label-export",
-      "module": "Module_Receiving",
-      "name": "Label / XLS Export",
-      "summary": "Writing, verifying, and cleaning up label data and XLS export files for receiving lines.",
-      "owner": "Receiving Team",
-      "relatedFiles": [
-        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
-        "Module_Receiving/Services/Service_XLSWriter.cs",
-        "Module_Receiving/Models/Model_XLSWriteResult.cs",
-        "Module_Receiving/Models/Model_XLSExistenceResult.cs",
-        "Module_Receiving/Models/Model_XLSDeleteResult.cs"
-      ],
-      "relatedServices": ["IService_XLSWriter"],
-      "subFeatures": [
-        {
-          "id": "receiving-xls-write",
-          "name": "Write to XLS",
-          "relatedFiles": [
-            "Module_Receiving/Services/Service_XLSWriter.cs",
-            "Module_Receiving/Contracts/IService_XLSWriter.cs"
-          ]
-        },
-        {
-          "id": "receiving-xls-cleanup",
-          "name": "Delete / Cleanup",
-          "relatedFiles": ["Module_Receiving/Data/Dao_ReceivingLabelData.cs"]
-        }
-      ]
-    },
     {
       "id": "bulk-inventory-processing",
       "module": "Module_Bulk_Inventory",
@@ -259,45 +111,6 @@
         "Module_Bulk_Inventory/Data"
       ],
       "relatedServices": ["IService_BulkInventory", "IService_LoggingUtility"]
-    },
-    {
-      "id": "reporting-dashboard",
-      "module": "Module_Reporting",
-      "name": "Reporting Dashboard",
-      "summary": "Report generation, filtering, and user-facing export flows.",
-      "owner": "Reporting Team",
-      "relatedFiles": [
-        "Module_Reporting/ViewModels",
-        "Module_Reporting/Views",
-        "Module_Reporting/Services"
-      ],
-      "relatedServices": ["IService_Reporting", "IService_ErrorHandler"]
-    },
-    {
-      "id": "dunnage-management",
-      "module": "Module_Dunnage",
-      "name": "Dunnage Management",
-      "summary": "Dunnage setup, lookup, and transaction tracking workflows.",
-      "owner": "Operations Team",
-      "relatedFiles": [
-        "Module_Dunnage/ViewModels",
-        "Module_Dunnage/Views",
-        "Module_Dunnage/Services"
-      ],
-      "relatedServices": ["IService_Dunnage", "IService_LoggingUtility"]
-    },
-    {
-      "id": "volvo-integration",
-      "module": "Module_Volvo",
-      "name": "Volvo Integration",
-      "summary": "Volvo-specific intake, validation, and integration flows.",
-      "owner": "Integration Team",
-      "relatedFiles": [
-        "Module_Volvo/ViewModels",
-        "Module_Volvo/Services",
-        "Module_Volvo/Data"
-      ],
-      "relatedServices": ["IService_Volvo", "IService_LoggingUtility"]
     },
     {
       "id": "settings-core",
@@ -435,21 +248,21 @@
     {
       "id": "ui-change",
       "title": "UI Change Request",
-      "summary": "Capture UI layout, content, visual hierarchy, and interaction changes.",
+      "summary": "Describe a screen change in plain English, with as much guided picking and as little typing as possible.",
       "whenToUse": [
-        "Use this when the screen already exists and the user wants it changed.",
-        "Use this when labels, grouping, layout, navigation, or interaction details need to change.",
-        "Do not use this if the main problem is incorrect business logic or a bug with no UI design intent."
+        "Use this when the screen already exists and you want it to look or behave differently.",
+        "Use this when layout, grouping, labels, or interactions should change.",
+        "Do not use this if the real problem is business logic or a bug with no UI design goal."
       ],
       "beforeYouStart": [
-        "Know the screen name, workflow step, or control names if possible.",
-        "Write down what feels wrong today and what the user wants instead.",
-        "List any parts of the workflow that must stay exactly the same."
+        "Pick the module and feature first so the form can load helpful choices for you.",
+        "Think about what feels hard or confusing today.",
+        "Know which parts of the workflow must stay the same."
       ],
       "endUserTips": [
         "Use plain language first and exact control names second.",
-        "Describe the result the user should see, not the code you think should change.",
-        "If copy matters, paste the exact text you want shown."
+        "Pick from the suggested choices wherever possible so you type less.",
+        "Describe the result the user should see, not the code you think should change."
       ],
       "outputFolder": "docs/CopilotForms/outputs/ui-change",
       "promptFile": ".github/prompts/copilotforms-ui-change.prompt.md",
@@ -457,72 +270,115 @@
       "fieldGroups": [
         {
           "title": "Request Summary",
-          "description": "State what the user wants changed and who the UI serves.",
+          "description": "Start with the goal in simple language. The form will help with the technical detail.",
           "columns": 2,
           "fields": [
             {
               "id": "requestTitle",
-              "label": "Short request title",
+              "label": "Short name for this UI change",
               "type": "text",
               "required": true,
-              "placeholder": "Receiving workflow header cleanup"
+              "placeholder": "Change Receiving Edit Mode from grid to cards"
             },
             {
               "id": "audience",
-              "label": "Primary audience",
+              "label": "Who is this screen mainly for?",
               "type": "select",
               "optionSource": "audiences",
               "required": true
             },
             {
               "id": "changeSummary",
-              "label": "What should change",
+              "label": "What feels wrong today, and what should be different?",
               "type": "textarea",
               "required": true,
-              "placeholder": "Describe the current UI issue and the desired end state."
+              "placeholder": "Explain the current UI problem in plain English, then say what the user should see instead."
             },
             {
               "id": "successLooksLike",
-              "label": "What success looks like",
+              "label": "What should be easier after this change?",
               "type": "textarea",
               "required": true,
-              "placeholder": "Describe what the user should be able to do more easily after the change."
+              "placeholder": "Describe what the user should be able to do faster, more clearly, or with less confusion."
             }
           ]
         },
         {
-          "title": "Visual And Interaction Detail",
-          "description": "Capture layout, content, and behavior detail that Copilot should preserve.",
+          "title": "Screen And Interaction Detail",
+          "description": "Pick the closest known answers first. Only type where you really need to explain something.",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "affectedScreens",
-              "label": "Affected screens or controls",
-              "type": "list",
-              "placeholder": "One screen or control per line"
+              "label": "Which screen or step should change?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "currentUiPattern",
+              "label": "What does it mostly look like today?",
+              "type": "select",
+              "featureHintKey": "currentUiPatterns",
+              "optionSource": "uiPresentationTypes",
+              "placeholder": "Pick the closest current layout"
+            },
+            {
+              "id": "desiredUiPattern",
+              "label": "What should it mostly look like after the change?",
+              "type": "select",
+              "featureHintKey": "desiredUiPatterns",
+              "optionSource": "uiPresentationTypes",
+              "placeholder": "Pick the closest target layout"
+            },
+            {
+              "id": "uiElements",
+              "label": "Which parts of the screen are involved?",
+              "type": "checkbox-group",
+              "featureHintKey": "uiElements"
+            },
+            {
+              "id": "userTasksToSupport",
+              "label": "What should the user be able to do more easily?",
+              "type": "checkbox-group",
+              "featureHintKey": "userActions"
             },
             {
               "id": "layoutNotes",
-              "label": "Layout and spacing notes",
+              "label": "Layout notes in plain English",
               "type": "textarea",
-              "placeholder": "Describe position, grouping, spacing, sizing, or responsive expectations."
+              "placeholder": "Describe grouping, spacing, emphasis, or what should be more visible."
             },
             {
               "id": "interactionChanges",
-              "label": "Interaction changes",
+              "label": "What interaction changes are needed?",
               "type": "textarea",
-              "placeholder": "Describe button behavior, command changes, focus order, validation, or navigation changes."
+              "placeholder": "Describe clicks, taps, navigation, focus order, selection behavior, or validation feedback changes."
             },
             {
               "id": "copyChanges",
-              "label": "Text or copy changes",
+              "label": "What text on the screen should change?",
               "type": "textarea",
-              "placeholder": "Provide any labels, button text, tooltips, or status messages that should change."
+              "placeholder": "Add any labels, button text, helper text, or messages that should change."
             },
             {
               "id": "accessibilityNeeds",
-              "label": "Accessibility or usability constraints",
+              "label": "Which usability needs matter here?",
+              "type": "checkbox-group",
+              "featureHintKey": "accessibilityNeeds",
+              "optionSource": "commonAccessibilityNeeds"
+            },
+            {
+              "id": "accessibilityNotes",
+              "label": "Anything else the user may struggle with?",
               "type": "textarea",
-              "placeholder": "Keyboard navigation, contrast, larger hit targets, reduced confusion, or user training needs."
+              "placeholder": "Add any extra usability, accessibility, or training concerns here."
             }
           ]
         },
@@ -531,22 +387,30 @@
           "fields": [
             {
               "id": "filesToReview",
-              "label": "Specific files to review first",
+              "label": "Suggested files to review first",
               "type": "list",
-              "placeholder": "One path per line"
+              "placeholder": "The form can prefill likely files when a feature is selected.",
+              "autoFillFeatureKey": "relatedFiles"
             },
             {
               "id": "doNotChange",
-              "label": "What must not change",
+              "label": "What should stay the same?",
+              "type": "checkbox-group",
+              "featureHintKey": "preserveRules"
+            },
+            {
+              "id": "extraConstraints",
+              "label": "Anything else that must stay the same?",
               "type": "textarea",
-              "placeholder": "Business logic, data flow, command names, test behavior, or existing integrations that should remain intact."
+              "placeholder": "Add extra constraints only if the suggested choices missed something important."
             },
             {
               "id": "acceptanceCriteria",
-              "label": "Acceptance criteria",
+              "label": "How will we know this UI change is done?",
               "type": "list",
               "required": true,
-              "placeholder": "One acceptance criterion per line"
+              "placeholder": "The form can prefill likely success checks when a feature is selected.",
+              "autoFillFeatureKey": "acceptanceCriteria"
             }
           ]
         }
@@ -555,21 +419,21 @@
     {
       "id": "debugging",
       "title": "Debugging Request",
-      "summary": "Capture symptoms, repro steps, expected behavior, and evidence.",
+      "summary": "Describe what is going wrong in simple language, with guided picks wherever possible.",
       "whenToUse": [
         "Use this when something is broken, inconsistent, or failing unexpectedly.",
         "Use this when you can describe what happens and what should have happened instead.",
         "Do not use this for a pure redesign or cleanup request."
       ],
       "beforeYouStart": [
+        "Pick the module and feature first so the form can load helpful context.",
         "Reproduce the problem at least once if possible.",
-        "Capture exact error text, logs, or screenshots if available.",
-        "Write the shortest reliable repro steps you can."
+        "Capture the exact message or visible symptom if you can."
       ],
       "endUserTips": [
         "Facts matter more than guesses.",
-        "If the issue is intermittent, say when it tends to happen.",
-        "Paste exact messages instead of paraphrasing them."
+        "Use the guided choices first, then add any missing detail in plain English.",
+        "Paste exact messages instead of paraphrasing them when possible."
       ],
       "outputFolder": "docs/CopilotForms/outputs/debugging",
       "promptFile": ".github/prompts/copilotforms-debugging.prompt.md",
@@ -588,21 +452,41 @@
             },
             {
               "id": "priority",
-              "label": "Priority",
+              "label": "How urgent is this?",
               "type": "select",
               "optionSource": "priorities",
               "required": true
             },
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this happening in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "affectedScreen",
+              "label": "Which screen or step shows the problem?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "symptomTypes",
+              "label": "Which of these best describe the problem?",
+              "type": "checkbox-group",
+              "optionSource": "symptomTypes"
+            },
+            {
               "id": "observedBehavior",
-              "label": "Observed behavior",
+              "label": "What is the user actually seeing?",
               "type": "textarea",
               "required": true,
-              "placeholder": "Describe the failure exactly as the user sees it."
+              "placeholder": "Describe the failure exactly as the user sees it, in plain English."
             },
             {
               "id": "expectedBehavior",
-              "label": "Expected behavior",
+              "label": "What should have happened instead?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe the expected result."
@@ -614,20 +498,21 @@
           "fields": [
             {
               "id": "reproSteps",
-              "label": "Reproduction steps",
+              "label": "How can someone make this happen again?",
               "type": "list",
               "required": true,
               "placeholder": "One step per line"
             },
             {
               "id": "frequency",
-              "label": "How often it happens",
-              "type": "text",
-              "placeholder": "Always, intermittent, only after navigation, only in Debug, and so on."
+              "label": "How often does it happen?",
+              "type": "select",
+              "optionSource": "debugFrequencies",
+              "placeholder": "Pick the closest frequency"
             },
             {
               "id": "environment",
-              "label": "Environment detail",
+              "label": "Anything special about when it happens?",
               "type": "textarea",
               "placeholder": "User role, machine, branch, config, test data, or timing conditions."
             }
@@ -638,27 +523,28 @@
           "fields": [
             {
               "id": "errorMessages",
-              "label": "Error messages or visible warnings",
+              "label": "Exact error message or warning",
               "type": "textarea",
               "placeholder": "Paste exact messages if available."
             },
             {
               "id": "logEvidence",
-              "label": "Relevant logs, traces, or breakpoints",
+              "label": "Logs, traces, or debugger clues",
               "type": "textarea",
               "placeholder": "Paste log snippets, stack traces, or debugger observations."
             },
             {
               "id": "suspectedCause",
-              "label": "Suspected cause",
+              "label": "Do you have a guess about the cause?",
               "type": "textarea",
               "placeholder": "If you have a theory, describe it. If not, say Unknown."
             },
             {
               "id": "filesToInspect",
-              "label": "Likely files or layers",
+              "label": "Suggested files or layers to inspect",
               "type": "list",
-              "placeholder": "One path or component per line"
+              "placeholder": "The form can prefill likely files when a feature is selected.",
+              "autoFillFeatureKey": "relatedFiles"
             }
           ]
         },
@@ -667,10 +553,11 @@
           "fields": [
             {
               "id": "verificationSteps",
-              "label": "How to verify the fix",
+              "label": "How should we verify the fix worked?",
               "type": "list",
               "required": true,
-              "placeholder": "One verification step per line"
+              "placeholder": "The form can prefill likely checks when a feature is selected.",
+              "autoFillFeatureKey": "acceptanceCriteria"
             }
           ]
         }
@@ -679,19 +566,20 @@
     {
       "id": "logic-correction",
       "title": "Feature Logic Correction",
-      "summary": "Capture where feature behavior does not match the intended workflow or rules.",
+      "summary": "Describe when the feature follows the wrong rules, path, or decision, using guided choices where possible.",
       "whenToUse": [
         "Use this when the feature runs but behaves incorrectly according to user intent or business rules.",
         "Use this when the UI may be fine but the workflow decisions are wrong.",
         "Do not use this for styling-only requests."
       ],
       "beforeYouStart": [
+        "Pick the module and feature first so the form can load helpful context.",
         "Describe the intended workflow in plain language before describing the bug.",
-        "List the rules the feature should follow.",
-        "Identify any inputs or data conditions that change the expected result."
+        "Think about which rule, branch, or condition is wrong."
       ],
       "endUserTips": [
         "Focus on intent versus actual behavior.",
+        "Use the guided choices first, then explain the mismatch in plain English.",
         "Give examples of good and bad outcomes.",
         "List what must keep working after the correction."
       ],
@@ -703,22 +591,42 @@
           "title": "Intent Versus Reality",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
+              "id": "affectedScreen",
+              "label": "Which screen or step is involved?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the main screen or step"
+            },
+            {
+              "id": "logicConcernTypes",
+              "label": "What kind of logic problem is this?",
+              "type": "checkbox-group",
+              "optionSource": "logicConcernTypes"
+            },
+            {
               "id": "workflowIntent",
-              "label": "What the feature is supposed to do",
+              "label": "What is this feature supposed to do?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe the intended business behavior in plain language."
             },
             {
               "id": "actualBehavior",
-              "label": "What it does today",
+              "label": "What does it do today instead?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe the current behavior."
             },
             {
               "id": "businessRuleMismatch",
-              "label": "Business rules being violated",
+              "label": "Which rule or expectation is being broken?",
               "type": "textarea",
               "placeholder": "State any rule or assumption the current logic breaks."
             }
@@ -729,27 +637,34 @@
           "fields": [
             {
               "id": "inputConditions",
-              "label": "Input conditions that matter",
+              "label": "Which conditions make this matter?",
               "type": "list",
               "placeholder": "One condition per line"
             },
             {
               "id": "relatedData",
-              "label": "Related data or database expectations",
+              "label": "What data or records affect this behavior?",
               "type": "textarea",
               "placeholder": "Describe fields, stored procedures, or external data involved."
             },
             {
               "id": "layersInvolved",
-              "label": "Layers or services involved",
+              "label": "Suggested layers or services involved",
               "type": "list",
-              "placeholder": "ViewModel, Service, DAO, stored procedure, and so on."
+              "placeholder": "The form can prefill likely files or layers from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
             },
             {
               "id": "constraints",
-              "label": "Constraints to preserve",
+              "label": "What should stay the same while fixing this?",
+              "type": "checkbox-group",
+              "featureHintKey": "preserveRules"
+            },
+            {
+              "id": "extraConstraints",
+              "label": "Any other constraints to preserve?",
               "type": "textarea",
-              "placeholder": "Performance, architecture, database rules, or backwards compatibility constraints."
+              "placeholder": "Add extra architecture, performance, or compatibility constraints if needed."
             }
           ]
         },
@@ -758,21 +673,22 @@
           "fields": [
             {
               "id": "desiredRuleSet",
-              "label": "Desired rule set",
+              "label": "What rules should the feature follow instead?",
               "type": "list",
               "required": true,
               "placeholder": "One rule per line"
             },
             {
               "id": "testCases",
-              "label": "Key scenarios to validate",
+              "label": "Which scenarios should prove the fix?",
               "type": "list",
               "required": true,
-              "placeholder": "One scenario per line"
+              "placeholder": "The form can prefill likely success checks when a feature is selected.",
+              "autoFillFeatureKey": "acceptanceCriteria"
             },
             {
               "id": "doNotRegress",
-              "label": "What must not regress",
+              "label": "What must not break while fixing this?",
               "type": "textarea",
               "placeholder": "List related flows that must remain stable."
             }
@@ -783,21 +699,21 @@
     {
       "id": "improvement-refactor",
       "title": "Improvement Refactor Request",
-      "summary": "Capture maintainability, clarity, structure, and performance-driven refactors.",
+      "summary": "Describe a cleanup or refactor request in plain English, with guided choices that help keep the scope realistic.",
       "whenToUse": [
-        "Use this when the behavior is acceptable but the code is hard to maintain, understand, or extend.",
-        "Use this for cleanup, decomposition, duplication removal, or clearer structure.",
-        "Do not use this when the main issue is a production bug or incorrect user behavior."
+        "Use this when the feature mostly works but the code is hard to maintain, follow, or extend.",
+        "Use this for cleanup, decomposition, duplication removal, or clearer ownership boundaries.",
+        "Do not use this when the main issue is a live bug or wrong business behavior."
       ],
       "beforeYouStart": [
-        "Identify the biggest pain points for future maintenance.",
-        "Decide how broad the refactor is allowed to be.",
-        "List any sensitive areas that must stay stable."
+        "Pick the module and feature first so the form can suggest likely files.",
+        "Decide how broad the cleanup is allowed to be.",
+        "Think about what must stay stable while the structure improves."
       ],
       "endUserTips": [
-        "Explain why the current code is difficult to work with.",
-        "Keep the scope realistic.",
-        "Call out whether behavior must remain identical."
+        "Explain why the current code is hard to work with in plain English.",
+        "Use the suggested files and constraints where they fit.",
+        "Be clear about whether the behavior must stay exactly the same."
       ],
       "outputFolder": "docs/CopilotForms/outputs/improvement-refactor",
       "promptFile": ".github/prompts/copilotforms-improvement-refactor.prompt.md",
@@ -807,22 +723,29 @@
           "title": "Refactor Goal",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "motivation",
-              "label": "Why this refactor is needed",
+              "label": "Why is this cleanup or refactor needed?",
               "type": "textarea",
               "required": true,
-              "placeholder": "State the maintainability, readability, duplication, or complexity problem."
+              "placeholder": "Describe what feels too tangled, duplicated, fragile, or hard to change."
             },
             {
               "id": "painPoints",
-              "label": "Current pain points",
+              "label": "What are the main pain points today?",
               "type": "list",
               "required": true,
               "placeholder": "One pain point per line"
             },
             {
               "id": "scope",
-              "label": "Expected scope",
+              "label": "How broad can this refactor be?",
               "type": "select",
               "optionSource": "changeScopes",
               "required": true
@@ -834,22 +757,29 @@
           "fields": [
             {
               "id": "preferredOutcome",
-              "label": "Preferred end state",
+              "label": "What should the improved code feel like afterward?",
               "type": "textarea",
               "required": true,
-              "placeholder": "Describe the desired code shape, structure, or ownership boundary."
+              "placeholder": "Describe the desired structure, ownership, or readability improvement."
             },
             {
               "id": "candidateFiles",
-              "label": "Files or types likely involved",
+              "label": "Suggested files or types to review first",
               "type": "list",
-              "placeholder": "One file or type per line"
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
             },
             {
               "id": "architectureNotes",
-              "label": "Architecture notes",
+              "label": "What boundaries or patterns must still be respected?",
               "type": "textarea",
               "placeholder": "Mention MVVM boundaries, service seams, DAO rules, or dependency concerns."
+            },
+            {
+              "id": "preserveRules",
+              "label": "What should stay the same while cleaning this up?",
+              "type": "checkbox-group",
+              "featureHintKey": "preserveRules"
             },
             {
               "id": "riskLevel",
@@ -865,16 +795,18 @@
           "fields": [
             {
               "id": "testsNeeded",
-              "label": "Tests or validation needed",
+              "label": "What tests or checks should help keep this safe?",
               "type": "list",
-              "placeholder": "One validation item per line"
+              "placeholder": "The form can prefill likely checks from the selected feature.",
+              "autoFillFeatureKey": "validationHints"
             },
             {
               "id": "successCriteria",
-              "label": "Success criteria",
+              "label": "How will we know this cleanup is done?",
               "type": "list",
               "required": true,
-              "placeholder": "One success criterion per line"
+              "placeholder": "The form can prefill likely success criteria from the selected feature.",
+              "autoFillFeatureKey": "acceptanceCriteria"
             }
           ]
         }
@@ -883,21 +815,21 @@
     {
       "id": "logging-refactor",
       "title": "Logging Refactor Request",
-      "summary": "Capture logging additions, removals, noise reduction, or structure changes.",
+      "summary": "Describe how logging should change, using guided picks so you can say more by choosing and less by typing.",
       "whenToUse": [
         "Use this when log output is missing, too noisy, inconsistent, or exposing the wrong details.",
         "Use this when the main change is about observability rather than workflow behavior.",
         "Do not use this for general refactors unless logging is the main objective."
       ],
       "beforeYouStart": [
-        "Know whether you want more logs, fewer logs, or better-structured logs.",
-        "List which events matter and which logs are noise.",
-        "Note any sensitive data that must never be logged."
+        "Pick the module and feature first so the form can suggest files and events.",
+        "Know whether you want more logs, fewer logs, or clearer logs.",
+        "Think about what should never appear in logs."
       ],
       "endUserTips": [
-        "State whether the change is for debugging, support, compliance, or performance.",
-        "Be explicit about which logs should stay or go.",
-        "If severity matters, explain what should count as an error versus a warning."
+        "State whether this is for debugging, support, compliance, or noise reduction.",
+        "Use the suggested files or events if they match your need.",
+        "Be explicit about what should stay, go, or change severity."
       ],
       "outputFolder": "docs/CopilotForms/outputs/logging-refactor",
       "promptFile": ".github/prompts/copilotforms-logging-refactor.prompt.md",
@@ -908,28 +840,35 @@
           "columns": 2,
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "loggingMode",
-              "label": "Logging mode",
+              "label": "What kind of logging change is this?",
               "type": "select",
               "optionSource": "loggingModes",
               "required": true
             },
             {
               "id": "reason",
-              "label": "Why logging should change",
+              "label": "Why should the logging change?",
               "type": "textarea",
               "required": true,
-              "placeholder": "State the debugging, audit, noise, or compliance reason."
+              "placeholder": "Describe the debugging, audit, support, or noise problem in plain English."
             },
             {
               "id": "currentIssue",
-              "label": "Current logging issue",
+              "label": "What is wrong with the current logs?",
               "type": "textarea",
               "placeholder": "Too noisy, too sparse, inconsistent, missing correlation, wrong severity, and so on."
             },
             {
               "id": "targetOutcome",
-              "label": "Desired logging outcome",
+              "label": "What should the logs feel like afterward?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe the target signal quality, structure, and severity usage."
@@ -941,33 +880,36 @@
           "fields": [
             {
               "id": "eventsToLog",
-              "label": "Events or transitions that should be logged",
+              "label": "Which events or transitions should be logged?",
               "type": "list",
-              "placeholder": "One event per line"
+              "placeholder": "The form can prefill likely events from the selected feature.",
+              "autoFillFeatureKey": "loggingEvents"
             },
             {
               "id": "eventsToRemove",
-              "label": "Logs to remove or suppress",
+              "label": "Which logs should be removed or made quieter?",
               "type": "list",
               "placeholder": "One log pattern per line"
             },
             {
               "id": "severityRules",
-              "label": "Severity rules",
+              "label": "How should severity be used?",
               "type": "textarea",
               "placeholder": "Describe what should be Trace, Debug, Information, Warning, or Error."
             },
             {
               "id": "sensitiveDataRules",
-              "label": "Sensitive data handling",
+              "label": "What must never be written to the logs?",
               "type": "textarea",
-              "placeholder": "Describe what must not be logged."
+              "placeholder": "The form can prefill common do-not-log guidance from the selected feature.",
+              "autoFillFeatureKey": "sensitiveDataRules"
             },
             {
               "id": "relevantFiles",
-              "label": "Relevant files or services",
+              "label": "Suggested files or services to inspect",
               "type": "list",
-              "placeholder": "One path or type per line"
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
             }
           ]
         },
@@ -976,10 +918,11 @@
           "fields": [
             {
               "id": "validationNeeds",
-              "label": "How to validate the logging change",
+              "label": "How should we check that the logging change worked?",
               "type": "list",
               "required": true,
-              "placeholder": "One validation step per line"
+              "placeholder": "The form can prefill likely checks from the selected feature.",
+              "autoFillFeatureKey": "validationHints"
             }
           ]
         }
@@ -988,21 +931,21 @@
     {
       "id": "code-review",
       "title": "Code Review Request",
-      "summary": "Capture a review request focused on defects, regressions, risks, architecture violations, and missing tests.",
+      "summary": "Describe what you want reviewed, with guided choices that focus the review on defects, risks, and missing validation.",
       "whenToUse": [
         "Use this when you want Copilot to review a feature, module, or set of changes for problems.",
         "Use this when the main goal is finding risks rather than implementing a requested change.",
         "Use this for review of planned or completed work."
       ],
       "beforeYouStart": [
-        "Name the module, feature, or files being reviewed.",
-        "State whether this is a full review or a focused review.",
-        "List any specific concerns like security, regressions, or missing tests."
+        "Pick the module and feature first so the form can suggest likely files and risks.",
+        "State whether this is a broad review or a focused review.",
+        "Think about the biggest risks you want reviewed first."
       ],
       "endUserTips": [
-        "Point to the exact area you care about if the codebase is large.",
-        "Say whether you want critical defects only or a full review.",
-        "Mention any recent changes or known unstable areas."
+        "If the codebase area is large, narrow the review to the feature or files that matter most.",
+        "Say whether you want critical defects only or a fuller review.",
+        "Mention any recent changes or unstable areas the reviewer should keep in mind."
       ],
       "outputFolder": "docs/CopilotForms/outputs/code-review",
       "promptFile": ".github/prompts/copilotforms-code-review.prompt.md",
@@ -1012,6 +955,13 @@
           "title": "Review Scope",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "reviewTitle",
               "label": "Short review title",
               "type": "text",
@@ -1020,25 +970,25 @@
             },
             {
               "id": "reviewScope",
-              "label": "Scope",
+              "label": "How broad should the review be?",
               "type": "select",
               "optionSource": "changeScopes",
               "required": true
             },
             {
               "id": "targetFiles",
-              "label": "Target files or areas",
+              "label": "Suggested files or areas to review first",
               "type": "list",
               "required": true,
-              "placeholder": "One file, folder, or type per line",
-              "defaultItems": ["Module_Receiving"]
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
             },
             {
               "id": "reviewGoal",
-              "label": "What should the review focus on",
+              "label": "What should the review focus on most?",
               "type": "textarea",
               "required": true,
-              "placeholder": "Regressions, architecture violations, data risks, missing tests, performance, security, and so on."
+              "placeholder": "Describe the kinds of problems you most want the review to catch."
             }
           ]
         },
@@ -1047,26 +997,22 @@
           "fields": [
             {
               "id": "specificConcerns",
-              "label": "Specific concerns",
-              "type": "list",
-              "placeholder": "One concern per line",
-              "defaultItems": [
-                "MVVM layer violations",
-                "x:Bind usage",
-                "Missing error handling"
-              ]
+              "label": "Which kinds of risks matter most here?",
+              "type": "checkbox-group",
+              "featureHintKey": "reviewFocusAreas",
+              "optionSource": "reviewFocusAreas"
             },
             {
               "id": "knownChanges",
-              "label": "Recent changes or background",
+              "label": "What recent changes or background should the reviewer know?",
               "type": "textarea",
               "placeholder": "Describe recent edits, PR intent, or unstable areas."
             },
             {
               "id": "reviewExpectations",
-              "label": "Expected review output",
+              "label": "What should the review output look like?",
               "type": "textarea",
-              "placeholder": "Example: findings first, severity ordered, file references, testing gaps."
+              "placeholder": "Example: findings first, highest risk first, file references, and testing gaps."
             }
           ]
         }
@@ -1075,21 +1021,21 @@
     {
       "id": "database-issue",
       "title": "Database Issue Request",
-      "summary": "Capture stored procedure, SQL, schema, connection, or read-model issues that need investigation or correction.",
+      "summary": "Describe a database-related problem in plain English, with guided picks for system, objects, files, and validation.",
       "whenToUse": [
         "Use this when the issue is in stored procedures, database mappings, query results, or schema alignment.",
         "Use this when the code problem cannot be understood without database context.",
         "Do not use this for purely visual UI changes."
       ],
       "beforeYouStart": [
+        "Pick the module and feature first so the form can suggest likely files and objects.",
         "Identify whether the issue is MySQL or Infor Visual SQL Server.",
-        "Name the stored procedure, table, query, or DAO if known.",
-        "Capture any mismatched data, SQL errors, or incorrect result shapes."
+        "Capture the exact mismatch, bad result, or SQL error if you can."
       ],
       "endUserTips": [
         "Paste exact SQL or stored procedure names when available.",
-        "State whether the failure is read, write, schema, or data-shape related.",
-        "Mention any constraints such as read-only Visual access or stored-procedure-only rules."
+        "Use the suggested files or database objects if they match.",
+        "Mention constraints like read-only Visual access or stored-procedure-only rules."
       ],
       "outputFolder": "docs/CopilotForms/outputs/database-issue",
       "promptFile": ".github/prompts/copilotforms-database-issue.prompt.md",
@@ -1099,6 +1045,13 @@
           "title": "Database Context",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "databaseTitle",
               "label": "Short database issue title",
               "type": "text",
@@ -1107,7 +1060,7 @@
             },
             {
               "id": "databaseSystem",
-              "label": "Database system",
+              "label": "Which database system is involved?",
               "type": "select",
               "required": true,
               "options": ["MySQL", "Infor Visual SQL Server", "Both", "Unknown"]
@@ -1117,11 +1070,12 @@
               "label": "Affected procedures, tables, queries, or DAOs",
               "type": "list",
               "required": true,
-              "placeholder": "One object per line"
+              "placeholder": "The form can prefill likely database objects from the selected feature.",
+              "autoFillFeatureKey": "databaseObjects"
             },
             {
               "id": "databaseProblem",
-              "label": "Problem summary",
+              "label": "What is going wrong in the database flow?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe the mismatch, failure, or incorrect data behavior."
@@ -1139,16 +1093,17 @@
             },
             {
               "id": "databaseConstraints",
-              "label": "Important database constraints",
+              "label": "What database rules or limits must be respected?",
               "type": "textarea",
               "placeholder": "Stored procedures only, read-only Visual DB, no schema changes, and so on."
             },
             {
               "id": "databaseValidation",
-              "label": "How to validate the database fix",
+              "label": "How should we check that the database fix worked?",
               "type": "list",
               "required": true,
-              "placeholder": "One validation step per line"
+              "placeholder": "The form can prefill likely checks from the selected feature.",
+              "autoFillFeatureKey": "validationHints"
             }
           ]
         }
@@ -1157,21 +1112,21 @@
     {
       "id": "test-generation",
       "title": "Test Generation Request",
-      "summary": "Capture which code needs tests, the intended scope, and what behavior the tests must prove.",
+      "summary": "Describe which code needs tests and what those tests must prove, with guided file and scenario suggestions.",
       "whenToUse": [
         "Use this when you want Copilot to add or expand tests for a file, class, or module.",
         "Use this when the main output is tests, not production code changes.",
         "Use this for unit or integration test requests."
       ],
       "beforeYouStart": [
-        "Know which code needs coverage.",
+        "Pick the module and feature first so the form can suggest likely files and scenarios.",
         "Decide whether you want unit, integration, or mixed tests.",
-        "List critical behaviors, edge cases, and dependencies that should be mocked or left real."
+        "Think about the few behaviors that matter most."
       ],
       "endUserTips": [
         "State the test scope clearly.",
-        "Mention whether the target uses DAOs, services, or UI-bound classes.",
-        "List the behaviors that matter more than coverage percentage."
+        "Use the suggested files or scenarios if they match your need.",
+        "Focus on behaviors that matter more than a coverage number."
       ],
       "outputFolder": "docs/CopilotForms/outputs/test-generation",
       "promptFile": ".github/prompts/copilotforms-test-generation.prompt.md",
@@ -1181,6 +1136,13 @@
           "title": "Test Target",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "testRequestTitle",
               "label": "Short test request title",
               "type": "text",
@@ -1189,21 +1151,22 @@
             },
             {
               "id": "testKind",
-              "label": "Test kind",
+              "label": "What kind of tests do you want?",
               "type": "select",
               "required": true,
               "options": ["Unit", "Integration", "Mixed"]
             },
             {
               "id": "testTargets",
-              "label": "Files, classes, or modules to test",
+              "label": "Suggested files, classes, or modules to test",
               "type": "list",
               "required": true,
-              "placeholder": "One target per line"
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
             },
             {
               "id": "testIntent",
-              "label": "What these tests must prove",
+              "label": "What must these tests prove?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe core behaviors, edge cases, and failure paths."
@@ -1215,20 +1178,21 @@
           "fields": [
             {
               "id": "testDependencies",
-              "label": "Dependencies to mock or keep real",
+              "label": "Which dependencies should be mocked or kept real?",
               "type": "textarea",
               "placeholder": "Describe services, DAOs, database access, or framework dependencies."
             },
             {
               "id": "testScenarios",
-              "label": "Required scenarios",
+              "label": "Which scenarios absolutely need coverage?",
               "type": "list",
               "required": true,
-              "placeholder": "One scenario per line"
+              "placeholder": "The form can prefill likely scenarios from the selected feature.",
+              "autoFillFeatureKey": "testScenarios"
             },
             {
               "id": "testConstraints",
-              "label": "Testing constraints",
+              "label": "What testing rules or limits matter here?",
               "type": "textarea",
               "placeholder": "Naming patterns, no database access, use FluentAssertions, and so on."
             }
@@ -1239,20 +1203,20 @@
     {
       "id": "documentation-change",
       "title": "Documentation Change Request",
-      "summary": "Capture missing, outdated, or newly required documentation and the audience it must serve.",
+      "summary": "Describe a documentation update in plain English, with guided source-file and topic suggestions.",
       "whenToUse": [
         "Use this when documentation needs to be created, corrected, or expanded.",
         "Use this when the user goal is clearer guidance for developers, operators, or end users.",
         "Use this when code changes require synchronized docs."
       ],
       "beforeYouStart": [
-        "Know which audience the document is for.",
-        "List the source files, modules, or workflows the docs must reflect.",
-        "State whether the problem is missing docs, stale docs, or poor structure."
+        "Pick the module and feature first so the form can suggest likely source files and topics.",
+        "Know who the finished document is meant to help.",
+        "Decide whether the problem is missing docs, stale docs, or confusing docs."
       ],
       "endUserTips": [
         "Describe who will read the documentation.",
-        "Call out sections that are wrong or incomplete today.",
+        "Use the suggested source files or topics if they fit.",
         "If the docs must match code exactly, say so explicitly."
       ],
       "outputFolder": "docs/CopilotForms/outputs/documentation-change",
@@ -1263,6 +1227,13 @@
           "title": "Documentation Goal",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this in?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "docTitle",
               "label": "Short documentation request title",
               "type": "text",
@@ -1271,21 +1242,21 @@
             },
             {
               "id": "docAudience",
-              "label": "Target audience",
+              "label": "Who is this documentation mainly for?",
               "type": "select",
               "optionSource": "audiences",
               "required": true
             },
             {
               "id": "docProblem",
-              "label": "What is wrong or missing",
+              "label": "What is wrong, missing, or unclear today?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe the missing, stale, or confusing documentation."
             },
             {
               "id": "docOutcome",
-              "label": "Desired documentation outcome",
+              "label": "What should the finished documentation help the reader do?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe what the finished documentation should help the reader do."
@@ -1297,22 +1268,25 @@
           "fields": [
             {
               "id": "docSourceFiles",
-              "label": "Source files or modules to inspect",
+              "label": "Suggested source files or modules to inspect",
               "type": "list",
-              "placeholder": "One path or module per line"
+              "placeholder": "The form can prefill likely files from the selected feature.",
+              "autoFillFeatureKey": "relatedFiles"
             },
             {
               "id": "docSections",
-              "label": "Sections or topics to include",
+              "label": "Which sections or topics should be included?",
               "type": "list",
-              "placeholder": "One topic per line"
+              "placeholder": "The form can prefill likely topics from the selected feature.",
+              "autoFillFeatureKey": "docTopics"
             },
             {
               "id": "docValidation",
-              "label": "How to verify the documentation",
+              "label": "How should we check that the documentation is correct?",
               "type": "list",
               "required": true,
-              "placeholder": "One validation step per line"
+              "placeholder": "The form can prefill likely checks from the selected feature.",
+              "autoFillFeatureKey": "validationHints"
             }
           ]
         }
@@ -1321,20 +1295,20 @@
     {
       "id": "ui-mockup",
       "title": "UI Mockup Request",
-      "summary": "Capture enough visual and workflow detail for Copilot to generate a mockup artifact for a screen or flow.",
+      "summary": "Describe a screen idea or mockup request in plain English, with guided picks for layout, screens, sections, and controls.",
       "whenToUse": [
         "Use this when the user wants a new screen concept or a visual mockup before implementation.",
         "Use this when a normal UI change request is not enough because the screen is still exploratory.",
         "Do not use this when the request is only for code cleanup."
       ],
       "beforeYouStart": [
+        "Pick the module and feature first so the form can suggest screens, controls, and sections.",
         "Know the screen purpose and main user actions.",
-        "List required fields, actions, and sections.",
-        "Describe any layout or visual style constraints that matter."
+        "Think about any layout or workflow constraints that must stay true."
       ],
       "endUserTips": [
         "Describe the screen as if explaining it to a designer.",
-        "Prioritize the most important user actions.",
+        "Use the suggested screens, sections, and controls if they fit.",
         "Mention desktop assumptions if the screen is WinUI-specific."
       ],
       "outputFolder": "docs/CopilotForms/outputs/ui-mockup",
@@ -1345,6 +1319,13 @@
           "title": "Mockup Goal",
           "fields": [
             {
+              "id": "workflowArea",
+              "label": "Which workflow area is this for?",
+              "type": "select",
+              "featureHintKey": "workflowAreas",
+              "placeholder": "Pick the closest workflow area"
+            },
+            {
               "id": "mockupTitle",
               "label": "Short mockup title",
               "type": "text",
@@ -1353,21 +1334,21 @@
             },
             {
               "id": "mockupPurpose",
-              "label": "Screen purpose",
+              "label": "What should this screen help the user do?",
               "type": "textarea",
               "required": true,
               "placeholder": "Describe what this screen helps the user do."
             },
             {
               "id": "mockupPrimaryActions",
-              "label": "Primary user actions",
+              "label": "What are the most important user actions?",
               "type": "list",
               "required": true,
               "placeholder": "One action per line"
             },
             {
               "id": "mockupAudience",
-              "label": "Primary audience",
+              "label": "Who is this screen mainly for?",
               "type": "select",
               "optionSource": "audiences",
               "required": true
@@ -1378,27 +1359,52 @@
           "title": "Layout And Content",
           "fields": [
             {
+              "id": "affectedScreen",
+              "label": "Which known screen or step is this closest to?",
+              "type": "select",
+              "featureHintKey": "screens",
+              "placeholder": "Pick the closest current screen or step"
+            },
+            {
+              "id": "currentUiPattern",
+              "label": "What does the closest current screen mostly look like?",
+              "type": "select",
+              "featureHintKey": "currentUiPatterns",
+              "optionSource": "uiPresentationTypes",
+              "placeholder": "Pick the closest current layout"
+            },
+            {
+              "id": "desiredUiPattern",
+              "label": "What should this mockup mostly look like?",
+              "type": "select",
+              "featureHintKey": "desiredUiPatterns",
+              "optionSource": "uiPresentationTypes",
+              "placeholder": "Pick the closest target layout"
+            },
+            {
               "id": "mockupSections",
-              "label": "Required sections or cards",
+              "label": "Which sections or cards should the mockup include?",
               "type": "list",
               "required": true,
-              "placeholder": "One section per line"
+              "placeholder": "The form can prefill likely sections from the selected feature.",
+              "autoFillFeatureKey": "mockupSections"
             },
             {
               "id": "mockupFields",
-              "label": "Important fields or controls",
+              "label": "Which fields or controls should be shown?",
               "type": "list",
-              "placeholder": "One field or control per line"
+              "placeholder": "The form can prefill likely controls from the selected feature.",
+              "autoFillFeatureKey": "mockupFields"
             },
             {
               "id": "mockupVisualNotes",
-              "label": "Visual or layout notes",
+              "label": "What layout or visual notes matter most?",
               "type": "textarea",
               "placeholder": "Describe hierarchy, spacing, panel layout, tables, buttons, and status areas."
             },
             {
               "id": "mockupConstraints",
-              "label": "Constraints to preserve",
+              "label": "What constraints should the mockup respect?",
               "type": "textarea",
               "placeholder": "Window size, desktop assumptions, branding, accessibility, or workflow constraints."
             }

@@ -1,0 +1,318 @@
+{
+  "id": "receiving-workflow",
+  "module": "Module_Receiving",
+  "name": "Receiving Workflow",
+  "summary": "Primary receiving flow for queueing, editing, and archiving receiving label data.",
+  "owner": "Receiving Team",
+  "relatedFiles": [
+    "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+    "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+    "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+    "Module_Receiving/Views/View_Receiving_Workflow.xaml"
+  ],
+  "relatedServices": ["IService_ReceivingWorkflow", "IService_MySQL_Receiving"],
+  "promptDefaults": {
+    "audience": "Receiving Clerk",
+    "docAudience": "Receiving Clerk",
+    "mockupAudience": "Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Guided receiving workflow",
+      "Startup routing",
+      "Step-by-step wizard"
+    ],
+    "screens": [
+      "View_Receiving_Workflow.xaml",
+      "View_Receiving_ModeSelection.xaml",
+      "View_Receiving_POEntry.xaml",
+      "View_Receiving_LoadEntry.xaml",
+      "View_Receiving_WeightQuantity.xaml",
+      "View_Receiving_HeatLot.xaml",
+      "View_Receiving_PackageType.xaml",
+      "View_Receiving_Review.xaml"
+    ],
+    "currentUiPatterns": [
+      "Wizard step",
+      "Toolbar + results list",
+      "Review table"
+    ],
+    "desiredUiPatterns": ["Wizard step", "Card list", "Split layout", "Form"],
+    "uiElements": [
+      "Step title",
+      "Primary Next button",
+      "Primary Back button",
+      "Help text",
+      "Review area",
+      "Save action"
+    ],
+    "userActions": [
+      "Move through the workflow one step at a time",
+      "Understand what to do next quickly",
+      "Review entries before saving",
+      "Recover from mistakes without confusion"
+    ],
+    "accessibilityNeeds": [
+      "Make the screen easier to scan",
+      "Reduce visual clutter",
+      "Make actions clearer for non-technical users"
+    ],
+    "preserveRules": [
+      "Keep business logic unchanged",
+      "Keep validation rules unchanged",
+      "Keep service and DAO flow unchanged",
+      "Keep current save behavior unchanged"
+    ],
+    "acceptanceCriteria": [
+      "The workflow remains step-based",
+      "The user can still complete the same task from start to finish",
+      "No business logic or save behavior changes",
+      "The UI is easier to understand at a glance"
+    ],
+    "reviewFocusAreas": [
+      "Workflow regressions",
+      "Validation behavior",
+      "Navigation clarity",
+      "Save-path stability"
+    ],
+    "testScenarios": [
+      "The user can move step to step when required values are present",
+      "Validation blocks progress when required values are missing",
+      "The review step shows the correct information before save",
+      "Saving preserves the existing business behavior"
+    ],
+    "docTopics": [
+      "Workflow overview",
+      "Step-by-step operator flow",
+      "Validation behavior",
+      "Review and save expectations"
+    ],
+    "validationHints": [
+      "Confirm the same workflow can still be completed from start to finish",
+      "Confirm validation still blocks invalid input",
+      "Confirm review and save behavior are unchanged"
+    ],
+    "mockupSections": [
+      "Step header",
+      "Primary input area",
+      "Inline help area",
+      "Navigation footer"
+    ],
+    "mockupFields": [
+      "Purchase order",
+      "Load number",
+      "Weight",
+      "Quantity",
+      "Package type",
+      "Review summary"
+    ],
+    "databaseObjects": [
+      "sp_Receiving_LabelData_Insert",
+      "sp_Receiving_LabelData_Update",
+      "receiving label data tables"
+    ],
+    "loggingEvents": [
+      "Step transitions",
+      "Validation failures",
+      "Save requests",
+      "Save failures"
+    ],
+    "sensitiveDataRules": [
+      "Do not log connection strings",
+      "Do not log sensitive user environment details"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "receiving-mode-selection",
+      "name": "Mode Selection",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
+        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_ModeSelection.xaml"],
+        "currentUiPatterns": ["Wizard step"],
+        "desiredUiPatterns": ["Card list", "Wizard step", "Split layout"],
+        "uiElements": [
+          "Guided mode option",
+          "Manual mode option",
+          "Edit mode option",
+          "Default mode toggles"
+        ],
+        "userActions": [
+          "Choose the right starting mode quickly",
+          "Understand the difference between the three modes"
+        ],
+        "mockupSections": [
+          "Mode selection choices",
+          "Mode explanation area",
+          "Primary continue action"
+        ]
+      }
+    },
+    {
+      "id": "receiving-load-entry",
+      "name": "Load Entry",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_LoadEntry.xaml"],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
+        "uiElements": [
+          "Load input field",
+          "Scan input area",
+          "Validation message",
+          "Continue action"
+        ],
+        "userActions": [
+          "Enter or scan a load number",
+          "Understand whether the load is valid right away"
+        ]
+      }
+    },
+    {
+      "id": "receiving-po-entry",
+      "name": "PO Entry",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs",
+        "Module_Receiving/Views/View_Receiving_POEntry.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_POEntry.xaml"],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
+        "uiElements": [
+          "PO input field",
+          "Lookup action",
+          "Validation message",
+          "Continue action"
+        ],
+        "userActions": [
+          "Enter or scan a purchase order",
+          "See whether the purchase order is valid"
+        ]
+      }
+    },
+    {
+      "id": "receiving-manual-entry",
+      "name": "Manual Entry",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_ManualEntry.xaml"],
+        "currentUiPatterns": ["Form"],
+        "desiredUiPatterns": ["Form", "Split layout", "Card list"],
+        "uiElements": [
+          "Manual entry fields",
+          "Validation help",
+          "Primary save action"
+        ],
+        "userActions": [
+          "Enter receiving data manually",
+          "Save a valid manual record confidently"
+        ]
+      }
+    },
+    {
+      "id": "receiving-package-type",
+      "name": "Package Type Selection",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_PackageType.xaml"],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Card list", "Wizard step", "Form"],
+        "uiElements": [
+          "Package type list",
+          "Preference hint",
+          "Selection state",
+          "Continue action"
+        ],
+        "userActions": [
+          "Choose the correct package type",
+          "Understand the recommended default quickly"
+        ]
+      }
+    },
+    {
+      "id": "receiving-heat-lot",
+      "name": "Heat / Lot Entry",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_HeatLot.xaml"],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
+        "uiElements": [
+          "Heat input field",
+          "Lot input field",
+          "Validation message",
+          "Continue action"
+        ],
+        "userActions": [
+          "Enter heat and lot information correctly",
+          "See missing or invalid values clearly"
+        ]
+      }
+    },
+    {
+      "id": "receiving-weight-qty",
+      "name": "Weight & Quantity Entry",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_WeightQuantity.xaml"],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
+        "uiElements": [
+          "Weight field",
+          "Quantity field",
+          "Validation help",
+          "Continue action"
+        ],
+        "userActions": [
+          "Enter weight and quantity quickly",
+          "Understand invalid values immediately"
+        ]
+      }
+    },
+    {
+      "id": "receiving-review",
+      "name": "Review & Submit",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs",
+        "Module_Receiving/Views/View_Receiving_Review.xaml"
+      ],
+      "uiHints": {
+        "screens": ["View_Receiving_Review.xaml"],
+        "currentUiPatterns": ["Review table", "Toolbar + results list"],
+        "desiredUiPatterns": ["Review table", "Split layout", "Card list"],
+        "uiElements": [
+          "Review summary",
+          "Line items",
+          "Back action",
+          "Submit action"
+        ],
+        "userActions": [
+          "Review entries before save",
+          "Submit confidently after checking the summary"
+        ]
+      }
+    }
+  ]
+}

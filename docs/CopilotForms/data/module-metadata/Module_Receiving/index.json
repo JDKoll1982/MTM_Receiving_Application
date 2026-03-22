@@ -1,0 +1,12 @@
+{
+  "module": "Module_Receiving",
+  "owner": "Receiving Team",
+  "lastUpdated": "2026-03-21",
+  "featureFiles": [
+    "receiving-workflow.json",
+    "receiving-edit-mode.json",
+    "receiving-quality-hold.json",
+    "receiving-package-preferences.json",
+    "receiving-label-export.json"
+  ]
+}

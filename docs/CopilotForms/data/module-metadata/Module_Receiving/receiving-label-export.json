@@ -1,0 +1,79 @@
+{
+  "id": "receiving-label-export",
+  "module": "Module_Receiving",
+  "name": "Label / XLS Export",
+  "summary": "Writing, verifying, and cleaning up label data and XLS export files for receiving lines.",
+  "owner": "Receiving Team",
+  "relatedFiles": [
+    "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+    "Module_Receiving/Services/Service_XLSWriter.cs",
+    "Module_Receiving/Models/Model_XLSWriteResult.cs",
+    "Module_Receiving/Models/Model_XLSExistenceResult.cs",
+    "Module_Receiving/Models/Model_XLSDeleteResult.cs"
+  ],
+  "relatedServices": ["IService_XLSWriter"],
+  "promptDefaults": {
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": ["Label data export", "XLS file write and cleanup"],
+    "currentUiPatterns": ["Form", "Toolbar + results list"],
+    "desiredUiPatterns": ["Form", "Split layout"],
+    "uiElements": [
+      "Export action",
+      "File path feedback",
+      "Cleanup action",
+      "Status message"
+    ],
+    "userActions": [
+      "Write label data to XLS",
+      "Confirm the export succeeded",
+      "Clean up generated files safely"
+    ],
+    "preserveRules": [
+      "Keep existing export output stable",
+      "Keep cleanup behavior stable unless explicitly requested"
+    ],
+    "acceptanceCriteria": [
+      "XLS files are still written correctly",
+      "Cleanup still removes the correct generated data",
+      "Status reporting stays accurate"
+    ],
+    "reviewFocusAreas": [
+      "File write correctness",
+      "Cleanup safety",
+      "Result-model alignment"
+    ],
+    "testScenarios": [
+      "A valid export writes the expected XLS output",
+      "Cleanup removes the intended generated file records only"
+    ],
+    "docTopics": ["XLS export flow", "Cleanup and file verification behavior"],
+    "validationHints": [
+      "Confirm XLS output still matches the expected format",
+      "Confirm cleanup still removes the intended generated items"
+    ],
+    "databaseObjects": [
+      "sp_ReceivingLabelData_Insert",
+      "sp_ReceivingLabelData_Delete",
+      "receiving label data tables"
+    ]
+  },
+  "subFeatures": [
+    {
+      "id": "receiving-xls-write",
+      "name": "Write to XLS",
+      "relatedFiles": [
+        "Module_Receiving/Services/Service_XLSWriter.cs",
+        "Module_Receiving/Contracts/IService_XLSWriter.cs"
+      ]
+    },
+    {
+      "id": "receiving-xls-cleanup",
+      "name": "Delete / Cleanup",
+      "relatedFiles": ["Module_Receiving/Data/Dao_ReceivingLabelData.cs"]
+    }
+  ]
+}

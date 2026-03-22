@@ -223,6 +223,56 @@ code {
   flex-shrink: 0;
 }
 
+.feature-aware-hint {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--info-border);
+  background: var(--info-bg);
+  border-radius: var(--r-md);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-xs);
+}
+
+.checkbox-group-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-group-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.checkbox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-raised);
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.checkbox-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.checkbox-chip input {
+  margin: 0;
+}
+
+.checkbox-chip-text {
+  color: var(--text);
+}
+
 /* ── Icon button ────────────────────────────────────────────────────────────── */
 .icon-btn {
   display: inline-flex;
