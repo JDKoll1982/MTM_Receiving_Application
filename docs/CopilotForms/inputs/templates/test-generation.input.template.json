@@ -1,11 +1,12 @@
 {
-    "formId": "test-generation",
-    "featureId": "receiving-workflow",
-    "testRequestTitle": "",
-    "testKind": "Unit",
-    "testTargets": [],
-    "testIntent": "",
-    "testDependencies": "",
-    "testScenarios": [],
-    "testConstraints": ""
+  "formId": "test-generation",
+  "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
+  "testRequestTitle": "",
+  "testKind": "Unit",
+  "testTargets": [],
+  "testIntent": "",
+  "testDependencies": "",
+  "testScenarios": [],
+  "testConstraints": ""
 }

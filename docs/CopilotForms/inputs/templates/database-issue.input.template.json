@@ -1,11 +1,12 @@
 {
-    "formId": "database-issue",
-    "featureId": "receiving-workflow",
-    "databaseTitle": "",
-    "databaseSystem": "MySQL",
-    "databaseObjects": [],
-    "databaseProblem": "",
-    "databaseEvidence": "",
-    "databaseConstraints": "",
-    "databaseValidation": []
+  "formId": "database-issue",
+  "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
+  "databaseTitle": "",
+  "databaseSystem": "MySQL",
+  "databaseObjects": [],
+  "databaseProblem": "",
+  "databaseEvidence": "",
+  "databaseConstraints": "",
+  "databaseValidation": []
 }

@@ -1,12 +1,13 @@
 {
-    "formId": "ui-mockup",
-    "featureId": "receiving-workflow",
-    "mockupTitle": "",
-    "mockupPurpose": "",
-    "mockupPrimaryActions": [],
-    "mockupAudience": "Receiving Clerk",
-    "mockupSections": [],
-    "mockupFields": [],
-    "mockupVisualNotes": "",
-    "mockupConstraints": ""
+  "formId": "ui-mockup",
+  "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
+  "mockupTitle": "",
+  "mockupPurpose": "",
+  "mockupPrimaryActions": [],
+  "mockupAudience": "Receiving Clerk",
+  "mockupSections": [],
+  "mockupFields": [],
+  "mockupVisualNotes": "",
+  "mockupConstraints": ""
 }

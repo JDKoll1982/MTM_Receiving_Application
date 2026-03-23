@@ -1,6 +1,7 @@
 {
   "formId": "ui-change-logic-change",
   "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
   "requestTitle": "",
   "audience": "Receiving Clerk",
   "currentUiProblem": "",

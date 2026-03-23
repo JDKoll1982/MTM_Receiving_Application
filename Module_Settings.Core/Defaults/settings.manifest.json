@@ -2481,7 +2481,7 @@
       "category": "Receiving",
       "key": "Receiving.PartNumberPadding.RulesJson",
       "displayName": "Part Number Padding - Rules JSON",
-      "defaultValue": "[{\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
+      "defaultValue": "[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
       "dataType": "String",
       "scope": "System",
       "permissionLevel": "User",

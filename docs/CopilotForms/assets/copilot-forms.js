@@ -1127,6 +1127,83 @@ function getFieldValue(values, ids = []) {
   return "";
 }
 
+const INFOR_VISUAL_CSV_REFERENCE_LINES = [
+  "CSV Files to assist in schema searching:",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_CheckConstraints.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_ColumnDetails.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_DefaultConstraints.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_FKs.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Indexes.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_PKs.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_TableRowCounts.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Tables.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Triggers.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_UniqueConstraints.csv",
+  "docs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Views.csv",
+];
+
+const INCLUDE_INFOR_VISUAL_CSV_FIELD = {
+  id: "includeInforVisualCsvFiles",
+  label: "Include Infor Visual CSV reference files in the output?",
+  type: "checkbox",
+  helpText:
+    "When enabled, CopilotForms adds the standard docs/InforVisual/DatabaseCSVFiles schema reference list to the export output.",
+};
+
+function buildInforVisualCsvReferenceBlock() {
+  return INFOR_VISUAL_CSV_REFERENCE_LINES.join("\n");
+}
+
+function getInforVisualCsvReferencePaths() {
+  return INFOR_VISUAL_CSV_REFERENCE_LINES.slice(1);
+}
+
+function ensureSharedFormFields(config) {
+  if (!config || !Array.isArray(config.forms)) {
+    return config;
+  }
+
+  for (const form of config.forms) {
+    const groups = Array.isArray(form.fieldGroups) ? form.fieldGroups : [];
+    if (!groups.length) {
+      continue;
+    }
+
+    const hasField = groups.some(
+      (group) =>
+        Array.isArray(group.fields) &&
+        group.fields.some(
+          (field) => field.id === INCLUDE_INFOR_VISUAL_CSV_FIELD.id,
+        ),
+    );
+
+    if (hasField) {
+      continue;
+    }
+
+    const lastGroup = groups[groups.length - 1];
+    if (!Array.isArray(lastGroup.fields)) {
+      lastGroup.fields = [];
+    }
+
+    lastGroup.fields.push({ ...INCLUDE_INFOR_VISUAL_CSV_FIELD });
+  }
+
+  return config;
+}
+
+function getExportValues(form, values) {
+  const exportValues = JSON.parse(JSON.stringify(values || {}));
+
+  if (exportValues.includeInforVisualCsvFiles) {
+    exportValues.inforVisualCsvReferences = getInforVisualCsvReferencePaths();
+  } else {
+    delete exportValues.inforVisualCsvReferences;
+  }
+
+  return exportValues;
+}
+
 function buildHumanSummary(form, feature, subFeature, values) {
   const title = getFieldValue(values, [
     "requestTitle",
@@ -1200,19 +1277,25 @@ function buildMetadataReviewInfo(feature, values) {
 
 // ── Build markdown output ──────────────────────────────────────────────────────
 function buildMarkdown(form, feature, values) {
+  const exportValues = getExportValues(form, values);
   const lines = [];
   lines.push(`# ${form.title} Export`, "");
   lines.push(`- Generated: ${new Date().toISOString()}`);
   lines.push(`- Form: ${form.id}`);
   const { subFeature: _subFeature } = getSelectedFeatureContext(_config);
-  const humanSummary = buildHumanSummary(form, feature, _subFeature, values);
-  const metadataReview = buildMetadataReviewInfo(feature, values);
+  const humanSummary = buildHumanSummary(
+    form,
+    feature,
+    _subFeature,
+    exportValues,
+  );
+  const metadataReview = buildMetadataReviewInfo(feature, exportValues);
   lines.push(
-    `- Feature: ${feature?.name || values.featureName || "Unspecified"}`,
+    `- Feature: ${feature?.name || exportValues.featureName || "Unspecified"}`,
   );
   lines.push(`- Sub-feature: ${_subFeature?.name || "(none selected)"}`);
   lines.push(
-    `- Module: ${feature?.module || values.moduleName || "Unspecified"}`,
+    `- Module: ${feature?.module || exportValues.moduleName || "Unspecified"}`,
   );
   lines.push(`- Prompt File: ${form.promptFile}`);
   lines.push(`- Instruction File: ${form.instructionFile}`);
@@ -1288,11 +1371,13 @@ function buildMarkdown(form, feature, values) {
   for (const group of form.fieldGroups || []) {
     lines.push(`## ${group.title}`, "");
     for (const field of group.fields) {
-      const val = values[field.id];
+      const val = exportValues[field.id];
       lines.push(`### ${field.label}`);
       if (Array.isArray(val)) {
         if (val.length === 0) lines.push("- None provided");
         else val.forEach((item) => lines.push(`- ${item}`));
+      } else if (typeof val === "boolean") {
+        lines.push(val ? "Yes" : "No");
       } else {
         lines.push(val ? String(val) : "_Not provided_");
       }
@@ -1300,11 +1385,19 @@ function buildMarkdown(form, feature, values) {
     }
   }
 
+  if (exportValues.includeInforVisualCsvFiles) {
+    lines.push("## Infor Visual CSV References", "");
+    getInforVisualCsvReferencePaths().forEach((path) =>
+      lines.push(`- ${path}`),
+    );
+    lines.push("");
+  }
+
   lines.push("## Machine Data", "");
   lines.push("```json");
   lines.push(
     JSON.stringify(
-      { formId: form.id, featureId: feature?.id || null, values },
+      { formId: form.id, featureId: feature?.id || null, values: exportValues },
       null,
       2,
     ),
@@ -1318,6 +1411,7 @@ function buildMarkdown(form, feature, values) {
 }
 
 function buildJson(form, feature, values) {
+  const exportValues = getExportValues(form, values);
   const { subFeature } = getSelectedFeatureContext(_config);
   return JSON.stringify(
     {
@@ -1326,11 +1420,11 @@ function buildJson(form, feature, values) {
       title: form.title,
       outputFolder: form.outputFolder,
       promptFile: form.promptFile,
-      humanSummary: buildHumanSummary(form, feature, subFeature, values),
-      metadataReview: buildMetadataReviewInfo(feature, values),
+      humanSummary: buildHumanSummary(form, feature, subFeature, exportValues),
+      metadataReview: buildMetadataReviewInfo(feature, exportValues),
       feature: feature || null,
       subFeature: subFeature || null,
-      values,
+      values: exportValues,
     },
     null,
     2,
@@ -1823,7 +1917,8 @@ async function enrichConfigWithModuleMetadata(config, basePath) {
 
 async function loadConfig(basePath) {
   const config = await loadJsonFile(basePath, "data/copilot-forms.config.json");
-  return enrichConfigWithModuleMetadata(config, basePath);
+  const enrichedConfig = await enrichConfigWithModuleMetadata(config, basePath);
+  return ensureSharedFormFields(enrichedConfig);
 }
 
 // ── Local config fallback ──────────────────────────────────────────────────────
@@ -2110,6 +2205,7 @@ async function initFormPage(
   config,
   basePath = document.body.dataset.basePath || ".",
 ) {
+  config = ensureSharedFormFields(config);
   _config = config;
 
   let formId =
@@ -2286,7 +2382,9 @@ async function initFormPage(
   });
 
   wireLocalConfig(async (cfg) => {
-    const enrichedConfig = await enrichConfigWithModuleMetadata(cfg, basePath);
+    const enrichedConfig = ensureSharedFormFields(
+      await enrichConfigWithModuleMetadata(cfg, basePath),
+    );
     _config = enrichedConfig;
     const nextForm =
       (enrichedConfig.forms || []).find((f) => f.id === formId) || form;

@@ -676,6 +676,12 @@ public class Dao_InforVisualConnection
     {
         try
         {
+            var rawTerm = term.Trim();
+            var normalizedTerm = rawTerm
+                .Replace("-", string.Empty, StringComparison.Ordinal)
+                .Replace(" ", string.Empty, StringComparison.Ordinal)
+                .ToUpperInvariant();
+
             _logger?.LogInfo(
                 $"Fuzzy-searching locations in warehouse '{warehouseCode}' for term '{term}' (max {maxResults})"
             );
@@ -687,7 +693,8 @@ public class Dao_InforVisualConnection
             await connection.OpenAsync();
 
             await using var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Term", $"%{term}%");
+            command.Parameters.AddWithValue("@Term", $"%{rawTerm}%");
+            command.Parameters.AddWithValue("@NormalizedTerm", $"%{normalizedTerm}%");
             command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
             command.Parameters.AddWithValue("@MaxResults", maxResults);
 

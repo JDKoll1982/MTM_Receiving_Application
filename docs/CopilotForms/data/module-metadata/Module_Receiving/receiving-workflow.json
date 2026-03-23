@@ -8,6 +8,7 @@
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
     "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
     "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
+    "Module_Core/Contracts/Services/IService_InforVisual.cs",
     "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
     "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
     "Module_Receiving/Services/Service_ReceivingSettings.cs",
@@ -15,8 +16,11 @@
     "Module_Receiving/Services/Service_SessionManager.cs",
     "Module_Receiving/Services/Service_MySQL_Receiving.cs",
     "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+    "Module_Core/Services/Database/Service_InforVisualConnect.cs",
     "Module_Receiving/Data/Dao_ReceivingLoad.cs",
     "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+    "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+    "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
     "Module_Receiving/Models/Model_Application_Variables.cs",
     "Module_Receiving/Models/Model_ReceivingSession.cs",
     "Module_Receiving/Models/Model_ReceivingLoad.cs",
@@ -36,17 +40,21 @@
     "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs",
     "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs",
     "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
-    "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs"
+    "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs",
+    "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
+    "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql"
   ],
   "relatedServices": [
     "IService_ReceivingWorkflow",
     "IService_ReceivingSettings",
     "IService_ReceivingValidation",
+    "IService_InforVisual",
     "IService_MySQL_Receiving",
     "Service_ReceivingWorkflow",
     "Service_ReceivingSettings",
     "Service_ReceivingValidation",
     "Service_SessionManager",
+    "Service_InforVisualConnect",
     "Service_MySQL_Receiving",
     "Service_ReceivingLabelData"
   ],
@@ -216,7 +224,13 @@
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
         "Module_Receiving/Views/View_Receiving_LoadEntry.xaml",
-        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs"
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs",
+        "Module_Core/Contracts/Services/IService_InforVisual.cs",
+        "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+        "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
+        "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
+        "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql"
       ],
       "uiHints": {
         "screens": ["View_Receiving_LoadEntry.xaml"],
@@ -224,13 +238,15 @@
         "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
         "uiElements": [
           "Load input field",
-          "Scan input area",
-          "Validation message",
+          "Optional location input field",
+          "Fuzzy location selection dialog",
+          "Validation/status message",
           "Continue action"
         ],
         "userActions": [
-          "Enter or scan a load number",
-          "Understand whether the load is valid right away"
+          "Enter the number of loads for the current part",
+          "Enter an optional receiving location and keep what was typed if it is an exact match",
+          "Choose a suggested location when the typed location does not exactly exist"
         ]
       }
     },

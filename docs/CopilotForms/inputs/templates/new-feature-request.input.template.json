@@ -1,6 +1,7 @@
 {
   "formId": "new-feature-request",
   "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
   "featureRequestTitle": "",
   "audience": "Receiving Clerk",
   "problemToSolve": "",

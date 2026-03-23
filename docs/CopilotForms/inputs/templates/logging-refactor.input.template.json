@@ -1,14 +1,15 @@
 {
-    "formId": "logging-refactor",
-    "featureId": "receiving-workflow",
-    "loggingMode": "Add logging",
-    "reason": "",
-    "currentIssue": "",
-    "targetOutcome": "",
-    "eventsToLog": [],
-    "eventsToRemove": [],
-    "severityRules": "",
-    "sensitiveDataRules": "",
-    "relevantFiles": [],
-    "validationNeeds": []
+  "formId": "logging-refactor",
+  "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
+  "loggingMode": "Add logging",
+  "reason": "",
+  "currentIssue": "",
+  "targetOutcome": "",
+  "eventsToLog": [],
+  "eventsToRemove": [],
+  "severityRules": "",
+  "sensitiveDataRules": "",
+  "relevantFiles": [],
+  "validationNeeds": []
 }

@@ -1,6 +1,7 @@
 {
   "formId": "feature-removal-request",
   "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
   "removalTitle": "",
   "workflowArea": "",
   "removalMode": "Hard removal",

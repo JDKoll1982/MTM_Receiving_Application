@@ -1,6 +1,7 @@
 {
   "formId": "logic-change-test-generation",
   "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
   "workflowIntent": "",
   "actualBehavior": "",
   "desiredRuleSet": [],

@@ -6,12 +6,14 @@
 --
 -- Parameters:
 --   @Term           nvarchar  Wildcard-wrapped search term, e.g. '%A-01%'
+--   @NormalizedTerm nvarchar  Wildcard-wrapped search term with dashes/spaces removed, e.g. '%A01%'
 --   @WarehouseCode  nvarchar  Warehouse code to restrict results, e.g. '002'
 --   @MaxResults     int       Maximum rows to return (default: 50 in C# caller)
 
-DECLARE @Term          nvarchar(60) = '%A-01%';
-DECLARE @WarehouseCode nvarchar(10) = '002';
-DECLARE @MaxResults    int          = 50;
+DECLARE @Term           nvarchar(60) = '%A-01%';
+DECLARE @NormalizedTerm nvarchar(60) = '%A01%';
+DECLARE @WarehouseCode  nvarchar(10) = '002';
+DECLARE @MaxResults     int          = 50;
 
 SELECT TOP (@MaxResults)
     l.ID            AS LocationId,
@@ -21,6 +23,9 @@ FROM
     dbo.LOCATION l
 WHERE
     l.WAREHOUSE_ID = @WarehouseCode
-    AND l.ID LIKE @Term
+    AND (
+        l.ID LIKE @Term
+        OR REPLACE(REPLACE(UPPER(l.ID), '-', ''), ' ', '') LIKE @NormalizedTerm
+    )
 ORDER BY
     l.ID;

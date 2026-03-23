@@ -1,0 +1,16 @@
+The Success pages for both the guided workflow and manual entry should not have the Next and Back Buttons visible as they serve no purpose.
+Clicking Start New Entry should return to either the 1st page of the Guided Workflow or Manual Entry. Also verify that it is clearing all UI Input data when used.
+When changing from 1 mode to another make sure to clear all UI data
+Module_Settings_Receiving -> Workflow Options Page needs a save button added as right now there does not appear to be a way of saving changes in that screen.
+Module_Settings_Receiving, when changing settings and leaving the settings window all changes need to be reflected into the MainWindow's UI, example If I change the Default Mode on Startup from Guided Wizard to Mode Selection then Mode Selection's 3 checkboxes should all be turned off, If I change it from Mode Selection to Guided Workflow then the checkbox under the Guided Workflow card should be checked and the other 2 unchecked.
+Module_Settings_Receiving -> Workflow Options Page Remove the Remember Last Mode option as it conflicts with the Default Mode on Startup Setting.
+Module_Settings_Receiving -> Workflow Options Page Remove the Auto-Fill Heat/Lot as there is a button to do that in the workflow
+Module_Settings_Receiving -> Workflow Options Page Remove the Save Package Type as Default as there is a Checkbox to do that in the workflow
+Module_Settings_Receiving -> Workflow Options Page Verify that the Show Review Table by Default is actually implemented in the Review page.
+Module_Settings_Receiving -> Workflow Options Page Remove the Allow Edit After Save as this is setting would conflict with Edit Mode too much.
+Module_Settings_Receiving -> Workflow Options Page Remove the Auto-Save Card as this is not needed
+Module_Settings_Receiving -> Shared Paths, Remove the Infor Visual Executable Root path as the feature that used it was removed.
+Module_Receiving & Module_Settings_Receiving -> Part Number Auto Padding, Currently Padding is working like this {3 Letter Prefix} {Padding Value} {Suffix} I want the Prefix to have a max allowed characters of 5. Currently if i try setting a prefix of MMCCS and then test it with a suffix of 15 shows up as MMC000CS15 when it should be MMCCS00015
+For all removed Options / Settings make sure to update the default settings json file to reflect these changes.
+Module_Settings_Receiving -> Part Number Auto Padding , when attempting to remove a Padding Value the app crashes/stalls - Object reference not set to an instance of an object.
+Module_Settings_Receiving -> All Pages, there is currently a "Back to Hub" button that allows each page to go back to the Hub of Module_Settings_Receiving, that was not what I wanted. There is a built in back button in the Settings Window I want implemented into the entire Settings Module

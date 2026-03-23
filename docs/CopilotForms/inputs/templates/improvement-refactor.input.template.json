@@ -1,13 +1,14 @@
 {
-    "formId": "improvement-refactor",
-    "featureId": "receiving-workflow",
-    "motivation": "",
-    "painPoints": [],
-    "scope": "Single feature",
-    "preferredOutcome": "",
-    "candidateFiles": [],
-    "architectureNotes": "",
-    "riskLevel": "Moderate",
-    "testsNeeded": [],
-    "successCriteria": []
+  "formId": "improvement-refactor",
+  "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
+  "motivation": "",
+  "painPoints": [],
+  "scope": "Single feature",
+  "preferredOutcome": "",
+  "candidateFiles": [],
+  "architectureNotes": "",
+  "riskLevel": "Moderate",
+  "testsNeeded": [],
+  "successCriteria": []
 }

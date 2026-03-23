@@ -1,6 +1,7 @@
 {
   "formId": "debugging-logging",
   "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
   "bugTitle": "",
   "priority": "High",
   "observedBehavior": "",

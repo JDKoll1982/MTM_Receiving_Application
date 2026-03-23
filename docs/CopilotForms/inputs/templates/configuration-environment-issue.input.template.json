@@ -1,6 +1,7 @@
 {
   "formId": "configuration-environment-issue",
   "featureId": "shared-infrastructure",
+  "includeInforVisualCsvFiles": false,
   "configIssueTitle": "",
   "environmentType": "Local developer machine",
   "configAreas": [],

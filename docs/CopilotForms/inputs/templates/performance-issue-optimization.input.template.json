@@ -1,6 +1,7 @@
 {
   "formId": "performance-issue-optimization",
   "featureId": "receiving-workflow",
+  "includeInforVisualCsvFiles": false,
   "performanceTitle": "",
   "workflowArea": "",
   "affectedScreen": "",

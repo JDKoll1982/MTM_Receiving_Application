@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -188,36 +190,73 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return validation;
             }
 
-            if (IsMockLocationMode || string.IsNullOrWhiteSpace(Location))
+            return validation;
+        }
+
+        public async Task<
+            Model_Dao_Result<List<Model_FuzzySearchResult>>
+        > GetLocationSuggestionsAsync(string warehouseCode = "002")
+        {
+            if (string.IsNullOrWhiteSpace(Location))
             {
-                return validation;
+                return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
+            }
+
+            if (IsMockLocationMode)
+            {
+                var normalizedSearch = NormalizeLocationForMatch(Location);
+                var locationSuggestions = PresetLocations
+                    .Where(presetLocation =>
+                    {
+                        var normalizedPreset = NormalizeLocationForMatch(presetLocation);
+                        return normalizedPreset.Contains(
+                            normalizedSearch,
+                            StringComparison.OrdinalIgnoreCase
+                        );
+                    })
+                    .OrderByDescending(presetLocation =>
+                        presetLocation.StartsWith(
+                            Location.Trim(),
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    .ThenBy(presetLocation => presetLocation, StringComparer.OrdinalIgnoreCase)
+                    .Select(presetLocation => new Model_FuzzySearchResult
+                    {
+                        Key = presetLocation,
+                        Label = presetLocation,
+                        Detail = "Preset mock location",
+                    })
+                    .ToList();
+
+                return Model_Dao_Result_Factory.Success(locationSuggestions);
             }
 
             var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
                 Location.Trim(),
-                "002"
+                warehouseCode
             );
-            if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null || fuzzyResult.Data.Count == 0)
+            if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null)
             {
-                return validation;
+                return fuzzyResult;
             }
 
-            var suggestions = string.Join(
-                ", ",
-                fuzzyResult
-                    .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
-                    .Select(static result => result.Label.Trim())
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .Take(5)
-            );
+            var suggestions = fuzzyResult
+                .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
+                .GroupBy(static result => result.Label.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Select(static group => group.First())
+                .ToList();
 
-            if (string.IsNullOrWhiteSpace(suggestions))
-            {
-                return validation;
-            }
+            return Model_Dao_Result_Factory.Success(suggestions);
+        }
 
-            return Model_ReceivingValidationResult.Error(
-                $"{validation.Message} Closest matches: {suggestions}"
+        private static string NormalizeLocationForMatch(string? location)
+        {
+            return new string(
+                (location ?? string.Empty)
+                    .Where(char.IsLetterOrDigit)
+                    .Select(char.ToUpperInvariant)
+                    .ToArray()
             );
         }
 

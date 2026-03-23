@@ -1,6 +1,7 @@
 {
   "formId": "naming-consistency-cleanup",
   "featureId": "receiving-label-export",
+  "includeInforVisualCsvFiles": false,
   "cleanupTitle": "",
   "scope": "Single feature",
   "namingProblem": "",
