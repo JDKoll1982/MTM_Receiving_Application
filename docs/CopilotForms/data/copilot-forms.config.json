@@ -26,17 +26,8 @@
     ]
   },
   "shared": {
-    "priorities": [
-      "Critical",
-      "High",
-      "Medium",
-      "Low"
-    ],
-    "riskLevels": [
-      "Low",
-      "Moderate",
-      "High"
-    ],
+    "priorities": ["Critical", "High", "Medium", "Low"],
+    "riskLevels": ["Low", "Moderate", "High"],
     "changeScopes": [
       "Single file",
       "Single feature",
@@ -315,17 +306,9 @@
             "Module_Receiving/Services/Service_ReceivingSettings.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_ModeSelection.xaml"
-            ],
-            "currentUiPatterns": [
-              "Wizard step"
-            ],
-            "desiredUiPatterns": [
-              "Card list",
-              "Wizard step",
-              "Split layout"
-            ],
+            "screens": ["View_Receiving_ModeSelection.xaml"],
+            "currentUiPatterns": ["Wizard step"],
+            "desiredUiPatterns": ["Card list", "Wizard step", "Split layout"],
             "uiElements": [
               "Guided mode option",
               "Manual mode option",
@@ -353,18 +336,9 @@
             "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_LoadEntry.xaml"
-            ],
-            "currentUiPatterns": [
-              "Wizard step",
-              "Form"
-            ],
-            "desiredUiPatterns": [
-              "Wizard step",
-              "Form",
-              "Split layout"
-            ],
+            "screens": ["View_Receiving_LoadEntry.xaml"],
+            "currentUiPatterns": ["Wizard step", "Form"],
+            "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
             "uiElements": [
               "Load input field",
               "Scan input area",
@@ -387,18 +361,9 @@
             "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_POEntry.xaml"
-            ],
-            "currentUiPatterns": [
-              "Wizard step",
-              "Form"
-            ],
-            "desiredUiPatterns": [
-              "Wizard step",
-              "Form",
-              "Split layout"
-            ],
+            "screens": ["View_Receiving_POEntry.xaml"],
+            "currentUiPatterns": ["Wizard step", "Form"],
+            "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
             "uiElements": [
               "PO input field",
               "Lookup action",
@@ -421,17 +386,9 @@
             "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_ManualEntry.xaml"
-            ],
-            "currentUiPatterns": [
-              "Form"
-            ],
-            "desiredUiPatterns": [
-              "Form",
-              "Split layout",
-              "Card list"
-            ],
+            "screens": ["View_Receiving_ManualEntry.xaml"],
+            "currentUiPatterns": ["Form"],
+            "desiredUiPatterns": ["Form", "Split layout", "Card list"],
             "uiElements": [
               "Manual entry fields",
               "Auto-Fill action",
@@ -455,18 +412,9 @@
             "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_PackageType.xaml"
-            ],
-            "currentUiPatterns": [
-              "Wizard step",
-              "Form"
-            ],
-            "desiredUiPatterns": [
-              "Card list",
-              "Wizard step",
-              "Form"
-            ],
+            "screens": ["View_Receiving_PackageType.xaml"],
+            "currentUiPatterns": ["Wizard step", "Form"],
+            "desiredUiPatterns": ["Card list", "Wizard step", "Form"],
             "uiElements": [
               "Package type list",
               "Preference hint",
@@ -489,18 +437,9 @@
             "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_HeatLot.xaml"
-            ],
-            "currentUiPatterns": [
-              "Wizard step",
-              "Form"
-            ],
-            "desiredUiPatterns": [
-              "Wizard step",
-              "Form",
-              "Split layout"
-            ],
+            "screens": ["View_Receiving_HeatLot.xaml"],
+            "currentUiPatterns": ["Wizard step", "Form"],
+            "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
             "uiElements": [
               "Heat input field",
               "Lot input field",
@@ -524,18 +463,9 @@
             "Module_Receiving/Models/Model_ReceivingValidationResult.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_WeightQuantity.xaml"
-            ],
-            "currentUiPatterns": [
-              "Wizard step",
-              "Form"
-            ],
-            "desiredUiPatterns": [
-              "Wizard step",
-              "Form",
-              "Split layout"
-            ],
+            "screens": ["View_Receiving_WeightQuantity.xaml"],
+            "currentUiPatterns": ["Wizard step", "Form"],
+            "desiredUiPatterns": ["Wizard step", "Form", "Split layout"],
             "uiElements": [
               "Weight field",
               "Quantity field",
@@ -560,18 +490,9 @@
             "Module_Receiving/Services/Service_MySQL_Receiving.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_Review.xaml"
-            ],
-            "currentUiPatterns": [
-              "Review table",
-              "Toolbar + results list"
-            ],
-            "desiredUiPatterns": [
-              "Review table",
-              "Split layout",
-              "Card list"
-            ],
+            "screens": ["View_Receiving_Review.xaml"],
+            "currentUiPatterns": ["Review table", "Toolbar + results list"],
+            "desiredUiPatterns": ["Review table", "Split layout", "Card list"],
             "uiElements": [
               "Review summary",
               "Line items",
@@ -596,10 +517,7 @@
             "Module_Receiving/Models/Model_WorkflowStepResult.cs"
           ],
           "uiHints": {
-            "workflowAreas": [
-              "Session persistence",
-              "Session restore"
-            ],
+            "workflowAreas": ["Session persistence", "Session restore"],
             "userActions": [
               "Resume unfinished receiving work after restart",
               "Avoid re-entering already captured load data"
@@ -664,9 +582,7 @@
           "Switch between current memory, current labels, and history",
           "Persist edit-grid preferences"
         ],
-        "screens": [
-          "View_Receiving_EditMode.xaml"
-        ],
+        "screens": ["View_Receiving_EditMode.xaml"],
         "currentUiPatterns": [
           "DataGrid",
           "Toolbar + results list",
@@ -799,12 +715,8 @@
             "Module_Receiving/Settings/ReceivingSettingsKeys.cs"
           ],
           "uiHints": {
-            "screens": [
-              "View_Receiving_EditMode.xaml"
-            ],
-            "currentUiPatterns": [
-              "DataGrid"
-            ],
+            "screens": ["View_Receiving_EditMode.xaml"],
+            "currentUiPatterns": ["DataGrid"],
             "desiredUiPatterns": [
               "Card list",
               "Compact card list",
@@ -841,9 +753,7 @@
             "Module_Receiving/Services/Service_ReceivingValidation.cs"
           ],
           "uiHints": {
-            "workflowAreas": [
-              "Save edited records"
-            ],
+            "workflowAreas": ["Save edited records"],
             "uiElements": [
               "Save Changes action",
               "Validation message area",
@@ -919,15 +829,8 @@
           "Quality hold warning dialog",
           "Quality hold maintenance flow"
         ],
-        "currentUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Dialog",
-          "Form",
-          "Split layout"
-        ],
+        "currentUiPatterns": ["Dialog", "Form"],
+        "desiredUiPatterns": ["Dialog", "Form", "Split layout"],
         "uiElements": [
           "Warning dialog",
           "Hold reason field",
@@ -1016,18 +919,9 @@
           "Package type defaults",
           "Prefix-based package rules"
         ],
-        "screens": [
-          "Package preference maintenance flow"
-        ],
-        "currentUiPatterns": [
-          "Form",
-          "Table"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Card list",
-          "Split layout"
-        ],
+        "screens": ["Package preference maintenance flow"],
+        "currentUiPatterns": ["Form", "Table"],
+        "desiredUiPatterns": ["Form", "Card list", "Split layout"],
         "uiElements": [
           "Part number input",
           "Prefix rule fields",
@@ -1113,18 +1007,9 @@
         "databaseSystem": "MySQL"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Label data export",
-          "Label data write and cleanup"
-        ],
-        "currentUiPatterns": [
-          "Form",
-          "Toolbar + results list"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Split layout"
-        ],
+        "workflowAreas": ["Label data export", "Label data write and cleanup"],
+        "currentUiPatterns": ["Form", "Toolbar + results list"],
+        "desiredUiPatterns": ["Form", "Split layout"],
         "uiElements": [
           "Export action",
           "File path feedback",
@@ -1181,9 +1066,7 @@
         {
           "id": "receiving-label-data-cleanup",
           "name": "Delete / Cleanup",
-          "relatedFiles": [
-            "Module_Receiving/Data/Dao_ReceivingLabelData.cs"
-          ],
+          "relatedFiles": ["Module_Receiving/Data/Dao_ReceivingLabelData.cs"],
           "relatedServices": []
         }
       ]
@@ -1242,15 +1125,8 @@
           "Admin parts view",
           "Admin inventory view"
         ],
-        "currentUiPatterns": [
-          "Wizard step",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Wizard step",
-          "Card list",
-          "Form"
-        ],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Wizard step", "Card list", "Form"],
         "uiElements": [
           "Mode selection",
           "Paging controls",
@@ -1326,16 +1202,9 @@
           "id": "dunnage-type-selection",
           "name": "Type Selection",
           "uiHints": {
-            "screens": [
-              "Type Selection step"
-            ],
-            "uiElements": [
-              "Type options",
-              "Continue action"
-            ],
-            "userActions": [
-              "Choose the correct dunnage type quickly"
-            ]
+            "screens": ["Type Selection step"],
+            "uiElements": ["Type options", "Continue action"],
+            "userActions": ["Choose the correct dunnage type quickly"]
           },
           "relatedServices": []
         },
@@ -1343,16 +1212,9 @@
           "id": "dunnage-part-selection",
           "name": "Part Selection",
           "uiHints": {
-            "screens": [
-              "Part Selection step"
-            ],
-            "uiElements": [
-              "Part list",
-              "Part action controls"
-            ],
-            "userActions": [
-              "Choose the correct part"
-            ]
+            "screens": ["Part Selection step"],
+            "uiElements": ["Part list", "Part action controls"],
+            "userActions": ["Choose the correct part"]
           },
           "relatedServices": []
         },
@@ -1360,17 +1222,13 @@
           "id": "dunnage-quantity-entry",
           "name": "Quantity Entry",
           "uiHints": {
-            "screens": [
-              "Quantity Entry step"
-            ],
+            "screens": ["Quantity Entry step"],
             "uiElements": [
               "Quantity field",
               "Validation message",
               "Save action"
             ],
-            "userActions": [
-              "Enter a valid quantity and finish the workflow"
-            ]
+            "userActions": ["Enter a valid quantity and finish the workflow"]
           },
           "relatedServices": []
         },
@@ -1461,10 +1319,7 @@
         "Module_Dunnage/Models/Model_DunnagePart.cs",
         "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs"
       ],
-      "relatedServices": [
-        "IService_DunnageWorkflow",
-        "IService_MySQL_Dunnage"
-      ],
+      "relatedServices": ["IService_DunnageWorkflow", "IService_MySQL_Dunnage"],
       "promptDefaults": {
         "audience": "Receiving Clerk",
         "docAudience": "Receiving Clerk",
@@ -1488,15 +1343,8 @@
           "View_Dunnage_DetailsEntryView.xaml",
           "View_Dunnage_ReviewView.xaml"
         ],
-        "currentUiPatterns": [
-          "Wizard step",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Wizard step",
-          "Form",
-          "Card list"
-        ],
+        "currentUiPatterns": ["Wizard step", "Form"],
+        "desiredUiPatterns": ["Wizard step", "Form", "Card list"],
         "uiElements": [
           "Mode selector",
           "Type selector",
@@ -1587,16 +1435,8 @@
           "View_Dunnage_QuickAddPartDialog.xaml",
           "View_Dunnage_QuickAddTypeDialog.xaml"
         ],
-        "currentUiPatterns": [
-          "Form",
-          "Table",
-          "Dialog"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Split layout",
-          "Dialog"
-        ],
+        "currentUiPatterns": ["Form", "Table", "Dialog"],
+        "desiredUiPatterns": ["Form", "Split layout", "Dialog"],
         "uiElements": [
           "Admin tables",
           "Type and part edit forms",
@@ -1662,16 +1502,8 @@
           "View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
           "View_Dunnage_Dialog_AddToInventoriedListDialog.xaml"
         ],
-        "currentUiPatterns": [
-          "DataGrid",
-          "Dialog",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Split layout",
-          "Dialog",
-          "Form"
-        ],
+        "currentUiPatterns": ["DataGrid", "Dialog", "Form"],
+        "desiredUiPatterns": ["Split layout", "Dialog", "Form"],
         "uiElements": [
           "Edit-mode results area",
           "Non-PO entry form",
@@ -1704,10 +1536,7 @@
         "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
         "Module_Reporting/Data/Dao_Reporting.cs"
       ],
-      "relatedServices": [
-        "IService_Reporting",
-        "Service_Reporting"
-      ],
+      "relatedServices": ["IService_Reporting", "Service_Reporting"],
       "promptDefaults": {
         "audience": "Supervisor",
         "docAudience": "Supervisor",
@@ -1716,19 +1545,10 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Check report availability"
-        ],
-        "screens": [
-          "View_Reporting_Main.xaml"
-        ],
-        "currentUiPatterns": [
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Split layout"
-        ],
+        "workflowAreas": ["Check report availability"],
+        "screens": ["View_Reporting_Main.xaml"],
+        "currentUiPatterns": ["Form"],
+        "desiredUiPatterns": ["Form", "Split layout"],
         "uiElements": [
           "Start date",
           "End date",
@@ -1760,10 +1580,7 @@
         "Module_Reporting/README.md",
         "Module_Reporting/SETTABLE_OBJECTS_REPORT.md"
       ],
-      "relatedServices": [
-        "IService_Reporting",
-        "Service_Reporting"
-      ],
+      "relatedServices": ["IService_Reporting", "Service_Reporting"],
       "promptDefaults": {
         "audience": "Supervisor",
         "docAudience": "Supervisor",
@@ -1772,30 +1589,16 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Generate reports"
-        ],
-        "screens": [
-          "View_Reporting_Main.xaml"
-        ],
-        "currentUiPatterns": [
-          "Form",
-          "Toolbar + results list"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Split layout",
-          "Form"
-        ],
+        "workflowAreas": ["Generate reports"],
+        "screens": ["View_Reporting_Main.xaml"],
+        "currentUiPatterns": ["Form", "Toolbar + results list"],
+        "desiredUiPatterns": ["Card list", "Split layout", "Form"],
         "uiElements": [
           "Module selection area",
           "Generate Reports button",
           "Status area"
         ],
-        "userActions": [
-          "Choose report modules",
-          "Generate reports"
-        ],
+        "userActions": ["Choose report modules", "Generate reports"],
         "validationHints": [
           "Confirm reports still generate correctly for the selected modules"
         ]
@@ -1839,17 +1642,9 @@
           "Review generated output",
           "Format and copy email-ready output"
         ],
-        "screens": [
-          "View_Reporting_PreviewDialog.xaml"
-        ],
-        "currentUiPatterns": [
-          "Toolbar + results list"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Split layout",
-          "Form"
-        ],
+        "screens": ["View_Reporting_PreviewDialog.xaml"],
+        "currentUiPatterns": ["Toolbar + results list"],
+        "desiredUiPatterns": ["Card list", "Split layout", "Form"],
         "uiElements": [
           "Preview cards",
           "Preview column selector",
@@ -1912,10 +1707,7 @@
         "Module_Volvo/Validators/CompleteShipmentCommandValidator.cs",
         "Module_Volvo/Validators/UpdateShipmentCommandValidator.cs"
       ],
-      "relatedServices": [
-        "IService_Volvo",
-        "Service_Volvo"
-      ],
+      "relatedServices": ["IService_Volvo", "Service_Volvo"],
       "promptDefaults": {
         "audience": "Supervisor",
         "docAudience": "Supervisor",
@@ -1934,15 +1726,8 @@
           "View_Volvo_ShipmentEntry.xaml",
           "VolvoShipmentEditDialog.xaml"
         ],
-        "currentUiPatterns": [
-          "Table",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Split layout",
-          "Form",
-          "Card list"
-        ],
+        "currentUiPatterns": ["Table", "Form"],
+        "desiredUiPatterns": ["Split layout", "Form", "Card list"],
         "uiElements": [
           "Shipment date",
           "Shipment number",
@@ -1984,10 +1769,7 @@
         "Module_Volvo/Models/Model_VolvoShipment.cs",
         "Module_Volvo/Models/Model_VolvoShipmentLine.cs"
       ],
-      "relatedServices": [
-        "IService_Volvo",
-        "Service_Volvo"
-      ],
+      "relatedServices": ["IService_Volvo", "Service_Volvo"],
       "promptDefaults": {
         "audience": "Supervisor",
         "docAudience": "Supervisor",
@@ -2001,17 +1783,9 @@
           "Recent shipment lookup",
           "Shipment detail review"
         ],
-        "screens": [
-          "View_Volvo_History.xaml"
-        ],
-        "currentUiPatterns": [
-          "Table"
-        ],
-        "desiredUiPatterns": [
-          "Split layout",
-          "Card list",
-          "Table"
-        ],
+        "screens": ["View_Volvo_History.xaml"],
+        "currentUiPatterns": ["Table"],
+        "desiredUiPatterns": ["Split layout", "Card list", "Table"],
         "uiElements": [
           "Shipment selection area",
           "History results",
@@ -2087,19 +1861,9 @@
           "Part add and edit dialogs",
           "CSV part import"
         ],
-        "screens": [
-          "View_Volvo_Settings.xaml",
-          "VolvoPartAddEditDialog.xaml"
-        ],
-        "currentUiPatterns": [
-          "Form",
-          "Table"
-        ],
-        "desiredUiPatterns": [
-          "Split layout",
-          "Form",
-          "Card list"
-        ],
+        "screens": ["View_Volvo_Settings.xaml", "VolvoPartAddEditDialog.xaml"],
+        "currentUiPatterns": ["Form", "Table"],
+        "desiredUiPatterns": ["Split layout", "Form", "Card list"],
         "uiElements": [
           "Part settings controls",
           "Part edit action",
@@ -2134,10 +1898,7 @@
         "Module_Volvo/Requests/Commands/ClearLabelDataCommand.cs",
         "Module_Volvo/Handlers/Commands/ClearLabelDataCommandHandler.cs"
       ],
-      "relatedServices": [
-        "IService_Volvo",
-        "Service_Volvo"
-      ],
+      "relatedServices": ["IService_Volvo", "Service_Volvo"],
       "promptDefaults": {
         "audience": "Supervisor",
         "docAudience": "Supervisor",
@@ -2151,13 +1912,8 @@
           "Format email data",
           "Clear generated label data"
         ],
-        "currentUiPatterns": [
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Split layout"
-        ],
+        "currentUiPatterns": ["Form"],
+        "desiredUiPatterns": ["Form", "Split layout"],
         "uiElements": [
           "Label generation action",
           "Email output action",
@@ -2196,12 +1952,8 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Volvo permission checks"
-        ],
-        "userActions": [
-          "Perform shipment actions only when authorized"
-        ],
+        "workflowAreas": ["Volvo permission checks"],
+        "userActions": ["Perform shipment actions only when authorized"],
         "validationHints": [
           "Confirm authorization checks still gate the intended Volvo actions"
         ]
@@ -2431,18 +2183,9 @@
           "Dialog interaction",
           "Focus and pagination support"
         ],
-        "screens": [
-          "Dialog_FuzzySearchPicker.xaml"
-        ],
-        "currentUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Dialog",
-          "Split layout",
-          "Form"
-        ],
+        "screens": ["Dialog_FuzzySearchPicker.xaml"],
+        "currentUiPatterns": ["Dialog", "Form"],
+        "desiredUiPatterns": ["Dialog", "Split layout", "Form"],
         "validationHints": [
           "Confirm navigation, windowing, and dialog support behavior remain consistent for dependent modules"
         ]
@@ -2591,21 +2334,10 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Shared shell support",
-          "Reusable icon selection"
-        ],
-        "screens": [
-          "View_Shared_IconSelectorWindow.xaml"
-        ],
-        "currentUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
+        "workflowAreas": ["Shared shell support", "Reusable icon selection"],
+        "screens": ["View_Shared_IconSelectorWindow.xaml"],
+        "currentUiPatterns": ["Dialog", "Form"],
+        "desiredUiPatterns": ["Dialog", "Form"],
         "validationHints": [
           "Confirm shared shell viewmodels and reusable icon selection behavior remain aligned"
         ]
@@ -2629,24 +2361,12 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Shared contextual help"
-        ],
-        "screens": [
-          "View_Shared_HelpDialog.xaml"
-        ],
-        "currentUiPatterns": [
-          "Dialog"
-        ],
-        "desiredUiPatterns": [
-          "Dialog"
-        ],
-        "userActions": [
-          "Read contextual help content when guidance is needed"
-        ],
-        "validationHints": [
-          "Confirm help dialog presentation remains intact"
-        ]
+        "workflowAreas": ["Shared contextual help"],
+        "screens": ["View_Shared_HelpDialog.xaml"],
+        "currentUiPatterns": ["Dialog"],
+        "desiredUiPatterns": ["Dialog"],
+        "userActions": ["Read contextual help content when guidance is needed"],
+        "validationHints": ["Confirm help dialog presentation remains intact"]
       },
       "subFeatures": []
     },
@@ -2667,23 +2387,11 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "First-run user setup"
-        ],
-        "screens": [
-          "View_Shared_NewUserSetupDialog.xaml"
-        ],
-        "currentUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
-        "userActions": [
-          "Complete first-run setup steps successfully"
-        ],
+        "workflowAreas": ["First-run user setup"],
+        "screens": ["View_Shared_NewUserSetupDialog.xaml"],
+        "currentUiPatterns": ["Dialog", "Form"],
+        "desiredUiPatterns": ["Dialog", "Form"],
+        "userActions": ["Complete first-run setup steps successfully"],
         "validationHints": [
           "Confirm new-user setup still guides first-run configuration correctly",
           "Confirm first and last name inputs compose the saved full name in the expected format",
@@ -2709,20 +2417,10 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Shared terminal access"
-        ],
-        "screens": [
-          "View_Shared_SharedTerminalLoginDialog.xaml"
-        ],
-        "currentUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Dialog",
-          "Form"
-        ],
+        "workflowAreas": ["Shared terminal access"],
+        "screens": ["View_Shared_SharedTerminalLoginDialog.xaml"],
+        "currentUiPatterns": ["Dialog", "Form"],
+        "desiredUiPatterns": ["Dialog", "Form"],
         "userActions": [
           "Authenticate at a shared terminal and continue safely"
         ],
@@ -2749,18 +2447,10 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Application startup splash"
-        ],
-        "screens": [
-          "View_Shared_SplashScreenWindow.xaml"
-        ],
-        "currentUiPatterns": [
-          "Window"
-        ],
-        "desiredUiPatterns": [
-          "Window"
-        ],
+        "workflowAreas": ["Application startup splash"],
+        "screens": ["View_Shared_SplashScreenWindow.xaml"],
+        "currentUiPatterns": ["Window"],
+        "desiredUiPatterns": ["Window"],
         "userActions": [
           "See startup progress while the application initializes"
         ],
@@ -2818,16 +2508,8 @@
           "View_Settings_CoreNavigationHub.xaml",
           "View_SettingsPlaceholderControl.xaml"
         ],
-        "currentUiPatterns": [
-          "Form",
-          "Card list",
-          "Tabs"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Split layout",
-          "Tabs"
-        ],
+        "currentUiPatterns": ["Form", "Card list", "Tabs"],
+        "desiredUiPatterns": ["Card list", "Split layout", "Tabs"],
         "uiElements": [
           "Settings window title",
           "Navigation step buttons",
@@ -2893,15 +2575,8 @@
           "View_Settings_Database.xaml",
           "View_Settings_Logging.xaml"
         ],
-        "currentUiPatterns": [
-          "Form",
-          "Tabs"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Split layout",
-          "Tabs"
-        ],
+        "currentUiPatterns": ["Form", "Tabs"],
+        "desiredUiPatterns": ["Form", "Split layout", "Tabs"],
         "uiElements": [
           "System settings list",
           "Database status message",
@@ -2960,13 +2635,8 @@
           "View_Settings_SharedPaths.xaml",
           "View_Settings_Theme.xaml"
         ],
-        "currentUiPatterns": [
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Form",
-          "Split layout"
-        ],
+        "currentUiPatterns": ["Form"],
+        "desiredUiPatterns": ["Form", "Split layout"],
         "uiElements": [
           "Export root path field",
           "Infor Visual executable path field",
@@ -3030,18 +2700,9 @@
           "Visual credential management",
           "Preference-backed user defaults"
         ],
-        "screens": [
-          "View_Settings_Users.xaml"
-        ],
-        "currentUiPatterns": [
-          "Table",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Split layout",
-          "Form",
-          "Table"
-        ],
+        "screens": ["View_Settings_Users.xaml"],
+        "currentUiPatterns": ["Table", "Form"],
+        "desiredUiPatterns": ["Split layout", "Form", "Table"],
         "uiElements": [
           "Users list",
           "Selected user details",
@@ -3132,15 +2793,9 @@
           "CQRS-backed setting reads and writes",
           "Settings validation and encryption"
         ],
-        "screens": [
-          "Settings infrastructure only"
-        ],
-        "currentUiPatterns": [
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Form"
-        ],
+        "screens": ["Settings infrastructure only"],
+        "currentUiPatterns": ["Form"],
+        "desiredUiPatterns": ["Form"],
         "uiElements": [
           "Manifest-backed definitions",
           "Validation pipeline",
@@ -3211,16 +2866,8 @@
           "View_Settings_Receiving_UserPreferences.xaml",
           "View_Settings_Receiving_BusinessRules.xaml"
         ],
-        "currentUiPatterns": [
-          "Card list",
-          "Form",
-          "Split layout"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Form",
-          "Split layout"
-        ],
+        "currentUiPatterns": ["Card list", "Form", "Split layout"],
+        "desiredUiPatterns": ["Card list", "Form", "Split layout"],
         "uiElements": [
           "Navigation cards",
           "Save and reset actions",
@@ -3324,15 +2971,8 @@
           "View_Settings_Dunnage_Permissions.xaml",
           "View_Settings_Dunnage_Audit.xaml"
         ],
-        "currentUiPatterns": [
-          "Card list",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Form",
-          "DataGrid"
-        ],
+        "currentUiPatterns": ["Card list", "Form"],
+        "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
         "uiElements": [
           "Navigation cards",
           "Placeholder overview content",
@@ -3416,15 +3056,8 @@
           "View_Settings_Reporting_BusinessRules.xaml",
           "View_Settings_Reporting_Permissions.xaml"
         ],
-        "currentUiPatterns": [
-          "Card list",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Form",
-          "DataGrid"
-        ],
+        "currentUiPatterns": ["Card list", "Form"],
+        "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
         "uiElements": [
           "Navigation cards",
           "Export folder path guidance",
@@ -3513,16 +3146,8 @@
           "View_Settings_Volvo_UiConfiguration.xaml",
           "View_Settings_Volvo_ExternalizationBacklog.xaml"
         ],
-        "currentUiPatterns": [
-          "Card list",
-          "Form",
-          "DataGrid"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Form",
-          "DataGrid"
-        ],
+        "currentUiPatterns": ["Card list", "Form", "DataGrid"],
+        "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
         "uiElements": [
           "Navigation cards",
           "Recipient list guidance",
@@ -3608,14 +3233,8 @@
           "View_Settings_DeveloperTools_FeatureC.xaml",
           "View_Settings_DeveloperTools_FeatureD.xaml"
         ],
-        "currentUiPatterns": [
-          "Card list",
-          "Form"
-        ],
-        "desiredUiPatterns": [
-          "Card list",
-          "Form"
-        ],
+        "currentUiPatterns": ["Card list", "Form"],
+        "desiredUiPatterns": ["Card list", "Form"],
         "uiElements": [
           "Navigation cards",
           "Overview text",
@@ -3683,19 +3302,9 @@
           "Stored procedure validation",
           "DAO operational checks"
         ],
-        "screens": [
-          "View_SettingsDeveloperTools_DatabaseTest.xaml"
-        ],
-        "currentUiPatterns": [
-          "Tabs",
-          "Table",
-          "Toolbar + results list"
-        ],
-        "desiredUiPatterns": [
-          "Tabs",
-          "Table",
-          "Toolbar + results list"
-        ],
+        "screens": ["View_SettingsDeveloperTools_DatabaseTest.xaml"],
+        "currentUiPatterns": ["Tabs", "Table", "Toolbar + results list"],
+        "desiredUiPatterns": ["Tabs", "Table", "Toolbar + results list"],
         "uiElements": [
           "Run Tests button",
           "Connection summary",
@@ -3787,18 +3396,9 @@
           "Tool navigation",
           "Back-to-tools routing"
         ],
-        "screens": [
-          "View_ShipRecTools_Main.xaml"
-        ],
-        "currentUiPatterns": [
-          "Container host",
-          "Conditional content region"
-        ],
-        "desiredUiPatterns": [
-          "Container host",
-          "Card list",
-          "Split layout"
-        ],
+        "screens": ["View_ShipRecTools_Main.xaml"],
+        "currentUiPatterns": ["Container host", "Conditional content region"],
+        "desiredUiPatterns": ["Container host", "Card list", "Split layout"],
         "uiElements": [
           "Back to Tools button",
           "Current tool title",
@@ -3855,9 +3455,7 @@
           "Category grouping",
           "Tool-card selection"
         ],
-        "screens": [
-          "View_ShipRecTools_ToolSelection.xaml"
-        ],
+        "screens": ["View_ShipRecTools_ToolSelection.xaml"],
         "currentUiPatterns": [
           "Card list",
           "Sectioned dashboard",
@@ -3927,19 +3525,9 @@
           "Vendor search",
           "Dispatch history review"
         ],
-        "screens": [
-          "View_Tool_OutsideServiceHistory.xaml"
-        ],
-        "currentUiPatterns": [
-          "Search form",
-          "Toggle filter",
-          "Results grid"
-        ],
-        "desiredUiPatterns": [
-          "Search form",
-          "Results grid",
-          "Split layout"
-        ],
+        "screens": ["View_Tool_OutsideServiceHistory.xaml"],
+        "currentUiPatterns": ["Search form", "Toggle filter", "Results grid"],
+        "desiredUiPatterns": ["Search form", "Results grid", "Split layout"],
         "uiElements": [
           "Part Number toggle",
           "Vendor Name toggle",
@@ -5429,11 +5017,7 @@
               "label": "What kind of tests should be added?",
               "type": "select",
               "required": true,
-              "options": [
-                "Unit",
-                "Integration",
-                "Mixed"
-              ]
+              "options": ["Unit", "Integration", "Mixed"]
             },
             {
               "id": "testTargets",
@@ -5853,12 +5437,7 @@
               "label": "Which database system is involved?",
               "type": "select",
               "required": true,
-              "options": [
-                "MySQL",
-                "Infor Visual SQL Server",
-                "Both",
-                "Unknown"
-              ]
+              "options": ["MySQL", "Infor Visual SQL Server", "Both", "Unknown"]
             },
             {
               "id": "databaseObjects",
@@ -5950,11 +5529,7 @@
               "label": "What kind of tests do you want?",
               "type": "select",
               "required": true,
-              "options": [
-                "Unit",
-                "Integration",
-                "Mixed"
-              ]
+              "options": ["Unit", "Integration", "Mixed"]
             },
             {
               "id": "testTargets",
