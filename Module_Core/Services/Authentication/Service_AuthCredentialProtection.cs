@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -14,6 +15,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
 
         private const int DerivedKeySize = 32;
         private const int PinIterationCount = 100000;
+        private const string LocalSecretDirectoryName = "MTM Receiving Application\\Security";
+        private const string SecretFileName = "MTM_AUTH_USER_SECRET_KEY.txt";
+        private const string SharedSecretDirectoryPath =
+            "\\\\172.16.1.104\\MTM_Receiving_Application\\Security";
 
         public string HashPin(string pin)
         {
@@ -112,14 +117,143 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         private static string GetMasterSecret()
         {
             var masterSecret = Environment.GetEnvironmentVariable(EnvironmentVariableName);
+            if (TryNormalizeSecret(masterSecret, out var normalizedMasterSecret))
+            {
+                return normalizedMasterSecret;
+            }
+
+            if (TryLoadSecretFromFallbackPaths(out normalizedMasterSecret))
+            {
+                CacheSecretForCurrentWorkstation(normalizedMasterSecret);
+                return normalizedMasterSecret;
+            }
+
             if (string.IsNullOrWhiteSpace(masterSecret))
             {
                 throw new InvalidOperationException(
-                    $"Environment variable '{EnvironmentVariableName}' must be configured on each client workstation before authentication data can be read or written."
+                    $"Environment variable '{EnvironmentVariableName}' is missing and no local or shared auth secret file could be found for this workstation."
                 );
             }
 
             return masterSecret.Trim();
+        }
+
+        private static bool TryLoadSecretFromFallbackPaths(out string masterSecret)
+        {
+            foreach (var secretPath in GetFallbackSecretPaths())
+            {
+                try
+                {
+                    if (!File.Exists(secretPath))
+                    {
+                        continue;
+                    }
+
+                    var fileSecret = File.ReadAllText(secretPath, Encoding.UTF8);
+                    if (TryNormalizeSecret(fileSecret, out masterSecret))
+                    {
+                        return true;
+                    }
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
+
+            masterSecret = string.Empty;
+            return false;
+        }
+
+        private static string[] GetFallbackSecretPaths()
+        {
+            var programDataPath = Environment.GetFolderPath(
+                Environment.SpecialFolder.CommonApplicationData
+            );
+            var localSecretPath = Path.Combine(
+                programDataPath,
+                LocalSecretDirectoryName,
+                SecretFileName
+            );
+            var sharedSecretPath = Path.Combine(SharedSecretDirectoryPath, SecretFileName);
+
+            return new[] { localSecretPath, sharedSecretPath };
+        }
+
+        private static void CacheSecretForCurrentWorkstation(string masterSecret)
+        {
+            Environment.SetEnvironmentVariable(
+                EnvironmentVariableName,
+                masterSecret,
+                EnvironmentVariableTarget.Process
+            );
+
+            try
+            {
+                Environment.SetEnvironmentVariable(
+                    EnvironmentVariableName,
+                    masterSecret,
+                    EnvironmentVariableTarget.Machine
+                );
+            }
+            catch (UnauthorizedAccessException)
+            {
+                try
+                {
+                    Environment.SetEnvironmentVariable(
+                        EnvironmentVariableName,
+                        masterSecret,
+                        EnvironmentVariableTarget.User
+                    );
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+                catch (System.Security.SecurityException)
+                {
+                }
+            }
+            catch (System.Security.SecurityException)
+            {
+                try
+                {
+                    Environment.SetEnvironmentVariable(
+                        EnvironmentVariableName,
+                        masterSecret,
+                        EnvironmentVariableTarget.User
+                    );
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+                catch (System.Security.SecurityException)
+                {
+                }
+            }
+
+            try
+            {
+                var localSecretDirectory = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    LocalSecretDirectoryName
+                );
+
+                Directory.CreateDirectory(localSecretDirectory);
+                var localSecretPath = Path.Combine(localSecretDirectory, SecretFileName);
+                File.WriteAllText(localSecretPath, masterSecret, new UTF8Encoding(false));
+            }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
+        private static bool TryNormalizeSecret(string? candidateSecret, out string normalizedSecret)
+        {
+            if (string.IsNullOrWhiteSpace(candidateSecret))
+            {
+                normalizedSecret = string.Empty;
+                return false;
+            }
+
+            normalizedSecret = candidateSecret.Trim();
+            return normalizedSecret.Length > 0;
         }
     }
 }

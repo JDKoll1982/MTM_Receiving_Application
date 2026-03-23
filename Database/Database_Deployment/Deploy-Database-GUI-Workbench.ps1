@@ -58,6 +58,7 @@ $script:Config = [ordered]@{
     }
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
+        ShowButton          = $true
         LocalHostValue      = 'localhost'
         SharedHostValue     = '172.16.1.104'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
@@ -403,6 +404,10 @@ $modeSwitchButton = $window.FindName("ModeSwitchButton")
 $deployButton = $window.FindName("DeployButton")
 $closeButton = $window.FindName("CloseButton")
 
+if ($null -ne $swapHostsButton) {
+    $swapHostsButton.Visibility = if ($script:Config.HostSwap.ShowButton) { 'Visible' } else { 'Collapsed' }
+}
+
 $script:WorkbenchProfile = [ordered]@{
     Server   = $Server
     Port     = $Port
@@ -613,12 +618,12 @@ function Protect-AuthSecretLogicBlocks {
 
     $protectedBlocks = [ordered]@{}
     $updatedContent = $Content
-    $matches = [regex]::Matches($Content, '(?s)# AUTH-SECRET-LOGIC-BEGIN.*?# AUTH-SECRET-LOGIC-END')
+    $protectedBlockList = [regex]::Matches($Content, '(?s)# AUTH-SECRET-LOGIC-BEGIN.*?# AUTH-SECRET-LOGIC-END')
 
-    for ($index = 0; $index -lt $matches.Count; $index++) {
-        $token = "__MTM_AUTH_SECRET_BLOCK_$index__"
-        $protectedBlocks[$token] = $matches[$index].Value
-        $updatedContent = $updatedContent.Replace($matches[$index].Value, $token)
+    for ($index = 0; $index -lt $protectedBlockList.Count; $index++) {
+        $token = "__MTM_AUTH_SECRET_BLOCK_$($index)__"
+        $protectedBlocks[$token] = $protectedBlockList[$index].Value
+        $updatedContent = $updatedContent.Replace($protectedBlockList[$index].Value, $token)
     }
 
     return [PSCustomObject]@{
@@ -648,7 +653,7 @@ function Convert-HostReferenceText {
         [string]$ToHost
     )
 
-    $placeholder = '__MTM_HOST_SWAP_PLACEHOLDER__'
+    $placeholder = 'localhost'
     return $Content.Replace($FromHost, $placeholder).Replace($ToHost, $FromHost).Replace($placeholder, $ToHost)
 }
 

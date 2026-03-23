@@ -50,7 +50,7 @@
     "validationHints": [
       "Confirm authentication still returns the intended user/session result",
       "Confirm session timeout and user-session handling remain aligned",
-      "Confirm client workstations require the shared auth environment variable before protected auth data is read or written",
+      "Confirm client workstations can bootstrap the shared auth environment variable from local or shared secret storage before protected auth data is read or written",
       "Confirm PIN authentication still succeeds with hashed PIN storage"
     ]
   }
