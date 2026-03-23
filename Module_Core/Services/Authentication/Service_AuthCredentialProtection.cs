@@ -204,12 +204,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                         EnvironmentVariableTarget.User
                     );
                 }
-                catch (UnauthorizedAccessException)
-                {
-                }
-                catch (System.Security.SecurityException)
-                {
-                }
+                catch (UnauthorizedAccessException) { }
+                catch (System.Security.SecurityException) { }
             }
             catch (System.Security.SecurityException)
             {
@@ -221,12 +217,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                         EnvironmentVariableTarget.User
                     );
                 }
-                catch (UnauthorizedAccessException)
-                {
-                }
-                catch (System.Security.SecurityException)
-                {
-                }
+                catch (UnauthorizedAccessException) { }
+                catch (System.Security.SecurityException) { }
             }
 
             try
