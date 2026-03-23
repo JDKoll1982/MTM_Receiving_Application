@@ -1,0 +1,96 @@
+{
+  "id": "settings-developer-tools-diagnostics",
+  "module": "Module_Settings.DeveloperTools",
+  "name": "Settings Database Diagnostics",
+  "summary": "Developer-facing database diagnostics screen that runs a MediatR command, checks MySQL connectivity, validates expected settings tables and stored procedures, and probes core settings DAOs.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_SettingsDeveloperTools_DatabaseTest.cs",
+    "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml",
+    "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml.cs",
+    "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommand.cs",
+    "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommandHandler.cs",
+    "Module_Settings.DeveloperTools/Data/Dao_SettingsDiagnostics.cs",
+    "Module_Settings.DeveloperTools/Models/Model_SettingsDbTestReport.cs",
+    "Module_Settings.DeveloperTools/Models/Model_SettingsDbTableResult.cs",
+    "Module_Settings.DeveloperTools/Models/Model_SettingsDbProcedureResult.cs",
+    "Module_Settings.DeveloperTools/Models/Model_SettingsDbDaoResult.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs"
+  ],
+  "promptDefaults": {
+    "audience": "Developer",
+    "docAudience": "Developer",
+    "mockupAudience": "Developer",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Connection test",
+      "Settings table validation",
+      "Stored procedure validation",
+      "DAO operational checks"
+    ],
+    "screens": ["View_SettingsDeveloperTools_DatabaseTest.xaml"],
+    "currentUiPatterns": ["Tabs", "Table", "Toolbar + results list"],
+    "desiredUiPatterns": ["Tabs", "Table", "Toolbar + results list"],
+    "uiElements": [
+      "Run Tests button",
+      "Connection summary",
+      "Server version value",
+      "Validated tables count",
+      "Validated procedures count",
+      "Validated DAOs count",
+      "Summary tab",
+      "Tables tab",
+      "Stored Procedures tab",
+      "DAOs tab"
+    ],
+    "userActions": [
+      "Run all diagnostics from one command",
+      "Review connection state and response time",
+      "See which expected tables are missing or found",
+      "See which expected stored procedures are missing or found",
+      "See whether the core settings DAOs are operational"
+    ],
+    "preserveRules": [
+      "Keep diagnostics read-only",
+      "Keep the command-based flow from ViewModel to MediatR handler intact",
+      "Keep the diagnostics screen focused on validation and reporting rather than mutation"
+    ],
+    "acceptanceCriteria": [
+      "Run Tests still invokes the command and populates summary, tables, stored procedures, and DAO results",
+      "The diagnostics remain read-only and do not write to settings data",
+      "Metadata reflects the actual expected tables, procedures, and DAO checks described by the handler"
+    ],
+    "validationHints": [
+      "Confirm Run Tests still updates connection state and validation counts",
+      "Confirm table, stored procedure, and DAO result lists still populate the correct pivot tabs",
+      "Confirm the diagnostics still probe the expected settings tables and stored procedures"
+    ],
+    "databaseObjects": [
+      "sp_SettingsCore_Meta_GetTables",
+      "sp_SettingsCore_Meta_GetStoredProcedures",
+      "settings_universal",
+      "settings_personal",
+      "settings_activity",
+      "settings_roles",
+      "settings_user_roles",
+      "sp_SettingsCore_System_GetByKey",
+      "sp_SettingsCore_System_GetByCategory",
+      "sp_SettingsCore_System_Upsert",
+      "sp_SettingsCore_System_Reset",
+      "sp_SettingsCore_User_GetByKey",
+      "sp_SettingsCore_User_GetByCategory",
+      "sp_SettingsCore_User_Upsert",
+      "sp_SettingsCore_User_Reset"
+    ],
+    "sensitiveDataRules": [
+      "Do not log or expose raw connection strings in the diagnostics UI",
+      "Keep database diagnostics limited to health and metadata checks"
+    ]
+  }
+}

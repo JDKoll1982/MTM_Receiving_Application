@@ -1,0 +1,96 @@
+{
+  "id": "settings-receiving-configuration",
+  "module": "Module_Settings.Receiving",
+  "name": "Receiving Settings Configuration",
+  "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and workflow options backed by the shared settings facade.",
+  "owner": "Receiving Team",
+  "relatedFiles": [
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Defaults.cs",
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Validation.cs",
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_UserPreferences.cs",
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml.cs",
+    "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+    "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single module",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Settings navigation hub",
+      "Receiving defaults",
+      "Validation rules and limits",
+      "Part number auto-padding preferences",
+      "Workflow options"
+    ],
+    "screens": [
+      "View_Settings_Receiving_WorkflowHub.xaml",
+      "View_Settings_Receiving_Defaults.xaml",
+      "View_Settings_Receiving_Validation.xaml",
+      "View_Settings_Receiving_UserPreferences.xaml",
+      "View_Settings_Receiving_BusinessRules.xaml"
+    ],
+    "currentUiPatterns": ["Card list", "Form", "Split layout"],
+    "desiredUiPatterns": ["Card list", "Form", "Split layout"],
+    "uiElements": [
+      "Navigation cards",
+      "Save and reset actions",
+      "Default receiving mode selector",
+      "Default location field",
+      "Validation toggles",
+      "Numeric limit inputs",
+      "Auto-padding rules list",
+      "Rule add and remove actions",
+      "Auto-padding preview",
+      "Workflow option toggles"
+    ],
+    "userActions": [
+      "Open a receiving settings area from the hub",
+      "Change default receiving mode and default location",
+      "Toggle validation requirements and warning rules",
+      "Adjust min and max receiving limits",
+      "Add, edit, test, and remove auto-padding rules",
+      "Change workflow startup and auto-save behavior",
+      "Save, reset, or cancel settings changes"
+    ],
+    "preserveRules": [
+      "Keep settings persistence routed through IService_SettingsCoreFacade",
+      "Keep navigation actions wired through ISettingsNavigationActions",
+      "Keep x:Bind-based forms unchanged unless the request is explicitly about UI",
+      "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId"
+    ],
+    "acceptanceCriteria": [
+      "Each hub card still opens the intended receiving settings page",
+      "Defaults, validation, auto-padding, and workflow options remain separately accessible",
+      "Save, reset, and cancel paths remain available on the implemented settings pages",
+      "Metadata does not hide the fact that this module already has real settings persistence behavior"
+    ],
+    "validationHints": [
+      "Confirm default receiving mode and location still load and save",
+      "Confirm validation toggles and numeric limits still bind correctly",
+      "Confirm auto-padding rule editing and test preview still work",
+      "Confirm workflow option values still load, save, and reset through the shared settings facade"
+    ],
+    "reviewFocusAreas": [
+      "Correctness and regressions",
+      "Navigation goes to the wrong place",
+      "Save does not work",
+      "Validation blocks the wrong thing"
+    ]
+  }
+}

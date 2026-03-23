@@ -47,6 +47,7 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
         services.AddSingleton<IService_Help, Service_Help>();
+        services.AddSingleton<IService_AuthCredentialProtection, Service_AuthCredentialProtection>();
 
         // Dispatcher Service (Singleton - Wraps the UI thread dispatcher)
         // Note: Dispatcher is lazy-initialized on first use since it requires UI thread
@@ -97,7 +98,12 @@ public static class CoreServiceExtensions
             );
 
         // User DAO (Singleton - Stateless data access)
-        services.AddSingleton(_ => new Dao_User(mySqlConnectionString));
+        services.AddSingleton(sp =>
+            new Dao_User(
+                mySqlConnectionString,
+                sp.GetRequiredService<IService_AuthCredentialProtection>()
+            )
+        );
 
         // Authentication Service (Singleton - Stateless authentication logic)
         services.AddSingleton<IService_Authentication>(sp =>

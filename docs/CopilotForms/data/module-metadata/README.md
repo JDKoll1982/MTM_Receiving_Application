@@ -24,6 +24,15 @@ The CopilotForms runtime reads the main config first, then loads each module ind
 - `Module_Dunnage`
 - `Module_Reporting`
 - `Module_Volvo`
+- `Module_Settings.Core`
+- `Module_Settings.Receiving`
+- `Module_Settings.Dunnage`
+- `Module_Settings.Reporting`
+- `Module_Settings.Volvo`
+- `Module_Settings.DeveloperTools`
+
+Settings modules that previously lived as thin inline entries in `copilot-forms.config.json`
+should now be maintained in their module folders here.
 
 ## Editing Rule
 

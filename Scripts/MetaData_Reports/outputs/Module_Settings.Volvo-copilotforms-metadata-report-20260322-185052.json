@@ -1,0 +1,53 @@
+{
+  "Module": "Module_Settings.Volvo",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.Volvo",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.Volvo",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 21,
+  "FeatureReports": [
+    {
+      "FeatureId": "settings-volvo-shell",
+      "Name": "Volvo Settings Shell",
+      "MetadataFile": "settings-volvo-shell.json",
+      "ReferencedFiles": [
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ConnectionStrings.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_DatabaseSettings.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ExternalizationBacklog.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_FilePaths.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_SettingsOverview.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_UiConfiguration.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml.cs"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "settings-volvo-shell.json"
+  ],
+  "ActualFeatureFiles": [
+    "settings-volvo-shell.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

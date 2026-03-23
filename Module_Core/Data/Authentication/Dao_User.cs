@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
@@ -17,15 +18,22 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
     public class Dao_User
     {
         private readonly string _connectionString;
+        private readonly IService_AuthCredentialProtection _credentialProtection;
 
         /// <summary>
         /// Constructor with connection string injection
         /// </summary>
         /// <param name="connectionString">MySQL connection string</param>
-        public Dao_User(string connectionString)
+        public Dao_User(
+            string connectionString,
+            IService_AuthCredentialProtection credentialProtection
+        )
         {
             _connectionString =
                 connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _credentialProtection =
+                credentialProtection
+                ?? throw new ArgumentNullException(nameof(credentialProtection));
         }
 
         // ====================================================================
@@ -65,10 +73,12 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             string pin
         )
         {
+            var protectedPin = _credentialProtection.HashPin(pin);
+
             var parameters = new Dictionary<string, object>
             {
                 { "@p_username", username },
-                { "@p_pin", pin },
+                { "@p_pin", protectedPin },
             };
 
             return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
@@ -108,17 +118,17 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 command.Parameters.AddWithValue("@p_employee_number", user.EmployeeNumber);
                 command.Parameters.AddWithValue("@p_windows_username", user.WindowsUsername);
                 command.Parameters.AddWithValue("@p_full_name", user.FullName);
-                command.Parameters.AddWithValue("@p_pin", user.Pin);
+                command.Parameters.AddWithValue("@p_pin", _credentialProtection.HashPin(user.Pin));
                 command.Parameters.AddWithValue("@p_department", user.Department);
                 command.Parameters.AddWithValue("@p_shift", user.Shift);
                 command.Parameters.AddWithValue("@p_created_by", createdBy);
                 command.Parameters.AddWithValue(
                     "@p_visual_username",
-                    user.VisualUsername ?? (object)DBNull.Value
+                    EncryptVisualValue(user.VisualUsername) ?? (object)DBNull.Value
                 );
                 command.Parameters.AddWithValue(
                     "@p_visual_password",
-                    user.VisualPassword ?? (object)DBNull.Value
+                    EncryptVisualValue(user.VisualPassword) ?? (object)DBNull.Value
                 );
 
                 // Output parameters
@@ -186,23 +196,32 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         {
             try
             {
-                await using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
-
-                var query = excludeEmployeeNumber.HasValue
-                    ? "SELECT COUNT(*) FROM auth_users WHERE windows_username = @username AND employee_number != @excludeId"
-                    : "SELECT COUNT(*) FROM auth_users WHERE windows_username = @username";
-
-                await using var command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@username", username);
-
-                if (excludeEmployeeNumber.HasValue)
+                var parameters = new Dictionary<string, object>
                 {
-                    command.Parameters.AddWithValue("@excludeId", excludeEmployeeNumber.Value);
+                    { "windows_username", username },
+                    {
+                        "exclude_employee_number",
+                        excludeEmployeeNumber.HasValue
+                            ? (object)excludeEmployeeNumber.Value
+                            : DBNull.Value
+                    },
+                };
+
+                var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+                    _connectionString,
+                    "sp_Auth_User_IsWindowsUsernameUnique",
+                    reader => Convert.ToInt32(reader["username_count"]),
+                    parameters
+                );
+
+                if (!result.Success)
+                {
+                    return Model_Dao_Result_Factory.Failure<bool>(
+                        result.ErrorMessage ?? "Failed to validate Windows username uniqueness."
+                    );
                 }
 
-                var count = Convert.ToInt32(await command.ExecuteScalarAsync());
-                var isUnique = count == 0;
+                var isUnique = result.Data == 0;
 
                 return Model_Dao_Result_Factory.Success<bool>(isUnique);
             }
@@ -340,16 +359,16 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 EmployeeNumber = reader.GetInt32(reader.GetOrdinal("employee_number")),
                 WindowsUsername = reader.GetString(reader.GetOrdinal("windows_username")),
                 FullName = reader.GetString(reader.GetOrdinal("full_name")),
-                Pin = reader.GetString(reader.GetOrdinal("pin")),
+                Pin = string.Empty,
                 Department = reader.GetString(reader.GetOrdinal("department")),
                 Shift = reader.GetString(reader.GetOrdinal("shift")),
                 IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
                 VisualUsername = reader.IsDBNull(reader.GetOrdinal("visual_username"))
                     ? null
-                    : reader.GetString(reader.GetOrdinal("visual_username")),
+                    : DecryptVisualValue(reader.GetString(reader.GetOrdinal("visual_username"))),
                 VisualPassword = reader.IsDBNull(reader.GetOrdinal("visual_password"))
                     ? null
-                    : reader.GetString(reader.GetOrdinal("visual_password")),
+                    : DecryptVisualValue(reader.GetString(reader.GetOrdinal("visual_password"))),
                 DefaultReceivingMode = TryGetDefaultReceivingMode(reader),
                 DefaultDunnageMode = TryGetDefaultDunnageMode(reader),
                 CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
@@ -500,17 +519,20 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
                 command.Parameters.AddWithValue("@p_employee_number", user.EmployeeNumber);
                 command.Parameters.AddWithValue("@p_full_name", user.FullName);
-                command.Parameters.AddWithValue("@p_pin", user.Pin);
+                command.Parameters.AddWithValue(
+                    "@p_pin",
+                    ProtectPinForUpdate(user.Pin) ?? (object)DBNull.Value
+                );
                 command.Parameters.AddWithValue("@p_department", user.Department);
                 command.Parameters.AddWithValue("@p_shift", user.Shift);
                 command.Parameters.AddWithValue("@p_is_active", user.IsActive ? 1 : 0);
                 command.Parameters.AddWithValue(
                     "@p_visual_username",
-                    user.VisualUsername ?? (object)DBNull.Value
+                    EncryptVisualValue(user.VisualUsername) ?? (object)DBNull.Value
                 );
                 command.Parameters.AddWithValue(
                     "@p_visual_password",
-                    user.VisualPassword ?? (object)DBNull.Value
+                    EncryptVisualValue(user.VisualPassword) ?? (object)DBNull.Value
                 );
                 command.Parameters.AddWithValue("@p_updated_by", updatedBy);
 
@@ -574,11 +596,11 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 command.Parameters.AddWithValue("@p_employee_number", employeeNumber);
                 command.Parameters.AddWithValue(
                     "@p_visual_username",
-                    visualUsername ?? (object)DBNull.Value
+                    EncryptVisualValue(visualUsername) ?? (object)DBNull.Value
                 );
                 command.Parameters.AddWithValue(
                     "@p_visual_password",
-                    visualPassword ?? (object)DBNull.Value
+                    EncryptVisualValue(visualPassword) ?? (object)DBNull.Value
                 );
                 command.Parameters.AddWithValue("@p_updated_by", updatedBy);
 
@@ -663,6 +685,26 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             {
                 return Model_Dao_Result_Factory.Failure($"Unexpected error: {ex.Message}", ex);
             }
+        }
+
+        private string? ProtectPinForUpdate(string? pin)
+        {
+            if (string.IsNullOrWhiteSpace(pin))
+            {
+                return null;
+            }
+
+            return _credentialProtection.HashPin(pin);
+        }
+
+        private string? EncryptVisualValue(string? value)
+        {
+            return _credentialProtection.EncryptVisualValue(value);
+        }
+
+        private string? DecryptVisualValue(string? value)
+        {
+            return _credentialProtection.DecryptVisualValue(value);
         }
     }
 }

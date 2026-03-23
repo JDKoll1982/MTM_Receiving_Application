@@ -19,9 +19,11 @@
           "type": "string"
         },
         "moduleMetadataIndexes": {
+          "description": "Ordered list of split module manifest files. In the normal fetch path the runtime loads these manifests, then merges their feature files ahead of the inline features array so matching feature ids from split metadata take precedence. The inline features array should still remain usable as a fallback for manual local-config loading.",
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^data/module-metadata/.+/index\\.json$"
           }
         },
         "notes": {
@@ -63,6 +65,7 @@
       "additionalProperties": true
     },
     "features": {
+      "description": "Inline feature catalog consumed by the runtime to populate the Module, Feature, and Sub-Feature selectors and to attach prompt context to a selected feature. This array also serves as the fallback catalog for the HTML local-config loader. When split module metadata is fetched through project.moduleMetadataIndexes, matching feature ids from those manifests override the inline fallback entries.",
       "type": "array",
       "items": {
         "type": "object",
@@ -72,17 +75,19 @@
           "name",
           "summary",
           "owner",
-          "relatedFiles",
-          "relatedServices"
+          "relatedFiles"
         ],
         "properties": {
           "id": {
+            "description": "Stable feature identifier used in selector state and exported payloads.",
             "type": "string"
           },
           "module": {
+            "description": "Module label displayed in the Module combobox.",
             "type": "string"
           },
           "name": {
+            "description": "Human-readable feature label displayed in the Feature combobox.",
             "type": "string"
           },
           "summary": {
@@ -92,18 +97,74 @@
             "type": "string"
           },
           "relatedFiles": {
+            "description": "Suggested code entry points shown in exported context and used to prefill likely files to inspect.",
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "relatedServices": {
+            "description": "Optional related service, handler, or contract names used as extra prompt context. The runtime treats this as optional and falls back to an empty list when omitted.",
             "type": "array",
             "items": {
               "type": "string"
             }
+          },
+          "promptDefaults": {
+            "description": "Default field values inferred when this feature is selected.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "uiHints": {
+            "description": "Feature-specific hint lists merged into field choices and exported context.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "subFeatures": {
+            "description": "Optional child feature list displayed in the Sub-Feature combobox when a feature exposes finer workflow areas.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "name"],
+              "properties": {
+                "id": {
+                  "description": "Stable sub-feature identifier used in selector state and exported payloads.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Human-readable sub-feature label displayed in the Sub-Feature combobox.",
+                  "type": "string"
+                },
+                "relatedFiles": {
+                  "description": "Sub-feature-specific files used for prompt context and exported guidance.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "relatedServices": {
+                  "description": "Optional sub-feature-specific service or contract names.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "promptDefaults": {
+                  "description": "Default field values layered on top of the parent feature defaults when this sub-feature is selected.",
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "uiHints": {
+                  "description": "Sub-feature-specific hint lists that merge over the parent feature hints.",
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": true
+            }
           }
-        }
+        },
+        "additionalProperties": true
       }
     },
     "forms": {
@@ -184,7 +245,8 @@
                         "type": "string"
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Field renderer type. The runtime special-cases list, checkbox-group, textarea, and select. Any other string is passed through as an HTML input type, such as text, email, password, number, or date."
                       },
                       "required": {
                         "type": "boolean"
@@ -205,18 +267,26 @@
                         "type": "string"
                       },
                       "options": {
+                        "description": "Explicit option list for select or checkbox-group fields. If omitted, the renderer can source options from shared data via optionSource or feature hints.",
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
                       },
                       "defaultItems": {
+                        "description": "Initial list or checkbox-group selections for multi-value widgets.",
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
                       },
+                      "rows": {
+                        "description": "Optional textarea row count. The renderer defaults to 4 when omitted.",
+                        "type": "integer",
+                        "minimum": 1
+                      },
                       "itemPlaceholder": {
+                        "description": "Placeholder used for each row in a list widget.",
                         "type": "string"
                       }
                     }

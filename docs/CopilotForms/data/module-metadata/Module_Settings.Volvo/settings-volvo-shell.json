@@ -1,0 +1,92 @@
+{
+  "id": "settings-volvo-shell",
+  "module": "Module_Settings.Volvo",
+  "name": "Volvo Settings Shell",
+  "summary": "Card-based Volvo settings shell with placeholder overview, database settings, connection string, file path, UI configuration, and hardcoded-value externalization pages.",
+  "owner": "Integration Team",
+  "relatedFiles": [
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_SettingsOverview.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_DatabaseSettings.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ConnectionStrings.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_FilePaths.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_UiConfiguration.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ExternalizationBacklog.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml.cs"
+  ],
+  "promptDefaults": {
+    "audience": "IT Administrator",
+    "docAudience": "IT Administrator",
+    "mockupAudience": "IT Administrator",
+    "reviewScope": "Single module",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Settings overview",
+      "Database-backed Volvo settings guidance",
+      "Connection string handling guidance",
+      "File path guidance",
+      "UI configuration guidance",
+      "Hardcoded value externalization backlog"
+    ],
+    "screens": [
+      "View_Settings_Volvo_WorkflowHub.xaml",
+      "View_Settings_Volvo_SettingsOverview.xaml",
+      "View_Settings_Volvo_DatabaseSettings.xaml",
+      "View_Settings_Volvo_ConnectionStrings.xaml",
+      "View_Settings_Volvo_FilePaths.xaml",
+      "View_Settings_Volvo_UiConfiguration.xaml",
+      "View_Settings_Volvo_ExternalizationBacklog.xaml"
+    ],
+    "currentUiPatterns": ["Card list", "Form", "DataGrid"],
+    "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
+    "uiElements": [
+      "Navigation cards",
+      "Recipient list guidance",
+      "Masked connection string guidance",
+      "Folder and file picker guidance",
+      "UI defaults guidance",
+      "Externalization backlog grid guidance"
+    ],
+    "userActions": [
+      "Browse Volvo settings areas from the hub",
+      "Review which Volvo configuration belongs in database settings, file paths, and UI configuration",
+      "Inspect the connection string page guidance without exposing secrets in editable plain text",
+      "Review the backlog of hardcoded values that should become configuration"
+    ],
+    "preserveRules": [
+      "Keep the placeholder status explicit in metadata",
+      "Keep connection string guidance masked and read-only",
+      "Do not describe backlog tracking as a completed externalization workflow",
+      "Keep the existing step ordering and card-driven navigation unchanged"
+    ],
+    "acceptanceCriteria": [
+      "The hub still routes to overview, database settings, connection strings, file paths, UI configuration, and externalization backlog",
+      "Metadata reflects the visible placeholder guidance for each Volvo settings area",
+      "Metadata does not imply editable secrets or completed persistence logic that the module does not currently implement"
+    ],
+    "validationHints": [
+      "Confirm each Volvo card still opens the intended screen",
+      "Confirm connection string guidance remains masked and non-editable in concept",
+      "Confirm metadata continues to describe the hardcoded-values page as backlog tracking rather than finished automation"
+    ],
+    "sensitiveDataRules": [
+      "Do not expose raw connection strings in UI change requests or mockups",
+      "Keep secret-bearing fields masked or routed to deployment-time secret storage"
+    ]
+  }
+}

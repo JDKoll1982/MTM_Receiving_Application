@@ -1,0 +1,180 @@
+{
+  "Module": "Module_Settings.Core",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.Core",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.Core",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 71,
+  "FeatureReports": [
+    {
+      "FeatureId": "settings-core-settings-platform",
+      "Name": "Settings Platform Services",
+      "MetadataFile": "settings-core-settings-platform.json",
+      "ReferencedFiles": [
+        "Module_Settings.Core/Contracts/Services/IService_SettingsErrorHandler.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json",
+        "Module_Settings.Core/Enums/Enum_SettingsDataType.cs",
+        "Module_Settings.Core/Enums/Enum_SettingsScope.cs",
+        "Module_Settings.Core/Interfaces/ISettingsCache.cs",
+        "Module_Settings.Core/Interfaces/ISettingsEncryptionService.cs",
+        "Module_Settings.Core/Interfaces/ISettingsManifestProvider.cs",
+        "Module_Settings.Core/Interfaces/ISettingsMetadataRegistry.cs",
+        "Module_Settings.Core/Models/Model_CoreSetting.cs",
+        "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+        "Module_Settings.Core/Models/Model_SettingsValue.cs",
+        "Module_Settings.Core/Services/GetSettingQuery.cs",
+        "Module_Settings.Core/Services/GetSettingQueryHandler.cs",
+        "Module_Settings.Core/Services/ResetSettingCommand.cs",
+        "Module_Settings.Core/Services/ResetSettingCommandHandler.cs",
+        "Module_Settings.Core/Services/Service_SettingsCache.cs",
+        "Module_Settings.Core/Services/Service_SettingsCoreFacade.cs",
+        "Module_Settings.Core/Services/Service_SettingsEncryptionService.cs",
+        "Module_Settings.Core/Services/Service_SettingsErrorHandler.cs",
+        "Module_Settings.Core/Services/Service_SettingsManifestProvider.cs",
+        "Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs",
+        "Module_Settings.Core/Services/SetSettingCommand.cs",
+        "Module_Settings.Core/Services/SetSettingCommandHandler.cs",
+        "Module_Settings.Core/SETTABLE_OBJECTS_INVENTORY.md",
+        "Module_Settings.Core/Validators/SetSettingCommandValidator.cs"
+      ],
+      "ReferencedServices": [
+        "IService_SettingsCoreFacade",
+        "IService_SettingsErrorHandler",
+        "ISettingsCache",
+        "ISettingsEncryptionService",
+        "ISettingsManifestProvider",
+        "ISettingsMetadataRegistry",
+        "Service_SettingsCache",
+        "Service_SettingsCoreFacade",
+        "Service_SettingsEncryptionService",
+        "Service_SettingsErrorHandler",
+        "Service_SettingsManifestProvider",
+        "Service_SettingsMetadataRegistry"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "settings-core-sharedpaths-theme",
+      "Name": "Shared Paths And Theme Settings",
+      "MetadataFile": "settings-core-sharedpaths-theme.json",
+      "ReferencedFiles": [
+        "Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs",
+        "Module_Settings.Core/Models/Model_SettingsValue.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_SharedPaths.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Theme.cs",
+        "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml",
+        "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Theme.xaml",
+        "Module_Settings.Core/Views/View_Settings_Theme.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_SettingsCoreFacade",
+        "Service_SettingsCoreFacade"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "settings-core-shell-navigation",
+      "Name": "Settings Shell And Navigation",
+      "MetadataFile": "settings-core-shell-navigation.json",
+      "ReferencedFiles": [
+        "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
+        "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
+        "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
+        "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs",
+        "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
+        "Module_Settings.Core/Services/Service_SettingsPagination.cs",
+        "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
+        "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
+        "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_SettingsPagination",
+        "IService_SettingsWindowHost",
+        "Service_SettingsPagination",
+        "Service_SettingsWindowHost"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "settings-core-system-database-logging",
+      "Name": "System Database And Logging Settings",
+      "MetadataFile": "settings-core-system-database-logging.json",
+      "ReferencedFiles": [
+        "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+        "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Logging.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_System.cs",
+        "Module_Settings.Core/Views/View_Settings_Database.xaml",
+        "Module_Settings.Core/Views/View_Settings_Database.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Logging.xaml",
+        "Module_Settings.Core/Views/View_Settings_Logging.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_System.xaml",
+        "Module_Settings.Core/Views/View_Settings_System.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "ISettingsMetadataRegistry",
+        "Service_SettingsMetadataRegistry"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "settings-core-users-roles",
+      "Name": "Users And Roles Settings",
+      "MetadataFile": "settings-core-users-roles.json",
+      "ReferencedFiles": [
+        "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreRoles.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUserRoles.cs",
+        "Module_Settings.Core/Enums/Enum_SettingsPermissionLevel.cs",
+        "Module_Settings.Core/Interfaces/IService_UserPreferences.cs",
+        "Module_Settings.Core/Models/Model_SettingsAuditEntry.cs",
+        "Module_Settings.Core/Models/Model_SettingsRole.cs",
+        "Module_Settings.Core/Models/Model_SettingsUserRole.cs",
+        "Module_Settings.Core/Models/Model_UserSetting.cs",
+        "Module_Settings.Core/Services/Service_UserPreferences.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs",
+        "Module_Settings.Core/Views/View_Settings_Users.xaml",
+        "Module_Settings.Core/Views/View_Settings_Users.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_UserPreferences",
+        "Service_UserPreferences"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "settings-core-shell-navigation.json",
+    "settings-core-system-database-logging.json",
+    "settings-core-sharedpaths-theme.json",
+    "settings-core-users-roles.json",
+    "settings-core-settings-platform.json"
+  ],
+  "ActualFeatureFiles": [
+    "settings-core-settings-platform.json",
+    "settings-core-sharedpaths-theme.json",
+    "settings-core-shell-navigation.json",
+    "settings-core-system-database-logging.json",
+    "settings-core-users-roles.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

@@ -1,0 +1,51 @@
+{
+  "Module": "Infrastructure",
+  "GeneratedAt": "2026-03-22T18:50:49",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Infrastructure",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Infrastructure",
+  "MetadataStatus": "MissingMetadataFolder",
+  "SourceFileCount": 7,
+  "FeatureReports": [],
+  "IndexFeatureFiles": [],
+  "ActualFeatureFiles": [],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [
+    "Infrastructure/Configuration/ApplicationSettings.cs",
+    "Infrastructure/Configuration/DatabaseSettings.cs",
+    "Infrastructure/Configuration/InforVisualSettings.cs",
+    "Infrastructure/DependencyInjection/CoreServiceExtensions.cs",
+    "Infrastructure/DependencyInjection/CqrsInfrastructureExtensions.cs",
+    "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
+    "Infrastructure/Logging/SerilogConfiguration.cs"
+  ],
+  "UnreferencedSourceFileGroups": [
+    {
+      "Area": "Configuration",
+      "Count": 3,
+      "Items": [
+        "Infrastructure/Configuration/ApplicationSettings.cs",
+        "Infrastructure/Configuration/DatabaseSettings.cs",
+        "Infrastructure/Configuration/InforVisualSettings.cs"
+      ]
+    },
+    {
+      "Area": "DependencyInjection",
+      "Count": 3,
+      "Items": [
+        "Infrastructure/DependencyInjection/CoreServiceExtensions.cs",
+        "Infrastructure/DependencyInjection/CqrsInfrastructureExtensions.cs",
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ]
+    },
+    {
+      "Area": "Logging",
+      "Count": 1,
+      "Items": [
+        "Infrastructure/Logging/SerilogConfiguration.cs"
+      ]
+    }
+  ],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

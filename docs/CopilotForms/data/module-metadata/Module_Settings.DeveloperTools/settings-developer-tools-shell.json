@@ -1,0 +1,78 @@
+{
+  "id": "settings-developer-tools-shell",
+  "module": "Module_Settings.DeveloperTools",
+  "name": "Developer Tools Settings Shell",
+  "summary": "Developer tools navigation shell with an overview page, four placeholder feature pages, and routing into the concrete database diagnostics surface.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_NavigationHub.cs",
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_SettingsOverview.cs",
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureA.cs",
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureB.cs",
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureC.cs",
+    "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureD.cs",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml.cs",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml.cs",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml.cs",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml.cs",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml.cs",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml",
+    "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml.cs"
+  ],
+  "promptDefaults": {
+    "audience": "Developer",
+    "docAudience": "Developer",
+    "mockupAudience": "Developer",
+    "reviewScope": "Single module",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Developer tools overview",
+      "Placeholder feature pages",
+      "Navigation into diagnostics"
+    ],
+    "screens": [
+      "View_Settings_DeveloperTools_NavigationHub.xaml",
+      "View_Settings_DeveloperTools_SettingsOverview.xaml",
+      "View_Settings_DeveloperTools_FeatureA.xaml",
+      "View_Settings_DeveloperTools_FeatureB.xaml",
+      "View_Settings_DeveloperTools_FeatureC.xaml",
+      "View_Settings_DeveloperTools_FeatureD.xaml"
+    ],
+    "currentUiPatterns": ["Card list", "Form"],
+    "desiredUiPatterns": ["Card list", "Form"],
+    "uiElements": [
+      "Navigation cards",
+      "Overview text",
+      "Back actions",
+      "Placeholder page titles"
+    ],
+    "userActions": [
+      "Browse developer tool areas from the hub",
+      "Open the overview page",
+      "Open placeholder feature pages that are not implemented yet",
+      "Navigate from the shell into the database diagnostics page"
+    ],
+    "preserveRules": [
+      "Keep Feature A through Feature D explicitly marked as placeholders",
+      "Do not describe placeholder pages as implemented tool surfaces",
+      "Keep the current navigation hub card ordering unchanged"
+    ],
+    "acceptanceCriteria": [
+      "The hub still routes to overview, Feature A, Feature B, Feature C, Feature D, and Database Test",
+      "Metadata reflects the current placeholder status of Feature A through Feature D",
+      "Metadata separates the shell from the real diagnostics workflow"
+    ],
+    "validationHints": [
+      "Confirm the shell cards still open the intended page",
+      "Confirm Feature A through Feature D still present as placeholder pages",
+      "Confirm metadata does not overstate the capabilities of the placeholder views"
+    ]
+  }
+}

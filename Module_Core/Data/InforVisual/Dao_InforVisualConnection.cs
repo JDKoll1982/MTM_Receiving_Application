@@ -726,6 +726,7 @@ public class Dao_InforVisualConnection
     /// <summary>
     /// Returns <see langword="true"/> when a <c>PART</c> row with <c>ID = <paramref name="partId"/></c>
     /// exists in Infor Visual.
+    /// Uses: 12_ValidatePartExists.sql
     /// ⚠️ READ-ONLY — no writes to Infor Visual.
     /// </summary>
     /// <param name="partId">Exact part ID to check.</param>
@@ -733,12 +734,12 @@ public class Dao_InforVisualConnection
     {
         try
         {
-            const string sql = "SELECT COUNT(1) FROM PART WHERE ID = @PartId";
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("12_ValidatePartExists.sql");
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            await using var command = new SqlCommand(sql, connection);
+            await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PartId", partId);
 
             var count = (int)(await command.ExecuteScalarAsync() ?? 0);
@@ -758,6 +759,7 @@ public class Dao_InforVisualConnection
     /// Returns <see langword="true"/> when a <c>LOCATION</c> row with
     /// <c>ID = <paramref name="locationId"/></c> and
     /// <c>WAREHOUSE_ID = <paramref name="warehouseCode"/></c> exists in Infor Visual.
+    /// Uses: 13_ValidateLocationExists.sql
     /// ⚠️ READ-ONLY — no writes to Infor Visual.
     /// </summary>
     /// <param name="locationId">Exact location ID to check.</param>
@@ -769,13 +771,14 @@ public class Dao_InforVisualConnection
     {
         try
         {
-            const string sql =
-                "SELECT COUNT(1) FROM LOCATION WHERE ID = @LocationId AND WAREHOUSE_ID = @WarehouseCode";
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                resourcePath: "13_ValidateLocationExists.sql"
+            );
 
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            await using var command = new SqlCommand(sql, connection);
+            await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@LocationId", locationId);
             command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
 

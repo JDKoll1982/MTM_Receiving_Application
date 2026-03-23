@@ -1,0 +1,68 @@
+{
+  "id": "shiprec-tools-shell",
+  "module": "Module_ShipRec_Tools",
+  "name": "ShipRec Tools Shell",
+  "summary": "Container workflow that hosts the tool selection screen, routes into an active tool, and returns the user back to the tool hub.",
+  "owner": "Shipping / Receiving Team",
+  "relatedFiles": [
+    "Module_ShipRec_Tools/Contracts/IService_ShipRecTools_Navigation.cs",
+    "Module_ShipRec_Tools/Services/Service_ShipRecTools_Navigation.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_Base.cs",
+    "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml",
+    "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml.cs"
+  ],
+  "relatedServices": [
+    "IService_ShipRecTools_Navigation",
+    "Service_ShipRecTools_Navigation"
+  ],
+  "promptDefaults": {
+    "audience": "Shipping or Receiving Clerk",
+    "docAudience": "Shipping or Receiving Clerk",
+    "mockupAudience": "Shipping or Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "SQL Server"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Tool host container",
+      "Tool navigation",
+      "Back-to-tools routing"
+    ],
+    "screens": [
+      "View_ShipRecTools_Main.xaml"
+    ],
+    "currentUiPatterns": [
+      "Container host",
+      "Conditional content region"
+    ],
+    "desiredUiPatterns": [
+      "Container host",
+      "Card list",
+      "Split layout"
+    ],
+    "uiElements": [
+      "Back to Tools button",
+      "Current tool title",
+      "Selection host region",
+      "Active tool host region"
+    ],
+    "userActions": [
+      "Enter a selected tool",
+      "Return to the tool hub without restarting the module"
+    ],
+    "preserveRules": [
+      "Keep navigation key behavior unchanged",
+      "Keep back-to-tools flow unchanged"
+    ],
+    "acceptanceCriteria": [
+      "The correct tool host becomes visible after selection",
+      "The Back to Tools action returns the user to the selection screen"
+    ],
+    "validationHints": [
+      "Confirm tool navigation still toggles the correct host region",
+      "Confirm the shell title updates for the active tool"
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "shiprec-tools-catalog",
+  "module": "Module_ShipRec_Tools",
+  "name": "ShipRec Tool Catalog",
+  "summary": "Categorized tool-card selection screen that loads registered tools by category and raises the selected tool key into the shell workflow.",
+  "owner": "Shipping / Receiving Team",
+  "relatedFiles": [
+    "Module_ShipRec_Tools/Enums/Enum_ToolCategory.cs",
+    "Module_ShipRec_Tools/Models/Model_ToolDefinition.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_ToolSelection.cs",
+    "Module_ShipRec_Tools/Views/View_ShipRecTools_ToolSelection.xaml",
+    "Module_ShipRec_Tools/Views/View_ShipRecTools_ToolSelection.xaml.cs"
+  ],
+  "relatedServices": [
+    "IService_ShipRecTools_Navigation",
+    "Service_ShipRecTools_Navigation"
+  ],
+  "promptDefaults": {
+    "audience": "Shipping or Receiving Clerk",
+    "docAudience": "Shipping or Receiving Clerk",
+    "mockupAudience": "Shipping or Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "SQL Server"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Tool discovery",
+      "Category grouping",
+      "Tool-card selection"
+    ],
+    "screens": [
+      "View_ShipRecTools_ToolSelection.xaml"
+    ],
+    "currentUiPatterns": [
+      "Card list",
+      "Sectioned dashboard",
+      "Uniform grid"
+    ],
+    "desiredUiPatterns": [
+      "Card list",
+      "Sectioned dashboard",
+      "Uniform grid"
+    ],
+    "uiElements": [
+      "Lookup Tools section",
+      "Analysis Tools section",
+      "Utilities section",
+      "Tool title",
+      "Tool description",
+      "Tool icon"
+    ],
+    "userActions": [
+      "Scan available tools by category",
+      "Choose the correct tool card quickly"
+    ],
+    "preserveRules": [
+      "Keep the category grouping behavior unchanged",
+      "Keep tool-card command routing unchanged"
+    ],
+    "acceptanceCriteria": [
+      "Available tools still appear in the correct category",
+      "Selecting a card still raises the expected tool key"
+    ],
+    "validationHints": [
+      "Confirm tool counts and category visibility still reflect the registry",
+      "Confirm card selection still routes to the intended tool"
+    ]
+  }
+}

@@ -76,8 +76,8 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Row 0: Full Name (spans both columns) -->
-                <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Spacing="6">
+                <!-- Row 0: First Name & Last Name -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Spacing="6">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon
                             FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -86,15 +86,36 @@
                             Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                         />
                         <TextBlock
-                            Text="Full Name *"
+                            Text="First Name *"
                             Style="{StaticResource BodyStrongTextBlockStyle}"
                         />
                     </StackPanel>
                     <TextBox
-                        x:Name="FullNameTextBox"
-                        PlaceholderText="Enter your full name"
-                        MaxLength="100"
+                        x:Name="FirstNameTextBox"
+                        PlaceholderText="Enter your first name"
+                        MaxLength="50"
                         TabIndex="0"
+                    />
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Glyph="&#xE77B;"
+                            FontSize="16"
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        />
+                        <TextBlock
+                            Text="Last Name *"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                        />
+                    </StackPanel>
+                    <TextBox
+                        x:Name="LastNameTextBox"
+                        PlaceholderText="Enter your last name"
+                        MaxLength="50"
+                        TabIndex="1"
                     />
                 </StackPanel>
 
@@ -116,7 +137,7 @@
                         x:Name="EmployeeNumberTextBox"
                         PlaceholderText="e.g., 6229"
                         MaxLength="10"
-                        TabIndex="1"
+                        TabIndex="2"
                         InputScope="Number"
                     />
                 </StackPanel>
@@ -161,7 +182,7 @@
                         x:Name="DepartmentComboBox"
                         PlaceholderText="Select department"
                         HorizontalAlignment="Stretch"
-                        TabIndex="2"
+                        TabIndex="3"
                         SelectionChanged="DepartmentComboBox_SelectionChanged"
                     />
                 </StackPanel>
@@ -183,7 +204,7 @@
                         x:Name="ShiftComboBox"
                         PlaceholderText="Select shift"
                         HorizontalAlignment="Stretch"
-                        TabIndex="4"
+                        TabIndex="5"
                     >
                         <ComboBoxItem Content="1st Shift" />
                         <ComboBoxItem Content="2nd Shift" />
@@ -215,7 +236,7 @@
                         x:Name="CustomDepartmentTextBox"
                         PlaceholderText="Enter department name"
                         MaxLength="50"
-                        TabIndex="3"
+                        TabIndex="4"
                     />
                 </StackPanel>
 
@@ -237,7 +258,7 @@
                         x:Name="PinPasswordBox"
                         PlaceholderText="Create PIN"
                         MaxLength="4"
-                        TabIndex="5"
+                        TabIndex="6"
                         PasswordRevealMode="Peek"
                     />
                     <TextBlock
@@ -264,7 +285,7 @@
                         x:Name="ConfirmPinPasswordBox"
                         PlaceholderText="Re-enter PIN"
                         MaxLength="4"
-                        TabIndex="6"
+                        TabIndex="7"
                         PasswordRevealMode="Peek"
                     />
                 </StackPanel>
@@ -302,7 +323,7 @@
                             Content="Configure Visual/Infor ERP credentials"
                             Checked="ConfigureErpCheckBox_Checked"
                             Unchecked="ConfigureErpCheckBox_Unchecked"
-                            TabIndex="7"
+                            TabIndex="8"
                         />
 
                         <StackPanel
@@ -326,7 +347,7 @@
                                     x:Name="VisualUsernameTextBox"
                                     PlaceholderText="ERP username"
                                     MaxLength="50"
-                                    TabIndex="8"
+                                    TabIndex="9"
                                 />
                             </StackPanel>
 
@@ -339,7 +360,7 @@
                                     x:Name="VisualPasswordBox"
                                     PlaceholderText="ERP password"
                                     MaxLength="100"
-                                    TabIndex="9"
+                                    TabIndex="10"
                                     PasswordRevealMode="Peek"
                                 />
                             </StackPanel>

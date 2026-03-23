@@ -17,12 +17,12 @@ CREATE PROCEDURE `sp_Auth_User_Upsert`(
     IN p_employee_number INT,
     IN p_windows_username VARCHAR(50),
     IN p_full_name VARCHAR(100),
-    IN p_pin VARCHAR(4),
+    IN p_pin VARCHAR(64),
     IN p_department VARCHAR(50),
     IN p_shift VARCHAR(20),
     IN p_is_active BOOLEAN,
-    IN p_visual_username VARCHAR(50),
-    IN p_visual_password VARCHAR(100),
+    IN p_visual_username VARCHAR(256),
+    IN p_visual_password VARCHAR(256),
     IN p_created_by VARCHAR(50)
 )
 sp: BEGIN

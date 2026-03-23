@@ -12,8 +12,8 @@ DELIMITER $$
 
 CREATE PROCEDURE `sp_Auth_User_UpdateVisualCredentials`(
     IN p_employee_number INT,
-    IN p_visual_username VARCHAR(50),
-    IN p_visual_password VARCHAR(100),
+    IN p_visual_username VARCHAR(256),
+    IN p_visual_password VARCHAR(256),
     IN p_updated_by VARCHAR(50),
     OUT p_error_message VARCHAR(500)
 ) sp: BEGIN DECLARE v_existing_count INT DEFAULT 0;

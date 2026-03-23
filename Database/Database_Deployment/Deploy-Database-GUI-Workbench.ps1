@@ -47,6 +47,27 @@ $script:Config = [ordered]@{
             Password = 'root'
         }
     }
+    # AUTH-SECRET-LOGIC-BEGIN
+    Security  = [ordered]@{
+        EnvironmentVariableName = 'MTM_AUTH_USER_SECRET_KEY'
+        SharedServerIp          = '172.16.1.104'
+        LocalSecretDirectory    = Join-Path $env:ProgramData 'MTM Receiving Application\Security'
+        LocalSecretFileName     = 'MTM_AUTH_USER_SECRET_KEY.txt'
+        SharedSecretDirectory   = '\\172.16.1.104\MTM_Receiving_Application\Security'
+        SharedSecretFileName    = 'MTM_AUTH_USER_SECRET_KEY.txt'
+    }
+    # AUTH-SECRET-LOGIC-END
+    HostSwap  = [ordered]@{
+        LocalHostValue      = 'localhost'
+        SharedHostValue     = '172.16.1.104'
+        ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
+        IncludedExtensions  = @(
+            '.bat', '.cmd', '.config', '.cs', '.csproj', '.css', '.fs', '.go', '.htm', '.html',
+            '.ini', '.java', '.js', '.json', '.jsx', '.md', '.mmd', '.props', '.ps1', '.psd1',
+            '.psm1', '.py', '.razor', '.rb', '.rs', '.scss', '.sh', '.skill', '.sln', '.slnx',
+            '.sql', '.targets', '.toml', '.ts', '.tsx', '.txt', '.vb', '.xml', '.xaml', '.yaml', '.yml'
+        )
+    }
     Sql       = [ordered]@{
         ExcludePatterns = @('test_*.sql', '*_test.sql', '*.test.sql')
     }
@@ -315,6 +336,10 @@ $xaml = @"
         </Border>
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Name="SwapHostsButton" Content="Swap Host References"
+                Width="180" Height="35" Margin="0,0,10,0"
+                Background="#6A1B9A" Foreground="White"
+                BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
             <Button Name="ModeSwitchButton" Content="Object Catalog Mode"
                 Width="170" Height="35" Margin="0,0,10,0"
                 Background="#37474F" Foreground="White"
@@ -373,6 +398,7 @@ $catalogPathText = $window.FindName("CatalogPathText")
 $catalogGeneratedText = $window.FindName("CatalogGeneratedText")
 $catalogEntryCountText = $window.FindName("CatalogEntryCountText")
 $catalogDataGrid = $window.FindName("CatalogDataGrid")
+$swapHostsButton = $window.FindName("SwapHostsButton")
 $modeSwitchButton = $window.FindName("ModeSwitchButton")
 $deployButton = $window.FindName("DeployButton")
 $closeButton = $window.FindName("CloseButton")
@@ -463,6 +489,244 @@ function Update-ConnectionDisplay {
     $serverText.Text = "$($script:CurrentServer)`:$($script:CurrentPort)"
     $databaseText.Text = $Database
     $userText.Text = $script:CurrentUser
+
+    if ($null -ne $swapHostsButton) {
+        $swapTarget = if (Test-IsLocalHostValue -HostName $script:CurrentServer) {
+            $script:Config.HostSwap.SharedHostValue
+        }
+        else {
+            $script:Config.HostSwap.LocalHostValue
+        }
+
+        $swapHostsButton.Content = "Swap Repo To $swapTarget"
+    }
+}
+
+# AUTH-SECRET-LOGIC-BEGIN
+function Test-IsLocalHostValue {
+    param(
+        [string]$HostName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($HostName)) {
+        return $false
+    }
+
+    return $HostName.Trim().ToLowerInvariant() -in @('localhost', '127.0.0.1', '::1')
+}
+
+function New-AuthSecretValue {
+    $bytes = New-Object byte[] 32
+    [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+    return [Convert]::ToBase64String($bytes)
+}
+
+function Get-AuthSecretSourcePath {
+    $securityConfig = $script:Config.Security
+
+    if (Test-IsLocalHostValue -HostName $script:CurrentServer) {
+        return Join-Path $securityConfig.LocalSecretDirectory $securityConfig.LocalSecretFileName
+    }
+
+    return Join-Path $securityConfig.SharedSecretDirectory $securityConfig.SharedSecretFileName
+}
+
+function Get-OrCreate-AuthSecretValue {
+    $secretPath = Get-AuthSecretSourcePath
+    $secretDirectory = Split-Path -Parent $secretPath
+
+    if (-not (Test-Path $secretDirectory)) {
+        New-Item -Path $secretDirectory -ItemType Directory -Force | Out-Null
+    }
+
+    if (Test-Path $secretPath) {
+        $existingSecret = (Get-Content -Path $secretPath -Raw -ErrorAction Stop).Trim()
+        if (-not [string]::IsNullOrWhiteSpace($existingSecret)) {
+            return [PSCustomObject]@{
+                SecretValue = $existingSecret
+                SecretPath  = $secretPath
+                WasCreated  = $false
+            }
+        }
+    }
+
+    $newSecret = New-AuthSecretValue
+    [System.IO.File]::WriteAllText($secretPath, $newSecret, [System.Text.UTF8Encoding]::new($false))
+
+    return [PSCustomObject]@{
+        SecretValue = $newSecret
+        SecretPath  = $secretPath
+        WasCreated  = $true
+    }
+}
+
+function Set-AuthSecretEnvironmentVariable {
+    param(
+        [string]$SecretValue
+    )
+
+    $variableName = $script:Config.Security.EnvironmentVariableName
+    [Environment]::SetEnvironmentVariable($variableName, $SecretValue, 'Process')
+
+    $machineEnvironmentPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+    $userEnvironmentPath = 'HKCU:\Environment'
+
+    try {
+        Set-ItemProperty -Path $machineEnvironmentPath -Name $variableName -Value $SecretValue -Type String -ErrorAction Stop
+        return 'Machine'
+    }
+    catch {
+        if (-not (Test-Path $userEnvironmentPath)) {
+            New-Item -Path $userEnvironmentPath -Force | Out-Null
+        }
+
+        Set-ItemProperty -Path $userEnvironmentPath -Name $variableName -Value $SecretValue -Type String -ErrorAction Stop
+        return 'User'
+    }
+}
+
+function Ensure-AuthSecretConfigured {
+    $secretDetails = Get-OrCreate-AuthSecretValue
+    $scope = Set-AuthSecretEnvironmentVariable -SecretValue $secretDetails.SecretValue
+
+    $currentFileText.Text = "Auth secret source: $($secretDetails.SecretPath)"
+
+    if ($secretDetails.WasCreated) {
+        Write-Host "Created auth secret file at $($secretDetails.SecretPath) and set environment variable scope $scope." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Loaded auth secret from $($secretDetails.SecretPath) and set environment variable scope $scope." -ForegroundColor Cyan
+    }
+
+    return [PSCustomObject]@{
+        SecretPath = $secretDetails.SecretPath
+        Scope      = $scope
+        WasCreated = $secretDetails.WasCreated
+    }
+}
+# AUTH-SECRET-LOGIC-END
+
+function Protect-AuthSecretLogicBlocks {
+    param(
+        [string]$Content
+    )
+
+    $protectedBlocks = [ordered]@{}
+    $updatedContent = $Content
+    $matches = [regex]::Matches($Content, '(?s)# AUTH-SECRET-LOGIC-BEGIN.*?# AUTH-SECRET-LOGIC-END')
+
+    for ($index = 0; $index -lt $matches.Count; $index++) {
+        $token = "__MTM_AUTH_SECRET_BLOCK_$index__"
+        $protectedBlocks[$token] = $matches[$index].Value
+        $updatedContent = $updatedContent.Replace($matches[$index].Value, $token)
+    }
+
+    return [PSCustomObject]@{
+        Content = $updatedContent
+        Blocks  = $protectedBlocks
+    }
+}
+
+function Restore-AuthSecretLogicBlocks {
+    param(
+        [string]$Content,
+        [System.Collections.IDictionary]$Blocks
+    )
+
+    $restoredContent = $Content
+    foreach ($entry in $Blocks.GetEnumerator()) {
+        $restoredContent = $restoredContent.Replace($entry.Key, $entry.Value)
+    }
+
+    return $restoredContent
+}
+
+function Convert-HostReferenceText {
+    param(
+        [string]$Content,
+        [string]$FromHost,
+        [string]$ToHost
+    )
+
+    $placeholder = '__MTM_HOST_SWAP_PLACEHOLDER__'
+    return $Content.Replace($FromHost, $placeholder).Replace($ToHost, $FromHost).Replace($placeholder, $ToHost)
+}
+
+function Get-RepoFilesForHostSwap {
+    param(
+        [string]$RepoRoot
+    )
+
+    $includedExtensions = $script:Config.HostSwap.IncludedExtensions
+    $excludedDirectories = $script:Config.HostSwap.ExcludedDirectories
+
+    return @(
+        Get-ChildItem -Path $RepoRoot -Recurse -File -ErrorAction SilentlyContinue |
+        Where-Object {
+            if ($_.Extension.ToLowerInvariant() -notin $includedExtensions) {
+                return $false
+            }
+
+            $relativePath = $_.FullName.Substring($RepoRoot.Length).TrimStart('\')
+            $pathSegments = $relativePath.Split([System.IO.Path]::DirectorySeparatorChar, [System.StringSplitOptions]::RemoveEmptyEntries)
+            return -not ($pathSegments | Where-Object { $_ -in $excludedDirectories })
+        }
+    )
+}
+
+function Update-HostProfilesAfterSwap {
+    param(
+        [string]$FromHost,
+        [string]$ToHost
+    )
+
+    foreach ($profile in @($script:WorkbenchProfile, $script:MampProfile)) {
+        if ($profile['Server'] -eq $FromHost) {
+            $profile['Server'] = $ToHost
+        }
+        elseif ($profile['Server'] -eq $ToHost) {
+            $profile['Server'] = $FromHost
+        }
+    }
+
+    if ($script:CurrentServer -eq $FromHost) {
+        $script:CurrentServer = $ToHost
+    }
+    elseif ($script:CurrentServer -eq $ToHost) {
+        $script:CurrentServer = $FromHost
+    }
+
+    Update-ConnectionDisplay
+}
+
+function Invoke-RepoHostReferenceSwap {
+    $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    $localHost = $script:Config.HostSwap.LocalHostValue
+    $sharedHost = $script:Config.HostSwap.SharedHostValue
+    $fromHost = if (Test-IsLocalHostValue -HostName $script:CurrentServer) { $localHost } else { $sharedHost }
+    $toHost = if ($fromHost -eq $localHost) { $sharedHost } else { $localHost }
+    $filesChanged = 0
+
+    foreach ($file in (Get-RepoFilesForHostSwap -RepoRoot $repoRoot)) {
+        $originalContent = [System.IO.File]::ReadAllText($file.FullName)
+        $protectedContent = Protect-AuthSecretLogicBlocks -Content $originalContent
+        $updatedContent = Convert-HostReferenceText -Content $protectedContent.Content -FromHost $fromHost -ToHost $toHost
+        $updatedContent = Restore-AuthSecretLogicBlocks -Content $updatedContent -Blocks $protectedContent.Blocks
+
+        if ($updatedContent -ne $originalContent) {
+            [System.IO.File]::WriteAllText($file.FullName, $updatedContent, [System.Text.UTF8Encoding]::new($false))
+            $filesChanged++
+        }
+    }
+
+    Update-HostProfilesAfterSwap -FromHost $fromHost -ToHost $toHost
+
+    return [PSCustomObject]@{
+        FromHost     = $fromHost
+        ToHost       = $toHost
+        FilesChanged = $filesChanged
+        RepoRoot     = $repoRoot
+    }
 }
 
 function Test-IsMampListener {
@@ -1576,6 +1840,9 @@ $deployButton.Add_Click({
 
             $script:ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
+            $secretSetup = Ensure-AuthSecretConfigured
+            Write-Host "DEBUG: Auth secret scope = $($secretSetup.Scope), path = $($secretSetup.SecretPath)" -ForegroundColor Cyan
+
             if (-not (Test-Path $script:DatabaseRoot)) {
                 throw "SQL deployment folder not found at: $script:DatabaseRoot"
             }
@@ -1864,6 +2131,34 @@ $deployButton.Add_Click({
             $errorBorder.Visibility = "Visible"
             $errorText.Text = "Setup error: $($_.Exception.Message)`n`n$($_.ScriptStackTrace)"
             $deployButton.IsEnabled = $true
+        }
+    })
+
+$swapHostsButton.Add_Click({
+        try {
+            $errorBorder.Visibility = 'Collapsed'
+            $swapHostsButton.IsEnabled = $false
+            $providerToggleButton.IsEnabled = $false
+            $deployButton.IsEnabled = $false
+            $modeSwitchButton.IsEnabled = $false
+            $overallStatusText.Text = 'Swapping host references across repository...'
+            $currentFileText.Text = 'Updating text files under the solution folder...'
+
+            $swapResult = Invoke-RepoHostReferenceSwap
+
+            $overallStatusText.Text = 'Repository host swap completed.'
+            $currentFileText.Text = "$($swapResult.FilesChanged) file(s) updated from $($swapResult.FromHost) to $($swapResult.ToHost)."
+        }
+        catch {
+            $errorBorder.Visibility = 'Visible'
+            $errorText.Text = "Host swap error:`n`n$($_.Exception.Message)"
+            $overallStatusText.Text = 'Repository host swap failed.'
+        }
+        finally {
+            $swapHostsButton.IsEnabled = $true
+            $providerToggleButton.IsEnabled = $true
+            $deployButton.IsEnabled = $true
+            $modeSwitchButton.IsEnabled = $true
         }
     })
 

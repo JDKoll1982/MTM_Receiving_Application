@@ -1,0 +1,10 @@
+{
+  "module": "Module_ShipRec_Tools",
+  "owner": "Shipping / Receiving Team",
+  "lastUpdated": "2026-03-22",
+  "featureFiles": [
+    "shiprec-tools-shell.json",
+    "shiprec-tools-catalog.json",
+    "shiprec-tool-outside-service-history.json"
+  ]
+}

@@ -8,16 +8,35 @@
       "data/module-metadata/Module_Receiving/index.json",
       "data/module-metadata/Module_Dunnage/index.json",
       "data/module-metadata/Module_Reporting/index.json",
-      "data/module-metadata/Module_Volvo/index.json"
+      "data/module-metadata/Module_Volvo/index.json",
+      "data/module-metadata/Module_Core/index.json",
+      "data/module-metadata/Module_Shared/index.json",
+      "data/module-metadata/Module_Settings.Core/index.json",
+      "data/module-metadata/Module_Settings.Receiving/index.json",
+      "data/module-metadata/Module_Settings.Dunnage/index.json",
+      "data/module-metadata/Module_Settings.Reporting/index.json",
+      "data/module-metadata/Module_Settings.Volvo/index.json",
+      "data/module-metadata/Module_Settings.DeveloperTools/index.json",
+      "data/module-metadata/Module_ShipRec_Tools/index.json"
     ],
     "notes": [
       "WinUI 3 desktop app with MVVM, CQRS, and database-backed workflows.",
-      "Use this catalog as the single editable source for feature names and suggested code entry points."
+      "Prefer editing split module metadata under data/module-metadata; the inline features array below is a fallback copy for local-load compatibility.",
+      "The inline features array is a local-load fallback; when split module metadata is fetched, matching feature ids from moduleMetadataIndexes take precedence."
     ]
   },
   "shared": {
-    "priorities": ["Critical", "High", "Medium", "Low"],
-    "riskLevels": ["Low", "Moderate", "High"],
+    "priorities": [
+      "Critical",
+      "High",
+      "Medium",
+      "Low"
+    ],
+    "riskLevels": [
+      "Low",
+      "Moderate",
+      "High"
+    ],
     "changeScopes": [
       "Single file",
       "Single feature",
@@ -100,135 +119,3866 @@
   },
   "features": [
     {
-      "id": "settings-core",
-      "module": "Module_Settings.Core",
-      "name": "Settings Core",
-      "summary": "Cross-cutting settings infrastructure: persistence, encryption, user preferences, CQRS commands, and the settings window host.",
-      "owner": "Platform Team",
-      "relatedFiles": [
-        "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
-        "Module_Settings.Core/Services/Service_SettingsCoreFacade.cs",
-        "Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs",
-        "Module_Settings.Core/Services/Service_UserPreferences.cs",
-        "Module_Settings.Core/Services/Service_SettingsEncryptionService.cs"
-      ],
-      "relatedServices": [
-        "IService_SettingsCoreFacade",
-        "IService_UserPreferences",
-        "IService_SettingsMetadataRegistry"
-      ]
-    },
-    {
-      "id": "settings-receiving",
-      "module": "Module_Settings.Receiving",
-      "name": "Settings — Receiving",
-      "summary": "User-configurable receiving defaults, validation rules, business rules, and per-user preferences for the receiving workflow.",
+      "id": "receiving-workflow",
+      "module": "Module_Receiving",
+      "name": "Receiving Workflow",
+      "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, persisted session restore, and final save orchestration.",
       "owner": "Receiving Team",
       "relatedFiles": [
-        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Defaults.cs",
-        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs",
-        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Validation.cs",
-        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_UserPreferences.cs"
+        "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
+        "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
+        "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Services/Service_ReceivingSettings.cs",
+        "Module_Receiving/Services/Service_ReceivingValidation.cs",
+        "Module_Receiving/Services/Service_SessionManager.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+        "Module_Receiving/Data/Dao_ReceivingLoad.cs",
+        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+        "Module_Receiving/Models/Model_Application_Variables.cs",
+        "Module_Receiving/Models/Model_ReceivingSession.cs",
+        "Module_Receiving/Models/Model_ReceivingLoad.cs",
+        "Module_Receiving/Models/Model_ReceivingValidationResult.cs",
+        "Module_Receiving/Models/Model_UserPreference.cs",
+        "Module_Receiving/Models/Model_WorkflowStepResult.cs",
+        "Module_Receiving/Models/Model_ReceivingWorkflowStepResult.cs",
+        "Module_Receiving/Models/Model_SaveResult.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs"
       ],
       "relatedServices": [
-        "IService_SettingsCoreFacade",
-        "IService_UserPreferences"
+        "IService_ReceivingWorkflow",
+        "IService_ReceivingSettings",
+        "IService_ReceivingValidation",
+        "IService_MySQL_Receiving",
+        "Service_ReceivingWorkflow",
+        "Service_ReceivingSettings",
+        "Service_ReceivingValidation",
+        "Service_SessionManager",
+        "Service_MySQL_Receiving",
+        "Service_ReceivingLabelData"
+      ],
+      "promptDefaults": {
+        "audience": "Receiving Clerk",
+        "docAudience": "Receiving Clerk",
+        "mockupAudience": "Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "MySQL"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Guided receiving workflow",
+          "Startup routing",
+          "Step-by-step wizard",
+          "Session restore and resume",
+          "Settings-driven default mode and validation behavior"
+        ],
+        "screens": [
+          "View_Receiving_Workflow.xaml",
+          "View_Receiving_ModeSelection.xaml",
+          "View_Receiving_POEntry.xaml",
+          "View_Receiving_LoadEntry.xaml",
+          "View_Receiving_WeightQuantity.xaml",
+          "View_Receiving_HeatLot.xaml",
+          "View_Receiving_PackageType.xaml",
+          "View_Receiving_Review.xaml"
+        ],
+        "currentUiPatterns": [
+          "Wizard step",
+          "Toolbar + results list",
+          "Review table"
+        ],
+        "desiredUiPatterns": [
+          "Wizard step",
+          "Card list",
+          "Split layout",
+          "Form"
+        ],
+        "uiElements": [
+          "Step title",
+          "Primary Next button",
+          "Primary Back button",
+          "Mode-specific startup routing",
+          "Help text",
+          "Review area",
+          "Save action"
+        ],
+        "userActions": [
+          "Move through the workflow one step at a time",
+          "Understand what to do next quickly",
+          "Resume an existing receiving session after restart",
+          "Review entries before saving",
+          "Recover from mistakes without confusion"
+        ],
+        "accessibilityNeeds": [
+          "Make the screen easier to scan",
+          "Reduce visual clutter",
+          "Make actions clearer for non-technical users"
+        ],
+        "preserveRules": [
+          "Keep business logic unchanged",
+          "Keep validation rules unchanged",
+          "Keep service and DAO flow unchanged",
+          "Keep current save behavior unchanged"
+        ],
+        "acceptanceCriteria": [
+          "The workflow remains step-based",
+          "The user can still complete the same task from start to finish",
+          "No business logic or save behavior changes",
+          "The UI is easier to understand at a glance"
+        ],
+        "reviewFocusAreas": [
+          "Workflow regressions",
+          "Validation behavior",
+          "Session restore behavior",
+          "Default mode startup behavior",
+          "Navigation clarity",
+          "Save-path stability"
+        ],
+        "testScenarios": [
+          "The workflow restores an existing session when one is persisted",
+          "Configured or remembered startup mode sends the user to the intended first screen",
+          "The user can move step to step when required values are present",
+          "Validation blocks progress when required values are missing",
+          "The review step shows the correct information before save",
+          "Saving preserves the existing business behavior"
+        ],
+        "docTopics": [
+          "Workflow overview",
+          "Step-by-step operator flow",
+          "Session persistence and restore behavior",
+          "Receiving settings and default-mode behavior",
+          "Validation behavior",
+          "Review and save expectations"
+        ],
+        "validationHints": [
+          "Confirm session restore still returns the user to a valid step",
+          "Confirm default-mode and remember-last-mode settings still route correctly on startup",
+          "Confirm the same workflow can still be completed from start to finish",
+          "Confirm validation still blocks invalid input",
+          "Confirm review and save behavior are unchanged"
+        ],
+        "mockupSections": [
+          "Step header",
+          "Primary input area",
+          "Inline help area",
+          "Navigation footer"
+        ],
+        "mockupFields": [
+          "Purchase order",
+          "Load number",
+          "Weight",
+          "Quantity",
+          "Package type",
+          "Review summary"
+        ],
+        "databaseObjects": [
+          "sp_Receiving_Load_Update",
+          "sp_Receiving_LabelData_Insert",
+          "sp_Receiving_LabelData_Update",
+          "receiving label data tables"
+        ],
+        "loggingEvents": [
+          "Step transitions",
+          "Session persistence and restore",
+          "Validation failures",
+          "Save requests",
+          "Save failures"
+        ],
+        "sensitiveDataRules": [
+          "Do not log connection strings",
+          "Do not log sensitive user environment details"
+        ]
+      },
+      "subFeatures": [
+        {
+          "id": "receiving-mode-selection",
+          "name": "Mode Selection",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
+            "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
+            "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+            "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+            "Module_Receiving/Services/Service_ReceivingSettings.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_ModeSelection.xaml"
+            ],
+            "currentUiPatterns": [
+              "Wizard step"
+            ],
+            "desiredUiPatterns": [
+              "Card list",
+              "Wizard step",
+              "Split layout"
+            ],
+            "uiElements": [
+              "Guided mode option",
+              "Manual mode option",
+              "Edit mode option",
+              "Default mode toggles"
+            ],
+            "userActions": [
+              "Choose the right starting mode quickly",
+              "Understand the difference between the three modes"
+            ],
+            "mockupSections": [
+              "Mode selection choices",
+              "Mode explanation area",
+              "Primary continue action"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-load-entry",
+          "name": "Load Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
+            "Module_Receiving/Views/View_Receiving_LoadEntry.xaml",
+            "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_LoadEntry.xaml"
+            ],
+            "currentUiPatterns": [
+              "Wizard step",
+              "Form"
+            ],
+            "desiredUiPatterns": [
+              "Wizard step",
+              "Form",
+              "Split layout"
+            ],
+            "uiElements": [
+              "Load input field",
+              "Scan input area",
+              "Validation message",
+              "Continue action"
+            ],
+            "userActions": [
+              "Enter or scan a load number",
+              "Understand whether the load is valid right away"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-po-entry",
+          "name": "PO Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs",
+            "Module_Receiving/Views/View_Receiving_POEntry.xaml",
+            "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_POEntry.xaml"
+            ],
+            "currentUiPatterns": [
+              "Wizard step",
+              "Form"
+            ],
+            "desiredUiPatterns": [
+              "Wizard step",
+              "Form",
+              "Split layout"
+            ],
+            "uiElements": [
+              "PO input field",
+              "Lookup action",
+              "Validation message",
+              "Continue action"
+            ],
+            "userActions": [
+              "Enter or scan a purchase order",
+              "See whether the purchase order is valid"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-manual-entry",
+          "name": "Manual Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
+            "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+            "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_ManualEntry.xaml"
+            ],
+            "currentUiPatterns": [
+              "Form"
+            ],
+            "desiredUiPatterns": [
+              "Form",
+              "Split layout",
+              "Card list"
+            ],
+            "uiElements": [
+              "Manual entry fields",
+              "Auto-Fill action",
+              "Validation help",
+              "Primary save action"
+            ],
+            "userActions": [
+              "Enter receiving data manually",
+              "Auto-fill blank fields from the row above",
+              "Save a valid manual record confidently"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-package-type",
+          "name": "Package Type Selection",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
+            "Module_Receiving/Views/View_Receiving_PackageType.xaml",
+            "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_PackageType.xaml"
+            ],
+            "currentUiPatterns": [
+              "Wizard step",
+              "Form"
+            ],
+            "desiredUiPatterns": [
+              "Card list",
+              "Wizard step",
+              "Form"
+            ],
+            "uiElements": [
+              "Package type list",
+              "Preference hint",
+              "Selection state",
+              "Continue action"
+            ],
+            "userActions": [
+              "Choose the correct package type",
+              "Understand the recommended default quickly"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-heat-lot",
+          "name": "Heat / Lot Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
+            "Module_Receiving/Views/View_Receiving_HeatLot.xaml",
+            "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_HeatLot.xaml"
+            ],
+            "currentUiPatterns": [
+              "Wizard step",
+              "Form"
+            ],
+            "desiredUiPatterns": [
+              "Wizard step",
+              "Form",
+              "Split layout"
+            ],
+            "uiElements": [
+              "Heat input field",
+              "Lot input field",
+              "Validation message",
+              "Continue action"
+            ],
+            "userActions": [
+              "Enter heat and lot information correctly",
+              "See missing or invalid values clearly"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-weight-qty",
+          "name": "Weight & Quantity Entry",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
+            "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml",
+            "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs",
+            "Module_Receiving/Models/Model_ReceivingValidationResult.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_WeightQuantity.xaml"
+            ],
+            "currentUiPatterns": [
+              "Wizard step",
+              "Form"
+            ],
+            "desiredUiPatterns": [
+              "Wizard step",
+              "Form",
+              "Split layout"
+            ],
+            "uiElements": [
+              "Weight field",
+              "Quantity field",
+              "Validation help",
+              "Continue action"
+            ],
+            "userActions": [
+              "Enter weight and quantity quickly",
+              "Understand invalid values immediately"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-review",
+          "name": "Review & Submit",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs",
+            "Module_Receiving/Views/View_Receiving_Review.xaml",
+            "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+            "Module_Receiving/Models/Model_SaveResult.cs",
+            "Module_Receiving/Services/Service_MySQL_Receiving.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_Review.xaml"
+            ],
+            "currentUiPatterns": [
+              "Review table",
+              "Toolbar + results list"
+            ],
+            "desiredUiPatterns": [
+              "Review table",
+              "Split layout",
+              "Card list"
+            ],
+            "uiElements": [
+              "Review summary",
+              "Line items",
+              "Back action",
+              "Submit action"
+            ],
+            "userActions": [
+              "Review entries before save",
+              "Submit confidently after checking the summary"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-session-state",
+          "name": "Session State",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_SessionManager.cs",
+            "Module_Receiving/Models/Model_ReceivingSession.cs",
+            "Module_Receiving/Models/Model_ReceivingLoad.cs",
+            "Module_Receiving/Models/Model_UserPreference.cs",
+            "Module_Receiving/Models/Model_WorkflowStepResult.cs"
+          ],
+          "uiHints": {
+            "workflowAreas": [
+              "Session persistence",
+              "Session restore"
+            ],
+            "userActions": [
+              "Resume unfinished receiving work after restart",
+              "Avoid re-entering already captured load data"
+            ],
+            "testScenarios": [
+              "A saved session restores the pending loads and returns the user to a reviewable workflow state"
+            ]
+          },
+          "relatedServices": []
+        }
       ]
     },
     {
-      "id": "settings-dunnage",
-      "module": "Module_Settings.Dunnage",
-      "name": "Settings — Dunnage",
-      "summary": "Dunnage workflow configuration, permissions, audit settings, UI/UX preferences, and user-level options.",
+      "id": "receiving-edit-mode",
+      "module": "Module_Receiving",
+      "name": "Edit Mode",
+      "summary": "In-place editing of current-memory, current-label, and history-backed receiving loads with search, paging, validation, and save coordination.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
+        "Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs",
+        "Module_Receiving/Contracts/IService_MySQL_Receiving.cs",
+        "Module_Receiving/Data/Dao_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs",
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+        "Module_Receiving/Services/Service_ReceivingSettings.cs",
+        "Module_Receiving/Services/Service_ReceivingValidation.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Models/Model_ReceivingLine.cs",
+        "Module_Receiving/Models/Model_EditModeColumn.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs"
+      ],
+      "relatedServices": [
+        "IService_MySQL_ReceivingLine",
+        "IService_MySQL_Receiving",
+        "IService_ReceivingLabelData",
+        "IService_ReceivingSettings",
+        "IService_ReceivingValidation",
+        "IService_ReceivingWorkflow",
+        "Service_MySQL_ReceivingLine",
+        "Service_MySQL_Receiving",
+        "Service_ReceivingLabelData",
+        "Service_ReceivingSettings",
+        "Service_ReceivingValidation",
+        "Service_ReceivingWorkflow"
+      ],
+      "promptDefaults": {
+        "audience": "Receiving Clerk",
+        "docAudience": "Receiving Clerk",
+        "mockupAudience": "Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "MySQL"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Edit existing loads",
+          "Search and page through saved receiving entries",
+          "Switch between current memory, current labels, and history",
+          "Persist edit-grid preferences"
+        ],
+        "screens": [
+          "View_Receiving_EditMode.xaml"
+        ],
+        "currentUiPatterns": [
+          "DataGrid",
+          "Toolbar + results list",
+          "Paged results list"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Compact card list",
+          "Split layout",
+          "Master-detail cards"
+        ],
+        "uiElements": [
+          "Data source selector",
+          "Date filter",
+          "Results grid",
+          "Search box",
+          "Search-by selector",
+          "Sort controls",
+          "Column chooser",
+          "Page size selector",
+          "Pagination controls",
+          "Select All action",
+          "Save Changes action",
+          "Row edit actions"
+        ],
+        "userActions": [
+          "Scan existing loads quickly",
+          "Find a load by search",
+          "Switch between memory, label queue, and history data",
+          "Review one load at a time",
+          "Edit a selected record",
+          "Save changes confidently"
+        ],
+        "accessibilityNeeds": [
+          "Make the screen easier to scan",
+          "Reduce visual clutter",
+          "Make actions clearer for non-technical users",
+          "Keep important actions visible without scrolling"
+        ],
+        "preserveRules": [
+          "Keep business logic unchanged",
+          "Keep validation rules unchanged",
+          "Keep service layer unchanged",
+          "Keep DAO/data flow unchanged",
+          "Keep save behavior unchanged",
+          "Keep search behavior unless explicitly changed",
+          "Keep paging unless explicitly changed"
+        ],
+        "acceptanceCriteria": [
+          "Users can review entries more easily than in the current grid",
+          "Data-source switching still loads the intended records",
+          "Saved column visibility and page-size preferences still apply",
+          "Search still works",
+          "Paging still works unless the request says otherwise",
+          "Existing save behavior still works",
+          "No business logic or data flow changes"
+        ],
+        "reviewFocusAreas": [
+          "Data-source switching",
+          "Grid-to-card regressions",
+          "Search and paging behavior",
+          "Saved grid preferences",
+          "Save path stability",
+          "Selection and row-action correctness"
+        ],
+        "testScenarios": [
+          "Switching between current memory, current labels, and history loads the correct record source",
+          "Search still finds matching results",
+          "Paging still moves through records correctly",
+          "Saved column visibility and page-size preferences restore correctly",
+          "Editing a record preserves the correct values",
+          "Save Changes keeps the current business flow intact"
+        ],
+        "docTopics": [
+          "Edit mode overview",
+          "Data-source switching behavior",
+          "Search and paging behavior",
+          "Column visibility and page-size preferences",
+          "Row editing expectations",
+          "Save Changes behavior"
+        ],
+        "validationHints": [
+          "Confirm each data source still loads the intended records",
+          "Confirm search still works",
+          "Confirm paging still works",
+          "Confirm saved grid preferences still apply",
+          "Confirm saving still uses the existing logic",
+          "Confirm row actions still work correctly"
+        ],
+        "mockupSections": [
+          "Data source and date filter toolbar",
+          "Search and filter toolbar",
+          "Results area",
+          "Record action area",
+          "Save footer"
+        ],
+        "mockupFields": [
+          "Data source",
+          "Date range",
+          "Search text",
+          "Search-by selector",
+          "Sort controls",
+          "Page size",
+          "Row actions",
+          "Save Changes action"
+        ],
+        "databaseObjects": [
+          "sp_ReceivingLine_Update",
+          "sp_ReceivingLine_GetPaged",
+          "receiving line tables"
+        ],
+        "loggingEvents": [
+          "Data source changes",
+          "Search requests",
+          "Paging changes",
+          "Column visibility changes",
+          "Row edit actions",
+          "Save Changes requests"
+        ]
+      },
+      "subFeatures": [
+        {
+          "id": "receiving-edit-grid",
+          "name": "Edit Grid",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+            "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+            "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
+            "Module_Receiving/Models/Model_EditModeColumn.cs",
+            "Module_Receiving/Settings/ReceivingSettingsKeys.cs"
+          ],
+          "uiHints": {
+            "screens": [
+              "View_Receiving_EditMode.xaml"
+            ],
+            "currentUiPatterns": [
+              "DataGrid"
+            ],
+            "desiredUiPatterns": [
+              "Card list",
+              "Compact card list",
+              "Master-detail cards"
+            ],
+            "uiElements": [
+              "Results grid",
+              "Row actions",
+              "Search box",
+              "Sort controls",
+              "Pagination controls"
+            ],
+            "userActions": [
+              "Scan a record quickly",
+              "Compare one record to another",
+              "Open actions for a single record"
+            ],
+            "testScenarios": [
+              "The user can still scan and review rows quickly",
+              "The chosen card or row action opens the correct record"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-edit-save",
+          "name": "Save Changes",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_ReceivingLine.cs",
+            "Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs",
+            "Module_Receiving/Models/Model_ReceivingLine.cs",
+            "Module_Receiving/Services/Service_MySQL_ReceivingLine.cs",
+            "Module_Receiving/Services/Service_MySQL_Receiving.cs",
+            "Module_Receiving/Services/Service_ReceivingValidation.cs"
+          ],
+          "uiHints": {
+            "workflowAreas": [
+              "Save edited records"
+            ],
+            "uiElements": [
+              "Save Changes action",
+              "Validation message area",
+              "Success or failure feedback"
+            ],
+            "userActions": [
+              "Save edits confidently",
+              "Understand whether the save succeeded"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-edit-data-sources",
+          "name": "Data Source Switching",
+          "relatedFiles": [
+            "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+            "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+            "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+            "Module_Receiving/Contracts/IService_MySQL_Receiving.cs",
+            "Module_Receiving/Services/Service_MySQL_Receiving.cs"
+          ],
+          "uiHints": {
+            "workflowAreas": [
+              "Switch edit mode source",
+              "Filter historical receiving data"
+            ],
+            "uiElements": [
+              "Current Memory option",
+              "Current Labels option",
+              "History option",
+              "Date range filter"
+            ],
+            "userActions": [
+              "Choose the correct source for edits",
+              "Narrow historical results by date"
+            ]
+          },
+          "relatedServices": []
+        }
+      ]
+    },
+    {
+      "id": "receiving-quality-hold",
+      "module": "Module_Receiving",
+      "name": "Quality Hold",
+      "summary": "Quality-hold assignment, warning dialogs, and CRUD operations for QH records.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/Contracts/IService_MySQL_QualityHold.cs",
+        "Module_Receiving/Data/Dao_QualityHold.cs",
+        "Module_Receiving/Services/Service_MySQL_QualityHold.cs",
+        "Module_Receiving/Services/Service_QualityHoldWarning.cs",
+        "Module_Receiving/Models/Model_QualityHold.cs"
+      ],
+      "relatedServices": [
+        "IService_MySQL_QualityHold",
+        "IService_QualityHoldWarning",
+        "Service_MySQL_QualityHold",
+        "Service_QualityHoldWarning"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "MySQL"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Quality hold assignment",
+          "Quality hold warning flow"
+        ],
+        "screens": [
+          "Quality hold warning dialog",
+          "Quality hold maintenance flow"
+        ],
+        "currentUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Dialog",
+          "Form",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Warning dialog",
+          "Hold reason field",
+          "Confirm action",
+          "CRUD actions"
+        ],
+        "userActions": [
+          "Understand why a quality hold is required",
+          "Create or update a quality hold record"
+        ],
+        "preserveRules": [
+          "Keep quality hold business rules unchanged",
+          "Keep warning behavior unchanged unless explicitly requested"
+        ],
+        "acceptanceCriteria": [
+          "Quality hold warnings still appear at the correct time",
+          "CRUD operations still work for quality hold records"
+        ],
+        "reviewFocusAreas": [
+          "Warning dialog correctness",
+          "CRUD stability",
+          "Stored procedure alignment"
+        ],
+        "testScenarios": [
+          "A quality hold warning appears when expected",
+          "A quality hold record can be created and updated correctly"
+        ],
+        "docTopics": [
+          "Quality hold warning behavior",
+          "Quality hold maintenance rules"
+        ],
+        "validationHints": [
+          "Confirm warning timing is unchanged",
+          "Confirm CRUD behavior still works correctly"
+        ],
+        "databaseObjects": [
+          "sp_QualityHold_Insert",
+          "sp_QualityHold_Update",
+          "quality hold tables"
+        ]
+      },
+      "subFeatures": [
+        {
+          "id": "receiving-qh-warning",
+          "name": "QH Warning Dialog",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_QualityHoldWarning.cs",
+            "Module_Receiving/Contracts/IService_QualityHoldWarning.cs"
+          ],
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-qh-crud",
+          "name": "QH CRUD Operations",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_QualityHold.cs",
+            "Module_Receiving/Services/Service_MySQL_QualityHold.cs"
+          ],
+          "relatedServices": []
+        }
+      ]
+    },
+    {
+      "id": "receiving-package-preferences",
+      "module": "Module_Receiving",
+      "name": "Package Preferences",
+      "summary": "Per-part package type preferences and prefix-based rules for auto-selecting package types.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+        "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
+        "Module_Receiving/Models/Model_PackageTypePreference.cs",
+        "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
+      ],
+      "relatedServices": [
+        "IService_MySQL_PackagePreferences",
+        "Service_MySQL_PackagePreferences"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "MySQL"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Package type defaults",
+          "Prefix-based package rules"
+        ],
+        "screens": [
+          "Package preference maintenance flow"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Table"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Card list",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Part number input",
+          "Prefix rule fields",
+          "Preferred package type selector",
+          "Save action"
+        ],
+        "userActions": [
+          "Set preferred package types",
+          "Understand which prefix rule will apply"
+        ],
+        "preserveRules": [
+          "Keep package selection rules stable unless explicitly changed"
+        ],
+        "acceptanceCriteria": [
+          "Preference rules still resolve the correct package type",
+          "Preference service behavior remains correct"
+        ],
+        "reviewFocusAreas": [
+          "Rule precedence",
+          "Stored procedure alignment",
+          "Prefix rule correctness"
+        ],
+        "testScenarios": [
+          "A matching prefix rule selects the expected package type",
+          "The preferences service returns the expected default"
+        ],
+        "docTopics": [
+          "Package preference rule order",
+          "Prefix-based package defaults"
+        ],
+        "validationHints": [
+          "Confirm the same package type is selected for the same prefix rules",
+          "Confirm service behavior remains unchanged"
+        ],
+        "databaseObjects": [
+          "sp_PackageTypePreference_Get",
+          "sp_PackageTypePreference_Save",
+          "package preference tables"
+        ]
+      },
+      "subFeatures": [
+        {
+          "id": "receiving-pkg-pref-rules",
+          "name": "Preference Rules",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_PackageTypePreference.cs",
+            "Module_Receiving/Models/Model_PartNumberPrefixRule.cs"
+          ],
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-pkg-pref-service",
+          "name": "Preferences Service",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_MySQL_PackagePreferences.cs",
+            "Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs",
+            "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
+          ],
+          "relatedServices": []
+        }
+      ]
+    },
+    {
+      "id": "receiving-label-export",
+      "module": "Module_Receiving",
+      "name": "Label Data Export",
+      "summary": "Writing, verifying, and cleaning up database-backed label data for receiving lines.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+        "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+        "Module_Receiving/Models/Model_LabelDataSaveResult.cs",
+        "Module_Receiving/Models/Model_LabelDataAvailabilityResult.cs",
+        "Module_Receiving/Models/Model_LabelDataClearResult.cs"
+      ],
+      "relatedServices": [
+        "IService_ReceivingLabelData",
+        "Service_ReceivingLabelData"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "MySQL"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Label data export",
+          "Label data write and cleanup"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Toolbar + results list"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Export action",
+          "File path feedback",
+          "Cleanup action",
+          "Status message"
+        ],
+        "userActions": [
+          "Write label data to the active store",
+          "Confirm the export succeeded",
+          "Clean up generated files safely"
+        ],
+        "preserveRules": [
+          "Keep existing export output stable",
+          "Keep cleanup behavior stable unless explicitly requested"
+        ],
+        "acceptanceCriteria": [
+          "Label data is still saved correctly",
+          "Cleanup still removes the correct generated data",
+          "Status reporting stays accurate"
+        ],
+        "reviewFocusAreas": [
+          "File write correctness",
+          "Cleanup safety",
+          "Result-model alignment"
+        ],
+        "testScenarios": [
+          "A valid export writes the expected label data output",
+          "Cleanup removes the intended generated file records only"
+        ],
+        "docTopics": [
+          "Label data export flow",
+          "Cleanup and label-data verification behavior"
+        ],
+        "validationHints": [
+          "Confirm label-data output still matches the expected format",
+          "Confirm cleanup still removes the intended generated items"
+        ],
+        "databaseObjects": [
+          "sp_ReceivingLabelData_Insert",
+          "sp_ReceivingLabelData_Delete",
+          "receiving label data tables"
+        ]
+      },
+      "subFeatures": [
+        {
+          "id": "receiving-label-data-write",
+          "name": "Write Label Data",
+          "relatedFiles": [
+            "Module_Receiving/Services/Service_ReceivingLabelData.cs",
+            "Module_Receiving/Contracts/IService_ReceivingLabelData.cs"
+          ],
+          "relatedServices": []
+        },
+        {
+          "id": "receiving-label-data-cleanup",
+          "name": "Delete / Cleanup",
+          "relatedFiles": [
+            "Module_Receiving/Data/Dao_ReceivingLabelData.cs"
+          ],
+          "relatedServices": []
+        }
+      ]
+    },
+    {
+      "id": "dunnage-management",
+      "module": "Module_Dunnage",
+      "name": "Dunnage Management",
+      "summary": "Dunnage workflow, admin maintenance, and MySQL-backed setup and transaction tracking for types, parts, specs, inventory, and load review.",
       "owner": "Operations Team",
       "relatedFiles": [
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Workflow.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Permissions.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Audit.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UserPreferences.cs"
+        "Module_Dunnage/Contracts/IService_DunnageWorkflow.cs",
+        "Module_Dunnage/Contracts/IService_DunnageAdminWorkflow.cs",
+        "Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs",
+        "Module_Dunnage/Services/Service_DunnageWorkflow.cs",
+        "Module_Dunnage/Services/Service_DunnageAdminWorkflow.cs",
+        "Module_Dunnage/Services/Service_MySQL_Dunnage.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminMainViewModel.cs",
+        "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml",
+        "Module_Dunnage/Models/Model_DunnageSession.cs",
+        "Module_Dunnage/Models/Model_DunnageLoad.cs",
+        "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs",
+        "Module_Dunnage/Enums/Enum_DunnageAdminSection.cs"
       ],
       "relatedServices": [
-        "IService_SettingsCoreFacade",
-        "IService_UserPreferences"
+        "IService_DunnageWorkflow",
+        "IService_DunnageAdminWorkflow",
+        "IService_MySQL_Dunnage",
+        "Service_DunnageWorkflow",
+        "Service_DunnageAdminWorkflow",
+        "Service_MySQL_Dunnage"
+      ],
+      "promptDefaults": {
+        "audience": "Receiving Clerk",
+        "docAudience": "Receiving Clerk",
+        "mockupAudience": "Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Guided dunnage workflow",
+          "Manual and edit dunnage entry",
+          "Dunnage admin navigation",
+          "Type, part, spec, and inventory maintenance"
+        ],
+        "screens": [
+          "Type Selection step",
+          "Part Selection step",
+          "Quantity Entry step",
+          "Workflow review step",
+          "Admin hub",
+          "Admin types view",
+          "Admin parts view",
+          "Admin inventory view"
+        ],
+        "currentUiPatterns": [
+          "Wizard step",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Wizard step",
+          "Card list",
+          "Form"
+        ],
+        "uiElements": [
+          "Mode selection",
+          "Paging controls",
+          "Part actions",
+          "Quantity entry field",
+          "Admin navigation cards",
+          "Validation message area"
+        ],
+        "userActions": [
+          "Pick a type",
+          "Pick a part",
+          "Enter a valid quantity",
+          "Review and save a dunnage session",
+          "Navigate between admin sections without losing changes"
+        ],
+        "preserveRules": [
+          "Keep quantity validation unchanged",
+          "Keep selection guards unchanged",
+          "Keep workflow step transitions unchanged",
+          "Keep admin dirty-state navigation guards unchanged"
+        ],
+        "acceptanceCriteria": [
+          "Users can still move through the same steps",
+          "Selection and quantity guards still work",
+          "Admin section navigation still respects unsaved-change blocking",
+          "The UI is easier to understand"
+        ],
+        "reviewFocusAreas": [
+          "Step-flow regressions",
+          "Quantity validation",
+          "Admin navigation state",
+          "MySQL service alignment",
+          "Selection guard behavior"
+        ],
+        "testScenarios": [
+          "The user can move from type selection to part selection",
+          "Invalid quantity is still blocked correctly",
+          "Admin navigation blocks when unsaved changes are present",
+          "Valid quantity still completes the workflow"
+        ],
+        "docTopics": [
+          "Dunnage workflow overview",
+          "Admin navigation behavior",
+          "Type and part selection behavior",
+          "Quantity validation rules"
+        ],
+        "validationHints": [
+          "Confirm the same guarded steps still work",
+          "Confirm admin navigation still blocks when the section is dirty",
+          "Confirm quantity validation still behaves correctly"
+        ],
+        "mockupSections": [
+          "Step header",
+          "Selection list",
+          "Quantity form",
+          "Validation and navigation footer"
+        ],
+        "mockupFields": [
+          "Type selector",
+          "Part selector",
+          "Quantity field",
+          "Validation message"
+        ],
+        "loggingEvents": [
+          "Type selection",
+          "Part selection",
+          "Admin section navigation",
+          "Quantity validation failure"
+        ]
+      },
+      "subFeatures": [
+        {
+          "id": "dunnage-type-selection",
+          "name": "Type Selection",
+          "uiHints": {
+            "screens": [
+              "Type Selection step"
+            ],
+            "uiElements": [
+              "Type options",
+              "Continue action"
+            ],
+            "userActions": [
+              "Choose the correct dunnage type quickly"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "dunnage-part-selection",
+          "name": "Part Selection",
+          "uiHints": {
+            "screens": [
+              "Part Selection step"
+            ],
+            "uiElements": [
+              "Part list",
+              "Part action controls"
+            ],
+            "userActions": [
+              "Choose the correct part"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "dunnage-quantity-entry",
+          "name": "Quantity Entry",
+          "uiHints": {
+            "screens": [
+              "Quantity Entry step"
+            ],
+            "uiElements": [
+              "Quantity field",
+              "Validation message",
+              "Save action"
+            ],
+            "userActions": [
+              "Enter a valid quantity and finish the workflow"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "dunnage-admin-navigation",
+          "name": "Admin Navigation",
+          "relatedFiles": [
+            "Module_Dunnage/Services/Service_DunnageAdminWorkflow.cs",
+            "Module_Dunnage/Contracts/IService_DunnageAdminWorkflow.cs",
+            "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminMainViewModel.cs",
+            "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml"
+          ],
+          "uiHints": {
+            "screens": [
+              "Admin hub",
+              "Admin types view",
+              "Admin parts view",
+              "Admin inventory view"
+            ],
+            "uiElements": [
+              "Navigation cards",
+              "Unsaved-changes warning",
+              "Section status message"
+            ],
+            "userActions": [
+              "Move between admin sections",
+              "Avoid losing unsaved changes"
+            ]
+          },
+          "relatedServices": []
+        },
+        {
+          "id": "dunnage-database-operations",
+          "name": "MySQL Dunnage Operations",
+          "relatedFiles": [
+            "Module_Dunnage/Services/Service_MySQL_Dunnage.cs",
+            "Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs",
+            "Module_Dunnage/Data/Dao_DunnageLoad.cs",
+            "Module_Dunnage/Data/Dao_DunnageType.cs",
+            "Module_Dunnage/Data/Dao_DunnagePart.cs"
+          ],
+          "uiHints": {
+            "workflowAreas": [
+              "Save dunnage loads",
+              "Manage dunnage setup records"
+            ],
+            "userActions": [
+              "Save dunnage loads",
+              "Maintain type and part definitions"
+            ]
+          },
+          "relatedServices": []
+        }
       ]
     },
     {
-      "id": "settings-reporting",
-      "module": "Module_Settings.Reporting",
-      "name": "Settings — Reporting",
-      "summary": "Report output paths, email UX, file I/O configuration, business rules, and permissions for the reporting module.",
+      "id": "dunnage-guided-workflow",
+      "module": "Module_Dunnage",
+      "name": "Guided Workflow",
+      "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, and final review.",
+      "owner": "Operations Team",
+      "relatedFiles": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_TypeSelectionViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_PartSelectionViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_QuantityEntryViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs",
+        "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_QuantityEntryView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_QuantityEntryView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml.cs",
+        "Module_Dunnage/Models/Model_DunnageLine.cs",
+        "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
+        "Module_Dunnage/Models/Model_DunnageType.cs",
+        "Module_Dunnage/Models/Model_DunnagePart.cs",
+        "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs"
+      ],
+      "relatedServices": [
+        "IService_DunnageWorkflow",
+        "IService_MySQL_Dunnage"
+      ],
+      "promptDefaults": {
+        "audience": "Receiving Clerk",
+        "docAudience": "Receiving Clerk",
+        "mockupAudience": "Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Mode selection",
+          "Guided dunnage entry",
+          "Manual and detail entry",
+          "Review before save"
+        ],
+        "screens": [
+          "View_Dunnage_ModeSelectionView.xaml",
+          "View_Dunnage_TypeSelectionView.xaml",
+          "View_Dunnage_PartSelectionView.xaml",
+          "View_Dunnage_QuantityEntryView.xaml",
+          "View_Dunnage_ManualEntryView.xaml",
+          "View_Dunnage_DetailsEntryView.xaml",
+          "View_Dunnage_ReviewView.xaml"
+        ],
+        "currentUiPatterns": [
+          "Wizard step",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Wizard step",
+          "Form",
+          "Card list"
+        ],
+        "uiElements": [
+          "Mode selector",
+          "Type selector",
+          "Part selector",
+          "Quantity field",
+          "Manual entry fields",
+          "Review summary"
+        ],
+        "userActions": [
+          "Choose the correct dunnage mode",
+          "Move through guided steps",
+          "Capture manual or detailed information",
+          "Review and finish the workflow"
+        ],
+        "validationHints": [
+          "Confirm the guided workflow still advances correctly between steps",
+          "Confirm manual and detail entry remain aligned with review behavior"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "dunnage-admin-maintenance",
+      "module": "Module_Dunnage",
+      "name": "Admin Maintenance",
+      "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current.",
+      "owner": "Operations Team",
+      "relatedFiles": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminInventoryViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminPartsViewModel.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminTypesViewModel.cs",
+        "Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml",
+        "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml",
+        "Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml",
+        "Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml",
+        "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml.cs",
+        "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
+        "Module_Dunnage/Data/Dao_DunnageSpec.cs",
+        "Module_Dunnage/Data/Dao_DunnageUserPreference.cs",
+        "Module_Dunnage/Data/Dao_InventoriedDunnage.cs",
+        "Module_Dunnage/Models/Model_CustomFieldDefinition.cs",
+        "Module_Dunnage/Models/Model_DunnagePart.cs",
+        "Module_Dunnage/Models/Model_DunnageSpec.cs",
+        "Module_Dunnage/Models/Model_DunnageType.cs",
+        "Module_Dunnage/Models/Model_IconDefinition.cs",
+        "Module_Dunnage/Models/Model_InventoriedDunnage.cs",
+        "Module_Dunnage/Models/Model_SpecInput.cs",
+        "Module_Dunnage/Models/Model_SpecItem.cs",
+        "Module_Dunnage/Models/SpecDefinition.cs",
+        "Module_Dunnage/SETTABLE_OBJECTS_REPORT.md"
+      ],
+      "relatedServices": [
+        "IService_DunnageAdminWorkflow",
+        "IService_MySQL_Dunnage"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Admin type maintenance",
+          "Admin part and spec maintenance",
+          "Admin inventory maintenance",
+          "Quick-add and edit dialogs"
+        ],
+        "screens": [
+          "View_Dunnage_AdminTypesView.xaml",
+          "View_Dunnage_AdminPartsView.xaml",
+          "View_Dunnage_AdminInventoryView.xaml",
+          "View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml",
+          "View_Dunnage_EditPartDialog.xaml",
+          "View_Dunnage_QuickAddPartDialog.xaml",
+          "View_Dunnage_QuickAddTypeDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Table",
+          "Dialog"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Split layout",
+          "Dialog"
+        ],
+        "uiElements": [
+          "Admin tables",
+          "Type and part edit forms",
+          "Inventory maintenance controls",
+          "Icon picker",
+          "Quick-add dialogs"
+        ],
+        "userActions": [
+          "Maintain dunnage master data",
+          "Edit inventory and part definitions",
+          "Add new types and parts quickly"
+        ],
+        "validationHints": [
+          "Confirm admin maintenance flows still edit the intended records",
+          "Confirm quick-add dialogs still feed the correct admin screens"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "dunnage-edit-and-dialogs",
+      "module": "Module_Dunnage",
+      "name": "Edit Mode And Dialogs",
+      "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, and supporting DAO flows used outside the main guided path.",
+      "owner": "Operations Team",
+      "relatedFiles": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
+        "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml",
+        "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml",
+        "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml.cs",
+        "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
+        "Module_Dunnage/Data/Dao_DunnageNonPOEntry.cs",
+        "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
+        "Module_Dunnage/Enums/Enum_DunnageAdminSection.cs"
+      ],
+      "relatedServices": [
+        "IService_DunnageAdminWorkflow",
+        "IService_MySQL_Dunnage"
+      ],
+      "promptDefaults": {
+        "audience": "Receiving Clerk",
+        "docAudience": "Receiving Clerk",
+        "mockupAudience": "Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Edit existing dunnage records",
+          "Non-PO entry",
+          "Add-row and inventory dialogs",
+          "Admin shell support"
+        ],
+        "screens": [
+          "View_Dunnage_EditModeView.xaml",
+          "View_Dunnage_Dialog_NonPOEntry.xaml",
+          "View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
+          "View_Dunnage_Dialog_AddToInventoriedListDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "DataGrid",
+          "Dialog",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Split layout",
+          "Dialog",
+          "Form"
+        ],
+        "uiElements": [
+          "Edit-mode results area",
+          "Non-PO entry form",
+          "Add multiple rows dialog",
+          "Add to inventoried list dialog"
+        ],
+        "userActions": [
+          "Edit saved dunnage records",
+          "Capture non-PO dunnage entries",
+          "Add rows or inventory items through dialogs"
+        ],
+        "validationHints": [
+          "Confirm edit-mode and non-PO dialog flows still target the correct records",
+          "Confirm add-row and inventory dialogs still support the admin workflow correctly"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "reporting-availability",
+      "module": "Module_Reporting",
+      "name": "Availability Check",
+      "summary": "Date-range availability checks that count reportable receiving, dunnage, and Volvo data before generation begins.",
       "owner": "Reporting Team",
       "relatedFiles": [
-        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_BusinessRules.cs",
-        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_FileIO.cs",
-        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_EmailUx.cs",
-        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_Permissions.cs"
-      ],
-      "relatedServices": ["IService_SettingsCoreFacade", "IService_Reporting"]
-    },
-    {
-      "id": "settings-volvo",
-      "module": "Module_Settings.Volvo",
-      "name": "Settings — Volvo",
-      "summary": "Volvo integration connection strings, file paths, database settings, UI configuration, and externalization backlog.",
-      "owner": "Integration Team",
-      "relatedFiles": [
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ConnectionStrings.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_DatabaseSettings.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_FilePaths.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_UiConfiguration.cs"
-      ],
-      "relatedServices": ["IService_SettingsCoreFacade", "IService_Volvo"]
-    },
-    {
-      "id": "settings-developer-tools",
-      "module": "Module_Settings.DeveloperTools",
-      "name": "Settings — Developer Tools",
-      "summary": "Developer-facing diagnostic settings, database test connectivity, feature toggles (A–D), and settings overview panel.",
-      "owner": "Platform Team",
-      "relatedFiles": [
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_SettingsOverview.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_SettingsDeveloperTools_DatabaseTest.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureA.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureB.cs"
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_Main.xaml",
+        "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+        "Module_Reporting/Data/Dao_Reporting.cs"
       ],
       "relatedServices": [
-        "IService_SettingsCoreFacade",
-        "IService_LoggingUtility"
-      ]
-    },
-    {
-      "id": "shiprec-tools",
-      "module": "Module_ShipRec_Tools",
-      "name": "ShipRec Tools",
-      "summary": "Shipment-receiving utility tools including outside service history lookup and multi-tool selection workflow.",
-      "owner": "Receiving Team",
-      "relatedFiles": [
-        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs",
-        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_ToolSelection.cs",
-        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_OutsideServiceHistory.cs",
-        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_Base.cs"
+        "IService_Reporting",
+        "Service_Reporting"
       ],
-      "relatedServices": ["IService_LoggingUtility", "IService_ErrorHandler"]
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Check report availability"
+        ],
+        "screens": [
+          "View_Reporting_Main.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Start date",
+          "End date",
+          "Check Availability button",
+          "Module availability indicators"
+        ],
+        "userActions": [
+          "Check which modules have reportable data before generating output"
+        ],
+        "validationHints": [
+          "Confirm availability counts and enabled states still match the chosen date range"
+        ]
+      },
+      "subFeatures": []
     },
     {
-      "id": "shared-infrastructure",
-      "module": "Module_Shared + Infrastructure",
-      "name": "Shared Infrastructure",
-      "summary": "Shared ViewModels (base, login, main window, splash screen, help dialog), cross-cutting DI registration, and app-level configuration.",
+      "id": "reporting-generation",
+      "module": "Module_Reporting",
+      "name": "Report Generation",
+      "summary": "Generation of reporting sections and summary tables for selected modules, including the reporting dashboard host and supporting output inventory documentation.",
+      "owner": "Reporting Team",
+      "relatedFiles": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Data/Dao_Reporting.cs",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_Main.xaml",
+        "Module_Reporting/Views/View_Reporting_Main.xaml.cs",
+        "Module_Reporting/README.md",
+        "Module_Reporting/SETTABLE_OBJECTS_REPORT.md"
+      ],
+      "relatedServices": [
+        "IService_Reporting",
+        "Service_Reporting"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Generate reports"
+        ],
+        "screens": [
+          "View_Reporting_Main.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Toolbar + results list"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Split layout",
+          "Form"
+        ],
+        "uiElements": [
+          "Module selection area",
+          "Generate Reports button",
+          "Status area"
+        ],
+        "userActions": [
+          "Choose report modules",
+          "Generate reports"
+        ],
+        "validationHints": [
+          "Confirm reports still generate correctly for the selected modules"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "reporting-preview-copy",
+      "module": "Module_Reporting",
+      "name": "Preview And Copy",
+      "summary": "Preview-card shaping, column selection, and clipboard-ready email formatting for generated report output.",
+      "owner": "Reporting Team",
+      "relatedFiles": [
+        "Module_Reporting/Contracts/IService_Reporting.cs",
+        "Module_Reporting/Contracts/IService_ReportingClipboard.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
+        "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
+        "Module_Reporting/Services/Service_Reporting.cs",
+        "Module_Reporting/Services/Service_ReportingClipboard.cs",
+        "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml",
+        "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+      ],
+      "relatedServices": [
+        "IService_Reporting",
+        "IService_ReportingClipboard",
+        "Service_Reporting",
+        "Service_ReportingClipboard"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Review generated output",
+          "Format and copy email-ready output"
+        ],
+        "screens": [
+          "View_Reporting_PreviewDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Toolbar + results list"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Split layout",
+          "Form"
+        ],
+        "uiElements": [
+          "Preview cards",
+          "Preview column selector",
+          "Copy Email Format action"
+        ],
+        "userActions": [
+          "Review the generated output",
+          "Choose preview columns",
+          "Copy the generated output"
+        ],
+        "validationHints": [
+          "Confirm selected preview columns control both the on-screen table and copied output",
+          "Confirm copy-email behavior still works"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "volvo-shipment-entry",
+      "module": "Module_Volvo",
+      "name": "Shipment Entry",
+      "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, shipment-line commands, validators, and host dialogs.",
+      "owner": "Integration Team",
+      "relatedFiles": [
+        "Module_Volvo/Contracts/IService_Volvo.cs",
+        "Module_Volvo/Interfaces/IDao_VolvoShipment.cs",
+        "Module_Volvo/Interfaces/IDao_VolvoShipmentLine.cs",
+        "Module_Volvo/Services/Service_Volvo.cs",
+        "Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs",
+        "Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml",
+        "Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml.cs",
+        "Module_Volvo/Views/VolvoShipmentEditDialog.xaml",
+        "Module_Volvo/Views/VolvoShipmentEditDialog.xaml.cs",
+        "Module_Volvo/Data/Dao_VolvoShipment.cs",
+        "Module_Volvo/Data/Dao_VolvoShipmentLine.cs",
+        "Module_Volvo/Models/Model_VolvoShipment.cs",
+        "Module_Volvo/Models/Model_VolvoShipmentLine.cs",
+        "Module_Volvo/Models/VolvoShipmentStatus.cs",
+        "Module_Volvo/Requests/ShipmentLineDto.cs",
+        "Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs",
+        "Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs",
+        "Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs",
+        "Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandler.cs",
+        "Module_Volvo/Requests/Commands/AddPartToShipmentCommand.cs",
+        "Module_Volvo/Requests/Commands/RemovePartFromShipmentCommand.cs",
+        "Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs",
+        "Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs",
+        "Module_Volvo/Requests/Commands/DeletePendingShipmentCommand.cs",
+        "Module_Volvo/Requests/Commands/UpdateShipmentCommand.cs",
+        "Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/DeletePendingShipmentCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandler.cs",
+        "Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs",
+        "Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs",
+        "Module_Volvo/Validators/CompleteShipmentCommandValidator.cs",
+        "Module_Volvo/Validators/UpdateShipmentCommandValidator.cs"
+      ],
+      "relatedServices": [
+        "IService_Volvo",
+        "Service_Volvo"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shipment entry",
+          "Pending shipment restore",
+          "Shipment-line editing",
+          "Save and complete shipment flow"
+        ],
+        "screens": [
+          "View_Volvo_ShipmentEntry.xaml",
+          "VolvoShipmentEditDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Table",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Split layout",
+          "Form",
+          "Card list"
+        ],
+        "uiElements": [
+          "Shipment date",
+          "Shipment number",
+          "Parts grid",
+          "Save action",
+          "Complete action"
+        ],
+        "userActions": [
+          "Create or continue a Volvo shipment",
+          "Add or remove shipment parts",
+          "Save progress",
+          "Complete the shipment"
+        ],
+        "validationHints": [
+          "Confirm pending shipment restore still loads the correct shipment state",
+          "Confirm shipment-line commands and completion still follow the intended guarded behavior"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "volvo-shipment-history",
+      "module": "Module_Volvo",
+      "name": "Shipment History",
+      "summary": "Shipment history lookup, recent shipment browsing, detail retrieval, and label history access for previously recorded Volvo shipments.",
+      "owner": "Integration Team",
+      "relatedFiles": [
+        "Module_Volvo/Views/View_Volvo_History.xaml",
+        "Module_Volvo/Views/View_Volvo_History.xaml.cs",
+        "Module_Volvo/ViewModels/ViewModel_Volvo_History.cs",
+        "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
+        "Module_Volvo/Data/IDao_VolvoLabelHistory.cs",
+        "Module_Volvo/Requests/Queries/GetRecentShipmentsQuery.cs",
+        "Module_Volvo/Requests/Queries/GetShipmentHistoryQuery.cs",
+        "Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs",
+        "Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandler.cs",
+        "Module_Volvo/Models/Model_VolvoShipment.cs",
+        "Module_Volvo/Models/Model_VolvoShipmentLine.cs"
+      ],
+      "relatedServices": [
+        "IService_Volvo",
+        "Service_Volvo"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shipment history",
+          "Recent shipment lookup",
+          "Shipment detail review"
+        ],
+        "screens": [
+          "View_Volvo_History.xaml"
+        ],
+        "currentUiPatterns": [
+          "Table"
+        ],
+        "desiredUiPatterns": [
+          "Split layout",
+          "Card list",
+          "Table"
+        ],
+        "uiElements": [
+          "Shipment selection area",
+          "History results",
+          "View detail action"
+        ],
+        "userActions": [
+          "Find and review a shipment history record",
+          "Open shipment details from history"
+        ],
+        "validationHints": [
+          "Confirm shipment history and recent shipment queries still return the expected records"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "volvo-part-settings",
+      "module": "Module_Volvo",
+      "name": "Part Settings",
+      "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part add/edit operations used by the settings screens.",
+      "owner": "Integration Team",
+      "relatedFiles": [
+        "Module_Volvo/Contracts/IService_VolvoMasterData.cs",
+        "Module_Volvo/Interfaces/IDao_VolvoPart.cs",
+        "Module_Volvo/Services/Service_VolvoMasterData.cs",
+        "Module_Volvo/ViewModels/ViewModel_Volvo_Settings.cs",
+        "Module_Volvo/Views/View_Volvo_Settings.xaml",
+        "Module_Volvo/Views/View_Volvo_Settings.xaml.cs",
+        "Module_Volvo/Views/VolvoPartAddEditDialog.xaml",
+        "Module_Volvo/Views/VolvoPartAddEditDialog.xaml.cs",
+        "Module_Volvo/Data/Dao_VolvoPart.cs",
+        "Module_Volvo/Data/Dao_VolvoPartComponent.cs",
+        "Module_Volvo/Data/Dao_VolvoSettings.cs",
+        "Module_Volvo/Models/Model_VolvoPart.cs",
+        "Module_Volvo/Models/Model_VolvoPartComponent.cs",
+        "Module_Volvo/Models/Model_VolvoSetting.cs",
+        "Module_Volvo/Requests/Queries/GetAllVolvoPartsQuery.cs",
+        "Module_Volvo/Requests/Queries/GetPartComponentsQuery.cs",
+        "Module_Volvo/Requests/Queries/GetVolvoSettingQuery.cs",
+        "Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs",
+        "Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GetVolvoSettingQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs",
+        "Module_Volvo/Requests/Commands/AddVolvoPartCommand.cs",
+        "Module_Volvo/Requests/Commands/UpdateVolvoPartCommand.cs",
+        "Module_Volvo/Requests/Commands/DeactivateVolvoPartCommand.cs",
+        "Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs",
+        "Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandler.cs",
+        "Module_Volvo/Validators/AddVolvoPartCommandValidator.cs",
+        "Module_Volvo/Validators/UpdateVolvoPartCommandValidator.cs",
+        "Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs",
+        "Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs"
+      ],
+      "relatedServices": [
+        "IService_VolvoMasterData",
+        "Service_VolvoMasterData"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Part settings",
+          "Volvo master data",
+          "Part add and edit dialogs",
+          "CSV part import"
+        ],
+        "screens": [
+          "View_Volvo_Settings.xaml",
+          "VolvoPartAddEditDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Table"
+        ],
+        "desiredUiPatterns": [
+          "Split layout",
+          "Form",
+          "Card list"
+        ],
+        "uiElements": [
+          "Part settings controls",
+          "Part edit action",
+          "CSV import action"
+        ],
+        "userActions": [
+          "Update or review a Volvo part setting",
+          "Add or edit a Volvo part",
+          "Import parts from CSV"
+        ],
+        "validationHints": [
+          "Confirm part search, add, update, deactivate, and import flows still affect the intended part records"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "volvo-label-and-email",
+      "module": "Module_Volvo",
+      "name": "Label And Email Output",
+      "summary": "Volvo label CSV generation, email formatting, recipient modeling, and label-data cleanup operations derived from shipment content.",
+      "owner": "Integration Team",
+      "relatedFiles": [
+        "Module_Volvo/Services/Service_Volvo.cs",
+        "Module_Volvo/Helpers/Helper_VolvoShipmentCalculations.cs",
+        "Module_Volvo/Models/Model_VolvoEmailData.cs",
+        "Module_Volvo/Models/Model_EmailRecipient.cs",
+        "Module_Volvo/Requests/Queries/FormatEmailDataQuery.cs",
+        "Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs",
+        "Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandler.cs",
+        "Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs",
+        "Module_Volvo/Requests/Commands/ClearLabelDataCommand.cs",
+        "Module_Volvo/Handlers/Commands/ClearLabelDataCommandHandler.cs"
+      ],
+      "relatedServices": [
+        "IService_Volvo",
+        "Service_Volvo"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Generate label output",
+          "Format email data",
+          "Clear generated label data"
+        ],
+        "currentUiPatterns": [
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Label generation action",
+          "Email output action",
+          "Clear label data action"
+        ],
+        "userActions": [
+          "Generate shipment label output",
+          "Prepare email-ready output",
+          "Clear generated label data when needed"
+        ],
+        "validationHints": [
+          "Confirm label and email output still reflect the selected shipment data accurately"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "volvo-authorization",
+      "module": "Module_Volvo",
+      "name": "Authorization",
+      "summary": "Volvo-specific authorization checks that gate shipment and master-data operations based on user permissions.",
+      "owner": "Integration Team",
+      "relatedFiles": [
+        "Module_Volvo/Services/IService_VolvoAuthorization.cs",
+        "Module_Volvo/Services/Service_VolvoAuthorization.cs"
+      ],
+      "relatedServices": [
+        "IService_VolvoAuthorization",
+        "Service_VolvoAuthorization"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Volvo permission checks"
+        ],
+        "userActions": [
+          "Perform shipment actions only when authorized"
+        ],
+        "validationHints": [
+          "Confirm authorization checks still gate the intended Volvo actions"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-auth-session",
+      "module": "Module_Core",
+      "name": "Authentication And Session",
+      "summary": "User authentication, session lifecycle, timer-backed session handling, protected auth-user secret handling, and user data access used across the application shell.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Contracts/Services/IService_Authentication.cs",
+        "Module_Core/Contracts/Services/IService_AuthCredentialProtection.cs",
+        "Module_Core/Contracts/Services/IService_SessionManager.cs",
+        "Module_Core/Contracts/Services/IService_UserSessionManager.cs",
+        "Module_Core/Contracts/Services/ITimer.cs",
+        "Module_Core/Data/Authentication/Dao_User.cs",
+        "Module_Core/Services/Authentication/Service_Authentication.cs",
+        "Module_Core/Services/Authentication/Service_AuthCredentialProtection.cs",
+        "Module_Core/Services/Authentication/Service_UserSessionManager.cs",
+        "Module_Core/Services/Service_DispatcherTimerWrapper.cs",
+        "Module_Core/Models/Systems/Model_AuthenticationResult.cs",
+        "Module_Core/Models/Systems/Model_CreateUserResult.cs",
+        "Module_Core/Models/Systems/Model_SessionTimedOutEventArgs.cs",
+        "Module_Core/Models/Systems/Model_User.cs",
+        "Module_Core/Models/Systems/Model_UserSession.cs"
+      ],
+      "relatedServices": [
+        "IService_Authentication",
+        "IService_AuthCredentialProtection",
+        "IService_SessionManager",
+        "IService_UserSessionManager",
+        "ITimer",
+        "Service_DispatcherTimerWrapper",
+        "Service_Authentication",
+        "Service_AuthCredentialProtection",
+        "Service_UserSessionManager"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "User authentication",
+          "Session lifetime management",
+          "Session timeout handling"
+        ],
+        "userActions": [
+          "Sign in successfully",
+          "Stay in an active session",
+          "Recover correctly when a session expires"
+        ],
+        "validationHints": [
+          "Confirm authentication still returns the intended user/session result",
+          "Confirm session timeout and user-session handling remain aligned",
+          "Confirm client workstations require the shared auth environment variable before protected auth data is read or written",
+          "Confirm PIN authentication still succeeds with hashed PIN storage"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-database-inforvisual",
+      "module": "Module_Core",
+      "name": "Database And Infor Visual",
+      "summary": "Database helpers, Infor Visual connection and query infrastructure, credential validation, defaults, and shared Infor Visual models.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Contracts/Services/IService_InforVisual.cs",
+        "Module_Core/Contracts/Services/IService_VisualCredentialValidator.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualPart.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualPO.cs",
+        "Module_Core/Defaults/InforVisualDefaults.cs",
+        "Module_Core/Helpers/Database/Helper_Database_StoredProcedure.cs",
+        "Module_Core/Helpers/Database/Helper_Database_Variables.cs",
+        "Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs",
+        "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+        "Module_Core/Services/Database/Service_VisualCredentialValidator.cs",
+        "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualConnection.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPart.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPartInfo.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPO.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualPOLine.cs",
+        "Module_Core/Models/InforVisual/Model_OutsideServiceHistory.cs"
+      ],
+      "relatedServices": [
+        "IService_InforVisual",
+        "IService_VisualCredentialValidator",
+        "Service_InforVisualConnect",
+        "Service_VisualCredentialValidator"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "SQL Server"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Infor Visual connectivity",
+          "Credential validation",
+          "Database helper infrastructure"
+        ],
+        "preserveRules": [
+          "Keep SQL Server access read-only where required",
+          "Keep stored-procedure helper behavior unchanged unless explicitly requested"
+        ],
+        "validationHints": [
+          "Confirm Infor Visual connection and credential checks still target the intended data source",
+          "Confirm database helper behavior remains aligned with existing DAO usage"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-error-help-logging",
+      "module": "Module_Core",
+      "name": "Error Help And Logging",
+      "summary": "Centralized error handling, help content generation, notifications, logging, and validation/audit pipeline behaviors used throughout the application.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Behaviors/AuditBehavior.cs",
+        "Module_Core/Behaviors/LoggingBehavior.cs",
+        "Module_Core/Behaviors/ValidationBehavior.cs",
+        "Module_Core/Contracts/Services/IService_ErrorHandler.cs",
+        "Module_Core/Contracts/Services/IService_Help.cs",
+        "Module_Core/Contracts/Services/IService_LoggingUtility.cs",
+        "Module_Core/Contracts/Services/IService_Notification.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs",
+        "Module_Core/Services/Database/Service_ErrorHandler.cs",
+        "Module_Core/Services/Database/Service_LoggingUtility.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Services/Service_Notification.cs",
+        "Module_Core/Models/Core/Model_HelpContent.cs",
+        "Module_Core/Models/Enums/Enum_ErrorSeverity.cs",
+        "Module_Core/Models/Enums/Enum_HelpSeverity.cs",
+        "Module_Core/Models/Enums/Enum_HelpType.cs",
+        "Module_Core/Models/Enums/Enum_InfoBarSeverity.cs",
+        "Module_Core/Models/Enums/Enum_ValidationSeverity.cs"
+      ],
+      "relatedServices": [
+        "IService_ErrorHandler",
+        "IService_Help",
+        "IService_LoggingUtility",
+        "IService_Notification",
+        "Service_ErrorHandler",
+        "Service_LoggingUtility",
+        "Service_Help",
+        "Service_Notification"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Application error handling",
+          "Contextual help",
+          "Logging and validation pipeline"
+        ],
+        "userActions": [
+          "See useful help when needed",
+          "Receive the correct error and notification messages"
+        ],
+        "validationHints": [
+          "Confirm error, help, notification, and logging behavior remain coordinated across the application"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-navigation-ui",
+      "module": "Module_Core",
+      "name": "Navigation And UI Services",
+      "summary": "Core navigation, dispatcher, focus, pagination, windowing, UI automation, fuzzy-search dialog, and view-model registry services that support interactive screens.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Contracts/Services/IService_Dispatcher.cs",
+        "Module_Core/Contracts/Services/IService_Focus.cs",
+        "Module_Core/Contracts/Services/IService_Pagination.cs",
+        "Module_Core/Contracts/Services/IService_UIAutomation.cs",
+        "Module_Core/Contracts/Services/IService_ViewModelRegistry.cs",
+        "Module_Core/Contracts/Services/IWindowService.cs",
+        "Module_Core/Contracts/Services/Navigation/IService_Navigation.cs",
+        "Module_Core/Contracts/ViewModels/IResettableViewModel.cs",
+        "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml",
+        "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
+        "Module_Core/Helpers/UI/Helper_WindowExtensions.cs",
+        "Module_Core/Helpers/UI/WindowHelper_WindowSizeAndStartupLocation.cs",
+        "Module_Core/Services/Navigation/Service_Navigation.cs",
+        "Module_Core/Services/Service_Dispatcher.cs",
+        "Module_Core/Services/Service_Focus.cs",
+        "Module_Core/Services/Service_Pagination.cs",
+        "Module_Core/Services/Service_Window.cs",
+        "Module_Core/Services/UI/Service_ViewModelRegistry.cs",
+        "Module_Core/Services/VisualAutomation/Service_UIAutomation.cs",
+        "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs"
+      ],
+      "relatedServices": [
+        "IService_Dispatcher",
+        "IService_Focus",
+        "IService_Pagination",
+        "IService_UIAutomation",
+        "IService_ViewModelRegistry",
+        "IWindowService",
+        "IService_Navigation",
+        "Service_Dispatcher",
+        "Service_Focus",
+        "Service_Pagination",
+        "Service_Window",
+        "Service_ViewModelRegistry",
+        "Service_UIAutomation",
+        "Service_Navigation"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Navigation",
+          "Window management",
+          "Dialog interaction",
+          "Focus and pagination support"
+        ],
+        "screens": [
+          "Dialog_FuzzySearchPicker.xaml"
+        ],
+        "currentUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Dialog",
+          "Split layout",
+          "Form"
+        ],
+        "validationHints": [
+          "Confirm navigation, windowing, and dialog support behavior remain consistent for dependent modules"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-converters-theme",
+      "module": "Module_Core",
+      "name": "Converters And Theme Assets",
+      "summary": "Shared value converters, material icon resources, and UI-theme support assets used across XAML screens.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Converters/Converter_BooleanToVisibility.cs",
+        "Module_Core/Converters/Converter_BoolToString.cs",
+        "Module_Core/Converters/Converter_DateTimeToString.cs",
+        "Module_Core/Converters/Converter_DecimalToDouble.cs",
+        "Module_Core/Converters/Converter_DecimalToInt.cs",
+        "Module_Core/Converters/Converter_DecimalToString.cs",
+        "Module_Core/Converters/Converter_DoubleToDecimal.cs",
+        "Module_Core/Converters/Converter_EmptyStringToVisibility.cs",
+        "Module_Core/Converters/Converter_EnumToVisibility.cs",
+        "Module_Core/Converters/Converter_IconCodeToGlyph.cs",
+        "Module_Core/Converters/Converter_InfoBarSeverity.cs",
+        "Module_Core/Converters/Converter_IntToString.cs",
+        "Module_Core/Converters/Converter_IntToVisibility.cs",
+        "Module_Core/Converters/Converter_InverseBool.cs",
+        "Module_Core/Converters/Converter_LoadNumberToOneBased.cs",
+        "Module_Core/Converters/Converter_NullableDoubleToString.cs",
+        "Module_Core/Converters/Converter_NullableIntToString.cs",
+        "Module_Core/Converters/Converter_PartIDToQualityHoldBrush.cs",
+        "Module_Core/Converters/Converter_PartIDToQualityHoldTextColor.cs",
+        "Module_Core/Converters/Converter_StringFormat.cs",
+        "Module_Core/Converters/NullableDoubleToDoubleConverter.cs",
+        "Module_Core/Helpers/UI/Helper_MaterialIcons.cs",
+        "Module_Core/Themes/MaterialIcons.xaml"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shared XAML formatting",
+          "Visibility and type conversion",
+          "Theme icon rendering"
+        ],
+        "validationHints": [
+          "Confirm shared converters and theme assets still support dependent XAML screens correctly"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-startup-system-config",
+      "module": "Module_Core",
+      "name": "Startup And System Config",
+      "summary": "Startup lifecycle orchestration, application and workstation defaults, and system-level configuration models shared across the app.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Contracts/Services/IService_OnStartup_AppLifecycle.cs",
+        "Module_Core/Defaults/WorkstationDefaults.cs",
+        "Module_Core/Services/Startup/Service_OnStartup_AppLifecycle.cs",
+        "Module_Core/Models/Systems/Model_AppSettings.cs",
+        "Module_Core/Models/Systems/Model_WorkstationConfig.cs",
+        "Module_Core/Models/Enums/Enum_DataSourceType.cs",
+        "Module_Core/Models/Enums/Enum_LabelType.cs",
+        "Module_Core/Models/Enums/Enum_PackageType.cs",
+        "Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs"
+      ],
+      "relatedServices": [
+        "IService_OnStartup_AppLifecycle",
+        "Service_OnStartup_AppLifecycle"
+      ],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Application startup",
+          "System configuration",
+          "Workstation defaults"
+        ],
+        "validationHints": [
+          "Confirm startup lifecycle and workstation defaults still initialize the app as expected"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "core-cqrs-reporting-models",
+      "module": "Module_Core",
+      "name": "CQRS And Shared Models",
+      "summary": "Shared DAO result models, validation/result infrastructure, and reporting document models used by higher-level features and CQRS-style processing.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Core/Models/Core/Model_Dao_Result.cs",
+        "Module_Core/Models/Core/Model_Dao_Result_Factory.cs",
+        "Module_Core/Models/Core/Model_Dao_Result_Generic.cs",
+        "Module_Core/Models/Reporting/Model_FormattedReportDocument.cs",
+        "Module_Core/Models/Reporting/Model_ReportRow.cs",
+        "Module_Core/Models/Reporting/Model_ReportSection.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryColumn.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryRow.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryTable.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryTableCell.cs",
+        "Module_Core/Models/Reporting/Model_ReportSummaryTableRow.cs",
+        "Module_Core/Models/Systems/Model_ValidationResult.cs",
+        "Module_Core/README_CQRS_INFRASTRUCTURE.md",
+        "Module_Core/SETTABLE_OBJECTS_REPORT.md"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shared result modeling",
+          "CQRS support infrastructure",
+          "Reporting document shaping"
+        ],
+        "validationHints": [
+          "Confirm shared result and reporting models remain compatible with dependent modules"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shared-shell-foundation",
+      "module": "Module_Shared",
+      "name": "Shared Shell Foundation",
+      "summary": "Base shared viewmodel infrastructure and shared shell windows used to support the main window and reusable icon selection UI.",
       "owner": "Platform Team",
       "relatedFiles": [
         "Module_Shared/ViewModels/ViewModel_Shared_Base.cs",
         "Module_Shared/ViewModels/ViewModel_Shared_MainWindow.cs",
+        "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml",
+        "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shared shell support",
+          "Reusable icon selection"
+        ],
+        "screens": [
+          "View_Shared_IconSelectorWindow.xaml"
+        ],
+        "currentUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "validationHints": [
+          "Confirm shared shell viewmodels and reusable icon selection behavior remain aligned"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shared-help-dialog",
+      "module": "Module_Shared",
+      "name": "Help Dialog",
+      "summary": "Shared help dialog presentation used to surface contextual help content to the user.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Shared/ViewModels/ViewModel_Shared_HelpDialog.cs",
+        "Module_Shared/Views/View_Shared_HelpDialog.xaml",
+        "Module_Shared/Views/View_Shared_HelpDialog.xaml.cs"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shared contextual help"
+        ],
+        "screens": [
+          "View_Shared_HelpDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Dialog"
+        ],
+        "desiredUiPatterns": [
+          "Dialog"
+        ],
+        "userActions": [
+          "Read contextual help content when guidance is needed"
+        ],
+        "validationHints": [
+          "Confirm help dialog presentation remains intact"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shared-new-user-setup",
+      "module": "Module_Shared",
+      "name": "New User Setup",
+      "summary": "Shared first-run setup dialog used to guide a new user through initial account setup, including separate first/last name capture and optional ERP credential entry.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Shared/ViewModels/ViewModel_Shared_NewUserSetup.cs",
+        "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml",
+        "Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml.cs"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "First-run user setup"
+        ],
+        "screens": [
+          "View_Shared_NewUserSetupDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "userActions": [
+          "Complete first-run setup steps successfully"
+        ],
+        "validationHints": [
+          "Confirm new-user setup still guides first-run configuration correctly",
+          "Confirm first and last name inputs compose the saved full name in the expected format",
+          "Confirm optional ERP credentials can still be entered during first-run account setup"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shared-terminal-login",
+      "module": "Module_Shared",
+      "name": "Shared Terminal Login",
+      "summary": "Shared terminal login dialog used for shared-workstation authentication and access continuation flows.",
+      "owner": "Platform Team",
+      "relatedFiles": [
         "Module_Shared/ViewModels/ViewModel_Shared_SharedTerminalLogin.cs",
-        "Infrastructure/DependencyInjection",
-        "Infrastructure/Configuration"
+        "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml",
+        "Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml.cs"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shared terminal access"
+        ],
+        "screens": [
+          "View_Shared_SharedTerminalLoginDialog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Dialog",
+          "Form"
+        ],
+        "userActions": [
+          "Authenticate at a shared terminal and continue safely"
+        ],
+        "validationHints": [
+          "Confirm shared terminal login continues to present and capture credentials correctly"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shared-splash-screen",
+      "module": "Module_Shared",
+      "name": "Splash Screen",
+      "summary": "Shared splash screen window and viewmodel shown during early application startup and module loading.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Shared/ViewModels/ViewModel_Shared_SplashScreen.cs",
+        "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml",
+        "Module_Shared/Views/View_Shared_SplashScreenWindow.xaml.cs"
+      ],
+      "relatedServices": [],
+      "promptDefaults": {
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Application startup splash"
+        ],
+        "screens": [
+          "View_Shared_SplashScreenWindow.xaml"
+        ],
+        "currentUiPatterns": [
+          "Window"
+        ],
+        "desiredUiPatterns": [
+          "Window"
+        ],
+        "userActions": [
+          "See startup progress while the application initializes"
+        ],
+        "validationHints": [
+          "Confirm splash-screen display and startup messaging remain stable"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "settings-core-shell-navigation",
+      "module": "Module_Settings.Core",
+      "name": "Settings Shell And Navigation",
+      "summary": "Core settings window shell, navigation hub, paged button layout, placeholder control, and window-host infrastructure for the settings experience.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
+        "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
+        "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
+        "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs",
+        "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
+        "Module_Settings.Core/Services/Service_SettingsPagination.cs",
+        "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
+        "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
+        "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs"
       ],
       "relatedServices": [
-        "IService_ErrorHandler",
-        "IService_LoggingUtility",
-        "IService_Dispatcher"
-      ]
+        "IService_SettingsPagination",
+        "IService_SettingsWindowHost",
+        "Service_SettingsPagination",
+        "Service_SettingsWindowHost"
+      ],
+      "promptDefaults": {
+        "audience": "IT Administrator",
+        "docAudience": "IT Administrator",
+        "mockupAudience": "IT Administrator",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Settings window shell",
+          "Navigation hub",
+          "Paged settings navigation",
+          "Placeholder and empty-state UI"
+        ],
+        "screens": [
+          "View_Settings_CoreWindow.xaml",
+          "View_Settings_CoreNavigationHub.xaml",
+          "View_SettingsPlaceholderControl.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Card list",
+          "Tabs"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Split layout",
+          "Tabs"
+        ],
+        "uiElements": [
+          "Settings window title",
+          "Navigation step buttons",
+          "Back and next navigation",
+          "Cancel, save, and reset actions",
+          "Placeholder content"
+        ],
+        "userActions": [
+          "Open the settings window",
+          "Move between settings areas",
+          "Understand which navigation actions are available",
+          "See placeholders for unfinished settings pages"
+        ],
+        "preserveRules": [
+          "Keep navigation paging behavior unchanged",
+          "Keep window hosting behavior unchanged"
+        ],
+        "validationHints": [
+          "Confirm navigation buttons still page correctly",
+          "Confirm the shell still hosts the selected settings page correctly"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "settings-core-system-database-logging",
+      "module": "Module_Settings.Core",
+      "name": "System Database And Logging Settings",
+      "summary": "System-scoped settings pages for registry-backed definitions, database defaults, and logging configuration surfaces.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+        "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_System.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Logging.cs",
+        "Module_Settings.Core/Views/View_Settings_System.xaml",
+        "Module_Settings.Core/Views/View_Settings_System.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Database.xaml",
+        "Module_Settings.Core/Views/View_Settings_Database.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Logging.xaml",
+        "Module_Settings.Core/Views/View_Settings_Logging.xaml.cs"
+      ],
+      "relatedServices": [
+        "ISettingsMetadataRegistry",
+        "Service_SettingsMetadataRegistry"
+      ],
+      "promptDefaults": {
+        "audience": "IT Administrator",
+        "docAudience": "IT Administrator",
+        "mockupAudience": "IT Administrator",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "System settings definitions",
+          "Database defaults",
+          "Logging defaults"
+        ],
+        "screens": [
+          "View_Settings_System.xaml",
+          "View_Settings_Database.xaml",
+          "View_Settings_Logging.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form",
+          "Tabs"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Split layout",
+          "Tabs"
+        ],
+        "uiElements": [
+          "System settings list",
+          "Database status message",
+          "Logging status message"
+        ],
+        "userActions": [
+          "Review system-scoped settings",
+          "Open database configuration defaults",
+          "Open logging configuration defaults"
+        ],
+        "preserveRules": [
+          "Keep system-scope filtering unchanged",
+          "Keep placeholder status messaging unchanged unless requested"
+        ],
+        "validationHints": [
+          "Confirm system definitions still filter to system scope",
+          "Confirm database and logging pages still load inside the settings host"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "settings-core-sharedpaths-theme",
+      "module": "Module_Settings.Core",
+      "name": "Shared Paths And Theme Settings",
+      "summary": "Core shared-path settings backed by the settings facade plus the theme settings surface for operator environment preferences.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs",
+        "Module_Settings.Core/Models/Model_SettingsValue.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_SharedPaths.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Theme.cs",
+        "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml",
+        "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_Theme.xaml",
+        "Module_Settings.Core/Views/View_Settings_Theme.xaml.cs"
+      ],
+      "relatedServices": [
+        "IService_SettingsCoreFacade",
+        "Service_SettingsCoreFacade"
+      ],
+      "promptDefaults": {
+        "audience": "IT Administrator",
+        "docAudience": "IT Administrator",
+        "mockupAudience": "IT Administrator",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Shared path configuration",
+          "Infor Visual executable path configuration",
+          "Theme settings"
+        ],
+        "screens": [
+          "View_Settings_SharedPaths.xaml",
+          "View_Settings_Theme.xaml"
+        ],
+        "currentUiPatterns": [
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Form",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Export root path field",
+          "Infor Visual executable path field",
+          "Save action",
+          "Theme status message"
+        ],
+        "userActions": [
+          "Load shared path settings",
+          "Update export and executable paths",
+          "Save shared path settings",
+          "Open the theme settings page"
+        ],
+        "preserveRules": [
+          "Keep facade-backed setting keys unchanged",
+          "Keep shared-path load and save behavior unchanged"
+        ],
+        "validationHints": [
+          "Confirm shared path keys still load and save through the core facade",
+          "Confirm the theme page still opens in the settings host"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "settings-core-users-roles",
+      "module": "Module_Settings.Core",
+      "name": "Users And Roles Settings",
+      "summary": "User management, roles, audit history, and preference-backed settings pages for maintaining application access, protected Visual credentials, and defaults.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreRoles.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUserRoles.cs",
+        "Module_Settings.Core/Enums/Enum_SettingsPermissionLevel.cs",
+        "Module_Settings.Core/Interfaces/IService_UserPreferences.cs",
+        "Module_Settings.Core/Models/Model_SettingsAuditEntry.cs",
+        "Module_Settings.Core/Models/Model_SettingsRole.cs",
+        "Module_Settings.Core/Models/Model_SettingsUserRole.cs",
+        "Module_Settings.Core/Models/Model_UserSetting.cs",
+        "Module_Settings.Core/Services/Service_UserPreferences.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs",
+        "Module_Settings.Core/Views/View_Settings_Users.xaml",
+        "Module_Settings.Core/Views/View_Settings_Users.xaml.cs"
+      ],
+      "relatedServices": [
+        "IService_UserPreferences",
+        "Service_UserPreferences"
+      ],
+      "promptDefaults": {
+        "audience": "IT Administrator",
+        "docAudience": "IT Administrator",
+        "mockupAudience": "IT Administrator",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "User management",
+          "Role assignment",
+          "Visual credential management",
+          "Preference-backed user defaults"
+        ],
+        "screens": [
+          "View_Settings_Users.xaml"
+        ],
+        "currentUiPatterns": [
+          "Table",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Split layout",
+          "Form",
+          "Table"
+        ],
+        "uiElements": [
+          "Users list",
+          "Selected user details",
+          "Add user action",
+          "Edit user action",
+          "Save user action",
+          "Department list"
+        ],
+        "userActions": [
+          "Load users",
+          "Add a user",
+          "Edit a user",
+          "Maintain Visual credentials",
+          "Save access-related changes"
+        ],
+        "preserveRules": [
+          "Keep user validation rules unchanged",
+          "Keep role and preference persistence behavior unchanged"
+        ],
+        "validationHints": [
+          "Confirm user list loading still works",
+          "Confirm create and edit flows still save correctly",
+          "Confirm department lookup still loads",
+          "Confirm existing PINs are not shown in the edit form and blank PIN leaves the current PIN unchanged",
+          "Confirm Visual credentials still save correctly after app-layer protection"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "settings-core-settings-platform",
+      "module": "Module_Settings.Core",
+      "name": "Settings Platform Services",
+      "summary": "Manifest, registry, cache, encryption, CQRS setting commands, validators, and shared models that power the Core Settings experience.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.Core/Contracts/Services/IService_SettingsErrorHandler.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json",
+        "Module_Settings.Core/Enums/Enum_SettingsDataType.cs",
+        "Module_Settings.Core/Enums/Enum_SettingsScope.cs",
+        "Module_Settings.Core/Interfaces/ISettingsCache.cs",
+        "Module_Settings.Core/Interfaces/ISettingsEncryptionService.cs",
+        "Module_Settings.Core/Interfaces/ISettingsManifestProvider.cs",
+        "Module_Settings.Core/Interfaces/ISettingsMetadataRegistry.cs",
+        "Module_Settings.Core/Models/Model_CoreSetting.cs",
+        "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+        "Module_Settings.Core/Models/Model_SettingsValue.cs",
+        "Module_Settings.Core/Services/GetSettingQuery.cs",
+        "Module_Settings.Core/Services/GetSettingQueryHandler.cs",
+        "Module_Settings.Core/Services/ResetSettingCommand.cs",
+        "Module_Settings.Core/Services/ResetSettingCommandHandler.cs",
+        "Module_Settings.Core/Services/Service_SettingsCache.cs",
+        "Module_Settings.Core/Services/Service_SettingsCoreFacade.cs",
+        "Module_Settings.Core/Services/Service_SettingsEncryptionService.cs",
+        "Module_Settings.Core/Services/Service_SettingsErrorHandler.cs",
+        "Module_Settings.Core/Services/Service_SettingsManifestProvider.cs",
+        "Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs",
+        "Module_Settings.Core/Services/SetSettingCommand.cs",
+        "Module_Settings.Core/Services/SetSettingCommandHandler.cs",
+        "Module_Settings.Core/SETTABLE_OBJECTS_INVENTORY.md",
+        "Module_Settings.Core/Validators/SetSettingCommandValidator.cs"
+      ],
+      "relatedServices": [
+        "ISettingsCache",
+        "ISettingsEncryptionService",
+        "ISettingsManifestProvider",
+        "ISettingsMetadataRegistry",
+        "IService_SettingsCoreFacade",
+        "IService_SettingsErrorHandler",
+        "Service_SettingsCache",
+        "Service_SettingsCoreFacade",
+        "Service_SettingsEncryptionService",
+        "Service_SettingsErrorHandler",
+        "Service_SettingsManifestProvider",
+        "Service_SettingsMetadataRegistry"
+      ],
+      "promptDefaults": {
+        "audience": "Developer",
+        "docAudience": "Developer",
+        "mockupAudience": "Developer",
+        "reviewScope": "Single module",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Settings manifest bootstrap",
+          "Metadata registry and cache",
+          "CQRS-backed setting reads and writes",
+          "Settings validation and encryption"
+        ],
+        "screens": [
+          "Settings infrastructure only"
+        ],
+        "currentUiPatterns": [
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Form"
+        ],
+        "uiElements": [
+          "Manifest-backed definitions",
+          "Validation pipeline",
+          "Facade-backed setting operations"
+        ],
+        "userActions": [
+          "Load default settings definitions",
+          "Read a setting",
+          "Set a setting",
+          "Reset a setting"
+        ],
+        "preserveRules": [
+          "Keep manifest keys and defaults aligned with the registry",
+          "Keep CQRS command and query behavior unchanged",
+          "Keep settings validation and encryption behavior unchanged"
+        ],
+        "validationHints": [
+          "Confirm manifest-backed definitions remain in sync with the registry and facade",
+          "Confirm get, set, and reset operations still flow through the same CQRS services"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "settings-receiving-configuration",
+      "module": "Module_Settings.Receiving",
+      "name": "Receiving Settings Configuration",
+      "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and workflow options backed by the shared settings facade.",
+      "owner": "Receiving Team",
+      "relatedFiles": [
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Defaults.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Validation.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_UserPreferences.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single module",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Settings navigation hub",
+          "Receiving defaults",
+          "Validation rules and limits",
+          "Part number auto-padding preferences",
+          "Workflow options"
+        ],
+        "screens": [
+          "View_Settings_Receiving_WorkflowHub.xaml",
+          "View_Settings_Receiving_Defaults.xaml",
+          "View_Settings_Receiving_Validation.xaml",
+          "View_Settings_Receiving_UserPreferences.xaml",
+          "View_Settings_Receiving_BusinessRules.xaml"
+        ],
+        "currentUiPatterns": [
+          "Card list",
+          "Form",
+          "Split layout"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Form",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Navigation cards",
+          "Save and reset actions",
+          "Default receiving mode selector",
+          "Default location field",
+          "Validation toggles",
+          "Numeric limit inputs",
+          "Auto-padding rules list",
+          "Rule add and remove actions",
+          "Auto-padding preview",
+          "Workflow option toggles"
+        ],
+        "userActions": [
+          "Open a receiving settings area from the hub",
+          "Change default receiving mode and default location",
+          "Toggle validation requirements and warning rules",
+          "Adjust min and max receiving limits",
+          "Add, edit, test, and remove auto-padding rules",
+          "Change workflow startup and auto-save behavior",
+          "Save, reset, or cancel settings changes"
+        ],
+        "preserveRules": [
+          "Keep settings persistence routed through IService_SettingsCoreFacade",
+          "Keep navigation actions wired through ISettingsNavigationActions",
+          "Keep x:Bind-based forms unchanged unless the request is explicitly about UI",
+          "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId"
+        ],
+        "acceptanceCriteria": [
+          "Each hub card still opens the intended receiving settings page",
+          "Defaults, validation, auto-padding, and workflow options remain separately accessible",
+          "Save, reset, and cancel paths remain available on the implemented settings pages",
+          "Metadata does not hide the fact that this module already has real settings persistence behavior"
+        ],
+        "validationHints": [
+          "Confirm default receiving mode and location still load and save",
+          "Confirm validation toggles and numeric limits still bind correctly",
+          "Confirm auto-padding rule editing and test preview still work",
+          "Confirm workflow option values still load, save, and reset through the shared settings facade"
+        ],
+        "reviewFocusAreas": [
+          "Correctness and regressions",
+          "Navigation goes to the wrong place",
+          "Save does not work",
+          "Validation blocks the wrong thing"
+        ]
+      },
+      "relatedServices": [],
+      "subFeatures": []
+    },
+    {
+      "id": "settings-dunnage-shell",
+      "module": "Module_Settings.Dunnage",
+      "name": "Dunnage Settings Shell",
+      "summary": "Card-based dunnage settings shell with placeholder overview, user preference, UI/UX, workflow, permissions, and audit pages that document intended controls without implementing persistence yet.",
+      "owner": "Operations Team",
+      "relatedFiles": [
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_NavigationHub.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_SettingsOverview.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UserPreferences.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UiUx.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Workflow.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Permissions.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Audit.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml.cs"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single module",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Settings overview",
+          "User preferences",
+          "UI and UX tuning",
+          "Workflow defaults and guardrails",
+          "Permissions",
+          "Audit history"
+        ],
+        "screens": [
+          "View_Settings_Dunnage_WorkflowHub.xaml",
+          "View_Settings_Dunnage_SettingsOverview.xaml",
+          "View_Settings_Dunnage_UserPreferences.xaml",
+          "View_Settings_Dunnage_UiUx.xaml",
+          "View_Settings_Dunnage_Workflow.xaml",
+          "View_Settings_Dunnage_Permissions.xaml",
+          "View_Settings_Dunnage_Audit.xaml"
+        ],
+        "currentUiPatterns": [
+          "Card list",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Form",
+          "DataGrid"
+        ],
+        "uiElements": [
+          "Navigation cards",
+          "Placeholder overview content",
+          "Suggested controls notes",
+          "Permission matrix guidance",
+          "Audit grid guidance",
+          "Date and user filter guidance",
+          "Workflow threshold guidance"
+        ],
+        "userActions": [
+          "Browse dunnage settings areas from the hub",
+          "Review placeholder guidance for future settings implementation",
+          "Inspect suggested controls for permissions and audit history",
+          "Understand which dunnage settings areas still need full implementation"
+        ],
+        "preserveRules": [
+          "Keep the placeholder status explicit in metadata",
+          "Do not describe placeholder pages as fully implemented settings editors",
+          "Keep the existing navigation hub step list unchanged unless the code changes"
+        ],
+        "acceptanceCriteria": [
+          "The hub still routes to overview, preferences, UI/UX, workflow, permissions, and audit pages",
+          "Metadata makes it clear these screens are currently placeholders with suggested controls",
+          "Metadata does not claim data persistence or business logic that the module does not implement"
+        ],
+        "validationHints": [
+          "Confirm each dunnage card still opens the intended placeholder screen",
+          "Confirm titles and descriptions still match the current placeholder content",
+          "Confirm metadata continues to describe suggested controls as future-facing guidance"
+        ]
+      },
+      "relatedServices": [],
+      "subFeatures": []
+    },
+    {
+      "id": "settings-reporting-shell",
+      "module": "Module_Settings.Reporting",
+      "name": "Reporting Settings Shell",
+      "summary": "Card-based reporting settings shell with placeholder overview, file I/O, email UX, business rules, and permissions pages derived from reporting settable-object guidance.",
+      "owner": "Reporting Team",
+      "relatedFiles": [
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_NavigationHub.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_SettingsOverview.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_FileIO.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_EmailUx.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_BusinessRules.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_Permissions.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml.cs"
+      ],
+      "promptDefaults": {
+        "audience": "Supervisor",
+        "docAudience": "Supervisor",
+        "mockupAudience": "Supervisor",
+        "reviewScope": "Single module",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Settings overview",
+          "Report file output settings",
+          "Email formatting and UX guidance",
+          "Reporting business rules",
+          "Permissions"
+        ],
+        "screens": [
+          "View_Settings_Reporting_WorkflowHub.xaml",
+          "View_Settings_Reporting_SettingsOverview.xaml",
+          "View_Settings_Reporting_FileIO.xaml",
+          "View_Settings_Reporting_EmailUx.xaml",
+          "View_Settings_Reporting_BusinessRules.xaml",
+          "View_Settings_Reporting_Permissions.xaml"
+        ],
+        "currentUiPatterns": [
+          "Card list",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Form",
+          "DataGrid"
+        ],
+        "uiElements": [
+          "Navigation cards",
+          "Export folder path guidance",
+          "File name template guidance",
+          "Timestamp format guidance",
+          "Email HTML style guidance",
+          "Template validation warnings guidance",
+          "Permission matrix guidance"
+        ],
+        "userActions": [
+          "Browse reporting settings areas from the hub",
+          "Review placeholder guidance for report output configuration",
+          "Review placeholder guidance for email formatting and permissions",
+          "Understand which reporting settings still need full implementation"
+        ],
+        "preserveRules": [
+          "Keep the placeholder status explicit in metadata",
+          "Do not describe reporting settings pages as persisted editors unless the code adds that behavior",
+          "Keep the existing step ordering and card-driven navigation unchanged"
+        ],
+        "acceptanceCriteria": [
+          "The hub still routes to overview, file I/O, email UX, business rules, and permissions",
+          "Metadata reflects the current placeholder nature of these reporting settings pages",
+          "Metadata captures the visible suggested controls without inventing persistence logic"
+        ],
+        "validationHints": [
+          "Confirm the reporting cards still open the intended screens",
+          "Confirm placeholder descriptions still mention export, email, business rule, and permission guidance",
+          "Confirm metadata does not overstate how complete these settings pages are"
+        ]
+      },
+      "relatedServices": [],
+      "subFeatures": []
+    },
+    {
+      "id": "settings-volvo-shell",
+      "module": "Module_Settings.Volvo",
+      "name": "Volvo Settings Shell",
+      "summary": "Card-based Volvo settings shell with placeholder overview, database settings, connection string, file path, UI configuration, and hardcoded-value externalization pages.",
+      "owner": "Integration Team",
+      "relatedFiles": [
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_SettingsOverview.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_DatabaseSettings.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ConnectionStrings.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_FilePaths.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_UiConfiguration.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ExternalizationBacklog.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml.cs"
+      ],
+      "promptDefaults": {
+        "audience": "IT Administrator",
+        "docAudience": "IT Administrator",
+        "mockupAudience": "IT Administrator",
+        "reviewScope": "Single module",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Settings overview",
+          "Database-backed Volvo settings guidance",
+          "Connection string handling guidance",
+          "File path guidance",
+          "UI configuration guidance",
+          "Hardcoded value externalization backlog"
+        ],
+        "screens": [
+          "View_Settings_Volvo_WorkflowHub.xaml",
+          "View_Settings_Volvo_SettingsOverview.xaml",
+          "View_Settings_Volvo_DatabaseSettings.xaml",
+          "View_Settings_Volvo_ConnectionStrings.xaml",
+          "View_Settings_Volvo_FilePaths.xaml",
+          "View_Settings_Volvo_UiConfiguration.xaml",
+          "View_Settings_Volvo_ExternalizationBacklog.xaml"
+        ],
+        "currentUiPatterns": [
+          "Card list",
+          "Form",
+          "DataGrid"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Form",
+          "DataGrid"
+        ],
+        "uiElements": [
+          "Navigation cards",
+          "Recipient list guidance",
+          "Masked connection string guidance",
+          "Folder and file picker guidance",
+          "UI defaults guidance",
+          "Externalization backlog grid guidance"
+        ],
+        "userActions": [
+          "Browse Volvo settings areas from the hub",
+          "Review which Volvo configuration belongs in database settings, file paths, and UI configuration",
+          "Inspect the connection string page guidance without exposing secrets in editable plain text",
+          "Review the backlog of hardcoded values that should become configuration"
+        ],
+        "preserveRules": [
+          "Keep the placeholder status explicit in metadata",
+          "Keep connection string guidance masked and read-only",
+          "Do not describe backlog tracking as a completed externalization workflow",
+          "Keep the existing step ordering and card-driven navigation unchanged"
+        ],
+        "acceptanceCriteria": [
+          "The hub still routes to overview, database settings, connection strings, file paths, UI configuration, and externalization backlog",
+          "Metadata reflects the visible placeholder guidance for each Volvo settings area",
+          "Metadata does not imply editable secrets or completed persistence logic that the module does not currently implement"
+        ],
+        "validationHints": [
+          "Confirm each Volvo card still opens the intended screen",
+          "Confirm connection string guidance remains masked and non-editable in concept",
+          "Confirm metadata continues to describe the hardcoded-values page as backlog tracking rather than finished automation"
+        ],
+        "sensitiveDataRules": [
+          "Do not expose raw connection strings in UI change requests or mockups",
+          "Keep secret-bearing fields masked or routed to deployment-time secret storage"
+        ]
+      },
+      "relatedServices": [],
+      "subFeatures": []
+    },
+    {
+      "id": "settings-developer-tools-shell",
+      "module": "Module_Settings.DeveloperTools",
+      "name": "Developer Tools Settings Shell",
+      "summary": "Developer tools navigation shell with an overview page, four placeholder feature pages, and routing into the concrete database diagnostics surface.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_NavigationHub.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_SettingsOverview.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureA.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureB.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureC.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureD.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml.cs"
+      ],
+      "promptDefaults": {
+        "audience": "Developer",
+        "docAudience": "Developer",
+        "mockupAudience": "Developer",
+        "reviewScope": "Single module",
+        "testKind": "Mixed"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Developer tools overview",
+          "Placeholder feature pages",
+          "Navigation into diagnostics"
+        ],
+        "screens": [
+          "View_Settings_DeveloperTools_NavigationHub.xaml",
+          "View_Settings_DeveloperTools_SettingsOverview.xaml",
+          "View_Settings_DeveloperTools_FeatureA.xaml",
+          "View_Settings_DeveloperTools_FeatureB.xaml",
+          "View_Settings_DeveloperTools_FeatureC.xaml",
+          "View_Settings_DeveloperTools_FeatureD.xaml"
+        ],
+        "currentUiPatterns": [
+          "Card list",
+          "Form"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Form"
+        ],
+        "uiElements": [
+          "Navigation cards",
+          "Overview text",
+          "Back actions",
+          "Placeholder page titles"
+        ],
+        "userActions": [
+          "Browse developer tool areas from the hub",
+          "Open the overview page",
+          "Open placeholder feature pages that are not implemented yet",
+          "Navigate from the shell into the database diagnostics page"
+        ],
+        "preserveRules": [
+          "Keep Feature A through Feature D explicitly marked as placeholders",
+          "Do not describe placeholder pages as implemented tool surfaces",
+          "Keep the current navigation hub card ordering unchanged"
+        ],
+        "acceptanceCriteria": [
+          "The hub still routes to overview, Feature A, Feature B, Feature C, Feature D, and Database Test",
+          "Metadata reflects the current placeholder status of Feature A through Feature D",
+          "Metadata separates the shell from the real diagnostics workflow"
+        ],
+        "validationHints": [
+          "Confirm the shell cards still open the intended page",
+          "Confirm Feature A through Feature D still present as placeholder pages",
+          "Confirm metadata does not overstate the capabilities of the placeholder views"
+        ]
+      },
+      "relatedServices": [],
+      "subFeatures": []
+    },
+    {
+      "id": "settings-developer-tools-diagnostics",
+      "module": "Module_Settings.DeveloperTools",
+      "name": "Settings Database Diagnostics",
+      "summary": "Developer-facing database diagnostics screen that runs a MediatR command, checks MySQL connectivity, validates expected settings tables and stored procedures, and probes core settings DAOs.",
+      "owner": "Platform Team",
+      "relatedFiles": [
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_SettingsDeveloperTools_DatabaseTest.cs",
+        "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml",
+        "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml.cs",
+        "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommand.cs",
+        "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommandHandler.cs",
+        "Module_Settings.DeveloperTools/Data/Dao_SettingsDiagnostics.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbTestReport.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbTableResult.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbProcedureResult.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbDaoResult.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs"
+      ],
+      "promptDefaults": {
+        "audience": "Developer",
+        "docAudience": "Developer",
+        "mockupAudience": "Developer",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "MySQL"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Connection test",
+          "Settings table validation",
+          "Stored procedure validation",
+          "DAO operational checks"
+        ],
+        "screens": [
+          "View_SettingsDeveloperTools_DatabaseTest.xaml"
+        ],
+        "currentUiPatterns": [
+          "Tabs",
+          "Table",
+          "Toolbar + results list"
+        ],
+        "desiredUiPatterns": [
+          "Tabs",
+          "Table",
+          "Toolbar + results list"
+        ],
+        "uiElements": [
+          "Run Tests button",
+          "Connection summary",
+          "Server version value",
+          "Validated tables count",
+          "Validated procedures count",
+          "Validated DAOs count",
+          "Summary tab",
+          "Tables tab",
+          "Stored Procedures tab",
+          "DAOs tab"
+        ],
+        "userActions": [
+          "Run all diagnostics from one command",
+          "Review connection state and response time",
+          "See which expected tables are missing or found",
+          "See which expected stored procedures are missing or found",
+          "See whether the core settings DAOs are operational"
+        ],
+        "preserveRules": [
+          "Keep diagnostics read-only",
+          "Keep the command-based flow from ViewModel to MediatR handler intact",
+          "Keep the diagnostics screen focused on validation and reporting rather than mutation"
+        ],
+        "acceptanceCriteria": [
+          "Run Tests still invokes the command and populates summary, tables, stored procedures, and DAO results",
+          "The diagnostics remain read-only and do not write to settings data",
+          "Metadata reflects the actual expected tables, procedures, and DAO checks described by the handler"
+        ],
+        "validationHints": [
+          "Confirm Run Tests still updates connection state and validation counts",
+          "Confirm table, stored procedure, and DAO result lists still populate the correct pivot tabs",
+          "Confirm the diagnostics still probe the expected settings tables and stored procedures"
+        ],
+        "databaseObjects": [
+          "sp_SettingsCore_Meta_GetTables",
+          "sp_SettingsCore_Meta_GetStoredProcedures",
+          "settings_universal",
+          "settings_personal",
+          "settings_activity",
+          "settings_roles",
+          "settings_user_roles",
+          "sp_SettingsCore_System_GetByKey",
+          "sp_SettingsCore_System_GetByCategory",
+          "sp_SettingsCore_System_Upsert",
+          "sp_SettingsCore_System_Reset",
+          "sp_SettingsCore_User_GetByKey",
+          "sp_SettingsCore_User_GetByCategory",
+          "sp_SettingsCore_User_Upsert",
+          "sp_SettingsCore_User_Reset"
+        ],
+        "sensitiveDataRules": [
+          "Do not log or expose raw connection strings in the diagnostics UI",
+          "Keep database diagnostics limited to health and metadata checks"
+        ]
+      },
+      "relatedServices": [],
+      "subFeatures": []
+    },
+    {
+      "id": "shiprec-tools-shell",
+      "module": "Module_ShipRec_Tools",
+      "name": "ShipRec Tools Shell",
+      "summary": "Container workflow that hosts the tool selection screen, routes into an active tool, and returns the user back to the tool hub.",
+      "owner": "Shipping / Receiving Team",
+      "relatedFiles": [
+        "Module_ShipRec_Tools/Contracts/IService_ShipRecTools_Navigation.cs",
+        "Module_ShipRec_Tools/Services/Service_ShipRecTools_Navigation.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_Base.cs",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml.cs"
+      ],
+      "relatedServices": [
+        "IService_ShipRecTools_Navigation",
+        "Service_ShipRecTools_Navigation"
+      ],
+      "promptDefaults": {
+        "audience": "Shipping or Receiving Clerk",
+        "docAudience": "Shipping or Receiving Clerk",
+        "mockupAudience": "Shipping or Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "SQL Server"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Tool host container",
+          "Tool navigation",
+          "Back-to-tools routing"
+        ],
+        "screens": [
+          "View_ShipRecTools_Main.xaml"
+        ],
+        "currentUiPatterns": [
+          "Container host",
+          "Conditional content region"
+        ],
+        "desiredUiPatterns": [
+          "Container host",
+          "Card list",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Back to Tools button",
+          "Current tool title",
+          "Selection host region",
+          "Active tool host region"
+        ],
+        "userActions": [
+          "Enter a selected tool",
+          "Return to the tool hub without restarting the module"
+        ],
+        "preserveRules": [
+          "Keep navigation key behavior unchanged",
+          "Keep back-to-tools flow unchanged"
+        ],
+        "acceptanceCriteria": [
+          "The correct tool host becomes visible after selection",
+          "The Back to Tools action returns the user to the selection screen"
+        ],
+        "validationHints": [
+          "Confirm tool navigation still toggles the correct host region",
+          "Confirm the shell title updates for the active tool"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shiprec-tools-catalog",
+      "module": "Module_ShipRec_Tools",
+      "name": "ShipRec Tool Catalog",
+      "summary": "Categorized tool-card selection screen that loads registered tools by category and raises the selected tool key into the shell workflow.",
+      "owner": "Shipping / Receiving Team",
+      "relatedFiles": [
+        "Module_ShipRec_Tools/Enums/Enum_ToolCategory.cs",
+        "Module_ShipRec_Tools/Models/Model_ToolDefinition.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_ToolSelection.cs",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_ToolSelection.xaml",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_ToolSelection.xaml.cs"
+      ],
+      "relatedServices": [
+        "IService_ShipRecTools_Navigation",
+        "Service_ShipRecTools_Navigation"
+      ],
+      "promptDefaults": {
+        "audience": "Shipping or Receiving Clerk",
+        "docAudience": "Shipping or Receiving Clerk",
+        "mockupAudience": "Shipping or Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "SQL Server"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Tool discovery",
+          "Category grouping",
+          "Tool-card selection"
+        ],
+        "screens": [
+          "View_ShipRecTools_ToolSelection.xaml"
+        ],
+        "currentUiPatterns": [
+          "Card list",
+          "Sectioned dashboard",
+          "Uniform grid"
+        ],
+        "desiredUiPatterns": [
+          "Card list",
+          "Sectioned dashboard",
+          "Uniform grid"
+        ],
+        "uiElements": [
+          "Lookup Tools section",
+          "Analysis Tools section",
+          "Utilities section",
+          "Tool title",
+          "Tool description",
+          "Tool icon"
+        ],
+        "userActions": [
+          "Scan available tools by category",
+          "Choose the correct tool card quickly"
+        ],
+        "preserveRules": [
+          "Keep the category grouping behavior unchanged",
+          "Keep tool-card command routing unchanged"
+        ],
+        "acceptanceCriteria": [
+          "Available tools still appear in the correct category",
+          "Selecting a card still raises the expected tool key"
+        ],
+        "validationHints": [
+          "Confirm tool counts and category visibility still reflect the registry",
+          "Confirm card selection still routes to the intended tool"
+        ]
+      },
+      "subFeatures": []
+    },
+    {
+      "id": "shiprec-tool-outside-service-history",
+      "module": "Module_ShipRec_Tools",
+      "name": "Outside Service History Lookup",
+      "summary": "Read-only Infor Visual lookup tool for outside service provider dispatch history with part or vendor search, fuzzy selection, and sortable results.",
+      "owner": "Shipping / Receiving Team",
+      "relatedFiles": [
+        "Module_ShipRec_Tools/Contracts/IService_Tool_OutsideServiceHistory.cs",
+        "Module_ShipRec_Tools/Services/Service_Tool_OutsideServiceHistory.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_OutsideServiceHistory.cs",
+        "Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml",
+        "Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml.cs"
+      ],
+      "relatedServices": [
+        "IService_Tool_OutsideServiceHistory",
+        "Service_Tool_OutsideServiceHistory"
+      ],
+      "promptDefaults": {
+        "audience": "Shipping or Receiving Clerk",
+        "docAudience": "Shipping or Receiving Clerk",
+        "mockupAudience": "Shipping or Receiving Clerk",
+        "reviewScope": "Single feature",
+        "testKind": "Mixed",
+        "databaseSystem": "SQL Server"
+      },
+      "uiHints": {
+        "workflowAreas": [
+          "Outside service provider lookup",
+          "Part search",
+          "Vendor search",
+          "Dispatch history review"
+        ],
+        "screens": [
+          "View_Tool_OutsideServiceHistory.xaml"
+        ],
+        "currentUiPatterns": [
+          "Search form",
+          "Toggle filter",
+          "Results grid"
+        ],
+        "desiredUiPatterns": [
+          "Search form",
+          "Results grid",
+          "Split layout"
+        ],
+        "uiElements": [
+          "Part Number toggle",
+          "Vendor Name toggle",
+          "Search input",
+          "Search button",
+          "Clear button",
+          "Status InfoBar",
+          "Dispatch history DataGrid"
+        ],
+        "userActions": [
+          "Search by part number",
+          "Search by vendor name",
+          "Resolve fuzzy matches",
+          "Review outside service dispatch history"
+        ],
+        "preserveRules": [
+          "Keep all Infor Visual access read-only",
+          "Keep fuzzy-search confirmation behavior unchanged",
+          "Keep current sort behavior unchanged"
+        ],
+        "acceptanceCriteria": [
+          "Part and vendor search modes still return the correct history data",
+          "The user can confirm fuzzy matches before loading the final result set",
+          "The results grid remains sortable and read-only"
+        ],
+        "validationHints": [
+          "Confirm vendor and part modes still hit the intended Infor Visual queries",
+          "Confirm fuzzy picker flow still occurs when multiple matches are returned",
+          "Confirm the results grid still shows dispatch history without enabling edits"
+        ],
+        "databaseObjects": [
+          "Infor Visual outside service history queries",
+          "FuzzySearchPartsAsync",
+          "FuzzySearchVendorsAsync",
+          "GetOutsideServiceHistoryByPartAsync",
+          "GetOutsideServiceHistoryByVendorAsync"
+        ]
+      },
+      "subFeatures": []
     }
   ],
   "forms": [
@@ -1679,7 +5429,11 @@
               "label": "What kind of tests should be added?",
               "type": "select",
               "required": true,
-              "options": ["Unit", "Integration", "Mixed"]
+              "options": [
+                "Unit",
+                "Integration",
+                "Mixed"
+              ]
             },
             {
               "id": "testTargets",
@@ -2099,7 +5853,12 @@
               "label": "Which database system is involved?",
               "type": "select",
               "required": true,
-              "options": ["MySQL", "Infor Visual SQL Server", "Both", "Unknown"]
+              "options": [
+                "MySQL",
+                "Infor Visual SQL Server",
+                "Both",
+                "Unknown"
+              ]
             },
             {
               "id": "databaseObjects",
@@ -2191,7 +5950,11 @@
               "label": "What kind of tests do you want?",
               "type": "select",
               "required": true,
-              "options": ["Unit", "Integration", "Mixed"]
+              "options": [
+                "Unit",
+                "Integration",
+                "Mixed"
+              ]
             },
             {
               "id": "testTargets",

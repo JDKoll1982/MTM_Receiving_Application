@@ -1,0 +1,9 @@
+{
+  "module": "Module_Settings.DeveloperTools",
+  "owner": "Platform Team",
+  "lastUpdated": "2026-03-22",
+  "featureFiles": [
+    "settings-developer-tools-shell.json",
+    "settings-developer-tools-diagnostics.json"
+  ]
+}

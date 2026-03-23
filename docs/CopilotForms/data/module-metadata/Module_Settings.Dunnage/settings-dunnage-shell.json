@@ -1,0 +1,88 @@
+{
+  "id": "settings-dunnage-shell",
+  "module": "Module_Settings.Dunnage",
+  "name": "Dunnage Settings Shell",
+  "summary": "Card-based dunnage settings shell with placeholder overview, user preference, UI/UX, workflow, permissions, and audit pages that document intended controls without implementing persistence yet.",
+  "owner": "Operations Team",
+  "relatedFiles": [
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_NavigationHub.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_SettingsOverview.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UserPreferences.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UiUx.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Workflow.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Permissions.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Audit.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml.cs"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single module",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Settings overview",
+      "User preferences",
+      "UI and UX tuning",
+      "Workflow defaults and guardrails",
+      "Permissions",
+      "Audit history"
+    ],
+    "screens": [
+      "View_Settings_Dunnage_WorkflowHub.xaml",
+      "View_Settings_Dunnage_SettingsOverview.xaml",
+      "View_Settings_Dunnage_UserPreferences.xaml",
+      "View_Settings_Dunnage_UiUx.xaml",
+      "View_Settings_Dunnage_Workflow.xaml",
+      "View_Settings_Dunnage_Permissions.xaml",
+      "View_Settings_Dunnage_Audit.xaml"
+    ],
+    "currentUiPatterns": ["Card list", "Form"],
+    "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
+    "uiElements": [
+      "Navigation cards",
+      "Placeholder overview content",
+      "Suggested controls notes",
+      "Permission matrix guidance",
+      "Audit grid guidance",
+      "Date and user filter guidance",
+      "Workflow threshold guidance"
+    ],
+    "userActions": [
+      "Browse dunnage settings areas from the hub",
+      "Review placeholder guidance for future settings implementation",
+      "Inspect suggested controls for permissions and audit history",
+      "Understand which dunnage settings areas still need full implementation"
+    ],
+    "preserveRules": [
+      "Keep the placeholder status explicit in metadata",
+      "Do not describe placeholder pages as fully implemented settings editors",
+      "Keep the existing navigation hub step list unchanged unless the code changes"
+    ],
+    "acceptanceCriteria": [
+      "The hub still routes to overview, preferences, UI/UX, workflow, permissions, and audit pages",
+      "Metadata makes it clear these screens are currently placeholders with suggested controls",
+      "Metadata does not claim data persistence or business logic that the module does not implement"
+    ],
+    "validationHints": [
+      "Confirm each dunnage card still opens the intended placeholder screen",
+      "Confirm titles and descriptions still match the current placeholder content",
+      "Confirm metadata continues to describe suggested controls as future-facing guidance"
+    ]
+  }
+}

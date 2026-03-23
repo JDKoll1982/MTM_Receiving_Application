@@ -150,7 +150,7 @@
                         <TextBox
                             Text="{x:Bind ViewModel.EditingUser.Pin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             MaxLength="4"
-                            PlaceholderText="0000"
+                            PlaceholderText="{x:Bind ViewModel.PinPlaceholderText, Mode=OneWay}"
                         />
                     </StackPanel>
 

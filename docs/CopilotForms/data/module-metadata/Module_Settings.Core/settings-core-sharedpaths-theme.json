@@ -1,0 +1,58 @@
+{
+  "id": "settings-core-sharedpaths-theme",
+  "module": "Module_Settings.Core",
+  "name": "Shared Paths And Theme Settings",
+  "summary": "Core shared-path settings backed by the settings facade plus the theme settings surface for operator environment preferences.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs",
+    "Module_Settings.Core/Models/Model_SettingsValue.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_SharedPaths.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Theme.cs",
+    "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml",
+    "Module_Settings.Core/Views/View_Settings_SharedPaths.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Theme.xaml",
+    "Module_Settings.Core/Views/View_Settings_Theme.xaml.cs"
+  ],
+  "relatedServices": [
+    "IService_SettingsCoreFacade",
+    "Service_SettingsCoreFacade"
+  ],
+  "promptDefaults": {
+    "audience": "IT Administrator",
+    "docAudience": "IT Administrator",
+    "mockupAudience": "IT Administrator",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Shared path configuration",
+      "Infor Visual executable path configuration",
+      "Theme settings"
+    ],
+    "screens": ["View_Settings_SharedPaths.xaml", "View_Settings_Theme.xaml"],
+    "currentUiPatterns": ["Form"],
+    "desiredUiPatterns": ["Form", "Split layout"],
+    "uiElements": [
+      "Export root path field",
+      "Infor Visual executable path field",
+      "Save action",
+      "Theme status message"
+    ],
+    "userActions": [
+      "Load shared path settings",
+      "Update export and executable paths",
+      "Save shared path settings",
+      "Open the theme settings page"
+    ],
+    "preserveRules": [
+      "Keep facade-backed setting keys unchanged",
+      "Keep shared-path load and save behavior unchanged"
+    ],
+    "validationHints": [
+      "Confirm shared path keys still load and save through the core facade",
+      "Confirm the theme page still opens in the settings host"
+    ]
+  }
+}

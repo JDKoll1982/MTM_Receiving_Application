@@ -1,0 +1,49 @@
+{
+  "Module": "Module_Settings.Receiving",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.Receiving",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.Receiving",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 15,
+  "FeatureReports": [
+    {
+      "FeatureId": "settings-receiving-configuration",
+      "Name": "Receiving Settings Configuration",
+      "MetadataFile": "settings-receiving-configuration.json",
+      "ReferencedFiles": [
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Defaults.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_UserPreferences.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Validation.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml.cs"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "settings-receiving-configuration.json"
+  ],
+  "ActualFeatureFiles": [
+    "settings-receiving-configuration.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

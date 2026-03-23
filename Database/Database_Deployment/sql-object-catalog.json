@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T17:34:08.3098587-05:00",
+  "generatedAt": "2026-03-22T18:58:08.1293637-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1168,7 +1168,7 @@
         {
           "direction": "IN",
           "name": "p_pin",
-          "sqlType": "VARCHAR(4)"
+          "sqlType": "VARCHAR(64)"
         },
         {
           "direction": "IN",
@@ -1188,12 +1188,12 @@
         {
           "direction": "IN",
           "name": "p_visual_username",
-          "sqlType": "VARCHAR(50)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
           "name": "p_visual_password",
-          "sqlType": "VARCHAR(100)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
@@ -1292,12 +1292,12 @@
         {
           "direction": "IN",
           "name": "p_visual_username",
-          "sqlType": "VARCHAR(50)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
           "name": "p_visual_password",
-          "sqlType": "VARCHAR(100)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
@@ -1470,7 +1470,7 @@
         {
           "direction": "IN",
           "name": "p_pin",
-          "sqlType": "VARCHAR(4)"
+          "sqlType": "VARCHAR(64)"
         },
         {
           "direction": "IN",
@@ -1490,12 +1490,12 @@
         {
           "direction": "IN",
           "name": "p_visual_username",
-          "sqlType": "VARCHAR(50)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
           "name": "p_visual_password",
-          "sqlType": "VARCHAR(100)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "OUT",
@@ -1637,6 +1637,57 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_user_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "auth_users",
+          "object": "auth_users"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_IsWindowsUsernameUnique.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Auth_User_IsWindowsUsernameUnique",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Core/Data/Authentication/Dao_User.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_windows_username",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_exclude_employee_number",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "auth_users"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_windows_username",
+        "p_exclude_employee_number"
       ],
       "variableTokensUsed": [],
       "temporaryTables": [],
@@ -1898,7 +1949,7 @@
         {
           "direction": "IN",
           "name": "p_pin",
-          "sqlType": "VARCHAR(4)"
+          "sqlType": "VARCHAR(64)"
         },
         {
           "direction": "IN",
@@ -1918,12 +1969,12 @@
         {
           "direction": "IN",
           "name": "p_visual_username",
-          "sqlType": "VARCHAR(50)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
           "name": "p_visual_password",
-          "sqlType": "VARCHAR(100)"
+          "sqlType": "VARCHAR(256)"
         },
         {
           "direction": "IN",
@@ -2026,7 +2077,7 @@
         {
           "direction": "IN",
           "name": "p_pin",
-          "sqlType": "VARCHAR(4)"
+          "sqlType": "VARCHAR(64)"
         }
       ],
       "declaredVariables": [],
@@ -9631,6 +9682,51 @@
       ]
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetById.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_Shipment_GetById",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoShipment.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_label_data"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_label_data",
+          "object": "volvo_label_data"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetHistory.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -9768,6 +9864,43 @@
         {
           "alias": "l",
           "object": "volvo_line_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetNextShipmentNumber.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_Shipment_GetNextShipmentNumber",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoShipment.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_label_data"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_label_data",
+          "object": "volvo_label_data"
         }
       ]
     },

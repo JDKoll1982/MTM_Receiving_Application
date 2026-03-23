@@ -51,6 +51,9 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     [ObservableProperty]
     private List<string> _departments = new();
 
+    [ObservableProperty]
+    private string _pinPlaceholderText = "Leave blank to keep the current PIN when editing.";
+
     /// <summary>Required to host ContentDialogs from the ViewModel.</summary>
     public XamlRoot? XamlRoot { get; set; }
 
@@ -138,6 +141,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         EditingUser = new Model_User { IsActive = true };
         IsAddingNew = true;
         IsEditing = true;
+        PinPlaceholderText = "Enter a new 4-digit PIN";
 
         var deptResult = await _daoUser.GetActiveDepartmentsAsync();
         if (deptResult.IsSuccess)
@@ -154,7 +158,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
             EmployeeNumber = user.EmployeeNumber,
             WindowsUsername = user.WindowsUsername,
             FullName = user.FullName,
-            Pin = user.Pin,
+            Pin = string.Empty,
             Department = user.Department,
             Shift = user.Shift,
             IsActive = user.IsActive,
@@ -168,6 +172,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         };
         IsAddingNew = false;
         IsEditing = true;
+        PinPlaceholderText = "Leave blank to keep the current PIN";
     }
 
     [RelayCommand]
@@ -187,6 +192,21 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         if (string.IsNullOrWhiteSpace(EditingUser.WindowsUsername))
         {
             ShowStatus("Windows username is required.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (IsAddingNew && string.IsNullOrWhiteSpace(EditingUser.Pin))
+        {
+            ShowStatus("PIN is required for new users.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (
+            !string.IsNullOrWhiteSpace(EditingUser.Pin)
+            && (EditingUser.Pin.Length != 4 || !int.TryParse(EditingUser.Pin, out _))
+        )
+        {
+            ShowStatus("PIN must be exactly 4 numeric digits.", InfoBarSeverity.Warning);
             return;
         }
 
@@ -363,6 +383,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
         EditingUser = null;
         IsEditing = false;
         IsAddingNew = false;
+        PinPlaceholderText = "Leave blank to keep the current PIN when editing.";
     }
 
     // ====================================================================

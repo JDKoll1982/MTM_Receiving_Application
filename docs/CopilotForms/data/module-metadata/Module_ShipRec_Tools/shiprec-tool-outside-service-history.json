@@ -1,0 +1,84 @@
+{
+  "id": "shiprec-tool-outside-service-history",
+  "module": "Module_ShipRec_Tools",
+  "name": "Outside Service History Lookup",
+  "summary": "Read-only Infor Visual lookup tool for outside service provider dispatch history with part or vendor search, fuzzy selection, and sortable results.",
+  "owner": "Shipping / Receiving Team",
+  "relatedFiles": [
+    "Module_ShipRec_Tools/Contracts/IService_Tool_OutsideServiceHistory.cs",
+    "Module_ShipRec_Tools/Services/Service_Tool_OutsideServiceHistory.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_OutsideServiceHistory.cs",
+    "Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml",
+    "Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml.cs"
+  ],
+  "relatedServices": [
+    "IService_Tool_OutsideServiceHistory",
+    "Service_Tool_OutsideServiceHistory"
+  ],
+  "promptDefaults": {
+    "audience": "Shipping or Receiving Clerk",
+    "docAudience": "Shipping or Receiving Clerk",
+    "mockupAudience": "Shipping or Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "SQL Server"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Outside service provider lookup",
+      "Part search",
+      "Vendor search",
+      "Dispatch history review"
+    ],
+    "screens": [
+      "View_Tool_OutsideServiceHistory.xaml"
+    ],
+    "currentUiPatterns": [
+      "Search form",
+      "Toggle filter",
+      "Results grid"
+    ],
+    "desiredUiPatterns": [
+      "Search form",
+      "Results grid",
+      "Split layout"
+    ],
+    "uiElements": [
+      "Part Number toggle",
+      "Vendor Name toggle",
+      "Search input",
+      "Search button",
+      "Clear button",
+      "Status InfoBar",
+      "Dispatch history DataGrid"
+    ],
+    "userActions": [
+      "Search by part number",
+      "Search by vendor name",
+      "Resolve fuzzy matches",
+      "Review outside service dispatch history"
+    ],
+    "preserveRules": [
+      "Keep all Infor Visual access read-only",
+      "Keep fuzzy-search confirmation behavior unchanged",
+      "Keep current sort behavior unchanged"
+    ],
+    "acceptanceCriteria": [
+      "Part and vendor search modes still return the correct history data",
+      "The user can confirm fuzzy matches before loading the final result set",
+      "The results grid remains sortable and read-only"
+    ],
+    "validationHints": [
+      "Confirm vendor and part modes still hit the intended Infor Visual queries",
+      "Confirm fuzzy picker flow still occurs when multiple matches are returned",
+      "Confirm the results grid still shows dispatch history without enabling edits"
+    ],
+    "databaseObjects": [
+      "Infor Visual outside service history queries",
+      "FuzzySearchPartsAsync",
+      "FuzzySearchVendorsAsync",
+      "GetOutsideServiceHistoryByPartAsync",
+      "GetOutsideServiceHistoryByVendorAsync"
+    ]
+  }
+}

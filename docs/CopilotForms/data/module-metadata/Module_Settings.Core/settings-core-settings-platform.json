@@ -1,0 +1,86 @@
+{
+  "id": "settings-core-settings-platform",
+  "module": "Module_Settings.Core",
+  "name": "Settings Platform Services",
+  "summary": "Manifest, registry, cache, encryption, CQRS setting commands, validators, and shared models that power the Core Settings experience.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.Core/Contracts/Services/IService_SettingsErrorHandler.cs",
+    "Module_Settings.Core/Defaults/settings.manifest.json",
+    "Module_Settings.Core/Enums/Enum_SettingsDataType.cs",
+    "Module_Settings.Core/Enums/Enum_SettingsScope.cs",
+    "Module_Settings.Core/Interfaces/ISettingsCache.cs",
+    "Module_Settings.Core/Interfaces/ISettingsEncryptionService.cs",
+    "Module_Settings.Core/Interfaces/ISettingsManifestProvider.cs",
+    "Module_Settings.Core/Interfaces/ISettingsMetadataRegistry.cs",
+    "Module_Settings.Core/Models/Model_CoreSetting.cs",
+    "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+    "Module_Settings.Core/Models/Model_SettingsValue.cs",
+    "Module_Settings.Core/Services/GetSettingQuery.cs",
+    "Module_Settings.Core/Services/GetSettingQueryHandler.cs",
+    "Module_Settings.Core/Services/ResetSettingCommand.cs",
+    "Module_Settings.Core/Services/ResetSettingCommandHandler.cs",
+    "Module_Settings.Core/Services/Service_SettingsCache.cs",
+    "Module_Settings.Core/Services/Service_SettingsCoreFacade.cs",
+    "Module_Settings.Core/Services/Service_SettingsEncryptionService.cs",
+    "Module_Settings.Core/Services/Service_SettingsErrorHandler.cs",
+    "Module_Settings.Core/Services/Service_SettingsManifestProvider.cs",
+    "Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs",
+    "Module_Settings.Core/Services/SetSettingCommand.cs",
+    "Module_Settings.Core/Services/SetSettingCommandHandler.cs",
+    "Module_Settings.Core/SETTABLE_OBJECTS_INVENTORY.md",
+    "Module_Settings.Core/Validators/SetSettingCommandValidator.cs"
+  ],
+  "relatedServices": [
+    "ISettingsCache",
+    "ISettingsEncryptionService",
+    "ISettingsManifestProvider",
+    "ISettingsMetadataRegistry",
+    "IService_SettingsCoreFacade",
+    "IService_SettingsErrorHandler",
+    "Service_SettingsCache",
+    "Service_SettingsCoreFacade",
+    "Service_SettingsEncryptionService",
+    "Service_SettingsErrorHandler",
+    "Service_SettingsManifestProvider",
+    "Service_SettingsMetadataRegistry"
+  ],
+  "promptDefaults": {
+    "audience": "Developer",
+    "docAudience": "Developer",
+    "mockupAudience": "Developer",
+    "reviewScope": "Single module",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Settings manifest bootstrap",
+      "Metadata registry and cache",
+      "CQRS-backed setting reads and writes",
+      "Settings validation and encryption"
+    ],
+    "screens": ["Settings infrastructure only"],
+    "currentUiPatterns": ["Form"],
+    "desiredUiPatterns": ["Form"],
+    "uiElements": [
+      "Manifest-backed definitions",
+      "Validation pipeline",
+      "Facade-backed setting operations"
+    ],
+    "userActions": [
+      "Load default settings definitions",
+      "Read a setting",
+      "Set a setting",
+      "Reset a setting"
+    ],
+    "preserveRules": [
+      "Keep manifest keys and defaults aligned with the registry",
+      "Keep CQRS command and query behavior unchanged",
+      "Keep settings validation and encryption behavior unchanged"
+    ],
+    "validationHints": [
+      "Confirm manifest-backed definitions remain in sync with the registry and facade",
+      "Confirm get, set, and reset operations still flow through the same CQRS services"
+    ]
+  }
+}

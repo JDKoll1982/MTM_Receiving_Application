@@ -1,0 +1,162 @@
+[
+  {
+    "Module": "Infrastructure",
+    "MetadataStatus": "MissingMetadataFolder",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Infrastructure-copilotforms-metadata-report-20260322-185049.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Infrastructure-copilotforms-metadata-report-20260322-185049.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 7,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Core",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Core-copilotforms-metadata-report-20260322-185051.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Core-copilotforms-metadata-report-20260322-185051.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 2,
+    "UnreferencedServices": 2
+  },
+  {
+    "Module": "Module_Dunnage",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Dunnage-copilotforms-metadata-report-20260322-185051.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Dunnage-copilotforms-metadata-report-20260322-185051.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Receiving",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Receiving-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Receiving-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Reporting",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Reporting-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Reporting-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Settings.Core",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Core-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Core-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Settings.DeveloperTools",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.DeveloperTools-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.DeveloperTools-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Settings.Dunnage",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Dunnage-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Dunnage-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Settings.Receiving",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Receiving-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Receiving-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Settings.Volvo",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Volvo-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Volvo-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Settings.Reporting",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Reporting-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Settings.Reporting-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Shared",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Shared-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Shared-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_ShipRec_Tools",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_ShipRec_Tools-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_ShipRec_Tools-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Module_Volvo",
+    "MetadataStatus": "MetadataPresent",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Volvo-copilotforms-metadata-report-20260322-185052.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Module_Volvo-copilotforms-metadata-report-20260322-185052.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 0,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "Database",
+    "MetadataStatus": "MissingMetadataFolder",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Database-copilotforms-metadata-report-20260322-185053.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\Database-copilotforms-metadata-report-20260322-185053.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 201,
+    "UnreferencedServices": 0
+  },
+  {
+    "Module": "MTM_Receiving_Application.Tests",
+    "MetadataStatus": "MissingMetadataFolder",
+    "MarkdownReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\MTM_Receiving_Application.Tests-copilotforms-metadata-report-20260322-185053.md",
+    "JsonReport": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Scripts\\MetaData_Reports\\outputs\\MTM_Receiving_Application.Tests-copilotforms-metadata-report-20260322-185053.json",
+    "UnindexedMetadataFiles": 0,
+    "MissingMetadataFilesFromIndex": 0,
+    "UnreferencedSourceFiles": 25,
+    "UnreferencedServices": 0
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "module": "Module_Settings.Core",
+  "owner": "Platform Team",
+  "lastUpdated": "2026-03-22",
+  "featureFiles": [
+    "settings-core-shell-navigation.json",
+    "settings-core-system-database-logging.json",
+    "settings-core-sharedpaths-theme.json",
+    "settings-core-users-roles.json",
+    "settings-core-settings-platform.json"
+  ]
+}

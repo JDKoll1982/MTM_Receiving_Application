@@ -1,0 +1,75 @@
+{
+  "Module": "Module_Settings.DeveloperTools",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.DeveloperTools",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.DeveloperTools",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 28,
+  "FeatureReports": [
+    {
+      "FeatureId": "settings-developer-tools-diagnostics",
+      "Name": "Settings Database Diagnostics",
+      "MetadataFile": "settings-developer-tools-diagnostics.json",
+      "ReferencedFiles": [
+        "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+        "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+        "Module_Settings.DeveloperTools/Data/Dao_SettingsDiagnostics.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbDaoResult.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbProcedureResult.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbTableResult.cs",
+        "Module_Settings.DeveloperTools/Models/Model_SettingsDbTestReport.cs",
+        "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommand.cs",
+        "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommandHandler.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_SettingsDeveloperTools_DatabaseTest.cs",
+        "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml",
+        "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml.cs"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "settings-developer-tools-shell",
+      "Name": "Developer Tools Settings Shell",
+      "MetadataFile": "settings-developer-tools-shell.json",
+      "ReferencedFiles": [
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureA.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureB.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureC.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureD.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_NavigationHub.cs",
+        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_SettingsOverview.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml.cs",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml",
+        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml.cs"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "settings-developer-tools-shell.json",
+    "settings-developer-tools-diagnostics.json"
+  ],
+  "ActualFeatureFiles": [
+    "settings-developer-tools-diagnostics.json",
+    "settings-developer-tools-shell.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

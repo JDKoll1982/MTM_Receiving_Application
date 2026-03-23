@@ -163,6 +163,8 @@ function Get-ExpectedServiceReferencePaths {
 
     return @(
         Join-Path $ModuleNameValue (Join-Path 'Contracts' ($ServiceName + '.cs'))
+        Join-Path $ModuleNameValue (Join-Path 'Contracts\Services' ($ServiceName + '.cs'))
+        Join-Path $ModuleNameValue (Join-Path 'Interfaces' ($ServiceName + '.cs'))
         Join-Path $ModuleNameValue (Join-Path 'Services' ($ServiceName + '.cs'))
     ) | Sort-Object -Unique
 }
@@ -340,6 +342,7 @@ function New-ModuleMetadataReport {
             foreach ($serviceName in $referencedServices) {
                 $matchingServiceFiles = @(
                     Get-ChildItem -Path (Join-Path $modulePath 'Contracts') -Recurse -File -Filter ($serviceName + '.cs') -ErrorAction SilentlyContinue
+                    Get-ChildItem -Path (Join-Path $modulePath 'Interfaces') -Recurse -File -Filter ($serviceName + '.cs') -ErrorAction SilentlyContinue
                     Get-ChildItem -Path (Join-Path $modulePath 'Services') -Recurse -File -Filter ($serviceName + '.cs') -ErrorAction SilentlyContinue
                 ) | Sort-Object FullName -Unique
 
@@ -389,15 +392,25 @@ function New-ModuleMetadataReport {
         }
     ) | Sort-Object -Unique
 
-    $serviceFiles = @(Get-ChildItem -Path (Join-Path $modulePath 'Services') -File -Filter '*.cs' -ErrorAction SilentlyContinue)
-    $contractFiles = @(Get-ChildItem -Path (Join-Path $modulePath 'Contracts') -File -Filter '*.cs' -ErrorAction SilentlyContinue)
+    $serviceFiles = @(Get-ChildItem -Path (Join-Path $modulePath 'Services') -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue)
+    $contractFiles = @(Get-ChildItem -Path (Join-Path $modulePath 'Contracts') -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue)
+    $interfaceFiles = @(Get-ChildItem -Path (Join-Path $modulePath 'Interfaces') -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue)
 
     $liveServiceNames = @(
         foreach ($serviceFile in $serviceFiles) {
-            $serviceFile.BaseName
+            if ($serviceFile.BaseName -like 'Service_*') {
+                $serviceFile.BaseName
+            }
         }
         foreach ($contractFile in $contractFiles) {
-            $contractFile.BaseName
+            if ($contractFile.BaseName -like 'IService_*') {
+                $contractFile.BaseName
+            }
+        }
+        foreach ($interfaceFile in $interfaceFiles) {
+            if ($interfaceFile.BaseName -like 'IService_*') {
+                $interfaceFile.BaseName
+            }
         }
     ) | Sort-Object -Unique
     $referencedServiceSet = @($allReferencedServices | Sort-Object -Unique)

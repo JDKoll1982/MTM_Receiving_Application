@@ -13,12 +13,12 @@ DELIMITER $$
 CREATE PROCEDURE `sp_Auth_User_Update`(
     IN p_employee_number INT,
     IN p_full_name VARCHAR(100),
-    IN p_pin VARCHAR(4),
+    IN p_pin VARCHAR(64),
     IN p_department VARCHAR(50),
     IN p_shift VARCHAR(20),
     IN p_is_active TINYINT(1),
-    IN p_visual_username VARCHAR(50),
-    IN p_visual_password VARCHAR(100),
+    IN p_visual_username VARCHAR(256),
+    IN p_visual_password VARCHAR(256),
     IN p_updated_by VARCHAR(50),
     OUT p_error_message VARCHAR(500)
 ) sp: BEGIN DECLARE v_existing_count INT DEFAULT 0;
@@ -44,11 +44,11 @@ LEAVE sp;
 
 END IF;
 
--- Validate PIN
+-- Validate protected PIN payload when supplied
 IF p_pin IS NOT NULL
-AND p_pin NOT REGEXP '^[0-9]{4}$' THEN
+AND TRIM(p_pin) = '' THEN
 SET
-    p_error_message = 'PIN must be exactly 4 numeric digits';
+    p_error_message = 'Protected PIN value cannot be empty when provided';
 
 LEAVE sp;
 
@@ -69,7 +69,10 @@ UPDATE
     auth_users
 SET
     full_name = TRIM(p_full_name),
-    pin = p_pin,
+    pin = CASE
+        WHEN p_pin IS NULL OR TRIM(p_pin) = '' THEN pin
+        ELSE p_pin
+    END,
     department = TRIM(p_department),
     shift = p_shift,
     is_active = p_is_active,

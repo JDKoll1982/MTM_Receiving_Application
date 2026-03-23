@@ -1,0 +1,93 @@
+{
+  "Module": "MTM_Receiving_Application.Tests",
+  "GeneratedAt": "2026-03-22T18:50:53",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\MTM_Receiving_Application.Tests",
+  "MetadataStatus": "MissingMetadataFolder",
+  "SourceFileCount": 25,
+  "FeatureReports": [],
+  "IndexFeatureFiles": [],
+  "ActualFeatureFiles": [],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/appsettings.Development.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/appsettings.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/Module_Settings.Core/Defaults/settings.manifest.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.deps.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.runtimeconfig.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.deps.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.runtimeconfig.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/workloads.j32.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/workloads.json",
+    "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/workloads.qnn.json",
+    "MTM_Receiving_Application.Tests/CopilotForms/CopilotFormsConfigTests.cs",
+    "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.AssemblyInfo.cs",
+    "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.GlobalUsings.g.cs",
+    "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.sourcelink.json",
+    "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/Verify.Attributes.cs",
+    "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/VerifyXunit.Attributes.cs",
+    "MTM_Receiving_Application.Tests/obj/MTM_Receiving_Application.Tests.csproj.nuget.dgspec.json",
+    "MTM_Receiving_Application.Tests/obj/project.assets.json",
+    "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.AssemblyInfo.cs",
+    "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.GlobalUsings.g.cs",
+    "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/Verify.Attributes.cs",
+    "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/VerifyXunit.Attributes.cs",
+    "MTM_Receiving_Application.Tests/README.md"
+  ],
+  "UnreferencedSourceFileGroups": [
+    {
+      "Area": "bin",
+      "Count": 10,
+      "Items": [
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/appsettings.Development.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/appsettings.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/Module_Settings.Core/Defaults/settings.manifest.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.deps.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.runtimeconfig.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.deps.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.runtimeconfig.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/workloads.j32.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/workloads.json",
+        "MTM_Receiving_Application.Tests/bin/ARM64/Debug/net10.0-windows10.0.22621.0/workloads.qnn.json"
+      ]
+    },
+    {
+      "Area": "CopilotForms",
+      "Count": 1,
+      "Items": [
+        "MTM_Receiving_Application.Tests/CopilotForms/CopilotFormsConfigTests.cs"
+      ]
+    },
+    {
+      "Area": "obj",
+      "Count": 13,
+      "Items": [
+        "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+        "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.AssemblyInfo.cs",
+        "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.GlobalUsings.g.cs",
+        "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.sourcelink.json",
+        "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/Verify.Attributes.cs",
+        "MTM_Receiving_Application.Tests/obj/ARM64/Debug/net10.0-windows10.0.22621.0/VerifyXunit.Attributes.cs",
+        "MTM_Receiving_Application.Tests/obj/MTM_Receiving_Application.Tests.csproj.nuget.dgspec.json",
+        "MTM_Receiving_Application.Tests/obj/project.assets.json",
+        "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+        "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.AssemblyInfo.cs",
+        "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/MTM_Receiving_Application.Tests.GlobalUsings.g.cs",
+        "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/Verify.Attributes.cs",
+        "MTM_Receiving_Application.Tests/obj/x64/Debug/net10.0-windows10.0.22621.0/VerifyXunit.Attributes.cs"
+      ]
+    },
+    {
+      "Area": "README.md",
+      "Count": 1,
+      "Items": [
+        "MTM_Receiving_Application.Tests/README.md"
+      ]
+    }
+  ],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

@@ -13,7 +13,7 @@ DELIMITER $$
 
 CREATE PROCEDURE `sp_Auth_User_ValidatePin`(
     IN p_username VARCHAR(50),
-    IN p_pin VARCHAR(4)
+    IN p_pin VARCHAR(64)
 )
 BEGIN
     -- Validate username and PIN combination

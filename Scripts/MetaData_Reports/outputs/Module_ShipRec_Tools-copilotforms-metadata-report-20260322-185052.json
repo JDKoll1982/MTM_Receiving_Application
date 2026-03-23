@@ -1,0 +1,81 @@
+{
+  "Module": "Module_ShipRec_Tools",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_ShipRec_Tools",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_ShipRec_Tools",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 16,
+  "FeatureReports": [
+    {
+      "FeatureId": "shiprec-tool-outside-service-history",
+      "Name": "Outside Service History Lookup",
+      "MetadataFile": "shiprec-tool-outside-service-history.json",
+      "ReferencedFiles": [
+        "Module_ShipRec_Tools/Contracts/IService_Tool_OutsideServiceHistory.cs",
+        "Module_ShipRec_Tools/Services/Service_Tool_OutsideServiceHistory.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_OutsideServiceHistory.cs",
+        "Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml",
+        "Module_ShipRec_Tools/Views/View_Tool_OutsideServiceHistory.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_Tool_OutsideServiceHistory",
+        "Service_Tool_OutsideServiceHistory"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "shiprec-tools-catalog",
+      "Name": "ShipRec Tool Catalog",
+      "MetadataFile": "shiprec-tools-catalog.json",
+      "ReferencedFiles": [
+        "Module_ShipRec_Tools/Enums/Enum_ToolCategory.cs",
+        "Module_ShipRec_Tools/Models/Model_ToolDefinition.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_ToolSelection.cs",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_ToolSelection.xaml",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_ToolSelection.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_ShipRecTools_Navigation",
+        "Service_ShipRecTools_Navigation"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    },
+    {
+      "FeatureId": "shiprec-tools-shell",
+      "Name": "ShipRec Tools Shell",
+      "MetadataFile": "shiprec-tools-shell.json",
+      "ReferencedFiles": [
+        "Module_ShipRec_Tools/Contracts/IService_ShipRecTools_Navigation.cs",
+        "Module_ShipRec_Tools/Services/Service_ShipRecTools_Navigation.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs",
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_Base.cs",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml",
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml.cs"
+      ],
+      "ReferencedServices": [
+        "IService_ShipRecTools_Navigation",
+        "Service_ShipRecTools_Navigation"
+      ],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "shiprec-tools-shell.json",
+    "shiprec-tools-catalog.json",
+    "shiprec-tool-outside-service-history.json"
+  ],
+  "ActualFeatureFiles": [
+    "shiprec-tool-outside-service-history.json",
+    "shiprec-tools-catalog.json",
+    "shiprec-tools-shell.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

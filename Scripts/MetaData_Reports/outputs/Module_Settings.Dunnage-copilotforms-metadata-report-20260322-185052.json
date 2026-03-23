@@ -1,0 +1,53 @@
+{
+  "Module": "Module_Settings.Dunnage",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.Dunnage",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.Dunnage",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 21,
+  "FeatureReports": [
+    {
+      "FeatureId": "settings-dunnage-shell",
+      "Name": "Dunnage Settings Shell",
+      "MetadataFile": "settings-dunnage-shell.json",
+      "ReferencedFiles": [
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Audit.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_NavigationHub.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Permissions.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_SettingsOverview.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UiUx.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UserPreferences.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Workflow.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml.cs"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "settings-dunnage-shell.json"
+  ],
+  "ActualFeatureFiles": [
+    "settings-dunnage-shell.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

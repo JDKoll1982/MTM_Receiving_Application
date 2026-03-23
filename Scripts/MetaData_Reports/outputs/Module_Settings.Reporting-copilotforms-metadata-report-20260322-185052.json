@@ -1,0 +1,50 @@
+{
+  "Module": "Module_Settings.Reporting",
+  "GeneratedAt": "2026-03-22T18:50:52",
+  "ModulePath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Settings.Reporting",
+  "MetadataPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\docs\\CopilotForms\\data\\module-metadata\\Module_Settings.Reporting",
+  "MetadataStatus": "MetadataPresent",
+  "SourceFileCount": 18,
+  "FeatureReports": [
+    {
+      "FeatureId": "settings-reporting-shell",
+      "Name": "Reporting Settings Shell",
+      "MetadataFile": "settings-reporting-shell.json",
+      "ReferencedFiles": [
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_BusinessRules.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_EmailUx.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_FileIO.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_NavigationHub.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_Permissions.cs",
+        "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_SettingsOverview.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml.cs",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml",
+        "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml.cs"
+      ],
+      "ReferencedServices": [],
+      "MissingReferencedFiles": [],
+      "MissingServiceContracts": []
+    }
+  ],
+  "IndexFeatureFiles": [
+    "settings-reporting-shell.json"
+  ],
+  "ActualFeatureFiles": [
+    "settings-reporting-shell.json"
+  ],
+  "UnindexedMetadataFiles": [],
+  "MissingMetadataFilesFromIndex": [],
+  "UnreferencedSourceFiles": [],
+  "UnreferencedSourceFileGroups": [],
+  "UnreferencedServices": [],
+  "UnreferencedServiceGroups": []
+}

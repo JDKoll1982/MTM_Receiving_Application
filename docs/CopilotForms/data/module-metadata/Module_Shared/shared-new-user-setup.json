@@ -2,7 +2,7 @@
   "id": "shared-new-user-setup",
   "module": "Module_Shared",
   "name": "New User Setup",
-  "summary": "Shared first-run setup dialog used to guide a new user through initial application setup tasks.",
+  "summary": "Shared first-run setup dialog used to guide a new user through initial account setup, including separate first/last name capture and optional ERP credential entry.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Shared/ViewModels/ViewModel_Shared_NewUserSetup.cs",
@@ -21,7 +21,9 @@
     "desiredUiPatterns": ["Dialog", "Form"],
     "userActions": ["Complete first-run setup steps successfully"],
     "validationHints": [
-      "Confirm new-user setup still guides first-run configuration correctly"
+      "Confirm new-user setup still guides first-run configuration correctly",
+      "Confirm first and last name inputs compose the saved full name in the expected format",
+      "Confirm optional ERP credentials can still be entered during first-run account setup"
     ]
   }
 }

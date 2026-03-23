@@ -1,0 +1,73 @@
+{
+  "id": "settings-core-shell-navigation",
+  "module": "Module_Settings.Core",
+  "name": "Settings Shell And Navigation",
+  "summary": "Core settings window shell, navigation hub, paged button layout, placeholder control, and window-host infrastructure for the settings experience.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
+    "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
+    "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
+    "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs",
+    "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
+    "Module_Settings.Core/Services/Service_SettingsPagination.cs",
+    "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
+    "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
+    "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
+    "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
+    "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs"
+  ],
+  "relatedServices": [
+    "IService_SettingsPagination",
+    "IService_SettingsWindowHost",
+    "Service_SettingsPagination",
+    "Service_SettingsWindowHost"
+  ],
+  "promptDefaults": {
+    "audience": "IT Administrator",
+    "docAudience": "IT Administrator",
+    "mockupAudience": "IT Administrator",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Settings window shell",
+      "Navigation hub",
+      "Paged settings navigation",
+      "Placeholder and empty-state UI"
+    ],
+    "screens": [
+      "View_Settings_CoreWindow.xaml",
+      "View_Settings_CoreNavigationHub.xaml",
+      "View_SettingsPlaceholderControl.xaml"
+    ],
+    "currentUiPatterns": ["Form", "Card list", "Tabs"],
+    "desiredUiPatterns": ["Card list", "Split layout", "Tabs"],
+    "uiElements": [
+      "Settings window title",
+      "Navigation step buttons",
+      "Back and next navigation",
+      "Cancel, save, and reset actions",
+      "Placeholder content"
+    ],
+    "userActions": [
+      "Open the settings window",
+      "Move between settings areas",
+      "Understand which navigation actions are available",
+      "See placeholders for unfinished settings pages"
+    ],
+    "preserveRules": [
+      "Keep navigation paging behavior unchanged",
+      "Keep window hosting behavior unchanged"
+    ],
+    "validationHints": [
+      "Confirm navigation buttons still page correctly",
+      "Confirm the shell still hosts the selected settings page correctly"
+    ]
+  }
+}

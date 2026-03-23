@@ -1,0 +1,63 @@
+{
+  "id": "settings-core-system-database-logging",
+  "module": "Module_Settings.Core",
+  "name": "System Database And Logging Settings",
+  "summary": "System-scoped settings pages for registry-backed definitions, database defaults, and logging configuration surfaces.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
+    "Module_Settings.Core/Models/Model_SettingsDefinition.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_System.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Logging.cs",
+    "Module_Settings.Core/Views/View_Settings_System.xaml",
+    "Module_Settings.Core/Views/View_Settings_System.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Database.xaml",
+    "Module_Settings.Core/Views/View_Settings_Database.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_Logging.xaml",
+    "Module_Settings.Core/Views/View_Settings_Logging.xaml.cs"
+  ],
+  "relatedServices": [
+    "ISettingsMetadataRegistry",
+    "Service_SettingsMetadataRegistry"
+  ],
+  "promptDefaults": {
+    "audience": "IT Administrator",
+    "docAudience": "IT Administrator",
+    "mockupAudience": "IT Administrator",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "System settings definitions",
+      "Database defaults",
+      "Logging defaults"
+    ],
+    "screens": [
+      "View_Settings_System.xaml",
+      "View_Settings_Database.xaml",
+      "View_Settings_Logging.xaml"
+    ],
+    "currentUiPatterns": ["Form", "Tabs"],
+    "desiredUiPatterns": ["Form", "Split layout", "Tabs"],
+    "uiElements": [
+      "System settings list",
+      "Database status message",
+      "Logging status message"
+    ],
+    "userActions": [
+      "Review system-scoped settings",
+      "Open database configuration defaults",
+      "Open logging configuration defaults"
+    ],
+    "preserveRules": [
+      "Keep system-scope filtering unchanged",
+      "Keep placeholder status messaging unchanged unless requested"
+    ],
+    "validationHints": [
+      "Confirm system definitions still filter to system scope",
+      "Confirm database and logging pages still load inside the settings host"
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "settings-core-users-roles",
+  "module": "Module_Settings.Core",
+  "name": "Users And Roles Settings",
+  "summary": "User management, roles, audit history, and preference-backed settings pages for maintaining application access, protected Visual credentials, and defaults.",
+  "owner": "Platform Team",
+  "relatedFiles": [
+    "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreRoles.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
+    "Module_Settings.Core/Data/Dao_SettingsCoreUserRoles.cs",
+    "Module_Settings.Core/Enums/Enum_SettingsPermissionLevel.cs",
+    "Module_Settings.Core/Interfaces/IService_UserPreferences.cs",
+    "Module_Settings.Core/Models/Model_SettingsAuditEntry.cs",
+    "Module_Settings.Core/Models/Model_SettingsRole.cs",
+    "Module_Settings.Core/Models/Model_SettingsUserRole.cs",
+    "Module_Settings.Core/Models/Model_UserSetting.cs",
+    "Module_Settings.Core/Services/Service_UserPreferences.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs",
+    "Module_Settings.Core/Views/View_Settings_Users.xaml",
+    "Module_Settings.Core/Views/View_Settings_Users.xaml.cs"
+  ],
+  "relatedServices": ["IService_UserPreferences", "Service_UserPreferences"],
+  "promptDefaults": {
+    "audience": "IT Administrator",
+    "docAudience": "IT Administrator",
+    "mockupAudience": "IT Administrator",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "User management",
+      "Role assignment",
+      "Visual credential management",
+      "Preference-backed user defaults"
+    ],
+    "screens": ["View_Settings_Users.xaml"],
+    "currentUiPatterns": ["Table", "Form"],
+    "desiredUiPatterns": ["Split layout", "Form", "Table"],
+    "uiElements": [
+      "Users list",
+      "Selected user details",
+      "Add user action",
+      "Edit user action",
+      "Save user action",
+      "Department list"
+    ],
+    "userActions": [
+      "Load users",
+      "Add a user",
+      "Edit a user",
+      "Maintain Visual credentials",
+      "Save access-related changes"
+    ],
+    "preserveRules": [
+      "Keep user validation rules unchanged",
+      "Keep role and preference persistence behavior unchanged"
+    ],
+    "validationHints": [
+      "Confirm user list loading still works",
+      "Confirm create and edit flows still save correctly",
+      "Confirm department lookup still loads",
+      "Confirm existing PINs are not shown in the edit form and blank PIN leaves the current PIN unchanged",
+      "Confirm Visual credentials still save correctly after app-layer protection"
+    ]
+  }
+}

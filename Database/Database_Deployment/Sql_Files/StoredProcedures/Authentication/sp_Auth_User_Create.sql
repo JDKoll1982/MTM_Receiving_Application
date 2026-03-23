@@ -113,12 +113,12 @@ CREATE PROCEDURE `sp_Auth_User_Create`(
     IN p_employee_number INT,
     IN p_windows_username VARCHAR(50),
     IN p_full_name VARCHAR(100),
-    IN p_pin VARCHAR(4),
+    IN p_pin VARCHAR(64),
     IN p_department VARCHAR(50),
     IN p_shift VARCHAR(20),
     IN p_created_by VARCHAR(50),
-    IN p_visual_username VARCHAR(50),
-    IN p_visual_password VARCHAR(100),
+    IN p_visual_username VARCHAR(256),
+    IN p_visual_password VARCHAR(256),
     OUT p_error_message VARCHAR(500)
 ) BEGIN DECLARE v_existing_count INT DEFAULT 0;
 
@@ -131,10 +131,10 @@ SET
 -- Start transaction to ensure atomicity of validation + insert
 START TRANSACTION;
 
--- VALIDATION 1: PIN Format (must be exactly 4 numeric digits)
-IF p_pin NOT REGEXP '^[0-9]{4}$' THEN
+-- VALIDATION 1: Protected PIN value is required
+IF p_pin IS NULL OR TRIM(p_pin) = '' THEN
 SET
-    p_error_message = 'PIN must be exactly 4 numeric digits';
+    p_error_message = 'Protected PIN value is required';
 
 ROLLBACK;
 
@@ -253,8 +253,8 @@ VALUES
         TRIM(p_department),
         p_shift,
         TRUE,
-        NULLIF(TRIM(p_visual_username), ''),
-        NULLIF(TRIM(p_visual_password), ''),
+        NULLIF(TRIM(COALESCE(p_visual_username, '')), ''),
+        NULLIF(TRIM(COALESCE(p_visual_password, '')), ''),
         p_created_by,
         NOW(),
         NOW()

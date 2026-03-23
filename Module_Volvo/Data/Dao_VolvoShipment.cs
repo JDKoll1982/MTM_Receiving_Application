@@ -205,32 +205,21 @@ public class Dao_VolvoShipment
     {
         try
         {
-            await using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
+            var parameters = new Dictionary<string, object> { { "id", shipmentId } };
+            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+                _connectionString,
+                "sp_Volvo_Shipment_GetById",
+                MapFromReader,
+                parameters
+            );
 
-            await using var command = new MySqlCommand
-            {
-                Connection = connection,
-                CommandText =
-                    @"
-                    SELECT id, shipment_date, shipment_number, po_number, receiver_number,
-                           employee_number, notes, status, created_date, modified_date, is_archived
-                    FROM volvo_label_data
-                    WHERE id = @p_id",
-                CommandType = CommandType.Text,
-            };
-
-            command.Parameters.AddWithValue("@p_id", shipmentId);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            if (await reader.ReadAsync())
+            if (result.Success)
             {
                 return new Model_Dao_Result<Model_VolvoShipment?>
                 {
                     Success = true,
-                    Data = MapFromReader(reader),
-                    AffectedRows = 1,
+                    Data = result.Data,
+                    AffectedRows = result.AffectedRows,
                 };
             }
 
@@ -238,7 +227,8 @@ public class Dao_VolvoShipment
             {
                 Success = false,
                 Data = null,
-                ErrorMessage = "Shipment not found",
+                ErrorMessage = result.ErrorMessage ?? "Shipment not found",
+                Severity = result.Severity,
             };
         }
         catch (Exception ex)
@@ -317,18 +307,25 @@ public class Dao_VolvoShipment
     {
         try
         {
-            // Query to get max shipment_number + 1
-            await using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
+            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+                _connectionString,
+                "sp_Volvo_Shipment_GetNextShipmentNumber",
+                reader => Convert.ToInt32(reader["next_shipment_number"]),
+                null
+            );
 
-            const string query =
-                "SELECT COALESCE(MAX(shipment_number), 0) + 1 FROM volvo_label_data";
-            await using var command = new MySqlCommand(query, connection);
+            if (result.Success)
+            {
+                return result;
+            }
 
-            var result = await command.ExecuteScalarAsync();
-            var nextNumber = Convert.ToInt32(result);
-
-            return new Model_Dao_Result<int> { Success = true, Data = nextNumber };
+            return new Model_Dao_Result<int>
+            {
+                Success = false,
+                ErrorMessage = result.ErrorMessage ?? "Failed to get next shipment number.",
+                Severity = result.Severity,
+                Exception = result.Exception,
+            };
         }
         catch (Exception ex)
         {

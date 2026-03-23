@@ -1,0 +1,457 @@
+# CopilotForms Module Metadata Report
+
+- Generated: 2026-03-22T18:50:53
+- Module: Database
+- Metadata status: MissingMetadataFolder
+- Source file count: 201
+- Metadata folder: C:\Users\johnk\source\repos\MTM_Receiving_Application\docs\CopilotForms\data\module-metadata\Database
+
+## Metadata Availability
+
+- No split CopilotForms metadata folder exists for this path yet.
+- Review the source-file groups below to decide whether this path should get a new metadata folder and index.json.
+
+## Summary
+
+- Unindexed metadata files: 0
+- Missing metadata files from index: 0
+- Unreferenced source files: 201
+- Unreferenced services/contracts: 0
+
+## Index Findings
+
+- Index file list matches the metadata files on disk.
+
+## Feature Findings
+
+## Live Source Files Not Referenced By Metadata
+
+- Database/Database_Deployment/outputs/sql-validation-20260322-171539.json
+- Database/Database_Deployment/outputs/sql-validation-20260322-171831.json
+- Database/Database_Deployment/outputs/sql-validation-20260322-173251.json
+- Database/Database_Deployment/outputs/sql-validation-20260322-174741.json
+- Database/Database_Deployment/Sql_Files/Migrations/01_Migration_receiving_label_queue_history_alignment.sql
+- Database/Database_Deployment/Sql_Files/Migrations/02_Migration_receiving_label_data_load_id_unique.sql
+- Database/Database_Deployment/Sql_Files/Migrations/03_Migration_dunnage_history_parity.sql
+- Database/Database_Deployment/Sql_Files/Migrations/04_Migration_volvo_line_location.sql
+- Database/Database_Deployment/Sql_Files/Schemas/01_Table_auth_departments.sql
+- Database/Database_Deployment/Sql_Files/Schemas/02_Table_auth_users.sql
+- Database/Database_Deployment/Sql_Files/Schemas/03_Table_auth_workstation_config.sql
+- Database/Database_Deployment/Sql_Files/Schemas/04_Table_dunnage_types.sql
+- Database/Database_Deployment/Sql_Files/Schemas/05_Table_dunnage_parts.sql
+- Database/Database_Deployment/Sql_Files/Schemas/06_Table_dunnage_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/07_Table_dunnage_requires_inventory.sql
+- Database/Database_Deployment/Sql_Files/Schemas/08_Table_dunnage_specs.sql
+- Database/Database_Deployment/Sql_Files/Schemas/09_Table_dunnage_custom_fields.sql
+- Database/Database_Deployment/Sql_Files/Schemas/09_Table_dunnage_non_po_entries.sql
+- Database/Database_Deployment/Sql_Files/Schemas/10_Table_receiving_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/11_Table_receiving_label_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/12_Table_receiving_package_type_mapping.sql
+- Database/Database_Deployment/Sql_Files/Schemas/13_Table_receiving_package_types.sql
+- Database/Database_Deployment/Sql_Files/Schemas/13_Table_Receiving_Quality_Holds_Schema.sql
+- Database/Database_Deployment/Sql_Files/Schemas/14_Table_reporting_scheduled_reports.sql
+- Database/Database_Deployment/Sql_Files/Schemas/19_Table_settings_user_roles.sql
+- Database/Database_Deployment/Sql_Files/Schemas/20_Table_settings_roles.sql
+- Database/Database_Deployment/Sql_Files/Schemas/21_Table_settings_activity.sql
+- Database/Database_Deployment/Sql_Files/Schemas/22_Table_settings_dunnage_personal.sql
+- Database/Database_Deployment/Sql_Files/Schemas/23_Table_settings_module_volvo.sql
+- Database/Database_Deployment/Sql_Files/Schemas/24_Table_settings_personal.sql
+- Database/Database_Deployment/Sql_Files/Schemas/25_Table_settings_personal_activity_log.sql
+- Database/Database_Deployment/Sql_Files/Schemas/27_Table_settings_universal.sql
+- Database/Database_Deployment/Sql_Files/Schemas/28_Table_volvo_label_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/29_Table_volvo_line_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/30_Table_volvo_masterdata.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_dunnage_label_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_volvo_label_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_volvo_line_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_volvo_part_components.sql
+- Database/Database_Deployment/Sql_Files/SeedData/01_seed_volvo_data.sql
+- Database/Database_Deployment/Sql_Files/SeedData/02_seed_settingscore_roles.sql
+- Database/Database_Deployment/Sql_Files/SeedData/03_seed_dunnage_data.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Deactivate.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_UpdateVisualCredentials.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_Department_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_Terminal_GetShared.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_Create.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_GetByWindowsUsername.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_GetDefaultMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_IsWindowsUsernameUnique.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_SeedDefaultModes.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_UpdateDefaultDunnageMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_UpdateDefaultMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_UpdateDefaultReceivingMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_ValidatePin.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_Workstation_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_GetByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Check.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_GetByPart.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_ClearToHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_InsertBatch.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_loads_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Loads_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Loads_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Loads_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_loads_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_CountTransactions.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetTransactionCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_search.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_CountPartsUsingSpec.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_DeleteById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_DeleteByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetAllKeys.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_specs_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_specs_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_CheckDuplicate.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_CountParts.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_CountTransactions.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_types_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetPartCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetTransactionCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetUsageCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_types_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_types_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Import.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_ClearToHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Line_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_GetByPrefix.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Save.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypes_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_QualityHolds_GetByLoadID.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_QualityHolds_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_QualityHolds_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_Availability_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_DunnageHistory_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingHistory_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_VolvoHistory_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Auth_Activity_Log.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Dunnage_UserPreferences_GetRecentIcons.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Dunnage_UserPreferences_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetActive.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetDue.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_ToggleActive.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_UpdateLastRun.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_SettingsCore.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Reset.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_LabelData_ClearToHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_part_check_references.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartComponent_DeleteByParent.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartComponent_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartComponent_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_SetActive.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_complete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetNextShipmentNumber.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetPending.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_GetByShipment.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Update.sql
+- Database/Database_Deployment/Sql_Files/Triggers/01_Triggers_Module_Volvo.sql
+- Database/Database_Deployment/Sql_Files/Views/01_View_dunnage_history.sql
+- Database/Database_Deployment/Sql_Files/Views/02_View_receiving_history.sql
+- Database/Database_Deployment/Sql_Files/Views/03_View_volvo_history.sql
+- Database/Database_Deployment/Sql_Files/Views/04_View_volvo_label_data_history.sql
+- Database/Database_Deployment/sql-object-catalog.json
+- Database/InforVisualScripts/PowerShell_Scripts/Test-POLineQuery.sql
+- Database/InforVisualScripts/Queries/01_GetPOWithParts.sql
+- Database/InforVisualScripts/Queries/02_ValidatePONumber.sql
+- Database/InforVisualScripts/Queries/03_GetPartByNumber.sql
+- Database/InforVisualScripts/Queries/04_SearchPartsByDescription.sql
+- Database/InforVisualScripts/Queries/05_GetOutsideServiceHistoryByPart.sql
+- Database/InforVisualScripts/Queries/06_FuzzySearchPartsByID.sql
+- Database/InforVisualScripts/Queries/07_FuzzySearchVendorsByName.sql
+- Database/InforVisualScripts/Queries/08_GetOutsideServiceHistoryByVendor.sql
+- Database/InforVisualScripts/Queries/09_GetDistinctPartsByVendor.sql
+- Database/InforVisualScripts/Queries/10_GetOutsideServiceByVendorAndPart.sql
+- Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql
+- Database/InforVisualScripts/Queries/12_ValidatePartExists.sql
+- Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql
+- Database/InforVisualScripts/README.md
+- Database/InforVisualTest/01_GetPOWithParts.sql
+- Database/InforVisualTest/02_ValidatePONumber.sql
+- Database/InforVisualTest/03_GetPartByNumber.sql
+- Database/InforVisualTest/04_SearchPartsByDescription.sql
+- Database/InforVisualTest/README.md
+- Database/Scripts/ImportReceivingHistory/receiving_label_history_reconciliation.sql
+
+## Unreferenced Source Files By Area
+
+### Database_Deployment (180)
+
+- Database/Database_Deployment/outputs/sql-validation-20260322-171539.json
+- Database/Database_Deployment/outputs/sql-validation-20260322-171831.json
+- Database/Database_Deployment/outputs/sql-validation-20260322-173251.json
+- Database/Database_Deployment/outputs/sql-validation-20260322-174741.json
+- Database/Database_Deployment/Sql_Files/Migrations/01_Migration_receiving_label_queue_history_alignment.sql
+- Database/Database_Deployment/Sql_Files/Migrations/02_Migration_receiving_label_data_load_id_unique.sql
+- Database/Database_Deployment/Sql_Files/Migrations/03_Migration_dunnage_history_parity.sql
+- Database/Database_Deployment/Sql_Files/Migrations/04_Migration_volvo_line_location.sql
+- Database/Database_Deployment/Sql_Files/Schemas/01_Table_auth_departments.sql
+- Database/Database_Deployment/Sql_Files/Schemas/02_Table_auth_users.sql
+- Database/Database_Deployment/Sql_Files/Schemas/03_Table_auth_workstation_config.sql
+- Database/Database_Deployment/Sql_Files/Schemas/04_Table_dunnage_types.sql
+- Database/Database_Deployment/Sql_Files/Schemas/05_Table_dunnage_parts.sql
+- Database/Database_Deployment/Sql_Files/Schemas/06_Table_dunnage_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/07_Table_dunnage_requires_inventory.sql
+- Database/Database_Deployment/Sql_Files/Schemas/08_Table_dunnage_specs.sql
+- Database/Database_Deployment/Sql_Files/Schemas/09_Table_dunnage_custom_fields.sql
+- Database/Database_Deployment/Sql_Files/Schemas/09_Table_dunnage_non_po_entries.sql
+- Database/Database_Deployment/Sql_Files/Schemas/10_Table_receiving_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/11_Table_receiving_label_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/12_Table_receiving_package_type_mapping.sql
+- Database/Database_Deployment/Sql_Files/Schemas/13_Table_receiving_package_types.sql
+- Database/Database_Deployment/Sql_Files/Schemas/13_Table_Receiving_Quality_Holds_Schema.sql
+- Database/Database_Deployment/Sql_Files/Schemas/14_Table_reporting_scheduled_reports.sql
+- Database/Database_Deployment/Sql_Files/Schemas/19_Table_settings_user_roles.sql
+- Database/Database_Deployment/Sql_Files/Schemas/20_Table_settings_roles.sql
+- Database/Database_Deployment/Sql_Files/Schemas/21_Table_settings_activity.sql
+- Database/Database_Deployment/Sql_Files/Schemas/22_Table_settings_dunnage_personal.sql
+- Database/Database_Deployment/Sql_Files/Schemas/23_Table_settings_module_volvo.sql
+- Database/Database_Deployment/Sql_Files/Schemas/24_Table_settings_personal.sql
+- Database/Database_Deployment/Sql_Files/Schemas/25_Table_settings_personal_activity_log.sql
+- Database/Database_Deployment/Sql_Files/Schemas/27_Table_settings_universal.sql
+- Database/Database_Deployment/Sql_Files/Schemas/28_Table_volvo_label_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/29_Table_volvo_line_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/30_Table_volvo_masterdata.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_dunnage_label_data.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_volvo_label_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_volvo_line_history.sql
+- Database/Database_Deployment/Sql_Files/Schemas/31_Table_volvo_part_components.sql
+- Database/Database_Deployment/Sql_Files/SeedData/01_seed_volvo_data.sql
+- Database/Database_Deployment/Sql_Files/SeedData/02_seed_settingscore_roles.sql
+- Database/Database_Deployment/Sql_Files/SeedData/03_seed_dunnage_data.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Deactivate.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_UpdateVisualCredentials.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_Department_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_Terminal_GetShared.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_Create.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_GetByWindowsUsername.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_GetDefaultMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_IsWindowsUsernameUnique.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_SeedDefaultModes.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_UpdateDefaultDunnageMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_UpdateDefaultMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_UpdateDefaultReceivingMode.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_User_ValidatePin.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Authentication/sp_Auth_Workstation_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_GetByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Check.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_GetByPart.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_ClearToHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_InsertBatch.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_loads_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Loads_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Loads_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Loads_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_loads_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_CountTransactions.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_GetTransactionCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_search.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_CountPartsUsingSpec.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_DeleteById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_DeleteByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetAllKeys.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_GetByType.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_specs_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_specs_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_CheckDuplicate.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_CountParts.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_CountTransactions.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_types_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetPartCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetTransactionCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Types_GetUsageCount.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_types_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_types_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Import.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_ClearToHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Line_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_Load_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_GetByPrefix.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypeMappings_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Save.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_PackageTypes_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_QualityHolds_GetByLoadID.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_QualityHolds_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_QualityHolds_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_Availability_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_DunnageHistory_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingHistory_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_VolvoHistory_GetByDateRange.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Auth_Activity_Log.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Dunnage_UserPreferences_GetRecentIcons.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Dunnage_UserPreferences_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetActive.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetDue.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_ToggleActive.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_UpdateLastRun.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_SettingsCore.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Reset.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Upsert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_LabelData_ClearToHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_part_check_references.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartComponent_DeleteByParent.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartComponent_Get.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartComponent_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetAll.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_SetActive.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_PartMaster_Update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_complete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetById.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetHistory.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetNextShipmentNumber.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_Shipment_GetPending.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_update.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Delete.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_GetByShipment.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Insert.sql
+- Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Update.sql
+- Database/Database_Deployment/Sql_Files/Triggers/01_Triggers_Module_Volvo.sql
+- Database/Database_Deployment/Sql_Files/Views/01_View_dunnage_history.sql
+- Database/Database_Deployment/Sql_Files/Views/02_View_receiving_history.sql
+- Database/Database_Deployment/Sql_Files/Views/03_View_volvo_history.sql
+- Database/Database_Deployment/Sql_Files/Views/04_View_volvo_label_data_history.sql
+- Database/Database_Deployment/sql-object-catalog.json
+
+### InforVisualScripts (15)
+
+- Database/InforVisualScripts/PowerShell_Scripts/Test-POLineQuery.sql
+- Database/InforVisualScripts/Queries/01_GetPOWithParts.sql
+- Database/InforVisualScripts/Queries/02_ValidatePONumber.sql
+- Database/InforVisualScripts/Queries/03_GetPartByNumber.sql
+- Database/InforVisualScripts/Queries/04_SearchPartsByDescription.sql
+- Database/InforVisualScripts/Queries/05_GetOutsideServiceHistoryByPart.sql
+- Database/InforVisualScripts/Queries/06_FuzzySearchPartsByID.sql
+- Database/InforVisualScripts/Queries/07_FuzzySearchVendorsByName.sql
+- Database/InforVisualScripts/Queries/08_GetOutsideServiceHistoryByVendor.sql
+- Database/InforVisualScripts/Queries/09_GetDistinctPartsByVendor.sql
+- Database/InforVisualScripts/Queries/10_GetOutsideServiceByVendorAndPart.sql
+- Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql
+- Database/InforVisualScripts/Queries/12_ValidatePartExists.sql
+- Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql
+- Database/InforVisualScripts/README.md
+
+### InforVisualTest (5)
+
+- Database/InforVisualTest/01_GetPOWithParts.sql
+- Database/InforVisualTest/02_ValidatePONumber.sql
+- Database/InforVisualTest/03_GetPartByNumber.sql
+- Database/InforVisualTest/04_SearchPartsByDescription.sql
+- Database/InforVisualTest/README.md
+
+### Scripts (1)
+
+- Database/Scripts/ImportReceivingHistory/receiving_label_history_reconciliation.sql
+
+## Live Services Or Contracts Not Referenced By Metadata
+
+- Every scanned service or contract name appears in metadata.
+
+## Unreferenced Services By Type
+
+- No unreferenced service groups to report.
+## Update Guidance
+
+- Use this report to decide which feature JSON files or index entries are stale.
+- Do not treat this report as an auto-fix. Review the actual module code before changing summaries, hints, or related file lists.
+- Broken references are usually safe to fix first, then review unreferenced source files to decide whether they belong in existing features or require new metadata entries.

@@ -31,8 +31,8 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         public string FullName { get; set; } = string.Empty;
 
         /// <summary>
-        /// 4-digit numeric PIN for shared terminal login (plain text storage)
-        /// Not unique across users (shared PINs allowed)
+        /// Raw PIN value only while editing or creating a user.
+        /// Persisted storage uses a one-way protected value and is never round-tripped back into the UI.
         /// </summary>
         public string Pin { get; set; } = string.Empty;
 
@@ -52,12 +52,14 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         public bool IsActive { get; set; } = true;
 
         /// <summary>
-        /// Optional Visual/Infor ERP username (plain text storage)
+        /// Optional Visual/Infor ERP username.
+        /// Persisted storage uses reversible encryption and this property holds the decrypted runtime value.
         /// </summary>
         public string? VisualUsername { get; set; }
 
         /// <summary>
-        /// Optional Visual/Infor ERP password (plain text storage, masked in UI)
+        /// Optional Visual/Infor ERP password.
+        /// Persisted storage uses reversible encryption and this property holds the decrypted runtime value.
         /// </summary>
         public string? VisualPassword { get; set; }
 

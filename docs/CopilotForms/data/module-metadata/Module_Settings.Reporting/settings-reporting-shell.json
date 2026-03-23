@@ -1,0 +1,83 @@
+{
+  "id": "settings-reporting-shell",
+  "module": "Module_Settings.Reporting",
+  "name": "Reporting Settings Shell",
+  "summary": "Card-based reporting settings shell with placeholder overview, file I/O, email UX, business rules, and permissions pages derived from reporting settable-object guidance.",
+  "owner": "Reporting Team",
+  "relatedFiles": [
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_NavigationHub.cs",
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_SettingsOverview.cs",
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_FileIO.cs",
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_EmailUx.cs",
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_BusinessRules.cs",
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_Permissions.cs",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml.cs",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml.cs",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml.cs",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml.cs",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml.cs",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml.cs"
+  ],
+  "promptDefaults": {
+    "audience": "Supervisor",
+    "docAudience": "Supervisor",
+    "mockupAudience": "Supervisor",
+    "reviewScope": "Single module",
+    "testKind": "Mixed"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Settings overview",
+      "Report file output settings",
+      "Email formatting and UX guidance",
+      "Reporting business rules",
+      "Permissions"
+    ],
+    "screens": [
+      "View_Settings_Reporting_WorkflowHub.xaml",
+      "View_Settings_Reporting_SettingsOverview.xaml",
+      "View_Settings_Reporting_FileIO.xaml",
+      "View_Settings_Reporting_EmailUx.xaml",
+      "View_Settings_Reporting_BusinessRules.xaml",
+      "View_Settings_Reporting_Permissions.xaml"
+    ],
+    "currentUiPatterns": ["Card list", "Form"],
+    "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
+    "uiElements": [
+      "Navigation cards",
+      "Export folder path guidance",
+      "File name template guidance",
+      "Timestamp format guidance",
+      "Email HTML style guidance",
+      "Template validation warnings guidance",
+      "Permission matrix guidance"
+    ],
+    "userActions": [
+      "Browse reporting settings areas from the hub",
+      "Review placeholder guidance for report output configuration",
+      "Review placeholder guidance for email formatting and permissions",
+      "Understand which reporting settings still need full implementation"
+    ],
+    "preserveRules": [
+      "Keep the placeholder status explicit in metadata",
+      "Do not describe reporting settings pages as persisted editors unless the code adds that behavior",
+      "Keep the existing step ordering and card-driven navigation unchanged"
+    ],
+    "acceptanceCriteria": [
+      "The hub still routes to overview, file I/O, email UX, business rules, and permissions",
+      "Metadata reflects the current placeholder nature of these reporting settings pages",
+      "Metadata captures the visible suggested controls without inventing persistence logic"
+    ],
+    "validationHints": [
+      "Confirm the reporting cards still open the intended screens",
+      "Confirm placeholder descriptions still mention export, email, business rule, and permission guidance",
+      "Confirm metadata does not overstate how complete these settings pages are"
+    ]
+  }
+}

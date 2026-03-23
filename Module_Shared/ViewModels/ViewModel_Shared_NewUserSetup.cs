@@ -27,7 +27,12 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         private string _employeeNumber = string.Empty;
 
         [ObservableProperty]
-        private string _fullName = string.Empty;
+        [NotifyPropertyChangedFor(nameof(FullName))]
+        private string _firstName = string.Empty;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(FullName))]
+        private string _lastName = string.Empty;
 
         [ObservableProperty]
         private string _department = string.Empty;
@@ -52,6 +57,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
 
         [ObservableProperty]
         private string? _visualPassword;
+
+        public string FullName => CombineFullName(FirstName, LastName);
 
         /// <summary>
         /// List of available departments from database
@@ -271,12 +278,61 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         }
 
         /// <summary>
-        /// Validate full name (at least 2 characters)
+        /// Validate first and last name values.
         /// </summary>
-        /// <param name="fullName"></param>
-        public bool ValidateFullName(string fullName)
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        public bool ValidateNameParts(string firstName, string lastName)
         {
-            return !string.IsNullOrWhiteSpace(fullName) && fullName.Trim().Length >= 2;
+            return !string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName);
+        }
+
+        private static string CombineFullName(string firstName, string lastName)
+        {
+            var formattedFirstName = FormatNamePart(firstName);
+            var formattedLastName = FormatNamePart(lastName);
+
+            if (string.IsNullOrWhiteSpace(formattedFirstName))
+            {
+                return formattedLastName;
+            }
+
+            if (string.IsNullOrWhiteSpace(formattedLastName))
+            {
+                return formattedFirstName;
+            }
+
+            return $"{formattedFirstName} {formattedLastName}";
+        }
+
+        private static string FormatNamePart(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            var normalized = value.Trim().ToLowerInvariant();
+            var builder = new System.Text.StringBuilder(normalized.Length);
+            var capitalizeNext = true;
+
+            foreach (var character in normalized)
+            {
+                if (char.IsWhiteSpace(character))
+                {
+                    if (builder.Length > 0 && builder[^1] != ' ')
+                    {
+                        builder.Append(' ');
+                    }
+                    capitalizeNext = true;
+                    continue;
+                }
+
+                builder.Append(capitalizeNext ? char.ToUpperInvariant(character) : character);
+                capitalizeNext = character is ' ' or '-' or '\'';
+            }
+
+            return builder.ToString().Trim();
         }
     }
 }

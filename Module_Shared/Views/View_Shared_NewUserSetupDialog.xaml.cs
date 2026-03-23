@@ -57,8 +57,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             // Load departments from database
             await LoadDepartmentsAsync();
 
-            // Set focus to full name field
-            FullNameTextBox.Focus(FocusState.Programmatic);
+            // Set focus to first name field
+            FirstNameTextBox.Focus(FocusState.Programmatic);
         }
 
         /// <summary>
@@ -184,7 +184,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
             // Collect form data
             string employeeNumber = EmployeeNumberTextBox.Text?.Trim() ?? string.Empty;
-            string fullName = FullNameTextBox.Text?.Trim() ?? string.Empty;
+            string firstName = FirstNameTextBox.Text?.Trim() ?? string.Empty;
+            string lastName = LastNameTextBox.Text?.Trim() ?? string.Empty;
             string department = DepartmentComboBox.SelectedItem?.ToString() ?? string.Empty;
             string customDepartment = CustomDepartmentTextBox.Text?.Trim() ?? string.Empty;
             string shift =
@@ -213,17 +214,17 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(fullName))
+            if (string.IsNullOrWhiteSpace(firstName))
             {
-                ShowValidationError("Full Name is required.");
-                FullNameTextBox.Focus(FocusState.Programmatic);
+                ShowValidationError("First Name is required.");
+                FirstNameTextBox.Focus(FocusState.Programmatic);
                 return;
             }
 
-            if (fullName.Length < 2)
+            if (string.IsNullOrWhiteSpace(lastName))
             {
-                ShowValidationError("Full Name must be at least 2 characters.");
-                FullNameTextBox.Focus(FocusState.Programmatic);
+                ShowValidationError("Last Name is required.");
+                LastNameTextBox.Focus(FocusState.Programmatic);
                 return;
             }
 
@@ -270,7 +271,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
             // Update ViewModel properties
             ViewModel.EmployeeNumber = employeeNumber;
-            ViewModel.FullName = fullName;
+            ViewModel.FirstName = firstName;
+            ViewModel.LastName = lastName;
             ViewModel.Department = department;
             ViewModel.Shift = shift;
             ViewModel.Pin = pin;
@@ -345,7 +347,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         private void SetLoadingState(bool isLoading)
         {
             // Disable/enable input controls
-            FullNameTextBox.IsEnabled = !isLoading;
+            FirstNameTextBox.IsEnabled = !isLoading;
+            LastNameTextBox.IsEnabled = !isLoading;
             DepartmentComboBox.IsEnabled = !isLoading;
             CustomDepartmentTextBox.IsEnabled = !isLoading;
             ShiftComboBox.IsEnabled = !isLoading;
