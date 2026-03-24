@@ -1,3 +1,15 @@
+<# 
+    Debug-POLinks.ps1
+    
+    This script debugs the relationship between Purchase Orders (PO) and Work Orders (WO)
+    by inspecting three key database tables:
+    - PURC_ORDER_LINE: Contains purchase order line items with references to work orders
+    - DEMAND_SUPPLY_LINK: Links supply (PO) to demand (WO) relationships
+    - WORK_ORDER: Contains work order details
+    
+    The script queries these tables for a specific PO and WO to identify any linking issues.
+#>
+
 $connString = "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;"
 
 try {
@@ -18,7 +30,8 @@ try {
     Write-Host "`n--- PURC_ORDER_LINE (First 5 columns + relevance) ---"
     if ($dtPO.Rows.Count -gt 0) {
         $dtPO | Select-Object PURC_ORDER_ID, LINE_NO, PART_ID, GL_EXPENSE_ACCT_ID, PROJ_REF_SUB_ID, WORK_ORDER_ID | Format-Table -AutoSize
-    } else {
+    }
+    else {
         Write-Host "No lines found for PO $poId"
     }
 
@@ -34,7 +47,8 @@ try {
         Write-Host "SUPPLY_NO Type: $($row['SUPPLY_NO'].GetType().Name)"
         Write-Host "SUPPLY_NO Value: '$($row['SUPPLY_NO'])'"
         $dtLink | Select-Object SUPPLY_BASE_ID, SUPPLY_NO, DEMAND_BASE_ID, SUPPLY_TYPE, DEMAND_TYPE, QTY | Format-Table -AutoSize
-    } else {
+    }
+    else {
         Write-Host "No links found for Supply Base ID matching $poId"
     }
 
@@ -47,15 +61,18 @@ try {
     Write-Host "`n--- WORK_ORDER ---"
     if ($dtWO.Rows.Count -gt 0) {
         $dtWO | Select-Object BASE_ID, ID, PART_ID, STATUS | Format-Table -AutoSize
-    } else {
+    }
+    else {
         Write-Host "No WO found for Base ID matching $woId"
     }
     
     # Check for direct link in PURC_ORDER_LINE ?
     # Check if PROJ_REF_SUB_ID in PURC_ORDER_LINE matches correct WO ID
     
-} catch {
+}
+catch {
     Write-Error $_.Exception.Message
-} finally {
+}
+finally {
     if ($conn) { $conn.Close() }
 }

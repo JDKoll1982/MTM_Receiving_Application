@@ -31,6 +31,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Spacing="2">
@@ -40,7 +41,7 @@
                         FontWeight="SemiBold"
                     />
                     <TextBlock
-                        Text="Review the included modules below. Uncheck any module before copying if you want it excluded from the final report."
+                        Text="Review the generated modules below, then use Customize Preview to choose which modules and detail columns stay in the final preview and copied report."
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         TextWrapping="WrapWholeWords"
@@ -49,6 +50,13 @@
 
                 <Button
                     Grid.Column="1"
+                    Content="Customize Preview"
+                    Click="OnCustomizePreviewClick"
+                    VerticalAlignment="Center"
+                />
+
+                <Button
+                    Grid.Column="2"
                     Content="Copy Report Summary"
                     Command="{x:Bind ViewModel.CopyEmailFormatCommand}"
                     Style="{StaticResource AccentButtonStyle}"
@@ -70,7 +78,7 @@
                         Style="{StaticResource BodyStrongTextBlockStyle}"
                     />
 
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.PreviewModuleCards, Mode=OneWay}">
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.IncludedPreviewModuleCards, Mode=OneWay}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" />
@@ -78,12 +86,19 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="previewModels:Model_ReportingPreviewModuleCard">
-                                <CheckBox
-                                    Content="{x:Bind ModuleName}"
-                                    IsChecked="{x:Bind IsIncluded, Mode=TwoWay}"
+                                <Border
+                                    Background="{x:Bind AccentBackgroundBrush}"
+                                    CornerRadius="999"
+                                    Padding="12,6"
                                     Margin="0,0,16,0"
                                     VerticalAlignment="Center"
-                                />
+                                >
+                                    <TextBlock
+                                        Text="{x:Bind ModuleName}"
+                                        Foreground="{x:Bind AccentForegroundBrush}"
+                                        FontWeight="SemiBold"
+                                    />
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -207,44 +222,26 @@
                                     </StackPanel>
 
                                     <StackPanel Spacing="6">
-                                        <TextBlock
-                                            Text="Detail Columns"
-                                            FontWeight="SemiBold"
-                                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        />
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
 
-                                        <GridView
-                                            ItemsSource="{x:Bind AvailableColumns}"
-                                            SelectionMode="None"
-                                            IsItemClickEnabled="False"
-                                            IsSwipeEnabled="False"
-                                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                            ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                            HorizontalAlignment="Stretch"
-                                        >
-                                            <GridView.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" />
-                                                </ItemsPanelTemplate>
-                                            </GridView.ItemsPanel>
-                                            <GridView.ItemTemplate>
-                                                <DataTemplate x:DataType="previewModels:Model_ReportingPreviewColumnOption">
-                                                    <CheckBox
-                                                        Content="{x:Bind Header}"
-                                                        IsChecked="{x:Bind IsIncluded, Mode=TwoWay}"
-                                                        Margin="0,0,12,8"
-                                                    />
-                                                </DataTemplate>
-                                            </GridView.ItemTemplate>
-                                        </GridView>
-                                    </StackPanel>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Text="Detailed Activity"
+                                                FontWeight="SemiBold"
+                                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                            />
 
-                                    <StackPanel Spacing="6">
-                                        <TextBlock
-                                            Text="Detailed Activity"
-                                            FontWeight="SemiBold"
-                                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        />
+                                            <Button
+                                                Grid.Column="1"
+                                                Content="Customize Preview"
+                                                Click="OnCustomizePreviewClick"
+                                                Tag="{x:Bind}"
+                                            />
+                                        </Grid>
 
                                         <TextBlock
                                             Text="{x:Bind Description}"

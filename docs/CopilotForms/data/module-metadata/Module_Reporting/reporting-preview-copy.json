@@ -2,7 +2,7 @@
   "id": "reporting-preview-copy",
   "module": "Module_Reporting",
   "name": "Preview And Copy",
-  "summary": "Preview-card shaping, column selection, and clipboard-ready email formatting for generated report output.",
+  "summary": "Preview-card shaping, modal preview customization, data-aware column selection, and clipboard-ready email formatting for generated report output.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Reporting/Contracts/IService_Reporting.cs",
@@ -36,20 +36,21 @@
       "Format and copy email-ready output"
     ],
     "screens": ["View_Reporting_PreviewDialog.xaml"],
-    "currentUiPatterns": ["Toolbar + results list"],
-    "desiredUiPatterns": ["Card list", "Split layout", "Form"],
+    "currentUiPatterns": ["Toolbar + results list", "Card list", "Modal customization dialog"],
+    "desiredUiPatterns": ["Card list", "Split layout", "Modal customization dialog"],
     "uiElements": [
       "Preview cards",
-      "Preview column selector",
+      "Modal preview customizer",
       "Copy Email Format action"
     ],
     "userActions": [
       "Review the generated output",
-      "Choose preview columns",
+      "Choose preview modules and columns in the modal customizer",
       "Copy the generated output"
     ],
     "validationHints": [
-      "Confirm selected preview columns control both the on-screen table and copied output",
+      "Confirm selected preview modules and columns control both the on-screen table and copied output",
+      "Confirm columns without data are not enabled by default",
       "Confirm copy-email behavior still works"
     ]
   }

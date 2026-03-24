@@ -423,7 +423,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         };
 
         previewModuleCard.PropertyChanged += OnPreviewModuleCardPropertyChanged;
-        previewModuleCard.InitializeColumns(CreateDetailColumnOptions());
+        previewModuleCard.InitializeColumns(CreateDetailColumnOptions(section));
         return previewModuleCard;
     }
 
@@ -438,39 +438,128 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         PreviewTableViewportWidth = Math.Max(PreviewCardWidth - 48d, 1240d);
     }
 
-    private static List<Model_ReportingPreviewColumnOption> CreateDetailColumnOptions()
+    private static List<Model_ReportingPreviewColumnOption> CreateDetailColumnOptions(
+        Model_ReportSection section
+    )
     {
-        return
-        [
-            CreateColumn(nameof(Model_ReportRow.Id), "ID", 150d),
-            CreateColumn(nameof(Model_ReportRow.SourceModule), "Source Module", 130d),
-            CreateColumn(nameof(Model_ReportRow.PONumber), "PO Number", 140d),
-            CreateColumn(nameof(Model_ReportRow.POLineNumber), "PO Line #", 110d),
-            CreateColumn(nameof(Model_ReportRow.PartNumber), "Part Number", 170d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.PartDescription), "Part Description", 240d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.DunnageType), "Dunnage Type", 180d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.SpecsCombined), "Specs Combined", 260d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.Quantity), "Quantity", 110d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.WeightLbs), "Weight Lbs", 110d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.HeatLotNumber), "Heat/Lot", 140d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.CreatedDate), "Created Date", 120d),
-            CreateColumn(nameof(Model_ReportRow.EmployeeNumber), "Employee", 120d),
-            CreateColumn(nameof(Model_ReportRow.CreatedByUsername), "Created By", 160d),
-            CreateColumn(nameof(Model_ReportRow.ShipmentNumber), "Shipment #", 120d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.ReceiverNumber), "Receiver #", 120d),
-            CreateColumn(nameof(Model_ReportRow.Status), "Status", 130d),
-            CreateColumn(nameof(Model_ReportRow.PartCount), "Part Count", 110d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.Location), "Location", 170d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.Notes), "Notes", 240d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.LoadNumber), "Load #", 100d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.LabelNumber), "Label #", 100d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.PackagesPerLoad), "Packages/Load", 130d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.PackageTypeName), "Package Type", 140d, wrapText: true),
-            CreateColumn(nameof(Model_ReportRow.IsNonPOItem), "Non-PO", 90d),
-            CreateColumn(nameof(Model_ReportRow.CoilsOnSkid), "Coils/Skid", 110d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.QuantityPerSkid), "Qty/Skid", 110d, isNumeric: true),
-            CreateColumn(nameof(Model_ReportRow.ReceivedSkidCount), "Received Skids", 130d, isNumeric: true),
-        ];
+        var candidateColumns = new List<Model_ReportingPreviewColumnOption>();
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayPo), "PO / Line", 180d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PONumber), "PO Number", 140d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.POLineNumber), "PO Line #", 110d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayPartOrDunnage), "Part / Dunnage", 220d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PartNumber), "Part Number", 170d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PartDescription), "Part Description", 240d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DunnageType), "Dunnage Type", 180d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.SpecsCombined), "Specs Combined", 260d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayQuantity), "Quantity", 110d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.Quantity), "Raw Quantity", 120d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.WeightLbs), "Weight Lbs", 110d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.HeatLotNumber), "Heat/Lot", 140d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.CreatedDate), "Created Date", 120d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.EmployeeNumber), "Employee", 120d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.CreatedByUsername), "Created By", 160d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.ShipmentNumber), "Shipment #", 120d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.ReceiverNumber), "Receiver #", 120d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.Status), "Status", 130d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PartCount), "Part Count", 110d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayLocation), "Location", 170d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayNotes), "Notes", 240d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.LoadNumber), "Load #", 100d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.LabelNumber), "Label #", 100d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayLoadsOrSkids), "Loads / Skids", 130d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.DisplayUnitsPerSkid), "Units Per Skid", 170d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PackagesPerLoad), "Packages/Load", 130d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PackageTypeName), "Package Type", 140d, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.IsNonPOItem), "Non-PO", 90d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.CoilsOnSkid), "Coils/Skid", 110d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.QuantityPerSkid), "Qty/Skid", 110d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.ReceivedSkidCount), "Received Skids", 130d, false, true));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.SourceModule), "Source Module", 130d));
+        candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.Id), "ID", 150d));
+
+        var sectionRows = section.Rows.ToList();
+        var preferredKeys = GetPreferredPreviewColumnKeys(section.ModuleName);
+
+        var availableColumns = candidateColumns
+            .Where(column => SectionHasDataForColumn(sectionRows, column.Key))
+            .ToList();
+
+        foreach (var availableColumn in availableColumns)
+        {
+            availableColumn.IsIncluded = preferredKeys.Contains(availableColumn.Key);
+        }
+
+        if (availableColumns.All(column => !column.IsIncluded))
+        {
+            foreach (var availableColumn in availableColumns.Take(6))
+            {
+                availableColumn.IsIncluded = true;
+            }
+        }
+
+        return availableColumns;
+    }
+
+    private static HashSet<string> GetPreferredPreviewColumnKeys(string moduleName)
+    {
+        return moduleName switch
+        {
+            "Receiving" => new HashSet<string>(StringComparer.Ordinal)
+            {
+                nameof(Model_ReportRow.DisplayPo),
+                nameof(Model_ReportRow.DisplayPartOrDunnage),
+                nameof(Model_ReportRow.DisplayQuantity),
+                nameof(Model_ReportRow.CreatedDate),
+                nameof(Model_ReportRow.EmployeeNumber),
+                nameof(Model_ReportRow.DisplayLocation),
+                nameof(Model_ReportRow.DisplayLoadsOrSkids),
+                nameof(Model_ReportRow.DisplayUnitsPerSkid),
+                nameof(Model_ReportRow.DisplayNotes),
+            },
+            "Dunnage" => new HashSet<string>(StringComparer.Ordinal)
+            {
+                nameof(Model_ReportRow.PONumber),
+                nameof(Model_ReportRow.DisplayPartOrDunnage),
+                nameof(Model_ReportRow.DisplayQuantity),
+                nameof(Model_ReportRow.CreatedDate),
+                nameof(Model_ReportRow.EmployeeNumber),
+                nameof(Model_ReportRow.CreatedByUsername),
+                nameof(Model_ReportRow.DisplayLocation),
+                nameof(Model_ReportRow.DisplayNotes),
+            },
+            "Volvo" => new HashSet<string>(StringComparer.Ordinal)
+            {
+                nameof(Model_ReportRow.PONumber),
+                nameof(Model_ReportRow.PartNumber),
+                nameof(Model_ReportRow.DisplayQuantity),
+                nameof(Model_ReportRow.CreatedDate),
+                nameof(Model_ReportRow.EmployeeNumber),
+                nameof(Model_ReportRow.ShipmentNumber),
+                nameof(Model_ReportRow.ReceiverNumber),
+                nameof(Model_ReportRow.Status),
+                nameof(Model_ReportRow.PartCount),
+                nameof(Model_ReportRow.QuantityPerSkid),
+                nameof(Model_ReportRow.ReceivedSkidCount),
+                nameof(Model_ReportRow.DisplayLocation),
+                nameof(Model_ReportRow.DisplayNotes),
+            },
+            _ => new HashSet<string>(StringComparer.Ordinal)
+            {
+                nameof(Model_ReportRow.CreatedDate),
+                nameof(Model_ReportRow.DisplayPartOrDunnage),
+                nameof(Model_ReportRow.DisplayQuantity),
+                nameof(Model_ReportRow.DisplayLocation),
+                nameof(Model_ReportRow.DisplayNotes),
+            },
+        };
+    }
+
+    private static bool SectionHasDataForColumn(
+        IEnumerable<Model_ReportRow> rows,
+        string columnKey
+    )
+    {
+        return rows.Any(row => !string.IsNullOrWhiteSpace(row.GetColumnValue(columnKey)));
     }
 
     private static Model_ReportingPreviewColumnOption CreateColumn(
@@ -488,7 +577,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             Width = width,
             WrapText = wrapText,
             IsNumeric = isNumeric,
-            IsIncluded = true,
+            IsIncluded = false,
         };
     }
 
