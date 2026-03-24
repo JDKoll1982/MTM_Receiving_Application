@@ -33,6 +33,7 @@ $n5arm64 = "FOR ARM64 MACHINES — publish to a separate folder with a separate 
 $script:BaseShare = "X:\Software Development\Live Applications"
 $script:ProjectFile = "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj"
 $script:PublishVerbosity = 'detailed'
+$script:SatelliteResourceLanguages = ''
 
 $script:Options = @(
     @{
@@ -156,10 +157,19 @@ $xaml = @"
                     <ColumnDefinition Width="62"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Project:" FontWeight="Bold" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="1" Name="ProjectPathText"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Project:" FontWeight="Bold" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Name="ProjectPathText"
                          FontFamily="Consolas" FontSize="11" Padding="5,4"
                          BorderBrush="#CCC" BorderThickness="1" VerticalContentAlignment="Center"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Langs:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Name="SatelliteLanguagesText"
+                         FontFamily="Consolas" FontSize="11" Padding="5,4" Margin="0,10,0,0"
+                         BorderBrush="#CCC" BorderThickness="1" VerticalContentAlignment="Center"
+                         ToolTip="Optional. Example: en or en;en-US. Leave blank to publish all satellite resource languages."/>
             </Grid>
         </Border>
 
@@ -239,6 +249,7 @@ $optionList = $window.FindName("OptionList")
 $notesText = $window.FindName("NotesText")
 $outputPathText = $window.FindName("OutputPathText")
 $projectPathText = $window.FindName("ProjectPathText")
+$satelliteLanguagesText = $window.FindName("SatelliteLanguagesText")
 $statusText = $window.FindName("StatusText")
 $publishProgress = $window.FindName("PublishProgress")
 $outputBorder = $window.FindName("OutputBorder")
@@ -252,6 +263,7 @@ $publishButton = $window.FindName("PublishButton")
 $closeButton = $window.FindName("CloseButton")
 
 $projectPathText.Text = $script:ProjectFile
+$satelliteLanguagesText.Text = $script:SatelliteResourceLanguages
 
 # ---------------------------------------------------------------------------
 # Populate option ListBox
@@ -316,7 +328,14 @@ $publishButton.Add_Click({
         $opt = $script:selectedOption
         $script:currentOutputPath = "$($script:BaseShare)\$($opt.Folder)"
         $projectPath = $projectPathText.Text
-        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args) -v $($script:PublishVerbosity) -o `"$($script:currentOutputPath)`""
+        $satelliteLanguages = $satelliteLanguagesText.Text.Trim()
+        $satelliteLanguagesArg = if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) {
+            ''
+        }
+        else {
+            " -p:SatelliteResourceLanguages=$satelliteLanguages"
+        }
+        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $($script:PublishVerbosity) -o `"$($script:currentOutputPath)`""
 
         # Reset UI
         $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
@@ -329,6 +348,7 @@ Option: $($opt.Label)
 Project: $projectPath
 Output: $($script:currentOutputPath)
 Verbosity: $($script:PublishVerbosity)
+SatelliteResourceLanguages: $(if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) { 'all' } else { $satelliteLanguages })
 Command: $publishCommand
 
 "@
