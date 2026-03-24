@@ -18,6 +18,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         private const string LocalSecretDirectoryName = "MTM Receiving Application\\Security";
         private const string SecretFileName = "MTM_AUTH_USER_SECRET_KEY.txt";
         private const string SharedSecretDirectoryPath =
+            "\\\\MTMANU-FS01\\Expo Drive\\Software Development\\Live Applications\\MTM_Application_Keys";
+        private const string LegacySharedSecretDirectoryPath =
             "\\\\172.16.1.104\\MTM_Receiving_Application\\Security";
 
         public string HashPin(string pin)
@@ -174,8 +176,12 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 SecretFileName
             );
             var sharedSecretPath = Path.Combine(SharedSecretDirectoryPath, SecretFileName);
+            var legacySharedSecretPath = Path.Combine(
+                LegacySharedSecretDirectoryPath,
+                SecretFileName
+            );
 
-            return new[] { localSecretPath, sharedSecretPath };
+            return new[] { localSecretPath, sharedSecretPath, legacySharedSecretPath };
         }
 
         private static void CacheSecretForCurrentWorkstation(string masterSecret)

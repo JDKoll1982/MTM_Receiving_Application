@@ -115,6 +115,10 @@ public sealed class Service_AuthCredentialProtectionTests : IDisposable
             protectionType,
             "SharedSecretDirectoryPath"
         );
+        var legacySharedDirectoryPath = GetPrivateConstantValue(
+            protectionType,
+            "LegacySharedSecretDirectoryPath"
+        );
 
         var localSecretPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
@@ -122,8 +126,9 @@ public sealed class Service_AuthCredentialProtectionTests : IDisposable
             secretFileName
         );
         var sharedSecretPath = Path.Combine(sharedDirectoryPath, secretFileName);
+        var legacySharedSecretPath = Path.Combine(legacySharedDirectoryPath, secretFileName);
 
-        return new[] { localSecretPath, sharedSecretPath };
+        return new[] { localSecretPath, sharedSecretPath, legacySharedSecretPath };
     }
 
     private static string GetPrivateConstantValue(Type declaringType, string fieldName)
