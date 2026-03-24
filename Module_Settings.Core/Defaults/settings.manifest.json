@@ -1401,17 +1401,6 @@
     },
     {
       "category": "Receiving",
-      "key": "Receiving.Defaults.DefaultReceivingMode",
-      "displayName": "Default Receiving Mode",
-      "defaultValue": "Guided",
-      "dataType": "String",
-      "scope": "User",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Allowed: Guided, Manual, Edit"
-    },
-    {
-      "category": "Receiving",
       "key": "Receiving.Defaults.CsvSaveLocation",
       "displayName": "Label Database Table File Save Location",
       "defaultValue": "",
@@ -2215,28 +2204,6 @@
     },
     {
       "category": "Receiving",
-      "key": "Receiving.BusinessRules.AutoSaveEnabled",
-      "displayName": "Business Rules - Auto Save Enabled",
-      "defaultValue": "false",
-      "dataType": "Bool",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.BusinessRules.AutoSaveIntervalSeconds",
-      "displayName": "Business Rules - Auto Save Interval",
-      "defaultValue": "300",
-      "dataType": "Int",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Int"
-    },
-    {
-      "category": "Receiving",
       "key": "Receiving.BusinessRules.DefaultModeOnStartup",
       "displayName": "Business Rules - Default Mode on Startup",
       "defaultValue": "ModeSelection",
@@ -2245,17 +2212,6 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.BusinessRules.RememberLastMode",
-      "displayName": "Business Rules - Remember Last Mode",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "User",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
     },
     {
       "category": "Receiving",
@@ -2270,44 +2226,11 @@
     },
     {
       "category": "Receiving",
-      "key": "Receiving.BusinessRules.AutoFillHeatLotEnabled",
-      "displayName": "Business Rules - Auto-Fill Heat/Lot Enabled",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.BusinessRules.SavePackageTypeAsDefault",
-      "displayName": "Business Rules - Save Package Type as Default",
-      "defaultValue": "false",
-      "dataType": "Bool",
-      "scope": "User",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
       "key": "Receiving.BusinessRules.ShowReviewTableByDefault",
       "displayName": "Business Rules - Show Review Table by Default",
       "defaultValue": "false",
       "dataType": "Bool",
       "scope": "User",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "Bool"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.BusinessRules.AllowEditAfterSave",
-      "displayName": "Business Rules - Allow Edit After Save",
-      "defaultValue": "true",
-      "dataType": "Bool",
-      "scope": "System",
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Bool"
@@ -2372,17 +2295,6 @@
       "key": "Receiving.Defaults.DefaultLoadNumberPrefix",
       "displayName": "Defaults - Default Load Number Prefix",
       "defaultValue": "L",
-      "dataType": "String",
-      "scope": "System",
-      "permissionLevel": "User",
-      "isSensitive": false,
-      "validationRules": "String"
-    },
-    {
-      "category": "Receiving",
-      "key": "Receiving.Defaults.DefaultReceivingMode",
-      "displayName": "Defaults - Default Receiving Mode",
-      "defaultValue": "Guided",
       "dataType": "String",
       "scope": "System",
       "permissionLevel": "User",
@@ -2489,15 +2401,15 @@
       "validationRules": "String"
     },
     {
-      "category": "System",
-      "key": "Core.SharedPaths.InforVisualExePath",
-      "displayName": "Infor Visual Executable Root Path",
-      "defaultValue": "\\\\visual\\visual908$\\VMFG",
+      "category": "Receiving",
+      "key": "Receiving.PartNumberPadding.RulesJson",
+      "displayName": "Part Number Padding - Rules JSON",
+      "defaultValue": "[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]",
       "dataType": "String",
       "scope": "System",
       "permissionLevel": "User",
       "isSensitive": false,
-      "validationRules": "Path"
+      "validationRules": "String"
     }
   ]
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -64,6 +65,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
+        }
+
+        public async Task RefreshSettingsDependentStateAsync()
+        {
+            if (ModeSelectionHost.Content is View_Receiving_ModeSelection modeSelectionView)
+            {
+                await modeSelectionView.ViewModel.RefreshDefaultModeIndicatorsAsync();
+            }
         }
     }
 }

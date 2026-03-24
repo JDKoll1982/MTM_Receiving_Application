@@ -135,12 +135,22 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     [RelayCommand]
     private void RemoveRule()
     {
-        if (SelectedRule != null)
+        if (SelectedRule == null)
         {
-            PrefixRules.Remove(SelectedRule);
-            _logger.LogInfo($"Removed part number padding rule with prefix: {SelectedRule.Prefix}");
-            SelectedRule = null;
+            return;
         }
+
+        var removedRule = SelectedRule;
+        var removedIndex = PrefixRules.IndexOf(removedRule);
+        PrefixRules.Remove(removedRule);
+
+        SelectedRule =
+            PrefixRules.Count == 0
+                ? null
+                : PrefixRules[Math.Min(removedIndex, PrefixRules.Count - 1)];
+
+        _logger.LogInfo($"Removed part number padding rule with prefix: {removedRule.Prefix}");
+        TestPadding();
     }
 
     [RelayCommand]
@@ -153,15 +163,9 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         }
 
         var input = TestInput.Trim();
-        var result = input;
-
-        if (IsPaddingEnabled)
-        {
-            foreach (var rule in PrefixRules.Where(r => r.IsEnabled))
-            {
-                result = rule.FormatPartNumber(result);
-            }
-        }
+        var result = IsPaddingEnabled
+            ? Model_PartNumberPrefixRule.ApplyBestMatchingRule(PrefixRules.ToArray(), input)
+            : input;
 
         TestOutput = result;
         _logger.LogInfo($"Test padding: '{input}' → '{result}'");
@@ -173,6 +177,11 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     }
 
     partial void OnIsPaddingEnabledChanged(bool value)
+    {
+        TestPadding();
+    }
+
+    public void RefreshTestOutput()
     {
         TestPadding();
     }

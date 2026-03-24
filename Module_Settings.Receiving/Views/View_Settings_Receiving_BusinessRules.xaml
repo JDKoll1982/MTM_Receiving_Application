@@ -15,31 +15,6 @@
                 >
                     <StackPanel Spacing="12">
                         <TextBlock
-                            Text="Auto-Save"
-                            Style="{StaticResource SubtitleTextBlockStyle}"
-                        />
-                        <ToggleSwitch
-                            Header="Auto-Save Enabled"
-                            ToolTipService.ToolTip="When turned on, the app saves your work automatically so you are less likely to lose information."
-                            IsOn="{x:Bind ViewModel.AutoSaveEnabled, Mode=TwoWay}"
-                        />
-                        <TextBox
-                            Header="Auto-Save Interval (Seconds)"
-                            ToolTipService.ToolTip="How often the app auto-saves (in seconds). A smaller number saves more often."
-                            Text="{x:Bind ViewModel.AutoSaveIntervalSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        />
-                    </StackPanel>
-                </Border>
-
-                <Border
-                    Padding="16"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                >
-                    <StackPanel Spacing="12">
-                        <TextBlock
                             Text="Workflow"
                             Style="{StaticResource SubtitleTextBlockStyle}"
                         />
@@ -60,55 +35,33 @@
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <ToggleSwitch
                                 Grid.Row="0"
                                 Grid.Column="0"
-                                Header="Remember Last Mode"
-                                ToolTipService.ToolTip="When turned on, the app remembers the last mode you used and starts there next time."
-                                IsOn="{x:Bind ViewModel.RememberLastMode, Mode=TwoWay}"
-                            />
-                            <ToggleSwitch
-                                Grid.Row="0"
-                                Grid.Column="1"
                                 Header="Confirm Mode Change"
                                 ToolTipService.ToolTip="When turned on, the app asks you to confirm before switching modes."
                                 IsOn="{x:Bind ViewModel.ConfirmModeChange, Mode=TwoWay}"
                             />
 
                             <ToggleSwitch
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Header="Auto-Fill Heat/Lot"
-                                ToolTipService.ToolTip="When turned on, the app tries to fill heat/lot automatically when possible."
-                                IsOn="{x:Bind ViewModel.AutoFillHeatLotEnabled, Mode=TwoWay}"
-                            />
-                            <ToggleSwitch
-                                Grid.Row="1"
+                                Grid.Row="0"
                                 Grid.Column="1"
-                                Header="Save Package Type As Default"
-                                ToolTipService.ToolTip="When turned on, the app will remember the last package type you picked and use it next time."
-                                IsOn="{x:Bind ViewModel.SavePackageTypeAsDefault, Mode=TwoWay}"
-                            />
-
-                            <ToggleSwitch
-                                Grid.Row="2"
-                                Grid.Column="0"
                                 Header="Show Review Table By Default"
                                 ToolTipService.ToolTip="When turned on, the review table is shown automatically so you can double-check entries."
                                 IsOn="{x:Bind ViewModel.ShowReviewTableByDefault, Mode=TwoWay}"
                             />
-                            <ToggleSwitch
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                Header="Allow Edit After Save"
-                                ToolTipService.ToolTip="When turned on, you can change information after saving. Turn off to prevent changes after saving."
-                                IsOn="{x:Bind ViewModel.AllowEditAfterSave, Mode=TwoWay}"
-                            />
                         </Grid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <Button
+                                Content="Save"
+                                Command="{x:Bind ViewModel.SavePageCommand}"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Padding="24,8"
+                            />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </StackPanel>

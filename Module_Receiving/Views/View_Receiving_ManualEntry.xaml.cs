@@ -636,14 +636,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return input;
             }
 
-            var result = input;
-
-            foreach (var rule in _paddingRules.Where(r => r.IsEnabled))
-            {
-                result = rule.FormatPartNumber(result);
-            }
-
-            return result;
+            return Model_PartNumberPrefixRule.ApplyBestMatchingRule(_paddingRules.ToArray(), input);
         }
 
         private async Task<T> RunWithDialogTransitionSuppressedAsync<T>(Func<Task<T>> action)

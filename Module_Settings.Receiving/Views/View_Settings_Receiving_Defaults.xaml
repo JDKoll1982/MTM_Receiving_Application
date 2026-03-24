@@ -29,23 +29,10 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <ComboBox
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Header="Default Receiving Mode"
-                                ToolTipService.ToolTip="This sets the starting mode the Receiving screen uses."
-                                SelectedItem="{x:Bind ViewModel.DefaultReceivingMode, Mode=TwoWay}"
-                            >
-                                <x:String>Guided</x:String>
-                                <x:String>Manual</x:String>
-                                <x:String>Edit</x:String>
-                            </ComboBox>
-
                             <TextBox
-                                Grid.Row="1"
+                                Grid.Row="0"
                                 Grid.Column="0"
                                 Header="Default Location"
                                 ToolTipService.ToolTip="Applied when a receiving load advances without a location entered."
@@ -53,7 +40,7 @@
                             />
 
                             <StackPanel
-                                Grid.Row="2"
+                                Grid.Row="1"
                                 Grid.Column="0"
                                 Orientation="Horizontal"
                                 Spacing="8"

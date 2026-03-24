@@ -124,12 +124,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _completionStartNewEntryText = "Start New Entry";
 
         [ObservableProperty]
-        private string _completionEditSavedEntriesText = "Edit Saved Entries";
-
-        [ObservableProperty]
-        private bool _canEditAfterSave;
-
-        [ObservableProperty]
         private double _saveProgressValue = 0;
 
         [ObservableProperty]
@@ -142,6 +136,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             Enum_ReceivingWorkflowStep,
             string
         > _stepTitles = new();
+        private Enum_ReceivingWorkflowStep _startNewEntryStep = Enum_ReceivingWorkflowStep.POEntry;
 
         public ViewModel_Receiving_Workflow(
             IService_ReceivingWorkflow workflowService,
@@ -243,9 +238,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 CompletionStartNewEntryText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.CompletionStartNewEntry
                 );
-                CanEditAfterSave = await _receivingSettings.GetBoolAsync(
-                    ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave
-                );
 
                 SaveProgressMessage = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Workflow.SaveProgressInitializing
@@ -287,6 +279,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     "Step is Saving but already in progress. Skipping duplicate save."
                 );
             }
+
+            UpdateStartNewEntryTarget(_workflowService.CurrentStep);
 
             // Hide all steps
             IsModeSelectionVisible = false;
@@ -464,14 +458,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private async Task StartNewEntryAsync()
         {
             await _workflowService.ResetWorkflowAsync();
-        }
-
-        [RelayCommand]
-        private Task EditSavedEntriesAsync()
-        {
-            _workflowService.RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
-            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
-            return Task.CompletedTask;
+            _workflowService.GoToStep(_startNewEntryStep);
         }
 
         [RelayCommand]
@@ -605,6 +592,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
 
         public string GetTip(string key) => _helpService.GetTip(key);
+
+        private void UpdateStartNewEntryTarget(Enum_ReceivingWorkflowStep currentStep)
+        {
+            switch (currentStep)
+            {
+                case Enum_ReceivingWorkflowStep.ManualEntry:
+                    _startNewEntryStep = Enum_ReceivingWorkflowStep.ManualEntry;
+                    break;
+                case Enum_ReceivingWorkflowStep.EditMode:
+                    _startNewEntryStep = Enum_ReceivingWorkflowStep.EditMode;
+                    break;
+                case Enum_ReceivingWorkflowStep.POEntry:
+                case Enum_ReceivingWorkflowStep.PartSelection:
+                case Enum_ReceivingWorkflowStep.LoadEntry:
+                case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
+                case Enum_ReceivingWorkflowStep.HeatLotEntry:
+                case Enum_ReceivingWorkflowStep.PackageTypeEntry:
+                case Enum_ReceivingWorkflowStep.Review:
+                    _startNewEntryStep = Enum_ReceivingWorkflowStep.POEntry;
+                    break;
+            }
+        }
 
         #endregion
     }

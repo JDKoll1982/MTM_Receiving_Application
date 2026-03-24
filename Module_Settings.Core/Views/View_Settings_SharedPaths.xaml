@@ -58,31 +58,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Infor Visual section -->
-                <StackPanel Spacing="8">
-                    <TextBlock
-                        Text="Infor Visual"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                    />
-
-                    <StackPanel Spacing="4">
-                        <TextBlock
-                            Text="Infor Visual Executable Root Path"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                        />
-                        <TextBlock
-                            Text="UNC or local path to the Infor Visual executable root (e.g. \\\\visual\\visual908$\\VMFG)."
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                        />
-                        <TextBox
-                            Text="{x:Bind ViewModel.InforVisualExePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            PlaceholderText="\\\\visual\\visual908$\\VMFG"
-                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                        />
-                    </StackPanel>
-                </StackPanel>
-
-
                 <!-- Save button -->
                 <Button
                     Content="Save"

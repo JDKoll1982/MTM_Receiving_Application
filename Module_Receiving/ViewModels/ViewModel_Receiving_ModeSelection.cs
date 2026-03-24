@@ -156,8 +156,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (await ConfirmModeChangeAsync())
             {
-                ClearWorkflowData();
-                await RememberLastModeAsync("Guided");
+                await _workflowService.ResetWorkflowAsync();
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
             }
         }
@@ -169,8 +168,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (await ConfirmModeChangeAsync())
             {
-                ClearWorkflowData();
-                await RememberLastModeAsync(nameof(Enum_ReceivingWorkflowStep.ManualEntry));
+                await _workflowService.ResetWorkflowAsync();
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
             }
         }
@@ -182,36 +180,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (await ConfirmModeChangeAsync())
             {
-                ClearWorkflowData();
+                await _workflowService.ResetWorkflowAsync();
                 _workflowService.RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
-                await RememberLastModeAsync(nameof(Enum_ReceivingWorkflowStep.EditMode));
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
             }
-        }
-
-        private async Task RememberLastModeAsync(string modeValue)
-        {
-            var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
-            if (currentUserId is null)
-            {
-                return;
-            }
-
-            var rememberLastMode = await _receivingSettings.GetBoolAsync(
-                ReceivingSettingsKeys.BusinessRules.RememberLastMode,
-                currentUserId
-            );
-
-            if (!rememberLastMode)
-            {
-                return;
-            }
-
-            await _receivingSettings.SaveStringAsync(
-                ReceivingSettingsKeys.Defaults.DefaultReceivingMode,
-                modeValue,
-                currentUserId
-            );
         }
 
         /// <summary>
@@ -309,15 +281,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                // Clear current session data (in-memory only, not database or CSV)
-                if (_workflowService.CurrentSession != null)
-                {
-                    _workflowService.CurrentSession.Loads?.Clear();
-                }
-
-                // Clear UI inputs in all connected ViewModels
-                ClearAllUIInputs();
-
                 _logger.LogInfo("Workflow data and UI inputs cleared for mode change");
             }
             catch (Exception ex)
@@ -331,9 +294,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         private void ClearAllUIInputs()
         {
-            // Transient ViewModels cannot be cleared this way as GetService returns a new instance.
-            // State should represent the current session which is cleared in ClearWorkflowData.
-            _logger.LogInfo("UI inputs cleared via session reset.");
+            _workflowService.ClearUIInputs();
+            _logger.LogInfo("UI inputs cleared via registry reset.");
+        }
+
+        public Task RefreshDefaultModeIndicatorsAsync()
+        {
+            LoadDefaultMode();
+            return Task.CompletedTask;
         }
 
         [RelayCommand]

@@ -238,11 +238,6 @@
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"
                     />
                     <Button
-                        Command="{x:Bind ViewModel.EditSavedEntriesCommand}"
-                        Content="{x:Bind ViewModel.CompletionEditSavedEntriesText, Mode=OneWay}"
-                        Visibility="{x:Bind ViewModel.CanEditAfterSave, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    />
-                    <Button
                         Command="{x:Bind ViewModel.ResetLabelDataCommand}"
                         Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
@@ -305,6 +300,7 @@
                 HorizontalAlignment="Right"
                 Orientation="Horizontal"
                 Spacing="12"
+                Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
             >
                 <Button
                     Command="{x:Bind ViewModel.PreviousStepCommand}"

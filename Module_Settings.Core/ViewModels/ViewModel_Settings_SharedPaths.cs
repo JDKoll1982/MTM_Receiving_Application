@@ -10,13 +10,12 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
 /// <summary>
-/// ViewModel for shared path settings: export root and Infor Visual executable path.
+/// ViewModel for shared path settings.
 /// </summary>
 public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 {
     private const string SystemCategory = "System";
     private const string KeyExportRoot = "Core.SharedPaths.ExportRoot";
-    private const string KeyVisualExePath = "Core.SharedPaths.InforVisualExePath";
 
     private readonly IService_SettingsCoreFacade _settingsCore;
 
@@ -25,9 +24,6 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
 
     [ObservableProperty]
     private string _exportRootPath = string.Empty;
-
-    [ObservableProperty]
-    private string _inforVisualExePath = string.Empty;
 
     public ViewModel_Settings_SharedPaths(
         IService_SettingsCoreFacade settingsCore,
@@ -49,7 +45,6 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
             StatusMessage = "Loading settings...";
 
             ExportRootPath = await GetStringSettingAsync(SystemCategory, KeyExportRoot);
-            InforVisualExePath = await GetStringSettingAsync(SystemCategory, KeyVisualExePath);
 
             StatusMessage = "Settings loaded.";
         }
@@ -80,7 +75,6 @@ public partial class ViewModel_Settings_SharedPaths : ViewModel_Shared_Base
             StatusMessage = "Saving settings...";
 
             await SaveSettingAsync(SystemCategory, KeyExportRoot, ExportRootPath);
-            await SaveSettingAsync(SystemCategory, KeyVisualExePath, InforVisualExePath);
 
             StatusMessage = "Settings saved.";
         }

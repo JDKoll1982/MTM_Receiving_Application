@@ -2,7 +2,7 @@
   "id": "settings-core-shell-navigation",
   "module": "Module_Settings.Core",
   "name": "Settings Shell And Navigation",
-  "summary": "Core settings window shell, navigation hub, paged button layout, placeholder control, and window-host infrastructure for the settings experience.",
+  "summary": "Core settings window shell, NavigationView-driven back navigation, paged button layout, placeholder control, and window-host infrastructure for the settings experience.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
@@ -51,13 +51,14 @@
     "uiElements": [
       "Settings window title",
       "Navigation step buttons",
-      "Back and next navigation",
+      "Built-in back navigation",
       "Cancel, save, and reset actions",
       "Placeholder content"
     ],
     "userActions": [
       "Open the settings window",
       "Move between settings areas",
+      "Use the built-in back button to return to the active module hub",
       "Understand which navigation actions are available",
       "See placeholders for unfinished settings pages"
     ],
@@ -67,6 +68,7 @@
     ],
     "validationHints": [
       "Confirm navigation buttons still page correctly",
+      "Confirm the built-in back button returns to the selected module hub when a child page is active",
       "Confirm the shell still hosts the selected settings page correctly"
     ]
   }

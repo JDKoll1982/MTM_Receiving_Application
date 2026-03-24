@@ -311,24 +311,14 @@ public static class ReceivingSettingsKeys
 
     public static class BusinessRules
     {
-        public const string AutoSaveEnabled = "Receiving.BusinessRules.AutoSaveEnabled";
-        public const string AutoSaveIntervalSeconds =
-            "Receiving.BusinessRules.AutoSaveIntervalSeconds";
         public const string DefaultModeOnStartup = "Receiving.BusinessRules.DefaultModeOnStartup";
-        public const string RememberLastMode = "Receiving.BusinessRules.RememberLastMode";
         public const string ConfirmModeChange = "Receiving.BusinessRules.ConfirmModeChange";
-        public const string AutoFillHeatLotEnabled =
-            "Receiving.BusinessRules.AutoFillHeatLotEnabled";
-        public const string SavePackageTypeAsDefault =
-            "Receiving.BusinessRules.SavePackageTypeAsDefault";
         public const string ShowReviewTableByDefault =
             "Receiving.BusinessRules.ShowReviewTableByDefault";
-        public const string AllowEditAfterSave = "Receiving.BusinessRules.AllowEditAfterSave";
     }
 
     public static class Defaults
     {
-        public const string DefaultReceivingMode = "Receiving.Defaults.DefaultReceivingMode";
         public const string DefaultLocation = "Receiving.Defaults.DefaultLocation";
         public const string XlsSaveLocation = "Receiving.Defaults.XlsSaveLocation";
     }

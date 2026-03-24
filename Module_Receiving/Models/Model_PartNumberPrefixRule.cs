@@ -56,9 +56,15 @@ public partial class Model_PartNumberPrefixRule : ObservableObject
         }
 
         var trimmed = input.Trim().ToUpperInvariant();
+        var normalizedPrefix = Prefix.Trim().ToUpperInvariant();
+
+        if (string.IsNullOrWhiteSpace(normalizedPrefix))
+        {
+            return trimmed;
+        }
 
         // Check if input starts with this prefix
-        if (!trimmed.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase))
+        if (!trimmed.StartsWith(normalizedPrefix, StringComparison.OrdinalIgnoreCase))
         {
             return input; // Not applicable to this rule
         }
@@ -70,10 +76,10 @@ public partial class Model_PartNumberPrefixRule : ObservableObject
         }
 
         // Extract the numeric/suffix part after the prefix
-        string suffixPart = trimmed.Substring(Prefix.Length);
+        string suffixPart = trimmed.Substring(normalizedPrefix.Length);
 
         // Calculate how many padding characters needed
-        int totalPaddingNeeded = MaxLength - Prefix.Length - suffixPart.Length;
+        int totalPaddingNeeded = MaxLength - normalizedPrefix.Length - suffixPart.Length;
 
         if (totalPaddingNeeded <= 0)
         {
@@ -82,6 +88,47 @@ public partial class Model_PartNumberPrefixRule : ObservableObject
 
         // Build padded result: PREFIX + PADDING + SUFFIX
         string padding = new string(PadChar, totalPaddingNeeded);
-        return $"{Prefix}{padding}{suffixPart}";
+        return $"{normalizedPrefix}{padding}{suffixPart}";
+    }
+
+    public static Model_PartNumberPrefixRule? FindBestMatch(
+        Model_PartNumberPrefixRule[] rules,
+        string input
+    )
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return null;
+        }
+
+        var normalizedInput = input.Trim().ToUpperInvariant();
+        Model_PartNumberPrefixRule? bestMatch = null;
+
+        foreach (var rule in rules)
+        {
+            if (!rule.IsEnabled || string.IsNullOrWhiteSpace(rule.Prefix))
+            {
+                continue;
+            }
+
+            var candidatePrefix = rule.Prefix.Trim();
+            if (!normalizedInput.StartsWith(candidatePrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (bestMatch == null || candidatePrefix.Length > bestMatch.Prefix.Trim().Length)
+            {
+                bestMatch = rule;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    public static string ApplyBestMatchingRule(Model_PartNumberPrefixRule[] rules, string input)
+    {
+        var matchingRule = FindBestMatch(rules, input);
+        return matchingRule?.FormatPartNumber(input) ?? input;
     }
 }

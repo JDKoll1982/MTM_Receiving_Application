@@ -39,6 +39,11 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         {
             RuleEditorFields.Visibility = Visibility.Collapsed;
             NoSelectionText.Visibility = Visibility.Visible;
+            NameTextBox.Text = string.Empty;
+            PrefixTextBox.Text = string.Empty;
+            MaxLengthNumberBox.Value = 1;
+            IsEnabledToggle.IsOn = false;
+            SetPadCharSelection('0');
         }
         else
         {
@@ -61,6 +66,7 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         if (ViewModel.SelectedRule != null)
         {
             ViewModel.SelectedRule.Name = NameTextBox.Text;
+            ViewModel.RefreshTestOutput();
         }
     }
 
@@ -69,6 +75,7 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         if (ViewModel.SelectedRule != null)
         {
             ViewModel.SelectedRule.Prefix = PrefixTextBox.Text;
+            ViewModel.RefreshTestOutput();
         }
     }
 
@@ -80,6 +87,7 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         if (ViewModel.SelectedRule != null)
         {
             ViewModel.SelectedRule.MaxLength = (int)sender.Value;
+            ViewModel.RefreshTestOutput();
         }
     }
 
@@ -88,6 +96,7 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
         if (ViewModel.SelectedRule != null)
         {
             ViewModel.SelectedRule.IsEnabled = IsEnabledToggle.IsOn;
+            ViewModel.RefreshTestOutput();
         }
     }
 
@@ -115,6 +124,7 @@ public sealed partial class View_Settings_Receiving_UserPreferences : Page
             if (tag.Length > 0)
             {
                 ViewModel.SelectedRule.PadChar = tag[0];
+                ViewModel.RefreshTestOutput();
             }
         }
     }

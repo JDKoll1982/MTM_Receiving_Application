@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
@@ -41,6 +42,21 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
     public ObservableCollection<Model_SettingsNavigationStep> Steps { get; }
 
     public ObservableCollection<Model_SettingsNavigationStep> VisibleSteps { get; }
+
+    public bool HasStep(int index)
+    {
+        return index >= 0 && index < Steps.Count;
+    }
+
+    public string GetStepTitle(int index)
+    {
+        return HasStep(index) ? Steps[index].Title : string.Empty;
+    }
+
+    public Visibility GetStepVisibility(int index)
+    {
+        return HasStep(index) ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     public string NavigationTitle
     {

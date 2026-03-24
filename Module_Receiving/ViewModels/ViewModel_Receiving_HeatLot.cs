@@ -128,13 +128,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            var autoFillEnabled = await _receivingSettings.GetBoolAsync(
-                ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled
-            );
-            if (autoFillEnabled)
-            {
-                AutoFill();
-            }
+            await Task.CompletedTask;
         }
 
         [RelayCommand]

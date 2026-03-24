@@ -26,23 +26,18 @@
     "testKind": "Mixed"
   },
   "uiHints": {
-    "workflowAreas": [
-      "Shared path configuration",
-      "Infor Visual executable path configuration",
-      "Theme settings"
-    ],
+    "workflowAreas": ["Shared path configuration", "Theme settings"],
     "screens": ["View_Settings_SharedPaths.xaml", "View_Settings_Theme.xaml"],
     "currentUiPatterns": ["Form"],
     "desiredUiPatterns": ["Form", "Split layout"],
     "uiElements": [
       "Export root path field",
-      "Infor Visual executable path field",
       "Save action",
       "Theme status message"
     ],
     "userActions": [
       "Load shared path settings",
-      "Update export and executable paths",
+      "Update the export root path",
       "Save shared path settings",
       "Open the theme settings page"
     ],

@@ -844,10 +844,7 @@ public class Service_Reporting : IService_Reporting
             return null;
         }
 
-        var partNumber = row.PartNumber.Trim();
-        return rules.FirstOrDefault(rule =>
-            partNumber.StartsWith(rule.Prefix, StringComparison.OrdinalIgnoreCase)
-        );
+        return Model_PartNumberPrefixRule.FindBestMatch(rules.ToArray(), row.PartNumber);
     }
 
     private static string GetRuleLabel(Model_PartNumberPrefixRule rule)

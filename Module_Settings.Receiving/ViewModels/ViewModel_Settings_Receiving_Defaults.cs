@@ -23,9 +23,6 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults
     private readonly IService_SettingsErrorHandler _settingsErrorHandler;
 
     [ObservableProperty]
-    private string _defaultReceivingMode = string.Empty;
-
-    [ObservableProperty]
     private string _defaultLocation = string.Empty;
 
     public ViewModel_Settings_Receiving_Defaults(
@@ -44,7 +41,6 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults
         Title = "Receiving Defaults";
 
         // Initialize with defaults before async load
-        DefaultReceivingMode = "Guided";
         DefaultLocation = "RECV";
 
         // Load current settings asynchronously
@@ -63,10 +59,6 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults
         {
             IsBusy = true;
 
-            await SaveSettingAsync(
-                ReceivingSettingsKeys.Defaults.DefaultReceivingMode,
-                DefaultReceivingMode
-            );
             await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation, DefaultLocation);
 
             await _settingsErrorHandler.ShowSuccessAsync(
@@ -101,7 +93,6 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults
         {
             IsBusy = true;
 
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
             await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
 
             await LoadSettingsAsync();
@@ -136,22 +127,13 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults
     {
         try
         {
-            var mode = await GetStringSettingAsync(
-                ReceivingSettingsKeys.Defaults.DefaultReceivingMode
-            );
             var location = await GetStringSettingAsync(
                 ReceivingSettingsKeys.Defaults.DefaultLocation
             );
 
-            System.Diagnostics.Debug.WriteLine($"[LoadSettings] Mode loaded: '{mode}'");
             System.Diagnostics.Debug.WriteLine($"[LoadSettings] Location loaded: '{location}'");
 
-            DefaultReceivingMode = mode;
             DefaultLocation = location;
-
-            System.Diagnostics.Debug.WriteLine(
-                $"[LoadSettings] Mode set to: '{DefaultReceivingMode}'"
-            );
             System.Diagnostics.Debug.WriteLine(
                 $"[LoadSettings] Location set to: '{DefaultLocation}'"
             );

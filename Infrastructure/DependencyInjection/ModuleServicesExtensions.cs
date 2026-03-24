@@ -23,8 +23,6 @@ using MTM_Receiving_Application.Module_Settings.Core.Data;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Services;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
-using MTM_Receiving_Application.Module_Settings.DeveloperTools.Data;
-using MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
@@ -325,8 +323,6 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_SettingsCoreAudit(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_SettingsCoreRoles(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_SettingsCoreUserRoles(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_SettingsDiagnostics(mySqlConnectionString));
-
         // Settings Core Services (Singleton - Application-wide settings infrastructure)
         services.AddSingleton<ISettingsManifestProvider, Service_SettingsManifestProvider>();
         services.AddSingleton<ISettingsMetadataRegistry, Service_SettingsMetadataRegistry>();
@@ -365,7 +361,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_NavigationHub>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_NavigationHub>();
-        services.AddTransient<ViewModel_Settings_DeveloperTools_NavigationHub>();
 
         // Receiving Settings Pages
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Defaults>();
@@ -395,14 +390,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_FilePaths>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_UiConfiguration>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_ExternalizationBacklog>();
-
-        // Developer Tools Pages
-        services.AddTransient<ViewModel_SettingsDeveloperTools_DatabaseTest>();
-        services.AddTransient<Module_Settings.DeveloperTools.ViewModels.ViewModel_Settings_DeveloperTools_SettingsOverview>();
-        services.AddTransient<Module_Settings.DeveloperTools.ViewModels.ViewModel_Settings_DeveloperTools_FeatureA>();
-        services.AddTransient<Module_Settings.DeveloperTools.ViewModels.ViewModel_Settings_DeveloperTools_FeatureB>();
-        services.AddTransient<Module_Settings.DeveloperTools.ViewModels.ViewModel_Settings_DeveloperTools_FeatureC>();
-        services.AddTransient<Module_Settings.DeveloperTools.ViewModels.ViewModel_Settings_DeveloperTools_FeatureD>();
 
         // Settings Views (Transient - Per-view instances with constructor DI)
         RegisterSettingsViews(services);
@@ -457,15 +444,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ConnectionStrings>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_FilePaths>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_UiConfiguration>();
-
-        // DeveloperTools Settings Views
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_SettingsOverview>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureA>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureB>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureC>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureD>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_SettingsDeveloperTools_DatabaseTest>();
     }
 
     /// <summary>

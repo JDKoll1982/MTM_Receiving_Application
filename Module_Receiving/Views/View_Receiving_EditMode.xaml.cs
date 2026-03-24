@@ -41,6 +41,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             // Apply saved column visibility once the control is loaded
             this.Loaded += async (_, _) => await ApplyColumnVisibilityAsync();
+            this.Unloaded += OnUnloaded;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ResetToDefaults();
         }
 
         // ------------------------------------------------------------------ column visibility

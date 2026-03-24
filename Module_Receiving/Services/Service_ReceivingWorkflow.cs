@@ -146,15 +146,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             else
             {
-                var rememberLastMode = await _receivingSettings.GetBoolAsync(
-                    MTM_Receiving_Application
-                        .Module_Receiving
-                        .Settings
-                        .ReceivingSettingsKeys
-                        .BusinessRules
-                        .RememberLastMode,
-                    currentUserId
-                );
                 var configuredDefaultMode = (
                     await _receivingSettings.GetStringAsync(
                         MTM_Receiving_Application
@@ -166,32 +157,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         currentUserId
                     )
                 ).Trim();
-                var rememberedMode = rememberLastMode
-                    ? (
-                        await _receivingSettings.GetStringAsync(
-                            MTM_Receiving_Application
-                                .Module_Receiving
-                                .Settings
-                                .ReceivingSettingsKeys
-                                .Defaults
-                                .DefaultReceivingMode,
-                            currentUserId
-                        )
-                    ).Trim()
-                    : string.Empty;
-                var startupMode = string.IsNullOrWhiteSpace(rememberedMode)
-                    ? configuredDefaultMode
-                    : rememberedMode;
-                var normalizedDefaultMode = startupMode.ToLowerInvariant();
+                var normalizedDefaultMode = configuredDefaultMode.ToLowerInvariant();
 
                 if (normalizedDefaultMode == "guided")
                 {
                     CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
-                    _logger.LogInfo(
-                        string.IsNullOrWhiteSpace(rememberedMode)
-                            ? "Starting in Guided mode (settings default)"
-                            : "Starting in Guided mode (remembered last mode)"
-                    );
+                    _logger.LogInfo("Starting in Guided mode (settings default)");
                 }
                 else if (
                     normalizedDefaultMode == "manualentry"
@@ -199,21 +170,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 )
                 {
                     CurrentStep = Enum_ReceivingWorkflowStep.ManualEntry;
-                    _logger.LogInfo(
-                        string.IsNullOrWhiteSpace(rememberedMode)
-                            ? "Starting in Manual Entry mode (settings default)"
-                            : "Starting in Manual Entry mode (remembered last mode)"
-                    );
+                    _logger.LogInfo("Starting in Manual Entry mode (settings default)");
                 }
                 else if (normalizedDefaultMode == "editmode" || normalizedDefaultMode == "edit")
                 {
                     CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
                     RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
-                    _logger.LogInfo(
-                        string.IsNullOrWhiteSpace(rememberedMode)
-                            ? "Starting in Edit mode (settings default)"
-                            : "Starting in Edit mode (remembered last mode)"
-                    );
+                    _logger.LogInfo("Starting in Edit mode (settings default)");
                 }
                 else
                 {

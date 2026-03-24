@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -331,6 +332,14 @@ namespace MTM_Receiving_Application
                 var user = _sessionManager.CurrentSession.User;
                 UserDisplayTextBlock.Text = user.DisplayName;
                 UserPicture.DisplayName = user.DisplayName;
+            }
+        }
+
+        public async Task RefreshSettingsDependentStateAsync()
+        {
+            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow workflowView)
+            {
+                await workflowView.RefreshSettingsDependentStateAsync();
             }
         }
 

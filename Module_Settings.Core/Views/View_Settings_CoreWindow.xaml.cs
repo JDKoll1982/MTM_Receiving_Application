@@ -270,36 +270,6 @@ public sealed partial class View_Settings_CoreWindow : Window
                 "Manage Volvo module defaults and configuration pages."
             ),
 
-            // Developer Tools Pages
-            "View_Settings_DeveloperTools_SettingsOverview" => (
-                "Developer Tools",
-                "Access diagnostic and developer utilities."
-            ),
-            "View_Settings_DeveloperTools_FeatureA" => (
-                "Feature A",
-                "Developer feature A settings."
-            ),
-            "View_Settings_DeveloperTools_FeatureB" => (
-                "Feature B",
-                "Developer feature B settings."
-            ),
-            "View_Settings_DeveloperTools_FeatureC" => (
-                "Feature C",
-                "Developer feature C settings."
-            ),
-            "View_Settings_DeveloperTools_FeatureD" => (
-                "Feature D",
-                "Developer feature D settings."
-            ),
-            "View_SettingsDeveloperTools_DatabaseTest" => (
-                "Database Test",
-                "Test database connectivity and queries."
-            ),
-            "View_Settings_DeveloperTools_NavigationHub" => (
-                "Developer Tools",
-                "Access diagnostic and developer utilities."
-            ),
-
             // Core Settings Pages
             "View_Settings_CoreNavigationHub" => (
                 "Configuration",
@@ -360,39 +330,32 @@ public sealed partial class View_Settings_CoreWindow : Window
             is false
         )
         {
-            BackToHubButton.Visibility = Visibility.Collapsed;
+            SettingsNavView.IsBackEnabled = false;
             return;
         }
 
         if (hubViewType is null)
         {
-            BackToHubButton.Visibility = Visibility.Collapsed;
+            SettingsNavView.IsBackEnabled = false;
             return;
         }
 
         var activePageType = _currentNestedSettingsPageType ?? SettingsFrame.Content?.GetType();
         if (activePageType is null)
         {
-            BackToHubButton.Visibility = Visibility.Collapsed;
+            SettingsNavView.IsBackEnabled = false;
             return;
         }
 
         if (activePageType == hubViewType)
         {
-            BackToHubButton.Visibility = Visibility.Collapsed;
+            SettingsNavView.IsBackEnabled = false;
             return;
         }
 
-        if (
+        SettingsNavView.IsBackEnabled =
             activePageType.Namespace?.StartsWith(moduleNamespacePrefix, StringComparison.Ordinal)
-            == true
-        )
-        {
-            BackToHubButton.Visibility = Visibility.Visible;
-            return;
-        }
-
-        BackToHubButton.Visibility = Visibility.Collapsed;
+            == true;
     }
 
     private static bool TryGetModuleContext(
@@ -430,20 +393,19 @@ public sealed partial class View_Settings_CoreWindow : Window
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Volvo.Views";
                 hubViewType = typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
                 return true;
-            case "DeveloperToolsSettingsHub":
-                moduleNamespacePrefix =
-                    "MTM_Receiving_Application.Module_Settings.DeveloperTools.Views";
-                hubViewType =
-                    typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
-                return true;
             default:
                 return false;
         }
     }
 
-    private void OnBackToHubClicked(object sender, RoutedEventArgs e)
+    private void OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
     {
-        _logger.LogInfo("Back to Hub button clicked", "Settings.Navigation");
+        NavigateBackToHub();
+    }
+
+    private void NavigateBackToHub()
+    {
+        _logger.LogInfo("Settings back requested", "Settings.Navigation");
         var selectedTag = (SettingsNavView.SelectedItem as NavigationViewItem)?.Tag?.ToString();
         if (!TryGetModuleContext(selectedTag, out _, out var hubViewType) || hubViewType is null)
         {
@@ -660,14 +622,6 @@ public sealed partial class View_Settings_CoreWindow : Window
                             "Volvo Navigation",
                             "Manage Volvo module defaults and configuration pages."
                         );
-                        UpdateHeaderActions();
-                        break;
-                    case "DeveloperToolsSettingsHub":
-                        SettingsFrame.Content =
-                            _serviceProvider.GetRequiredService<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
-                        _currentNestedSettingsPageType =
-                            typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
-                        SetHeader("Developer Tools", "Access diagnostic and developer utilities.");
                         UpdateHeaderActions();
                         break;
                 }

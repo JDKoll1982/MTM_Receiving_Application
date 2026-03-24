@@ -264,7 +264,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Accessibility.ReviewSaveToDatabase] = "Save to Database",
 
             // Defaults for non-UI settings
-            [ReceivingSettingsKeys.Defaults.DefaultReceivingMode] = "Guided",
             [ReceivingSettingsKeys.Defaults.DefaultLocation] = "RECV",
 
             // Integrations defaults
@@ -282,7 +281,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Validation.MaxQuantity] = "999999",
 
             // Business Rules defaults
-            [ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds] = "300",
             [ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup] = "ModeSelection",
         };
 
@@ -300,13 +298,8 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving] = true,
 
             // Business Rules
-            [ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled] = false,
-            [ReceivingSettingsKeys.BusinessRules.RememberLastMode] = true,
             [ReceivingSettingsKeys.BusinessRules.ConfirmModeChange] = true,
-            [ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled] = true,
-            [ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault] = false,
             [ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault] = false,
-            [ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave] = true,
 
             // Integrations
             [ReceivingSettingsKeys.Integrations.ErpSyncEnabled] = true,
@@ -327,9 +320,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Validation.MaxLoadCount] = 99,
             [ReceivingSettingsKeys.Validation.MinQuantity] = 0,
             [ReceivingSettingsKeys.Validation.MaxQuantity] = 999999,
-
-            // Business Rules
-            [ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds] = 300,
 
             // Integrations
             [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = 30,

@@ -16,7 +16,6 @@
       "data/module-metadata/Module_Settings.Dunnage/index.json",
       "data/module-metadata/Module_Settings.Reporting/index.json",
       "data/module-metadata/Module_Settings.Volvo/index.json",
-      "data/module-metadata/Module_Settings.DeveloperTools/index.json",
       "data/module-metadata/Module_ShipRec_Tools/index.json"
     ],
     "notes": [
@@ -249,7 +248,7 @@
         ],
         "testScenarios": [
           "The workflow restores an existing session when one is persisted",
-          "Configured or remembered startup mode sends the user to the intended first screen",
+          "Configured startup mode sends the user to the intended first screen",
           "The user can move step to step when required values are present",
           "Validation blocks progress when required values are missing",
           "The review step shows the correct information before save",
@@ -265,7 +264,7 @@
         ],
         "validationHints": [
           "Confirm session restore still returns the user to a valid step",
-          "Confirm default-mode and remember-last-mode settings still route correctly on startup",
+          "Confirm default-mode routing still sends the user to the intended startup screen",
           "Confirm the same workflow can still be completed from start to finish",
           "Confirm validation still blocks invalid input",
           "Confirm review and save behavior are unchanged"
@@ -2640,11 +2639,7 @@
         "testKind": "Mixed"
       },
       "uiHints": {
-        "workflowAreas": [
-          "Shared path configuration",
-          "Infor Visual executable path configuration",
-          "Theme settings"
-        ],
+        "workflowAreas": ["Shared path configuration", "Theme settings"],
         "screens": [
           "View_Settings_SharedPaths.xaml",
           "View_Settings_Theme.xaml"
@@ -2653,7 +2648,6 @@
         "desiredUiPatterns": ["Form", "Split layout"],
         "uiElements": [
           "Export root path field",
-          "Infor Visual executable path field",
           "Save action",
           "Theme status message"
         ],
@@ -2900,7 +2894,7 @@
           "Toggle validation requirements and warning rules",
           "Adjust min and max receiving limits",
           "Add, edit, test, and remove auto-padding rules",
-          "Change workflow startup and auto-save behavior",
+          "Change workflow startup and review-table behavior",
           "Save, reset, or cancel settings changes"
         ],
         "preserveRules": [
@@ -3195,184 +3189,6 @@
         "sensitiveDataRules": [
           "Do not expose raw connection strings in UI change requests or mockups",
           "Keep secret-bearing fields masked or routed to deployment-time secret storage"
-        ]
-      },
-      "relatedServices": [],
-      "subFeatures": []
-    },
-    {
-      "id": "settings-developer-tools-shell",
-      "module": "Module_Settings.DeveloperTools",
-      "name": "Developer Tools Settings Shell",
-      "summary": "Developer tools navigation shell with an overview page, four placeholder feature pages, and routing into the concrete database diagnostics surface.",
-      "owner": "Platform Team",
-      "relatedFiles": [
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_NavigationHub.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_SettingsOverview.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureA.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureB.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureC.cs",
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_Settings_DeveloperTools_FeatureD.cs",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_NavigationHub.xaml.cs",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_SettingsOverview.xaml.cs",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureA.xaml.cs",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureB.xaml.cs",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureC.xaml.cs",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml",
-        "Module_Settings.DeveloperTools/Views/View_Settings_DeveloperTools_FeatureD.xaml.cs"
-      ],
-      "promptDefaults": {
-        "audience": "Developer",
-        "docAudience": "Developer",
-        "mockupAudience": "Developer",
-        "reviewScope": "Single module",
-        "testKind": "Mixed"
-      },
-      "uiHints": {
-        "workflowAreas": [
-          "Developer tools overview",
-          "Placeholder feature pages",
-          "Navigation into diagnostics"
-        ],
-        "screens": [
-          "View_Settings_DeveloperTools_NavigationHub.xaml",
-          "View_Settings_DeveloperTools_SettingsOverview.xaml",
-          "View_Settings_DeveloperTools_FeatureA.xaml",
-          "View_Settings_DeveloperTools_FeatureB.xaml",
-          "View_Settings_DeveloperTools_FeatureC.xaml",
-          "View_Settings_DeveloperTools_FeatureD.xaml"
-        ],
-        "currentUiPatterns": ["Card list", "Form"],
-        "desiredUiPatterns": ["Card list", "Form"],
-        "uiElements": [
-          "Navigation cards",
-          "Overview text",
-          "Back actions",
-          "Placeholder page titles"
-        ],
-        "userActions": [
-          "Browse developer tool areas from the hub",
-          "Open the overview page",
-          "Open placeholder feature pages that are not implemented yet",
-          "Navigate from the shell into the database diagnostics page"
-        ],
-        "preserveRules": [
-          "Keep Feature A through Feature D explicitly marked as placeholders",
-          "Do not describe placeholder pages as implemented tool surfaces",
-          "Keep the current navigation hub card ordering unchanged"
-        ],
-        "acceptanceCriteria": [
-          "The hub still routes to overview, Feature A, Feature B, Feature C, Feature D, and Database Test",
-          "Metadata reflects the current placeholder status of Feature A through Feature D",
-          "Metadata separates the shell from the real diagnostics workflow"
-        ],
-        "validationHints": [
-          "Confirm the shell cards still open the intended page",
-          "Confirm Feature A through Feature D still present as placeholder pages",
-          "Confirm metadata does not overstate the capabilities of the placeholder views"
-        ]
-      },
-      "relatedServices": [],
-      "subFeatures": []
-    },
-    {
-      "id": "settings-developer-tools-diagnostics",
-      "module": "Module_Settings.DeveloperTools",
-      "name": "Settings Database Diagnostics",
-      "summary": "Developer-facing database diagnostics screen that runs a MediatR command, checks MySQL connectivity, validates expected settings tables and stored procedures, and probes core settings DAOs.",
-      "owner": "Platform Team",
-      "relatedFiles": [
-        "Module_Settings.DeveloperTools/ViewModels/ViewModel_SettingsDeveloperTools_DatabaseTest.cs",
-        "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml",
-        "Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml.cs",
-        "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommand.cs",
-        "Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommandHandler.cs",
-        "Module_Settings.DeveloperTools/Data/Dao_SettingsDiagnostics.cs",
-        "Module_Settings.DeveloperTools/Models/Model_SettingsDbTestReport.cs",
-        "Module_Settings.DeveloperTools/Models/Model_SettingsDbTableResult.cs",
-        "Module_Settings.DeveloperTools/Models/Model_SettingsDbProcedureResult.cs",
-        "Module_Settings.DeveloperTools/Models/Model_SettingsDbDaoResult.cs",
-        "Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs",
-        "Module_Settings.Core/Data/Dao_SettingsCoreUser.cs",
-        "Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs"
-      ],
-      "promptDefaults": {
-        "audience": "Developer",
-        "docAudience": "Developer",
-        "mockupAudience": "Developer",
-        "reviewScope": "Single feature",
-        "testKind": "Mixed",
-        "databaseSystem": "MySQL"
-      },
-      "uiHints": {
-        "workflowAreas": [
-          "Connection test",
-          "Settings table validation",
-          "Stored procedure validation",
-          "DAO operational checks"
-        ],
-        "screens": ["View_SettingsDeveloperTools_DatabaseTest.xaml"],
-        "currentUiPatterns": ["Tabs", "Table", "Toolbar + results list"],
-        "desiredUiPatterns": ["Tabs", "Table", "Toolbar + results list"],
-        "uiElements": [
-          "Run Tests button",
-          "Connection summary",
-          "Server version value",
-          "Validated tables count",
-          "Validated procedures count",
-          "Validated DAOs count",
-          "Summary tab",
-          "Tables tab",
-          "Stored Procedures tab",
-          "DAOs tab"
-        ],
-        "userActions": [
-          "Run all diagnostics from one command",
-          "Review connection state and response time",
-          "See which expected tables are missing or found",
-          "See which expected stored procedures are missing or found",
-          "See whether the core settings DAOs are operational"
-        ],
-        "preserveRules": [
-          "Keep diagnostics read-only",
-          "Keep the command-based flow from ViewModel to MediatR handler intact",
-          "Keep the diagnostics screen focused on validation and reporting rather than mutation"
-        ],
-        "acceptanceCriteria": [
-          "Run Tests still invokes the command and populates summary, tables, stored procedures, and DAO results",
-          "The diagnostics remain read-only and do not write to settings data",
-          "Metadata reflects the actual expected tables, procedures, and DAO checks described by the handler"
-        ],
-        "validationHints": [
-          "Confirm Run Tests still updates connection state and validation counts",
-          "Confirm table, stored procedure, and DAO result lists still populate the correct pivot tabs",
-          "Confirm the diagnostics still probe the expected settings tables and stored procedures"
-        ],
-        "databaseObjects": [
-          "sp_SettingsCore_Meta_GetTables",
-          "sp_SettingsCore_Meta_GetStoredProcedures",
-          "settings_universal",
-          "settings_personal",
-          "settings_activity",
-          "settings_roles",
-          "settings_user_roles",
-          "sp_SettingsCore_System_GetByKey",
-          "sp_SettingsCore_System_GetByCategory",
-          "sp_SettingsCore_System_Upsert",
-          "sp_SettingsCore_System_Reset",
-          "sp_SettingsCore_User_GetByKey",
-          "sp_SettingsCore_User_GetByCategory",
-          "sp_SettingsCore_User_Upsert",
-          "sp_SettingsCore_User_Reset"
-        ],
-        "sensitiveDataRules": [
-          "Do not log or expose raw connection strings in the diagnostics UI",
-          "Keep database diagnostics limited to health and metadata checks"
         ]
       },
       "relatedServices": [],

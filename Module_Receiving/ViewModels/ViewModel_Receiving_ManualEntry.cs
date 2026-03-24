@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
@@ -19,9 +20,11 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_ManualEntry : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_ManualEntry
+        : ViewModel_Shared_Base,
+            IResettableViewModel
     {
-        private const int InitialManualEntryRows = 10;
+        private const int InitialManualEntryRows = 1;
 
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -29,6 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly SemaphoreSlim _manualEntryDialogGate = new(1, 1);
 
         [ObservableProperty]
@@ -101,6 +105,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Window windowService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
+            IService_ViewModelRegistry viewModelRegistry,
             IService_Notification notificationService
         )
             : base(errorHandler, logger, notificationService)
@@ -111,10 +116,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _inforVisualService = inforVisualService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
+            _viewModelRegistry = viewModelRegistry;
             _loads = new ObservableCollection<Model_ReceivingLoad>(
                 _workflowService.CurrentSession.Loads
             );
             _loads.CollectionChanged += Loads_CollectionChanged;
+            _workflowService.StepChanged += OnStepChanged;
+            _viewModelRegistry.Register(this);
 
             foreach (var presetLocation in _validationService.PresetLocations)
             {
@@ -129,6 +137,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             EnsureInitialManualRows();
 
             _ = LoadUITextAsync();
+        }
+
+        public void ResetToDefaults()
+        {
+            var existingLoads = Loads.ToList();
+            foreach (var load in existingLoads)
+            {
+                DetachLoadHandlers(load);
+            }
+
+            Loads.Clear();
+            SelectedLoad = null;
+            StatusMessage = string.Empty;
         }
 
         private void EnsureInitialManualRows()
@@ -203,6 +224,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
+        private void OnStepChanged(object? sender, EventArgs e)
+        {
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.ManualEntry)
+            {
+                SyncLoadsFromCurrentSession(true);
+            }
+        }
+
         [RelayCommand]
         private async Task AutoFillAsync()
         {
@@ -240,19 +269,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             if (!string.IsNullOrWhiteSpace(previousLoad.PartID))
                             {
                                 currentLoad.PartID = previousLoad.PartID;
+                                var normalizedPreviousPo = (previousLoad.PoNumber ?? string.Empty)
+                                    .Trim()
+                                    .ToUpperInvariant();
+                                var normalizedCurrentPo = (currentLoad.PoNumber ?? string.Empty)
+                                    .Trim()
+                                    .ToUpperInvariant();
+                                var poNumbersMatch =
+                                    string.IsNullOrWhiteSpace(currentLoad.PoNumber)
+                                    || normalizedPreviousPo == normalizedCurrentPo;
 
                                 if (
                                     !currentLoad.IsNonPOItem
                                     && previousLoad?.IsNonPOItem == false
                                     && !string.IsNullOrWhiteSpace(previousLoad.PoLineNumber)
-                                    && (
-                                        string.IsNullOrWhiteSpace(currentLoad.PoNumber)
-                                        || string.Equals(
-                                            currentLoad.PoNumber,
-                                            previousLoad.PoNumber,
-                                            StringComparison.OrdinalIgnoreCase
-                                        )
-                                    )
+                                    && poNumbersMatch
                                 )
                                 {
                                     CopyPoPartSelectionState(currentLoad, previousLoad);
@@ -852,8 +883,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
 
                 var matchingParts = poResult
-                    .Data
-                    .Parts.Where(part =>
+                    .Data.Parts.Where(part =>
                         string.Equals(
                             part.PartID?.Trim(),
                             load.PartID.Trim(),
@@ -1076,6 +1106,31 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             _workflowService.CurrentSession.IsNonPO = Loads.All(load => load.IsNonPOItem);
+        }
+
+        private void SyncLoadsFromCurrentSession(bool ensureInitialRows)
+        {
+            var existingLoads = Loads.ToList();
+            foreach (var load in existingLoads)
+            {
+                DetachLoadHandlers(load);
+            }
+
+            Loads.Clear();
+
+            foreach (var load in _workflowService.CurrentSession.Loads)
+            {
+                Loads.Add(load);
+            }
+
+            if (ensureInitialRows)
+            {
+                EnsureInitialManualRows();
+            }
+            else
+            {
+                SelectedLoad = Loads.FirstOrDefault();
+            }
         }
 
         private void AttachLoadHandlers(Model_ReceivingLoad load)

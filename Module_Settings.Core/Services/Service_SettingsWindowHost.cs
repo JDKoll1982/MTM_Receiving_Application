@@ -37,6 +37,11 @@ public class Service_SettingsWindowHost : IService_SettingsWindowHost
                     _ownerRootElement.IsEnabled = true;
                     _ownerWindow?.BringToFront();
                 }
+
+                if (_ownerWindow is MainWindow mainWindow)
+                {
+                    _ = mainWindow.RefreshSettingsDependentStateAsync();
+                }
             };
         }
 

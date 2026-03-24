@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -18,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     /// <summary>
     /// ViewModel for Edit Mode — view, search, filter, and edit existing receiving loads.
     /// </summary>
-    public partial class ViewModel_Receiving_EditMode : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_EditMode : ViewModel_Shared_Base, IResettableViewModel
     {
         // ------------------------------------------------------------------ services
         private readonly IService_ReceivingWorkflow _workflowService;
@@ -29,6 +30,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Window _windowService;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         // ------------------------------------------------------------------ data
         private readonly List<Model_ReceivingLoad> _allLoads = new();
@@ -220,7 +222,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
             IService_Notification notificationService,
-            IService_ReceivingValidation validationService
+            IService_ReceivingValidation validationService,
+            IService_ViewModelRegistry viewModelRegistry
         )
             : base(errorHandler, logger, notificationService)
         {
@@ -232,6 +235,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _validationService = validationService;
+            _viewModelRegistry = viewModelRegistry;
 
             _loads = new ObservableCollection<Model_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
@@ -239,11 +243,36 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _paginationService.PageChanged += OnPageChanged;
             _paginationService.PageSize = 20;
             _workflowService.StepChanged += OnWorkflowStepChanged;
+            _viewModelRegistry.Register(this);
 
             _logger.LogInfo("Edit Mode initialized");
 
             _ = LoadUITextAsync()
                 .ContinueWith(_ => LoadColumnVisibilityAsync(), TaskScheduler.Default);
+        }
+
+        public void ResetToDefaults()
+        {
+            _allLoads.Clear();
+            _filteredLoads = new List<Model_ReceivingLoad>();
+            _deletedLoads.Clear();
+            Loads.Clear();
+            SelectedLoad = null;
+            CurrentDataSource = Enum_DataSourceType.Memory;
+            SearchText = string.Empty;
+            SearchByColumnKey = "All Fields";
+            ResultSummary = string.Empty;
+            SortColumn = string.Empty;
+            SortAscending = true;
+            SelectedPageSize = 20;
+            CurrentPage = 1;
+            TotalPages = 1;
+            GotoPageNumber = 1;
+            FilterStartDate = DateTimeOffset.Now.AddDays(-7);
+            FilterEndDate = DateTimeOffset.Now;
+            SelectAllButtonText = "Select All";
+            StatusMessage = string.Empty;
+            _currentLabelDataPath = null;
         }
 
         private void OnWorkflowStepChanged(object? sender, EventArgs e)

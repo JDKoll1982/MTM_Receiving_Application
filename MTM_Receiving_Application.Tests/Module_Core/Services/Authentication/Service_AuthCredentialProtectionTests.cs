@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using Xunit;
@@ -56,7 +58,7 @@ public sealed class Service_AuthCredentialProtectionTests : IDisposable
     }
 
     [Fact]
-    public void HashPin_ShouldThrow_WhenEnvironmentVariableIsMissing()
+    public void HashPin_ShouldRespectFallbackSecretSources_WhenEnvironmentVariableIsMissing()
     {
         Environment.SetEnvironmentVariable(
             Service_AuthCredentialProtection.EnvironmentVariableName,
@@ -65,10 +67,75 @@ public sealed class Service_AuthCredentialProtectionTests : IDisposable
 
         Action action = () => _service.HashPin("1234");
 
+        if (HasAvailableFallbackSecret())
+        {
+            action.Should().NotThrow();
+            return;
+        }
+
         action
             .Should()
             .Throw<InvalidOperationException>()
             .WithMessage($"*{Service_AuthCredentialProtection.EnvironmentVariableName}*");
+    }
+
+    private static bool HasAvailableFallbackSecret()
+    {
+        foreach (var secretPath in GetFallbackSecretPaths())
+        {
+            try
+            {
+                if (!File.Exists(secretPath))
+                {
+                    continue;
+                }
+
+                var secretValue = File.ReadAllText(secretPath);
+                if (!string.IsNullOrWhiteSpace(secretValue))
+                {
+                    return true;
+                }
+            }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
+        return false;
+    }
+
+    private static string[] GetFallbackSecretPaths()
+    {
+        var protectionType = typeof(Service_AuthCredentialProtection);
+        var localDirectoryName = GetPrivateConstantValue(
+            protectionType,
+            "LocalSecretDirectoryName"
+        );
+        var secretFileName = GetPrivateConstantValue(protectionType, "SecretFileName");
+        var sharedDirectoryPath = GetPrivateConstantValue(
+            protectionType,
+            "SharedSecretDirectoryPath"
+        );
+
+        var localSecretPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            localDirectoryName,
+            secretFileName
+        );
+        var sharedSecretPath = Path.Combine(sharedDirectoryPath, secretFileName);
+
+        return new[] { localSecretPath, sharedSecretPath };
+    }
+
+    private static string GetPrivateConstantValue(Type declaringType, string fieldName)
+    {
+        var field = declaringType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"the private constant '{fieldName}' should exist for the test");
+
+        return field!.GetRawConstantValue() as string
+            ?? throw new InvalidOperationException(
+                $"Private constant '{fieldName}' must be a string value."
+            );
     }
 
     public void Dispose()

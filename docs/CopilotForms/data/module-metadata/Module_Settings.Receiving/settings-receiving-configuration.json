@@ -65,7 +65,7 @@
       "Toggle validation requirements and warning rules",
       "Adjust min and max receiving limits",
       "Add, edit, test, and remove auto-padding rules",
-      "Change workflow startup and auto-save behavior",
+      "Change workflow startup and review-table behavior",
       "Save, reset, or cancel settings changes"
     ],
     "preserveRules": [

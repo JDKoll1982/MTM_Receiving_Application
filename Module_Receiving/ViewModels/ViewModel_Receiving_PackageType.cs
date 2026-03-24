@@ -175,9 +175,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            IsSaveAsDefault = await _receivingSettings.GetBoolAsync(
-                ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault
-            );
+            IsSaveAsDefault = false;
 
             await LoadPreferencesAsync();
 

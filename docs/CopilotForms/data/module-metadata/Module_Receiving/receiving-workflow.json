@@ -133,7 +133,7 @@
     ],
     "testScenarios": [
       "The workflow restores an existing session when one is persisted",
-      "Configured or remembered startup mode sends the user to the intended first screen",
+      "Configured startup mode sends the user to the intended first screen",
       "The user can move step to step when required values are present",
       "Validation blocks progress when required values are missing",
       "The review step shows the correct information before save",
@@ -149,7 +149,7 @@
     ],
     "validationHints": [
       "Confirm session restore still returns the user to a valid step",
-      "Confirm default-mode and remember-last-mode settings still route correctly on startup",
+      "Confirm default-mode routing still sends the user to the intended startup screen",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
       "Confirm review and save behavior are unchanged"
