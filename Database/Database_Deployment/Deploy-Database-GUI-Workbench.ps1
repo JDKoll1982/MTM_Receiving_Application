@@ -466,6 +466,9 @@ $script:CatalogPath = Join-Path $PSScriptRoot $script:Config.Paths.CatalogFileNa
 $script:ValidationOutputsPath = Join-Path $PSScriptRoot $script:Config.Paths.OutputsFolder
 $script:ExcludePatterns = $script:Config.Sql.ExcludePatterns
 $script:MySqlClientInfoCache = @{}
+$script:MySqlExeCache = @{}
+$script:SharedMySqlDefaultsFile = $null
+$script:SharedMySqlDefaultsFileKey = $null
 
 function Sync-UiRender {
     $window.Dispatcher.Invoke([System.Action] {}, [System.Windows.Threading.DispatcherPriority]::Render)
@@ -525,6 +528,19 @@ function Update-ConnectionDisplay {
 
         $swapHostsButton.Content = "Swap Repo To $swapTarget"
     }
+}
+
+function Get-MySqlExecutionCacheKey {
+    return "$($script:CurrentProvider)|$($script:CurrentServer)|$($script:CurrentPort)|$($script:CurrentUser)|$Database"
+}
+
+function Clear-SharedMySqlDefaultsFile {
+    if ($null -ne $script:SharedMySqlDefaultsFile -and (Test-Path $script:SharedMySqlDefaultsFile -ErrorAction SilentlyContinue)) {
+        Remove-Item $script:SharedMySqlDefaultsFile -ErrorAction SilentlyContinue
+    }
+
+    $script:SharedMySqlDefaultsFile = $null
+    $script:SharedMySqlDefaultsFileKey = $null
 }
 
 # AUTH-SECRET-LOGIC-BEGIN
@@ -830,6 +846,8 @@ function Set-ProviderState {
         [ValidateSet('workbench', 'mamp')]
         [string]$Provider
     )
+
+    Clear-SharedMySqlDefaultsFile
 
     $script:CurrentProvider = $Provider
 
@@ -1429,6 +1447,10 @@ Update-ConnectionDisplay
 # Locate mysql.exe under the default MySQL Server install directory.
 # Falls back to whatever is on the system PATH.
 function Find-MySqlExe {
+    if ($script:MySqlExeCache.ContainsKey($script:CurrentProvider)) {
+        return $script:MySqlExeCache[$script:CurrentProvider]
+    }
+
     if ($script:CurrentProvider -eq 'mamp') {
         $mampRoot = $script:Config.Paths.MampRoot
         if (Test-Path $mampRoot) {
@@ -1438,6 +1460,7 @@ function Find-MySqlExe {
             Select-Object -First 1
 
             if ($mampHit) {
+                $script:MySqlExeCache[$script:CurrentProvider] = $mampHit.FullName
                 return $mampHit.FullName
             }
         }
@@ -1451,10 +1474,14 @@ function Find-MySqlExe {
         Where-Object { $_.FullName -match "\\bin\\mysql\.exe$" } |
         Sort-Object FullName -Descending |
         Select-Object -First 1
-        if ($hit) { return $hit.FullName }
+        if ($hit) {
+            $script:MySqlExeCache[$script:CurrentProvider] = $hit.FullName
+            return $hit.FullName
+        }
     }
     try {
         $null = Get-Command mysql -ErrorAction Stop
+        $script:MySqlExeCache[$script:CurrentProvider] = 'mysql'
         return "mysql"
     }
     catch { }
@@ -1626,6 +1653,24 @@ password=$($script:CurrentPassword)
     return $tempDefaultsFile
 }
 
+function Get-SharedMySqlDefaultsFile {
+    $cacheKey = Get-MySqlExecutionCacheKey
+
+    if (
+        $script:SharedMySqlDefaultsFileKey -eq $cacheKey -and
+        $null -ne $script:SharedMySqlDefaultsFile -and
+        (Test-Path $script:SharedMySqlDefaultsFile -ErrorAction SilentlyContinue)
+    ) {
+        return $script:SharedMySqlDefaultsFile
+    }
+
+    Clear-SharedMySqlDefaultsFile
+    $script:SharedMySqlDefaultsFile = New-MySqlDefaultsFile
+    $script:SharedMySqlDefaultsFileKey = $cacheKey
+
+    return $script:SharedMySqlDefaultsFile
+}
+
 # Run a single SQL statement via -e.  No DELIMITER directives involved, so
 # ProcessStartInfo pipe-based stdin is fine here.
 function Execute-SqlCommand {
@@ -1633,37 +1678,28 @@ function Execute-SqlCommand {
         [string]$SqlCommand,
         [switch]$NoDatabase
     )
-    $defaultsFile = $null
+    $exe = Find-MySqlExe
+    $defaultsFile = Get-SharedMySqlDefaultsFile
+    $dbPart = if ($NoDatabase) { "" } else { $Database }
+    $argStr = "--defaults-extra-file=`"$defaultsFile`" -h$($script:CurrentServer) -P$($script:CurrentPort) --default-character-set=utf8mb4 $dbPart -e `"$SqlCommand`""
 
-    try {
-        $exe = Find-MySqlExe
-        $defaultsFile = New-MySqlDefaultsFile
-        $dbPart = if ($NoDatabase) { "" } else { $Database }
-        $argStr = "--defaults-extra-file=`"$defaultsFile`" -h$($script:CurrentServer) -P$($script:CurrentPort) --default-character-set=utf8mb4 $dbPart -e `"$SqlCommand`""
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $exe
+    $psi.Arguments = $argStr
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
 
-        $psi = New-Object System.Diagnostics.ProcessStartInfo
-        $psi.FileName = $exe
-        $psi.Arguments = $argStr
-        $psi.RedirectStandardOutput = $true
-        $psi.RedirectStandardError = $true
-        $psi.UseShellExecute = $false
-        $psi.CreateNoWindow = $true
+    $proc = New-Object System.Diagnostics.Process
+    $proc.StartInfo = $psi
+    $proc.Start() | Out-Null
+    $stdout = $proc.StandardOutput.ReadToEnd()
+    $stderr = $proc.StandardError.ReadToEnd()
+    $proc.WaitForExit()
 
-        $proc = New-Object System.Diagnostics.Process
-        $proc.StartInfo = $psi
-        $proc.Start() | Out-Null
-        $stdout = $proc.StandardOutput.ReadToEnd()
-        $stderr = $proc.StandardError.ReadToEnd()
-        $proc.WaitForExit()
-
-        if ($proc.ExitCode -ne 0) { throw "MySQL error: $stderr" }
-        return $true
-    }
-    finally {
-        if ($null -ne $defaultsFile -and (Test-Path $defaultsFile -ErrorAction SilentlyContinue)) {
-            Remove-Item $defaultsFile -ErrorAction SilentlyContinue
-        }
-    }
+    if ($proc.ExitCode -ne 0) { throw "MySQL error: $stderr" }
+    return $true
 }
 
 # Execute a .sql file by redirecting a real file handle into mysql.exe.
@@ -1688,7 +1724,7 @@ function Execute-SqlFile {
     $legacyBatchFiles = New-Object System.Collections.Generic.List[string]
 
     try {
-        $defaultsFile = New-MySqlDefaultsFile
+        $defaultsFile = Get-SharedMySqlDefaultsFile
 
         $body = [System.IO.File]::ReadAllText($FilePath)
 
@@ -1903,6 +1939,7 @@ $deployButton.Add_Click({
             $errorBorder.Visibility = "Collapsed"
             $summaryBorder.Visibility = "Collapsed"
             Reset-DeploymentProgressUi
+            Clear-SharedMySqlDefaultsFile
             $deployButton.IsEnabled = $false
             $overallStatusText.Text = "Deploying database..."
 
@@ -2168,6 +2205,7 @@ $deployButton.Add_Click({
                             $summarySeedData.Text = "$($script:SeedDataCountTotal) file(s)"
                             $deployButton.Content = "Deploy Again"
                             $deployButton.IsEnabled = $true
+                            Clear-SharedMySqlDefaultsFile
                         }
                     }
                     catch {
@@ -2180,6 +2218,7 @@ $deployButton.Add_Click({
                         $errorText.Text = "Error in step $($script:step)`n`nMessage: $($_.Exception.Message)`n`nFile: $($file.FullName)`n`nStack:`n$($_.ScriptStackTrace)"
                         $deployButton.Content = "Retry"
                         $deployButton.IsEnabled = $true
+                        Clear-SharedMySqlDefaultsFile
                     }
                 })
 
@@ -2199,6 +2238,7 @@ $deployButton.Add_Click({
             $errorBorder.Visibility = "Visible"
             $errorText.Text = "Setup error: $($_.Exception.Message)`n`n$($_.ScriptStackTrace)"
             $deployButton.IsEnabled = $true
+            Clear-SharedMySqlDefaultsFile
         }
     })
 
@@ -2266,6 +2306,9 @@ $modeSwitchButton.Add_Click({
         }
     })
 
-$closeButton.Add_Click({ $window.Close() })
+$closeButton.Add_Click({
+        Clear-SharedMySqlDefaultsFile
+        $window.Close()
+    })
 
 $window.ShowDialog() | Out-Null
