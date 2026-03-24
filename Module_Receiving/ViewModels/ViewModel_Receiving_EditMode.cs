@@ -811,6 +811,35 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectAllCommand.NotifyCanExecuteChanged();
         }
 
+        public void HandleCurrentLabelQueueCleared()
+        {
+            if (CurrentDataSource != Enum_DataSourceType.CurrentLabels)
+            {
+                return;
+            }
+
+            _logger.LogInfo(
+                "Current label queue cleared while Edit Mode is displaying current labels. Clearing grid."
+            );
+
+            _deletedLoads.Clear();
+            _allLoads.Clear();
+            _filteredLoads = new List<Model_ReceivingLoad>();
+            Loads.Clear();
+            SelectedLoad = null;
+            ResultSummary = "0 records";
+            StatusMessage = "Current label queue cleared.";
+            SelectAllButtonText = "Select All";
+
+            _paginationService.SetSource(_filteredLoads);
+            CurrentPage = _paginationService.CurrentPage;
+            TotalPages = _paginationService.TotalPages;
+            GotoPageNumber = CurrentPage;
+
+            NotifyPaginationCommands();
+            NotifyCommands();
+        }
+
         /// <summary>
         /// Handles changes to the filter start date.
         /// </summary>

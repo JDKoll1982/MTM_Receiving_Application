@@ -7,6 +7,8 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Windows.Graphics;
@@ -166,7 +168,7 @@ namespace MTM_Receiving_Application
             ),
         };
 
-        private void NavView_SelectionChanged(
+        private async void NavView_SelectionChanged(
             NavigationView sender,
             NavigationViewSelectionChangedEventArgs args
         )
@@ -193,7 +195,33 @@ namespace MTM_Receiving_Application
                 PageTitleTextBlock.Text = route.Title;
             }
 
+            await ClearModuleDraftStateBeforeNavigationAsync(route.PageType);
             NavigateWithDI(route.PageType);
+        }
+
+        private async Task ClearModuleDraftStateBeforeNavigationAsync(Type destinationPageType)
+        {
+            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow)
+            {
+                if (destinationPageType != typeof(Module_Receiving.Views.View_Receiving_Workflow))
+                {
+                    var receivingWorkflow =
+                        _serviceProvider.GetRequiredService<IService_ReceivingWorkflow>();
+                    await receivingWorkflow.ResetWorkflowAsync();
+                }
+
+                return;
+            }
+
+            if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView)
+            {
+                if (destinationPageType != typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView))
+                {
+                    var dunnageWorkflow =
+                        _serviceProvider.GetRequiredService<IService_DunnageWorkflow>();
+                    dunnageWorkflow.ClearSession();
+                }
+            }
         }
 
         private void ContentFrame_Navigated(

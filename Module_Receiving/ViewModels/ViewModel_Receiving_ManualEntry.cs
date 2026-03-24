@@ -134,8 +134,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 AttachLoadHandlers(load);
             }
 
-            EnsureInitialManualRows();
-
             _ = LoadUITextAsync();
         }
 

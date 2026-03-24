@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, persisted session restore, and final save orchestration.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, and final save orchestration.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -71,7 +71,7 @@
       "Guided receiving workflow",
       "Startup routing",
       "Step-by-step wizard",
-      "Session restore and resume",
+      "Unsaved state survives only inside the current module",
       "Settings-driven default mode and validation behavior"
     ],
     "screens": [
@@ -102,7 +102,7 @@
     "userActions": [
       "Move through the workflow one step at a time",
       "Understand what to do next quickly",
-      "Resume an existing receiving session after restart",
+      "Lose unsaved work when leaving the module or exiting before save",
       "Review entries before saving",
       "Recover from mistakes without confusion"
     ],
@@ -126,13 +126,13 @@
     "reviewFocusAreas": [
       "Workflow regressions",
       "Validation behavior",
-      "Session restore behavior",
+      "Unsaved-state reset behavior",
       "Default mode startup behavior",
       "Navigation clarity",
       "Save-path stability"
     ],
     "testScenarios": [
-      "The workflow restores an existing session when one is persisted",
+      "Leaving Receiving or exiting before save clears unsaved workflow data",
       "Configured startup mode sends the user to the intended first screen",
       "The user can move step to step when required values are present",
       "Validation blocks progress when required values are missing",
@@ -142,13 +142,13 @@
     "docTopics": [
       "Workflow overview",
       "Step-by-step operator flow",
-      "Session persistence and restore behavior",
+      "Module-scoped unsaved-state behavior",
       "Receiving settings and default-mode behavior",
       "Validation behavior",
       "Review and save expectations"
     ],
     "validationHints": [
-      "Confirm session restore still returns the user to a valid step",
+      "Confirm leaving Receiving or exiting before save discards unsaved receiving drafts",
       "Confirm default-mode routing still sends the user to the intended startup screen",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
@@ -176,7 +176,7 @@
     ],
     "loggingEvents": [
       "Step transitions",
-      "Session persistence and restore",
+      "Module-scoped unsaved-state behavior",
       "Validation failures",
       "Save requests",
       "Save failures"

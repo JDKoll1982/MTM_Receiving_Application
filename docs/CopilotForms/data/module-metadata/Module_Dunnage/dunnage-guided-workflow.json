@@ -2,7 +2,7 @@
   "id": "dunnage-guided-workflow",
   "module": "Module_Dunnage",
   "name": "Guided Workflow",
-  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, and final review.",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, final review, and module-scoped unsaved state.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
@@ -46,7 +46,8 @@
       "Mode selection",
       "Guided dunnage entry",
       "Manual and detail entry",
-      "Review before save"
+      "Review before save",
+      "Unsaved state survives only inside the current module"
     ],
     "screens": [
       "View_Dunnage_ModeSelectionView.xaml",
@@ -71,11 +72,13 @@
       "Choose the correct dunnage mode",
       "Move through guided steps",
       "Capture manual or detailed information",
-      "Review and finish the workflow"
+      "Review and finish the workflow",
+      "Lose unsaved work when leaving the module or exiting before save"
     ],
     "validationHints": [
       "Confirm the guided workflow still advances correctly between steps",
-      "Confirm manual and detail entry remain aligned with review behavior"
+      "Confirm manual and detail entry remain aligned with review behavior",
+      "Confirm leaving Dunnage before save clears unsaved workflow data"
     ]
   }
 }

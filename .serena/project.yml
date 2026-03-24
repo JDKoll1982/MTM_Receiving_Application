@@ -14,7 +14,7 @@
 # The first language is the default language and the respective language server will be used as a fallback.
 # Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
-  - csharp
+- csharp
 
 # the encoding used by text files in the project
 # For a list of possible encodings, see https://docs.python.org/3.11/library/codecs.html#standard-encodings
@@ -128,7 +128,6 @@ initial_prompt: |
   - xUnit + FluentAssertions for tests
 
   ## Respond with everything that you learned from the above instructions and memories in mind, and ask if you have any questions before proceeding with any code changes.
-
 # the name by which the project can be referenced within Serena
 project_name: "MTM_Receiving_Application"
 
@@ -145,12 +144,12 @@ project_name: "MTM_Receiving_Application"
 #                           memory-bank updates and PR descriptions.
 #   prepare_for_new_conversation : Enables clean session hand-off with context preserved in memories.
 included_optional_tools:
-  - execute_shell_command
-  - think_about_collected_information
-  - think_about_task_adherence
-  - think_about_whether_you_are_done
-  - summarize_changes
-  - prepare_for_new_conversation
+- execute_shell_command
+- think_about_collected_information
+- think_about_task_adherence
+- think_about_whether_you_are_done
+- summarize_changes
+- prepare_for_new_conversation
 
 # list of mode names to that are always to be included in the set of active modes
 # The full set of modes to be activated is base_modes + default_modes.
@@ -159,8 +158,8 @@ included_optional_tools:
 # Set this to [] to disable base modes for this project.
 # Set this to a list of mode names to always include the respective modes for this project.
 base_modes:
-  - editing
-  - interactive
+- editing
+- interactive
 
 # list of mode names that are to be activated by default.
 # The full set of modes to be activated is base_modes + default_modes.
@@ -191,11 +190,24 @@ language_backend: LSP
 # constitution_summary and forbidden_practices are protected from accidental AI edits;
 # they are the immutable architectural constraints for this project.
 read_only_memory_patterns:
-  - "constitution_summary"
-  - "forbidden_practices"
+- "constitution_summary"
+- "forbidden_practices"
 
 # line ending convention to use when writing source files.
 # Possible values: unset (use global setting), "lf", "crlf", or "native" (platform default)
 # This does not affect Serena's own files (e.g. memories and configuration files), which always use native line endings.
-# Set to crlf for Windows team consistency; prevents git diff pollution from line ending changes.
 line_ending: "crlf"
+
+# list of regex patterns for memories to completely ignore.
+# Matching memories will not appear in list_memories or activate_project output
+# and cannot be accessed via read_memory or write_memory.
+# To access ignored memory files, use the read_file tool on the raw file path.
+# Extends the list from the global configuration, merging the two lists.
+# Example: ["_archive/.*", "_episodes/.*"]
+ignored_memory_patterns: []
+
+# advanced configuration option allowing to configure language server-specific options.
+# Maps the language key to the options.
+# Have a look at the docstring of the constructors of the LS implementations within solidlsp (e.g., for C# or PHP) to see which options are available.
+# No documentation on options means no options are available.
+ls_specific_settings: {}

@@ -20,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         [ObservableProperty]
         private string _currentStepTitle = "Receiving - Mode Selection";
@@ -146,6 +147,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Window windowService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
+            IService_ViewModelRegistry viewModelRegistry,
             IService_Notification notificationService
         )
             : base(errorHandler, logger, notificationService)
@@ -155,6 +157,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService = workflowService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
+            _viewModelRegistry = viewModelRegistry;
             _workflowService.StepChanged += OnWorkflowStepChanged;
             _workflowService.StatusMessageRaised += (_, message) => ShowStatus(message);
 
@@ -166,7 +169,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Initialize the workflow to apply default mode and restore session state.
+        /// Initialize the workflow to apply the default mode and clear any stale draft state.
         /// </summary>
         private async Task InitializeWorkflowAsync()
         {
@@ -502,6 +505,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var deleteResult = await _workflowService.ResetLabelDataAsync();
                 if (deleteResult.LabelQueueCleared || deleteResult.ArchiveQueueCleared)
                 {
+                    foreach (
+                        var editModeViewModel in _viewModelRegistry.GetViewModels<ViewModel_Receiving_EditMode>()
+                    )
+                    {
+                        editModeViewModel.HandleCurrentLabelQueueCleared();
+                    }
+
                     ShowStatus(
                         await _receivingSettings.GetStringAsync(
                             ReceivingSettingsKeys.Workflow.StatusLabelDataClearedSuccess

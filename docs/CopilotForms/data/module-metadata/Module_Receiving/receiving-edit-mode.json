@@ -2,7 +2,7 @@
   "id": "receiving-edit-mode",
   "module": "Module_Receiving",
   "name": "Edit Mode",
-  "summary": "In-place editing of current-memory, current-label, and history-backed receiving loads with search, paging, validation, and save coordination.",
+  "summary": "In-place editing of current-memory, current-label, and history-backed receiving loads with search, paging, validation, save coordination, and immediate current-label grid clearing after label queue resets.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
@@ -48,7 +48,8 @@
       "Edit existing loads",
       "Search and page through saved receiving entries",
       "Switch between current memory, current labels, and history",
-      "Persist edit-grid preferences"
+      "Persist edit-grid preferences",
+      "Clear the current-label grid when the active label queue is reset"
     ],
     "screens": ["View_Receiving_EditMode.xaml"],
     "currentUiPatterns": [
@@ -80,6 +81,7 @@
       "Scan existing loads quickly",
       "Find a load by search",
       "Switch between memory, label queue, and history data",
+      "See the current-label grid empty immediately after the label queue is cleared",
       "Review one load at a time",
       "Edit a selected record",
       "Save changes confidently"
@@ -102,6 +104,7 @@
     "acceptanceCriteria": [
       "Users can review entries more easily than in the current grid",
       "Data-source switching still loads the intended records",
+      "Clearing label data empties the grid when Current Labels is the active source",
       "Saved column visibility and page-size preferences still apply",
       "Search still works",
       "Paging still works unless the request says otherwise",
@@ -110,6 +113,7 @@
     ],
     "reviewFocusAreas": [
       "Data-source switching",
+      "Current-label clear behavior",
       "Grid-to-card regressions",
       "Search and paging behavior",
       "Saved grid preferences",
@@ -118,6 +122,7 @@
     ],
     "testScenarios": [
       "Switching between current memory, current labels, and history loads the correct record source",
+      "Clearing label data while Current Labels is active empties the edit grid immediately",
       "Search still finds matching results",
       "Paging still moves through records correctly",
       "Saved column visibility and page-size preferences restore correctly",
@@ -127,6 +132,7 @@
     "docTopics": [
       "Edit mode overview",
       "Data-source switching behavior",
+      "Current-label clear behavior",
       "Search and paging behavior",
       "Column visibility and page-size preferences",
       "Row editing expectations",
@@ -134,6 +140,7 @@
     ],
     "validationHints": [
       "Confirm each data source still loads the intended records",
+      "Confirm clearing label data empties the grid when Current Labels is active",
       "Confirm search still works",
       "Confirm paging still works",
       "Confirm saved grid preferences still apply",

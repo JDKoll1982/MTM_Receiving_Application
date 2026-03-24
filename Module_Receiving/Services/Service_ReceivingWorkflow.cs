@@ -97,17 +97,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _logger.LogInfo("Starting receiving workflow.");
             var currentUser = _userSessionManager?.CurrentSession?.User;
 
-            // Try to load existing session
-            var existingSession = await _sessionManager.LoadSessionAsync();
-
-            if (existingSession?.HasLoads == true)
+            // Receiving drafts are intentionally not restored across app launches.
+            // If a stale session file exists, clear it so reopening always starts clean.
+            if (_sessionManager.SessionExists())
             {
-                _logger.LogInfo("Restoring existing session.");
-                CurrentSession = existingSession;
-                CurrentSession.User ??= currentUser;
-                // Determine which step to restore to based on session state
-                CurrentStep = Enum_ReceivingWorkflowStep.Review; // Default to review if session exists
-                return true; // Session restored
+                _logger.LogInfo("Discarding stale receiving session on workflow start.");
+                await _sessionManager.ClearSessionAsync();
             }
 
             // Start fresh
@@ -355,11 +350,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
             }
 
-            // Persist session after step change
-            _logger.LogInfo("Persisting session...");
-            await PersistSessionAsync();
-            _logger.LogInfo("Session persisted.");
-
             return Model_ReceivingWorkflowStepResult.SuccessResult(
                 CurrentStep,
                 $"Advanced to {CurrentStep}"
@@ -467,7 +457,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentLocation = string.Empty;
             RequestedEditDataSource = Enum_DataSourceType.Memory;
 
-            await PersistSessionAsync();
             CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
         }
 
@@ -664,9 +653,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task PersistSessionAsync()
         {
-            if (CurrentSession.HasLoads)
+            if (_sessionManager.SessionExists())
             {
-                await _sessionManager.SaveSessionAsync(CurrentSession);
+                await _sessionManager.ClearSessionAsync();
             }
         }
     }

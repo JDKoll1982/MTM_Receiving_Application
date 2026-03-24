@@ -88,9 +88,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
 
         /// <summary>
         /// Starts a new receiving workflow session.
-        /// Loads any existing persisted session if available.
+        /// Always starts fresh and discards any stale persisted draft session.
         /// </summary>
-        /// <returns>True if existing session restored, false if new session</returns>
+        /// <returns>False, because persisted receiving drafts are not restored on startup</returns>
         public Task<bool> StartWorkflowAsync();
 
         /// <summary>
