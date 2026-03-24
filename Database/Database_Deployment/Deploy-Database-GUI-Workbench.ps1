@@ -685,8 +685,38 @@ function Get-RepoFilesForHostSwap {
     $includedExtensions = $script:Config.HostSwap.IncludedExtensions
     $excludedDirectories = $script:Config.HostSwap.ExcludedDirectories
 
+    $candidateFiles = @()
+
+    try {
+        $gitFileList = git -C $RepoRoot ls-files --cached --others --exclude-standard 2>$null
+
+        if ($LASTEXITCODE -eq 0 -and $null -ne $gitFileList) {
+            $candidateFiles = @(
+                $gitFileList |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+                ForEach-Object {
+                    $relativePath = $_.Trim()
+                    $absolutePath = Join-Path $RepoRoot $relativePath
+
+                    if (Test-Path $absolutePath -PathType Leaf) {
+                        Get-Item -LiteralPath $absolutePath -ErrorAction SilentlyContinue
+                    }
+                } |
+                Where-Object { $null -ne $_ }
+            )
+        }
+    }
+    catch {
+    }
+
+    if ($candidateFiles.Count -eq 0) {
+        $candidateFiles = @(
+            Get-ChildItem -Path $RepoRoot -Recurse -File -ErrorAction SilentlyContinue
+        )
+    }
+
     return @(
-        Get-ChildItem -Path $RepoRoot -Recurse -File -ErrorAction SilentlyContinue |
+        $candidateFiles |
         Where-Object {
             if ($_.Extension.ToLowerInvariant() -notin $includedExtensions) {
                 return $false
