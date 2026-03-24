@@ -30,8 +30,9 @@ $n5arm64 = "FOR ARM64 MACHINES — publish to a separate folder with a separate 
 # ---------------------------------------------------------------------------
 # Publish option definitions — mirrors PublishAppScript.md
 # ---------------------------------------------------------------------------
-$script:BaseShare   = "X:\Software Development\Live Applications"
+$script:BaseShare = "X:\Software Development\Live Applications"
 $script:ProjectFile = "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj"
+$script:PublishVerbosity = 'detailed'
 
 $script:Options = @(
     @{
@@ -234,21 +235,21 @@ $window = [Windows.Markup.XamlReader]::Load($reader)
 # ---------------------------------------------------------------------------
 # Bind controls
 # ---------------------------------------------------------------------------
-$optionList        = $window.FindName("OptionList")
-$notesText         = $window.FindName("NotesText")
-$outputPathText    = $window.FindName("OutputPathText")
-$projectPathText   = $window.FindName("ProjectPathText")
-$statusText        = $window.FindName("StatusText")
-$publishProgress   = $window.FindName("PublishProgress")
-$outputBorder      = $window.FindName("OutputBorder")
+$optionList = $window.FindName("OptionList")
+$notesText = $window.FindName("NotesText")
+$outputPathText = $window.FindName("OutputPathText")
+$projectPathText = $window.FindName("ProjectPathText")
+$statusText = $window.FindName("StatusText")
+$publishProgress = $window.FindName("PublishProgress")
+$outputBorder = $window.FindName("OutputBorder")
 $outputScrollViewer = $window.FindName("OutputScrollViewer")
-$outputText        = $window.FindName("OutputText")
-$successBorder     = $window.FindName("SuccessBorder")
-$successText       = $window.FindName("SuccessText")
-$errorBorder       = $window.FindName("ErrorBorder")
-$errorText         = $window.FindName("ErrorText")
-$publishButton     = $window.FindName("PublishButton")
-$closeButton       = $window.FindName("CloseButton")
+$outputText = $window.FindName("OutputText")
+$successBorder = $window.FindName("SuccessBorder")
+$successText = $window.FindName("SuccessText")
+$errorBorder = $window.FindName("ErrorBorder")
+$errorText = $window.FindName("ErrorText")
+$publishButton = $window.FindName("PublishButton")
+$closeButton = $window.FindName("CloseButton")
 
 $projectPathText.Text = $script:ProjectFile
 
@@ -265,17 +266,17 @@ foreach ($opt in $script:Options) {
     $sp = New-Object System.Windows.Controls.StackPanel
 
     $labelBlock = New-Object System.Windows.Controls.TextBlock
-    $labelBlock.Text        = $opt.Label
-    $labelBlock.FontWeight  = [System.Windows.FontWeights]::SemiBold
+    $labelBlock.Text = $opt.Label
+    $labelBlock.FontWeight = [System.Windows.FontWeights]::SemiBold
     $labelBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
-    $labelBlock.Foreground  = $brushConverter.ConvertFromString($opt.TagColor)
+    $labelBlock.Foreground = $brushConverter.ConvertFromString($opt.TagColor)
 
     $folderBlock = New-Object System.Windows.Controls.TextBlock
-    $folderBlock.Text       = $opt.Folder
-    $folderBlock.FontSize   = 10
+    $folderBlock.Text = $opt.Folder
+    $folderBlock.FontSize = 10
     $folderBlock.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
     $folderBlock.Foreground = $brushConverter.ConvertFromString("#888888")
-    $folderBlock.Margin     = New-Object System.Windows.Thickness(0, 2, 0, 0)
+    $folderBlock.Margin = New-Object System.Windows.Thickness(0, 2, 0, 0)
 
     [void]$sp.Children.Add($labelBlock)
     [void]$sp.Children.Add($folderBlock)
@@ -289,125 +290,135 @@ foreach ($opt in $script:Options) {
 $script:selectedOption = $null
 
 $optionList.Add_SelectionChanged({
-    $selectedItem = $optionList.SelectedItem
-    if ($null -eq $selectedItem) { return }
+        $selectedItem = $optionList.SelectedItem
+        if ($null -eq $selectedItem) { return }
 
-    # Store directly so the publish handler never needs to re-derive it
-    $script:selectedOption = $script:Options[[int]$selectedItem.Tag]
+        # Store directly so the publish handler never needs to re-derive it
+        $script:selectedOption = $script:Options[[int]$selectedItem.Tag]
 
-    $notesText.Text      = $script:selectedOption.Notes
-    $outputPathText.Text = "$($script:BaseShare)\$($script:selectedOption.Folder)"
+        $notesText.Text = $script:selectedOption.Notes
+        $outputPathText.Text = "$($script:BaseShare)\$($script:selectedOption.Folder)"
 
-    $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
-    $errorBorder.Visibility   = [System.Windows.Visibility]::Collapsed
-    $outputBorder.Visibility  = [System.Windows.Visibility]::Collapsed
-    $outputText.Text          = ""
-    $statusText.Text          = "Ready to publish: $($script:selectedOption.Label)"
-    $publishButton.IsEnabled  = $true
-})
+        $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        $outputText.Text = ""
+        $statusText.Text = "Ready to publish: $($script:selectedOption.Label)"
+        $publishButton.IsEnabled = $true
+    })
 
 # ---------------------------------------------------------------------------
 # Publish button — run dotnet publish, show live output, show result
 # ---------------------------------------------------------------------------
 $publishButton.Add_Click({
-    if ($null -eq $script:selectedOption) { return }
+        if ($null -eq $script:selectedOption) { return }
 
-    $opt        = $script:selectedOption
-    $script:currentOutputPath = "$($script:BaseShare)\$($opt.Folder)"
-    $projectPath = $projectPathText.Text
+        $opt = $script:selectedOption
+        $script:currentOutputPath = "$($script:BaseShare)\$($opt.Folder)"
+        $projectPath = $projectPathText.Text
+        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args) -v $($script:PublishVerbosity) -o `"$($script:currentOutputPath)`""
 
-    # Reset UI
-    $successBorder.Visibility   = [System.Windows.Visibility]::Collapsed
-    $errorBorder.Visibility     = [System.Windows.Visibility]::Collapsed
-    $outputBorder.Visibility    = [System.Windows.Visibility]::Visible
-    $outputText.Text            = ""
-    $publishProgress.Visibility = [System.Windows.Visibility]::Visible
-    $publishButton.IsEnabled    = $false
-    $statusText.Text            = "Publishing — please wait..."
+        # Reset UI
+        $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        $outputBorder.Visibility = [System.Windows.Visibility]::Visible
+        $outputText.Text = @"
+MTM Receiving Application Publish Tool
+Started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+Option: $($opt.Label)
+Project: $projectPath
+Output: $($script:currentOutputPath)
+Verbosity: $($script:PublishVerbosity)
+Command: $publishCommand
 
-    # Redirect stdout+stderr to a temp file via cmd /c.
-    # This avoids DataReceived event callbacks crossing into the PowerShell runspace
-    # from a thread-pool thread, which causes the CLR crash (0xE0434352).
-    # The DispatcherTimer reads and streams from the file entirely on the UI thread.
-    $script:outFile  = [System.IO.Path]::GetTempFileName()
-    $script:lastPos  = 0L
+"@
+        $publishProgress.Visibility = [System.Windows.Visibility]::Visible
+        $publishButton.IsEnabled = $false
+        $statusText.Text = "Publishing — please wait..."
 
-    $cmdArgs = "/c dotnet publish `"$projectPath`" $($opt.Args) -o `"$($script:currentOutputPath)`" > `"$($script:outFile)`" 2>&1"
+        # Redirect stdout+stderr to a temp file via cmd /c.
+        # This avoids DataReceived event callbacks crossing into the PowerShell runspace
+        # from a thread-pool thread, which causes the CLR crash (0xE0434352).
+        # The DispatcherTimer reads and streams from the file entirely on the UI thread.
+        $script:outFile = [System.IO.Path]::GetTempFileName()
+        $script:lastPos = 0L
 
-    $psi = New-Object System.Diagnostics.ProcessStartInfo
-    $psi.FileName        = "cmd.exe"
-    $psi.Arguments       = $cmdArgs
-    $psi.UseShellExecute = $false
-    $psi.CreateNoWindow  = $true
+        $cmdArgs = "/c $publishCommand > `"$($script:outFile)`" 2>&1"
 
-    $script:publishProcess = New-Object System.Diagnostics.Process
-    $script:publishProcess.StartInfo = $psi
-    $script:publishProcess.Start() | Out-Null
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = "cmd.exe"
+        $psi.Arguments = $cmdArgs
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
 
-    # Poll the temp file for new lines every 200 ms — all on the UI thread, no callbacks
-    $script:pollTimer = New-Object System.Windows.Threading.DispatcherTimer
-    $script:pollTimer.Interval = [TimeSpan]::FromMilliseconds(200)
-    $script:pollTimer.Add_Tick({
-        # Read any new bytes written to the temp file since last tick
-        try {
-            $fs = [System.IO.File]::Open($script:outFile,
-                    [System.IO.FileMode]::Open,
-                    [System.IO.FileAccess]::Read,
-                    [System.IO.FileShare]::ReadWrite)
-            $fs.Seek($script:lastPos, [System.IO.SeekOrigin]::Begin) | Out-Null
-            $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
-            $newText = $reader.ReadToEnd()
-            $script:lastPos = $fs.Position
-            $reader.Dispose()
-            $fs.Dispose()
+        $script:publishProcess = New-Object System.Diagnostics.Process
+        $script:publishProcess.StartInfo = $psi
+        $script:publishProcess.Start() | Out-Null
 
-            if ($newText.Length -gt 0) {
-                $outputText.Text += $newText
-                # Show last non-empty line in the status bar while building
-                $lastLine = ($newText -split "`n" | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 1)
-                if ($lastLine) { $statusText.Text = $lastLine.Trim() }
+        # Poll the temp file for new lines every 200 ms — all on the UI thread, no callbacks
+        $script:pollTimer = New-Object System.Windows.Threading.DispatcherTimer
+        $script:pollTimer.Interval = [TimeSpan]::FromMilliseconds(200)
+        $script:pollTimer.Add_Tick({
+                # Read any new bytes written to the temp file since last tick
+                try {
+                    $fs = [System.IO.File]::Open($script:outFile,
+                        [System.IO.FileMode]::Open,
+                        [System.IO.FileAccess]::Read,
+                        [System.IO.FileShare]::ReadWrite)
+                    $fs.Seek($script:lastPos, [System.IO.SeekOrigin]::Begin) | Out-Null
+                    $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
+                    $newText = $reader.ReadToEnd()
+                    $script:lastPos = $fs.Position
+                    $reader.Dispose()
+                    $fs.Dispose()
+
+                    if ($newText.Length -gt 0) {
+                        $outputText.Text += $newText
+                        # Show last non-empty line in the status bar while building
+                        $lastLine = ($newText -split "`n" | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 1)
+                        if ($lastLine) { $statusText.Text = $lastLine.Trim() }
+                        $outputScrollViewer.ScrollToEnd()
+                    }
+                }
+                catch { <# file briefly locked — skip this tick #> }
+
+                if (-not $script:publishProcess.HasExited) { return }
+
+                # Process exited — do one final read to capture the last bytes
+                $script:pollTimer.Stop()
+                try {
+                    $fs = [System.IO.File]::Open($script:outFile,
+                        [System.IO.FileMode]::Open,
+                        [System.IO.FileAccess]::Read,
+                        [System.IO.FileShare]::ReadWrite)
+                    $fs.Seek($script:lastPos, [System.IO.SeekOrigin]::Begin) | Out-Null
+                    $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
+                    $tail = $reader.ReadToEnd()
+                    $reader.Dispose()
+                    $fs.Dispose()
+                    if ($tail.Length -gt 0) { $outputText.Text += $tail }
+                }
+                catch { }
+
+                try { Remove-Item $script:outFile -Force -ErrorAction SilentlyContinue } catch { }
+
                 $outputScrollViewer.ScrollToEnd()
-            }
-        }
-        catch { <# file briefly locked — skip this tick #> }
+                $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
+                $publishButton.IsEnabled = $true
 
-        if (-not $script:publishProcess.HasExited) { return }
-
-        # Process exited — do one final read to capture the last bytes
-        $script:pollTimer.Stop()
-        try {
-            $fs = [System.IO.File]::Open($script:outFile,
-                    [System.IO.FileMode]::Open,
-                    [System.IO.FileAccess]::Read,
-                    [System.IO.FileShare]::ReadWrite)
-            $fs.Seek($script:lastPos, [System.IO.SeekOrigin]::Begin) | Out-Null
-            $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
-            $tail = $reader.ReadToEnd()
-            $reader.Dispose()
-            $fs.Dispose()
-            if ($tail.Length -gt 0) { $outputText.Text += $tail }
-        }
-        catch { }
-
-        try { Remove-Item $script:outFile -Force -ErrorAction SilentlyContinue } catch { }
-
-        $outputScrollViewer.ScrollToEnd()
-        $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
-        $publishButton.IsEnabled    = $true
-
-        if ($script:publishProcess.ExitCode -eq 0) {
-            $successBorder.Visibility = [System.Windows.Visibility]::Visible
-            $successText.Text         = "Publish succeeded!`nOutput folder: $script:currentOutputPath"
-            $statusText.Text          = "Publish completed successfully!"
-        }
-        else {
-            $errorBorder.Visibility = [System.Windows.Visibility]::Visible
-            $errorText.Text         = "Publish failed (exit code $($script:publishProcess.ExitCode)). See the build output above for details."
-            $statusText.Text        = "Publish failed — check build output."
-        }
+                if ($script:publishProcess.ExitCode -eq 0) {
+                    $successBorder.Visibility = [System.Windows.Visibility]::Visible
+                    $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath"
+                    $statusText.Text = "Publish completed successfully!"
+                }
+                else {
+                    $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+                    $errorText.Text = "Publish failed (exit code $($script:publishProcess.ExitCode)). See the build output above for details."
+                    $statusText.Text = "Publish failed — check build output."
+                }
+            })
+        $script:pollTimer.Start()
     })
-    $script:pollTimer.Start()
-})
 
 # ---------------------------------------------------------------------------
 # Close button
