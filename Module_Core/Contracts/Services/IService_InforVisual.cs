@@ -89,6 +89,15 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Returns purchase orders that contain the specified part number.
+        /// Results are ordered descending by PO number and include vendor details for selection dialogs.
+        /// </summary>
+        /// <param name="partId">Exact part ID to search for.</param>
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPurchaseOrdersByPartAsync(
+            string partId
+        );
+
+        /// <summary>
         /// Fuzzy-searches vendors by name using a LIKE '%term%' query against Infor Visual.
         /// Returns up to 50 candidates for display in a selection picker.
         /// </summary>

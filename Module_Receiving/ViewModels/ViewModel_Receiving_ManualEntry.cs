@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -892,7 +893,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (matchingParts.Count == 1)
                 {
-                    ApplySelectedPoPart(load, normalizedPo, matchingParts[0]);
+                    ApplySelectedPoPart(load, poResult.Data, matchingParts[0]);
                     continue;
                 }
 
@@ -1083,6 +1084,351 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             load.InitialLocation = result.Data.DefaultLocationId.Trim();
+        }
+
+        public async Task ResolveManualEntryRowAsync(Model_ReceivingLoad load)
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            if (load.IsNonPOItem)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(load.PartID) && string.IsNullOrWhiteSpace(load.PoNumber))
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(load.PoNumber))
+            {
+                var normalizedPo = load.PoNumber.Trim();
+                var poValidation = _validationService.ValidatePONumber(normalizedPo);
+                if (!poValidation.IsValid)
+                {
+                    return;
+                }
+
+                load.PoNumber = normalizedPo;
+            }
+
+            if (string.IsNullOrWhiteSpace(load.PartID))
+            {
+                if (!string.IsNullOrWhiteSpace(load.PoNumber))
+                {
+                    await TrySelectPartForPoAsync(load);
+                }
+
+                return;
+            }
+
+            var resolvedPart = await TryResolveEnteredPartAsync(load);
+            if (resolvedPart is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(load.PoNumber))
+            {
+                await TrySelectPurchaseOrderForPartAsync(load, resolvedPart);
+                return;
+            }
+
+            await TryResolvePartAgainstSelectedPurchaseOrderAsync(load, resolvedPart);
+        }
+
+        private async Task<Model_InforVisualPart?> TryResolveEnteredPartAsync(
+            Model_ReceivingLoad load
+        )
+        {
+            var enteredPartId = load.PartID.Trim();
+            var partResult = await _inforVisualService.GetPartByIDAsync(enteredPartId);
+
+            if (!partResult.IsSuccess)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    partResult.ErrorMessage ?? "Unable to validate the entered Part ID.",
+                    Enum_ErrorSeverity.Warning
+                );
+                return null;
+            }
+
+            var resolvedPart = partResult.Data;
+            if (resolvedPart is null)
+            {
+                var fuzzyResults = await _inforVisualService.FuzzySearchPartsAsync(enteredPartId);
+                if (!fuzzyResults.IsSuccess)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        fuzzyResults.ErrorMessage ?? "Unable to search for similar part numbers.",
+                        Enum_ErrorSeverity.Warning
+                    );
+                    ClearPoSelectedPart(load);
+                    return null;
+                }
+
+                if (fuzzyResults.Data is null || fuzzyResults.Data.Count == 0)
+                {
+                    ClearPoSelectedPart(load);
+                    ShowStatus(
+                        $"No part match was found for {enteredPartId}.",
+                        Module_Core.Models.Enums.InfoBarSeverity.Warning
+                    );
+                    return null;
+                }
+
+                var selectedPartResult = await ShowFuzzyPickerAsync(
+                    fuzzyResults.Data,
+                    "Select Part",
+                    $"No exact part match was found for '{enteredPartId}'. Select a similar part to continue."
+                );
+
+                if (selectedPartResult is null)
+                {
+                    ClearPoSelectedPart(load);
+                    return null;
+                }
+
+                load.PartID = selectedPartResult.Key.Trim();
+                partResult = await _inforVisualService.GetPartByIDAsync(load.PartID);
+                if (!partResult.IsSuccess || partResult.Data is null)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        partResult.ErrorMessage
+                            ?? "Unable to load the selected part after fuzzy search.",
+                        Enum_ErrorSeverity.Warning
+                    );
+                    ClearPoSelectedPart(load);
+                    return null;
+                }
+
+                resolvedPart = partResult.Data;
+            }
+
+            load.PartID = resolvedPart.PartID.Trim();
+            load.PartDescription = resolvedPart.Description;
+            load.UnitOfMeasure = resolvedPart.UnitOfMeasure;
+
+            if (
+                string.IsNullOrWhiteSpace(load.InitialLocation)
+                && !string.IsNullOrWhiteSpace(resolvedPart.DefaultLocationId)
+            )
+            {
+                load.InitialLocation = resolvedPart.DefaultLocationId.Trim();
+            }
+
+            return resolvedPart;
+        }
+
+        private async Task<bool> TrySelectPurchaseOrderForPartAsync(
+            Model_ReceivingLoad load,
+            Model_InforVisualPart resolvedPart
+        )
+        {
+            var poResults = await _inforVisualService.GetPurchaseOrdersByPartAsync(
+                resolvedPart.PartID.Trim()
+            );
+
+            if (!poResults.IsSuccess)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    poResults.ErrorMessage
+                        ?? $"Unable to find purchase orders for part {resolvedPart.PartID}.",
+                    Enum_ErrorSeverity.Warning
+                );
+                return false;
+            }
+
+            if (poResults.Data is null || poResults.Data.Count == 0)
+            {
+                ClearPoSelectedPart(load);
+                ShowStatus(
+                    $"No purchase orders were found for part {resolvedPart.PartID}.",
+                    Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
+                return false;
+            }
+
+            var selectedPo = await ShowFuzzyPickerAsync(
+                poResults.Data,
+                "Select PO",
+                $"Select a purchase order for part {resolvedPart.PartID}. Results include vendor information."
+            );
+
+            if (selectedPo is null)
+            {
+                ClearPoSelectedPart(load);
+                return false;
+            }
+
+            load.PoNumber = selectedPo.Key.Trim();
+            return await TryResolvePartAgainstSelectedPurchaseOrderAsync(load, resolvedPart);
+        }
+
+        private async Task<bool> TryResolvePartAgainstSelectedPurchaseOrderAsync(
+            Model_ReceivingLoad load,
+            Model_InforVisualPart resolvedPart
+        )
+        {
+            var normalizedPo = load.PoNumber?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedPo))
+            {
+                return false;
+            }
+
+            var poResult = await _inforVisualService.GetPOWithPartsAsync(normalizedPo);
+            if (!poResult.IsSuccess || poResult.Data is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    poResult.ErrorMessage ?? $"Unable to load parts for {normalizedPo}.",
+                    Enum_ErrorSeverity.Warning
+                );
+                return false;
+            }
+
+            var matchingParts = poResult
+                .Data.Parts.Where(part =>
+                    string.Equals(
+                        part.PartID.Trim(),
+                        resolvedPart.PartID.Trim(),
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .ToList();
+
+            if (matchingParts.Count == 1)
+            {
+                ApplySelectedPoPart(load, poResult.Data, matchingParts[0]);
+                StatusMessage = $"Confirmed part {resolvedPart.PartID} on {normalizedPo}.";
+                return true;
+            }
+
+            if (matchingParts.Count > 1)
+            {
+                var selectedPart = await ShowPurchaseOrderPartSelectionAsync(
+                    poResult.Data.Parts,
+                    $"Part {resolvedPart.PartID} appears on multiple lines for {normalizedPo}. Select the correct PO line."
+                );
+
+                if (selectedPart is null)
+                {
+                    return false;
+                }
+
+                ApplySelectedPoPart(load, poResult.Data, selectedPart);
+                StatusMessage = $"Confirmed part {selectedPart.PartID} on {normalizedPo}.";
+                return true;
+            }
+
+            return await TryResolvePurchaseOrderMismatchAsync(load, poResult.Data, resolvedPart);
+        }
+
+        private async Task<bool> TryResolvePurchaseOrderMismatchAsync(
+            Model_ReceivingLoad load,
+            Model_InforVisualPO purchaseOrder,
+            Model_InforVisualPart enteredPart
+        )
+        {
+            var selectedPart = await ShowPurchaseOrderPartSelectionAsync(
+                purchaseOrder.Parts,
+                $"The entered Part ID '{enteredPart.PartID}' was not found on {purchaseOrder.PONumber}. Select a part from this PO to continue."
+            );
+
+            if (selectedPart is null)
+            {
+                ClearPoSelectedPart(load);
+                return false;
+            }
+
+            ApplySelectedPoPart(load, purchaseOrder, selectedPart);
+            StatusMessage =
+                $"Updated row to part {selectedPart.PartID} on {purchaseOrder.PONumber}.";
+            return true;
+        }
+
+        private async Task<Model_InforVisualPart?> ShowPurchaseOrderPartSelectionAsync(
+            IReadOnlyList<Model_InforVisualPart> parts,
+            string subtitle
+        )
+        {
+            if (parts.Count == 0)
+            {
+                return null;
+            }
+
+            var pickerItems = parts
+                .Select(part => new Model_FuzzySearchResult
+                {
+                    Key = part.POLineNumber,
+                    Label = part.DisplayText,
+                    Detail = BuildPartSelectionDetail(part),
+                })
+                .ToList();
+
+            var selectedResult = await ShowFuzzyPickerAsync(pickerItems, "Select Part", subtitle);
+
+            if (selectedResult is null)
+            {
+                return null;
+            }
+
+            return parts.FirstOrDefault(part =>
+                string.Equals(
+                    part.POLineNumber,
+                    selectedResult.Key,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+        }
+
+        private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
+            IReadOnlyList<Model_FuzzySearchResult> items,
+            string title,
+            string subtitle
+        )
+        {
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display selection dialog.",
+                    Enum_ErrorSeverity.Error
+                );
+                return null;
+            }
+
+            if (!await TryEnterManualEntryDialogAsync())
+            {
+                _logger.LogWarning(
+                    $"Skipped Manual Entry picker '{title}' because another dialog is already open."
+                );
+                return null;
+            }
+
+            Dialog_FuzzySearchPicker? dialog = null;
+
+            try
+            {
+                dialog = new Dialog_FuzzySearchPicker(items, title, subtitle)
+                {
+                    XamlRoot = xamlRoot,
+                };
+
+                var dialogResult = await dialog.ShowAsync();
+                if (
+                    dialogResult != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary
+                    || dialog.SelectedResult is null
+                )
+                {
+                    return null;
+                }
+
+                return dialog.SelectedResult;
+            }
+            finally
+            {
+                ExitManualEntryDialog();
+            }
         }
 
         private void Loads_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -1328,7 +1674,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return false;
             }
 
-            ApplySelectedPoPart(load, normalizedPo, selectedPart);
+            ApplySelectedPoPart(load, poResult.Data, selectedPart);
             StatusMessage = $"Selected part {selectedPart.PartID} for {normalizedPo}.";
             return true;
         }
@@ -1344,18 +1690,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private void ApplySelectedPoPart(
             Model_ReceivingLoad load,
-            string normalizedPo,
+            Model_InforVisualPO purchaseOrder,
             Model_InforVisualPart selectedPart
         )
         {
-            load.PoNumber = normalizedPo;
+            load.PoNumber = purchaseOrder.PONumber;
             load.PartID = selectedPart.PartID.Trim();
             load.PoLineNumber = selectedPart.POLineNumber.Trim();
-            load.SelectedPartSourcePONumber = normalizedPo;
+            load.SelectedPartSourcePONumber = purchaseOrder.PONumber;
             load.PartDescription = selectedPart.Description;
             load.UnitOfMeasure = selectedPart.UnitOfMeasure;
             load.QtyOrdered = selectedPart.QtyOrdered;
             load.RemainingQuantity = selectedPart.RemainingQuantity;
+            load.PoVendor = purchaseOrder.Vendor;
+            load.PoStatus = purchaseOrder.Status;
 
             if (
                 string.IsNullOrWhiteSpace(load.InitialLocation)

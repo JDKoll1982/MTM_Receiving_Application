@@ -482,7 +482,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             await RunWithDialogTransitionSuppressedAsync(async () =>
             {
-                await ViewModel.TrySelectPartForPoAsync(load);
+                await ViewModel.ResolveManualEntryRowAsync(load);
                 return true;
             });
         }
@@ -575,7 +575,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 Debug.WriteLine($"[ManualEntry] Formatted PartID: '{value}' → '{formattedPartID}'");
             }
 
-            await ViewModel.ApplyDefaultLocationFromPartAsync(load);
+            await RunWithDialogTransitionSuppressedAsync(async () =>
+            {
+                await ViewModel.ResolveManualEntryRowAsync(load);
+                return true;
+            });
         }
 
         private async void PartIdCell_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

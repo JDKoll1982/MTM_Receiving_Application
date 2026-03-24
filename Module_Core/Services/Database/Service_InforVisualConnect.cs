@@ -597,6 +597,27 @@ public class Service_InforVisualConnect : IService_InforVisual
     }
 
     /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPurchaseOrdersByPartAsync(
+        string partId
+    )
+    {
+        if (string.IsNullOrWhiteSpace(partId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                "Part ID cannot be empty"
+            );
+        }
+
+        if (_useMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock purchase orders for part: {partId}");
+            return CreateMockPurchaseOrdersByPart(partId);
+        }
+
+        return await _dao.GetPurchaseOrdersByPartAsync(partId);
+    }
+
+    /// <inheritdoc />
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(
         string term
     )
@@ -753,6 +774,38 @@ public class Service_InforVisualConnect : IService_InforVisual
                 Key = $"C-{term.ToUpper()}-03",
                 Label = $"C-{term.ToUpper()}-03",
                 Detail = $"Warehouse {warehouseCode} — Aisle C",
+            },
+        };
+
+        return Model_Dao_Result_Factory.Success(results);
+    }
+
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPurchaseOrdersByPart(
+        string partId
+    )
+    {
+        var normalizedPartId = partId.Trim().ToUpperInvariant();
+        var results = new List<Model_FuzzySearchResult>
+        {
+            new Model_FuzzySearchResult
+            {
+                Key = "PO-064543",
+                Label = "PO-064543",
+                Detail = $"Vendor: Mock Metals Supply | Status: Open | Contains {normalizedPartId}",
+            },
+            new Model_FuzzySearchResult
+            {
+                Key = "PO-064112",
+                Label = "PO-064112",
+                Detail =
+                    $"Vendor: Allied Service Group | Status: Closed | Contains {normalizedPartId}",
+            },
+            new Model_FuzzySearchResult
+            {
+                Key = "PO-063998",
+                Label = "PO-063998",
+                Detail =
+                    $"Vendor: Precision Steel Works | Status: Open | Contains {normalizedPartId}",
             },
         };
 

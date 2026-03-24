@@ -44,7 +44,7 @@ flowchart TD
   WInt_UserChoosesPart -->|Yes| WInt_UseChosenPart[Use selected part as the row Part Number]
   WInt_UseChosenPart --> WInt_CheckPOCell
   WInt_PartFound -->|Yes| WInt_CheckPOCell{PO cell populated?}
-  WInt_CheckPOCell -->|No| WInt_ShowPOList[Open fuzzy-search dialog showing all POs that contain the part, ordered descending, all statuses]
+  WInt_CheckPOCell -->|No| WInt_ShowPOList[Open fuzzy-search dialog showing all POs that contain the part, ordered descending, all statuses, including vendor]
   WInt_ShowPOList --> WInt_UserChoosesPO{User selects a PO?}
   WInt_UserChoosesPO -->|No| WInt_ClearPartAfterPoCancel[Clear Part ID cell]
   WInt_ClearPartAfterPoCancel --> WInt_POCancelEnd([Row remains unresolved])

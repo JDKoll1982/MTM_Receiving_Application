@@ -401,6 +401,66 @@ public class Dao_InforVisualConnection
     }
 
     /// <summary>
+    /// Returns purchase orders that contain the specified part number.
+    /// Uses: 14_FuzzySearchPOsByPart.sql
+    /// </summary>
+    /// <param name="partId">Exact part ID to search for.</param>
+    /// <param name="maxResults">Maximum number of results to return.</param>
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPurchaseOrdersByPartAsync(
+        string partId,
+        int maxResults = 50
+    )
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Retrieving purchase orders containing part '{partId}' (max {maxResults})"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("14_FuzzySearchPOsByPart.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PartId", partId);
+            command.Parameters.AddWithValue("@MaxResults", maxResults);
+
+            var results = new List<Model_FuzzySearchResult>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var poNumber = reader["PoNumber"].ToString() ?? string.Empty;
+                var vendorName = reader["VendorName"].ToString() ?? string.Empty;
+                var poStatus = reader["PoStatus"].ToString() ?? string.Empty;
+
+                results.Add(
+                    new Model_FuzzySearchResult
+                    {
+                        Key = poNumber,
+                        Label = poNumber,
+                        Detail = $"Vendor: {vendorName} | Status: {poStatus}",
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Found {results.Count} purchase order matches for part '{partId}'");
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving purchase orders for part '{partId}': {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                $"Error retrieving purchase orders for part: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
     /// Fuzzy search for vendors whose NAME contains <paramref name="term"/> (LIKE '%term%').
     /// Uses: 07_FuzzySearchVendorsByName.sql
     /// </summary>

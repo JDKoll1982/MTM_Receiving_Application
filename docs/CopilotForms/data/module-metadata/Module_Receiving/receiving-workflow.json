@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, and final save orchestration.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, and Manual Mode part-first or PO-first part/PO resolution.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -40,7 +40,9 @@
     "Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs",
     "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs",
     "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
     "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs",
+    "Database/InforVisualScripts/Queries/14_FuzzySearchPOsByPart.sql",
     "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
     "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql"
   ],
@@ -69,6 +71,8 @@
   "uiHints": {
     "workflowAreas": [
       "Guided receiving workflow",
+      "Manual Mode part-first matching",
+      "Manual Mode PO-first part selection",
       "Startup routing",
       "Step-by-step wizard",
       "Unsaved state survives only inside the current module",
@@ -82,7 +86,8 @@
       "View_Receiving_WeightQuantity.xaml",
       "View_Receiving_HeatLot.xaml",
       "View_Receiving_PackageType.xaml",
-      "View_Receiving_Review.xaml"
+      "View_Receiving_Review.xaml",
+      "View_Receiving_ManualEntry.xaml"
     ],
     "currentUiPatterns": [
       "Wizard step",
@@ -101,6 +106,7 @@
     ],
     "userActions": [
       "Move through the workflow one step at a time",
+      "Resolve part and PO combinations directly from Manual Mode",
       "Understand what to do next quickly",
       "Lose unsaved work when leaving the module or exiting before save",
       "Review entries before saving",
@@ -136,6 +142,10 @@
       "Configured startup mode sends the user to the intended first screen",
       "The user can move step to step when required values are present",
       "Validation blocks progress when required values are missing",
+      "Manual Mode checks exact part existence on Part ID leave",
+      "Manual Mode shows PO matches with vendor when Part ID exists and PO is blank",
+      "Manual Mode shows parts on a PO when PO is entered first",
+      "Manual Mode clears Part ID when part-selection or mismatch resolution is cancelled",
       "The review step shows the correct information before save",
       "Saving preserves the existing business behavior"
     ],
@@ -145,6 +155,7 @@
       "Module-scoped unsaved-state behavior",
       "Receiving settings and default-mode behavior",
       "Validation behavior",
+      "Manual Mode part and PO matching behavior",
       "Review and save expectations"
     ],
     "validationHints": [
@@ -152,6 +163,7 @@
       "Confirm default-mode routing still sends the user to the intended startup screen",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
+      "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm review and save behavior are unchanged"
     ],
     "mockupSections": [
@@ -172,12 +184,14 @@
       "sp_Receiving_Load_Update",
       "sp_Receiving_LabelData_Insert",
       "sp_Receiving_LabelData_Update",
-      "receiving label data tables"
+      "receiving label data tables",
+      "14_FuzzySearchPOsByPart.sql"
     ],
     "loggingEvents": [
       "Step transitions",
       "Module-scoped unsaved-state behavior",
       "Validation failures",
+      "Manual Mode part/PO resolution dialogs",
       "Save requests",
       "Save failures"
     ],
@@ -229,6 +243,10 @@
         "Module_Core/Services/Database/Service_InforVisualConnect.cs",
         "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
         "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs",
+        "Database/InforVisualScripts/Queries/14_FuzzySearchPOsByPart.sql",
         "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
         "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql"
       ],
@@ -246,7 +264,8 @@
         "userActions": [
           "Enter the number of loads for the current part",
           "Enter an optional receiving location and keep what was typed if it is an exact match",
-          "Choose a suggested location when the typed location does not exactly exist"
+          "Choose a suggested location when the typed location does not exactly exist",
+          "Resolve a part and purchase order directly from Manual Mode using part-first or PO-first entry"
         ]
       }
     },
