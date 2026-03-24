@@ -53,7 +53,7 @@ $script:Config = [ordered]@{
         SharedServerIp          = '172.16.1.104'
         LocalSecretDirectory    = Join-Path $env:ProgramData 'MTM Receiving Application\Security'
         LocalSecretFileName     = 'MTM_AUTH_USER_SECRET_KEY.txt'
-        SharedSecretDirectory   = '\\172.16.1.104\MTM_Receiving_Application\Security'
+        SharedSecretDirectory   = '\\MTMANU-FS01\Expo Drive\Software Development\Live Applications\MTM_Application_Keys'
         SharedSecretFileName    = 'MTM_AUTH_USER_SECRET_KEY.txt'
     }
     # AUTH-SECRET-LOGIC-END
@@ -490,6 +490,26 @@ function Hide-ProviderSwitchProgress {
     Sync-UiRender
 }
 
+function Show-HostSwapProgress {
+    param(
+        [int]$CurrentFileIndex,
+        [int]$TotalFileCount,
+        [string]$CurrentFilePath
+    )
+
+    $safeTotalFileCount = [Math]::Max(1, $TotalFileCount)
+    $currentProgress = if ($TotalFileCount -le 0) {
+        100
+    }
+    else {
+        [Math]::Round(($CurrentFileIndex / $safeTotalFileCount) * 100, 2)
+    }
+
+    Show-ProviderSwitchProgress -StatusText "Swapping host references ($CurrentFileIndex/$TotalFileCount)..." -ProgressValue $currentProgress
+    $currentFileText.Text = "Scanning file $CurrentFileIndex of ${TotalFileCount}: $CurrentFilePath"
+    Sync-UiRender
+}
+
 function Update-ConnectionDisplay {
     $serverText.Text = "$($script:CurrentServer)`:$($script:CurrentPort)"
     $databaseText.Text = $Database
@@ -711,8 +731,18 @@ function Invoke-RepoHostReferenceSwap {
     $fromHost = if (Test-IsLocalHostValue -HostName $script:CurrentServer) { $localHost } else { $sharedHost }
     $toHost = if ($fromHost -eq $localHost) { $sharedHost } else { $localHost }
     $filesChanged = 0
+    $repoFiles = @(Get-RepoFilesForHostSwap -RepoRoot $repoRoot)
+    $totalFiles = $repoFiles.Count
 
-    foreach ($file in (Get-RepoFilesForHostSwap -RepoRoot $repoRoot)) {
+    if ($totalFiles -eq 0) {
+        Show-ProviderSwitchProgress -StatusText 'No eligible repository files found for host swap.' -ProgressValue 100
+    }
+
+    for ($fileIndex = 0; $fileIndex -lt $totalFiles; $fileIndex++) {
+        $file = $repoFiles[$fileIndex]
+        $relativePath = $file.FullName.Substring($repoRoot.Length).TrimStart('\')
+        Show-HostSwapProgress -CurrentFileIndex ($fileIndex + 1) -TotalFileCount $totalFiles -CurrentFilePath $relativePath
+
         $originalContent = [System.IO.File]::ReadAllText($file.FullName)
         $protectedContent = Protect-AuthSecretLogicBlocks -Content $originalContent
         $updatedContent = Convert-HostReferenceText -Content $protectedContent.Content -FromHost $fromHost -ToHost $toHost
@@ -726,10 +756,13 @@ function Invoke-RepoHostReferenceSwap {
 
     Update-HostProfilesAfterSwap -FromHost $fromHost -ToHost $toHost
 
+    Show-ProviderSwitchProgress -StatusText "Host reference swap complete ($totalFiles/$totalFiles)." -ProgressValue 100
+
     return [PSCustomObject]@{
         FromHost     = $fromHost
         ToHost       = $toHost
         FilesChanged = $filesChanged
+        FilesScanned = $totalFiles
         RepoRoot     = $repoRoot
     }
 }
@@ -2147,12 +2180,13 @@ $swapHostsButton.Add_Click({
             $deployButton.IsEnabled = $false
             $modeSwitchButton.IsEnabled = $false
             $overallStatusText.Text = 'Swapping host references across repository...'
-            $currentFileText.Text = 'Updating text files under the solution folder...'
+            Show-ProviderSwitchProgress -StatusText 'Preparing repository host swap...' -ProgressValue 0
+            $currentFileText.Text = 'Collecting eligible files under the solution folder...'
 
             $swapResult = Invoke-RepoHostReferenceSwap
 
             $overallStatusText.Text = 'Repository host swap completed.'
-            $currentFileText.Text = "$($swapResult.FilesChanged) file(s) updated from $($swapResult.FromHost) to $($swapResult.ToHost)."
+            $currentFileText.Text = "$($swapResult.FilesChanged) of $($swapResult.FilesScanned) file(s) updated from $($swapResult.FromHost) to $($swapResult.ToHost)."
         }
         catch {
             $errorBorder.Visibility = 'Visible'
@@ -2160,6 +2194,7 @@ $swapHostsButton.Add_Click({
             $overallStatusText.Text = 'Repository host swap failed.'
         }
         finally {
+            Hide-ProviderSwitchProgress
             $swapHostsButton.IsEnabled = $true
             $providerToggleButton.IsEnabled = $true
             $deployButton.IsEnabled = $true
