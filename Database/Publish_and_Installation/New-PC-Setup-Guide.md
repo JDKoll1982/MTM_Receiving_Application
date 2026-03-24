@@ -90,7 +90,7 @@ LABELVIEW requires the **32-bit** administrator:
    |---|---|
    | **Data Source Name** | `MTM Receiving Application` |
    | **Description** | MTM Receiving Application MySQL |
-   | **TCP/IP Server** | `localhost` |
+   | **TCP/IP Server** | `172.16.1.104` |
    | **Port** | `3306` |
    | **User** | root |
    | **Password** | root |

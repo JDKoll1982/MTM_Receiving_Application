@@ -166,7 +166,7 @@ The 64-bit driver will not appear in LABELVIEW's data source list.
    |---|---|
    | **Data Source Name** | `MTM Receiving Application` |
    | **Description** | MTM Receiving Application MySQL |
-   | **TCP/IP Server** | `localhost` |
+   | **TCP/IP Server** | `172.16.1.104` |
    | **Port** | `3306` |
    | **User** | root |
    | **Password** | root |

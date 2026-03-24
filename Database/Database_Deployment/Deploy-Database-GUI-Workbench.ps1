@@ -4,7 +4,7 @@
 # mode, so delimiter-based scripts are normalized before execution in that mode.
 
 param(
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -41,7 +41,7 @@ $script:Config = [ordered]@{
     }
     Providers = [ordered]@{
         Mamp = [ordered]@{
-            Server   = 'localhost'
+            Server   = '172.16.1.104'
             Port     = '3306'
             User     = 'root'
             Password = 'root'
@@ -59,7 +59,7 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
         ShowButton          = $true
-        LocalHostValue      = 'localhost'
+        LocalHostValue      = '172.16.1.104'
         SharedHostValue     = '172.16.1.104'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
         IncludedExtensions  = @(
@@ -689,7 +689,7 @@ function Convert-HostReferenceText {
         [string]$ToHost
     )
 
-    $placeholder = 'localhost'
+    $placeholder = '172.16.1.104'
     return $Content.Replace($FromHost, $placeholder).Replace($ToHost, $FromHost).Replace($placeholder, $ToHost)
 }
 

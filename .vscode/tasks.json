@@ -91,7 +91,7 @@
         "kind": "build",
         "isDefault": false
       },
-      "detail": "Serves the repo root at http://localhost:8421 and asks whether to open CopilotForms in a VS Code tab or the web browser"
+      "detail": "Serves the repo root at http://172.16.1.104:8421 and asks whether to open CopilotForms in a VS Code tab or the web browser"
     },
     {
       "label": "CopilotForms: Open Index in Editor",
