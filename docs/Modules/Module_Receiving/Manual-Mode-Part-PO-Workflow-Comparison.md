@@ -1,4 +1,5 @@
 # Manual Mode Part and PO Workflow Comparison
+
 Last Updated: 2026-03-24
 
 This document compares the current Manual Mode behavior in Module_Receiving against the intended workflow described for part and PO matching.
@@ -38,20 +39,32 @@ flowchart TD
   WInt_CheckPart --> WInt_PartFound{Part exists?}
   WInt_PartFound -->|No| WInt_ShowPartFuzzy[Open fuzzy-search dialog with similar parts]
   WInt_ShowPartFuzzy --> WInt_UserChoosesPart{User selects a part?}
-  WInt_UserChoosesPart -->|No| WInt_PartCancelEnd([Row remains unresolved])
+  WInt_UserChoosesPart -->|No| WInt_ClearPartAfterPartCancel[Clear Part ID cell]
+  WInt_ClearPartAfterPartCancel --> WInt_PartCancelEnd([Row remains unresolved])
   WInt_UserChoosesPart -->|Yes| WInt_UseChosenPart[Use selected part as the row Part Number]
   WInt_UseChosenPart --> WInt_CheckPOCell
   WInt_PartFound -->|Yes| WInt_CheckPOCell{PO cell populated?}
   WInt_CheckPOCell -->|No| WInt_ShowPOList[Open fuzzy-search dialog showing all POs that contain the part, ordered descending, all statuses]
   WInt_ShowPOList --> WInt_UserChoosesPO{User selects a PO?}
-  WInt_UserChoosesPO -->|No| WInt_POCancelEnd([Row remains unresolved])
+  WInt_UserChoosesPO -->|No| WInt_ClearPartAfterPoCancel[Clear Part ID cell]
+  WInt_ClearPartAfterPoCancel --> WInt_POCancelEnd([Row remains unresolved])
   WInt_UserChoosesPO -->|Yes| WInt_ApplyPO[Apply selected PO to the row]
   WInt_ApplyPO --> WInt_Done([Part and PO are a confirmed match])
   WInt_CheckPOCell -->|Yes| WInt_CheckPOContainsPart[Check whether the entered PO contains the part]
   WInt_CheckPOContainsPart --> WInt_POHasPart{PO contains part?}
   WInt_POHasPart -->|Yes| WInt_Done
-  WInt_POHasPart -->|No| WInt_ShowPOMismatch[Show mismatch or selection dialog because entered PO does not contain the part]
-  WInt_ShowPOMismatch --> WInt_MismatchEnd([User must resolve the mismatch])
+  WInt_POHasPart -->|No| WInt_ShowPOMismatch[Open dialog showing all parts for the PO and state that the entered Part ID did not match]
+  WInt_ShowPOMismatch --> WInt_MismatchResolved{Mismatch resolved?}
+  WInt_MismatchResolved -->|Yes| WInt_Done
+  WInt_MismatchResolved -->|No| WInt_ClearPartAfterMismatch[Clear Part ID cell]
+  WInt_ClearPartAfterMismatch --> WInt_MismatchEnd([User must resolve the mismatch])
+
+  WInt_POFirstStart([User enters PO Number with no Part ID in the row and leaves the cell]) --> WInt_ShowPoParts[Open dialog showing all parts for the entered PO]
+  WInt_ShowPoParts --> WInt_UserChoosesPoPart{User selects a part?}
+  WInt_UserChoosesPoPart -->|Yes| WInt_ApplyPoPart[Apply selected part to the row]
+  WInt_ApplyPoPart --> WInt_Done
+  WInt_UserChoosesPoPart -->|No| WInt_ClearPartAfterPoFirstCancel[Clear Part ID cell]
+  WInt_ClearPartAfterPoFirstCancel --> WInt_PoFirstUnresolved([Row remains unresolved])
 ```
 
 ## Key Differences
