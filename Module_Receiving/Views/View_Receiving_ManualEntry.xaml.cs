@@ -627,6 +627,130 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
         }
 
+        private async void PackageTypeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                sender is not FrameworkElement element
+                || element.DataContext is not Model_ReceivingLoad load
+            )
+            {
+                return;
+            }
+
+            await RunWithDialogTransitionSuppressedAsync(async () =>
+            {
+                await ShowPackageTypeDialogAsync(load);
+                return true;
+            });
+        }
+
+        private async Task ShowPackageTypeDialogAsync(Model_ReceivingLoad load)
+        {
+            var xamlRoot = this.XamlRoot;
+            if (xamlRoot is null)
+            {
+                ViewModel.ShowStatus(
+                    "Unable to display the package type dialog.",
+                    Module_Core.Models.Enums.InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            var selectedPackageType = ViewModel.GetManualEntryPackageTypeSelection(load);
+            var customPackageTypeName = ViewModel.GetManualEntryCustomPackageTypeName(load);
+
+            var packageTypeComboBox = new ComboBox
+            {
+                ItemsSource = ViewModel.ManualEntryPackageTypeOptions,
+                SelectedItem = selectedPackageType,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                MinWidth = 240,
+                Header = "Type",
+            };
+
+            var customPackageTypeTextBox = new TextBox
+            {
+                Text = customPackageTypeName,
+                Header = "Custom Name",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                MinWidth = 240,
+                Visibility =
+                    selectedPackageType == "Custom" ? Visibility.Visible : Visibility.Collapsed,
+            };
+
+            var changeAllExistingRowsCheckBox = new CheckBox
+            {
+                Content = "Change all existing Rows",
+                IsChecked = false,
+            };
+
+            var validationTextBlock = new TextBlock
+            {
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)
+                    Application.Current.Resources["SystemFillColorCriticalBrush"],
+                TextWrapping = TextWrapping.Wrap,
+                Visibility = Visibility.Collapsed,
+            };
+
+            packageTypeComboBox.SelectionChanged += (_, _) =>
+            {
+                var isCustom = string.Equals(
+                    packageTypeComboBox.SelectedItem?.ToString(),
+                    "Custom",
+                    StringComparison.OrdinalIgnoreCase
+                );
+                customPackageTypeTextBox.Visibility = isCustom
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+                if (!isCustom)
+                {
+                    validationTextBlock.Visibility = Visibility.Collapsed;
+                    validationTextBlock.Text = string.Empty;
+                }
+            };
+
+            var dialogContent = new StackPanel
+            {
+                Spacing = 12,
+                Children =
+                {
+                    packageTypeComboBox,
+                    customPackageTypeTextBox,
+                    changeAllExistingRowsCheckBox,
+                    validationTextBlock,
+                },
+            };
+
+            var dialog = new ContentDialog
+            {
+                Title = $"Update Package Type for {load.LoadDisplayText}",
+                Content = dialogContent,
+                PrimaryButtonText = "Apply",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = xamlRoot,
+            };
+
+            dialog.PrimaryButtonClick += (_, args) =>
+            {
+                var validation = ViewModel.ApplyManualEntryPackageTypeChange(
+                    load,
+                    packageTypeComboBox.SelectedItem?.ToString() ?? string.Empty,
+                    customPackageTypeTextBox.Text,
+                    changeAllExistingRowsCheckBox.IsChecked == true
+                );
+
+                if (!validation.IsValid)
+                {
+                    validationTextBlock.Text = validation.Message;
+                    validationTextBlock.Visibility = Visibility.Visible;
+                    args.Cancel = true;
+                }
+            };
+
+            await dialog.ShowAsync();
+        }
+
         /// <summary>
         /// Applies part number padding rules to the input string.
         /// </summary>

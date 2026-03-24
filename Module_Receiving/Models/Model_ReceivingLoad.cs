@@ -98,6 +98,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         [ObservableProperty]
         private DateTime? _poDueDate;
 
+        public string PackageTypeDisplayName =>
+            string.IsNullOrWhiteSpace(PackageTypeName) ? PackageType.ToString() : PackageTypeName;
+
         partial void OnPartIDChanged(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -139,6 +142,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         partial void OnPackageTypeChanged(Enum_PackageType value)
         {
             PackageTypeName = value.ToString();
+            OnPropertyChanged(nameof(PackageTypeDisplayName));
         }
 
         partial void OnPackageTypeNameChanged(string value)
@@ -150,6 +154,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
                     PackageType = result;
                 }
             }
+
+            OnPropertyChanged(nameof(PackageTypeDisplayName));
         }
 
         /// <summary>

@@ -254,36 +254,42 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                     <controls:DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <ComboBox
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    BorderThickness="0"
-                                    ItemsSource="{Binding DataContext.PresetLocations, ElementName=Root}"
-                                    SelectedItem="{Binding InitialLocation, Mode=TwoWay}"
-                                    Visibility="{Binding DataContext.IsMockLocationMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                />
-                                <TextBox
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    VerticalContentAlignment="Center"
-                                    BorderThickness="0"
-                                    LostFocus="LocationTextBox_LostFocus"
-                                    Text="{Binding InitialLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="{Binding DataContext.IsMockLocationMode, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"
-                                />
-                            </Grid>
+                            <TextBox
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                BorderThickness="0"
+                                LostFocus="LocationTextBox_LostFocus"
+                                Text="{Binding InitialLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellEditingTemplate>
                 </controls:DataGridTemplateColumn>
 
                 <!--  Package Type column  -->
-
-                <controls:DataGridTextColumn
-                    Binding="{Binding PackageType}"
+                <controls:DataGridTemplateColumn
+                    Width="*"
                     Header="{x:Bind ViewModel.ManualEntryColumnPkgTypeText, Mode=OneWay}"
-                    IsReadOnly="True"
-                />
+                >
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                Click="PackageTypeButton_Click"
+                                Content="{Binding PackageTypeDisplayName}"
+                            />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                Click="PackageTypeButton_Click"
+                                Content="{Binding PackageTypeDisplayName}"
+                            />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
 
                 <!--  Packages Per Load column  -->
                 <controls:DataGridTemplateColumn

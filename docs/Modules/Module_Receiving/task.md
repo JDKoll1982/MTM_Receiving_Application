@@ -1,4 +1,4 @@
-# Manual Mode Part and PO Task List
+# Manual Mode UI Task List
 
 Last Updated: 2026-03-24
 
@@ -12,3 +12,9 @@ Last Updated: 2026-03-24
 - [x] Verify Guided Mode and Edit Mode remain behaviorally unchanged by keeping code changes scoped to Manual Entry handlers and Manual Entry viewmodel/service dependencies only.
 - [x] Build and validate the updated flow. Application build passed. Test project remains blocked by an existing WinUI asset-copy issue for `Microsoft.UI.Xaml\\Assets\\map.html` and `NoiseAsset_256X256_PNG.png`.
 - [x] Update Module_Receiving metadata after code changes.
+- [x] Change Manual Mode Location cell editing to textbox-only while preserving lost-focus validation behavior.
+- [x] Change Manual Mode Pkg Type cell to a button-driven dialog.
+- [x] Reuse Guided package-type selection logic including custom package types.
+- [x] Support "Change all existing Rows" updates for matching Manual Mode rows in the UI only.
+- [x] Build and validate the new Manual Mode UI changes. Application build passed.
+- [x] Refresh Module_Receiving metadata for the Manual Mode UI changes.

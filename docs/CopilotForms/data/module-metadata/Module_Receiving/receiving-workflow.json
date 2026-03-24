@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, and Manual Mode part-first or PO-first part/PO resolution.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, and a package-type update dialog for Manual Mode rows.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -73,6 +73,8 @@
       "Guided receiving workflow",
       "Manual Mode part-first matching",
       "Manual Mode PO-first part selection",
+      "Manual Mode package-type dialog updates",
+      "Manual Mode textbox-based location editing",
       "Startup routing",
       "Step-by-step wizard",
       "Unsaved state survives only inside the current module",
@@ -101,12 +103,18 @@
       "Primary Back button",
       "Mode-specific startup routing",
       "Help text",
+      "Manual Mode location textbox",
+      "Manual Mode package type button",
+      "Manual Mode package type dialog",
       "Review area",
       "Save action"
     ],
     "userActions": [
       "Move through the workflow one step at a time",
       "Resolve part and PO combinations directly from Manual Mode",
+      "Type a location directly in Manual Mode and validate it on focus loss",
+      "Open a package type dialog from the Manual Mode grid",
+      "Update matching Manual Mode rows for the same part when Change all existing Rows is checked",
       "Understand what to do next quickly",
       "Lose unsaved work when leaving the module or exiting before save",
       "Review entries before saving",
@@ -146,6 +154,9 @@
       "Manual Mode shows PO matches with vendor when Part ID exists and PO is blank",
       "Manual Mode shows parts on a PO when PO is entered first",
       "Manual Mode clears Part ID when part-selection or mismatch resolution is cancelled",
+      "Manual Mode location entry validates typed values through the textbox lost-focus handler",
+      "Manual Mode package type button opens a dialog with standard and custom package type options",
+      "Manual Mode Change all existing Rows updates only matching rows in the current UI collection",
       "The review step shows the correct information before save",
       "Saving preserves the existing business behavior"
     ],
@@ -156,6 +167,8 @@
       "Receiving settings and default-mode behavior",
       "Validation behavior",
       "Manual Mode part and PO matching behavior",
+      "Manual Mode package type dialog behavior",
+      "Manual Mode location textbox behavior",
       "Review and save expectations"
     ],
     "validationHints": [
@@ -164,6 +177,8 @@
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
+      "Confirm Manual Mode location editing stays textbox-based in all cases",
+      "Confirm Manual Mode package type dialog changes only the in-memory UI rows unless the user later saves",
       "Confirm review and save behavior are unchanged"
     ],
     "mockupSections": [
@@ -192,6 +207,7 @@
       "Module-scoped unsaved-state behavior",
       "Validation failures",
       "Manual Mode part/PO resolution dialogs",
+      "Manual Mode package type dialog apply actions",
       "Save requests",
       "Save failures"
     ],

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -35,6 +36,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly SemaphoreSlim _manualEntryDialogGate = new(1, 1);
+        private static readonly Regex _packageTypeRegex = new(@"^[\w\s\-\.\(\)]+$");
+        private static readonly IReadOnlyDictionary<string, Enum_PackageType> _packageTypeMap =
+            new Dictionary<string, Enum_PackageType>(StringComparer.OrdinalIgnoreCase)
+            {
+                [nameof(Enum_PackageType.Skid)] = Enum_PackageType.Skid,
+                ["Skids"] = Enum_PackageType.Skid,
+                [nameof(Enum_PackageType.Coil)] = Enum_PackageType.Coil,
+                ["Coils"] = Enum_PackageType.Coil,
+                [nameof(Enum_PackageType.Sheet)] = Enum_PackageType.Sheet,
+                ["Sheets"] = Enum_PackageType.Sheet,
+            };
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
@@ -96,6 +108,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } =
             new(Enum.GetValues<Enum_PackageType>());
+
+        public IReadOnlyList<string> ManualEntryPackageTypeOptions { get; } =
+            new[] { "Coils", "Sheets", "Skids", "Custom" };
 
         public ViewModel_Receiving_ManualEntry(
             IService_ReceivingWorkflow workflowService,
@@ -1135,6 +1150,107 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             await TryResolvePartAgainstSelectedPurchaseOrderAsync(load, resolvedPart);
+        }
+
+        public string GetManualEntryPackageTypeSelection(Model_ReceivingLoad load)
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            var currentValue = load.PackageTypeDisplayName.Trim();
+            return ManualEntryPackageTypeOptions.Contains(
+                currentValue,
+                StringComparer.OrdinalIgnoreCase
+            )
+                ? ManualEntryPackageTypeOptions.First(option =>
+                    string.Equals(option, currentValue, StringComparison.OrdinalIgnoreCase)
+                )
+                : "Custom";
+        }
+
+        public string GetManualEntryCustomPackageTypeName(Model_ReceivingLoad load)
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            var currentValue = load.PackageTypeDisplayName.Trim();
+            return GetManualEntryPackageTypeSelection(load) == "Custom"
+                ? currentValue
+                : string.Empty;
+        }
+
+        public Model_ReceivingValidationResult ApplyManualEntryPackageTypeChange(
+            Model_ReceivingLoad load,
+            string selectedPackageType,
+            string customPackageTypeName,
+            bool changeAllExistingRows
+        )
+        {
+            ArgumentNullException.ThrowIfNull(load);
+
+            var normalizedSelection = selectedPackageType.Trim();
+            var resolvedPackageTypeName = normalizedSelection.Equals(
+                "Custom",
+                StringComparison.OrdinalIgnoreCase
+            )
+                ? customPackageTypeName.Trim()
+                : normalizedSelection;
+
+            if (string.IsNullOrWhiteSpace(resolvedPackageTypeName))
+            {
+                return Model_ReceivingValidationResult.Error("Please enter a package type name.");
+            }
+
+            if (resolvedPackageTypeName.Length > 50)
+            {
+                return Model_ReceivingValidationResult.Error(
+                    "Package type name cannot exceed 50 characters."
+                );
+            }
+
+            if (!_packageTypeRegex.IsMatch(resolvedPackageTypeName))
+            {
+                return Model_ReceivingValidationResult.Error(
+                    "Invalid characters in package type name."
+                );
+            }
+
+            var oldPackageTypeName = NormalizePackageTypeForComparison(load.PackageTypeDisplayName);
+            var targetRows =
+                changeAllExistingRows && !string.IsNullOrWhiteSpace(load.PartID)
+                    ? Loads
+                        .Where(candidate =>
+                            string.Equals(
+                                candidate.PartID,
+                                load.PartID,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                            && NormalizePackageTypeForComparison(candidate.PackageTypeDisplayName)
+                                == oldPackageTypeName
+                        )
+                        .ToList()
+                    : new List<Model_ReceivingLoad> { load };
+
+            foreach (var row in targetRows)
+            {
+                row.PackageTypeName = resolvedPackageTypeName;
+                if (_packageTypeMap.TryGetValue(resolvedPackageTypeName, out var mappedPackageType))
+                {
+                    row.PackageType = mappedPackageType;
+                }
+            }
+
+            return Model_ReceivingValidationResult.Success();
+        }
+
+        private static string NormalizePackageTypeForComparison(string packageTypeName)
+        {
+            if (string.IsNullOrWhiteSpace(packageTypeName))
+            {
+                return string.Empty;
+            }
+
+            return _packageTypeMap.TryGetValue(packageTypeName.Trim(), out var mappedPackageType)
+                ? mappedPackageType.ToString()
+                : packageTypeName.Trim();
         }
 
         private async Task<Model_InforVisualPart?> TryResolveEnteredPartAsync(
