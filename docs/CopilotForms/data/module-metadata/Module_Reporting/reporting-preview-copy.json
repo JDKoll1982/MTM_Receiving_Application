@@ -36,8 +36,16 @@
       "Format and copy email-ready output"
     ],
     "screens": ["View_Reporting_PreviewDialog.xaml"],
-    "currentUiPatterns": ["Toolbar + results list", "Card list", "Modal customization dialog"],
-    "desiredUiPatterns": ["Card list", "Split layout", "Modal customization dialog"],
+    "currentUiPatterns": [
+      "Toolbar + results list",
+      "Card list",
+      "Modal customization dialog"
+    ],
+    "desiredUiPatterns": [
+      "Card list",
+      "Split layout",
+      "Modal customization dialog"
+    ],
     "uiElements": [
       "Preview cards",
       "Modal preview customizer",

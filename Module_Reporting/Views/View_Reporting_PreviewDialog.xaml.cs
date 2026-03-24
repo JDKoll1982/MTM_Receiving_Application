@@ -32,7 +32,8 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
         contentPanel.Children.Add(
             new TextBlock
             {
-                Text = "Choose which modules appear in the preview and which detail columns remain visible. Only fields that contain data for each module are listed.",
+                Text =
+                    "Choose which modules appear in the preview and which detail columns remain visible. Only fields that contain data for each module are listed.",
                 TextWrapping = TextWrapping.WrapWholeWords,
             }
         );
@@ -84,7 +85,11 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
             }
             else
             {
-                for (var columnIndex = 0; columnIndex < previewModuleCard.AvailableColumns.Count; columnIndex++)
+                for (
+                    var columnIndex = 0;
+                    columnIndex < previewModuleCard.AvailableColumns.Count;
+                    columnIndex++
+                )
                 {
                     var previewColumn = previewModuleCard.AvailableColumns[columnIndex];
                     var columnCheckBox = new CheckBox
