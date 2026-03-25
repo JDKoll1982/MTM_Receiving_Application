@@ -87,6 +87,21 @@ BEGIN
     THROW 50001, 'RECEIVER_LINE table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
 END;
 
+IF @PurchaseOrderObjectName IS NULL
+BEGIN
+    THROW 50002, 'PURCHASE_ORDER table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
+IF @VendorObjectName IS NULL
+BEGIN
+    THROW 50003, 'VENDOR table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
+IF @InventoryTransObjectName IS NULL
+BEGIN
+    THROW 50004, 'INVENTORY_TRANS table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
 IF OBJECT_ID('tempdb..#ResolvedUserIds') IS NOT NULL
 BEGIN
     DROP TABLE #ResolvedUserIds;
@@ -187,38 +202,14 @@ SELECT
     rl.PURC_ORDER_LINE_NO AS PurchaseOrderLineNo,
     CAST(ROUND(rl.USER_RECEIVED_QTY, 0) AS int) AS UserReceivedQty,
     r.SITE_ID AS SiteId,
-    ' + CASE
-        WHEN @PurchaseOrderObjectName IS NOT NULL AND @VendorObjectName IS NOT NULL THEN N'v.NAME'
-        ELSE N'CAST(NULL AS nvarchar(255))'
-    END + N' AS VendorName,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.CUST_ORDER_ID, itServ.CUST_ORDER_ID, itFallback.CUST_ORDER_ID)'
-        ELSE N'CAST(NULL AS nvarchar(15))'
-    END + N' AS CustomerOrderId,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.CUST_ORDER_LINE_NO, itServ.CUST_ORDER_LINE_NO, itFallback.CUST_ORDER_LINE_NO)'
-        ELSE N'CAST(NULL AS smallint)'
-    END + N' AS CustomerOrderLineNo,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.WORKORDER_TYPE, itServ.WORKORDER_TYPE, itFallback.WORKORDER_TYPE)'
-        ELSE N'CAST(NULL AS nchar(1))'
-    END + N' AS WorkOrderType,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.WORKORDER_BASE_ID, itServ.WORKORDER_BASE_ID, itFallback.WORKORDER_BASE_ID)'
-        ELSE N'CAST(NULL AS nvarchar(30))'
-    END + N' AS WorkOrderBaseId,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.WORKORDER_LOT_ID, itServ.WORKORDER_LOT_ID, itFallback.WORKORDER_LOT_ID)'
-        ELSE N'CAST(NULL AS nvarchar(3))'
-    END + N' AS WorkOrderLotId,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.WORKORDER_SPLIT_ID, itServ.WORKORDER_SPLIT_ID, itFallback.WORKORDER_SPLIT_ID)'
-        ELSE N'CAST(NULL AS nvarchar(3))'
-    END + N' AS WorkOrderSplitId,
-    ' + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'COALESCE(itTxn.WORKORDER_SUB_ID, itServ.WORKORDER_SUB_ID, itFallback.WORKORDER_SUB_ID)'
-        ELSE N'CAST(NULL AS nvarchar(3))'
-    END + N' AS WorkOrderSubId,
+    v.NAME AS VendorName,
+    COALESCE(itTxn.CUST_ORDER_ID, itServ.CUST_ORDER_ID, itFallback.CUST_ORDER_ID) AS CustomerOrderId,
+    COALESCE(itTxn.CUST_ORDER_LINE_NO, itServ.CUST_ORDER_LINE_NO, itFallback.CUST_ORDER_LINE_NO) AS CustomerOrderLineNo,
+    COALESCE(itTxn.WORKORDER_TYPE, itServ.WORKORDER_TYPE, itFallback.WORKORDER_TYPE) AS WorkOrderType,
+    COALESCE(itTxn.WORKORDER_BASE_ID, itServ.WORKORDER_BASE_ID, itFallback.WORKORDER_BASE_ID) AS WorkOrderBaseId,
+    COALESCE(itTxn.WORKORDER_LOT_ID, itServ.WORKORDER_LOT_ID, itFallback.WORKORDER_LOT_ID) AS WorkOrderLotId,
+    COALESCE(itTxn.WORKORDER_SPLIT_ID, itServ.WORKORDER_SPLIT_ID, itFallback.WORKORDER_SPLIT_ID) AS WorkOrderSplitId,
+    COALESCE(itTxn.WORKORDER_SUB_ID, itServ.WORKORDER_SUB_ID, itFallback.WORKORDER_SUB_ID) AS WorkOrderSubId,
     ' + CASE
         WHEN @PurcLineBinaryObjectName IS NULL THEN N'CAST(NULL AS nvarchar(max))'
         ELSE N'(
@@ -246,18 +237,11 @@ SELECT
 FROM ' + @ReceiverObjectName + N' AS r
 INNER JOIN ' + @ReceiverLineObjectName + N' AS rl
     ON rl.RECEIVER_ID = r.ID
-' + CASE
-        WHEN @PurchaseOrderObjectName IS NOT NULL THEN N'LEFT JOIN ' + @PurchaseOrderObjectName + N' AS po
+LEFT JOIN ' + @PurchaseOrderObjectName + N' AS po
     ON po.ID = r.PURC_ORDER_ID
-'
-        ELSE N''
-    END + CASE
-        WHEN @PurchaseOrderObjectName IS NOT NULL AND @VendorObjectName IS NOT NULL THEN N'LEFT JOIN ' + @VendorObjectName + N' AS v
+LEFT JOIN ' + @VendorObjectName + N' AS v
     ON v.ID = po.VENDOR_ID
-'
-        ELSE N''
-    END + CASE
-        WHEN @InventoryTransObjectName IS NOT NULL THEN N'LEFT JOIN ' + @InventoryTransObjectName + N' AS itTxn
+LEFT JOIN ' + @InventoryTransObjectName + N' AS itTxn
     ON itTxn.TRANSACTION_ID = rl.TRANSACTION_ID
 LEFT JOIN ' + @InventoryTransObjectName + N' AS itServ
     ON itServ.TRANSACTION_ID = rl.SERV_TRANS_ID
@@ -283,9 +267,7 @@ LEFT JOIN
    AND fallbackPick.PURC_ORDER_LINE_NO = rl.PURC_ORDER_LINE_NO
 LEFT JOIN ' + @InventoryTransObjectName + N' AS itFallback
     ON itFallback.TRANSACTION_ID = fallbackPick.FallbackTransactionId
-'
-        ELSE N''
-    END + N'WHERE EXISTS
+WHERE EXISTS
 (
     SELECT 1
     FROM #ResolvedUserIds AS resolved
