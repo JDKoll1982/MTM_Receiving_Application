@@ -151,7 +151,7 @@ internal sealed class WeakHandler
 
     public MethodInfo Method { get; }
 
-    public bool IsDead => _targetReference is not null && !_targetReference.TryGetTarget(out _);
+    public bool IsDead => _targetReference?.TryGetTarget(out _) == false;
 
     public bool Matches(MethodInfo method, object? target)
     {

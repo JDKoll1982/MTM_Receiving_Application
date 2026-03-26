@@ -266,7 +266,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             CurrentSession = new Model_DunnageSession();
             _viewModelRegistry.ClearAllInputs();
-            StatusMessageRaised?.Invoke(this, "Session cleared");
+            _statusMessageRaised.Raise(this, "Session cleared");
         }
 
         public async Task<Model_Dao_Result<int>> ClearLabelDataAsync()
@@ -276,14 +276,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 var result = await _dunnageService.ClearLabelDataAsync();
                 if (result.IsSuccess)
                 {
-                    StatusMessageRaised?.Invoke(
+                    _statusMessageRaised.Raise(
                         this,
                         $"Label data cleared — {result.Data} row(s) archived"
                     );
                 }
                 else
                 {
-                    StatusMessageRaised?.Invoke(
+                    _statusMessageRaised.Raise(
                         this,
                         $"Clear Label Data failed: {result.ErrorMessage}"
                     );
@@ -342,7 +342,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         $"Added load to session: Part {load.PartId}, Qty {load.Quantity}",
                         "DunnageWorkflow"
                     );
-                    StatusMessageRaised?.Invoke(this, $"Added load to session");
+                    _statusMessageRaised.Raise(this, "Added load to session");
                 }
             }
             catch (Exception ex)

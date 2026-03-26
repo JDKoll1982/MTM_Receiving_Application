@@ -78,12 +78,18 @@
   <ItemGroup>
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
     <Compile Remove="Properties\**" />
+    <Compile Remove="obj_verify\**" />
     <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
     <EmbeddedResource Remove="Properties\**" />
+    <EmbeddedResource Remove="obj_verify\**" />
     <None Remove="MTM_Receiving_Application.Tests\**" />
     <None Remove="Properties\**" />
+    <None Remove="obj_verify\**" />
     <Page Remove="MTM_Receiving_Application.Tests\**" />
     <Page Remove="Properties\**" />
+    <Page Remove="obj_verify\**" />
+    <ApplicationDefinition Remove="obj_verify\**" />
+    <PRIResource Remove="obj_verify\**" />
   </ItemGroup>
   <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon
     property) -->
@@ -113,8 +119,10 @@
     <Compile Remove=".specify\**" />
     <Compile Remove=".vscode\**" />
     <Compile Remove="Database\**" />
+    <Compile Remove="obj_verify\**" />
     <!-- Exclude generated files from source control scanning -->
     <None Remove="obj\**" />
+    <None Remove="obj_verify\**" />
     <None Remove="bin\**" />
   </ItemGroup>
   <!-- Specify Configuration Files -->

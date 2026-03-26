@@ -1,7 +1,8 @@
 using System;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Infrastructure.DependencyInjection;
 using MTM_Receiving_Application.Infrastructure.Logging;
@@ -22,7 +23,7 @@ public partial class App : Application
 {
     private readonly IHost _host;
     private readonly object _shutdownSync = new();
-    private Task? _shutdownTask;
+    private System.Threading.Tasks.Task? _shutdownTask;
 
     /// <summary>
     /// Gets the main window for the application.
@@ -81,7 +82,10 @@ public partial class App : Application
 
         if (shutdownService.IsShutdownRequested)
         {
-            await EnsureShutdownAsync(shutdownService.Reason ?? "startup_shutdown", shutdownService.ExitCode);
+            await EnsureShutdownAsync(
+                shutdownService.Reason ?? "startup_shutdown",
+                shutdownService.ExitCode
+            );
             return;
         }
 
@@ -98,8 +102,8 @@ public partial class App : Application
     /// <param name="e"></param>
     private void OnSessionTimedOut(object? sender, Model_SessionTimedOutEventArgs e)
     {
-        _host.Services
-            .GetRequiredService<IService_ApplicationShutdown>()
+        _host
+            .Services.GetRequiredService<IService_ApplicationShutdown>()
             .RequestShutdown("session_timeout");
 
         MainWindow?.Close();
@@ -168,7 +172,9 @@ public partial class App : Application
 
         try
         {
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var timeoutCts = new System.Threading.CancellationTokenSource(
+                TimeSpan.FromSeconds(5)
+            );
             await _host.StopAsync(timeoutCts.Token);
         }
         catch (OperationCanceledException ex)

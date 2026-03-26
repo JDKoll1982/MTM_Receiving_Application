@@ -634,7 +634,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _viewModelRegistry.ClearAllInputs();
 
             await _sessionManager.ClearSessionAsync();
-            StepChanged?.Invoke(this, EventArgs.Empty);
+            _stepChanged.Raise(this, EventArgs.Empty);
         }
 
         public async Task<Model_LabelDataClearResult> ResetLabelDataAsync()
