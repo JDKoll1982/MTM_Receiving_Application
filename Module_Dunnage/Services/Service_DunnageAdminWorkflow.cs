@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Events;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -20,6 +21,8 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
 {
     private Enum_DunnageAdminSection _currentSection = Enum_DunnageAdminSection.Hub;
     private bool _isDirty;
+    private readonly WeakEventSource<Enum_DunnageAdminSection> _sectionChanged = new();
+    private readonly WeakEventSource<string> _statusMessageRaised = new();
 
     /// <summary>
     /// Gets the current admin section being displayed
@@ -32,7 +35,7 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
             if (_currentSection != value)
             {
                 _currentSection = value;
-                SectionChanged?.Invoke(this, _currentSection);
+                _sectionChanged.Raise(this, _currentSection);
             }
         }
     }
@@ -40,12 +43,20 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
     /// <summary>
     /// Raised when admin section changes
     /// </summary>
-    public event EventHandler<Enum_DunnageAdminSection>? SectionChanged;
+    public event EventHandler<Enum_DunnageAdminSection>? SectionChanged
+    {
+        add => _sectionChanged.Subscribe(value);
+        remove => _sectionChanged.Unsubscribe(value);
+    }
 
     /// <summary>
     /// Raised when status message needs to be displayed
     /// </summary>
-    public event EventHandler<string>? StatusMessageRaised;
+    public event EventHandler<string>? StatusMessageRaised
+    {
+        add => _statusMessageRaised.Subscribe(value);
+        remove => _statusMessageRaised.Unsubscribe(value);
+    }
 
     /// <summary>
     /// Navigate to specific admin section
@@ -56,7 +67,7 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
         // Check if navigation is allowed
         if (!await CanNavigateAwayAsync())
         {
-            StatusMessageRaised?.Invoke(
+            _statusMessageRaised.Raise(
                 this,
                 "Cannot navigate - unsaved changes exist. Please save or discard changes first."
             );
@@ -78,7 +89,7 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
             _ => "Unknown Section",
         };
 
-        StatusMessageRaised?.Invoke(this, $"Navigated to {sectionName}");
+        _statusMessageRaised.Raise(this, $"Navigated to {sectionName}");
     }
 
     /// <summary>

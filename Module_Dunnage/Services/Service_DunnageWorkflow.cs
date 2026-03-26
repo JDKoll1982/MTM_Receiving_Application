@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Events;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -12,19 +13,30 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
-    public class Service_DunnageWorkflow : IService_DunnageWorkflow
+    public class Service_DunnageWorkflow : IService_DunnageWorkflow, IDisposable
     {
         private readonly IService_MySQL_Dunnage _dunnageService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly WeakEventSource _stepChanged = new();
+        private readonly WeakEventSource<string> _statusMessageRaised = new();
 
         public Enum_DunnageWorkflowStep CurrentStep { get; private set; }
         public Model_DunnageSession CurrentSession { get; private set; } = new();
 
-        public event EventHandler? StepChanged;
-        public event EventHandler<string>? StatusMessageRaised;
+        public event EventHandler? StepChanged
+        {
+            add => _stepChanged.Subscribe(value);
+            remove => _stepChanged.Unsubscribe(value);
+        }
+
+        public event EventHandler<string>? StatusMessageRaised
+        {
+            add => _statusMessageRaised.Subscribe(value);
+            remove => _statusMessageRaised.Unsubscribe(value);
+        }
 
         public Service_DunnageWorkflow(
             IService_MySQL_Dunnage dunnageService,
@@ -63,20 +75,20 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 {
                     case "guided":
                         GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
-                        StatusMessageRaised?.Invoke(this, "Starting Guided Wizard mode");
+                        _statusMessageRaised.Raise(this, "Starting Guided Wizard mode");
                         break;
                     case "manual":
                         GoToStep(Enum_DunnageWorkflowStep.ManualEntry);
-                        StatusMessageRaised?.Invoke(this, "Starting Manual Entry mode");
+                        _statusMessageRaised.Raise(this, "Starting Manual Entry mode");
                         break;
                     case "edit":
                         GoToStep(Enum_DunnageWorkflowStep.EditMode);
-                        StatusMessageRaised?.Invoke(this, "Starting Edit mode");
+                        _statusMessageRaised.Raise(this, "Starting Edit mode");
                         break;
                     default:
                         // Invalid default, show mode selection
                         GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-                        StatusMessageRaised?.Invoke(this, "Workflow started");
+                        _statusMessageRaised.Raise(this, "Workflow started");
                         break;
                 }
             }
@@ -84,7 +96,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             {
                 // No default mode, show mode selection
                 GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-                StatusMessageRaised?.Invoke(this, "Workflow started");
+                _statusMessageRaised.Raise(this, "Workflow started");
             }
 
             return Task.FromResult(true);
@@ -191,7 +203,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
 
             CurrentStep = step;
-            StepChanged?.Invoke(this, EventArgs.Empty);
+            _stepChanged.Raise(this, EventArgs.Empty);
+        }
+
+        public void Dispose()
+        {
+            _sessionManager.SessionTimedOut -= OnSessionTimedOut;
         }
 
         public async Task<Model_SaveResult> SaveToDatabaseOnlyAsync()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Events;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
@@ -27,13 +28,24 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
         private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
+        private readonly WeakEventSource _stepChanged = new();
+        private readonly WeakEventSource<string> _statusMessageRaised = new();
 
-        public event EventHandler? StepChanged;
-        public event EventHandler<string>? StatusMessageRaised;
+        public event EventHandler? StepChanged
+        {
+            add => _stepChanged.Subscribe(value);
+            remove => _stepChanged.Unsubscribe(value);
+        }
+
+        public event EventHandler<string>? StatusMessageRaised
+        {
+            add => _statusMessageRaised.Subscribe(value);
+            remove => _statusMessageRaised.Unsubscribe(value);
+        }
 
         public void RaiseStatusMessage(string message)
         {
-            StatusMessageRaised?.Invoke(this, message);
+            _statusMessageRaised.Raise(this, message);
         }
 
         private Enum_ReceivingWorkflowStep _currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
@@ -46,7 +58,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 {
                     _logger.LogInfo($"Changing step from {_currentStep} to {value}");
                     _currentStep = value;
-                    StepChanged?.Invoke(this, EventArgs.Empty);
+                    _stepChanged.Raise(this, EventArgs.Empty);
                     _logger.LogInfo($"Step changed to {value} (event fired)");
                 }
             }

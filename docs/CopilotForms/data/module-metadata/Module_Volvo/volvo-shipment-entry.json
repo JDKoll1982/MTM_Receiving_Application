@@ -2,7 +2,7 @@
   "id": "volvo-shipment-entry",
   "module": "Module_Volvo",
   "name": "Shipment Entry",
-  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, shipment-line commands, validators, and host dialogs.",
+  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, DAO-owned shipment-line transaction handling, validators, and host dialogs.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -82,7 +82,8 @@
     ],
     "validationHints": [
       "Confirm pending shipment restore still loads the correct shipment state",
-      "Confirm shipment-line commands and completion still follow the intended guarded behavior"
+      "Confirm shipment-line commands and completion still follow the intended guarded behavior",
+      "Confirm shipment-line persistence still behaves transactionally after transaction ownership moved out of the service layer"
     ]
   }
 }

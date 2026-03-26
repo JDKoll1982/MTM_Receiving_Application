@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
     /// Service implementation for session management and timeout monitoring.
     /// Uses IDispatcherService to check for session timeouts every 60 seconds.
     /// </summary>
-    public class Service_UserSessionManager : IService_UserSessionManager
+    public class Service_UserSessionManager : IService_UserSessionManager, IDisposable
     {
         private readonly Dao_User _daoUser;
         private readonly IService_Dispatcher _dispatcherService;
@@ -199,6 +199,11 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 // Stop monitoring (app will close)
                 StopTimeoutMonitoring();
             }
+        }
+
+        public void Dispose()
+        {
+            StopTimeoutMonitoring();
         }
     }
 }

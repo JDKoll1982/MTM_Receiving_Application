@@ -26,10 +26,36 @@ public class Dao_InforVisualConnection
         string siteId = "002"
     )
     {
+        ValidateReadOnlyConnection(connectionString);
         _connectionString =
             connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         _siteId = siteId;
         _logger = logger;
+    }
+
+    private static void ValidateReadOnlyConnection(string connectionString)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+
+        try
+        {
+            var builder = new SqlConnectionStringBuilder(connectionString);
+
+            if (builder.ApplicationIntent != ApplicationIntent.ReadOnly)
+            {
+                throw new InvalidOperationException(
+                    $"CONSTITUTIONAL VIOLATION: Infor Visual DAO requires ApplicationIntent=ReadOnly. "
+                        + $"Current connection string ApplicationIntent is '{builder.ApplicationIntent}'."
+                );
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            throw new InvalidOperationException(
+                "CONSTITUTIONAL VIOLATION: Invalid Infor Visual connection string provided.",
+                ex
+            );
+        }
     }
 
     #region Connection Management

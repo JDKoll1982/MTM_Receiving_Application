@@ -41,6 +41,7 @@ public static class CoreServiceExtensions
         // Error Handling & Logging (Singleton - Stateless utilities, thread-safe)
         services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
         services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
+        services.AddSingleton<IService_ApplicationShutdown, Service_ApplicationShutdown>();
 
         // UI Services (Singleton - Stateless utilities)
         services.AddSingleton<IService_Notification, Service_Notification>();

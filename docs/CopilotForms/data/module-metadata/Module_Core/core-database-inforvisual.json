@@ -2,7 +2,7 @@
   "id": "core-database-inforvisual",
   "module": "Module_Core",
   "name": "Database And Infor Visual",
-  "summary": "Database helpers, Infor Visual connection and query infrastructure, credential validation, defaults, and shared Infor Visual models.",
+  "summary": "Database helpers, Infor Visual connection and query infrastructure with read-only enforcement, credential validation, defaults, and shared Infor Visual models.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Core/Contracts/Services/IService_InforVisual.cs",
@@ -47,7 +47,8 @@
     ],
     "validationHints": [
       "Confirm Infor Visual connection and credential checks still target the intended data source",
-      "Confirm database helper behavior remains aligned with existing DAO usage"
+      "Confirm database helper behavior remains aligned with existing DAO usage",
+      "Confirm Infor Visual DAO construction now rejects connection strings that are not explicitly read-only"
     ]
   }
 }

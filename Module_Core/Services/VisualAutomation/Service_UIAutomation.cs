@@ -15,6 +15,13 @@ namespace MTM_Receiving_Application.Module_Core.Services.VisualAutomation;
 /// </summary>
 public class Service_UIAutomation : IService_UIAutomation
 {
+    private readonly IService_ApplicationShutdown _applicationShutdown;
+
+    public Service_UIAutomation(IService_ApplicationShutdown applicationShutdown)
+    {
+        _applicationShutdown = applicationShutdown;
+    }
+
     // ── Win32 P/Invoke ────────────────────────────────────────────────────────
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -44,10 +51,12 @@ public class Service_UIAutomation : IService_UIAutomation
         CancellationToken ct = default
     )
     {
+        using var linkedCts = CreateLinkedTokenSource(ct);
+        var linkedToken = linkedCts.Token;
         var deadline = DateTime.UtcNow + timeout;
         while (DateTime.UtcNow < deadline)
         {
-            ct.ThrowIfCancellationRequested();
+            linkedToken.ThrowIfCancellationRequested();
 
             var element = AutomationElement.RootElement.FindFirst(
                 TreeScope.Children,
@@ -59,7 +68,7 @@ public class Service_UIAutomation : IService_UIAutomation
                 return element;
             }
 
-            await Task.Delay(100, ct).ConfigureAwait(false);
+            await Task.Delay(100, linkedToken).ConfigureAwait(false);
         }
 
         return null;
@@ -84,10 +93,12 @@ public class Service_UIAutomation : IService_UIAutomation
         CancellationToken ct = default
     )
     {
+        using var linkedCts = CreateLinkedTokenSource(ct);
+        var linkedToken = linkedCts.Token;
         var deadline = DateTime.UtcNow + settleTimeout;
         while (DateTime.UtcNow < deadline)
         {
-            ct.ThrowIfCancellationRequested();
+            linkedToken.ThrowIfCancellationRequested();
 
             var hwnd = FindWindow(className, windowTitle);
             if (hwnd != IntPtr.Zero)
@@ -95,7 +106,7 @@ public class Service_UIAutomation : IService_UIAutomation
                 return hwnd;
             }
 
-            await Task.Delay(pollMs, ct).ConfigureAwait(false);
+            await Task.Delay(pollMs, linkedToken).ConfigureAwait(false);
         }
 
         return IntPtr.Zero;
@@ -110,17 +121,19 @@ public class Service_UIAutomation : IService_UIAutomation
         CancellationToken ct = default
     )
     {
+        using var linkedCts = CreateLinkedTokenSource(ct);
+        var linkedToken = linkedCts.Token;
         var deadline = DateTime.UtcNow + timeout;
         while (DateTime.UtcNow < deadline)
         {
-            ct.ThrowIfCancellationRequested();
+            linkedToken.ThrowIfCancellationRequested();
 
             if (!WindowExists(className, windowTitle))
             {
                 return;
             }
 
-            await Task.Delay(pollMs, ct).ConfigureAwait(false);
+            await Task.Delay(pollMs, linkedToken).ConfigureAwait(false);
         }
     }
 
@@ -133,6 +146,8 @@ public class Service_UIAutomation : IService_UIAutomation
         CancellationToken ct = default
     )
     {
+        using var linkedCts = CreateLinkedTokenSource(ct);
+        var linkedToken = linkedCts.Token;
         var hwnd = FindWindow(className, windowTitle);
         if (hwnd == IntPtr.Zero)
         {
@@ -146,7 +161,7 @@ public class Service_UIAutomation : IService_UIAutomation
 
         WinForms.SendKeys.Send(keySequence);
 
-        await WaitForWindowToCloseAsync(className, windowTitle, timeout, ct: ct)
+        await WaitForWindowToCloseAsync(className, windowTitle, timeout, ct: linkedToken)
             .ConfigureAwait(false);
         return true;
     }
@@ -162,7 +177,9 @@ public class Service_UIAutomation : IService_UIAutomation
         CancellationToken ct = default
     )
     {
-        ct.ThrowIfCancellationRequested();
+        using var linkedCts = CreateLinkedTokenSource(ct);
+        var linkedToken = linkedCts.Token;
+        linkedToken.ThrowIfCancellationRequested();
 
         var element = FindElementByAutomationId(window, automationId);
 
@@ -176,7 +193,7 @@ public class Service_UIAutomation : IService_UIAutomation
         var hwnd = new IntPtr(element.Current.NativeWindowHandle);
         SetForegroundVerified(hwnd);
 
-        await Task.Delay(50, ct).ConfigureAwait(false);
+        await Task.Delay(50, linkedToken).ConfigureAwait(false);
 
         WinForms.SendKeys.Send(value);
 
@@ -194,7 +211,9 @@ public class Service_UIAutomation : IService_UIAutomation
         CancellationToken ct = default
     )
     {
-        ct.ThrowIfCancellationRequested();
+        using var linkedCts = CreateLinkedTokenSource(ct);
+        var linkedToken = linkedCts.Token;
+        linkedToken.ThrowIfCancellationRequested();
 
         var element = FindElementByAutomationId(window, automationId);
 
@@ -208,7 +227,7 @@ public class Service_UIAutomation : IService_UIAutomation
         var hwnd = new IntPtr(element.Current.NativeWindowHandle);
         SetForegroundVerified(hwnd);
 
-        await Task.Delay(50, ct).ConfigureAwait(false);
+        await Task.Delay(50, linkedToken).ConfigureAwait(false);
 
         // Select all → delete existing content, then type the new value
         WinForms.SendKeys.Send("^a");
@@ -252,5 +271,20 @@ public class Service_UIAutomation : IService_UIAutomation
         }
 
         return element;
+    }
+
+    private CancellationTokenSource CreateLinkedTokenSource(CancellationToken cancellationToken)
+    {
+        if (!cancellationToken.CanBeCanceled)
+        {
+            return CancellationTokenSource.CreateLinkedTokenSource(
+                _applicationShutdown.ShutdownToken
+            );
+        }
+
+        return CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            _applicationShutdown.ShutdownToken
+        );
     }
 }

@@ -18,6 +18,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IServiceProvider _serviceProvider;
         private readonly IService_Authentication _authService;
         private readonly IService_UserSessionManager _sessionManager;
+        private readonly IService_ApplicationShutdown _applicationShutdown;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ReceivingLabelData _labelDataService;
         private readonly Dao_SettingsCoreRoles _rolesDao;
@@ -28,6 +29,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IServiceProvider serviceProvider,
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
+            IService_ApplicationShutdown applicationShutdown,
             IService_ErrorHandler errorHandler,
             IService_ReceivingLabelData labelDataService,
             Dao_SettingsCoreRoles rolesDao,
@@ -37,6 +39,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             _serviceProvider = serviceProvider;
             _authService = authService;
             _sessionManager = sessionManager;
+            _applicationShutdown = applicationShutdown;
             _errorHandler = errorHandler;
             _labelDataService = labelDataService;
             _rolesDao = rolesDao;
@@ -53,6 +56,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 _splashScreen.Activate();
                 UpdateSplash(5, "Starting application...");
                 await Task.Delay(100);
+                if (ShouldAbortStartup())
+                {
+                    return;
+                }
 
                 // 2. Create Main Window (hidden initially)
                 UpdateSplash(15, "Loading main window...");
@@ -61,10 +68,18 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
 
                 // Give UI thread time to initialize
                 await Task.Delay(100);
+                if (ShouldAbortStartup())
+                {
+                    return;
+                }
 
                 // 3. Initialize Services (20%)
                 UpdateSplash(20, "Initializing services...");
                 await Task.Delay(300);
+                if (ShouldAbortStartup())
+                {
+                    return;
+                }
 
                 // 3. Check if Windows user exists (30%)
                 UpdateSplash(30, "Checking user account...");
@@ -158,18 +173,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             showDialog: false
                         );
 
-                        // Close splash screen
-                        if (_splashScreen != null)
-                        {
-                            _splashScreen.IsProgrammaticClose = true;
-                            _splashScreen.Close();
-                        }
-
-                        // Close main window if it exists
-                        App.MainWindow?.Close();
-
-                        // Exit application properly
-                        Application.Current.Exit();
+                        RequestShutdown("new_user_setup_cancelled");
                         return;
                     }
                 }
@@ -256,9 +260,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             showDialog: false
                         );
 
-                        // Close application
-                        Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().UnregisterKey();
-                        System.Environment.Exit(0);
+                        RequestShutdown("shared_terminal_locked_out");
                         return;
                     }
                     else if (loginViewModel.IsCancelled)
@@ -270,7 +272,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             showDialog: false
                         );
 
-                        System.Environment.Exit(0);
+                        RequestShutdown("shared_terminal_login_cancelled");
                         return;
                     }
                     else
@@ -282,7 +284,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             showDialog: false
                         );
 
-                        System.Environment.Exit(0);
+                        RequestShutdown("shared_terminal_login_unexpected_close");
                         return;
                     }
                 }
@@ -320,7 +322,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                         Models.Enums.Enum_ErrorSeverity.Warning,
                         showDialog: false
                     );
-                    System.Environment.Exit(0);
+                    RequestShutdown("startup_authentication_failed");
                     return;
                 }
 
@@ -346,13 +348,35 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     Models.Enums.Enum_ErrorSeverity.Critical,
                     ex
                 );
+                _sessionManager.StopTimeoutMonitoring();
+                await _sessionManager.EndSessionAsync("startup_failure");
                 if (_splashScreen != null)
                 {
                     _splashScreen.IsProgrammaticClose = true;
                     _splashScreen.Close();
                 }
-                System.Environment.Exit(1);
+                _splashScreen = null;
+                RequestShutdown("startup_exception", 1);
             }
+        }
+
+        private bool ShouldAbortStartup()
+        {
+            return _applicationShutdown.IsShutdownRequested;
+        }
+
+        private void RequestShutdown(string reason, int exitCode = 0)
+        {
+            _applicationShutdown.RequestShutdown(reason, exitCode);
+
+            if (_splashScreen != null)
+            {
+                _splashScreen.IsProgrammaticClose = true;
+                _splashScreen.Close();
+                _splashScreen = null;
+            }
+
+            App.MainWindow?.Close();
         }
 
         private void UpdateSplash(double percentage, string message)

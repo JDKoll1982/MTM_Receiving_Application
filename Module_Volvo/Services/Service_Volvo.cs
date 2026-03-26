@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Helpers;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Volvo.Services;
 
@@ -572,110 +570,44 @@ public class Service_Volvo : IService_Volvo
                 $"Starting line insertion transaction for shipment {shipmentId}, {lines.Count} lines to insert"
             );
 
-            // Insert lines within transaction for data integrity
-            await using var connection = new MySqlConnection(
-                Helper_Database_Variables.GetConnectionString()
-            );
-            await connection.OpenAsync();
-            await using var transaction = await connection.BeginTransactionAsync();
-
-            try
+            int lineIndex = 0;
+            foreach (var line in lines)
             {
-                int lineIndex = 0;
-                foreach (var line in lines)
-                {
-                    lineIndex++;
-                    line.ShipmentId = shipmentId;
-
-                    await _logger.LogInfoAsync(
-                        $"Inserting line {lineIndex}/{lines.Count}: "
-                            + $"Part={line.PartNumber}, "
-                            + $"Skids={line.ReceivedSkidCount}, "
-                            + $"Pieces={line.CalculatedPieceCount}, "
-                            + $"HasDiscrepancy={line.HasDiscrepancy}, "
-                            + $"ExpectedSkids={line.ExpectedSkidCount?.ToString() ?? "NULL"}, "
-                            + $"Note={(!string.IsNullOrEmpty(line.DiscrepancyNote) ? "PROVIDED" : "NULL")}"
-                    );
-
-                    var parameters = new Dictionary<string, object>
-                    {
-                        { "shipment_id", line.ShipmentId },
-                        { "part_number", line.PartNumber },
-                        { "received_skid_count", line.ReceivedSkidCount },
-                        { "calculated_piece_count", line.CalculatedPieceCount },
-                        { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
-                        { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
-                        { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
-                    };
-
-                    await _logger.LogInfoAsync(
-                        $"Parameters: {string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}"))}"
-                    );
-
-                    var lineResult =
-                        await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
-                            connection,
-                            (MySqlTransaction)transaction,
-                            "sp_Volvo_ShipmentLine_Insert",
-                            parameters
-                        );
-
-                    if (!lineResult.IsSuccess)
-                    {
-                        await transaction.RollbackAsync();
-                        await _logger.LogErrorAsync(
-                            $"Failed to insert line {lineIndex} for part {line.PartNumber}"
-                        );
-                        await _logger.LogErrorAsync($"Error: {lineResult.ErrorMessage}");
-                        if (lineResult.Exception != null)
-                        {
-                            await _logger.LogErrorAsync(
-                                $"Exception Type: {lineResult.Exception.GetType().Name}"
-                            );
-                            await _logger.LogErrorAsync(
-                                $"Exception Message: {lineResult.Exception.Message}"
-                            );
-                            if (lineResult.Exception.InnerException != null)
-                            {
-                                await _logger.LogErrorAsync(
-                                    $"Inner Exception: {lineResult.Exception.InnerException.Message}"
-                                );
-                            }
-                        }
-                        return new Model_Dao_Result<(int, int)>
-                        {
-                            Success = false,
-                            ErrorMessage =
-                                $"Failed to insert line for part {line.PartNumber}: {lineResult.ErrorMessage}",
-                            Severity = Enum_ErrorSeverity.Error,
-                        };
-                    }
-
-                    await _logger.LogInfoAsync($"Line {lineIndex} inserted successfully");
-                }
-
-                await transaction.CommitAsync();
+                lineIndex++;
                 await _logger.LogInfoAsync(
-                    $"Transaction committed: Shipment {shipmentId} saved with {lines.Count} lines"
+                    $"Queueing line {lineIndex}/{lines.Count}: "
+                        + $"Part={line.PartNumber}, "
+                        + $"Skids={line.ReceivedSkidCount}, "
+                        + $"Pieces={line.CalculatedPieceCount}, "
+                        + $"HasDiscrepancy={line.HasDiscrepancy}, "
+                        + $"ExpectedSkids={line.ExpectedSkidCount?.ToString() ?? "NULL"}, "
+                        + $"Note={(!string.IsNullOrEmpty(line.DiscrepancyNote) ? "PROVIDED" : "NULL")}"
                 );
-
-                return new Model_Dao_Result<(int, int)>
-                {
-                    Success = true,
-                    Data = (shipmentId, shipmentNumber),
-                };
             }
-            catch (Exception ex)
+
+            var lineInsertResult = await _lineDao.InsertBatchAsync(shipmentId, lines);
+            if (!lineInsertResult.IsSuccess)
             {
-                await transaction.RollbackAsync();
-                await _logger.LogErrorAsync($"Transaction failed, rolled back: {ex.Message}", ex);
+                await _logger.LogErrorAsync(
+                    $"Failed to insert lines for shipment {shipmentId}: {lineInsertResult.ErrorMessage}"
+                );
                 return new Model_Dao_Result<(int, int)>
                 {
                     Success = false,
-                    ErrorMessage = $"Transaction failed: {ex.Message}",
+                    ErrorMessage = lineInsertResult.ErrorMessage,
                     Severity = Enum_ErrorSeverity.Error,
                 };
             }
+
+            await _logger.LogInfoAsync(
+                $"Shipment {shipmentId} saved with {lines.Count} lines via DAO transaction"
+            );
+
+            return new Model_Dao_Result<(int, int)>
+            {
+                Success = true,
+                Data = (shipmentId, shipmentNumber),
+            };
         }
         catch (Exception ex)
         {

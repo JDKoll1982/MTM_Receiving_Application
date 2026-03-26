@@ -2,7 +2,7 @@
   "id": "dunnage-admin-maintenance",
   "module": "Module_Dunnage",
   "name": "Admin Maintenance",
-  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current.",
+  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current, including timer-backed add-type validation cleanup.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs",
@@ -83,7 +83,8 @@
     ],
     "validationHints": [
       "Confirm admin maintenance flows still edit the intended records",
-      "Confirm quick-add dialogs still feed the correct admin screens"
+      "Confirm quick-add dialogs still feed the correct admin screens",
+      "Confirm the Add Type dialog tears down its validation timer when the dialog closes"
     ]
   }
 }

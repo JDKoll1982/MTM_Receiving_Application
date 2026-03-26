@@ -19,6 +19,7 @@ public sealed partial class View_Dunnage_Dialog_Dunnage_AddTypeDialog : ContentD
         InitializeComponent();
 
         _focusService.AttachFocusOnVisibility(this);
+        Closed += OnClosed;
     }
 
     private async void OnSelectIconClick(object sender, RoutedEventArgs e)
@@ -36,6 +37,14 @@ public sealed partial class View_Dunnage_Dialog_Dunnage_AddTypeDialog : ContentD
         if (selectedIcon.HasValue)
         {
             ViewModel.SelectedIcon = selectedIcon.Value;
+        }
+    }
+
+    private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)
+    {
+        if (ViewModel is IDisposable disposable)
+        {
+            disposable.Dispose();
         }
     }
 }

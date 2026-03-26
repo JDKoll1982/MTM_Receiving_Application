@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, and a package-type update dialog for Manual Mode rows.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, and a package-type update dialog for Manual Mode rows.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -176,6 +176,7 @@
       "Confirm default-mode routing still sends the user to the intended startup screen",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
+      "Confirm workflow step and status updates still refresh the UI correctly after repeated navigation between receiving views",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm Manual Mode location editing stays textbox-based in all cases",
       "Confirm Manual Mode package type dialog changes only the in-memory UI rows unless the user later saves",

@@ -39,12 +39,13 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
         private void SplashScreenWindow_Closed(object sender, WindowEventArgs args)
         {
-            // If the user manually closes the splash screen (e.g. via Alt+F4 or taskbar),
-            // we must ensure the application process terminates.
             if (!IsProgrammaticClose)
             {
-                Application.Current.Exit();
+                App.GetService<Module_Core.Contracts.Services.IService_ApplicationShutdown>()
+                    .RequestShutdown("splash_manual_close");
             }
+
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
         }
 
         /// <summary>

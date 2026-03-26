@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -114,6 +116,72 @@ public class Dao_VolvoShipmentLine
             "sp_Volvo_ShipmentLine_Delete",
             parameters
         );
+    }
+
+    /// <summary>
+    /// Inserts multiple shipment lines within a single transaction.
+    /// </summary>
+    /// <param name="shipmentId"></param>
+    /// <param name="lines"></param>
+    public async Task<Model_Dao_Result> InsertBatchAsync(
+        int shipmentId,
+        IEnumerable<Model_VolvoShipmentLine> lines
+    )
+    {
+        var lineList = lines?.ToList() ?? new List<Model_VolvoShipmentLine>();
+        if (lineList.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Success();
+        }
+
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            foreach (var line in lineList)
+            {
+                line.ShipmentId = shipmentId;
+
+                var parameters = new Dictionary<string, object>
+                {
+                    { "shipment_id", line.ShipmentId },
+                    { "part_number", line.PartNumber },
+                    { "received_skid_count", line.ReceivedSkidCount },
+                    { "calculated_piece_count", line.CalculatedPieceCount },
+                    { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
+                    { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
+                    { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
+                };
+
+                var lineResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                    connection,
+                    (MySqlTransaction)transaction,
+                    "sp_Volvo_ShipmentLine_Insert",
+                    parameters
+                );
+
+                if (!lineResult.IsSuccess)
+                {
+                    await transaction.RollbackAsync();
+                    return Model_Dao_Result_Factory.Failure(
+                        $"Failed to insert line for part {line.PartNumber}: {lineResult.ErrorMessage}",
+                        lineResult.Exception
+                    );
+                }
+            }
+
+            await transaction.CommitAsync();
+            return Model_Dao_Result_Factory.Success();
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure(
+                $"Failed to insert shipment lines: {ex.Message}",
+                ex
+            );
+        }
     }
 
     private static Model_VolvoShipmentLine MapFromReader(IDataReader reader)

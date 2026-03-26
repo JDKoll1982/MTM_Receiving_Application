@@ -86,7 +86,6 @@ namespace MTM_Receiving_Application
             }
 
             this.Activated += MainWindow_Activated;
-            this.Closed += MainWindow_Closed;
 
             // Subscribe to navigation events once
             ContentFrame.Navigated += ContentFrame_Navigated;
@@ -94,12 +93,6 @@ namespace MTM_Receiving_Application
             // Wire up title bar events
             AppTitleBar.Loaded += AppTitleBar_Loaded;
             AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
-        }
-
-        private void MainWindow_Closed(object sender, WindowEventArgs args)
-        {
-            // Ensure the application process terminates when the main window is closed
-            Application.Current.Exit();
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

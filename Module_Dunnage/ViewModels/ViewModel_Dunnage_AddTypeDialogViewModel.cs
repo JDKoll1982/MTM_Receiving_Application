@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Add New Type Dialog with real-time validation and custom field preview
 /// </summary>
-public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base, IDisposable
 {
     #region Dependencies
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -239,6 +239,18 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
         UpdateCanSave();
     }
     #endregion
+
+    public void Dispose()
+    {
+        if (_validationTimer is null)
+        {
+            return;
+        }
+
+        _validationTimer.Stop();
+        _validationTimer.Tick -= OnValidationTimerTick;
+        _validationTimer = null;
+    }
 
     #region Validation Methods
     partial void OnTypeNameChanged(string value)

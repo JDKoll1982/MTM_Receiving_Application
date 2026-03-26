@@ -2,7 +2,7 @@
   "id": "shared-splash-screen",
   "module": "Module_Shared",
   "name": "Splash Screen",
-  "summary": "Shared splash screen window and viewmodel shown during early application startup and module loading.",
+  "summary": "Shared splash screen window and viewmodel shown during early application startup and module loading, including coordinated manual-close shutdown behavior.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Shared/ViewModels/ViewModel_Shared_SplashScreen.cs",
@@ -21,7 +21,8 @@
     "desiredUiPatterns": ["Window"],
     "userActions": ["See startup progress while the application initializes"],
     "validationHints": [
-      "Confirm splash-screen display and startup messaging remain stable"
+      "Confirm splash-screen display and startup messaging remain stable",
+      "Confirm manually closing the splash screen now requests coordinated shutdown instead of leaving startup partially running"
     ]
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Infrastructure.DependencyInjection;
 using MTM_Receiving_Application.Infrastructure.Logging;
@@ -8,6 +9,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Services.Startup;
 using MTM_Receiving_Application.Module_Shared.Views;
+using MySql.Data.MySqlClient;
 using Serilog;
 
 namespace MTM_Receiving_Application;
@@ -19,6 +21,8 @@ namespace MTM_Receiving_Application;
 public partial class App : Application
 {
     private readonly IHost _host;
+    private readonly object _shutdownSync = new();
+    private Task? _shutdownTask;
 
     /// <summary>
     /// Gets the main window for the application.
@@ -32,6 +36,7 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+        DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
 
         _host = Host.CreateDefaultBuilder()
             .UseSerilog(
@@ -65,12 +70,20 @@ public partial class App : Application
     /// <param name="args">The launch activation arguments.</param>
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
+        await _host.StartAsync();
+
+        var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
+        var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
+        sessionManager.SessionTimedOut += OnSessionTimedOut;
+
         var startupService = _host.Services.GetRequiredService<IService_OnStartup_AppLifecycle>();
         await startupService.StartAsync();
 
-        // Subscribe to session events
-        var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
-        sessionManager.SessionTimedOut += OnSessionTimedOut;
+        if (shutdownService.IsShutdownRequested)
+        {
+            await EnsureShutdownAsync(shutdownService.Reason ?? "startup_shutdown", shutdownService.ExitCode);
+            return;
+        }
 
         if (MainWindow != null)
         {
@@ -85,8 +98,10 @@ public partial class App : Application
     /// <param name="e"></param>
     private void OnSessionTimedOut(object? sender, Model_SessionTimedOutEventArgs e)
     {
-        // Close application on timeout
-        // In production, consider showing a dialog or navigating to login
+        _host.Services
+            .GetRequiredService<IService_ApplicationShutdown>()
+            .RequestShutdown("session_timeout");
+
         MainWindow?.Close();
     }
 
@@ -97,8 +112,92 @@ public partial class App : Application
     /// <param name="args"></param>
     private async void OnMainWindowClosed(object sender, WindowEventArgs args)
     {
-        var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
-        await sessionManager.EndSessionAsync("manual_close");
+        var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
+        var reason = shutdownService.Reason ?? "manual_close";
+        await EnsureShutdownAsync(reason, shutdownService.ExitCode);
+    }
+
+    private Task EnsureShutdownAsync(string reason, int exitCode = 0)
+    {
+        lock (_shutdownSync)
+        {
+            _shutdownTask ??= ShutdownCoreAsync(reason, exitCode);
+            return _shutdownTask;
+        }
+    }
+
+    private async Task ShutdownCoreAsync(string reason, int exitCode)
+    {
+        var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
+        shutdownService.RequestShutdown(reason, exitCode);
+
+        try
+        {
+            var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
+            sessionManager.SessionTimedOut -= OnSessionTimedOut;
+
+            if (MainWindow != null)
+            {
+                MainWindow.Closed -= OnMainWindowClosed;
+            }
+
+            await sessionManager.EndSessionAsync(reason);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error ending session during shutdown");
+        }
+
+        try
+        {
+            MySqlConnection.ClearAllPools();
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to clear MySQL pools during shutdown");
+        }
+
+        try
+        {
+            SqlConnection.ClearAllPools();
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to clear SQL pools during shutdown");
+        }
+
+        try
+        {
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await _host.StopAsync(timeoutCts.Token);
+        }
+        catch (OperationCanceledException ex)
+        {
+            Log.Warning(ex, "Host shutdown timed out");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error stopping host during shutdown");
+        }
+
+        try
+        {
+            if (_host is IAsyncDisposable asyncDisposableHost)
+            {
+                await asyncDisposableHost.DisposeAsync();
+            }
+            else
+            {
+                _host.Dispose();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error disposing host during shutdown");
+        }
+
+        Environment.ExitCode = exitCode;
+        Exit();
     }
 
     /// <summary>

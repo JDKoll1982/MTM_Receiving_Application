@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Review &amp; Save
 /// </summary>
-public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposable
+public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -408,15 +408,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IDisposab
     /// </summary>
     /// <param name="key"></param>
     public string GetTip(string key) => _helpService.GetTip(key);
-
-    #endregion
-
-    #region IDisposable
-
-    public void Dispose()
-    {
-        _workflowService.StepChanged -= OnWorkflowStepChanged;
-    }
 
     #endregion
 }
