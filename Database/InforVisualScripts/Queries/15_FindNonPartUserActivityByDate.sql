@@ -11,95 +11,50 @@
 
 DECLARE @TargetUserId nvarchar(20) = N'JKOLL';
 DECLARE @TargetDate date = '2026-03-24';
-DECLARE @ResolveUserSql nvarchar(max);
-DECLARE @MainQuerySql nvarchar(max);
-DECLARE @ReceiverObjectName nvarchar(258);
-DECLARE @ReceiverLineObjectName nvarchar(258);
-DECLARE @PurcLineBinaryObjectName nvarchar(258);
-DECLARE @EmployeeObjectName nvarchar(258);
-DECLARE @PurchaseOrderObjectName nvarchar(258);
-DECLARE @VendorObjectName nvarchar(258);
-DECLARE @InventoryTransObjectName nvarchar(258);
 
-SELECT TOP (1)
-    @ReceiverObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'RECEIVER'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-SELECT TOP (1)
-    @ReceiverLineObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'RECEIVER_LINE'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-SELECT TOP (1)
-    @PurcLineBinaryObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'PURC_LINE_BINARY'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-SELECT TOP (1)
-    @EmployeeObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'EMPLOYEE'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-SELECT TOP (1)
-    @PurchaseOrderObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'PURCHASE_ORDER'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-SELECT TOP (1)
-    @VendorObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'VENDOR'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-SELECT TOP (1)
-    @InventoryTransObjectName = QUOTENAME(s.name) + N'.' + QUOTENAME(t.name)
-FROM sys.tables AS t
-INNER JOIN sys.schemas AS s
-    ON s.schema_id = t.schema_id
-WHERE t.name = N'INVENTORY_TRANS'
-ORDER BY CASE WHEN s.name = N'dbo' THEN 0 ELSE 1 END, s.name;
-
-IF @ReceiverObjectName IS NULL
+IF OBJECT_ID(N'dbo.RECEIVER', N'U') IS NULL
 BEGIN
     THROW 50000, 'RECEIVER table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
 END;
 
-IF @ReceiverLineObjectName IS NULL
+IF OBJECT_ID(N'dbo.RECEIVER_LINE', N'U') IS NULL
 BEGIN
     THROW 50001, 'RECEIVER_LINE table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
 END;
 
-IF @PurchaseOrderObjectName IS NULL
+IF OBJECT_ID(N'dbo.PURCHASE_ORDER', N'U') IS NULL
 BEGIN
     THROW 50002, 'PURCHASE_ORDER table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
 END;
 
-IF @VendorObjectName IS NULL
+IF OBJECT_ID(N'dbo.VENDOR', N'U') IS NULL
 BEGIN
     THROW 50003, 'VENDOR table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
 END;
 
-IF @InventoryTransObjectName IS NULL
+IF OBJECT_ID(N'dbo.INVENTORY_TRANS', N'U') IS NULL
 BEGIN
     THROW 50004, 'INVENTORY_TRANS table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
+IF OBJECT_ID(N'dbo.PAYABLE_LINE', N'U') IS NULL
+BEGIN
+    THROW 50005, 'PAYABLE_LINE table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
+IF OBJECT_ID(N'dbo.SERVICE_RECEIPT', N'U') IS NULL
+BEGIN
+    THROW 50006, 'SERVICE_RECEIPT table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
+IF OBJECT_ID(N'dbo.DEMAND_SUPPLY_LINK', N'U') IS NULL
+BEGIN
+    THROW 50007, 'DEMAND_SUPPLY_LINK table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
+END;
+
+IF OBJECT_ID(N'dbo.WORK_ORDER', N'U') IS NULL
+BEGIN
+    THROW 50008, 'WORK_ORDER table was not found in the current database. Verify you are connected to the correct MTMFG database.', 1;
 END;
 
 IF OBJECT_ID('tempdb..#ResolvedUserIds') IS NOT NULL
@@ -116,41 +71,34 @@ INSERT INTO #ResolvedUserIds (UserId)
 SELECT LTRIM(RTRIM(@TargetUserId))
 WHERE LTRIM(RTRIM(@TargetUserId)) <> N'';
 
-IF @EmployeeObjectName IS NOT NULL
+IF OBJECT_ID(N'dbo.EMPLOYEE', N'U') IS NOT NULL
 BEGIN
-    SET @ResolveUserSql = N'
-    INSERT INTO #ResolvedUserIds (UserId)
-    SELECT DISTINCT resolved.ResolvedUserId
-    FROM
-    (
-        SELECT LTRIM(RTRIM(e.USER_ID)) AS ResolvedUserId
-                FROM ' + @EmployeeObjectName + N' AS e
-        WHERE e.ID = @TargetUserId
-          AND e.USER_ID IS NOT NULL
+        INSERT INTO #ResolvedUserIds (UserId)
+        SELECT DISTINCT resolved.ResolvedUserId
+        FROM
+        (
+                SELECT LTRIM(RTRIM(e.USER_ID)) AS ResolvedUserId
+                FROM dbo.EMPLOYEE AS e
+                WHERE e.ID = @TargetUserId
+                    AND e.USER_ID IS NOT NULL
 
-        UNION
+                UNION
 
-        SELECT LTRIM(RTRIM(e.USER_ID)) AS ResolvedUserId
-                FROM ' + @EmployeeObjectName + N' AS e
-        WHERE e.USER_ID = @TargetUserId
-          AND e.USER_ID IS NOT NULL
-    ) AS resolved
-    WHERE resolved.ResolvedUserId <> N''''
-      AND NOT EXISTS
-      (
-          SELECT 1
-          FROM #ResolvedUserIds AS existing
-          WHERE existing.UserId = resolved.ResolvedUserId
-      );';
-
-    EXEC sys.sp_executesql
-        @ResolveUserSql,
-        N'@TargetUserId nvarchar(20)',
-        @TargetUserId = @TargetUserId;
+                SELECT LTRIM(RTRIM(e.USER_ID)) AS ResolvedUserId
+                FROM dbo.EMPLOYEE AS e
+                WHERE e.USER_ID = @TargetUserId
+                    AND e.USER_ID IS NOT NULL
+        ) AS resolved
+        WHERE resolved.ResolvedUserId <> N''
+            AND NOT EXISTS
+            (
+                    SELECT 1
+                    FROM #ResolvedUserIds AS existing
+                    WHERE existing.UserId = resolved.ResolvedUserId
+            );
 END;
 
-SET @MainQuerySql = N'
-IF OBJECT_ID(''tempdb..#BaseRows'') IS NOT NULL
+IF OBJECT_ID('tempdb..#BaseRows') IS NOT NULL
 BEGIN
     DROP TABLE #BaseRows;
 END;
@@ -203,70 +151,130 @@ SELECT
     CAST(ROUND(rl.USER_RECEIVED_QTY, 0) AS int) AS UserReceivedQty,
     r.SITE_ID AS SiteId,
     v.NAME AS VendorName,
-    COALESCE(itTxn.CUST_ORDER_ID, itServ.CUST_ORDER_ID, itFallback.CUST_ORDER_ID) AS CustomerOrderId,
-    COALESCE(itTxn.CUST_ORDER_LINE_NO, itServ.CUST_ORDER_LINE_NO, itFallback.CUST_ORDER_LINE_NO) AS CustomerOrderLineNo,
-    COALESCE(itTxn.WORKORDER_TYPE, itServ.WORKORDER_TYPE, itFallback.WORKORDER_TYPE) AS WorkOrderType,
-    COALESCE(itTxn.WORKORDER_BASE_ID, itServ.WORKORDER_BASE_ID, itFallback.WORKORDER_BASE_ID) AS WorkOrderBaseId,
-    COALESCE(itTxn.WORKORDER_LOT_ID, itServ.WORKORDER_LOT_ID, itFallback.WORKORDER_LOT_ID) AS WorkOrderLotId,
-    COALESCE(itTxn.WORKORDER_SPLIT_ID, itServ.WORKORDER_SPLIT_ID, itFallback.WORKORDER_SPLIT_ID) AS WorkOrderSplitId,
-    COALESCE(itTxn.WORKORDER_SUB_ID, itServ.WORKORDER_SUB_ID, itFallback.WORKORDER_SUB_ID) AS WorkOrderSubId,
-    ' + CASE
-        WHEN @PurcLineBinaryObjectName IS NULL THEN N'CAST(NULL AS nvarchar(max))'
-        ELSE N'(
-        SELECT STUFF
+    COALESCE(payLine.CUST_ORDER_ID, itTxn.CUST_ORDER_ID, itServ.CUST_ORDER_ID) AS CustomerOrderId,
+    COALESCE(itTxn.CUST_ORDER_LINE_NO, itServ.CUST_ORDER_LINE_NO) AS CustomerOrderLineNo,
+    COALESCE(workOrderLink.WorkOrderType, serviceReceipt.WORKORDER_TYPE, payLine.WORKORDER_TYPE, itTxn.WORKORDER_TYPE, itServ.WORKORDER_TYPE) AS WorkOrderType,
+    COALESCE(workOrderLink.WorkOrderBaseId, serviceReceipt.WORKORDER_BASE_ID, payLine.WORKORDER_BASE_ID, itTxn.WORKORDER_BASE_ID, itServ.WORKORDER_BASE_ID) AS WorkOrderBaseId,
+    COALESCE(workOrderLink.WorkOrderLotId, serviceReceipt.WORKORDER_LOT_ID, payLine.WORKORDER_LOT_ID, itTxn.WORKORDER_LOT_ID, itServ.WORKORDER_LOT_ID) AS WorkOrderLotId,
+    COALESCE(workOrderLink.WorkOrderSplitId, serviceReceipt.WORKORDER_SPLIT_ID, payLine.WORKORDER_SPLIT_ID, itTxn.WORKORDER_SPLIT_ID, itServ.WORKORDER_SPLIT_ID) AS WorkOrderSplitId,
+    COALESCE(workOrderLink.WorkOrderSubId, serviceReceipt.WORKORDER_SUB_ID, payLine.WORKORDER_SUB_ID, itTxn.WORKORDER_SUB_ID, itServ.WORKORDER_SUB_ID) AS WorkOrderSubId,
+    CASE
+        WHEN OBJECT_ID(N'dbo.PURC_LINE_BINARY', N'U') IS NULL THEN CAST(NULL AS nvarchar(max))
+        ELSE
         (
+            SELECT STUFF
             (
-                SELECT '' | '' + specs.SpecText
-                FROM
                 (
-                    SELECT DISTINCT
-                        CONVERT(nvarchar(max), CONVERT(varbinary(max), plb.BITS)) AS SpecText
-                    FROM ' + @PurcLineBinaryObjectName + N' AS plb
-                    WHERE plb.PURC_ORDER_ID = rl.PURC_ORDER_ID
-                      AND plb.PURC_ORDER_LINE_NO = rl.PURC_ORDER_LINE_NO
-                      AND plb.TYPE = ''D''
-                ) AS specs
-                FOR XML PATH(''''), TYPE
-            ).value(''.'', ''nvarchar(max)''),
-            1,
-            3,
-            ''''
+                    SELECT ' | ' + specs.SpecText
+                    FROM
+                    (
+                        SELECT DISTINCT
+                            CONVERT(nvarchar(max), CONVERT(varbinary(max), plb.BITS)) AS SpecText
+                        FROM dbo.PURC_LINE_BINARY AS plb
+                        WHERE plb.PURC_ORDER_ID = rl.PURC_ORDER_ID
+                          AND plb.PURC_ORDER_LINE_NO = rl.PURC_ORDER_LINE_NO
+                          AND plb.TYPE = 'D'
+                    ) AS specs
+                    FOR XML PATH(''), TYPE
+                ).value('.', 'nvarchar(max)'),
+                1,
+                3,
+                ''
+            )
         )
-    )'
-    END + N' AS POLineSpecText
-FROM ' + @ReceiverObjectName + N' AS r
-INNER JOIN ' + @ReceiverLineObjectName + N' AS rl
+    END AS POLineSpecText
+FROM dbo.RECEIVER AS r
+INNER JOIN dbo.RECEIVER_LINE AS rl
     ON rl.RECEIVER_ID = r.ID
-LEFT JOIN ' + @PurchaseOrderObjectName + N' AS po
+LEFT JOIN dbo.PURCHASE_ORDER AS po
     ON po.ID = r.PURC_ORDER_ID
-LEFT JOIN ' + @VendorObjectName + N' AS v
+LEFT JOIN dbo.VENDOR AS v
     ON v.ID = po.VENDOR_ID
-LEFT JOIN ' + @InventoryTransObjectName + N' AS itTxn
-    ON itTxn.TRANSACTION_ID = rl.TRANSACTION_ID
-LEFT JOIN ' + @InventoryTransObjectName + N' AS itServ
-    ON itServ.TRANSACTION_ID = rl.SERV_TRANS_ID
-LEFT JOIN
+OUTER APPLY
 (
-    SELECT
-        fallbackKey.PURC_ORDER_ID,
-        fallbackKey.PURC_ORDER_LINE_NO,
-        MAX(fallbackKey.TRANSACTION_ID) AS FallbackTransactionId
-    FROM ' + @InventoryTransObjectName + N' AS fallbackKey
-    WHERE fallbackKey.TRANSACTION_DATE >= @TargetDate
-      AND fallbackKey.TRANSACTION_DATE < DATEADD(day, 1, @TargetDate)
-      AND
-      (
-          fallbackKey.CUST_ORDER_ID IS NOT NULL
-          OR fallbackKey.WORKORDER_BASE_ID IS NOT NULL
-      )
-    GROUP BY
-        fallbackKey.PURC_ORDER_ID,
-        fallbackKey.PURC_ORDER_LINE_NO
-) AS fallbackPick
-    ON fallbackPick.PURC_ORDER_ID = rl.PURC_ORDER_ID
-   AND fallbackPick.PURC_ORDER_LINE_NO = rl.PURC_ORDER_LINE_NO
-LEFT JOIN ' + @InventoryTransObjectName + N' AS itFallback
-    ON itFallback.TRANSACTION_ID = fallbackPick.FallbackTransactionId
+    SELECT TOP (1)
+        wo.TYPE AS WorkOrderType,
+        wo.BASE_ID AS WorkOrderBaseId,
+        wo.LOT_ID AS WorkOrderLotId,
+        wo.SPLIT_ID AS WorkOrderSplitId,
+        wo.SUB_ID AS WorkOrderSubId
+    FROM dbo.DEMAND_SUPPLY_LINK AS dsl
+    INNER JOIN dbo.WORK_ORDER AS wo
+        ON wo.BASE_ID = dsl.DEMAND_BASE_ID
+       AND wo.LOT_ID = ISNULL(dsl.DEMAND_LOT_ID, N'')
+       AND wo.SPLIT_ID = ISNULL(dsl.DEMAND_SPLIT_ID, N'')
+       AND wo.SUB_ID = ISNULL(dsl.DEMAND_SUB_ID, N'')
+    WHERE dsl.SUPPLY_BASE_ID = rl.PURC_ORDER_ID
+      AND dsl.SUPPLY_NO = rl.PURC_ORDER_LINE_NO
+    ORDER BY dsl.CREATE_DATE DESC, dsl.ID DESC
+) AS workOrderLink
+OUTER APPLY
+(
+    SELECT TOP (1)
+        pl.CUST_ORDER_ID,
+        pl.WORKORDER_TYPE,
+        pl.WORKORDER_BASE_ID,
+        pl.WORKORDER_LOT_ID,
+        pl.WORKORDER_SPLIT_ID,
+        pl.WORKORDER_SUB_ID
+    FROM dbo.PAYABLE_LINE AS pl
+    WHERE
+        (
+            pl.RECEIVER_ID = rl.RECEIVER_ID
+            AND pl.RECEIVER_LINE_NO = rl.LINE_NO
+        )
+        OR
+        (
+            pl.PURC_ORDER_ID = rl.PURC_ORDER_ID
+            AND pl.PURC_ORDER_LINE_NO = rl.PURC_ORDER_LINE_NO
+        )
+    ORDER BY
+        CASE
+            WHEN pl.RECEIVER_ID = rl.RECEIVER_ID
+             AND pl.RECEIVER_LINE_NO = rl.LINE_NO THEN 0
+            ELSE 1
+        END,
+        pl.VOUCHER_ID DESC,
+        pl.LINE_NO DESC
+) AS payLine
+OUTER APPLY
+(
+    SELECT TOP (1)
+        sr.WORKORDER_TYPE,
+        sr.WORKORDER_BASE_ID,
+        sr.WORKORDER_LOT_ID,
+        sr.WORKORDER_SPLIT_ID,
+        sr.WORKORDER_SUB_ID
+    FROM dbo.SERVICE_RECEIPT AS sr
+    WHERE
+        (
+            rl.SERV_TRANS_ID IS NOT NULL
+            AND sr.TRANSACTION_ID = rl.SERV_TRANS_ID
+        )
+        OR
+        (
+            sr.RECEIVER_ID = rl.RECEIVER_ID
+            AND sr.RECEIVER_LINE_NO = rl.LINE_NO
+        )
+        OR
+        (
+            sr.PURC_ORDER_ID = rl.PURC_ORDER_ID
+            AND sr.PURC_ORDER_LINE_NO = rl.PURC_ORDER_LINE_NO
+        )
+    ORDER BY
+        CASE
+            WHEN rl.SERV_TRANS_ID IS NOT NULL AND sr.TRANSACTION_ID = rl.SERV_TRANS_ID THEN 0
+            WHEN sr.RECEIVER_ID = rl.RECEIVER_ID
+             AND sr.RECEIVER_LINE_NO = rl.LINE_NO THEN 1
+            ELSE 2
+        END,
+        sr.CREATE_DATE DESC,
+        sr.TRANSACTION_ID DESC
+) AS serviceReceipt
+LEFT JOIN dbo.INVENTORY_TRANS AS itTxn
+    ON itTxn.TRANSACTION_ID = rl.TRANSACTION_ID
+LEFT JOIN dbo.INVENTORY_TRANS AS itServ
+    ON itServ.TRANSACTION_ID = rl.SERV_TRANS_ID
 WHERE EXISTS
 (
     SELECT 1
@@ -279,7 +287,7 @@ WHERE EXISTS
 SELECT
     UserId,
     CONVERT(varchar(10), MatchedDateTime, 23) AS MatchedDate,
-    STUFF(RIGHT(''0'' + LTRIM(RIGHT(CONVERT(varchar(20), MatchedDateTime, 100), 7)), 7), 6, 0, '' '') AS MatchedTime,
+    STUFF(RIGHT('0' + LTRIM(RIGHT(CONVERT(varchar(20), MatchedDateTime, 100), 7)), 7), 6, 0, ' ') AS MatchedTime,
     ReceiverId,
     PurchaseOrderId,
     PurchaseOrderLineNo,
@@ -295,7 +303,7 @@ ORDER BY MatchedDateTime, ReceiverId, PurchaseOrderLineNo;
 SELECT
     UserId,
     CONVERT(varchar(10), MatchedDateTime, 23) AS MatchedDate,
-    STUFF(RIGHT(''0'' + LTRIM(RIGHT(CONVERT(varchar(20), MatchedDateTime, 100), 7)), 7), 6, 0, '' '') AS MatchedTime,
+    STUFF(RIGHT('0' + LTRIM(RIGHT(CONVERT(varchar(20), MatchedDateTime, 100), 7)), 7), 6, 0, ' ') AS MatchedTime,
     ReceiverId,
     PurchaseOrderId,
     PurchaseOrderLineNo,
@@ -313,9 +321,4 @@ SELECT
 FROM #BaseRows
 WHERE CustomerOrderId IS NOT NULL
    OR WorkOrderBaseId IS NOT NULL
-ORDER BY MatchedDateTime, ReceiverId, PurchaseOrderLineNo;';
-
-EXEC sys.sp_executesql
-    @MainQuerySql,
-    N'@TargetDate date',
-    @TargetDate = @TargetDate;
+ORDER BY MatchedDateTime, ReceiverId, PurchaseOrderLineNo;
