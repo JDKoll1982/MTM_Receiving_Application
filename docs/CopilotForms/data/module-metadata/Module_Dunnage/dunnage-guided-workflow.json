@@ -2,7 +2,7 @@
   "id": "dunnage-guided-workflow",
   "module": "Module_Dunnage",
   "name": "Guided Workflow",
-  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, final review, weak-event workflow notifications, and module-scoped unsaved state.",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, final review, a denser 4x4 type card selector, weak-event workflow notifications, and module-scoped unsaved state.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
@@ -77,6 +77,7 @@
     ],
     "validationHints": [
       "Confirm the guided workflow still advances correctly between steps",
+      "Confirm the dunnage type selector shows 16 cards per page without a vertical scrollbar at the standard app window size",
       "Confirm manual and detail entry remain aligned with review behavior",
       "Confirm step-based UI refresh still works after revisiting dunnage views without retaining stale subscribers",
       "Confirm leaving Dunnage before save clears unsaved workflow data"

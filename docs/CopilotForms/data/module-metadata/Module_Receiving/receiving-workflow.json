@@ -176,6 +176,7 @@
       "Confirm default-mode routing still sends the user to the intended startup screen",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
+      "Confirm Clear Label Data archives packages-per-load values into receiving_history.coils_on_skid as intended",
       "Confirm workflow step and status updates still refresh the UI correctly after repeated navigation between receiving views",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm Manual Mode location editing stays textbox-based in all cases",

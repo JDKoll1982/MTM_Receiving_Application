@@ -145,7 +145,7 @@ SET
     @t13 = @id;
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 20x20',
+    '20x20',
     @t1,
     '{"dimensions":"20x20"}',
     NULL,
@@ -154,7 +154,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 32x30',
+    '32x30',
     @t1,
     '{"dimensions":"32x30"}',
     NULL,
@@ -163,7 +163,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 40x48',
+    '40x48',
     @t1,
     '{"dimensions":"40x48"}',
     NULL,
@@ -172,7 +172,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 42x42',
+    '42x42',
     @t1,
     '{"dimensions":"42x42"}',
     NULL,
@@ -181,7 +181,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 42x54',
+    '42x54',
     @t1,
     '{"dimensions":"42x54"}',
     NULL,
@@ -190,7 +190,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 45x48',
+    '45x48',
     @t1,
     '{"dimensions":"45x48"}',
     NULL,
@@ -199,7 +199,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 47x52',
+    '47x52',
     @t1,
     '{"dimensions":"47x52"}',
     NULL,
@@ -208,7 +208,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 48x48',
+    '48x48',
     @t1,
     '{"dimensions":"48x48"}',
     NULL,
@@ -217,7 +217,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 52x47',
+    '52x47',
     @t1,
     '{"dimensions":"52x47"}',
     NULL,
@@ -226,7 +226,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 54x42',
+    '54x42',
     @t1,
     '{"dimensions":"54x42"}',
     NULL,
@@ -235,7 +235,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 74x40',
+    '74x40',
     @t1,
     '{"dimensions":"74x40"}',
     NULL,
@@ -244,7 +244,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 85x40',
+    '85x40',
     @t1,
     '{"dimensions":"85x40"}',
     NULL,
@@ -253,7 +253,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 100x40',
+    '100x40',
     @t1,
     '{"dimensions":"100x40"}',
     NULL,
@@ -262,7 +262,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet 40x48 John Deere',
+    '40x48 John Deere',
     @t1,
     '{"dimensions":"40x48","customer":"John Deere"}',
     NULL,
@@ -271,7 +271,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Pallet Styberg',
+    'Styberg',
     @t1,
     '{"customer":"Styberg"}',
     NULL,
@@ -280,7 +280,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet 16x38.5',
+    '16x38.5',
     @t2,
     '{"dimensions":"16x38.5"}',
     NULL,
@@ -289,7 +289,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet 39x39',
+    '39x39',
     @t2,
     '{"dimensions":"39x39"}',
     NULL,
@@ -298,7 +298,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet 40x48',
+    '40x48',
     @t2,
     '{"dimensions":"40x48"}',
     NULL,
@@ -307,7 +307,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet 47x52',
+    '47x52',
     @t2,
     '{"dimensions":"47x52"}',
     NULL,
@@ -316,7 +316,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet 48x40',
+    '48x40',
     @t2,
     '{"dimensions":"48x40"}',
     NULL,
@@ -325,7 +325,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet 52x47',
+    '52x47',
     @t2,
     '{"dimensions":"52x47"}',
     NULL,
@@ -334,7 +334,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Cardboard Sheet John Deere',
+    'John Deere',
     @t2,
     '{"customer":"John Deere"}',
     'S-E Racking',
@@ -343,7 +343,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 8x5x5',
+    '8x5x5',
     @t3,
     '{"length":"8","width":"5","height":"5"}',
     NULL,
@@ -352,7 +352,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 12x12x6 Single Wall',
+    '12x12x6 Single Wall',
     @t3,
     '{"length":"12","width":"12","height":"6","wall_type":"Single Wall"}',
     NULL,
@@ -361,7 +361,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 12x12x6 Double Wall',
+    '12x12x6 Double Wall',
     @t3,
     '{"length":"12","width":"12","height":"6","wall_type":"Double Wall"}',
     NULL,
@@ -370,7 +370,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 12x12x12 Single Wall',
+    '12x12x12 Single Wall',
     @t3,
     '{"length":"12","width":"12","height":"12","wall_type":"Single Wall"}',
     NULL,
@@ -379,7 +379,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 12x12x12 Double Wall',
+    '12x12x12 Double Wall',
     @t3,
     '{"length":"12","width":"12","height":"12","wall_type":"Double Wall"}',
     NULL,
@@ -388,7 +388,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 16x12x8',
+    '16x12x8',
     @t3,
     '{"length":"16","width":"12","height":"8"}',
     NULL,
@@ -397,7 +397,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 24x16x8 Volvo',
+    '24x16x8 Volvo',
     @t3,
     '{"length":"24","width":"16","height":"8","customer":"Volvo"}',
     NULL,
@@ -415,7 +415,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 26x26x26',
+    '26x26x26',
     @t3,
     '{"length":"26","width":"26","height":"26"}',
     NULL,
@@ -424,7 +424,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 28x16x17',
+    '28x16x17',
     @t3,
     '{"length":"28","width":"16","height":"17"}',
     NULL,
@@ -433,7 +433,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 32x30x15 Electrolux',
+    '32x30x15 Electrolux',
     @t3,
     '{"length":"32","width":"30","height":"15","customer":"Electrolux"}',
     'Floor - In front of V-N Racking',
@@ -442,7 +442,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 32x30x25 Electrolux',
+    '32x30x25 Electrolux',
     @t3,
     '{"length":"32","width":"30","height":"25","customer":"Electrolux"}',
     NULL,
@@ -451,7 +451,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box 42x24x30',
+    '42x24x30',
     @t3,
     '{"length":"42","width":"24","height":"30"}',
     NULL,
@@ -460,7 +460,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Corrugated Box Lennox',
+    'Lennox',
     @t3,
     '{"customer":"Lennox"}',
     NULL,
@@ -469,7 +469,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Gaylord Short',
+    'Short',
     @t4,
     '{"height_type":"Short"}',
     NULL,
@@ -478,7 +478,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Gaylord Tall',
+    'Tall',
     @t4,
     '{"height_type":"Tall"}',
     NULL,
@@ -487,7 +487,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Stretch Film Hand-Held',
+    'Hand-Held',
     @t5,
     '{"application":"Hand-Held"}',
     'T - Bay',
@@ -496,7 +496,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Stretch Film Auto-Wrapper',
+    'Auto-Wrapper',
     @t5,
     '{"application":"Auto-Wrapper"}',
     'Rack by 100-15',
@@ -505,7 +505,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Bag 40x48 Lay Flat',
+    '40x48 Lay Flat',
     @t6,
     '{"length":"40","width":"48","mil":"4","style":"Lay Flat"}',
     NULL,
@@ -514,7 +514,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Bag 40x48 Gaylord',
+    '40x48 Gaylord',
     @t6,
     '{"length":"40","width":"48","mil":"4","style":"Gaylord"}',
     NULL,
@@ -559,7 +559,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Edge Protector 3x3x6',
+    '3x3x6',
     @t8,
     '{"width":"3","depth":"3","length":"6"}',
     NULL,
@@ -631,7 +631,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Rack John Deere AKK543',
+    'AKK543',
     @t10,
     '{"rack_number":"AKK543","customer":"John Deere"}',
     NULL,
@@ -640,7 +640,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Rack John Deere AKK46582',
+    'AKK46582',
     @t10,
     '{"rack_number":"AKK46582","customer":"John Deere"}',
     NULL,
@@ -649,7 +649,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Rack John Deere AKK46543',
+    'AKK46543',
     @t10,
     '{"rack_number":"AKK46543","customer":"John Deere"}',
     NULL,
@@ -658,7 +658,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Rack John Deere AKK546',
+    'AKK546',
     @t10,
     '{"rack_number":"AKK546","customer":"John Deere"}',
     NULL,
@@ -667,7 +667,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Rack John Deere AKK419925',
+    'AKK419925',
     @t10,
     '{"rack_number":"AKK419925","customer":"John Deere"}',
     NULL,
@@ -703,7 +703,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote Kawasaki 14x12x7',
+    'Kawasaki 14x12x7',
     @t12,
     '{"length":"14","width":"12","height":"7","customer":"Kawasaki"}',
     'WC',
@@ -712,7 +712,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote Kawasaki 15x12x7',
+    'Kawasaki 15x12x7',
     @t12,
     '{"length":"15","width":"12","height":"7","customer":"Kawasaki"}',
     NULL,
@@ -721,7 +721,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote Kawasaki 24x14x7',
+    'Kawasaki 24x14x7',
     @t12,
     '{"length":"24","width":"14","height":"7","customer":"Kawasaki"}',
     NULL,
@@ -730,7 +730,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote Allison',
+    'Allison',
     @t12,
     '{"customer":"Allison"}',
     'RECV',
@@ -739,7 +739,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote Ariens',
+    'Ariens',
     @t12,
     '{"customer":"Ariens"}',
     NULL,
@@ -748,7 +748,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote Lennox',
+    'Lennox',
     @t12,
     '{"customer":"Lennox"}',
     NULL,
@@ -757,7 +757,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Tote ZF',
+    'ZF',
     @t12,
     '{"customer":"ZF"}',
     NULL,

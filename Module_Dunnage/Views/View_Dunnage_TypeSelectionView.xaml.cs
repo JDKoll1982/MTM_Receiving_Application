@@ -7,7 +7,7 @@ using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 /// <summary>
-/// UserControl for Dunnage Type Selection view with 3x3 paginated grid
+/// UserControl for Dunnage Type Selection view with 4x4 paginated grid
 /// </summary>
 public sealed partial class View_dunnage_typeselectionView : UserControl
 {

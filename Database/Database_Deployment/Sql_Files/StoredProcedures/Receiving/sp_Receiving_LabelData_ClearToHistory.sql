@@ -74,7 +74,7 @@ BEGIN
             rld.heat                                                   AS heat,
             COALESCE(DATE(rld.received_date), rld.transaction_date)    AS transaction_date,
             rld.initial_location                                       AS initial_location,
-            rld.coils_on_skid                                          AS coils_on_skid,
+            rld.packages_per_load                                      AS coils_on_skid,
             COALESCE(rld.label_number, 1)                              AS label_number,
             COALESCE(rld.po_vendor, rld.vendor_name)                   AS vendor_name,
             COALESCE(rld.is_non_po_item, 0)                            AS is_non_po_item,
