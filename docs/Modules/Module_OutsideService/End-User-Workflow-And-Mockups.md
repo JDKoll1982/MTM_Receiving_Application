@@ -38,7 +38,7 @@ The mockups below are concept sketches, not exact screen replicas.
 
 ## Workflow Overview
 
-### Version 1 Flow
+### Outside Service Cordinator Creates new Request
 
 ```mermaid
 flowchart TD
@@ -61,7 +61,7 @@ flowchart TD
   W1_1_AddToWaitlist --> W1_1_SuccessEnd([Request ready for Shipping review])
 ```
 
-### Full Lifecycle
+### Shipping Schedules Shipment
 
 ```mermaid
 flowchart TD
@@ -72,14 +72,9 @@ flowchart TD
   W2_1_SetupDecision -->|Yes| W2_1_SelectVendor[Choose suggested vendor or enter custom vendor]
   W2_1_SelectVendor --> W2_1_AddShipmentData[Enter BOL number and shipment details]
   W2_1_AddShipmentData --> W2_1_SetupState[Move line to Setup]
-  W2_1_SetupState --> W2_1_CompleteDecision{Shipment leaves facility?}
-  W2_1_CompleteDecision -->|No| W2_1_SetupEnd([Remain in Setup])
-  W2_1_CompleteDecision -->|Yes| W2_1_MarkComplete[Mark line as Complete]
-  W2_1_MarkComplete --> W2_1_HistoryMove[Move line to history]
-  W2_1_HistoryMove --> W2_1_HistoryEnd([Line visible in complete history])
 ```
 
-### Complete Phase Flow
+### Parts Leave the Building
 
 ```mermaid
 flowchart TD
