@@ -15,7 +15,7 @@ The later states **Shipment Scheduled** and **Shipped** are intentionally docume
 
 ### User Story 1 - Create An Outside Service Request (Priority: P1)
 
-An Outside Service Coordinator needs to enter a new request for one or more part IDs that must be sent to a vendor. The coordinator records the part ID, the number of packages for each part, the quantity per package, and the intended vendor using either a suggested prior vendor or a custom vendor entry.
+An Outside Service Coordinator needs to enter a new request for one or more part IDs that must be sent out for external work. The coordinator records the part ID, the number of packages for each part, and the quantity per package so Shipping can later schedule the outbound shipment.
 
 **Why this priority**: This is the core business action that creates value. Without request entry, there is no waitlist for Shipping to act on.
 
@@ -24,8 +24,8 @@ An Outside Service Coordinator needs to enter a new request for one or more part
 **Acceptance Scenarios**:
 
 1. **Given** the coordinator opens Module_OutsideService, **When** they enter a valid request with at least one part line and save it, **Then** the system stores the request in MySQL and shows it in the active waitlist.
-2. **Given** a part ID has prior outside-service history, **When** the coordinator selects that part line, **Then** the system shows vendor suggestions based on prior history for that part.
-3. **Given** a part ID has no vendor history, **When** the coordinator enters the request, **Then** the system still allows a custom vendor to be entered and the request can be saved.
+2. **Given** a coordinator enters a request without any vendor selection, **When** the request is saved, **Then** the system stores it as an open waitlist item for Shipping follow-up.
+3. **Given** a request contains multiple part lines, **When** the coordinator saves the request, **Then** the system keeps the lines together under one request without requiring Shipping-owned details.
 
 ---
 
@@ -35,7 +35,7 @@ The Outside Service Coordinator and Shipping team need a single place to see ope
 
 **Why this priority**: Once requests are created, the team needs immediate visibility into open work. This makes Version 1 operationally useful without requiring scheduled or shipped state transitions yet.
 
-**Independent Test**: Can be tested by saving multiple requests, opening the waitlist, and verifying that the saved requests appear with the correct line counts, vendor display, and `InitialEntry` lifecycle state.
+**Independent Test**: Can be tested by saving multiple requests, opening the waitlist, and verifying that the saved requests appear with the correct line counts and `InitialEntry` lifecycle state.
 
 **Acceptance Scenarios**:
 
@@ -46,7 +46,7 @@ The Outside Service Coordinator and Shipping team need a single place to see ope
 
 ### User Story 3 - Prepare For Future Scheduling And Shipping (Priority: P3)
 
-The business expects the same request to later move into `ShipmentScheduled` and then `Shipped`, with BOL number and vendor shipment tracking captured outside Infor Visual. The first release does not implement these transitions, but the design must leave room for them.
+The business expects the same request to later move into `ShipmentScheduled` and then `Shipped`, with vendor selection, BOL number, and shipment tracking captured outside Infor Visual by Shipping. The first release does not implement these transitions, but the design must leave room for them.
 
 **Why this priority**: This protects the module design from becoming a dead-end while keeping Version 1 focused.
 
@@ -55,7 +55,7 @@ The business expects the same request to later move into `ShipmentScheduled` and
 **Acceptance Scenarios**:
 
 1. **Given** the Version 1 specification, **When** the lifecycle is reviewed, **Then** `ShipmentScheduled` and `Shipped` are clearly documented as future phases rather than current delivery scope.
-2. **Given** the future scheduling workflow is planned, **When** a later release begins, **Then** the design already identifies required fields such as BOL number and scheduled vendor shipment details.
+2. **Given** the future scheduling workflow is planned, **When** a later release begins, **Then** the design already identifies required fields such as selected vendor, BOL number, and scheduled shipment details.
 
 ---
 
@@ -63,8 +63,8 @@ The business expects the same request to later move into `ShipmentScheduled` and
 
 - What happens when the coordinator enters multiple lines for the same part ID in a single request? The system should preserve the lines exactly as entered unless future consolidation rules are explicitly defined.
 - What happens when package count or quantity per package is zero or negative? The request must be blocked with a clear validation error.
-- What happens when a part ID has no Infor Visual outside-service history? The system must still allow the request through with custom vendor entry.
-- What happens when the same part appears in prior history with multiple vendors? The system should show the most recent or most relevant suggestions in a predictable order, while still allowing manual override.
+- What happens when a part ID has no Infor Visual outside-service history? The Version 1 request should still save because vendor selection does not happen yet.
+- What happens when the same part appears in prior history with multiple vendors? The future Shipping scheduling workflow should show suggestions in a predictable order while still allowing manual override.
 - What happens when Shipping opens the waitlist before any requests exist? The module should show an empty-state message rather than a blank grid.
 - What happens when a request is partially complete but not saved? The module should keep unsaved data in-memory for the current session only unless future draft persistence is intentionally added.
 
@@ -81,17 +81,18 @@ The business expects the same request to later move into `ShipmentScheduled` and
 - **FR-007**: The system MUST persist Version 1 outside-service requests in MySQL and MUST NOT use Infor Visual as the write store for the feature.
 - **FR-008**: The system MUST assign a Version 1 lifecycle state of `InitialEntry` to newly created requests.
 - **FR-009**: The system MUST display an active waitlist view of open requests stored by Module_OutsideService.
-- **FR-010**: The system MUST show vendor suggestions derived from prior outside-service history for the selected part ID when that history exists.
-- **FR-011**: The system MUST allow a custom vendor value when the suggestion list is unsuitable or empty.
-- **FR-012**: The system MUST separate the new active waitlist from the existing Ship/Rec Outside Service History lookup tool.
-- **FR-013**: The system MUST record request-level audit fields for creation metadata, including who created the request and when it was created.
-- **FR-014**: The future lifecycle states `ShipmentScheduled` and `Shipped` MUST be documented in the design, but MUST NOT be required for Version 1 delivery.
-- **FR-015**: The future `ShipmentScheduled` phase MUST support BOL number and explicit vendor shipment data stored outside Infor Visual.
-- **FR-016**: The future `Shipped` phase MUST support moving completed requests into a history-oriented view or archive model.
-- **FR-017**: The implementation MUST follow the project MVVM flow `View -> ViewModel -> Service -> DAO -> Database`.
-- **FR-018**: Any MySQL write access for this module MUST use the project-standard DAO and stored-procedure patterns.
-- **FR-019**: The module MUST keep Infor Visual access read-only and use it only for vendor suggestions or historical reference data.
-- **FR-020**: Version 1 MUST NOT require scheduling, shipping confirmation, cancellation, or edit-after-save workflows unless they are later approved as a separate scope expansion.
+- **FR-010**: Version 1 MUST allow requests to be saved without a vendor selection because vendor assignment is owned by Shipping.
+- **FR-011**: The future `ShipmentScheduled` phase MUST show vendor suggestions derived from prior outside-service history for the selected part ID when that history exists.
+- **FR-012**: The future `ShipmentScheduled` phase MUST allow a custom vendor value when the suggestion list is unsuitable or empty.
+- **FR-013**: The system MUST separate the new active waitlist from the existing Ship/Rec Outside Service History lookup tool.
+- **FR-014**: The system MUST record request-level audit fields for creation metadata, including who created the request and when it was created.
+- **FR-015**: The future lifecycle states `ShipmentScheduled` and `Shipped` MUST be documented in the design, but MUST NOT be required for Version 1 delivery.
+- **FR-016**: The future `ShipmentScheduled` phase MUST support selected vendor, BOL number, and explicit shipment data stored outside Infor Visual.
+- **FR-017**: The future `Shipped` phase MUST support moving completed requests into a history-oriented view or archive model.
+- **FR-018**: The implementation MUST follow the project MVVM flow `View -> ViewModel -> Service -> DAO -> Database`.
+- **FR-019**: Any MySQL write access for this module MUST use the project-standard DAO and stored-procedure patterns.
+- **FR-020**: The module MUST keep Infor Visual access read-only and use it only for vendor suggestions or historical reference data.
+- **FR-021**: Version 1 MUST NOT require scheduling, shipping confirmation, cancellation, edit-after-save workflows, or vendor assignment unless they are later approved as a separate scope expansion.
 
 ### Non-Goals For Version 1
 
@@ -104,9 +105,9 @@ The business expects the same request to later move into `ShipmentScheduled` and
 
 ## Key Entities *(include if feature involves data)*
 
-- **OutsideServiceRequest**: The request header created by the Outside Service Coordinator. Stores request number, lifecycle status, selected vendor, created-by metadata, created timestamp, and summary information for the waitlist.
+- **OutsideServiceRequest**: The request header created by the Outside Service Coordinator. Stores request number, lifecycle status, created-by metadata, created timestamp, and summary information for the waitlist.
 - **OutsideServiceRequestLine**: A child line belonging to an outside-service request. Stores part ID, package count, quantity per package, and line ordering.
-- **OutsideServiceVendorSuggestion**: A read-only suggestion derived from prior Infor Visual outside-service history for a part ID. Includes vendor identity or display name plus recency context.
+- **OutsideServiceVendorSuggestion**: A read-only suggestion derived from prior Infor Visual outside-service history for a part ID. It is reserved for the future Shipping scheduling workflow.
 - **OutsideServiceLifecycleState**: The business status model for the request. Version 1 uses `InitialEntry`. Future states include `ShipmentScheduled` and `Shipped`.
 
 ## Proposed Version 1 Data Model
@@ -115,7 +116,7 @@ The business expects the same request to later move into `ShipmentScheduled` and
 
 | Table | Purpose | Key Columns |
 | ----- | ------- | ----------- |
-| `outside_service_request` | Request header table for the active waitlist | `outside_service_request_id`, `request_number`, `status`, `vendor_display_name`, `vendor_source`, `created_by_user`, `created_utc`, `notes` |
+| `outside_service_request` | Request header table for the active waitlist | `outside_service_request_id`, `request_number`, `status`, `created_by_user`, `created_utc`, `notes` |
 | `outside_service_request_line` | Request detail lines | `outside_service_request_line_id`, `outside_service_request_id`, `line_number`, `part_id`, `package_count`, `quantity_per_package` |
 
 ### Proposed Stored Procedures
@@ -160,7 +161,7 @@ Module_OutsideService/
 | Navigation | Add a new top-level menu entry in `MainWindow.xaml` and route map entry in `MainWindow.xaml.cs` |
 | Dependency Injection | Add an `AddOutsideServiceModule` registration method in `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs` |
 | MySQL | Add module-specific tables and stored procedures for request persistence |
-| Infor Visual | Reuse existing outside-service history queries for vendor suggestion behavior only |
+| Infor Visual | Reuse existing outside-service history queries for future Shipping-owned vendor suggestion behavior only |
 | Documentation | Add module documentation under `docs/Modules/Module_OutsideService` |
 
 ## Future Phase Design Notes
@@ -169,6 +170,7 @@ Module_OutsideService/
 
 The later `ShipmentScheduled` phase is expected to capture:
 
+- selected vendor
 - BOL number
 - scheduled ship date
 - selected shipping contact or handoff owner
@@ -188,13 +190,13 @@ The later `Shipped` phase is expected to capture:
 
 - **SC-001**: A coordinator can create a valid outside-service request with at least one line in under 2 minutes without leaving the module.
 - **SC-002**: 100% of saved Version 1 requests appear in the active waitlist immediately after save.
-- **SC-003**: Users can identify whether a vendor came from historical suggestion data or manual entry without opening the database.
+- **SC-003**: Coordinators can save valid requests without being blocked by Shipping-owned vendor decisions.
 - **SC-004**: The specification and end-user workflow document agree on the Version 1 scope and future-phase boundaries with no conflicting lifecycle definitions.
 - **SC-005**: Future implementation can add `ShipmentScheduled` and `Shipped` without replacing the Version 1 request-entry model.
 
 ## Open Follow-Up Items
 
 - Confirm whether only the Outside Service Coordinator can create requests, or whether Leads should also be allowed.
-- Confirm whether vendor suggestions should be ranked by most recent use, most frequent use, or both.
+- Confirm whether vendor suggestions for Shipping should be ranked by most recent use, most frequent use, or both.
 - Confirm whether Version 1 needs per-request notes only, or both request-level and line-level notes.
 - Confirm whether request numbers should be human-readable sequential values or GUID-backed display tokens.
