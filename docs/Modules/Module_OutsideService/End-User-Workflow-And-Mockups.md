@@ -4,8 +4,8 @@ Last Updated: 2026-03-27
 
 This document explains how the new Outside Service waitlist is expected to work for day-to-day users.
 It is written for coordinators, Shipping, and support staff.
-Version 1 focuses on creating and viewing open requests.
-Later scheduling and shipped-history screens are included below as future-state mockups so the full workflow is easy to understand.
+This release includes the full line lifecycle.
+Each waitlist line moves through three phases: `Initialize`, `Setup`, and `Complete`.
 
 ---
 
@@ -23,14 +23,13 @@ Later scheduling and shipped-history screens are included below as future-state 
 - Add one or more part lines to the request
 - Use a Part Match Helper if the entered part number is close but not exact
 - Enter number of packages and quantity per package for each line
+- Move lines through `Initialize`, `Setup`, and `Complete`
+- Choose vendor and enter BOL information during `Setup`
 - Save the request into an active waitlist
-- View the open waitlist for Shipping follow-up
+- View the open waitlist and completed history
 
 ## What Version 1 Does Not Include
 
-- Scheduling the shipment
-- Entering a BOL number
-- Marking the request as shipped
 - Editing a saved request after it is submitted
 - Cancelling a saved request
 
@@ -61,35 +60,35 @@ flowchart TD
   W1_1_AddToWaitlist --> W1_1_SuccessEnd([Request ready for Shipping review])
 ```
 
-### Future Full Lifecycle
+### Full Lifecycle
 
 ```mermaid
 flowchart TD
   W2_1_Start([Saved request in active waitlist]) --> W2_1_ShippingReview[Shipping reviews request]
-  W2_1_ShippingReview --> W2_1_ScheduleDecision{Ready to schedule?}
-  W2_1_ScheduleDecision -->|No| W2_1_StayOpen[Remain in active waitlist]
+  W2_1_ShippingReview --> W2_1_SetupDecision{Ready for Setup?}
+  W2_1_SetupDecision -->|No| W2_1_StayOpen[Remain in Initialize]
   W2_1_StayOpen --> W2_1_OpenEnd([Still waiting for action])
-  W2_1_ScheduleDecision -->|Yes| W2_1_SelectVendor[Choose suggested vendor or enter custom vendor]
+  W2_1_SetupDecision -->|Yes| W2_1_SelectVendor[Choose suggested vendor or enter custom vendor]
   W2_1_SelectVendor --> W2_1_AddShipmentData[Enter BOL number and shipment details]
-  W2_1_AddShipmentData --> W2_1_ScheduledState[Move request to Shipment Scheduled]
-  W2_1_ScheduledState --> W2_1_ShipConfirm{Shipment leaves facility?}
-  W2_1_ShipConfirm -->|No| W2_1_ScheduledEnd([Remain in scheduled queue])
-  W2_1_ShipConfirm -->|Yes| W2_1_MarkShipped[Mark request as Shipped]
-  W2_1_MarkShipped --> W2_1_HistoryMove[Move request to history]
-  W2_1_HistoryMove --> W2_1_HistoryEnd([Request visible in shipped history])
+  W2_1_AddShipmentData --> W2_1_SetupState[Move line to Setup]
+  W2_1_SetupState --> W2_1_CompleteDecision{Shipment leaves facility?}
+  W2_1_CompleteDecision -->|No| W2_1_SetupEnd([Remain in Setup])
+  W2_1_CompleteDecision -->|Yes| W2_1_MarkComplete[Mark line as Complete]
+  W2_1_MarkComplete --> W2_1_HistoryMove[Move line to history]
+  W2_1_HistoryMove --> W2_1_HistoryEnd([Line visible in complete history])
 ```
 
 ---
 
 ## Screen Summary
 
-| Screen | Version | Purpose |
-| ------ | ------- | ------- |
-| `Outside Service Request Entry` | Version 1 | Create a new request with part lines only |
-| `Part Match Helper` | Version 1 | Help the user choose the correct part when the entered part number is close but not exact |
-| `Outside Service Active Waitlist` | Version 1 | Show open requests waiting for Shipping action |
-| `Outside Service Shipment Scheduled` | Future Phase | Capture BOL number and shipment scheduling details |
-| `Outside Service Shipped History` | Future Phase | Review requests that have already left the facility |
+| Screen                               | Version      | Purpose                                                                                   |
+| ------------------------------------ | ------------ | ----------------------------------------------------------------------------------------- |
+| `Outside Service Request Entry`      | Version 1    | Create a new request with part lines only                                                 |
+| `Part Match Helper`                  | Version 1    | Help the user choose the correct part when the entered part number is close but not exact |
+| `Outside Service Active Waitlist`    | Version 1    | Show open waitlist lines and their current phase                                          |
+| `Outside Service Setup`              | Version 1    | Capture vendor, BOL number, and shipment setup details                                    |
+| `Outside Service Complete History`   | Version 1    | Review lines that have already completed the process                                      |
 
 ---
 
@@ -97,7 +96,7 @@ flowchart TD
 
 This is the main Version 1 screen for the Outside Service Coordinator.
 
-### What The User Does
+### Part Match Helper Steps
 
 1. Starts a new request.
 2. Adds one or more part lines.
@@ -179,7 +178,7 @@ This is the Version 1 list that Shipping uses to see open work.
 - newest requests first
 - vendor still pending Shipping assignment
 - number of part lines in the request
-- request status, which will be `Initial Entry` in Version 1
+- current line phase, which starts as `Initialize`
 
 ### Active Waitlist Mockup
 
@@ -187,19 +186,18 @@ This is the Version 1 list that Shipping uses to see open work.
 +------------------------------------------------------------------------------------------------+
 | Outside Service - Active Waitlist                                                              |
 +------------------------------------------------------------------------------------------------+
-| Search: [__________________________]   Status: [Initial Entry v]   [Refresh]                  |
+| Search: [__________________________]   Phase: [Initialize v]   [Refresh]                      |
 |                                                                                                |
-| Request #   Created On   Created By        Vendor Status       Lines   Status                  |
-| OS-000128   03/27/2026   J. Smith          Pending Shipping    2       Initial Entry           |
-| OS-000127   03/27/2026   A. Lopez          Pending Shipping    1       Initial Entry           |
-| OS-000126   03/26/2026   J. Smith          Pending Shipping    3       Initial Entry           |
+| Request #   Line   Created On   Created By        Vendor Status       Phase                    |
+| OS-000128   1      03/27/2026   J. Smith          Pending Shipping    Initialize               |
+| OS-000128   2      03/27/2026   J. Smith          Pending Shipping    Initialize               |
+| OS-000127   1      03/27/2026   A. Lopez          Pending Shipping    Initialize               |
 |                                                                                                |
 | Request Details                                                                               |
 | Request #: OS-000128                                                                          |
-| Vendor: Not selected yet                                                                      |
-| Lines: 2                                                                                      |
-| - ABC-123 | 4 packages | 25 each                                                              |
-| - XYZ-900 | 2 packages | 10 each                                                              |
+| Line Phases:                                                                                  |
+| - Line 1 | ABC-123 | 4 packages | 25 each | Initialize                                        |
+| - Line 2 | XYZ-900 | 2 packages | 10 each | Initialize                                        |
 |                                                                                                |
 | [View Request]                                                                                |
 +------------------------------------------------------------------------------------------------+
@@ -208,26 +206,24 @@ This is the Version 1 list that Shipping uses to see open work.
 ### Active Waitlist User Notes
 
 - In Version 1 this list is for visibility only.
-- Scheduling actions are not part of the first release.
+- Shipping uses this list to move lines into `Setup` and later `Complete`.
 - Vendor assignment is intentionally deferred until Shipping works the request.
 - The existing Ship/Rec Outside Service History screen remains separate and continues to serve historical lookup needs.
 
 ---
 
-## Screen 3 — Outside Service Shipment Scheduled
+## Screen 3 — Outside Service Setup
 
-**Future Phase**
+This screen is part of the delivered workflow.
+Shipping uses it to move a waitlist line from `Initialize` into `Setup`.
 
-This screen is not part of Version 1.
-It shows how Shipping would later confirm that a request is scheduled to leave.
-
-### Shipment Scheduled Mockup
+### Setup Mockup
 
 ```text
 +----------------------------------------------------------------------------------------------+
-| Outside Service - Shipment Scheduled                                                         |
+| Outside Service - Setup                                                                      |
 +----------------------------------------------------------------------------------------------+
-| Request #: [OS-000128]                                                                      |
+| Request #: [OS-000128]   Line: [1]                                                          |
 | Vendor: [Suggested Vendor v]              [Use Custom Vendor]                               |
 | Custom Name: [__________________________________________]                                   |
 | BOL Number: [____________________________________]                                           |
@@ -235,41 +231,39 @@ It shows how Shipping would later confirm that a request is scheduled to leave.
 | Shipping Contact: [________________________________]                                         |
 | Notes: [__________________________________________________________________________________] |
 |                                                                                              |
-| [Save As Scheduled]   [Back To Waitlist]                                                     |
+| [Save As Setup]   [Back To Waitlist]                                                         |
 +----------------------------------------------------------------------------------------------+
 ```
 
-### Shipment Scheduled Notes
+### Setup Notes
 
 - This phase is where Shipping would choose the vendor and add the BOL number.
-- Once saved, the request would move from `Initial Entry` to `Shipment Scheduled`.
+- Once saved, the line moves from `Initialize` to `Setup`.
 
 ---
 
-## Screen 4 — Outside Service Shipped History
+## Screen 4 — Outside Service Complete History
 
-**Future Phase**
+This screen is part of the delivered workflow.
+It shows what the end-state history screen looks like after lines are marked complete.
 
-This screen is also not part of Version 1.
-It shows what the end-state history screen may look like after requests are marked as shipped.
-
-### Shipped History Mockup
+### Complete History Mockup
 
 ```text
 +------------------------------------------------------------------------------------------------+
-| Outside Service - Shipped History                                                             |
+| Outside Service - Complete History                                                            |
 +------------------------------------------------------------------------------------------------+
 | Search: [________________________]   Vendor: [All v]   Date Range: [Last 30 Days v]          |
 |                                                                                                |
-| Request #   Ship Date    BOL Number      Vendor              Status                           |
-| OS-000091   03/19/2026   BOL-445991      Metro Heat Treat    Shipped                          |
-| OS-000087   03/17/2026   BOL-445870      Allied Plating      Shipped                          |
+| Request #   Line   Ship Date    BOL Number      Vendor              Phase                      |
+| OS-000091   1      03/19/2026   BOL-445991      Metro Heat Treat    Complete                   |
+| OS-000087   2      03/17/2026   BOL-445870      Allied Plating      Complete                   |
 |                                                                                                |
 | [Open History Record]                                                                         |
 +------------------------------------------------------------------------------------------------+
 ```
 
-### Shipped History Notes
+### Complete History Notes
 
 - This is the screen that would replace manual tracking for completed shipments.
 - It is intended for history and follow-up, not for new request entry.
@@ -278,16 +272,17 @@ It shows what the end-state history screen may look like after requests are mark
 
 ## Daily Workflow Summary
 
-| Role | Version 1 Action |
-| ---- | ---------------- |
-| Outside Service Coordinator | Create new requests with part and package details only |
-| Shipping | Review the active waitlist, choose the vendor later, and prepare for future scheduling work |
-| Support Staff | Use the screen layout and lifecycle summary to understand what is currently live versus future-state |
+| Role                        | Version 1 Action                                                                                     |
+| --------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Outside Service Coordinator | Create new requests with part and package details only                                               |
+| Shipping                    | Review the active waitlist and move each line through `Setup` and `Complete`                         |
+| Support Staff               | Use the screen layout and lifecycle summary to understand how the delivered line phases work |
 
 ---
 
 ## Support Notes
 
-- If a user asks where BOL number entry is, the correct answer for Version 1 is: not available yet.
+- If a user asks where BOL number entry is, the correct answer is: Shipping enters it during the `Setup` phase.
 - If a user asks why the request does not appear in Ship/Rec history, the answer is: the waitlist and the history lookup are separate tools.
 - If a user asks why there is no vendor field during request entry, the answer is: vendor selection belongs to Shipping, not the Outside Service Coordinator.
+- If a user asks what the progress steps are, the correct answer is: each waitlist line moves through `Initialize`, then `Setup`, then `Complete`.

@@ -8,8 +8,9 @@
 ## Scope Summary
 
 Module_OutsideService is a new top-level module for coordinator-managed outside-service requests.
-Version 1 is limited to **Initial Entry** and **active waitlist visibility**.
-The later states **Shipment Scheduled** and **Shipped** are intentionally documented as future phases so the design can grow without forcing those workflows into the first delivery.
+The first delivery includes the full waitlist-line lifecycle.
+Each waitlist line moves through three phases: **Initialize -> Setup -> Complete**.
+`Initialize` is owned by the Outside Service Coordinator, while `Setup` and `Complete` are owned by Shipping.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -19,44 +20,44 @@ An Outside Service Coordinator needs to enter a new request for one or more part
 
 **Why this priority**: This is the core business action that creates value. Without request entry, there is no waitlist for Shipping to act on.
 
-**Independent Test**: Can be fully tested by opening the module, entering a request with one or more part lines, saving it, and confirming the request appears in the active waitlist with status `InitialEntry`.
+**Independent Test**: Can be fully tested by opening the module, entering a request with one or more part lines, saving it, and confirming each saved line appears in the active waitlist with phase `Initialize`.
 
 **Acceptance Scenarios**:
 
-1. **Given** the coordinator opens Module_OutsideService, **When** they enter a valid request with at least one part line and save it, **Then** the system stores the request in MySQL and shows it in the active waitlist.
+1. **Given** the coordinator opens Module_OutsideService, **When** they enter a valid request with at least one part line and save it, **Then** the system stores the request in MySQL and shows each line in the active waitlist with phase `Initialize`.
 2. **Given** a coordinator enters a request without any vendor selection, **When** the request is saved, **Then** the system stores it as an open waitlist item for Shipping follow-up.
-3. **Given** a request contains multiple part lines, **When** the coordinator saves the request, **Then** the system keeps the lines together under one request without requiring Shipping-owned details.
+3. **Given** a request contains multiple part lines, **When** the coordinator saves the request, **Then** the system keeps the lines together under one request while allowing each line to progress independently later.
 4. **Given** the entered part number does not exactly match a part in Infor Visual, **When** the coordinator leaves the part field or tries to save, **Then** the system opens a Part Match Helper showing similar parts so the coordinator can choose the correct one.
 
 ---
 
-### User Story 2 - Review The Active Waitlist (Priority: P2)
+### User Story 2 - Review And Set Up Waitlist Lines (Priority: P2)
 
-The Outside Service Coordinator and Shipping team need a single place to see open outside-service requests that are ready for scheduling work, without mixing those requests into the existing Ship/Rec history lookup tool.
+The Outside Service Coordinator and Shipping team need a single place to see open outside-service waitlist lines, understand each line's current phase, and move eligible lines from `Initialize` into `Setup`.
 
-**Why this priority**: Once requests are created, the team needs immediate visibility into open work. This makes Version 1 operationally useful without requiring scheduled or shipped state transitions yet.
+**Why this priority**: Once requests are created, the team needs immediate visibility into open work and must be able to complete setup tasks in the same release.
 
-**Independent Test**: Can be tested by saving multiple requests, opening the waitlist, and verifying that the saved requests appear with the correct line counts and `InitialEntry` lifecycle state.
+**Independent Test**: Can be tested by saving multiple requests, opening the waitlist, and verifying that saved lines appear with the correct counts and phase, then moving a line from `Initialize` to `Setup` with vendor and BOL information.
 
 **Acceptance Scenarios**:
 
-1. **Given** one or more requests exist, **When** a user opens the waitlist view, **Then** the system lists open requests in a consistent newest-first order.
-2. **Given** a request contains multiple part lines, **When** the waitlist is shown, **Then** the request summary shows the number of lines and enough detail for Shipping to identify the work item.
+1. **Given** one or more requests exist, **When** a user opens the waitlist view, **Then** the system lists open lines in a consistent newest-first order with their current phase.
+2. **Given** a Shipping user opens a line that is in `Initialize`, **When** they assign a vendor and complete the required BOL and shipment setup details, **Then** that line moves to phase `Setup`.
 
 ---
 
-### User Story 3 - Prepare For Future Scheduling And Shipping (Priority: P3)
+### User Story 3 - Complete Waitlist Lines And Move Them To History (Priority: P3)
 
-The business expects the same request to later move into `ShipmentScheduled` and then `Shipped`, with vendor selection, BOL number, and shipment tracking captured outside Infor Visual by Shipping. The first release does not implement these transitions, but the design must leave room for them.
+The business needs Shipping to finish the process in the same delivery by marking each line `Complete` once it leaves the facility, and then showing completed lines in history.
 
-**Why this priority**: This protects the module design from becoming a dead-end while keeping Version 1 focused.
+**Why this priority**: The three-phase lifecycle is part of the feature definition, not a later enhancement.
 
-**Independent Test**: Can be tested as a design review by verifying the specification, entities, and workflow document all define the future states and fields consistently without requiring them in the first implementation.
+**Independent Test**: Can be tested by moving a line from `Setup` to `Complete` and verifying the completed line appears in the completed-history view.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Version 1 specification, **When** the lifecycle is reviewed, **Then** `ShipmentScheduled` and `Shipped` are clearly documented as future phases rather than current delivery scope.
-2. **Given** the future scheduling workflow is planned, **When** a later release begins, **Then** the design already identifies required fields such as selected vendor, BOL number, and scheduled shipment details.
+1. **Given** a line is already in `Setup`, **When** Shipping confirms the line has left the facility, **Then** the line moves to `Complete`.
+2. **Given** one or more lines are `Complete`, **When** a user opens the completed-history view, **Then** the system shows those lines with vendor and BOL details for follow-up.
 
 ---
 
@@ -66,9 +67,10 @@ The business expects the same request to later move into `ShipmentScheduled` and
 - What happens when package count or quantity per package is zero or negative? The request must be blocked with a clear validation error.
 - What happens when a part ID has no Infor Visual outside-service history? The Version 1 request should still save because vendor selection does not happen yet.
 - What happens when the entered part number does not match anything in Infor Visual and the Part Match Helper has no useful result? The system must block save for that line and tell the user to correct the part number manually.
-- What happens when the same part appears in prior history with multiple vendors? The future Shipping scheduling workflow should show suggestions in a predictable order while still allowing manual override.
+- What happens when the same part appears in prior history with multiple vendors? The `Setup` phase should show suggestions in a predictable order while still allowing manual override.
 - What happens when Shipping opens the waitlist before any requests exist? The module should show an empty-state message rather than a blank grid.
 - What happens when a request is partially complete but not saved? The module should keep unsaved data in-memory for the current session only unless future draft persistence is intentionally added.
+- What happens when different lines under the same request are in different phases? The waitlist must show phase at the line level and must not force all lines in a request to share one phase.
 
 ## Requirements *(mandatory)*
 
@@ -84,37 +86,35 @@ The business expects the same request to later move into `ShipmentScheduled` and
 - **FR-008**: When an entered part ID does not exactly match Infor Visual, Version 1 MUST open a user-facing Part Match Helper that shows similar part options.
 - **FR-009**: The Part Match Helper MUST let the coordinator pick one of the suggested parts or return to manual correction.
 - **FR-010**: The system MUST persist Version 1 outside-service requests in MySQL and MUST NOT use Infor Visual as the write store for the feature.
-- **FR-011**: The system MUST assign a Version 1 lifecycle state of `InitialEntry` to newly created requests.
-- **FR-012**: The system MUST display an active waitlist view of open requests stored by Module_OutsideService.
-- **FR-013**: Version 1 MUST allow requests to be saved without a vendor selection because vendor assignment is owned by Shipping.
-- **FR-014**: The future `ShipmentScheduled` phase MUST show vendor suggestions derived from prior outside-service history for the selected part ID when that history exists.
-- **FR-015**: The future `ShipmentScheduled` phase MUST allow a custom vendor value when the suggestion list is unsuitable or empty.
-- **FR-016**: The system MUST separate the new active waitlist from the existing Ship/Rec Outside Service History lookup tool.
-- **FR-017**: The system MUST record request-level audit fields for creation metadata, including who created the request and when it was created.
-- **FR-018**: The future lifecycle states `ShipmentScheduled` and `Shipped` MUST be documented in the design, but MUST NOT be required for Version 1 delivery.
-- **FR-019**: The future `ShipmentScheduled` phase MUST support selected vendor, BOL number, and explicit shipment data stored outside Infor Visual.
-- **FR-020**: The future `Shipped` phase MUST support moving completed requests into a history-oriented view or archive model.
+- **FR-011**: The system MUST assign a waitlist line phase of `Initialize` to newly created lines.
+- **FR-012**: The system MUST use the line-level phase model `Initialize -> Setup -> Complete` for each waitlist line.
+- **FR-013**: The system MUST display an active waitlist view of open requests and lines stored by Module_OutsideService.
+- **FR-014**: The `Initialize` phase MUST allow requests to be saved without a vendor selection because vendor assignment is owned by Shipping.
+- **FR-015**: The `Setup` phase MUST show vendor suggestions derived from prior outside-service history for the selected part ID when that history exists.
+- **FR-016**: The `Setup` phase MUST allow a custom vendor value when the suggestion list is unsuitable or empty.
+- **FR-017**: The system MUST separate the new active waitlist from the existing Ship/Rec Outside Service History lookup tool.
+- **FR-018**: The system MUST record request-level audit fields for creation metadata, including who created the request and when it was created.
+- **FR-019**: The `Setup` phase MUST support selected vendor, BOL number, and explicit shipment data stored outside Infor Visual.
+- **FR-020**: The `Complete` phase MUST support moving completed lines into a history-oriented view or archive model.
 - **FR-021**: The implementation MUST follow the project MVVM flow `View -> ViewModel -> Service -> DAO -> Database`.
 - **FR-022**: Any MySQL write access for this module MUST use the project-standard DAO and stored-procedure patterns.
 - **FR-023**: The module MUST keep Infor Visual access read-only and use it only for part validation, part-match suggestions, vendor suggestions, or other historical reference data.
-- **FR-024**: Version 1 MUST NOT require scheduling, shipping confirmation, cancellation, edit-after-save workflows, or vendor assignment unless they are later approved as a separate scope expansion.
+- **FR-024**: The active waitlist MUST show the current phase at the line level.
+- **FR-025**: The completed-history view MUST show completed lines with enough detail for follow-up and auditing.
 
 ### Non-Goals For Version 1
 
-- No Shipment Scheduled transition.
-- No Shipped transition.
-- No BOL entry screen.
 - No cancellation or void flow.
 - No post-save editing workflow.
 - No write-back to Infor Visual.
 
 ## Key Entities *(include if feature involves data)*
 
-- **OutsideServiceRequest**: The request header created by the Outside Service Coordinator. Stores request number, lifecycle status, created-by metadata, created timestamp, and summary information for the waitlist.
-- **OutsideServiceRequestLine**: A child line belonging to an outside-service request. Stores part ID, package count, quantity per package, and line ordering.
+- **OutsideServiceRequest**: The request header created by the Outside Service Coordinator. Stores request number, created-by metadata, created timestamp, and summary information for the waitlist.
+- **OutsideServiceRequestLine**: A child line belonging to an outside-service request. Stores part ID, package count, quantity per package, line ordering, current phase, and Shipping-owned setup/completion details.
 - **OutsideServicePartMatchSuggestion**: A read-only list of likely Infor Visual parts shown when the entered part number does not exactly match a real part. This powers the user-facing Part Match Helper in Version 1.
-- **OutsideServiceVendorSuggestion**: A read-only suggestion derived from prior Infor Visual outside-service history for a part ID. It is reserved for the future Shipping scheduling workflow.
-- **OutsideServiceLifecycleState**: The business status model for the request. Version 1 uses `InitialEntry`. Future states include `ShipmentScheduled` and `Shipped`.
+- **OutsideServiceVendorSuggestion**: A read-only suggestion derived from prior Infor Visual outside-service history for a part ID. It is used during the `Setup` phase.
+- **OutsideServiceLinePhase**: The business progress model for each waitlist line. The phases are `Initialize`, `Setup`, and `Complete`.
 
 ## Proposed Version 1 Data Model
 
@@ -122,8 +122,8 @@ The business expects the same request to later move into `ShipmentScheduled` and
 
 | Table | Purpose | Key Columns |
 | ----- | ------- | ----------- |
-| `outside_service_request` | Request header table for the active waitlist | `outside_service_request_id`, `request_number`, `status`, `created_by_user`, `created_utc`, `notes` |
-| `outside_service_request_line` | Request detail lines | `outside_service_request_line_id`, `outside_service_request_id`, `line_number`, `part_id`, `package_count`, `quantity_per_package` |
+| `outside_service_request` | Request header table for the active waitlist | `outside_service_request_id`, `request_number`, `created_by_user`, `created_utc`, `notes` |
+| `outside_service_request_line` | Request detail lines | `outside_service_request_line_id`, `outside_service_request_id`, `line_number`, `part_id`, `package_count`, `quantity_per_package`, `line_phase`, `vendor_display_name`, `vendor_source`, `bol_number`, `setup_utc`, `completed_utc` |
 
 ### Proposed Stored Procedures
 
@@ -131,7 +131,10 @@ The business expects the same request to later move into `ShipmentScheduled` and
 | ---------------- | ------- |
 | `sp_outside_service_request_insert` | Save a new request header |
 | `sp_outside_service_request_line_insert` | Save a request line |
-| `sp_outside_service_request_get_open` | Return active waitlist requests |
+| `sp_outside_service_request_line_update_setup` | Move a line to `Setup` and save Shipping-owned setup data |
+| `sp_outside_service_request_line_mark_complete` | Move a line to `Complete` |
+| `sp_outside_service_request_get_open` | Return active waitlist requests and lines |
+| `sp_outside_service_request_get_completed` | Return completed-history lines |
 | `sp_outside_service_request_get_by_id` | Return a saved request and its lines |
 
 ## Proposed Module Architecture
@@ -147,17 +150,21 @@ Module_OutsideService/
   Models/
     Model_OutsideServiceRequest.cs
     Model_OutsideServiceRequestLine.cs
-    Enum_OutsideServiceStatus.cs
+    Enum_OutsideServiceLinePhase.cs
   Services/
     Service_OutsideService.cs
   ViewModels/
     ViewModel_OutsideService_Main.cs
     ViewModel_OutsideService_RequestEntry.cs
     ViewModel_OutsideService_Waitlist.cs
+    ViewModel_OutsideService_Setup.cs
+    ViewModel_OutsideService_CompleteHistory.cs
   Views/
     View_OutsideService_Main.xaml
     View_OutsideService_RequestEntry.xaml
     View_OutsideService_Waitlist.xaml
+    View_OutsideService_Setup.xaml
+    View_OutsideService_CompleteHistory.xaml
 ```
 
 ### Integration Points
@@ -167,14 +174,23 @@ Module_OutsideService/
 | Navigation | Add a new top-level menu entry in `MainWindow.xaml` and route map entry in `MainWindow.xaml.cs` |
 | Dependency Injection | Add an `AddOutsideServiceModule` registration method in `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs` |
 | MySQL | Add module-specific tables and stored procedures for request persistence |
-| Infor Visual | Use read-only part validation plus Part Match Helper behavior in Version 1, and reuse outside-service history queries for future Shipping-owned vendor suggestion behavior |
+| Infor Visual | Use read-only part validation plus Part Match Helper behavior, and reuse outside-service history queries for Shipping-owned vendor suggestion behavior during `Setup` |
 | Documentation | Add module documentation under `docs/Modules/Module_OutsideService` |
 
-## Future Phase Design Notes
+## Line Phase Notes
 
-### Shipment Scheduled
+### Initialize
 
-The later `ShipmentScheduled` phase is expected to capture:
+The `Initialize` phase captures:
+
+- part ID
+- number of packages
+- quantity per package
+- request-level notes
+
+### Setup
+
+The `Setup` phase captures:
 
 - selected vendor
 - BOL number
@@ -182,11 +198,11 @@ The later `ShipmentScheduled` phase is expected to capture:
 - selected shipping contact or handoff owner
 - confirmation that Shipping accepted the request
 
-### Shipped
+### Complete
 
-The later `Shipped` phase is expected to capture:
+The `Complete` phase captures:
 
-- shipped date
+- completed or shipped date
 - final vendor confirmation details
 - movement from active waitlist to history/archive presentation
 
@@ -195,10 +211,10 @@ The later `Shipped` phase is expected to capture:
 ### Measurable Outcomes
 
 - **SC-001**: A coordinator can create a valid outside-service request with at least one line in under 2 minutes without leaving the module, including correcting an invalid part through the Part Match Helper when needed.
-- **SC-002**: 100% of saved Version 1 requests appear in the active waitlist immediately after save.
+- **SC-002**: 100% of saved waitlist lines appear in the active waitlist immediately after save with phase `Initialize`.
 - **SC-003**: Coordinators can save valid requests without being blocked by Shipping-owned vendor decisions.
-- **SC-004**: The specification and end-user workflow document agree on the Version 1 scope and future-phase boundaries with no conflicting lifecycle definitions.
-- **SC-005**: Future implementation can add `ShipmentScheduled` and `Shipped` without replacing the Version 1 request-entry model.
+- **SC-004**: Shipping can move a line from `Initialize` to `Setup` and then to `Complete` without leaving the module area.
+- **SC-005**: The specification and end-user workflow document agree on the delivered line-phase model with no conflicting lifecycle definitions.
 
 ## Open Follow-Up Items
 
