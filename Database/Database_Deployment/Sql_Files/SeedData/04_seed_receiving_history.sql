@@ -40,34 +40,32 @@ CREATE TABLE `receiving_history` (
   `initial_location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Initial warehouse location for received parts (optional)',
   `coils_on_skid` int(11) DEFAULT NULL COMMENT 'Number of coils on the skid (for coil materials, optional)',
   `label_number` int(11) DEFAULT '1' COMMENT 'Sequential label number when splitting quantities (default: 1)',
+  `load_number` int(11) DEFAULT NULL COMMENT 'Sequential load number within the receiving session',
   `vendor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Vendor/supplier name (optional, for reference)',
   `part_description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Part description from Infor Visual (optional, for reference)',
+  `po_status` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO status snapshot',
+  `po_due_date` date DEFAULT NULL COMMENT 'PO due date snapshot selected for receiving history',
+  `qty_ordered` decimal(18,2) DEFAULT NULL COMMENT 'Ordered quantity snapshot',
+  `unit_of_measure` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Unit of measure snapshot',
+  `remaining_quantity` int(11) DEFAULT NULL COMMENT 'Remaining PO quantity snapshot',
+  `user_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Windows user / app user id snapshot',
+  `packages_per_load` int(11) DEFAULT NULL COMMENT 'Number of packages per load/skid',
+  `package_type_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Package type description (Skid, Box, Coil, etc.)',
+  `weight_per_package` decimal(18,2) DEFAULT NULL COMMENT 'Weight of each individual package',
   `is_non_po_item` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Non-PO item flag: 1 when part not found in Infor Visual and no PO number',
+  `is_quality_hold_required` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when the part requires a quality hold acknowledgment',
+  `is_quality_hold_acknowledged` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when quality hold has been formally acknowledged',
+  `quality_hold_restriction_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Restriction type code from the quality hold check',
   `part_skid_sequence` int(11) DEFAULT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
   `part_skid_total` int(11) DEFAULT NULL COMMENT 'Total skids for the same part in the saved batch',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
-  `PartDescription` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Part description snapshot',
-  `POVendor` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO vendor snapshot',
-  `POStatus` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO status snapshot',
-  `PODueDate` date DEFAULT NULL COMMENT 'PO due date snapshot',
-  `QtyOrdered` decimal(18,2) DEFAULT NULL COMMENT 'Ordered quantity snapshot',
-  `UnitOfMeasure` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'UOM snapshot',
-  `RemainingQuantity` int(11) DEFAULT NULL COMMENT 'Remaining PO quantity snapshot',
-  `UserID` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Windows user / app user id',
-  `EmployeeNumber` int(11) DEFAULT NULL COMMENT 'Employee number',
-  `IsQualityHoldRequired` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Quality hold required',
-  `IsQualityHoldAcknowledged` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Quality hold acknowledged',
-  `QualityHoldRestrictionType` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Quality hold restriction type',
-  `ArchivedAt` datetime DEFAULT NULL COMMENT 'Archive transfer timestamp',
-  `ArchivedBy` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Archive action user',
-  `ArchiveBatchID` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Archive operation batch id'
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Receiving history - stores all receiving transactions matching receiving_label_data structure';
 
 --
 -- Dumping data for table `receiving_history`
 --
 
-INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `vendor_name`, `part_description`, `is_non_po_item`, `part_skid_sequence`, `part_skid_total`, `created_at`, `PartDescription`, `POVendor`, `POStatus`, `PODueDate`, `QtyOrdered`, `UnitOfMeasure`, `RemainingQuantity`, `UserID`, `EmployeeNumber`, `IsQualityHoldRequired`, `IsQualityHoldAcknowledged`, `QualityHoldRestrictionType`, `ArchivedAt`, `ArchivedBy`, `ArchiveBatchID`) VALUES
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `vendor_name`, `part_description`, `is_non_po_item`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
 (8, 'feed9255-ab98-4204-9cfb-e827b66dd469', 100, '78835831', '068026', NULL, 6229, '96788', '2026-03-24', 'Nothing Entered', 0, 1, 'Atlantic Gasket Corporation', 'Seal Cover Plate Firewall', 0, 1, 1, '2026-03-25 18:40:08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL),
 (9, 'a7ce1466-b4b9-4aff-a52a-320e0023a731', 2000, '23-10721-100', '067868', NULL, 6229, 'C63731', '2026-03-24', 'RECV DESK', NULL, 1, 'Buckeye Fasteners, Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.00\" Lg', 0, 1, 1, '2026-03-25 18:40:08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL),
 (10, '8025d177-1393-43aa-b0b9-c90456073141', 1, 'MMF0000250', '068694', NULL, 6229, 'None', '2026-03-24', 'RECV DESK', NULL, 1, 'McMaster-Carr Supply Co', 'Blank, .250 X 15.000 X 15.000', 0, 1, 1, '2026-03-25 18:40:08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL),
@@ -191,11 +189,10 @@ ALTER TABLE `receiving_history`
   ADD KEY `idx_part_id` (`part_id`) COMMENT 'Index for part lookup queries',
   ADD KEY `idx_po_number` (`po_number`) COMMENT 'Index for PO-based queries',
   ADD KEY `idx_po_line_number` (`po_line_number`) COMMENT 'Index for PO line lookups',
+  ADD KEY `idx_po_due_date` (`po_due_date`) COMMENT 'Index for PO due-date queries',
   ADD KEY `idx_transaction_date` (`transaction_date`) COMMENT 'Index for date range queries',
   ADD KEY `idx_employee_number` (`employee_number`) COMMENT 'Index for employee activity queries',
-  ADD KEY `idx_po_due_date` (`PODueDate`),
-  ADD KEY `idx_archived_at` (`ArchivedAt`),
-  ADD KEY `idx_archive_batch` (`ArchiveBatchID`);
+  ADD KEY `idx_user_id` (`user_id`) COMMENT 'Index for user-based history queries';
 
 --
 -- AUTO_INCREMENT for dumped tables

@@ -325,8 +325,8 @@ No focused receiving-history or reporting tests were found under `MTM_Receiving_
 - [x] Treat `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, and `quality_hold_restriction_type` as approved snake_case history fields and carry them through schema, archive, read, and reporting paths.
 - [x] Remove `ArchivedAt`, `ArchivedBy`, and `ArchiveBatchID` if no codebase or SQL usage is found that depends on them as business data.
 - [x] Update `Database/Database_Deployment/Sql_Files/Migrations/01_Migration_receiving_label_queue_history_alignment.sql` so it removes duplicate PascalCase columns and aligns live databases to the final snake_case-only schema.
-- [ ] Align or retire `Database/Database_Deployment/Sql_Files/SeedData/04_seed_receiving_history.sql` so it no longer reintroduces schema drift.
-- [-] Verify: schema, migration, and seed definitions all describe the same final history table.
+- [x] Align or retire `Database/Database_Deployment/Sql_Files/SeedData/04_seed_receiving_history.sql` so it no longer reintroduces schema drift.
+- [x] Verify: schema, migration, and seed definitions all describe the same final history table.
 
 ### Phase 2: Fix Queue-To-History Archival
 
@@ -722,9 +722,6 @@ The safest way to reduce ripple effects is to avoid starting with UI changes or 
 The first work should narrow ambiguity, freeze the database contract, remove duplicate columns and aliases in one coordinated snake_case-only contract update, and keep the initial implementation wave focused on data correctness before behavior expansion.
 
 ## Review Notes
-
-- `[-] Verify: schema, migration, and seed definitions all describe the same final history table.`
-  The active schema and migration are aligned, but `Database/Database_Deployment/Sql_Files/SeedData/04_seed_receiving_history.sql` still contains the retired PascalCase columns and old indexes, so the repository still has a real seed/schema mismatch.
 
 - `[-] Confirm whether guided mode requires the same final acknowledgment step already used in Manual Entry and Edit Mode.`
   I found the explicit final acknowledgment setter in Manual Entry and Edit Mode, but not an equivalent guided-mode confirmation path. This is a product/workflow decision that still needs to be confirmed before code should be added.
