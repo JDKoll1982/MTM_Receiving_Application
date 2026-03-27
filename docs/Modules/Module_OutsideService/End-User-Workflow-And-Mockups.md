@@ -6,6 +6,7 @@ This document explains how the new Outside Service waitlist is expected to work 
 It is written for coordinators, Shipping, and support staff.
 This release includes the full line lifecycle.
 Each waitlist line moves through three phases: `Initialize`, `Setup`, and `Complete`.
+The mockups below are concept sketches, not exact screen replicas.
 
 ---
 
@@ -196,30 +197,27 @@ This is the Version 1 list that Shipping uses to see open work.
 
 ```text
 +-------------------------------------------------------------------------------------------------------------------+
-| Outside Service Waitlist                                                     Open Lines: [12]                    |
+| Outside Service Queue                                                     Initialize [12]  Setup [4]  Complete [84] |
 +-------------------------------------------------------------------------------------------------------------------+
-| [Waitlist] [Setup Queue] [Complete History]                                  Search lines [__________________]   |
+| Filter: [All Parts v]   Search: [__________________________]   Sort: [Oldest Waiting v]   [New Request]        |
 |                                                                                                                   |
-| Req | Line | Part / Description              | Wait     | Notify        | Actions                            |
-| 128 | 1    | ABC-123                         | 51 mins  | [Call] [Msg]  | [View] [Setup] [Hold] [Complete]   |
-|     |      | Widget Housing                  |          |               |                                    |
-| 128 | 2    | XYZ-900                         | 47 mins  | [Call] [Msg]  | [View] [Setup] [Hold] [Complete]   |
-|     |      | Widget Cover                    |          |               |                                    |
-| 127 | 1    | MMC-725                         | 45 mins  | [Call] [Msg]  | [View] [Setup] [Hold] [Complete]   |
-|     |      | Transfer to outside service     |          |               |                                    |
+| Req/Line   Part                    Details                       Waiting   Contact        Next Step               |
+| 128-1      ABC-123                 Widget Housing                51 mins   [Call] [Msg]  [Open] [Move to Setup] |
+| 128-2      XYZ-900                 Widget Cover                  47 mins   [Call] [Msg]  [Open] [Move to Setup] |
+| 127-1      MMC-725                 Transfer to outside service   45 mins   [Call] [Msg]  [Open] [Move to Setup] |
 |                                                                                                                   |
-| Selected Line Summary                                                                                             |
-| Request 128 / Line 1 | Phase: Initialize | Vendor: Pending Shipping                                             |
-| Packages: 4 | Qty Each: 25 | Created By: J. Smith | Created: 03/27/2026                                         |
-| [Open Request]                                                                                                    |
-+-------------------------------------------------------------------------------------------------------------------+
-|                                                                                                              [+]  |
+| Details Panel                                                                                                     |
+| Request 128 / Line 1                                                                                Phase: Initialize |
+| Part: ABC-123   Packages: 4   Qty Each: 25   Created By: J. Smith   Vendor: Pending Shipping                    |
+| Notes: [Transfer to outside service after inspection]                                                          |
+| [Open Full Request]                                                                                                |
 +-------------------------------------------------------------------------------------------------------------------+
 ```
 
 ### Active Waitlist User Notes
 
 - This layout is intended to feel like a live waitlist board rather than a plain data table.
+- The badges, quick actions, and side detail panel are conceptual design cues, not fixed control requirements.
 - Shipping uses this list to move lines into `Setup` and later `Complete`.
 - Vendor assignment is intentionally deferred until Shipping works the request.
 - The existing Ship/Rec Outside Service History screen remains separate and continues to serve historical lookup needs.
@@ -235,19 +233,20 @@ Shipping uses it to move a waitlist line from `Initialize` into `Setup`.
 
 ```text
 +-------------------------------------------------------------------------------------------------------------------+
-| Outside Service - Setup                                                      Request 128 / Line 1                |
+| Outside Service Setup                                                                         Request 128 / Line 1 |
 +-------------------------------------------------------------------------------------------------------------------+
-| Part: ABC-123                          Description: Widget Housing                                               |
-| Current Phase: Initialize              Wait Time: 51 mins                                                        |
+| Line Summary: ABC-123 / Widget Housing                           Current Phase: Initialize   Wait Time: 51 mins   |
 |                                                                                                                   |
-| Vendor: [Suggested Vendor v]           [Use Custom Vendor]                                                       |
-| Custom Name: [__________________________________________]                                                         |
-| BOL Number: [____________________________________]                                                                 |
-| Scheduled Ship Date: [03/30/2026]      Pickup Window: [2:00 PM - 4:00 PM]                                        |
-| Shipping Contact: [________________________________]                                                               |
+| Vendor Decision                                                                                                   |
+| Suggested Vendor: [Metro Heat Treat v]        [Use Custom Vendor]                                                |
+| Custom Vendor Name: [__________________________________________]                                                  |
+|                                                                                                                   |
+| Shipment Setup                                                                                                    |
+| BOL Number: [________________________]      Scheduled Date: [03/30/2026]                                         |
+| Pickup Window: [2:00 PM - 4:00 PM]       Shipping Contact: [______________________________]                      |
 | Notes: [______________________________________________________________________________________________]          |
 |                                                                                                                   |
-| [Save As Setup]   [Back To Waitlist]   [Message Coordinator]                                                     |
+| [Save Setup]   [Return to Queue]   [Notify Coordinator]                                                           |
 +-------------------------------------------------------------------------------------------------------------------+
 ```
 
@@ -267,19 +266,18 @@ It shows what the end-state history screen looks like after lines are marked com
 
 ```text
 +-------------------------------------------------------------------------------------------------------------------+
-| Outside Service - Complete History                                           Completed Lines [84]                |
+| Outside Service Complete History                                                           Completed Lines [84]    |
 +-------------------------------------------------------------------------------------------------------------------+
-| Search lines [__________________]   Vendor [All v]   Date Range [Last 30 Days v]                                  |
+| Search: [____________________]   Vendor: [All v]   Completed: [Last 30 Days v]   [Export]                        |
 |                                                                                                                   |
-| Req | Line | Part / Description              | Completed | Vendor            | Actions                           |
-| 091 | 1    | ABC-123                         | 03/19/26  | Metro Heat Treat  | [View] [Reopen]                  |
-|     |      | Widget Housing                  |           |                   |                                  |
-| 087 | 2    | XYZ-900                         | 03/17/26  | Allied Plating    | [View]                           |
-|     |      | Widget Cover                    |           |                   |                                  |
+| Req/Line   Part                    Completed On   Vendor            BOL         Actions                           |
+| 091-1      ABC-123                 03/19/26       Metro Heat Treat  445991      [View] [Reopen]                  |
+| 087-2      XYZ-900                 03/17/26       Allied Plating    445870      [View]                           |
 |                                                                                                                   |
-| Complete Detail Summary                                                                                           |
-| Request 091 / Line 1 | Phase: Complete | BOL: 445991 | Vendor: Metro Heat Treat                                 |
-| [Open History Record]                                                                                             |
+| History Detail Panel                                                                                              |
+| Request 091 / Line 1   Phase: Complete   Vendor: Metro Heat Treat   BOL: 445991                                 |
+| Completed On: 03/19/26   Final Notes: [Picked up on second afternoon run]                                        |
+| [Open History Record]                                                                                                |
 +-------------------------------------------------------------------------------------------------------------------+
 ```
 
