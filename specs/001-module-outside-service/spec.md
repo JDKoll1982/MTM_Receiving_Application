@@ -15,7 +15,7 @@ The later states **Shipment Scheduled** and **Shipped** are intentionally docume
 
 ### User Story 1 - Create An Outside Service Request (Priority: P1)
 
-An Outside Service Coordinator needs to enter a new request for one or more part IDs that must be sent out for external work. The coordinator records the part ID, the number of packages for each part, and the quantity per package so Shipping can later schedule the outbound shipment.
+An Outside Service Coordinator needs to enter a new request for one or more part IDs that must be sent out for external work. The coordinator records the part ID, the number of packages for each part, and the quantity per package so Shipping can later schedule the outbound shipment. If the entered part number does not match Infor Visual, the system helps the user find the right part by showing close matches in a Part Match Helper.
 
 **Why this priority**: This is the core business action that creates value. Without request entry, there is no waitlist for Shipping to act on.
 
@@ -26,6 +26,7 @@ An Outside Service Coordinator needs to enter a new request for one or more part
 1. **Given** the coordinator opens Module_OutsideService, **When** they enter a valid request with at least one part line and save it, **Then** the system stores the request in MySQL and shows it in the active waitlist.
 2. **Given** a coordinator enters a request without any vendor selection, **When** the request is saved, **Then** the system stores it as an open waitlist item for Shipping follow-up.
 3. **Given** a request contains multiple part lines, **When** the coordinator saves the request, **Then** the system keeps the lines together under one request without requiring Shipping-owned details.
+4. **Given** the entered part number does not exactly match a part in Infor Visual, **When** the coordinator leaves the part field or tries to save, **Then** the system opens a Part Match Helper showing similar parts so the coordinator can choose the correct one.
 
 ---
 
@@ -64,6 +65,7 @@ The business expects the same request to later move into `ShipmentScheduled` and
 - What happens when the coordinator enters multiple lines for the same part ID in a single request? The system should preserve the lines exactly as entered unless future consolidation rules are explicitly defined.
 - What happens when package count or quantity per package is zero or negative? The request must be blocked with a clear validation error.
 - What happens when a part ID has no Infor Visual outside-service history? The Version 1 request should still save because vendor selection does not happen yet.
+- What happens when the entered part number does not match anything in Infor Visual and the Part Match Helper has no useful result? The system must block save for that line and tell the user to correct the part number manually.
 - What happens when the same part appears in prior history with multiple vendors? The future Shipping scheduling workflow should show suggestions in a predictable order while still allowing manual override.
 - What happens when Shipping opens the waitlist before any requests exist? The module should show an empty-state message rather than a blank grid.
 - What happens when a request is partially complete but not saved? The module should keep unsaved data in-memory for the current session only unless future draft persistence is intentionally added.
@@ -78,21 +80,24 @@ The business expects the same request to later move into `ShipmentScheduled` and
 - **FR-004**: Each part line MUST capture `Part ID`, `Number Of Packages`, and `Quantity Per Package`.
 - **FR-005**: The system MUST require at least one valid part line before a request can be saved.
 - **FR-006**: The system MUST validate that package counts and quantities are positive numeric values.
-- **FR-007**: The system MUST persist Version 1 outside-service requests in MySQL and MUST NOT use Infor Visual as the write store for the feature.
-- **FR-008**: The system MUST assign a Version 1 lifecycle state of `InitialEntry` to newly created requests.
-- **FR-009**: The system MUST display an active waitlist view of open requests stored by Module_OutsideService.
-- **FR-010**: Version 1 MUST allow requests to be saved without a vendor selection because vendor assignment is owned by Shipping.
-- **FR-011**: The future `ShipmentScheduled` phase MUST show vendor suggestions derived from prior outside-service history for the selected part ID when that history exists.
-- **FR-012**: The future `ShipmentScheduled` phase MUST allow a custom vendor value when the suggestion list is unsuitable or empty.
-- **FR-013**: The system MUST separate the new active waitlist from the existing Ship/Rec Outside Service History lookup tool.
-- **FR-014**: The system MUST record request-level audit fields for creation metadata, including who created the request and when it was created.
-- **FR-015**: The future lifecycle states `ShipmentScheduled` and `Shipped` MUST be documented in the design, but MUST NOT be required for Version 1 delivery.
-- **FR-016**: The future `ShipmentScheduled` phase MUST support selected vendor, BOL number, and explicit shipment data stored outside Infor Visual.
-- **FR-017**: The future `Shipped` phase MUST support moving completed requests into a history-oriented view or archive model.
-- **FR-018**: The implementation MUST follow the project MVVM flow `View -> ViewModel -> Service -> DAO -> Database`.
-- **FR-019**: Any MySQL write access for this module MUST use the project-standard DAO and stored-procedure patterns.
-- **FR-020**: The module MUST keep Infor Visual access read-only and use it only for vendor suggestions or historical reference data.
-- **FR-021**: Version 1 MUST NOT require scheduling, shipping confirmation, cancellation, edit-after-save workflows, or vendor assignment unless they are later approved as a separate scope expansion.
+- **FR-007**: Version 1 MUST validate entered part IDs against the Infor Visual database before a request can be saved.
+- **FR-008**: When an entered part ID does not exactly match Infor Visual, Version 1 MUST open a user-facing Part Match Helper that shows similar part options.
+- **FR-009**: The Part Match Helper MUST let the coordinator pick one of the suggested parts or return to manual correction.
+- **FR-010**: The system MUST persist Version 1 outside-service requests in MySQL and MUST NOT use Infor Visual as the write store for the feature.
+- **FR-011**: The system MUST assign a Version 1 lifecycle state of `InitialEntry` to newly created requests.
+- **FR-012**: The system MUST display an active waitlist view of open requests stored by Module_OutsideService.
+- **FR-013**: Version 1 MUST allow requests to be saved without a vendor selection because vendor assignment is owned by Shipping.
+- **FR-014**: The future `ShipmentScheduled` phase MUST show vendor suggestions derived from prior outside-service history for the selected part ID when that history exists.
+- **FR-015**: The future `ShipmentScheduled` phase MUST allow a custom vendor value when the suggestion list is unsuitable or empty.
+- **FR-016**: The system MUST separate the new active waitlist from the existing Ship/Rec Outside Service History lookup tool.
+- **FR-017**: The system MUST record request-level audit fields for creation metadata, including who created the request and when it was created.
+- **FR-018**: The future lifecycle states `ShipmentScheduled` and `Shipped` MUST be documented in the design, but MUST NOT be required for Version 1 delivery.
+- **FR-019**: The future `ShipmentScheduled` phase MUST support selected vendor, BOL number, and explicit shipment data stored outside Infor Visual.
+- **FR-020**: The future `Shipped` phase MUST support moving completed requests into a history-oriented view or archive model.
+- **FR-021**: The implementation MUST follow the project MVVM flow `View -> ViewModel -> Service -> DAO -> Database`.
+- **FR-022**: Any MySQL write access for this module MUST use the project-standard DAO and stored-procedure patterns.
+- **FR-023**: The module MUST keep Infor Visual access read-only and use it only for part validation, part-match suggestions, vendor suggestions, or other historical reference data.
+- **FR-024**: Version 1 MUST NOT require scheduling, shipping confirmation, cancellation, edit-after-save workflows, or vendor assignment unless they are later approved as a separate scope expansion.
 
 ### Non-Goals For Version 1
 
@@ -107,6 +112,7 @@ The business expects the same request to later move into `ShipmentScheduled` and
 
 - **OutsideServiceRequest**: The request header created by the Outside Service Coordinator. Stores request number, lifecycle status, created-by metadata, created timestamp, and summary information for the waitlist.
 - **OutsideServiceRequestLine**: A child line belonging to an outside-service request. Stores part ID, package count, quantity per package, and line ordering.
+- **OutsideServicePartMatchSuggestion**: A read-only list of likely Infor Visual parts shown when the entered part number does not exactly match a real part. This powers the user-facing Part Match Helper in Version 1.
 - **OutsideServiceVendorSuggestion**: A read-only suggestion derived from prior Infor Visual outside-service history for a part ID. It is reserved for the future Shipping scheduling workflow.
 - **OutsideServiceLifecycleState**: The business status model for the request. Version 1 uses `InitialEntry`. Future states include `ShipmentScheduled` and `Shipped`.
 
@@ -161,7 +167,7 @@ Module_OutsideService/
 | Navigation | Add a new top-level menu entry in `MainWindow.xaml` and route map entry in `MainWindow.xaml.cs` |
 | Dependency Injection | Add an `AddOutsideServiceModule` registration method in `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs` |
 | MySQL | Add module-specific tables and stored procedures for request persistence |
-| Infor Visual | Reuse existing outside-service history queries for future Shipping-owned vendor suggestion behavior only |
+| Infor Visual | Use read-only part validation plus Part Match Helper behavior in Version 1, and reuse outside-service history queries for future Shipping-owned vendor suggestion behavior |
 | Documentation | Add module documentation under `docs/Modules/Module_OutsideService` |
 
 ## Future Phase Design Notes
@@ -188,7 +194,7 @@ The later `Shipped` phase is expected to capture:
 
 ### Measurable Outcomes
 
-- **SC-001**: A coordinator can create a valid outside-service request with at least one line in under 2 minutes without leaving the module.
+- **SC-001**: A coordinator can create a valid outside-service request with at least one line in under 2 minutes without leaving the module, including correcting an invalid part through the Part Match Helper when needed.
 - **SC-002**: 100% of saved Version 1 requests appear in the active waitlist immediately after save.
 - **SC-003**: Coordinators can save valid requests without being blocked by Shipping-owned vendor decisions.
 - **SC-004**: The specification and end-user workflow document agree on the Version 1 scope and future-phase boundaries with no conflicting lifecycle definitions.
@@ -197,6 +203,7 @@ The later `Shipped` phase is expected to capture:
 ## Open Follow-Up Items
 
 - Confirm whether only the Outside Service Coordinator can create requests, or whether Leads should also be allowed.
+- Confirm how many part suggestions the Part Match Helper should show before asking the user to manually refine the entry.
 - Confirm whether vendor suggestions for Shipping should be ranked by most recent use, most frequent use, or both.
 - Confirm whether Version 1 needs per-request notes only, or both request-level and line-level notes.
 - Confirm whether request numbers should be human-readable sequential values or GUID-backed display tokens.

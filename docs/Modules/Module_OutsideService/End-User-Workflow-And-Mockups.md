@@ -21,6 +21,7 @@ Later scheduling and shipped-history screens are included below as future-state 
 
 - Create a new outside-service request
 - Add one or more part lines to the request
+- Use a Part Match Helper if the entered part number is close but not exact
 - Enter number of packages and quantity per package for each line
 - Save the request into an active waitlist
 - View the open waitlist for Shipping follow-up
@@ -43,7 +44,14 @@ Later scheduling and shipped-history screens are included below as future-state 
 flowchart TD
   W1_1_Start([Coordinator opens Outside Service]) --> W1_1_NewRequest[Start new request]
   W1_1_NewRequest --> W1_1_AddLine[Add one or more part lines]
-  W1_1_AddLine --> W1_1_EnterPackageData[Enter package count and quantity per package]
+  W1_1_AddLine --> W1_1_CheckPart{Part found in Infor Visual?}
+  W1_1_CheckPart -->|Yes| W1_1_EnterPackageData[Enter package count and quantity per package]
+  W1_1_CheckPart -->|No| W1_1_OpenHelper[Open Part Match Helper]
+  W1_1_OpenHelper --> W1_1_HelperSelect{Matching part chosen?}
+  W1_1_HelperSelect -->|Yes| W1_1_UseMatch[Use selected part]
+  W1_1_UseMatch --> W1_1_EnterPackageData
+  W1_1_HelperSelect -->|No| W1_1_ReturnEdit[Return to edit the part number]
+  W1_1_ReturnEdit --> W1_1_AddLine
   W1_1_EnterPackageData --> W1_1_SaveRequest[Save request]
   W1_1_SaveRequest --> W1_1_SaveValid{All required fields valid?}
   W1_1_SaveValid -->|No| W1_1_ShowValidation[Show validation message]
@@ -78,6 +86,7 @@ flowchart TD
 | Screen | Version | Purpose |
 | ------ | ------- | ------- |
 | `Outside Service Request Entry` | Version 1 | Create a new request with part lines only |
+| `Part Match Helper` | Version 1 | Help the user choose the correct part when the entered part number is close but not exact |
 | `Outside Service Active Waitlist` | Version 1 | Show open requests waiting for Shipping action |
 | `Outside Service Shipment Scheduled` | Future Phase | Capture BOL number and shipment scheduling details |
 | `Outside Service Shipped History` | Future Phase | Review requests that have already left the facility |
@@ -92,8 +101,9 @@ This is the main Version 1 screen for the Outside Service Coordinator.
 
 1. Starts a new request.
 2. Adds one or more part lines.
-3. Enters package count and quantity per package for each line.
-4. Saves the request.
+3. If a part number is not found, uses the Part Match Helper to choose the correct part.
+4. Enters package count and quantity per package for each line.
+5. Saves the request.
 
 ### Request Entry Mockup
 
@@ -118,8 +128,45 @@ This is the main Version 1 screen for the Outside Service Coordinator.
 ### Request Entry User Notes
 
 - The request cannot be saved unless every part line has valid counts.
+- If the entered part number is not found, the Part Match Helper opens and shows similar parts.
 - Vendor selection does not happen in Version 1.
 - Shipping will choose the vendor later when the request is scheduled.
+
+---
+
+## Screen 1A — Part Match Helper
+
+This helper appears when the part number typed by the coordinator does not exactly match a part in Infor Visual.
+
+### What The User Does
+
+1. Reviews the closest part matches.
+2. Selects the correct part if one is shown.
+3. Returns to the request form if the entered value needs to be corrected manually.
+
+### Part Match Helper Mockup
+
+```text
++----------------------------------------------------------------------------------+
+| Part Match Helper                                                                |
++----------------------------------------------------------------------------------+
+| We could not find an exact match for: [ABC1234]                                  |
+|                                                                                  |
+| Did you mean one of these parts?                                                 |
+|                                                                                  |
+| ( ) ABC-1234   Widget Housing                                                    |
+| ( ) ABC-1235   Widget Housing Rev B                                              |
+| ( ) ABC-1284   Widget Cover                                                      |
+|                                                                                  |
+| [Use Selected Part]   [Go Back And Edit]                                         |
++----------------------------------------------------------------------------------+
+```
+
+### Part Match Helper Notes
+
+- This helper is meant to be easier for end users to understand than the term fuzzy search.
+- It helps prevent failed requests caused by a small typing error in the part number.
+- If none of the shown parts is correct, the user returns to the form and fixes the value manually.
 
 ---
 
