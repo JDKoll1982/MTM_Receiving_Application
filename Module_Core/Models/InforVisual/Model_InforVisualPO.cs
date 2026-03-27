@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
@@ -13,6 +14,15 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public string Vendor { get; set; } = string.Empty;
 
         public string Status { get; set; } = string.Empty;
+
+        public DateTime? HeaderPromiseDate { get; set; }
+
+        public DateTime? HeaderDesiredReceiveDate { get; set; }
+
+        public string FreeOnBoard { get; set; } = string.Empty;
+
+        public bool IsBlanketOrder =>
+            FreeOnBoard.Contains("BLANKET", StringComparison.OrdinalIgnoreCase);
 
         public List<Model_InforVisualPart> Parts { get; set; } = new();
 

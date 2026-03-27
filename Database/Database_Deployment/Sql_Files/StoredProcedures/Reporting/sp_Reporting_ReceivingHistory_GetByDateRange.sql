@@ -11,25 +11,40 @@ BEGIN
         id,
         po_number,
         po_line_number,
-        part_number,
+        part_id,
+        part_description,
         quantity,
-        created_date,
+        weight_lbs,
+        heat,
+        transaction_date,
+        created_at,
         employee_number,
-        NULL AS created_by_username,
+        user_id,
         source_module,
-        initial_location AS location,
+        initial_location,
         notes,
         load_number,
         label_number,
         packages_per_load,
         package_type_name,
+        weight_per_package,
         coils_on_skid,
+        vendor_name,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
         is_non_po_item,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type,
+        part_skid_total,
         NULL AS quantity_per_skid,
         NULL AS received_skid_count
     FROM view_receiving_history
-    WHERE created_date BETWEEN p_start_date AND p_end_date
-    ORDER BY created_date DESC, id DESC;
+    WHERE DATE(created_at) BETWEEN p_start_date AND p_end_date
+    ORDER BY created_at DESC, id DESC;
 END $$
 
 DELIMITER ;

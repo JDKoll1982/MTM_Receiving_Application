@@ -88,6 +88,15 @@ public class Dao_InforVisualPO
                             reader["DueDate"] == DBNull.Value
                                 ? null
                                 : Convert.ToDateTime(reader["DueDate"]),
+                        HeaderPromiseDate =
+                            reader["HeaderPromiseDate"] == DBNull.Value
+                                ? null
+                                : Convert.ToDateTime(reader["HeaderPromiseDate"]),
+                        HeaderDesiredReceiveDate =
+                            reader["HeaderDesiredRecvDate"] == DBNull.Value
+                                ? null
+                                : Convert.ToDateTime(reader["HeaderDesiredRecvDate"]),
+                        FreeOnBoard = reader["FreeOnBoard"].ToString() ?? string.Empty,
                         VendorCode = reader["VendorCode"].ToString() ?? string.Empty,
                         VendorName = reader["VendorName"].ToString() ?? string.Empty,
                         PoStatus = reader["PoStatus"].ToString() ?? string.Empty,

@@ -101,14 +101,17 @@ public class Dao_Reporting
             Id = ReadString(reader, "id") ?? string.Empty,
             PONumber = ReadNullableString(reader, "po_number"),
             POLineNumber = ReadNullableString(reader, "po_line_number"),
-            PartNumber = ReadNullableString(reader, "part_number"),
+            PartNumber = ReadNullableString(reader, "part_id", "part_number"),
             PartDescription = ReadNullableString(reader, "part_description"),
             Quantity = ReadNullableDecimal(reader, "quantity"),
             WeightLbs = ReadNullableDecimal(reader, "weight_lbs"),
-            HeatLotNumber = ReadNullableString(reader, "heat_lot_number"),
-            CreatedDate = ReadDateTime(reader, "created_date"),
+            HeatLotNumber = ReadNullableString(reader, "heat", "heat_lot_number"),
+            CreatedDate = ReadDateTime(reader, "created_at", "created_date", "transaction_date"),
+            TransactionDate = ReadNullableDateTime(reader, "transaction_date"),
+            CreatedAt = ReadNullableDateTime(reader, "created_at", "created_date"),
             EmployeeNumber = ReadNullableString(reader, "employee_number"),
-            CreatedByUsername = ReadNullableString(reader, "created_by_username"),
+            CreatedByUsername = ReadNullableString(reader, "created_by_username", "user_id"),
+            UserId = ReadNullableString(reader, "user_id"),
             SourceModule = ReadString(reader, "source_module") ?? string.Empty,
             DunnageType = ReadNullableString(reader, "dunnage_type"),
             SpecsCombined = ReadNullableString(reader, "specs_combined"),
@@ -116,14 +119,29 @@ public class Dao_Reporting
             ReceiverNumber = ReadNullableString(reader, "receiver_number"),
             Status = ReadNullableString(reader, "status"),
             PartCount = ReadNullableInt(reader, "part_count"),
-            Location = ReadNullableString(reader, "location"),
+            Location = ReadNullableString(reader, "initial_location", "location"),
+            VendorName = ReadNullableString(reader, "vendor_name"),
             Notes = ReadNullableString(reader, "notes"),
             LoadNumber = ReadNullableInt(reader, "load_number"),
             LabelNumber = ReadNullableInt(reader, "label_number"),
             PackagesPerLoad = ReadNullableInt(reader, "packages_per_load"),
             PackageTypeName = ReadNullableString(reader, "package_type_name"),
+            WeightPerPackage = ReadNullableDecimal(reader, "weight_per_package"),
+            PoStatus = ReadNullableString(reader, "po_status"),
+            PoDueDate = ReadNullableDateTime(reader, "po_due_date"),
+            QtyOrdered = ReadNullableDecimal(reader, "qty_ordered"),
+            UnitOfMeasure = ReadNullableString(reader, "unit_of_measure"),
+            RemainingQuantity = ReadNullableInt(reader, "remaining_quantity"),
             CoilsOnSkid = ReadNullableInt(reader, "coils_on_skid"),
             IsNonPOItem = ReadNullableBool(reader, "is_non_po_item") ?? false,
+            IsQualityHoldRequired = ReadNullableBool(reader, "is_quality_hold_required") ?? false,
+            IsQualityHoldAcknowledged =
+                ReadNullableBool(reader, "is_quality_hold_acknowledged") ?? false,
+            QualityHoldRestrictionType = ReadNullableString(
+                reader,
+                "quality_hold_restriction_type"
+            ),
+            PartSkidTotal = ReadNullableInt(reader, "part_skid_total"),
             QuantityPerSkid = ReadNullableInt(reader, "quantity_per_skid"),
             ReceivedSkidCount = ReadNullableInt(reader, "received_skid_count"),
         };
@@ -139,85 +157,99 @@ public class Dao_Reporting
         };
     }
 
-    private static string? ReadString(IDataReader reader, string columnName)
+    private static string? ReadString(IDataReader reader, params string[] columnNames)
     {
-        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        foreach (var columnName in columnNames)
         {
-            return null;
+            if (!TryGetOrdinal(reader, columnName, out var ordinal) || reader.IsDBNull(ordinal))
+            {
+                continue;
+            }
+
+            return Convert.ToString(reader.GetValue(ordinal));
         }
 
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        return Convert.ToString(reader.GetValue(ordinal));
+        return null;
     }
 
-    private static string? ReadNullableString(IDataReader reader, string columnName)
+    private static string? ReadNullableString(IDataReader reader, params string[] columnNames)
     {
-        if (!TryGetOrdinal(reader, columnName, out var ordinal))
-        {
-            return null;
-        }
-
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        return Convert.ToString(reader.GetValue(ordinal));
+        return ReadString(reader, columnNames);
     }
 
-    private static decimal? ReadNullableDecimal(IDataReader reader, string columnName)
+    private static decimal? ReadNullableDecimal(IDataReader reader, params string[] columnNames)
     {
-        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        foreach (var columnName in columnNames)
         {
-            return null;
+            if (!TryGetOrdinal(reader, columnName, out var ordinal) || reader.IsDBNull(ordinal))
+            {
+                continue;
+            }
+
+            return Convert.ToDecimal(reader.GetValue(ordinal));
         }
 
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        return Convert.ToDecimal(reader.GetValue(ordinal));
+        return null;
     }
 
-    private static int? ReadNullableInt(IDataReader reader, string columnName)
+    private static int? ReadNullableInt(IDataReader reader, params string[] columnNames)
     {
-        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        foreach (var columnName in columnNames)
         {
-            return null;
+            if (!TryGetOrdinal(reader, columnName, out var ordinal) || reader.IsDBNull(ordinal))
+            {
+                continue;
+            }
+
+            return Convert.ToInt32(reader.GetValue(ordinal));
         }
 
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        return Convert.ToInt32(reader.GetValue(ordinal));
+        return null;
     }
 
-    private static bool? ReadNullableBool(IDataReader reader, string columnName)
+    private static bool? ReadNullableBool(IDataReader reader, params string[] columnNames)
     {
-        if (!TryGetOrdinal(reader, columnName, out var ordinal))
+        foreach (var columnName in columnNames)
         {
-            return null;
+            if (!TryGetOrdinal(reader, columnName, out var ordinal) || reader.IsDBNull(ordinal))
+            {
+                continue;
+            }
+
+            return Convert.ToBoolean(reader.GetValue(ordinal));
         }
 
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        return Convert.ToBoolean(reader.GetValue(ordinal));
+        return null;
     }
 
-    private static DateTime ReadDateTime(IDataReader reader, string columnName)
+    private static DateTime ReadDateTime(IDataReader reader, params string[] columnNames)
     {
-        var ordinal = reader.GetOrdinal(columnName);
-        return reader.GetDateTime(ordinal);
+        foreach (var columnName in columnNames)
+        {
+            if (!TryGetOrdinal(reader, columnName, out var ordinal) || reader.IsDBNull(ordinal))
+            {
+                continue;
+            }
+
+            return Convert.ToDateTime(reader.GetValue(ordinal));
+        }
+
+        return DateTime.MinValue;
+    }
+
+    private static DateTime? ReadNullableDateTime(IDataReader reader, params string[] columnNames)
+    {
+        foreach (var columnName in columnNames)
+        {
+            if (!TryGetOrdinal(reader, columnName, out var ordinal) || reader.IsDBNull(ordinal))
+            {
+                continue;
+            }
+
+            return Convert.ToDateTime(reader.GetValue(ordinal));
+        }
+
+        return null;
     }
 
     private static bool TryGetOrdinal(IDataReader reader, string columnName, out int ordinal)

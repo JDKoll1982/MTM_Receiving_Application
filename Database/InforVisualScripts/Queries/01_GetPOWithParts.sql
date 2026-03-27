@@ -23,6 +23,9 @@ SELECT
     po.VENDOR_ID AS VendorCode,
     v.NAME AS VendorName,
     po.STATUS AS PoStatus,
+    po.PROMISE_DATE AS HeaderPromiseDate,
+    po.DESIRED_RECV_DATE AS HeaderDesiredRecvDate,
+    po.FREE_ON_BOARD AS FreeOnBoard,
     po.SITE_ID AS SiteId
 FROM dbo.PURCHASE_ORDER po
 INNER JOIN dbo.PURC_ORDER_LINE pol ON po.ID = pol.PURC_ORDER_ID
@@ -56,8 +59,11 @@ ORDER BY pol.LINE_NO;
 -- - ReceivedQty: Quantity already received
 -- - RemainingQty: Calculated remaining quantity (ordered - received)
 -- - UnitOfMeasure: Unit of measure (e.g., EA, LB, FT)
--- - DueDate: Due date for this line
+-- - DueDate: Selected line-level due date for this line
 -- - VendorCode: Vendor ID
 -- - VendorName: Vendor name
 -- - PoStatus: PO status code
+-- - HeaderPromiseDate: Header-level promised delivery date
+-- - HeaderDesiredRecvDate: Header-level desired receive date
+-- - FreeOnBoard: Header-level FOB/free-on-board text
 -- - SiteId: Site/warehouse ID (should be '002')

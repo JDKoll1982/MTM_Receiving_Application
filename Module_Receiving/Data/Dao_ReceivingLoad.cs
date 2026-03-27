@@ -451,34 +451,34 @@ public class Dao_ReceivingLoad
     {
         return new Model_ReceivingLoad
         {
-            LoadID = ReadGuid(row, "LoadID"),
-            PartID = ReadString(row, "PartID"),
-            PartDescription = ReadString(row, "PartDescription"),
-            PartType = ReadString(row, "PartType"),
-            PoNumber = ReadNullableString(row, "PONumber"),
-            PoLineNumber = ReadString(row, "POLineNumber"),
-            PoVendor = ReadString(row, "POVendor"),
-            PoStatus = ReadString(row, "POStatus"),
-            PoDueDate = ReadNullableDateTime(row, "PODueDate"),
-            QtyOrdered = ReadDecimal(row, "QtyOrdered"),
-            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "UnitOfMeasure"))
+            LoadID = ReadGuid(row, "load_id", "load_guid"),
+            PartID = ReadString(row, "part_id"),
+            PartDescription = ReadString(row, "part_description"),
+            PartType = ReadString(row, "part_type"),
+            PoNumber = ReadNullableString(row, "po_number"),
+            PoLineNumber = ReadString(row, "po_line_number"),
+            PoVendor = ReadString(row, "po_vendor", "vendor_name"),
+            PoStatus = ReadString(row, "po_status"),
+            PoDueDate = ReadNullableDateTime(row, "po_due_date"),
+            QtyOrdered = ReadDecimal(row, "qty_ordered"),
+            UnitOfMeasure = string.IsNullOrWhiteSpace(ReadString(row, "unit_of_measure"))
                 ? "EA"
-                : ReadString(row, "UnitOfMeasure"),
-            RemainingQuantity = ReadInt(row, "RemainingQuantity"),
-            LoadNumber = ReadInt(row, "LoadNumber"),
-            WeightQuantity = ReadDecimal(row, "WeightQuantity"),
-            HeatLotNumber = ReadString(row, "HeatLotNumber"),
-            InitialLocation = ReadString(row, "InitialLocation"),
-            PackagesPerLoad = ReadInt(row, "PackagesPerLoad"),
-            PackageTypeName = ReadString(row, "PackageTypeName"),
-            WeightPerPackage = ReadDecimal(row, "WeightPerPackage"),
-            IsNonPOItem = ReadBool(row, "IsNonPOItem"),
-            ReceivedDate = ReadDateTime(row, "ReceivedDate"),
-            UserId = ReadNullableString(row, "UserID"),
-            EmployeeNumber = ReadInt(row, "EmployeeNumber"),
-            IsQualityHoldRequired = ReadBool(row, "IsQualityHoldRequired"),
-            IsQualityHoldAcknowledged = ReadBool(row, "IsQualityHoldAcknowledged"),
-            QualityHoldRestrictionType = ReadString(row, "QualityHoldRestrictionType"),
+                : ReadString(row, "unit_of_measure"),
+            RemainingQuantity = ReadInt(row, "remaining_quantity"),
+            LoadNumber = ReadInt(row, "load_number", "label_number"),
+            WeightQuantity = ReadDecimal(row, "weight_quantity", "quantity"),
+            HeatLotNumber = ReadString(row, "heat"),
+            InitialLocation = ReadString(row, "initial_location"),
+            PackagesPerLoad = ReadInt(row, "packages_per_load"),
+            PackageTypeName = ReadString(row, "package_type_name"),
+            WeightPerPackage = ReadDecimal(row, "weight_per_package"),
+            IsNonPOItem = ReadBool(row, "is_non_po_item"),
+            ReceivedDate = ReadDateTime(row, "received_date", "created_at", "transaction_date"),
+            UserId = ReadNullableString(row, "user_id"),
+            EmployeeNumber = ReadInt(row, "employee_number"),
+            IsQualityHoldRequired = ReadBool(row, "is_quality_hold_required"),
+            IsQualityHoldAcknowledged = ReadBool(row, "is_quality_hold_acknowledged"),
+            QualityHoldRestrictionType = ReadString(row, "quality_hold_restriction_type"),
         };
     }
 
@@ -487,84 +487,88 @@ public class Dao_ReceivingLoad
         return row.Table.Columns.Contains(columnName);
     }
 
-    private static string ReadString(DataRow row, string columnName)
+    private static object? ReadValue(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        foreach (var columnName in columnNames)
         {
-            return string.Empty;
+            if (HasColumn(row, columnName) && row[columnName] != DBNull.Value)
+            {
+                return row[columnName];
+            }
         }
 
-        return row[columnName]?.ToString() ?? string.Empty;
+        return null;
     }
 
-    private static string? ReadNullableString(DataRow row, string columnName)
+    private static string ReadString(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
-        {
-            return null;
-        }
-
-        return row[columnName]?.ToString();
+        return ReadValue(row, columnNames)?.ToString() ?? string.Empty;
     }
 
-    private static int ReadInt(DataRow row, string columnName)
+    private static string? ReadNullableString(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
-        {
-            return 0;
-        }
-
-        return Convert.ToInt32(row[columnName]);
+        return ReadValue(row, columnNames)?.ToString();
     }
 
-    private static decimal ReadDecimal(DataRow row, string columnName)
+    private static int ReadInt(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        var value = ReadValue(row, columnNames);
+        if (value is null)
         {
             return 0;
         }
 
-        return Convert.ToDecimal(row[columnName]);
+        return Convert.ToInt32(value);
     }
 
-    private static bool ReadBool(DataRow row, string columnName)
+    private static decimal ReadDecimal(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        var value = ReadValue(row, columnNames);
+        if (value is null)
+        {
+            return 0;
+        }
+
+        return Convert.ToDecimal(value);
+    }
+
+    private static bool ReadBool(DataRow row, params string[] columnNames)
+    {
+        var value = ReadValue(row, columnNames);
+        if (value is null)
         {
             return false;
         }
 
-        return Convert.ToBoolean(row[columnName]);
+        return Convert.ToBoolean(value);
     }
 
-    private static DateTime ReadDateTime(DataRow row, string columnName)
+    private static DateTime ReadDateTime(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        var value = ReadValue(row, columnNames);
+        if (value is null)
         {
             return DateTime.Now;
         }
 
-        return Convert.ToDateTime(row[columnName]);
+        return Convert.ToDateTime(value);
     }
 
-    private static DateTime? ReadNullableDateTime(DataRow row, string columnName)
+    private static DateTime? ReadNullableDateTime(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
-        {
-            return null;
-        }
-
-        return Convert.ToDateTime(row[columnName]);
+        var value = ReadValue(row, columnNames);
+        return value is null ? null : Convert.ToDateTime(value);
     }
 
-    private static Guid ReadGuid(DataRow row, string columnName)
+    private static Guid ReadGuid(DataRow row, params string[] columnNames)
     {
-        if (!HasColumn(row, columnName) || row[columnName] == DBNull.Value)
+        var value = ReadValue(row, columnNames);
+        if (value is null)
         {
             return Guid.Empty;
         }
 
-        var raw = row[columnName]?.ToString();
+        var raw = value.ToString();
         return Guid.TryParse(raw, out var parsed) ? parsed : Guid.Empty;
     }
 }

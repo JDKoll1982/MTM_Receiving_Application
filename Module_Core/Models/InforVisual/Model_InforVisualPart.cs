@@ -1,3 +1,5 @@
+using System;
+
 namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
 {
     /// <summary>
@@ -28,6 +30,11 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         /// Whole number only (no decimals).
         /// </summary>
         public int RemainingQuantity { get; set; }
+
+        /// <summary>
+        /// Selected line-level due date from Infor Visual for this part.
+        /// </summary>
+        public DateTime? DueDate { get; set; }
 
         /// <summary>
         /// Display text for UI showing part ID, description, and line number.

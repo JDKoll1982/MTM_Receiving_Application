@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, and a package-type update dialog for Manual Mode rows.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, package-type updates for Manual Mode rows, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -129,12 +129,12 @@
       "Keep business logic unchanged",
       "Keep validation rules unchanged",
       "Keep service and DAO flow unchanged",
-      "Keep current save behavior unchanged"
+      "Keep current save behavior unchanged except for the intended PO due-date and receiving-history field persistence updates"
     ],
     "acceptanceCriteria": [
       "The workflow remains step-based",
       "The user can still complete the same task from start to finish",
-      "No business logic or save behavior changes",
+      "No unintended business logic regressions",
       "The UI is easier to understand at a glance"
     ],
     "reviewFocusAreas": [
@@ -176,7 +176,8 @@
       "Confirm default-mode routing still sends the user to the intended startup screen",
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm validation still blocks invalid input",
-      "Confirm Clear Label Data archives packages-per-load values into receiving_history.coils_on_skid as intended",
+      "Confirm Clear Label Data archives load, package, PO, user, and quality-hold fields into the snake_case receiving_history columns",
+      "Confirm guided and manual PO-assisted entry both persist po_due_date by preferring the selected line-level due date and falling back to the PO header promise date",
       "Confirm workflow step and status updates still refresh the UI correctly after repeated navigation between receiving views",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm Manual Mode location editing stays textbox-based in all cases",

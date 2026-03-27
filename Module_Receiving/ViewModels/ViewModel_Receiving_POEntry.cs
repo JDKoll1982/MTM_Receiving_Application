@@ -25,6 +25,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private DateTime? _currentPoHeaderPromiseDate;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -239,6 +240,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectedPart = null;
             PackageType = "Skids";
             PoStatus = string.Empty;
+            _currentPoHeaderPromiseDate = null;
+            _workflowService.CurrentPODueDate = null;
         }
 
         [RelayCommand]
@@ -301,7 +304,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     // Set PO header data in Workflow Service for XLSX export
                     _workflowService.CurrentPOVendor = result.Data.Vendor;
                     _workflowService.CurrentPOStatus = result.Data.Status;
-                    _workflowService.CurrentPODueDate = null; // Model_InforVisualPO doesn't have DueDate yet
+                    _currentPoHeaderPromiseDate = result.Data.HeaderPromiseDate;
+                    _workflowService.CurrentPODueDate = _currentPoHeaderPromiseDate;
 
                     // Load parts and populate remaining quantity for each
                     foreach (var part in result.Data.Parts)
@@ -336,6 +340,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         );
                     await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
                     Parts.Clear();
+                    _currentPoHeaderPromiseDate = null;
+                    _workflowService.CurrentPODueDate = null;
                     _workflowService.CurrentLocation = string.Empty;
                 }
             }
@@ -354,6 +360,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             PoNumber = string.Empty;
             PartID = string.Empty;
             _workflowService.IsNonPOItem = IsNonPOItem;
+            _currentPoHeaderPromiseDate = null;
+            _workflowService.CurrentPODueDate = null;
             _workflowService.CurrentLocation = string.Empty;
         }
 
@@ -378,6 +386,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (result.IsSuccess && result.Data != null)
                 {
                     SelectedPart = result.Data;
+                    _currentPoHeaderPromiseDate = null;
+                    _workflowService.CurrentPODueDate = null;
                     // For Non-PO items, we might want to show it in the list or just set SelectedPart directly.
                     // Setting SelectedPart directly is enough for the workflow, but the UI might want to show it.
                     Parts.Clear();
@@ -416,6 +426,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (string.IsNullOrWhiteSpace(value))
             {
                 _workflowService.CurrentPONumber = string.Empty;
+                _currentPoHeaderPromiseDate = null;
+                _workflowService.CurrentPODueDate = null;
                 IsLoadPOEnabled = false;
                 PoValidationMessage = string.Empty;
                 return;
@@ -501,6 +513,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         partial void OnSelectedPartChanged(Model_InforVisualPart? value)
         {
             _workflowService.CurrentPart = value;
+            _workflowService.CurrentPODueDate = IsNonPOItem
+                ? null
+                : value?.DueDate ?? _currentPoHeaderPromiseDate;
             _workflowService.CurrentLocation = value?.DefaultLocationId?.Trim() ?? string.Empty;
 
             // Auto-detect package type when a part is selected from PO

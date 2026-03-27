@@ -23,11 +23,17 @@ public class Model_ReportRow
 
     public DateTime CreatedDate { get; set; }
 
+    public DateTime? TransactionDate { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
     public string SourceModule { get; set; } = string.Empty;
 
     public string? EmployeeNumber { get; set; }
 
     public string? CreatedByUsername { get; set; }
+
+    public string? UserId { get; set; }
 
     public string? DunnageType { get; set; }
 
@@ -43,6 +49,8 @@ public class Model_ReportRow
 
     public string? Location { get; set; }
 
+    public string? VendorName { get; set; }
+
     public string? Notes { get; set; }
 
     public int? LoadNumber { get; set; }
@@ -53,7 +61,27 @@ public class Model_ReportRow
 
     public string? PackageTypeName { get; set; }
 
+    public decimal? WeightPerPackage { get; set; }
+
+    public string? PoStatus { get; set; }
+
+    public DateTime? PoDueDate { get; set; }
+
+    public decimal? QtyOrdered { get; set; }
+
+    public string? UnitOfMeasure { get; set; }
+
+    public int? RemainingQuantity { get; set; }
+
     public bool IsNonPOItem { get; set; }
+
+    public bool IsQualityHoldRequired { get; set; }
+
+    public bool IsQualityHoldAcknowledged { get; set; }
+
+    public string? QualityHoldRestrictionType { get; set; }
+
+    public int? PartSkidTotal { get; set; }
 
     public int? CoilsOnSkid { get; set; }
 
@@ -71,31 +99,64 @@ public class Model_ReportRow
             nameof(POLineNumber) => POLineNumber?.Trim() ?? string.Empty,
             nameof(PartNumber) => PartNumber?.Trim() ?? string.Empty,
             nameof(PartDescription) => PartDescription?.Trim() ?? string.Empty,
-            nameof(Quantity) => Quantity?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty,
-            nameof(WeightLbs) => WeightLbs?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(Quantity) => Quantity?.ToString("0.##", CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(WeightLbs) => WeightLbs?.ToString("0.##", CultureInfo.InvariantCulture)
+                ?? string.Empty,
             nameof(HeatLotNumber) => HeatLotNumber?.Trim() ?? string.Empty,
             nameof(CreatedDate) => DisplayCreatedDate,
+            nameof(TransactionDate) => DisplayTransactionDate,
+            nameof(CreatedAt) => DisplayCreatedAt,
             nameof(EmployeeNumber) => EmployeeNumber?.Trim() ?? string.Empty,
             nameof(CreatedByUsername) => CreatedByUsername?.Trim() ?? string.Empty,
+            nameof(UserId) => UserId?.Trim() ?? string.Empty,
             nameof(DunnageType) => DunnageType?.Trim() ?? string.Empty,
             nameof(SpecsCombined) => SpecsCombined?.Trim() ?? string.Empty,
-            nameof(ShipmentNumber) => ShipmentNumber?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(ShipmentNumber) => ShipmentNumber?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
             nameof(ReceiverNumber) => ReceiverNumber?.Trim() ?? string.Empty,
             nameof(Status) => Status?.Trim() ?? string.Empty,
             nameof(PartCount) => PartCount?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
             nameof(Location) => DisplayLocation,
+            nameof(VendorName) => VendorName?.Trim() ?? string.Empty,
             nameof(Notes) => DisplayNotes,
-            nameof(LoadNumber) => LoadNumber?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
-            nameof(LabelNumber) => LabelNumber?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
-            nameof(PackagesPerLoad) => PackagesPerLoad?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(LoadNumber) => LoadNumber?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(LabelNumber) => LabelNumber?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(PackagesPerLoad) => PackagesPerLoad?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
             nameof(PackageTypeName) => PackageTypeName?.Trim() ?? string.Empty,
+            nameof(WeightPerPackage) => WeightPerPackage?.ToString(
+                "0.##",
+                CultureInfo.InvariantCulture
+            ) ?? string.Empty,
+            nameof(PoStatus) => PoStatus?.Trim() ?? string.Empty,
+            nameof(PoDueDate) => DisplayPoDueDate,
+            nameof(QtyOrdered) => QtyOrdered?.ToString("0.##", CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(UnitOfMeasure) => UnitOfMeasure?.Trim() ?? string.Empty,
+            nameof(RemainingQuantity) => RemainingQuantity?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
             nameof(IsNonPOItem) => IsNonPOItem ? "Yes" : "No",
-            nameof(CoilsOnSkid) => CoilsOnSkid?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
-            nameof(QuantityPerSkid) => QuantityPerSkid?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
-            nameof(ReceivedSkidCount) => ReceivedSkidCount?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            nameof(IsQualityHoldRequired) => IsQualityHoldRequired ? "Yes" : "No",
+            nameof(IsQualityHoldAcknowledged) => IsQualityHoldAcknowledged ? "Yes" : "No",
+            nameof(QualityHoldRestrictionType) => QualityHoldRestrictionType?.Trim()
+                ?? string.Empty,
+            nameof(PartSkidTotal) => PartSkidTotal?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(CoilsOnSkid) => CoilsOnSkid?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(QuantityPerSkid) => QuantityPerSkid?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
+            nameof(ReceivedSkidCount) => ReceivedSkidCount?.ToString(CultureInfo.InvariantCulture)
+                ?? string.Empty,
             nameof(DisplayPo) => DisplayPo,
             nameof(DisplayPartOrDunnage) => DisplayPartOrDunnage,
             nameof(DisplayQuantity) => DisplayQuantity,
+            nameof(DisplayTransactionDate) => DisplayTransactionDate,
+            nameof(DisplayCreatedAt) => DisplayCreatedAt,
+            nameof(DisplayPoDueDate) => DisplayPoDueDate,
             nameof(DisplayLocation) => DisplayLocation,
             nameof(DisplayNotes) => DisplayNotes,
             nameof(DisplayLoadsOrSkids) => DisplayLoadsOrSkids,
@@ -163,6 +224,27 @@ public class Model_ReportRow
         CreatedDate == default
             ? string.Empty
             : CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+
+    public string DisplayTransactionDate =>
+        TransactionDate.HasValue
+            ? TransactionDate.Value.ToString("M/d/yyyy", CultureInfo.InvariantCulture)
+            : string.Empty;
+
+    public string DisplayCreatedAt
+    {
+        get
+        {
+            var timestamp = CreatedAt ?? (CreatedDate == default ? null : CreatedDate);
+            return timestamp.HasValue
+                ? timestamp.Value.ToString("M/d/yyyy h:mm tt", CultureInfo.InvariantCulture)
+                : string.Empty;
+        }
+    }
+
+    public string DisplayPoDueDate =>
+        PoDueDate.HasValue
+            ? PoDueDate.Value.ToString("M/d/yyyy", CultureInfo.InvariantCulture)
+            : string.Empty;
 
     public string DisplayLocation => Location?.Trim() ?? string.Empty;
 

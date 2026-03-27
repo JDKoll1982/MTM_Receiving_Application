@@ -498,6 +498,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             targetLoad.UnitOfMeasure = sourceLoad.UnitOfMeasure;
             targetLoad.QtyOrdered = sourceLoad.QtyOrdered;
             targetLoad.RemainingQuantity = sourceLoad.RemainingQuantity;
+            targetLoad.PoVendor = sourceLoad.PoVendor;
+            targetLoad.PoStatus = sourceLoad.PoStatus;
+            targetLoad.PoDueDate = sourceLoad.PoDueDate;
         }
 
         [RelayCommand]
@@ -1820,6 +1823,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             load.RemainingQuantity = selectedPart.RemainingQuantity;
             load.PoVendor = purchaseOrder.Vendor;
             load.PoStatus = purchaseOrder.Status;
+            load.PoDueDate = selectedPart.DueDate ?? purchaseOrder.HeaderPromiseDate;
 
             if (
                 string.IsNullOrWhiteSpace(load.InitialLocation)

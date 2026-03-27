@@ -271,6 +271,9 @@ public class Service_InforVisualConnect : IService_InforVisual
             PONumber = firstLine.PoNumber,
             Vendor = firstLine.VendorName,
             Status = firstLine.PoStatus,
+            HeaderPromiseDate = firstLine.HeaderPromiseDate,
+            HeaderDesiredReceiveDate = firstLine.HeaderDesiredReceiveDate,
+            FreeOnBoard = firstLine.FreeOnBoard,
             Parts = poLines.ConvertAll(line => new Model_InforVisualPart
             {
                 PartID = line.PartNumber,
@@ -281,6 +284,7 @@ public class Service_InforVisualConnect : IService_InforVisual
                 QtyOrdered = (int)line.OrderedQty,
                 RemainingQuantity = (int)line.RemainingQty,
                 UnitOfMeasure = line.UnitOfMeasure,
+                DueDate = line.DueDate,
             }),
         };
     }

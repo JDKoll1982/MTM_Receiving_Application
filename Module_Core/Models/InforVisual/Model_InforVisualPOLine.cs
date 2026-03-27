@@ -38,6 +38,15 @@ public partial class Model_InforVisualPOLine : ObservableObject
     private DateTime? _dueDate;
 
     [ObservableProperty]
+    private DateTime? _headerPromiseDate;
+
+    [ObservableProperty]
+    private DateTime? _headerDesiredReceiveDate;
+
+    [ObservableProperty]
+    private string _freeOnBoard = string.Empty;
+
+    [ObservableProperty]
     private string _vendorCode = string.Empty;
 
     [ObservableProperty]

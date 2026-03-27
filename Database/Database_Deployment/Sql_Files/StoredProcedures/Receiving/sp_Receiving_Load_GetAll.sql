@@ -1,7 +1,6 @@
 -- Stored Procedure: sp_Receiving_Load_GetAll
 -- Description: Retrieves all receiving loads within a date range for Edit Mode.
---              Aliases snake_case table columns to the PascalCase names
---              expected by Dao_ReceivingLoad.MapRowToLoad.
+--              Returns actual snake_case columns from receiving_history.
 --              Columns with no counterpart in receiving_history return NULL.
 -- Parameters:
 --   p_StartDate - Start date for retrieval (DATE)
@@ -19,31 +18,33 @@ CREATE PROCEDURE `sp_Receiving_Load_GetAll`(
 )
 BEGIN
     SELECT
-        load_guid           AS LoadID,
-        part_id             AS PartID,
-        part_description    AS PartDescription,
-        NULL                AS PartType,
-        po_number           AS PONumber,
-        NULL                AS POLineNumber,
-        vendor_name         AS POVendor,
-        NULL                AS POStatus,
-        NULL                AS PODueDate,
-        NULL                AS QtyOrdered,
-        NULL                AS UnitOfMeasure,
-        NULL                AS RemainingQuantity,
-        label_number        AS LoadNumber,
-        quantity            AS WeightQuantity,
-        heat                AS HeatLotNumber,
-        NULL                AS PackagesPerLoad,
-        NULL                AS PackageTypeName,
-        NULL                AS WeightPerPackage,
-        is_non_po_item      AS IsNonPOItem,
-        transaction_date    AS ReceivedDate,
-        NULL                AS UserID,
-        employee_number     AS EmployeeNumber,
-        0                   AS IsQualityHoldRequired,
-        0                   AS IsQualityHoldAcknowledged,
-        NULL                AS QualityHoldRestrictionType
+        load_guid,
+        part_id,
+        part_description,
+        NULL AS part_type,
+        po_number,
+        po_line_number,
+        vendor_name,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
+        load_number,
+        quantity,
+        heat,
+        initial_location,
+        packages_per_load,
+        package_type_name,
+        weight_per_package,
+        is_non_po_item,
+        created_at,
+        transaction_date,
+        user_id,
+        employee_number,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type
     FROM receiving_history
     WHERE transaction_date >= p_StartDate
       AND transaction_date <= p_EndDate
