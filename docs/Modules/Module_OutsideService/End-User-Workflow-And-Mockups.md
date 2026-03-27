@@ -78,17 +78,29 @@ flowchart TD
   W2_1_HistoryMove --> W2_1_HistoryEnd([Line visible in complete history])
 ```
 
+### Complete Phase Flow
+
+```mermaid
+flowchart TD
+  W3_1_Start([Line is already in Setup]) --> W3_1_LeaveDecision{Shipment leaves facility?}
+  W3_1_LeaveDecision -->|No| W3_1_RemainSetup[Remain in Setup queue]
+  W3_1_RemainSetup --> W3_1_SetupEnd([Line still waiting to complete])
+  W3_1_LeaveDecision -->|Yes| W3_1_MarkComplete[Mark line as Complete]
+  W3_1_MarkComplete --> W3_1_MoveHistory[Move line to complete history]
+  W3_1_MoveHistory --> W3_1_HistoryEnd([Line visible in Complete history])
+```
+
 ---
 
 ## Screen Summary
 
-| Screen                               | Version      | Purpose                                                                                   |
-| ------------------------------------ | ------------ | ----------------------------------------------------------------------------------------- |
-| `Outside Service Request Entry`      | Version 1    | Create a new request with part lines only                                                 |
-| `Part Match Helper`                  | Version 1    | Help the user choose the correct part when the entered part number is close but not exact |
-| `Outside Service Active Waitlist`    | Version 1    | Show open waitlist lines and their current phase                                          |
-| `Outside Service Setup`              | Version 1    | Capture vendor, BOL number, and shipment setup details                                    |
-| `Outside Service Complete History`   | Version 1    | Review lines that have already completed the process                                      |
+| Screen                             | Version   | Purpose                                                                                   |
+| ---------------------------------- | --------- | ----------------------------------------------------------------------------------------- |
+| `Outside Service Request Entry`    | Version 1 | Create a new request with part lines only                                                 |
+| `Part Match Helper`                | Version 1 | Help the user choose the correct part when the entered part number is close but not exact |
+| `Outside Service Active Waitlist`  | Version 1 | Show open waitlist lines and their current phase                                          |
+| `Outside Service Setup`            | Version 1 | Capture vendor, BOL number, and shipment setup details                                    |
+| `Outside Service Complete History` | Version 1 | Review lines that have already completed the process                                      |
 
 ---
 
@@ -183,29 +195,31 @@ This is the Version 1 list that Shipping uses to see open work.
 ### Active Waitlist Mockup
 
 ```text
-+------------------------------------------------------------------------------------------------+
-| Outside Service - Active Waitlist                                                              |
-+------------------------------------------------------------------------------------------------+
-| Search: [__________________________]   Phase: [Initialize v]   [Refresh]                      |
-|                                                                                                |
-| Request #   Line   Created On   Created By        Vendor Status       Phase                    |
-| OS-000128   1      03/27/2026   J. Smith          Pending Shipping    Initialize               |
-| OS-000128   2      03/27/2026   J. Smith          Pending Shipping    Initialize               |
-| OS-000127   1      03/27/2026   A. Lopez          Pending Shipping    Initialize               |
-|                                                                                                |
-| Request Details                                                                               |
-| Request #: OS-000128                                                                          |
-| Line Phases:                                                                                  |
-| - Line 1 | ABC-123 | 4 packages | 25 each | Initialize                                        |
-| - Line 2 | XYZ-900 | 2 packages | 10 each | Initialize                                        |
-|                                                                                                |
-| [View Request]                                                                                |
-+------------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------------------+
+| Outside Service Waitlist                                                     Open Lines: [12]                    |
++-------------------------------------------------------------------------------------------------------------------+
+| [Waitlist] [Setup Queue] [Complete History]                                  Search lines [__________________]   |
+|                                                                                                                   |
+| Req | Line | Part / Description              | Wait     | Notify        | Actions                            |
+| 128 | 1    | ABC-123                         | 51 mins  | [Call] [Msg]  | [View] [Setup] [Hold] [Complete]   |
+|     |      | Widget Housing                  |          |               |                                    |
+| 128 | 2    | XYZ-900                         | 47 mins  | [Call] [Msg]  | [View] [Setup] [Hold] [Complete]   |
+|     |      | Widget Cover                    |          |               |                                    |
+| 127 | 1    | MMC-725                         | 45 mins  | [Call] [Msg]  | [View] [Setup] [Hold] [Complete]   |
+|     |      | Transfer to outside service     |          |               |                                    |
+|                                                                                                                   |
+| Selected Line Summary                                                                                             |
+| Request 128 / Line 1 | Phase: Initialize | Vendor: Pending Shipping                                             |
+| Packages: 4 | Qty Each: 25 | Created By: J. Smith | Created: 03/27/2026                                         |
+| [Open Request]                                                                                                    |
++-------------------------------------------------------------------------------------------------------------------+
+|                                                                                                              [+]  |
++-------------------------------------------------------------------------------------------------------------------+
 ```
 
 ### Active Waitlist User Notes
 
-- In Version 1 this list is for visibility only.
+- This layout is intended to feel like a live waitlist board rather than a plain data table.
 - Shipping uses this list to move lines into `Setup` and later `Complete`.
 - Vendor assignment is intentionally deferred until Shipping works the request.
 - The existing Ship/Rec Outside Service History screen remains separate and continues to serve historical lookup needs.
@@ -220,19 +234,21 @@ Shipping uses it to move a waitlist line from `Initialize` into `Setup`.
 ### Setup Mockup
 
 ```text
-+----------------------------------------------------------------------------------------------+
-| Outside Service - Setup                                                                      |
-+----------------------------------------------------------------------------------------------+
-| Request #: [OS-000128]   Line: [1]                                                          |
-| Vendor: [Suggested Vendor v]              [Use Custom Vendor]                               |
-| Custom Name: [__________________________________________]                                   |
-| BOL Number: [____________________________________]                                           |
-| Scheduled Ship Date: [03/30/2026]   Pickup Window: [2:00 PM - 4:00 PM]                      |
-| Shipping Contact: [________________________________]                                         |
-| Notes: [__________________________________________________________________________________] |
-|                                                                                              |
-| [Save As Setup]   [Back To Waitlist]                                                         |
-+----------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------------------+
+| Outside Service - Setup                                                      Request 128 / Line 1                |
++-------------------------------------------------------------------------------------------------------------------+
+| Part: ABC-123                          Description: Widget Housing                                               |
+| Current Phase: Initialize              Wait Time: 51 mins                                                        |
+|                                                                                                                   |
+| Vendor: [Suggested Vendor v]           [Use Custom Vendor]                                                       |
+| Custom Name: [__________________________________________]                                                         |
+| BOL Number: [____________________________________]                                                                 |
+| Scheduled Ship Date: [03/30/2026]      Pickup Window: [2:00 PM - 4:00 PM]                                        |
+| Shipping Contact: [________________________________]                                                               |
+| Notes: [______________________________________________________________________________________________]          |
+|                                                                                                                   |
+| [Save As Setup]   [Back To Waitlist]   [Message Coordinator]                                                     |
++-------------------------------------------------------------------------------------------------------------------+
 ```
 
 ### Setup Notes
@@ -250,32 +266,37 @@ It shows what the end-state history screen looks like after lines are marked com
 ### Complete History Mockup
 
 ```text
-+------------------------------------------------------------------------------------------------+
-| Outside Service - Complete History                                                            |
-+------------------------------------------------------------------------------------------------+
-| Search: [________________________]   Vendor: [All v]   Date Range: [Last 30 Days v]          |
-|                                                                                                |
-| Request #   Line   Ship Date    BOL Number      Vendor              Phase                      |
-| OS-000091   1      03/19/2026   BOL-445991      Metro Heat Treat    Complete                   |
-| OS-000087   2      03/17/2026   BOL-445870      Allied Plating      Complete                   |
-|                                                                                                |
-| [Open History Record]                                                                         |
-+------------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------------------+
+| Outside Service - Complete History                                           Completed Lines [84]                |
++-------------------------------------------------------------------------------------------------------------------+
+| Search lines [__________________]   Vendor [All v]   Date Range [Last 30 Days v]                                  |
+|                                                                                                                   |
+| Req | Line | Part / Description              | Completed | Vendor            | Actions                           |
+| 091 | 1    | ABC-123                         | 03/19/26  | Metro Heat Treat  | [View] [Reopen]                  |
+|     |      | Widget Housing                  |           |                   |                                  |
+| 087 | 2    | XYZ-900                         | 03/17/26  | Allied Plating    | [View]                           |
+|     |      | Widget Cover                    |           |                   |                                  |
+|                                                                                                                   |
+| Complete Detail Summary                                                                                           |
+| Request 091 / Line 1 | Phase: Complete | BOL: 445991 | Vendor: Metro Heat Treat                                 |
+| [Open History Record]                                                                                             |
++-------------------------------------------------------------------------------------------------------------------+
 ```
 
 ### Complete History Notes
 
 - This is the screen that would replace manual tracking for completed shipments.
 - It is intended for history and follow-up, not for new request entry.
+- The completed-history view should feel like the same waitlist screen family, but filtered to finished work.
 
 ---
 
 ## Daily Workflow Summary
 
-| Role                        | Version 1 Action                                                                                     |
-| --------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Outside Service Coordinator | Create new requests with part and package details only                                               |
-| Shipping                    | Review the active waitlist and move each line through `Setup` and `Complete`                         |
+| Role                        | Version 1 Action                                                                             |
+| --------------------------- | -------------------------------------------------------------------------------------------- |
+| Outside Service Coordinator | Create new requests with part and package details only                                       |
+| Shipping                    | Review the active waitlist and move each line through `Setup` and `Complete`                 |
 | Support Staff               | Use the screen layout and lifecycle summary to understand how the delivered line phases work |
 
 ---

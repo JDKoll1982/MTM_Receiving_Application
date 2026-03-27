@@ -14,6 +14,14 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
+            <Style TargetType="controls:DataGrid">
+                <Setter Property="RowBackground" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+                <Setter Property="AlternatingRowBackground" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                <Setter Property="RowForeground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+                <Setter Property="AlternatingRowForeground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+                <Setter Property="HorizontalGridLinesBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                <Setter Property="VerticalGridLinesBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+            </Style>
             <Style TargetType="controls:DataGridCell">
                 <Setter Property="VerticalContentAlignment" Value="Center" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />

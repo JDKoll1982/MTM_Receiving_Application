@@ -21,12 +21,13 @@
         <x:Double x:Key="ContentDialogMaxWidth">2200</x:Double>
     </ContentDialog.Resources>
 
-    <ScrollViewer
-        VerticalScrollBarVisibility="Auto"
-        HorizontalScrollBarVisibility="Disabled"
-        MaxHeight="900"
-    >
-        <StackPanel Spacing="16" Padding="20,18,20,20">
+    <Grid>
+        <ScrollViewer
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled"
+            MaxHeight="900"
+        >
+            <StackPanel Spacing="16" Padding="20,18,20,20">
             <Grid ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -329,6 +330,64 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </StackPanel>
-    </ScrollViewer>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border
+            x:Name="CustomizePreviewOverlay"
+            Background="#66000000"
+            Visibility="Collapsed"
+        >
+            <Border
+                Width="760"
+                MaxWidth="760"
+                MaxHeight="820"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                CornerRadius="12"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Padding="20"
+            >
+                <Grid RowSpacing="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Spacing="8">
+                        <TextBlock
+                            Text="Customize Preview"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                        />
+                        <TextBlock
+                            Text="Choose which modules appear in the preview and which detail columns remain visible. Only fields that contain data for each module are listed."
+                            TextWrapping="WrapWholeWords"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        />
+                    </StackPanel>
+
+                    <ScrollViewer
+                        Grid.Row="1"
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Disabled"
+                        MaxHeight="680"
+                    >
+                        <ContentPresenter x:Name="CustomizePreviewPresenter" />
+                    </ScrollViewer>
+
+                    <Button
+                        Grid.Row="2"
+                        Content="Done"
+                        Click="OnCloseCustomizePreviewClick"
+                        HorizontalAlignment="Right"
+                        MinWidth="96"
+                    />
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
 </ContentDialog>

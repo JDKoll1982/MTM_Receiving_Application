@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,26 +21,12 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
 
     private void OnCustomizePreviewClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not FrameworkElement target)
-        {
-            return;
-        }
-
-        ShowCustomizePreviewFlyout(target);
+        ShowCustomizePreviewOverlay();
     }
 
-    private void ShowCustomizePreviewFlyout(FrameworkElement target)
+    private void ShowCustomizePreviewOverlay()
     {
         var contentPanel = new StackPanel { Spacing = 16 };
-
-        contentPanel.Children.Add(
-            new TextBlock
-            {
-                Text =
-                    "Choose which modules appear in the preview and which detail columns remain visible. Only fields that contain data for each module are listed.",
-                TextWrapping = TextWrapping.WrapWholeWords,
-            }
-        );
 
         foreach (var previewModuleCard in ViewModel.PreviewModuleCards)
         {
@@ -49,7 +34,11 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
             var columnCheckBoxes = new List<CheckBox>();
             var includeModuleCheckBox = new CheckBox
             {
-                Content = $"Include {previewModuleCard.ModuleName}",
+                Content = new TextBlock
+                {
+                    Text = $"Include {previewModuleCard.ModuleName}",
+                    TextWrapping = TextWrapping.WrapWholeWords,
+                },
                 IsChecked = previewModuleCard.IsIncluded,
                 FontWeight = FontWeights.SemiBold,
             };
@@ -57,6 +46,12 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
             var columnGrid = new Grid { ColumnSpacing = 16, RowSpacing = 8 };
             columnGrid.ColumnDefinitions.Add(new ColumnDefinition());
             columnGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            var rowCount = (previewModuleCard.AvailableColumns.Count + 1) / 2;
+            for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            {
+                columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            }
 
             includeModuleCheckBox.Checked += (_, _) =>
             {
@@ -99,7 +94,12 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
                     var previewColumn = previewModuleCard.AvailableColumns[columnIndex];
                     var columnCheckBox = new CheckBox
                     {
-                        Content = previewColumn.Header,
+                        Content = new TextBlock
+                        {
+                            Text = previewColumn.Header,
+                            TextWrapping = TextWrapping.WrapWholeWords,
+                            MaxWidth = 280,
+                        },
                         IsChecked = previewColumn.IsIncluded,
                         Margin = new Thickness(0),
                         IsEnabled = previewModuleCard.IsIncluded,
@@ -129,57 +129,13 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
             );
         }
 
-        Flyout? flyout = null;
-        var doneButton = new Button
-        {
-            Content = "Done",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            MinWidth = 96,
-        };
+        CustomizePreviewPresenter.Content = contentPanel;
+        CustomizePreviewOverlay.Visibility = Visibility.Visible;
+    }
 
-        doneButton.Click += (_, _) => flyout?.Hide();
-
-        var layoutPanel = new StackPanel { Spacing = 12 };
-        layoutPanel.Children.Add(
-            new TextBlock
-            {
-                Text = "Customize Preview",
-                FontSize = 18,
-                FontWeight = FontWeights.SemiBold,
-            }
-        );
-        layoutPanel.Children.Add(
-            new ScrollViewer
-            {
-                MaxHeight = 720,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Content = contentPanel,
-            }
-        );
-        layoutPanel.Children.Add(doneButton);
-
-        flyout = new Flyout
-        {
-            Placement = Microsoft
-                .UI
-                .Xaml
-                .Controls
-                .Primitives
-                .FlyoutPlacementMode
-                .BottomEdgeAlignedLeft,
-            ShouldConstrainToRootBounds = true,
-            Content = new Border
-            {
-                Width = 680,
-                MaxHeight = 820,
-                Padding = new Thickness(16),
-                BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Microsoft.UI.Colors.LightGray),
-                Background = new SolidColorBrush(Microsoft.UI.Colors.White),
-                Child = layoutPanel,
-            },
-        };
-
-        flyout.ShowAt(target);
+    private void OnCloseCustomizePreviewClick(object sender, RoutedEventArgs e)
+    {
+        CustomizePreviewOverlay.Visibility = Visibility.Collapsed;
+        CustomizePreviewPresenter.Content = null;
     }
 }
