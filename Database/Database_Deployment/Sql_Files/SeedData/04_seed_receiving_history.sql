@@ -7,65 +7,20 @@
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Database: `mtm_receiving_application`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `receiving_history`
---
-
-CREATE TABLE `receiving_history` (
-  `id` int(11) NOT NULL COMMENT 'Auto-incrementing unique identifier',
-  `load_guid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'GUID identifier for app-generated records; NULL for imported historical records',
-  `quantity` int(11) NOT NULL COMMENT 'Quantity of parts received on this label/skid',
-  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part identifier from Infor Visual',
-  `po_number` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order number (VARCHAR to support formats like PO-066914 and PO-064489B)',
-  `po_line_number` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order line number from Infor Visual',
-  `employee_number` int(11) NOT NULL DEFAULT '0' COMMENT 'Employee ID who processed the receiving',
-  `heat` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Heat/lot number for material traceability (optional)',
-  `transaction_date` date NOT NULL COMMENT 'Date the receiving transaction occurred',
-  `initial_location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Initial warehouse location for received parts (optional)',
-  `coils_on_skid` int(11) DEFAULT NULL COMMENT 'Number of coils on the skid (for coil materials, optional)',
-  `label_number` int(11) DEFAULT '1' COMMENT 'Sequential label number when splitting quantities (default: 1)',
-  `load_number` int(11) DEFAULT NULL COMMENT 'Sequential load number within the receiving session',
-  `vendor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Vendor/supplier name (optional, for reference)',
-  `part_description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Part description from Infor Visual (optional, for reference)',
-  `po_status` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO status snapshot',
-  `po_due_date` date DEFAULT NULL COMMENT 'PO due date snapshot selected for receiving history',
-  `qty_ordered` decimal(18,2) DEFAULT NULL COMMENT 'Ordered quantity snapshot',
-  `unit_of_measure` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Unit of measure snapshot',
-  `remaining_quantity` int(11) DEFAULT NULL COMMENT 'Remaining PO quantity snapshot',
-  `user_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Windows user / app user id snapshot',
-  `packages_per_load` int(11) DEFAULT NULL COMMENT 'Number of packages per load/skid',
-  `package_type_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Package type description (Skid, Box, Coil, etc.)',
-  `weight_per_package` decimal(18,2) DEFAULT NULL COMMENT 'Weight of each individual package',
-  `is_non_po_item` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Non-PO item flag: 1 when part not found in Infor Visual and no PO number',
-  `is_quality_hold_required` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when the part requires a quality hold acknowledgment',
-  `is_quality_hold_acknowledged` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when quality hold has been formally acknowledged',
-  `quality_hold_restriction_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Restriction type code from the quality hold check',
-  `part_skid_sequence` int(11) DEFAULT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
-  `part_skid_total` int(11) DEFAULT NULL COMMENT 'Total skids for the same part in the saved batch',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Receiving history - stores all receiving transactions matching receiving_label_data structure';
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 --
 -- Dumping data for table `receiving_history`
 --
 
-INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `vendor_name`, `part_description`, `is_non_po_item`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+INSERT IGNORE INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `vendor_name`, `part_description`, `is_non_po_item`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
 (8, 'feed9255-ab98-4204-9cfb-e827b66dd469', 100, '78835831', '068026', NULL, 6229, '96788', '2026-03-24', 'Nothing Entered', 0, 1, 'Atlantic Gasket Corporation', 'Seal Cover Plate Firewall', 0, 1, 1, '2026-03-25 18:40:08'),
 (9, 'a7ce1466-b4b9-4aff-a52a-320e0023a731', 2000, '23-10721-100', '067868', NULL, 6229, 'C63731', '2026-03-24', 'RECV DESK', NULL, 1, 'Buckeye Fasteners, Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.00\" Lg', 0, 1, 1, '2026-03-25 18:40:08'),
 (10, '8025d177-1393-43aa-b0b9-c90456073141', 1, 'MMF0000250', '068694', NULL, 6229, 'None', '2026-03-24', 'RECV DESK', NULL, 1, 'McMaster-Carr Supply Co', 'Blank, .250 X 15.000 X 15.000', 0, 1, 1, '2026-03-25 18:40:08'),
@@ -176,33 +131,8 @@ INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_n
 (164, '83f36f2e-b910-434d-ae51-e310b755995e', 4062, 'MMC0000014', '068597', NULL, 6229, 'Nothing Entered', '2026-03-26', 'RECV', NULL, 1, 'Mead Metals, Inc', 'Coil, 14Ga X 2.250', 0, 1, 2, '2026-03-26 17:25:37'),
 (165, 'a8303d34-e6ac-448f-bff6-42c72d5cdaa6', 1978, 'MMC0000014', '068597', NULL, 6229, 'Nothing Entered', '2026-03-26', 'RECV', NULL, 2, 'Mead Metals, Inc', 'Coil, 14Ga X 2.250', 0, 2, 2, '2026-03-26 17:25:37');
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `receiving_history`
---
-ALTER TABLE `receiving_history`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_load_guid` (`load_guid`) COMMENT 'Unique index for app GUID lookups (allows NULLs for imported records)',
-  ADD KEY `idx_part_id` (`part_id`) COMMENT 'Index for part lookup queries',
-  ADD KEY `idx_po_number` (`po_number`) COMMENT 'Index for PO-based queries',
-  ADD KEY `idx_po_line_number` (`po_line_number`) COMMENT 'Index for PO line lookups',
-  ADD KEY `idx_po_due_date` (`po_due_date`) COMMENT 'Index for PO due-date queries',
-  ADD KEY `idx_transaction_date` (`transaction_date`) COMMENT 'Index for date range queries',
-  ADD KEY `idx_employee_number` (`employee_number`) COMMENT 'Index for employee activity queries',
-  ADD KEY `idx_user_id` (`user_id`) COMMENT 'Index for user-based history queries';
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `receiving_history`
---
-ALTER TABLE `receiving_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Auto-incrementing unique identifier', AUTO_INCREMENT=167;
+-- NOTE: Primary key, indexes, and AUTO_INCREMENT are defined in
+-- 10_Table_receiving_history.sql (CREATE TABLE). Do not redefine them here.
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

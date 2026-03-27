@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-24T07:11:34.0784526-05:00",
+  "generatedAt": "2026-03-27T08:10:51.5847303-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -7,7 +7,7 @@
       "category": "migration_file",
       "objectType": "stored_procedure",
       "objectName": "sp_mig38_add_column_if_missing",
-      "procedureCount": 3,
+      "procedureCount": 5,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
       "codebaseReferences": [],
@@ -38,6 +38,14 @@
           "sqlType": "INT DEFAULT 0"
         },
         {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
           "name": "v_po_number_exists",
           "sqlType": "INT DEFAULT 0"
         }
@@ -53,6 +61,8 @@
       "calledRoutines": [
         "sp_mig38_add_column_if_missing",
         "sp_mig38_add_index_if_missing",
+        "sp_mig38_drop_index_if_exists",
+        "sp_mig38_drop_column_if_exists",
         "sp_mig38_apply"
       ],
       "parameterTokensUsed": [
@@ -1017,6 +1027,27 @@
           "object": "dunnage_requires_inventory"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/04_seed_receiving_history.sql",
+      "category": "seed_file",
+      "objectType": "table",
+      "objectName": "receiving_history",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Deactivate.sql",
@@ -5827,6 +5858,11 @@
         {
           "qualifier": "rld",
           "resolvedObject": "receiving_label_data",
+          "column": "po_line_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
           "column": "employee_number"
         },
         {
@@ -5847,7 +5883,32 @@
         {
           "qualifier": "rld",
           "resolvedObject": "receiving_label_data",
+          "column": "created_at"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
           "column": "initial_location"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "load_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "packages_per_load"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "package_type_name"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "weight_per_package"
         },
         {
           "qualifier": "rld",
@@ -5862,17 +5923,62 @@
         {
           "qualifier": "rld",
           "resolvedObject": "receiving_label_data",
-          "column": "po_vendor"
-        },
-        {
-          "qualifier": "rld",
-          "resolvedObject": "receiving_label_data",
           "column": "vendor_name"
         },
         {
           "qualifier": "rld",
           "resolvedObject": "receiving_label_data",
+          "column": "po_vendor"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_status"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_due_date"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "qty_ordered"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "unit_of_measure"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "remaining_quantity"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "user_id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
           "column": "is_non_po_item"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_quality_hold_required"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_quality_hold_acknowledged"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "quality_hold_restriction_type"
         },
         {
           "qualifier": "rld",
@@ -5894,14 +6000,29 @@
             "part_id",
             "part_description",
             "po_number",
+            "po_line_number",
             "employee_number",
             "heat",
             "transaction_date",
+            "created_at",
             "initial_location",
+            "load_number",
+            "packages_per_load",
+            "package_type_name",
+            "weight_per_package",
             "coils_on_skid",
             "label_number",
             "vendor_name",
+            "po_status",
+            "po_due_date",
+            "qty_ordered",
+            "unit_of_measure",
+            "remaining_quantity",
+            "user_id",
             "is_non_po_item",
+            "is_quality_hold_required",
+            "is_quality_hold_acknowledged",
+            "quality_hold_restriction_type",
             "part_skid_sequence",
             "part_skid_total"
           ]
@@ -10180,18 +10301,11 @@
       "objectName": "sp_Volvo_ShipmentLine_Insert",
       "procedureCount": 1,
       "codebaseReferenceCount": 2,
-      "codebaseReferenceFileCount": 2,
+      "codebaseReferenceFileCount": 1,
       "codebaseReferences": [
         {
           "relativePath": "Module_Volvo/Data/Dao_VolvoShipmentLine.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        },
-        {
-          "relativePath": "Module_Volvo/Services/Service_Volvo.cs",
-          "count": 1,
+          "count": 2,
           "patterns": [
             "Helper_Database_StoredProcedure"
           ]

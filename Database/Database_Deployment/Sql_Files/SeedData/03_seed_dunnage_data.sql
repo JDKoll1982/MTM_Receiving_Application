@@ -298,7 +298,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    '40x48',
+    '40x48 Sheet',
     @t2,
     '{"dimensions":"40x48"}',
     NULL,
@@ -307,7 +307,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    '47x52',
+    '47x52 Sheet',
     @t2,
     '{"dimensions":"47x52"}',
     NULL,
@@ -325,7 +325,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    '52x47',
+    '52x47 Sheet',
     @t2,
     '{"dimensions":"52x47"}',
     NULL,
@@ -460,7 +460,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Lennox',
+    'Lennox Box',
     @t3,
     '{"customer":"Lennox"}',
     NULL,
@@ -748,7 +748,7 @@ CALL sp_Dunnage_Parts_Insert(
 );
 
 CALL sp_Dunnage_Parts_Insert(
-    'Lennox',
+    'Lennox Tote',
     @t12,
     '{"customer":"Lennox"}',
     NULL,
