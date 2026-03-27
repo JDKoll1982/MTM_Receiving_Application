@@ -18,6 +18,7 @@ CREATE PROCEDURE `sp_Receiving_Load_GetAll`(
 )
 BEGIN
     SELECT
+        id,
         load_guid,
         part_id,
         part_description,

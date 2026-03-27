@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+  <rect width="960" height="620" fill="#eef3f8"/>
+  <rect x="120" y="60" width="720" height="500" rx="18" fill="#ffffff" stroke="#c8d1dc"/>
+  <rect x="120" y="60" width="720" height="72" rx="18" fill="#385a7c"/>
+  <text x="150" y="105" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#ffffff">Part Match Helper</text>
+  <text x="150" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#1b2733">We could not find an exact match for:</text>
+  <rect x="150" y="195" width="250" height="42" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <text x="168" y="222" font-family="Consolas, monospace" font-size="18" fill="#1b2733">ABC1234</text>
+  <text x="150" y="285" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#1b2733">Did you mean one of these parts?</text>
+  <rect x="150" y="305" width="660" height="150" rx="12" fill="#fbfcfe" stroke="#d7dee7"/>
+  <circle cx="185" cy="345" r="11" fill="#ffffff" stroke="#7a8b99"/>
+  <text x="215" y="351" font-family="Consolas, monospace" font-size="18" fill="#1b2733">ABC-1234   Widget Housing</text>
+  <circle cx="185" cy="385" r="11" fill="#ffffff" stroke="#7a8b99"/>
+  <text x="215" y="391" font-family="Consolas, monospace" font-size="18" fill="#1b2733">ABC-1235   Widget Housing Rev B</text>
+  <circle cx="185" cy="425" r="11" fill="#ffffff" stroke="#7a8b99"/>
+  <text x="215" y="431" font-family="Consolas, monospace" font-size="18" fill="#1b2733">ABC-1284   Widget Cover</text>
+  <rect x="430" y="485" width="170" height="42" rx="8" fill="#e8edf3" stroke="#c8d1dc"/>
+  <text x="466" y="512" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#1b2733">Go Back And Edit</text>
+  <rect x="620" y="485" width="190" height="42" rx="8" fill="#2d7ff9"/>
+  <text x="661" y="512" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#ffffff">Use Selected Part</text>
+</svg>

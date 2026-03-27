@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#f4f7fb"/>
+  <rect x="30" y="30" width="1140" height="700" rx="16" fill="#ffffff" stroke="#c8d1dc"/>
+  <rect x="30" y="30" width="1140" height="72" rx="16" fill="#234765"/>
+  <text x="60" y="76" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#ffffff">Outside Service Setup</text>
+  <text x="930" y="76" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#dbe7f3">Request 128 / Line 1</text>
+  <rect x="60" y="130" width="1080" height="72" rx="12" fill="#fbfcfe" stroke="#c8d1dc"/>
+  <text x="85" y="160" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">Line Summary: ABC-123 / Widget Housing</text>
+  <text x="85" y="188" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#4c5a67">Current Phase: Initialize   Wait Time: 51 mins   Packages: 4</text>
+  <text x="60" y="255" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#1b2733">Vendor Decision</text>
+  <text x="60" y="292" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">Suggested Vendor</text>
+  <rect x="60" y="302" width="380" height="42" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <text x="78" y="329" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#1b2733">Metro Heat Treat</text>
+  <rect x="460" y="302" width="180" height="42" rx="8" fill="#e8edf3" stroke="#c8d1dc"/>
+  <text x="494" y="329" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#1b2733">Use Custom Vendor</text>
+  <text x="60" y="385" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">Custom Vendor Name</text>
+  <rect x="60" y="395" width="580" height="42" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <text x="60" y="495" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#1b2733">Shipment Setup</text>
+  <text x="60" y="532" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">BOL Number</text>
+  <rect x="60" y="542" width="250" height="42" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <text x="340" y="532" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">Scheduled Ship</text>
+  <rect x="340" y="542" width="250" height="42" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <text x="620" y="532" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">Shipping Contact</text>
+  <rect x="620" y="542" width="300" height="42" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <text x="60" y="625" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#1b2733">Setup Notes</text>
+  <rect x="60" y="635" width="860" height="60" rx="8" fill="#f9fbfd" stroke="#c8d1dc"/>
+  <rect x="780" y="708" width="150" height="40" rx="8" fill="#e8edf3" stroke="#c8d1dc"/>
+  <text x="817" y="734" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#1b2733">Return To Queue</text>
+  <rect x="950" y="708" width="170" height="40" rx="8" fill="#1b8f4d"/>
+  <text x="994" y="734" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#ffffff">Save Setup</text>
+</svg>

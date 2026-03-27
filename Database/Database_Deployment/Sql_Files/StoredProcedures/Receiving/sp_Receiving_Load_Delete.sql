@@ -1,19 +1,25 @@
 -- Stored Procedure: sp_Receiving_Load_Delete
--- Description: Deletes a receiving load record by GUID.
---              Parameter name p_LoadID matches Dao_ReceivingLoad.DeleteLoadsAsync,
---              which sends { "p_LoadID", load.LoadID.ToString() } — the DAO helper
---              preserves the existing p_ prefix, so the parameter arrives as @p_LoadID.
+-- Description: Deletes a receiving history row by the persisted integer record ID
+--              when available, otherwise falls back to the GUID for rows that only
+--              have app-generated identity data.
 
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_Load_Delete` $$
 
 CREATE PROCEDURE `sp_Receiving_Load_Delete`(
-    IN p_LoadID CHAR(36)
+    IN p_LoadID CHAR(36),
+    IN p_HistoryRecordID INT
 )
 BEGIN
     DELETE FROM receiving_history
-    WHERE load_guid = p_LoadID;
+    WHERE (p_HistoryRecordID IS NOT NULL AND id = p_HistoryRecordID)
+       OR (
+            p_HistoryRecordID IS NULL
+            AND p_LoadID IS NOT NULL
+            AND p_LoadID <> ''
+            AND load_guid = p_LoadID
+        );
 END $$
 
 DELIMITER ;

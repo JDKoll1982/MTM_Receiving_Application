@@ -196,11 +196,25 @@ public class Dao_ReceivingLoad
 
             foreach (var load in loads)
             {
+                if (load.LoadID == Guid.Empty && !load.HistoryRecordID.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot update a receiving history row without a persisted identifier."
+                    );
+                }
+
+                object loadGuid = load.LoadID == Guid.Empty
+                    ? DBNull.Value
+                    : load.LoadID.ToString();
+                object historyRecordId = load.HistoryRecordID.HasValue
+                    ? load.HistoryRecordID.Value
+                    : DBNull.Value;
                 var cleanedPoNumber = CleanPONumber(load.PoNumber);
                 object poNumber = cleanedPoNumber is null ? DBNull.Value : cleanedPoNumber;
                 var parameters = new Dictionary<string, object>
                 {
-                    { "LoadID", load.LoadID.ToString() },
+                    { "LoadID", loadGuid },
+                    { "HistoryRecordID", historyRecordId },
                     { "PartID", load.PartID },
                     { "PartType", load.PartType },
                     { "PONumber", poNumber },
@@ -226,6 +240,13 @@ public class Dao_ReceivingLoad
                 if (!result.Success)
                 {
                     throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+                }
+
+                if (result.AffectedRows <= 0)
+                {
+                    throw new InvalidOperationException(
+                        $"No receiving history row matched the update request for load '{load.LoadNumber}'."
+                    );
                 }
 
                 updatedCount++;
@@ -261,9 +282,23 @@ public class Dao_ReceivingLoad
 
             foreach (var load in loads)
             {
+                if (load.LoadID == Guid.Empty && !load.HistoryRecordID.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot delete a receiving history row without a persisted identifier."
+                    );
+                }
+
+                object loadGuid = load.LoadID == Guid.Empty
+                    ? DBNull.Value
+                    : load.LoadID.ToString();
+                object historyRecordId = load.HistoryRecordID.HasValue
+                    ? load.HistoryRecordID.Value
+                    : DBNull.Value;
                 var parameters = new Dictionary<string, object>
                 {
-                    { "p_LoadID", load.LoadID.ToString() },
+                    { "LoadID", loadGuid },
+                    { "HistoryRecordID", historyRecordId },
                 };
 
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
@@ -276,6 +311,13 @@ public class Dao_ReceivingLoad
                 if (!result.Success)
                 {
                     throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+                }
+
+                if (result.AffectedRows <= 0)
+                {
+                    throw new InvalidOperationException(
+                        $"No receiving history row matched the delete request for load '{load.LoadNumber}'."
+                    );
                 }
 
                 deletedCount++;
@@ -451,6 +493,7 @@ public class Dao_ReceivingLoad
     {
         return new Model_ReceivingLoad
         {
+            HistoryRecordID = ReadNullableInt(row, "id"),
             LoadID = ReadGuid(row, "load_id", "load_guid"),
             PartID = ReadString(row, "part_id"),
             PartDescription = ReadString(row, "part_description"),
@@ -519,6 +562,12 @@ public class Dao_ReceivingLoad
         }
 
         return Convert.ToInt32(value);
+    }
+
+    private static int? ReadNullableInt(DataRow row, params string[] columnNames)
+    {
+        var value = ReadValue(row, columnNames);
+        return value is null ? null : Convert.ToInt32(value);
     }
 
     private static decimal ReadDecimal(DataRow row, params string[] columnNames)

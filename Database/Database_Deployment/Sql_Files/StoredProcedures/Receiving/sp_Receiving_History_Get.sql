@@ -16,6 +16,7 @@ CREATE PROCEDURE `sp_Receiving_History_Get`(
 )
 BEGIN
     SELECT
+        id,
         load_guid,
         part_id,
         part_description,

@@ -1,5 +1,6 @@
 -- Stored Procedure: sp_Receiving_Load_Update
--- Description: Updates an existing receiving load record by GUID.
+-- Description: Updates an existing receiving history row by the persisted integer
+--              record ID when available, otherwise falls back to the GUID.
 --              Parameter names match Dao_ReceivingLoad.UpdateLoadsAsync exactly
 --              (the DAO helper auto-prepends p_ to each key).
 --              Parameters for fields not stored in receiving_history
@@ -12,6 +13,7 @@ DROP PROCEDURE IF EXISTS `sp_Receiving_Load_Update` $$
 
 CREATE PROCEDURE `sp_Receiving_Load_Update`(
     IN p_LoadID           CHAR(36),
+    IN p_HistoryRecordID  INT,
     IN p_PartID           VARCHAR(50),
     IN p_PartType         VARCHAR(100),
     IN p_PONumber         VARCHAR(20),
@@ -35,7 +37,13 @@ BEGIN
         transaction_date = DATE(p_ReceivedDate),
         label_number     = IFNULL(p_LoadNumber, 1),
         is_non_po_item   = IFNULL(p_IsNonPOItem, 0)
-    WHERE load_guid = p_LoadID;
+    WHERE (p_HistoryRecordID IS NOT NULL AND id = p_HistoryRecordID)
+       OR (
+            p_HistoryRecordID IS NULL
+            AND p_LoadID IS NOT NULL
+            AND p_LoadID <> ''
+            AND load_guid = p_LoadID
+        );
 END $$
 
 DELIMITER ;
