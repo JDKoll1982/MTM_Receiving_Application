@@ -9,6 +9,7 @@ This folder contains module-level notes captured from code analysis and workflow
 | Module             | Documents                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------ |
 | `Module_Dunnage`   | `UI-Conditional-Guards.md`, `Workflow-Inventory.md`                                  |
+| `Module_OutsideService` | `End-User-Workflow-And-Mockups.md`                                             |
 | `Module_Receiving` | `UI-Conditional-Guards.md`, `Settings-Feature-Flags.md`, `Architecture-Inventory.md` |
 | `Module_Reporting` | `UI-Conditional-Guards.md`, `Workflow-Inventory.md`                                  |
 | `Module_Volvo`     | `UI-Conditional-Guards.md`, `Workflow-Inventory.md`                                  |
