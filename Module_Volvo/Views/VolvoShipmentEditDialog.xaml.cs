@@ -312,31 +312,56 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         var panel = new StackPanel { Spacing = 12 };
         panel.Children.Add(expectedSkidsBox);
         panel.Children.Add(noteBox);
-
-        var dialog = new ContentDialog
+        var validationText = new TextBlock
         {
-            Title = "Report Discrepancy",
-            Content = panel,
-            PrimaryButtonText = "Save",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = XamlRoot,
+            Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Colors.Red),
+            TextWrapping = TextWrapping.Wrap,
+            Visibility = Visibility.Collapsed,
+        };
+        panel.Children.Add(validationText);
+
+        Flyout? flyout = null;
+        var saveButton = new Button
+        {
+            Content = "Save",
+            Style = Application.Current.Resources["AccentButtonStyle"] as Style,
+            MinWidth = 96,
+        };
+        var cancelButton = new Button { Content = "Cancel", MinWidth = 96 };
+
+        saveButton.Click += (_, _) =>
+        {
+            if (expectedSkidsBox.Value < 1 || string.IsNullOrWhiteSpace(noteBox.Text))
+            {
+                validationText.Text =
+                    "Expected skids must be greater than zero and a discrepancy note is required.";
+                validationText.Visibility = Visibility.Visible;
+                return;
+            }
+
+            line.HasDiscrepancy = true;
+            line.ExpectedSkidCount = expectedSkidsBox.Value;
+            line.DiscrepancyNote = noteBox.Text.Trim();
+            flyout?.Hide();
         };
 
-        var result = await dialog.ShowAsync();
-        if (result != ContentDialogResult.Primary)
-        {
-            return;
-        }
+        cancelButton.Click += (_, _) => flyout?.Hide();
 
-        if (expectedSkidsBox.Value < 1 || string.IsNullOrWhiteSpace(noteBox.Text))
+        var actionPanel = new StackPanel
         {
-            return;
-        }
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 8,
+        };
+        actionPanel.Children.Add(saveButton);
+        actionPanel.Children.Add(cancelButton);
 
-        line.HasDiscrepancy = true;
-        line.ExpectedSkidCount = expectedSkidsBox.Value;
-        line.DiscrepancyNote = noteBox.Text.Trim();
+        var layoutPanel = CreateFlyoutLayout("Report Discrepancy", panel, actionPanel);
+
+        flyout = CreateFlyout(layoutPanel);
+        flyout.ShowAt(button);
+
+        await Task.CompletedTask;
     }
 
     private async void ViewDiscrepancyButton_Click(object sender, RoutedEventArgs e)
@@ -437,16 +462,19 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             );
         }
 
-        var dialog = new ContentDialog
+        Flyout? flyout = null;
+        var closeButton = new Button
         {
-            Title = "Discrepancy Details",
-            Content = content,
-            CloseButtonText = "Close",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = XamlRoot,
+            Content = "Close",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            MinWidth = 96,
         };
+        closeButton.Click += (_, _) => flyout?.Hide();
 
-        await dialog.ShowAsync();
+        flyout = CreateFlyout(CreateFlyoutLayout("Discrepancy Details", content, closeButton));
+        flyout.ShowAt(button);
+
+        await Task.CompletedTask;
     }
 
     private async void RemoveDiscrepancyButton_Click(object sender, RoutedEventArgs e)
@@ -456,22 +484,83 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             return;
         }
 
-        var confirmDialog = new ContentDialog
+        Flyout? flyout = null;
+        var message = new TextBlock
         {
-            Title = "Remove Discrepancy",
-            Content = "Remove the discrepancy for this line?",
-            PrimaryButtonText = "Remove",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = XamlRoot,
+            Text = "Remove the discrepancy for this line?",
+            TextWrapping = TextWrapping.Wrap,
         };
+        var removeButton = new Button
+        {
+            Content = "Remove",
+            Style = Application.Current.Resources["AccentButtonStyle"] as Style,
+            MinWidth = 96,
+        };
+        var cancelButton = new Button { Content = "Cancel", MinWidth = 96 };
 
-        var confirmResult = await confirmDialog.ShowAsync();
-        if (confirmResult == ContentDialogResult.Primary)
+        removeButton.Click += (_, _) =>
         {
             line.HasDiscrepancy = false;
             line.ExpectedSkidCount = null;
             line.DiscrepancyNote = null;
-        }
+            flyout?.Hide();
+        };
+        cancelButton.Click += (_, _) => flyout?.Hide();
+
+        var actionPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 8,
+        };
+        actionPanel.Children.Add(removeButton);
+        actionPanel.Children.Add(cancelButton);
+
+        flyout = CreateFlyout(CreateFlyoutLayout("Remove Discrepancy", message, actionPanel));
+        flyout.ShowAt(button);
+
+        await Task.CompletedTask;
+    }
+
+    private static Flyout CreateFlyout(UIElement content)
+    {
+        return new Flyout
+        {
+            Placement = Microsoft
+                .UI
+                .Xaml
+                .Controls
+                .Primitives
+                .FlyoutPlacementMode
+                .BottomEdgeAlignedLeft,
+            ShouldConstrainToRootBounds = true,
+            Content = new Border
+            {
+                Width = 420,
+                MaxHeight = 620,
+                Padding = new Thickness(16),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Colors.LightGray),
+                Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Colors.White),
+                Child = content,
+            },
+        };
+    }
+
+    private static StackPanel CreateFlyoutLayout(string title, UIElement content, UIElement footer)
+    {
+        var layoutPanel = new StackPanel { Spacing = 12 };
+        layoutPanel.Children.Add(
+            new TextBlock
+            {
+                Text = title,
+                FontSize = 18,
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                TextWrapping = TextWrapping.Wrap,
+            }
+        );
+        layoutPanel.Children.Add(content);
+        layoutPanel.Children.Add(footer);
+        return layoutPanel;
     }
 }

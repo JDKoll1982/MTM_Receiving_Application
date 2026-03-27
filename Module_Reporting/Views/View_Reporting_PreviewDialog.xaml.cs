@@ -20,19 +20,25 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
         InitializeComponent();
     }
 
-    private async void OnCustomizePreviewClick(object sender, RoutedEventArgs e)
+    private void OnCustomizePreviewClick(object sender, RoutedEventArgs e)
     {
-        await ShowCustomizePreviewDialogAsync();
+        if (sender is not FrameworkElement target)
+        {
+            return;
+        }
+
+        ShowCustomizePreviewFlyout(target);
     }
 
-    private async Task ShowCustomizePreviewDialogAsync()
+    private void ShowCustomizePreviewFlyout(FrameworkElement target)
     {
         var contentPanel = new StackPanel { Spacing = 16 };
 
         contentPanel.Children.Add(
             new TextBlock
             {
-                Text = "Choose which modules appear in the preview and which detail columns remain visible. Only fields that contain data for each module are listed.",
+                Text =
+                    "Choose which modules appear in the preview and which detail columns remain visible. Only fields that contain data for each module are listed.",
                 TextWrapping = TextWrapping.WrapWholeWords,
             }
         );
@@ -84,7 +90,11 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
             }
             else
             {
-                for (var columnIndex = 0; columnIndex < previewModuleCard.AvailableColumns.Count; columnIndex++)
+                for (
+                    var columnIndex = 0;
+                    columnIndex < previewModuleCard.AvailableColumns.Count;
+                    columnIndex++
+                )
                 {
                     var previewColumn = previewModuleCard.AvailableColumns[columnIndex];
                     var columnCheckBox = new CheckBox
@@ -119,21 +129,57 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
             );
         }
 
-        var dialog = new ContentDialog
+        Flyout? flyout = null;
+        var doneButton = new Button
         {
-            XamlRoot = XamlRoot,
-            Title = "Customize Preview",
-            PrimaryButtonText = "Done",
-            DefaultButton = ContentDialogButton.Primary,
-            HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            Content = new ScrollViewer
+            Content = "Done",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            MinWidth = 96,
+        };
+
+        doneButton.Click += (_, _) => flyout?.Hide();
+
+        var layoutPanel = new StackPanel { Spacing = 12 };
+        layoutPanel.Children.Add(
+            new TextBlock
+            {
+                Text = "Customize Preview",
+                FontSize = 18,
+                FontWeight = FontWeights.SemiBold,
+            }
+        );
+        layoutPanel.Children.Add(
+            new ScrollViewer
             {
                 MaxHeight = 720,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 Content = contentPanel,
+            }
+        );
+        layoutPanel.Children.Add(doneButton);
+
+        flyout = new Flyout
+        {
+            Placement = Microsoft
+                .UI
+                .Xaml
+                .Controls
+                .Primitives
+                .FlyoutPlacementMode
+                .BottomEdgeAlignedLeft,
+            ShouldConstrainToRootBounds = true,
+            Content = new Border
+            {
+                Width = 680,
+                MaxHeight = 820,
+                Padding = new Thickness(16),
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Microsoft.UI.Colors.LightGray),
+                Background = new SolidColorBrush(Microsoft.UI.Colors.White),
+                Child = layoutPanel,
             },
         };
 
-        await dialog.ShowAsync();
+        flyout.ShowAt(target);
     }
 }
