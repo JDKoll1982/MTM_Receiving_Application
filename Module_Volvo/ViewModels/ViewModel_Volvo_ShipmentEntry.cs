@@ -1192,7 +1192,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 #pragma warning restore CS0618
         if (view != null && App.MainWindow is MainWindow mainWindow)
         {
-            mainWindow.GetContentFrame().Content = view;
+            mainWindow.SetContentPage(view, "Volvo Shipment History");
         }
     }
 

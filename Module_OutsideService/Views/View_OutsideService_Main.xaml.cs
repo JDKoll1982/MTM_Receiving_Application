@@ -33,15 +33,24 @@ public sealed partial class View_OutsideService_Main : Page
         SetupHost.Content = setupView;
         HistoryHost.Content = historyView;
 
+        ViewModel.UpdateSelectedWaitlistLine(waitlistView.ViewModel.SelectedLine);
+
+        waitlistView.ViewModel.SelectedLineChanged += line =>
+        {
+            ViewModel.UpdateSelectedWaitlistLine(line);
+        };
+
         requestEntryView.ViewModel.RequestSaved += async _ =>
         {
             await waitlistView.ViewModel.RefreshCommand.ExecuteAsync(null);
             await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);
+            ViewModel.UpdateSelectedWaitlistLine(waitlistView.ViewModel.SelectedLine);
             ViewModel.ShowWaitlistCommand.Execute(null);
         };
 
         waitlistView.ViewModel.SetupRequested += async line =>
         {
+            ViewModel.UpdateSelectedWaitlistLine(line);
             await setupView.ViewModel.LoadLineAsync(line);
             ViewModel.ShowSetupCommand.Execute(null);
         };
@@ -62,12 +71,14 @@ public sealed partial class View_OutsideService_Main : Page
         {
             await waitlistView.ViewModel.RefreshCommand.ExecuteAsync(null);
             await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);
+            ViewModel.UpdateSelectedWaitlistLine(waitlistView.ViewModel.SelectedLine);
         };
 
         Loaded += async (_, _) =>
         {
             await waitlistView.ViewModel.LoadCommand.ExecuteAsync(null);
             await historyView.ViewModel.LoadCommand.ExecuteAsync(null);
+            ViewModel.UpdateSelectedWaitlistLine(waitlistView.ViewModel.SelectedLine);
         };
     }
 }

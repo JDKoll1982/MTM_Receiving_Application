@@ -16,11 +16,13 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
 {
     private readonly List<NumberBox> _packageBoxes = new();
     private bool _isPartValidated;
+    private bool _isInitializing = true;
 
     public View_OutsideService_AddLineModal()
     {
         InitializeComponent();
         RebuildPackageRows(1, null);
+        _isInitializing = false;
     }
 
     public Func<string, Task<bool>>? ValidatePartAsync { get; set; }
@@ -58,7 +60,12 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
 
     private void PackageCountBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        var packageCount = (int)Math.Max(1, sender.Value);
+        if (_isInitializing || PackageRowsPanel is null)
+        {
+            return;
+        }
+
+        var packageCount = NormalizePackageCount(sender.Value);
         var existingValues = _packageBoxes.ConvertAll(box => box.Value);
         RebuildPackageRows(packageCount, existingValues);
     }
@@ -73,7 +80,7 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
         {
             ErrorText.Visibility = Visibility.Collapsed;
             var partId = PartIdBox.Text?.Trim() ?? string.Empty;
-            var packageCount = (int)Math.Max(1, PackageCountBox.Value);
+            var packageCount = NormalizePackageCount(PackageCountBox.Value);
 
             if (string.IsNullOrWhiteSpace(partId))
             {
@@ -210,6 +217,16 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
             ? "The part is ready to return to the request entry screen."
             : "Use the Part Match Helper to apply a suggested part or correct the value manually.";
         return isValid;
+    }
+
+    private static int NormalizePackageCount(double rawValue)
+    {
+        if (double.IsNaN(rawValue) || double.IsInfinity(rawValue))
+        {
+            return 1;
+        }
+
+        return Math.Max(1, Convert.ToInt32(Math.Truncate(rawValue), CultureInfo.InvariantCulture));
     }
 
     private void ShowError(string message)

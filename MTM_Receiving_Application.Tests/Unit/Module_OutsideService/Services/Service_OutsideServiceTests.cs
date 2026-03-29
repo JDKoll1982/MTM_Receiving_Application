@@ -1,5 +1,7 @@
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
+using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
@@ -104,15 +106,66 @@ public class Service_OutsideServiceTests
         result.Data[1].VendorId.Should().Be("V-200");
     }
 
+    [Fact]
+    public async Task ValidatePartAsync_ShouldSucceed_WhenInforVisualFailsAndMockModeIsEnabled()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var loggerMock = new Mock<IService_LoggingUtility>();
+        var service = CreateService(inforVisualMock.Object, loggerMock.Object, useMockData: true);
+
+        inforVisualMock
+            .Setup(mock => mock.PartExistsAsync("PART-404"))
+            .ReturnsAsync(Model_Dao_Result_Factory.Failure<bool>("Infor Visual unavailable"));
+
+        var result = await service.ValidatePartAsync("PART-404");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().BeTrue();
+        loggerMock.Verify(
+            mock =>
+                mock.LogWarning(
+                    It.Is<string>(message => message.Contains("mock validation")),
+                    It.IsAny<string?>()
+                ),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task GetVendorSuggestionsAsync_ShouldReturnMockSuggestions_WhenInforVisualFailsAndMockModeIsEnabled()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var loggerMock = new Mock<IService_LoggingUtility>();
+        var service = CreateService(inforVisualMock.Object, loggerMock.Object, useMockData: true);
+
+        inforVisualMock
+            .Setup(mock => mock.GetOutsideServiceHistoryByPartAsync("PART-404"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceHistory>>(
+                    "Infor Visual unavailable"
+                )
+            );
+
+        var result = await service.GetVendorSuggestionsAsync("PART-404");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().HaveCount(2);
+        result.Data![0].VendorId.Should().Be("MOCK-VENDOR-001");
+        result.Data[0].DispatchCount.Should().Be(3);
+    }
+
     private static Service_OutsideService CreateService(
         IService_InforVisual inforVisual,
-        IService_LoggingUtility logger
+        IService_LoggingUtility logger,
+        bool useMockData = false
     )
     {
         return new Service_OutsideService(
             new Dao_OutsideServiceRequest("Server=localhost;Database=test;Uid=test;Pwd=test;"),
             inforVisual,
-            logger
+            logger,
+            Options.Create(new InforVisualSettings { UseMockData = useMockData })
         );
     }
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-29T13:22:13.8613281-05:00",
+  "generatedAt": "2026-03-29T15:04:28.0387827-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -910,6 +910,69 @@
       "category": "schema_file",
       "objectType": "table",
       "objectName": "volvo_part_components",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/32_Table_outside_service_request.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "outside_service_request",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/33_Table_outside_service_request_line.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "outside_service_request_line",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/34_Table_outside_service_request_package.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "outside_service_request_package",
       "procedureCount": 0,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
@@ -5831,6 +5894,679 @@
           "object": "dunnage_types"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_Request_GetCompleted.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_Request_GetCompleted",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "outside_service_request",
+        "outside_service_request_line"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "outside_service_request_id"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "request_number"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "created_by_user"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "created_by_display"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "created_utc"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "request_notes"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "outside_service_request_line_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "line_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "package_count"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "package_summary"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "line_phase"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_vendor_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_vendor_name"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_vendor_source"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "bol_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "scheduled_ship_utc"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "shipping_contact"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_notes"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "completed_utc"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "completion_notes"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "outside_service_request_id"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "outside_service_request",
+          "object": "outside_service_request"
+        },
+        {
+          "alias": "r",
+          "object": "outside_service_request"
+        },
+        {
+          "alias": "outside_service_request_line",
+          "object": "outside_service_request_line"
+        },
+        {
+          "alias": "l",
+          "object": "outside_service_request_line"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_Request_GetOpen.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_Request_GetOpen",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "outside_service_request",
+        "outside_service_request_line"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "outside_service_request_id"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "request_number"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "created_by_user"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "created_by_display"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "created_utc"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "outside_service_request",
+          "column": "request_notes"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "outside_service_request_line_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "line_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "package_count"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "package_summary"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "line_phase"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_vendor_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_vendor_name"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_vendor_source"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "bol_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "scheduled_ship_utc"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "shipping_contact"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "setup_notes"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "completed_utc"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "completion_notes"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "outside_service_request_line",
+          "column": "outside_service_request_id"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "outside_service_request",
+          "object": "outside_service_request"
+        },
+        {
+          "alias": "r",
+          "object": "outside_service_request"
+        },
+        {
+          "alias": "outside_service_request_line",
+          "object": "outside_service_request_line"
+        },
+        {
+          "alias": "l",
+          "object": "outside_service_request_line"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_Request_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_Request_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_created_by_user",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_created_by_display",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_request_notes",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_new_id",
+          "sqlType": "INT"
+        },
+        {
+          "name": "v_request_number",
+          "sqlType": "VARCHAR(20)"
+        }
+      ],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "outside_service_request",
+          "columns": [
+            "request_number",
+            "created_by_user",
+            "created_by_display",
+            "created_utc",
+            "request_notes"
+          ]
+        }
+      ],
+      "updateTargets": [
+        {
+          "table": "outside_service_request",
+          "columns": [
+            "request_number"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_created_by_user",
+        "p_created_by_display",
+        "p_request_notes"
+      ],
+      "variableTokensUsed": [
+        "v_new_id",
+        "v_request_number"
+      ],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestLine_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_RequestLine_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_outside_service_request_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_line_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_package_count",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_package_summary",
+          "sqlType": "VARCHAR(500)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "outside_service_request_line",
+          "columns": [
+            "outside_service_request_id",
+            "line_number",
+            "part_id",
+            "package_count",
+            "package_summary",
+            "line_phase"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_outside_service_request_id",
+        "p_line_number",
+        "p_part_id",
+        "p_package_count",
+        "p_package_summary"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestLine_MarkComplete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_RequestLine_MarkComplete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_outside_service_request_line_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_completion_notes",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "outside_service_request_line",
+          "columns": [
+            "completed_utc"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_outside_service_request_line_id",
+        "p_completion_notes"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestLine_UpdateSetup.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_RequestLine_UpdateSetup",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_outside_service_request_line_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_setup_vendor_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_setup_vendor_name",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_setup_vendor_source",
+          "sqlType": "VARCHAR(30)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_bol_number",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_scheduled_ship_utc",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_shipping_contact",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_setup_notes",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "outside_service_request_line",
+          "columns": [
+            "setup_vendor_id"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_outside_service_request_line_id",
+        "p_setup_vendor_id",
+        "p_setup_vendor_name",
+        "p_setup_vendor_source",
+        "p_bol_number",
+        "p_scheduled_ship_utc",
+        "p_shipping_contact",
+        "p_setup_notes"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestPackage_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_OutsideService_RequestPackage_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_outside_service_request_line_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_package_sequence",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_package_quantity",
+          "sqlType": "DECIMAL(18"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "outside_service_request_package",
+          "columns": [
+            "outside_service_request_line_id",
+            "package_sequence",
+            "package_quantity"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_outside_service_request_line_id",
+        "p_package_sequence",
+        "p_package_quantity"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Get.sql",

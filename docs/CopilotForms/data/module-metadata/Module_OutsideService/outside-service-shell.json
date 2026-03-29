@@ -2,7 +2,7 @@
   "id": "outside-service-shell",
   "module": "Module_OutsideService",
   "name": "Outside Service Queue",
-  "summary": "Request-entry, active waitlist, setup, and completion history workflow for MySQL-backed outside service requests with Infor Visual part validation and vendor suggestions.",
+  "summary": "Waitlist-first Outside Service workflow for MySQL-backed requests with gated Setup access, shared-shell section headers, and Infor Visual validation and suggestion flows that honor configured mock-data mode.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_OutsideService/Contracts/IService_OutsideService.cs",
@@ -56,8 +56,8 @@
   },
   "uiHints": {
     "workflowAreas": [
-      "Request entry",
       "Active waitlist",
+      "Request entry",
       "Setup and shipment prep",
       "Completion history"
     ],
@@ -85,6 +85,8 @@
       "Card list"
     ],
     "uiElements": [
+      "Shared shell section header",
+      "Waitlist-first section tabs",
       "Request notes entry",
       "Add line modal",
       "Package breakdown editor",
@@ -94,9 +96,10 @@
       "Completion history list"
     ],
     "userActions": [
+      "Review and prioritize open lines",
       "Create a new outside service request",
       "Resolve uncertain part numbers",
-      "Review and prioritize open lines",
+      "Open Setup only after selecting a waitlist line",
       "Save setup details",
       "Mark setup lines complete",
       "Review completed work"
@@ -108,15 +111,21 @@
     ],
     "acceptanceCriteria": [
       "The shell opens from the main navigation",
+      "The shared window header reflects the active Outside Service section",
+      "The waitlist tab is the first Outside Service section shown",
       "Request entry can stage and save one or more lines",
       "Open lines appear in the waitlist after save",
+      "Setup cannot be opened until a waitlist line is selected",
       "Setup data can be saved and lines can be marked complete",
       "Completed lines appear in history"
     ],
     "validationHints": [
       "Confirm invalid part IDs are blocked before save",
       "Confirm package count and package rows must match",
+      "Confirm the Add Line modal opens with the wider custom header layout",
+      "Confirm Setup stays disabled when no waitlist line is selected",
       "Confirm vendor suggestions are ordered by most recent dispatch",
+      "Confirm Infor Visual suggestion and validation paths fall back only when mock data mode is enabled",
       "Confirm waitlist and history filters do not hide valid rows unexpectedly"
     ],
     "databaseObjects": [

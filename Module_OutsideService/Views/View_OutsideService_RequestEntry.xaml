@@ -13,7 +13,7 @@
         <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
-    <Grid RowSpacing="16">
+    <Grid RowSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -107,7 +107,13 @@
                 </Grid>
             </Border>
 
-            <StackPanel Grid.Column="1" Spacing="16">
+            <Grid Grid.Column="1" RowSpacing="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
                 <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Selected Line Summary" Style="{StaticResource SubtitleTextBlockStyle}" />
@@ -118,14 +124,14 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
+                <Border Grid.Row="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="How New Lines Are Added" Style="{StaticResource SubtitleTextBlockStyle}" />
                         <TextBlock Text="The Add Line modal is the only place where Part ID, package count, and per-package quantities are entered in Version 1." TextWrapping="Wrap" />
                         <TextBlock Text="Package quantities can differ from one package to the next, and the request cannot be saved until every quantity is valid." TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
-            </StackPanel>
+            </Grid>
         </Grid>
 
         <StackPanel Grid.Row="2" Spacing="12">

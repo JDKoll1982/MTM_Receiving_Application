@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
@@ -15,7 +16,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Label entry page - Orchestrates workflow step visibility
 /// </summary>
-public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_WorkFlowViewModel
+    : ViewModel_Shared_Base,
+        IViewModel_HeaderTitleProvider
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Window _windowService;
@@ -92,7 +95,10 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
     private bool _isEditModeVisible;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
     private string _currentStepTitle = "Dunnage - Mode Selection";
+
+    public string CurrentHeaderTitle => CurrentStepTitle;
 
     #endregion
 

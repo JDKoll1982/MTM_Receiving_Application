@@ -18,7 +18,7 @@
                 <TextBlock Text="Opened from Add Line modal" Foreground="#0f6cbd" FontWeight="SemiBold" />
             </Border>
             <TextBlock Text="No exact match was found for the typed value below." TextWrapping="Wrap" />
-            <TextBlock Text="{x:Bind TypedValue, Mode=OneWay}" FontFamily="Consolas" />
+            <TextBlock x:Name="TypedValueTextBlock" FontFamily="Consolas" />
         </StackPanel>
 
         <Grid Grid.Row="1" ColumnSpacing="16">
@@ -28,7 +28,7 @@
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="16" Padding="12">
-                <ListView x:Name="SuggestionsList" ItemsSource="{x:Bind Suggestions, Mode=OneWay}" SelectionChanged="SuggestionsList_SelectionChanged">
+                <ListView x:Name="SuggestionsList" SelectionChanged="SuggestionsList_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_OutsideServicePartMatchSuggestion">
                             <Border Margin="0,0,0,8" Background="#ffffff" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="12" Padding="12">

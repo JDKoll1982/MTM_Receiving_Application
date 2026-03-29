@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
@@ -14,12 +15,17 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 /// Controls which view (tool selection or a specific tool) is currently displayed.
 /// Mirrors the pattern of ViewModel_Receiving_Workflow.
 /// </summary>
-public partial class ViewModel_ShipRecTools_Main : ViewModel_Shared_Base
+public partial class ViewModel_ShipRecTools_Main
+    : ViewModel_Shared_Base,
+        IViewModel_HeaderTitleProvider
 {
     private readonly IService_ShipRecTools_Navigation _navigationService;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
     private string _currentToolTitle = "Ship/Rec Tools";
+
+    public string CurrentHeaderTitle => CurrentToolTitle;
 
     [ObservableProperty]
     private bool _isToolSelectionVisible = true;

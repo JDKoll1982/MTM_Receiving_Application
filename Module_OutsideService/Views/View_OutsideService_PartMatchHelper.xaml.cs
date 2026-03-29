@@ -20,6 +20,9 @@ public sealed partial class View_OutsideService_PartMatchHelper : ContentDialog
         Suggestions = suggestions ?? throw new ArgumentNullException(nameof(suggestions));
         InitializeComponent();
 
+        TypedValueTextBlock.Text = TypedValue;
+        SuggestionsList.ItemsSource = Suggestions;
+
         if (Suggestions.Count > 0)
         {
             SuggestionsList.SelectedIndex = 0;

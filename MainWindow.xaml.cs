@@ -8,6 +8,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
@@ -34,6 +35,14 @@ namespace MTM_Receiving_Application
         /// Gets the main content frame for navigation
         /// </summary>
         public Frame GetContentFrame() => ContentFrame;
+
+        public void SetContentPage(Page page, string? fallbackTitle = null)
+        {
+            ArgumentNullException.ThrowIfNull(page);
+
+            ContentFrame.Content = page;
+            SyncPageHeader(page, fallbackTitle ?? GetFallbackTitle(page.GetType()));
+        }
 
         public MainWindow(
             ViewModel_Shared_MainWindow viewModel,
@@ -146,7 +155,7 @@ namespace MTM_Receiving_Application
             ),
             ["OutsideServiceMainPage"] = (
                 typeof(Module_OutsideService.Views.View_OutsideService_Main),
-                "Outside Service"
+                string.Empty
             ),
             ["VolvoShipmentEntry"] = (
                 typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry),
@@ -188,13 +197,8 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            if (!string.IsNullOrEmpty(route.Title))
-            {
-                PageTitleTextBlock.Text = route.Title;
-            }
-
             await ClearModuleDraftStateBeforeNavigationAsync(route.PageType);
-            NavigateWithDI(route.PageType);
+            NavigateWithDI(route.PageType, route.Title);
         }
 
         private async Task ClearModuleDraftStateBeforeNavigationAsync(Type destinationPageType)
@@ -222,6 +226,93 @@ namespace MTM_Receiving_Application
             }
         }
 
+        private void ClearHeaderSubscription()
+        {
+            if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
+            {
+                _logger.LogInfo(
+                    $"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}"
+                );
+                _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
+            }
+
+            _currentWorkflowViewModel = null;
+            _currentPropertyChangedHandler = null;
+        }
+
+        private void UpdateHeaderText(string title)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                PageTitleTextBlock.Text = title;
+            });
+        }
+
+        private void TrackHeaderProvider(IViewModel_HeaderTitleProvider viewModel)
+        {
+            UpdateHeaderText(viewModel.CurrentHeaderTitle);
+
+            _currentPropertyChangedHandler = (s, args) =>
+            {
+                if (args.PropertyName == nameof(IViewModel_HeaderTitleProvider.CurrentHeaderTitle))
+                {
+                    UpdateHeaderText(viewModel.CurrentHeaderTitle);
+                }
+            };
+
+            viewModel.PropertyChanged += _currentPropertyChangedHandler;
+            _currentWorkflowViewModel = viewModel;
+        }
+
+        private void SyncPageHeader(object? content, string? fallbackTitle = null)
+        {
+            ClearHeaderSubscription();
+
+            var headerProvider = ResolveHeaderProvider(content);
+            if (headerProvider != null)
+            {
+                TrackHeaderProvider(headerProvider);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(fallbackTitle))
+            {
+                UpdateHeaderText(fallbackTitle);
+            }
+        }
+
+        private static IViewModel_HeaderTitleProvider? ResolveHeaderProvider(object? content)
+        {
+            if (content is null)
+            {
+                return null;
+            }
+
+            if (content is IViewModel_HeaderTitleProvider directProvider)
+            {
+                return directProvider;
+            }
+
+            if (content is FrameworkElement frameworkElement
+                && frameworkElement.DataContext is IViewModel_HeaderTitleProvider dataContextProvider)
+            {
+                return dataContextProvider;
+            }
+
+            var viewModelProperty = content.GetType().GetProperty("ViewModel");
+            return viewModelProperty?.GetValue(content) as IViewModel_HeaderTitleProvider;
+        }
+
+        private static string GetFallbackTitle(Type? pageType)
+        {
+            if (pageType is null)
+            {
+                return string.Empty;
+            }
+
+            return _navRoutes.Values.FirstOrDefault(route => route.PageType == pageType).Title ?? string.Empty;
+        }
+
         private void ContentFrame_Navigated(
             object sender,
             Microsoft.UI.Xaml.Navigation.NavigationEventArgs e
@@ -231,120 +322,7 @@ namespace MTM_Receiving_Application
                 $"ContentFrame_Navigated: Navigated to {e.SourcePageType?.Name ?? "Unknown"}"
             );
 
-            // Unsubscribe from previous ViewModel to prevent memory leaks and incorrect header updates
-            if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
-            {
-                _logger.LogInfo(
-                    $"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}"
-                );
-                _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
-                _currentWorkflowViewModel = null;
-                _currentPropertyChangedHandler = null;
-            }
-
-            // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
-            if (
-                ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView
-            )
-            {
-                var viewModel = receivingView.ViewModel;
-                if (viewModel != null)
-                {
-                    _logger.LogInfo(
-                        $"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}"
-                    );
-
-                    // Update header with current step title (ensure UI thread)
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                        _logger.LogInfo(
-                            $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
-                        );
-                    });
-
-                    // Create and store the event handler
-                    _currentPropertyChangedHandler = (s, args) =>
-                    {
-                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
-                        {
-                            _logger.LogInfo(
-                                $"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}"
-                            );
-                            // Ensure UI update happens on UI thread
-                            DispatcherQueue.TryEnqueue(() =>
-                            {
-                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                                _logger.LogInfo(
-                                    $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
-                                );
-                            });
-                        }
-                    };
-
-                    // Subscribe to property changes to keep header updated
-                    viewModel.PropertyChanged += _currentPropertyChangedHandler;
-                    _currentWorkflowViewModel = viewModel;
-                    _logger.LogInfo(
-                        "Successfully subscribed to Receiving ViewModel PropertyChanged"
-                    );
-                }
-                else
-                {
-                    _logger.LogWarning("Receiving view ViewModel is null");
-                }
-            }
-            // If navigated to DunnageWorkflowView, subscribe to ViewModel changes to update header
-            else if (
-                ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView
-            )
-            {
-                var viewModel = dunnageView.ViewModel;
-                if (viewModel != null)
-                {
-                    _logger.LogInfo(
-                        $"Subscribing to Dunnage ViewModel. Current title: {viewModel.CurrentStepTitle}"
-                    );
-
-                    // Update header with current step title (ensure UI thread)
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                        _logger.LogInfo(
-                            $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
-                        );
-                    });
-
-                    // Create and store the event handler
-                    _currentPropertyChangedHandler = (s, args) =>
-                    {
-                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
-                        {
-                            _logger.LogInfo(
-                                $"PropertyChanged received for Dunnage CurrentStepTitle: {viewModel.CurrentStepTitle}"
-                            );
-                            // Ensure UI update happens on UI thread
-                            DispatcherQueue.TryEnqueue(() =>
-                            {
-                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                                _logger.LogInfo(
-                                    $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
-                                );
-                            });
-                        }
-                    };
-
-                    // Subscribe to property changes to keep header updated
-                    viewModel.PropertyChanged += _currentPropertyChangedHandler;
-                    _currentWorkflowViewModel = viewModel;
-                    _logger.LogInfo("Successfully subscribed to Dunnage ViewModel PropertyChanged");
-                }
-                else
-                {
-                    _logger.LogWarning("Dunnage view ViewModel is null");
-                }
-            }
-            // Settings Window runs in a separate window (no ContentFrame integration).
+            SyncPageHeader(ContentFrame.Content, GetFallbackTitle(e.SourcePageType));
         }
 
         /// <summary>
@@ -694,7 +672,7 @@ namespace MTM_Receiving_Application
         /// Navigate to a page type using dependency injection for view instantiation
         /// </summary>
         /// <param name="pageType"></param>
-        private bool NavigateWithDI(Type pageType)
+        private bool NavigateWithDI(Type pageType, string? fallbackTitle = null)
         {
             try
             {
@@ -710,99 +688,8 @@ namespace MTM_Receiving_Application
                     return false;
                 }
 
-                // Set the content directly instead of using Navigate
-                ContentFrame.Content = page;
-
-                // Manually trigger the same logic as ContentFrame_Navigated since we're bypassing Navigate()
+                SetContentPage((Page)page, fallbackTitle ?? GetFallbackTitle(pageType));
                 _logger.LogInfo($"NavigateWithDI: Navigated to {pageType.Name}");
-
-                // Unsubscribe from previous ViewModel to prevent memory leaks
-                if (_currentWorkflowViewModel != null && _currentPropertyChangedHandler != null)
-                {
-                    _logger.LogInfo(
-                        $"Unsubscribing from previous ViewModel: {_currentWorkflowViewModel.GetType().Name}"
-                    );
-                    _currentWorkflowViewModel.PropertyChanged -= _currentPropertyChangedHandler;
-                    _currentWorkflowViewModel = null;
-                    _currentPropertyChangedHandler = null;
-                }
-
-                // If navigated to ShipRecToolsView, set static title
-                if (page is Module_ShipRec_Tools.Views.View_ShipRecTools_Main shipRecView)
-                {
-                    var viewModel = shipRecView.ViewModel;
-                    if (viewModel != null)
-                    {
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            PageTitleTextBlock.Text = viewModel.CurrentToolTitle;
-                        });
-
-                        _currentPropertyChangedHandler = (s, propArgs) =>
-                        {
-                            if (propArgs.PropertyName == nameof(viewModel.CurrentToolTitle))
-                            {
-                                DispatcherQueue.TryEnqueue(() =>
-                                {
-                                    PageTitleTextBlock.Text = viewModel.CurrentToolTitle;
-                                });
-                            }
-                        };
-
-                        viewModel.PropertyChanged += _currentPropertyChangedHandler;
-                        _currentWorkflowViewModel = viewModel;
-                    }
-                }
-                // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes
-                else if (page is Module_Receiving.Views.View_Receiving_Workflow receivingView)
-                {
-                    var viewModel = receivingView.ViewModel;
-                    if (viewModel != null)
-                    {
-                        _logger.LogInfo(
-                            $"Subscribing to Receiving ViewModel. Current title: {viewModel.CurrentStepTitle}"
-                        );
-
-                        // Update header with current step title (ensure UI thread)
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                            _logger.LogInfo(
-                                $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
-                            );
-                        });
-
-                        // Create and store the event handler
-                        _currentPropertyChangedHandler = (s, args) =>
-                        {
-                            if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
-                            {
-                                _logger.LogInfo(
-                                    $"PropertyChanged received for CurrentStepTitle: {viewModel.CurrentStepTitle}"
-                                );
-                                // Ensure UI update happens on UI thread
-                                DispatcherQueue.TryEnqueue(() =>
-                                {
-                                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                                    _logger.LogInfo(
-                                        $"MainWindow header updated to: {viewModel.CurrentStepTitle}"
-                                    );
-                                });
-                            }
-                        };
-
-                        // Subscribe to property changes to keep header updated
-                        viewModel.PropertyChanged += _currentPropertyChangedHandler;
-                        _currentWorkflowViewModel = viewModel;
-                        _logger.LogInfo(
-                            "Successfully subscribed to Receiving ViewModel PropertyChanged"
-                        );
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Receiving view ViewModel is null");
-                    }
-                }
 
                 return true;
             }
@@ -837,7 +724,7 @@ namespace MTM_Receiving_Application
             // Try to resolve using DI as fallback
             if (e.SourcePageType != null)
             {
-                NavigateWithDI(e.SourcePageType);
+                NavigateWithDI(e.SourcePageType, GetFallbackTitle(e.SourcePageType));
             }
         }
     }

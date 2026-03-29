@@ -13,43 +13,35 @@
         <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
-    <Grid RowSpacing="16">
+    <Grid RowSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#115ea3" CornerRadius="18" Padding="20">
-            <Grid>
+        <Border Grid.Row="0" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="18" Padding="16">
+            <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="Active Waitlist" Style="{StaticResource TitleTextBlockStyle}" Foreground="White" />
-                    <TextBlock Text="Open lines grouped by phase so Shipping can work Initialize and Setup items without losing package context." Foreground="#d9ecff" TextWrapping="Wrap" />
-                </StackPanel>
-                <Button Grid.Column="1" Content="Refresh" Command="{x:Bind ViewModel.RefreshCommand}" IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                <TextBox Grid.Column="0" Header="Search" PlaceholderText="Search request, part, vendor, or BOL" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" />
+                <ComboBox Grid.Column="1" Header="Phase" ItemsSource="{x:Bind ViewModel.PhaseFilterOptions, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedPhaseFilter, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                <ComboBox Grid.Column="2" Header="Sort" ItemsSource="{x:Bind ViewModel.SortOptions, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedSortOption, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                <Button Grid.Column="3" Content="Refresh" Command="{x:Bind ViewModel.RefreshCommand}" IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" VerticalAlignment="Bottom" />
             </Grid>
         </Border>
 
-        <Border Grid.Row="1" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="18" Padding="16">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <TextBox Width="320" Header="Search" PlaceholderText="Search request, part, vendor, or BOL" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <ComboBox Width="180" Header="Phase" ItemsSource="{x:Bind ViewModel.PhaseFilterOptions, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedPhaseFilter, Mode=TwoWay}" />
-                <ComboBox Width="180" Header="Sort" ItemsSource="{x:Bind ViewModel.SortOptions, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedSortOption, Mode=TwoWay}" />
-            </StackPanel>
-        </Border>
-
-        <Grid Grid.Row="2" ColumnSpacing="16">
+        <Grid Grid.Row="1" ColumnSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="18" Padding="16">
-                <ListView ItemsSource="{x:Bind ViewModel.FilteredLines, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedLine, Mode=TwoWay}">
+                <ListView ItemsSource="{x:Bind ViewModel.FilteredLines, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedLine, Mode=TwoWay}" HorizontalAlignment="Stretch">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_OutsideServiceRequestLine">
                             <Border Margin="0,0,0,8" Background="#ffffff" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="14" Padding="12">
@@ -80,7 +72,13 @@
                 </ListView>
             </Border>
 
-            <StackPanel Grid.Column="1" Spacing="16">
+            <Grid Grid.Column="1" RowSpacing="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
                 <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Line Detail" Style="{StaticResource SubtitleTextBlockStyle}" />
@@ -92,7 +90,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
+                <Border Grid.Row="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Actions" Style="{StaticResource SubtitleTextBlockStyle}" />
                         <TextBlock Text="Open the selected line to continue Setup or to mark a Setup line complete." TextWrapping="Wrap" />
@@ -101,11 +99,12 @@
                 </Border>
 
                 <InfoBar
+                    Grid.Row="2"
                     IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
                     Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
                     Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                     IsClosable="True" />
-            </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

@@ -62,6 +62,8 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
 
     public event Action<Model_OutsideServiceRequestLine>? SetupRequested;
 
+    public event Action<Model_OutsideServiceRequestLine?>? SelectedLineChanged;
+
     /// <summary>
     /// Gets whether a waitlist line is selected.
     /// </summary>
@@ -71,6 +73,11 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
     /// Gets the primary detail-panel action text.
     /// </summary>
     public string PrimaryActionText => SelectedLine?.NextStepLabel ?? "Open Line";
+
+    partial void OnSelectedLineChanged(Model_OutsideServiceRequestLine? value)
+    {
+        SelectedLineChanged?.Invoke(value);
+    }
 
     [RelayCommand]
     private async Task LoadAsync()

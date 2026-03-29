@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI.Triggers;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -15,7 +16,9 @@ using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoB
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Workflow
+        : ViewModel_Shared_Base,
+            IViewModel_HeaderTitleProvider
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
@@ -23,7 +26,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
         private string _currentStepTitle = "Receiving - Mode Selection";
+
+        public string CurrentHeaderTitle => CurrentStepTitle;
 
         /// <summary>
         /// Called when CurrentStepTitle changes - ensures MainWindow header updates

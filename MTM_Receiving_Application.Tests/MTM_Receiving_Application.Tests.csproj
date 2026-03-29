@@ -12,6 +12,14 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <_WinUITestAssetRuntime Condition="'$(Platform)' == 'ARM64'">win-arm64</_WinUITestAssetRuntime>
+    <_WinUITestAssetRuntime Condition="'$(_WinUITestAssetRuntime)' == '' and '$(Platform)' == 'x86'">win-x86</_WinUITestAssetRuntime>
+    <_WinUITestAssetRuntime Condition="'$(_WinUITestAssetRuntime)' == ''">win-x64</_WinUITestAssetRuntime>
+    <_ReferencedAppWinUIAssetSourceDir>$(PkgMicrosoft_WindowsAppSDK_WinUI)\runtimes-framework\$(_WinUITestAssetRuntime)\native\Microsoft.UI.Xaml\Assets</_ReferencedAppWinUIAssetSourceDir>
+    <_ReferencedAppWinUIAssetOutputDir>$(MSBuildThisFileDirectory)..\bin\$(Platform)\$(Configuration)\$(TargetFramework)\Microsoft.UI.Xaml\Assets</_ReferencedAppWinUIAssetOutputDir>
+  </PropertyGroup>
+
   <!-- xUnit packages (per project standards) -->
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.5" />
@@ -52,4 +60,23 @@
       <AdditionalProperties>WindowsAppSdkBootstrapInitialize=false;WindowsAppSdkUndockedRegFreeWinRTInitialize=false;WindowsAppSDKSelfContained=false</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>
+
+  <Target Name="RestoreReferencedWinUIAssetsForTests"
+          AfterTargets="ResolveProjectReferences"
+          BeforeTargets="CopyFilesToOutputDirectory"
+          Condition="Exists('$(_ReferencedAppWinUIAssetSourceDir)')">
+    <ItemGroup>
+      <_ReferencedWinUIAsset Include="$(_ReferencedAppWinUIAssetSourceDir)\map.html">
+        <TargetPath>$(_ReferencedAppWinUIAssetOutputDir)\map.html</TargetPath>
+      </_ReferencedWinUIAsset>
+      <_ReferencedWinUIAsset Include="$(_ReferencedAppWinUIAssetSourceDir)\NoiseAsset_256x256_PNG.png">
+        <TargetPath>$(_ReferencedAppWinUIAssetOutputDir)\NoiseAsset_256X256_PNG.png</TargetPath>
+      </_ReferencedWinUIAsset>
+    </ItemGroup>
+
+    <MakeDir Directories="$(_ReferencedAppWinUIAssetOutputDir)" />
+    <Copy SourceFiles="@(_ReferencedWinUIAsset)"
+          DestinationFiles="@(_ReferencedWinUIAsset->'%(TargetPath)')"
+          SkipUnchangedFiles="true" />
+  </Target>
 </Project>

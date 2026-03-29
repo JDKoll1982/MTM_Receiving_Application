@@ -13,22 +13,14 @@
         <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
-    <ScrollViewer>
-        <Grid Padding="20" RowSpacing="16">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" HorizontalScrollMode="Disabled">
+        <Grid Padding="20" RowSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="#115ea3" CornerRadius="18" Padding="20">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="Outside Service Setup" Style="{StaticResource TitleTextBlockStyle}" Foreground="White" />
-                    <TextBlock Text="Shipping owns vendor selection, BOL setup, and final completion for the selected line." Foreground="#d9ecff" TextWrapping="Wrap" />
-                </StackPanel>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid Grid.Row="0" ColumnSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="*" />
@@ -91,7 +83,7 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
                 <Button Content="Return To Queue" Command="{x:Bind ViewModel.ReturnToQueueCommand}" />
                 <Button Content="{x:Bind ViewModel.PrimaryActionText, Mode=OneWay}" Command="{x:Bind ViewModel.SavePrimaryActionCommand}" Style="{StaticResource AccentButtonStyle}" IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
             </StackPanel>

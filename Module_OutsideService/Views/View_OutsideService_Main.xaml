@@ -10,49 +10,46 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
-    <Grid Padding="20" RowSpacing="16">
+    <Grid Padding="20" RowSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Spacing="12">
-            <Border
-                Background="#115ea3"
-                CornerRadius="18"
-                Padding="20">
-                <StackPanel Spacing="8">
-                    <TextBlock
-                        Text="Outside Service"
-                        Style="{StaticResource TitleTextBlockStyle}"
-                        Foreground="White" />
-                    <TextBlock
-                        Text="Create requests, work the active line waitlist, and review completed Outside Service history."
-                        Foreground="#d9ecff"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </Border>
+        <Grid Grid.Row="0" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <Button Content="Request Entry" Command="{x:Bind ViewModel.ShowRequestEntryCommand}" Style="{StaticResource AccentButtonStyle}" />
-                <Button Content="Active Waitlist" Command="{x:Bind ViewModel.ShowWaitlistCommand}" />
-                <Button Content="Setup" Command="{x:Bind ViewModel.ShowSetupCommand}" />
-                <Button Content="Complete History" Command="{x:Bind ViewModel.ShowHistoryCommand}" />
-            </StackPanel>
-        </StackPanel>
+            <Button Grid.Column="0" Content="Active Waitlist" Command="{x:Bind ViewModel.ShowWaitlistCommand}" MinHeight="40" HorizontalAlignment="Stretch" />
+            <Button Grid.Column="1" Content="Request Entry" Command="{x:Bind ViewModel.ShowRequestEntryCommand}" MinHeight="40" HorizontalAlignment="Stretch" />
+            <Button Grid.Column="2" Content="Setup" Command="{x:Bind ViewModel.ShowSetupCommand}" IsEnabled="{x:Bind ViewModel.IsSetupEnabled, Mode=OneWay}" MinHeight="40" HorizontalAlignment="Stretch" />
+            <Button Grid.Column="3" Content="Complete History" Command="{x:Bind ViewModel.ShowHistoryCommand}" MinHeight="40" HorizontalAlignment="Stretch" />
+        </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ContentControl
                 x:Name="RequestEntryHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsRequestEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <ContentControl
                 x:Name="WaitlistHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsWaitlistVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <ContentControl
                 x:Name="SetupHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsSetupVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <ContentControl
                 x:Name="HistoryHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsHistoryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
     </Grid>
