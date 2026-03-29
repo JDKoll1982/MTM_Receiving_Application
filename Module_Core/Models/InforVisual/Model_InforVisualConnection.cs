@@ -10,8 +10,8 @@ public class Model_InforVisualConnection
 {
     public string Server { get; set; } = InforVisualDefaults.DefaultServer;
     public string Database { get; set; } = InforVisualDefaults.DefaultDatabase;
-    public string UserId { get; set; } = "SHOP2";
-    public string Password { get; set; } = "SHOP";
+    public string UserId { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public string SiteId { get; set; } = InforVisualDefaults.DefaultSiteId;
 
     /// <summary>

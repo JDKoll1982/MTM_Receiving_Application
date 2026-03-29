@@ -2,7 +2,7 @@
   "id": "receiving-edit-mode",
   "module": "Module_Receiving",
   "name": "Edit Mode",
-  "summary": "In-place editing of current-memory, current-label, and history-backed receiving loads with search, paging, validation, save coordination, and immediate current-label grid clearing after label queue resets.",
+  "summary": "In-place editing of current-memory, current-label, and history-backed receiving loads with search, paging, validation, save coordination, immediate current-label grid clearing after label queue resets, and ownership-based Edit Mode restrictions for standard users.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
@@ -17,6 +17,8 @@
     "Module_Receiving/Services/Service_ReceivingSettings.cs",
     "Module_Receiving/Services/Service_ReceivingValidation.cs",
     "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+    "Module_Core/Contracts/Services/IService_UserSessionManager.cs",
+    "Module_Core/Contracts/Services/IService_UserPrivileges.cs",
     "Module_Receiving/Models/Model_ReceivingLine.cs",
     "Module_Receiving/Models/Model_EditModeColumn.cs",
     "Module_Receiving/Settings/ReceivingSettingsKeys.cs"
@@ -28,6 +30,8 @@
     "IService_ReceivingSettings",
     "IService_ReceivingValidation",
     "IService_ReceivingWorkflow",
+    "IService_UserSessionManager",
+    "IService_UserPrivileges",
     "Service_MySQL_ReceivingLine",
     "Service_MySQL_Receiving",
     "Service_ReceivingLabelData",
@@ -48,6 +52,7 @@
       "Edit existing loads",
       "Search and page through saved receiving entries",
       "Switch between current memory, current labels, and history",
+      "Restrict standard users to rows they created",
       "Persist edit-grid preferences",
       "Clear the current-label grid when the active label queue is reset"
     ],
@@ -81,6 +86,7 @@
       "Scan existing loads quickly",
       "Find a load by search",
       "Switch between memory, label queue, and history data",
+      "Only view and manage rows created by the signed-in user unless the role is Admin or Developer",
       "See the current-label grid empty immediately after the label queue is cleared",
       "Review one load at a time",
       "Edit a selected record",
@@ -93,26 +99,27 @@
       "Keep important actions visible without scrolling"
     ],
     "preserveRules": [
-      "Keep business logic unchanged",
       "Keep validation rules unchanged",
-      "Keep service layer unchanged",
       "Keep DAO/data flow unchanged",
-      "Keep save behavior unchanged",
       "Keep search behavior unless explicitly changed",
-      "Keep paging unless explicitly changed"
+      "Keep paging unless explicitly changed",
+      "Keep Admin and Developer edit access unrestricted"
     ],
     "acceptanceCriteria": [
       "Users can review entries more easily than in the current grid",
       "Data-source switching still loads the intended records",
+      "Standard users only see and manage rows they created in Edit Mode",
+      "Admin and Developer users can view and manage all Edit Mode rows",
       "Clearing label data empties the grid when Current Labels is the active source",
       "Saved column visibility and page-size preferences still apply",
       "Search still works",
       "Paging still works unless the request says otherwise",
-      "Existing save behavior still works",
-      "No business logic or data flow changes"
+      "Existing save behavior still works"
     ],
     "reviewFocusAreas": [
       "Data-source switching",
+      "Ownership-based row visibility",
+      "Ownership-based save/delete enforcement",
       "Current-label clear behavior",
       "Grid-to-card regressions",
       "Search and paging behavior",
@@ -122,6 +129,8 @@
     ],
     "testScenarios": [
       "Switching between current memory, current labels, and history loads the correct record source",
+      "Standard users only see rows they created in Edit Mode",
+      "Admin and Developer users retain unrestricted Edit Mode access",
       "Clearing label data while Current Labels is active empties the edit grid immediately",
       "Search still finds matching results",
       "Paging still moves through records correctly",
@@ -131,6 +140,7 @@
     ],
     "docTopics": [
       "Edit mode overview",
+      "Ownership-based Edit Mode access",
       "Data-source switching behavior",
       "Current-label clear behavior",
       "Search and paging behavior",
@@ -140,6 +150,8 @@
     ],
     "validationHints": [
       "Confirm each data source still loads the intended records",
+      "Confirm standard users only see and manage rows they created",
+      "Confirm Admin and Developer users can still manage all rows",
       "Confirm clearing label data empties the grid when Current Labels is active",
       "Confirm search still works",
       "Confirm paging still works",
@@ -171,6 +183,8 @@
     ],
     "loggingEvents": [
       "Data source changes",
+      "Ownership filter application",
+      "Ownership restriction blocks",
       "Search requests",
       "Paging changes",
       "Column visibility changes",

@@ -2,11 +2,12 @@
   "id": "reporting-generation",
   "module": "Module_Reporting",
   "name": "Report Generation",
-  "summary": "Generation of reporting sections and summary tables for selected modules, including the reporting dashboard host and supporting output inventory documentation.",
+  "summary": "Generation of reporting sections and summary tables for selected modules, including row-display mode selection, per-module table sorting, forced Loads/Skids combined-row counts in combine modes, the reporting dashboard host, and supporting output inventory documentation.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Reporting/Contracts/IService_Reporting.cs",
     "Module_Reporting/Data/Dao_Reporting.cs",
+    "Module_Reporting/Models/Enum_ReportingPreviewRowDisplayMode.cs",
     "Module_Reporting/Services/Service_Reporting.cs",
     "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
     "Module_Reporting/Views/View_Reporting_Main.xaml",
@@ -14,10 +15,7 @@
     "Module_Reporting/README.md",
     "Module_Reporting/SETTABLE_OBJECTS_REPORT.md"
   ],
-  "relatedServices": [
-    "IService_Reporting",
-    "Service_Reporting"
-  ],
+  "relatedServices": ["IService_Reporting", "Service_Reporting"],
   "promptDefaults": {
     "audience": "Supervisor",
     "docAudience": "Supervisor",
@@ -28,18 +26,34 @@
   "uiHints": {
     "workflowAreas": ["Generate reports"],
     "screens": ["View_Reporting_Main.xaml"],
-    "currentUiPatterns": ["Form", "Toolbar + results list"],
-    "desiredUiPatterns": ["Card list", "Split layout", "Form"],
+    "currentUiPatterns": [
+      "Form",
+      "Toolbar + results list",
+      "Options-driven preview flow"
+    ],
+    "desiredUiPatterns": [
+      "Tabbed card list",
+      "Split layout",
+      "Form",
+      "Options-driven preview flow"
+    ],
     "uiElements": [
       "Module selection area",
+      "Row display mode options",
+      "Per-module sort options",
       "Generate Reports button",
       "Status area"
     ],
     "userActions": [
       "Choose report modules",
+      "Choose how grouped detail rows are shown",
+      "Choose how each module preview table is sorted",
       "Generate reports"
     ],
     "validationHints": [
+      "Confirm each row-display mode produces the expected grouped detail rows for supported modules",
+      "Confirm each module preview table can sort independently by the selected sort field and direction",
+      "Confirm combine modes force the Loads/Skids detail column on and replace its value with the grouped row count",
       "Confirm reports still generate correctly for the selected modules"
     ]
   }

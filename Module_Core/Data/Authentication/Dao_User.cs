@@ -24,6 +24,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// Constructor with connection string injection
         /// </summary>
         /// <param name="connectionString">MySQL connection string</param>
+        /// <param name="credentialProtection"></param>
         public Dao_User(
             string connectionString,
             IService_AuthCredentialProtection credentialProtection

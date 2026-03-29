@@ -10,6 +10,10 @@ using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Views;
+using MTM_Receiving_Application.Module_OutsideService.Contracts;
+using MTM_Receiving_Application.Module_OutsideService.Data;
+using MTM_Receiving_Application.Module_OutsideService.Services;
+using MTM_Receiving_Application.Module_OutsideService.ViewModels;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Services;
@@ -51,6 +55,7 @@ public static class ModuleServicesExtensions
     {
         services.AddReceivingModule(configuration);
         services.AddDunnageModule(configuration);
+        services.AddOutsideServiceModule(configuration);
         services.AddVolvoModule(configuration);
         services.AddReportingModule(configuration);
         services.AddSettingsModule(configuration);
@@ -296,6 +301,40 @@ public static class ModuleServicesExtensions
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Reporting.Views.View_Reporting_Main>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers Outside Service module services, DAOs, ViewModels, and Views.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    private static IServiceCollection AddOutsideServiceModule(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException("MySql connection string not found");
+
+        services.AddSingleton(_ => new Dao_OutsideServiceRequest(mySqlConnectionString));
+        services.AddSingleton<IService_OutsideService, Service_OutsideService>();
+
+        services.AddTransient<ViewModel_OutsideService_Main>();
+        services.AddTransient<ViewModel_OutsideService_RequestEntry>();
+        services.AddTransient<ViewModel_OutsideService_Waitlist>();
+        services.AddTransient<ViewModel_OutsideService_Setup>();
+        services.AddTransient<ViewModel_OutsideService_CompleteHistory>();
+
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_Main>();
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_RequestEntry>();
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_Waitlist>();
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_Setup>();
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_CompleteHistory>();
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_AddLineModal>();
+        services.AddTransient<Module_OutsideService.Views.View_OutsideService_PartMatchHelper>();
 
         return services;
     }

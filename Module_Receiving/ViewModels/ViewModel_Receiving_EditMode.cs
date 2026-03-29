@@ -21,6 +21,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     /// </summary>
     public partial class ViewModel_Receiving_EditMode : ViewModel_Shared_Base, IResettableViewModel
     {
+        private const string EditModeOwnershipRestrictionMessage =
+            "You can only view, change, or remove rows that you created. Admin and Developer users can access all Edit Mode rows.";
+
         // ------------------------------------------------------------------ services
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
@@ -30,6 +33,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Window _windowService;
+        private readonly IService_UserSessionManager _sessionManager;
+        private readonly IService_UserPrivileges _userPrivileges;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         // ------------------------------------------------------------------ data
@@ -223,6 +228,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_Notification notificationService,
             IService_ReceivingValidation validationService,
+            IService_UserSessionManager sessionManager,
+            IService_UserPrivileges userPrivileges,
             IService_ViewModelRegistry viewModelRegistry
         )
             : base(errorHandler, logger, notificationService)
@@ -235,6 +242,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _validationService = validationService;
+            _sessionManager = sessionManager;
+            _userPrivileges = userPrivileges;
             _viewModelRegistry = viewModelRegistry;
 
             _loads = new ObservableCollection<Model_ReceivingLoad>();
@@ -273,6 +282,96 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectAllButtonText = "Select All";
             StatusMessage = string.Empty;
             _currentLabelDataPath = null;
+        }
+
+        private bool CurrentUserHasFullEditModeAccess()
+        {
+            var currentUser = _sessionManager.CurrentSession?.User;
+            return currentUser != null
+                && _userPrivileges.IsInitialized
+                && _userPrivileges.CurrentUserId == currentUser.EmployeeNumber
+                && _userPrivileges.HasAnyRole("Admin", "Developer");
+        }
+
+        private bool IsLoadOwnedByCurrentUser(Model_ReceivingLoad load)
+        {
+            if (CurrentUserHasFullEditModeAccess())
+            {
+                return true;
+            }
+
+            var currentUser = _sessionManager.CurrentSession?.User;
+            if (currentUser == null)
+            {
+                return false;
+            }
+
+            if (
+                currentUser.EmployeeNumber > 0
+                && load.EmployeeNumber > 0
+                && currentUser.EmployeeNumber == load.EmployeeNumber
+            )
+            {
+                return true;
+            }
+
+            return !string.IsNullOrWhiteSpace(currentUser.WindowsUsername)
+                && !string.IsNullOrWhiteSpace(load.UserId)
+                && string.Equals(
+                    currentUser.WindowsUsername,
+                    load.UserId,
+                    StringComparison.OrdinalIgnoreCase
+                );
+        }
+
+        private List<Model_ReceivingLoad> ApplyOwnershipVisibilityRules(
+            IEnumerable<Model_ReceivingLoad> loads,
+            string sourceName
+        )
+        {
+            var sourceLoads = loads?.ToList() ?? new List<Model_ReceivingLoad>();
+            if (CurrentUserHasFullEditModeAccess())
+            {
+                return sourceLoads;
+            }
+
+            var visibleLoads = sourceLoads.Where(IsLoadOwnedByCurrentUser).ToList();
+            if (visibleLoads.Count != sourceLoads.Count)
+            {
+                _logger.LogInfo(
+                    $"Hid {sourceLoads.Count - visibleLoads.Count} {sourceName} rows created by other users."
+                );
+            }
+
+            return visibleLoads;
+        }
+
+        private async Task<bool> EnsureCurrentUserCanManageLoadsAsync(
+            IEnumerable<Model_ReceivingLoad> loads,
+            string actionDescription
+        )
+        {
+            var candidateLoads = loads?.ToList() ?? new List<Model_ReceivingLoad>();
+            if (candidateLoads.Count == 0 || CurrentUserHasFullEditModeAccess())
+            {
+                return true;
+            }
+
+            var unauthorizedCount = candidateLoads.Count(load => !IsLoadOwnedByCurrentUser(load));
+            if (unauthorizedCount == 0)
+            {
+                return true;
+            }
+
+            _logger.LogWarning(
+                $"Blocked edit-mode {actionDescription} for {unauthorizedCount} row(s) created by other users."
+            );
+            await _errorHandler.ShowErrorDialogAsync(
+                "Access Restricted",
+                EditModeOwnershipRestrictionMessage,
+                Enum_ErrorSeverity.Warning
+            );
+            return false;
         }
 
         private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -1113,13 +1212,26 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
+                var visibleLoads = ApplyOwnershipVisibilityRules(currentLoads, "current session");
+                if (visibleLoads.Count == 0)
+                {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "No Editable Loads",
+                        EditModeOwnershipRestrictionMessage,
+                        Enum_ErrorSeverity.Warning
+                    );
+                    return;
+                }
+
                 _allLoads.Clear();
-                foreach (var load in currentLoads)
+                foreach (var load in visibleLoads)
                 {
                     _allLoads.Add(load);
                 }
 
-                StatusMessage = $"Loaded {_allLoads.Count} loads from current session";
+                StatusMessage = visibleLoads.Count == currentLoads.Count
+                    ? $"Loaded {_allLoads.Count} loads from current session"
+                    : $"Loaded {visibleLoads.Count} of {currentLoads.Count} loads from current session. Rows created by other users are hidden.";
                 _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from current memory");
                 CurrentDataSource = Enum_DataSourceType.Memory;
                 SelectAllButtonText = "Select All";
@@ -1181,13 +1293,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
+                var visibleLoads = ApplyOwnershipVisibilityRules(
+                    loadedData,
+                    "current label queue"
+                );
+                if (visibleLoads.Count == 0)
+                {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "No Editable Labels",
+                        EditModeOwnershipRestrictionMessage,
+                        Enum_ErrorSeverity.Warning
+                    );
+                    return;
+                }
+
                 _deletedLoads.Clear();
                 _allLoads.Clear();
-                foreach (var load in loadedData)
+                foreach (var load in visibleLoads)
                 {
                     _allLoads.Add(load);
                 }
-                StatusMessage = $"Loaded {_allLoads.Count} loads from current label queue";
+                StatusMessage = visibleLoads.Count == loadedData.Count
+                    ? $"Loaded {_allLoads.Count} loads from current label queue"
+                    : $"Loaded {visibleLoads.Count} of {loadedData.Count} loads from current label queue. Rows created by other users are hidden.";
                 _logger.LogInfo(
                     $"Successfully loaded {_allLoads.Count} loads from current label queue"
                 );
@@ -1228,14 +1356,25 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     if (loadedData.Count > 0)
                     {
+                        var visibleLoads = ApplyOwnershipVisibilityRules(
+                            loadedData,
+                            "network labels"
+                        );
+                        if (visibleLoads.Count == 0)
+                        {
+                            return false;
+                        }
+
                         _deletedLoads.Clear();
                         _allLoads.Clear();
-                        foreach (var load in loadedData)
+                        foreach (var load in visibleLoads)
                         {
                             _allLoads.Add(load);
                             _workflowService.CurrentSession.Loads.Add(load);
                         }
-                        StatusMessage = $"Loaded {_allLoads.Count} loads from network labels";
+                        StatusMessage = visibleLoads.Count == loadedData.Count
+                            ? $"Loaded {_allLoads.Count} loads from network labels"
+                            : $"Loaded {visibleLoads.Count} of {loadedData.Count} loads from network labels. Rows created by other users are hidden.";
                         _logger.LogInfo(
                             $"Successfully loaded {_allLoads.Count} loads from network labels"
                         );
@@ -1297,15 +1436,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
+                var visibleLoads = ApplyOwnershipVisibilityRules(result.Data, "history");
+                if (visibleLoads.Count == 0)
+                {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "No Editable History",
+                        EditModeOwnershipRestrictionMessage,
+                        Enum_ErrorSeverity.Warning
+                    );
+                    return;
+                }
+
                 _deletedLoads.Clear();
                 _allLoads.Clear();
-                foreach (var load in result.Data)
+                foreach (var load in visibleLoads)
                 {
                     _allLoads.Add(load);
                     _workflowService.CurrentSession.Loads.Add(load);
                 }
 
-                StatusMessage = $"Loaded {_allLoads.Count} loads from history";
+                StatusMessage = visibleLoads.Count == result.Data.Count
+                    ? $"Loaded {_allLoads.Count} loads from history"
+                    : $"Loaded {visibleLoads.Count} of {result.Data.Count} loads from history. Rows created by other users are hidden.";
                 _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from history");
                 CurrentDataSource = Enum_DataSourceType.History;
                 SelectAllButtonText = "Select All";
@@ -1364,12 +1516,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// Removes the selected row(s) from the collection.
         /// </summary>
         [RelayCommand(CanExecute = nameof(CanRemoveRow))]
-        private void RemoveRow()
+        private async Task RemoveRowAsync()
         {
             var selectedLoads = Loads.Where(l => l.IsSelected).ToList();
 
             if (selectedLoads.Count > 0)
             {
+                if (!await EnsureCurrentUserCanManageLoadsAsync(selectedLoads, "remove"))
+                {
+                    return;
+                }
+
                 _logger.LogInfo($"Removing {selectedLoads.Count} selected loads");
                 foreach (var load in selectedLoads)
                 {
@@ -1384,6 +1541,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             else if (SelectedLoad != null)
             {
+                if (!await EnsureCurrentUserCanManageLoadsAsync(new[] { SelectedLoad }, "remove"))
+                {
+                    return;
+                }
+
                 _logger.LogInfo(
                     $"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})"
                 );
@@ -1420,6 +1582,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 );
                 IsBusy = true;
                 StatusMessage = "Validating loads...";
+
+                if (
+                    !await EnsureCurrentUserCanManageLoadsAsync(
+                        _filteredLoads.Concat(_deletedLoads),
+                        "save"
+                    )
+                )
+                {
+                    return;
+                }
 
                 // Set default Heat/Lot if empty for all loads being processed
                 // We update _allLoads to ensure consistency across all data sources

@@ -11,8 +11,11 @@ role enforcement is expanded inside the module.
 ## Current State
 
 - Module_Receiving does not currently contain a centralized role-enforcement layer.
-- Session privilege data is now initialized during login and manual switch-user flows, but most
-  Receiving actions still rely on workflow/state guards rather than explicit role checks.
+- Session privilege data is now initialized during login and manual switch-user flows.
+- Receiving Edit Mode now enforces ownership-based access for standard users: they can only
+  view, change, and remove rows they created, while `Admin` and `Developer` retain unrestricted
+  access.
+- Broader Receiving actions still rely on workflow/state guards rather than explicit role checks.
 
 ## Features To Review As Permission-Gated Candidates
 
@@ -39,6 +42,6 @@ These are valuable, but they are not substitutes for role-based permission gates
 ## Recommended Follow-Up Order
 
 1. Gate entry into `Edit Mode` and prevent `edit` from being set as a default mode for unauthorized users.
-2. Gate destructive edit-mode commands such as row removal and edit-save flows.
-3. Gate MySQL delete/archive operations invoked by Receiving services.
-4. Reflect approved gates in CopilotForms metadata for `receiving-workflow.json` and `receiving-edit-mode.json`.
+2. Extend ownership or role-aware rules to any remaining Receiving destructive actions outside Edit Mode.
+3. Decide whether `Clear current label data to history` should remain broader than Edit Mode ownership rules.
+4. Keep CopilotForms metadata aligned with approved Receiving permission gates.

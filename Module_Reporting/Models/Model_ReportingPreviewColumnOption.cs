@@ -7,6 +7,9 @@ public partial class Model_ReportingPreviewColumnOption : ObservableObject
     [ObservableProperty]
     private bool _isIncluded = true;
 
+    [ObservableProperty]
+    private bool _canChangeInOptions = true;
+
     public string Key { get; init; } = string.Empty;
 
     public string Header { get; init; } = string.Empty;

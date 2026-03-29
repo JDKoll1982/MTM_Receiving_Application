@@ -1,203 +1,284 @@
-# Module_OutsideService - End-User Workflow And Mockups
+# End-User Workflow And Mockups: Module_OutsideService
 
-Last Updated: 2026-03-27
+**Feature Branch**: `001-module-outside-service`
+**Created**: 2026-03-27
+**Last Updated**: 2026-03-29
+**Version**: 1.0
 
-This document explains how the new Outside Service waitlist works for day-to-day users.
-It is written for coordinators, Shipping, and support staff.
-Version 1 includes the full delivered line lifecycle.
-Each waitlist line moves through `Initialize`, then `Setup`, then `Complete`.
-The mockups linked below are concept sketches in SVG format, not final screen replicas.
+---
 
-## Who This Is For
+## Quick Role Guide
 
-- Outside Service Coordinator
-- Shipping clerk
-- Leads and support staff who need to understand the process
+| Who | What They Do In This Module |
+| --- | --- |
+| Outside Service Coordinator | Creates new outside-service requests and adds lines through the Add Line modal. |
+| Shipping | Opens lines from the active waitlist, enters vendor and BOL information, and marks lines complete. |
 
-## What Version 1 Includes
+---
 
-- Create a new outside-service request
-- Add one or more part lines to the request
-- Enter package count and one quantity value for each package on the line
-- Use a Part Match Helper when the typed part number does not exactly match Infor Visual
-- Save lines into the active waitlist in phase `Initialize`
-- Let Shipping complete vendor and BOL setup in phase `Setup`
-- Let Shipping finish lines in phase `Complete`
-- View active waitlist lines and completed-history lines
+## Lifecycle Overview
 
-## What Version 1 Does Not Include
+Every waitlist line follows this progression:
 
-- Cancelling a saved request
-- Editing a fully completed line
-- Writing anything back into Infor Visual
-
-## Workflow Overview
-
-### Phase 1 - Initialize
-
-```mermaid
-flowchart TD
-  I1_Start([Coordinator opens Outside Service]) --> I1_NewRequest[Start new request]
-  I1_NewRequest --> I1_AddLine[Add part line]
-  I1_AddLine --> I1_CheckPart{Part found in Infor Visual?}
-  I1_CheckPart -->|Yes| I1_SetCount[Enter package count]
-  I1_CheckPart -->|No| I1_OpenHelper[Open Part Match Helper]
-  I1_OpenHelper --> I1_HelperChoice{Use suggested part?}
-  I1_HelperChoice -->|Yes| I1_ApplyMatch[Apply selected part]
-  I1_ApplyMatch --> I1_SetCount
-  I1_HelperChoice -->|No| I1_EditPart[Return and correct part entry]
-  I1_EditPart --> I1_AddLine
-  I1_SetCount --> I1_EnterPackages[Enter one quantity for each package]
-  I1_EnterPackages --> I1_SaveRequest[Save request]
-  I1_SaveRequest --> I1_IsValid{All lines and packages valid?}
-  I1_IsValid -->|No| I1_ShowError[Show validation message]
-  I1_ShowError --> I1_AddLine
-  I1_IsValid -->|Yes| I1_AddToWaitlist[Add line(s) to active waitlist]
-  I1_AddToWaitlist --> I1_End([Line(s) now waiting in Initialize])
+```
+Initialize  -->  Setup  -->  Complete
+(Coordinator)  (Shipping)  (Shipping)
 ```
 
-### Phase 2 - Setup
+Phase is tracked at the **line level**. Two lines in the same request can be in different phases at the same time.
 
-```mermaid
-flowchart TD
-  S1_Start([Shipping opens an Initialize line]) --> S1_Review[Review part, packages, and notes]
-  S1_Review --> S1_Vendor[Choose suggested vendor or enter custom vendor]
-  S1_Vendor --> S1_ShipInfo[Enter BOL and shipment setup details]
-  S1_ShipInfo --> S1_Save[Save setup]
-  S1_Save --> S1_Move[Move line to Setup]
-  S1_Move --> S1_End([Line now appears in Setup])
-```
+---
 
-### Phase 3 - Complete
+## Per-Package Quantity Rule
 
-```mermaid
-flowchart TD
-  C1_Start([Shipping opens a Setup line]) --> C1_Review[Review final shipment details]
-  C1_Review --> C1_Confirm[Confirm shipment has completed the outside-service handoff]
-  C1_Confirm --> C1_Save[Save completion details]
-  C1_Save --> C1_Move[Move line to Complete]
-  C1_Move --> C1_History[Show line in completed history]
-  C1_History --> C1_End([Line lifecycle is finished])
-```
+A single line may contain one or more physical packages. Each package has its own quantity. The quantities do not have to be equal.
 
-## Screen Summary
+**Example** - Part A123, four packages:
 
-| Screen | Purpose | Mockup |
-| ------ | ------- | ------ |
-| `Outside Service Request Entry` | Coordinator creates a request and enters package-by-package quantities | ![Outside Service Request Entry](Mockups/OutsideService-Request-Entry.svg) |
-| `Part Match Helper` | User-friendly helper for mismatched part numbers | ![Part Match Helper](Mockups/OutsideService-Part-Match-Helper.svg) |
-| `Outside Service Active Waitlist` | Open lines waiting in `Initialize` or `Setup` | ![Outside Service Active Waitlist](Mockups/OutsideService-Active-Waitlist.svg) |
-| `Outside Service Setup` | Shipping enters vendor and BOL details | ![Outside Service Setup](Mockups/OutsideService-Setup.svg) |
-| `Outside Service Complete History` | Completed lines and follow-up history | ![Outside Service Complete History](Mockups/OutsideService-Complete-History.svg) |
+| Package | Quantity |
+| ------- | -------- |
+| 1       | 10       |
+| 2       | 15       |
+| 3       | 8        |
+| 4       | 20       |
 
-## Screen 1 - Outside Service Request Entry
+The system stores all four values separately. The coordinator enters each one individually in the Add Line modal. They are never merged, averaged, or assumed equal.
 
-This is the main request-entry screen used by the Outside Service Coordinator.
+---
 
-![Outside Service Request Entry](Mockups/OutsideService-Request-Entry.svg)
+## Screen-By-Screen Walkthrough
 
-### Coordinator Actions
+### Screen 1 - Request Entry
 
-1. Starts a new request.
-2. Adds one or more part lines.
-3. Enters package count for the selected line.
-4. Enters one quantity value for each package on that line.
-5. Saves the request when all lines are valid.
+**Who uses it**: Outside Service Coordinator
+**When**: Starting a new outside-service request
 
-### Request Entry Notes
+**Wireframe**: See `Mockups/OutsideService-Request-Entry.svg`
 
-- Vendor selection does not happen here.
-- If a line has four packages, the user must enter four package quantities.
-- The package quantities for one line can all be different.
-- The request cannot be saved unless every package quantity is valid.
+**Purpose**: The coordinator fills in the request header and reviews the lines already added to the current request before saving. Lines are added one at a time through the Add Line modal launched from this screen.
 
-## Screen 1A - Part Match Helper
+**What the user sees**:
 
-This helper appears when the entered part number does not exactly match a part in Infor Visual.
+- A request header area at the top with request notes and a Save Request button.
+- A line list in the middle showing every line added so far. Each line row shows the part ID, package count, and a summary of packages.
+- An Add Line button below the list that opens the Add Line modal.
 
-![Part Match Helper](Mockups/OutsideService-Part-Match-Helper.svg)
+**What the user does**:
 
-### Helper Actions
+1. Opens the screen. A new request starts empty.
+2. Optionally types request notes in the header area.
+3. Clicks "Add Line". The Add Line modal opens.
+4. Repeats step three for each part to add.
+5. Reviews the line list to confirm all lines are present.
+6. Clicks "Save Request". The system saves the request and all lines to MySQL. Each line starts in `Initialize`.
 
-1. Reviews similar part options.
-2. Applies the correct part if it is shown.
-3. Returns to the request form if manual correction is still needed.
+**Important notes**:
 
-### Part Match Helper Notes
+- The Save Request button is disabled until at least one line has been added.
+- The coordinator cannot save a request with zero lines.
 
-- The name "Part Match Helper" is intended to be easier for end users to understand than "fuzzy search".
-- It prevents small typing errors from forcing the whole request to be restarted.
-- If no suggestion is correct, the user goes back and fixes the part manually.
+---
 
-## Screen 2 - Outside Service Active Waitlist
+### Screen 2 - Add Line Modal
 
-This is the working queue used by Shipping.
-It should feel like a live waitlist board, not just a plain grid.
+**Who uses it**: Outside Service Coordinator
+**When**: Adding a part line to the current request from the request-entry screen
 
-![Outside Service Active Waitlist](Mockups/OutsideService-Active-Waitlist.svg)
+**Wireframe**: See `Mockups/OutsideService-Add-Line-Modal.svg`
 
-### What The User Sees
+**Purpose**: The coordinator enters the Part ID, sets the number of packages, and then enters a quantity for each individual package.
 
-- open lines grouped by current phase
-- elapsed waiting time for each line
-- part and package summary for each line
-- next action for the line
-- a details panel that shows package-level quantities when a line is selected
+**What the user sees**:
 
-### Active Waitlist Notes
+- A Part ID field at the top.
+- A Package Count field showing how many physical packages will be on this line.
+- A package-quantity table that dynamically adds or removes rows to match the Package Count. Each row represents one physical package and has its own quantity field.
+- Save Line and Cancel buttons at the bottom.
 
-- The queue is line-based, not request-based.
-- Two lines from the same request can be in different phases at the same time.
-- Shipping uses the queue to open an `Initialize` line and move it into `Setup`.
+**What the user does**:
 
-## Screen 3 - Outside Service Setup
+1. Types the Part ID.
+2. Enters Package Count. The table immediately adds or removes rows to match.
+3. Types a quantity in each package row. Quantities can all be different.
+4. Clicks "Save Line".
 
-Shipping uses this screen to perform the second phase of the lifecycle.
+**What happens after Save Line**:
 
-![Outside Service Setup](Mockups/OutsideService-Setup.svg)
+- The system validates the Part ID against Infor Visual.
+- If the Part ID matches exactly, the line is added to the request and the modal closes.
+- If the Part ID does not match, the Part Match Helper opens automatically. See Screen 3.
 
-### Shipping Setup Actions
+**Validation rules enforced before save**:
 
-1. Reviews the line details.
-2. Chooses a vendor suggestion or enters a custom vendor.
-3. Enters BOL and shipment setup details.
-4. Saves the line into phase `Setup`.
+- Part ID must not be blank.
+- Package Count must be a positive whole number.
+- Every package row must have a quantity entered.
+- All quantities must be positive numbers.
+- The number of quantity rows must equal the Package Count.
 
-### Setup Notes
+**Example - four packages with different quantities**:
 
-- Vendor selection is Shipping-owned.
-- The line remains traceable back to its original package breakdown.
-- The queue should clearly show when the line has entered `Setup`.
+The coordinator enters Package Count = 4. The table shows four rows. They type 10, 15, 8, and 20 in those rows. Clicking Save Line stores four separate package records. The active waitlist later shows "4 pkgs" for this line.
 
-## Screen 4 - Outside Service Complete History
+---
 
-This screen shows lines that have finished the lifecycle.
+### Screen 3 - Part Match Helper
 
-![Outside Service Complete History](Mockups/OutsideService-Complete-History.svg)
+**Who uses it**: Outside Service Coordinator
+**When**: The entered Part ID in the Add Line modal does not exactly match any part in Infor Visual
 
-### History Actions
+**Wireframe**: See `Mockups/OutsideService-Part-Match-Helper.svg`
 
-1. Reviews completed lines.
-2. Searches by part, vendor, request, or BOL.
-3. Opens a history record when follow-up is needed.
+**Purpose**: Offers a plain-language list of Infor Visual parts that are similar to what was typed so the coordinator can pick the right one without memorizing exact formatting.
 
-### Complete History Notes
+**What the user sees**:
 
-- This is a history and audit screen, not a new-entry screen.
-- Completed lines should still show enough setup detail for follow-up questions.
-- History should remain line-based so users can trace exactly which line was completed.
+- A header showing what was typed.
+- A list of suggested matches. Each suggestion shows the part ID and a short description.
+- A "Use This Part" button next to each suggestion.
+- A "Go Back And Edit" option in case the suggestions are all wrong.
 
-## Daily Workflow Summary
+**What happens when the user picks a suggestion**:
 
-| Role | Version 1 Action |
-| ---- | ---------------- |
-| Outside Service Coordinator | Creates requests and enters package-by-package quantities in `Initialize` |
-| Shipping clerk | Moves each line through `Setup` and `Complete` |
-| Support Staff | Uses the lifecycle summary and history views to answer operational questions |
+- The Part Match Helper closes.
+- The Add Line modal reappears with the Part ID field updated to the selected value.
+- All other fields the coordinator had already filled in (Package Count and quantities) are still there exactly as left.
 
-## Support Notes
+**What if there are no suggestions**:
 
-- If a user asks where vendor selection happens, the answer is: Shipping does that in `Setup`.
-- If a user asks what happens when package quantities differ, the answer is: the line stores one quantity for each package, so different package quantities are supported.
-- If a user asks what happens when the part does not match Infor Visual, the answer is: the Part Match Helper opens and offers similar parts.
-- If a user asks what the progress steps are, the answer is: each waitlist line moves through `Initialize`, then `Setup`, then `Complete`.
+- The helper shows a "No matches found" message.
+- The coordinator clicks "Go Back And Edit" to return to the modal and correct the Part ID manually.
+
+---
+
+### Screen 4 - Active Waitlist
+
+**Who uses it**: Outside Service Coordinator (view only) and Shipping (view and action)
+**When**: Any time after at least one request has been saved
+
+**Wireframe**: See `Mockups/OutsideService-Active-Waitlist.svg`
+
+**Purpose**: Shows every open line grouped by phase so both roles can see what needs attention.
+
+**What the user sees**:
+
+- Two sections: "Initialize" and "Setup".
+- Each line row shows: request number, part ID, package count, and for `Setup` lines also vendor and BOL number.
+- A phase badge on each row.
+- An "Open" button on each row.
+
+**What Shipping does**:
+
+- Clicks "Open" on an `Initialize` line to begin setup. The Setup screen opens.
+- Clicks "Open" on a `Setup` line to review or complete it.
+
+**Empty state**: When no open lines exist the screen shows "No open requests" instead of an empty grid.
+
+---
+
+### Screen 5 - Setup Screen
+
+**Who uses it**: Shipping
+**When**: Opening a line that is currently in `Initialize`
+
+**Wireframe**: See `Mockups/OutsideService-Setup.svg`
+
+**Purpose**: Shipping enters vendor and shipment details and moves the line to `Setup`.
+
+**What the user sees**:
+
+- A read-only header showing the part ID, package count, and the per-package quantity breakdown from Initialize. Each package row and its quantity are visible but not editable.
+- A vendor section with suggested vendor names derived from prior outside-service history for this part ID. Each suggestion shows the vendor name and how recently it was used.
+- A "Use a different vendor" text field for cases where none of the suggestions apply.
+- A shipment section with BOL Number, Scheduled Ship Date, and Shipping Contact fields.
+- A "Save Setup" button.
+
+**What happens after Save Setup**:
+
+- The system updates the line phase to `Setup`.
+- The line moves into the "Setup" group on the active waitlist.
+- The package-quantity breakdown is preserved unchanged.
+
+**Vendor source tracking**:
+
+When Shipping picks a suggestion the system records the source as "suggested". When they type a custom value the source is recorded as "custom". This distinction is stored with the line.
+
+---
+
+### Screen 6 - Complete Line (Within Setup Screen)
+
+**Who uses it**: Shipping
+**When**: The shipment has physically left the facility
+
+**The "Complete Shipment" button appears at the bottom of the Setup Screen** once the line is in `Setup`.
+
+**What the user does**:
+
+1. Reviews the line details on the Setup Screen.
+2. Types optional completion notes.
+3. Clicks "Complete Shipment".
+
+**What happens**:
+
+- The system records the completion timestamp.
+- The line phase changes to `Complete`.
+- The line is removed from the active waitlist.
+- The line becomes visible in the Completed History view.
+
+---
+
+### Screen 7 - Completed History
+
+**Who uses it**: Both roles
+**When**: Viewing lines that have already shipped
+
+**Wireframe**: See `Mockups/OutsideService-Complete-History.svg`
+
+**Purpose**: A read-only view of all completed lines for reference and audit.
+
+**What the user sees**:
+
+- A list of completed lines sorted by completion date, newest first.
+- Each row shows: part ID, vendor, BOL number, package count, and completion timestamp.
+- An "Open Details" button on each row.
+
+**What opening a detail shows**:
+
+- All shipment fields from Setup.
+- The per-package quantity breakdown from Initialize showing each package and its individual quantity value.
+- Completion notes.
+
+---
+
+## Common Questions
+
+**Q: Can I change a quantity after saving the line?**
+No. Once a request is saved the quantities are locked. Editing submitted lines is not supported in Version 1.
+
+**Q: Do all packages on the same line have to have the same quantity?**
+No. Each package can have a completely different quantity. The system stores them individually.
+
+**Q: What if I type the wrong number for Package Count?**
+You can change Package Count while the Add Line modal is still open. The quantity table adjusts automatically. Once the line is saved Package Count is locked.
+
+**Q: What happens to the package quantities when Shipping does setup?**
+They are preserved exactly as the coordinator entered them. Shipping can see them as read-only reference in the Setup screen.
+
+**Q: Why does the Part Match Helper open automatically?**
+Because typos and formatting differences in part numbers are common. The system catches mismatches immediately inside the modal so the coordinator can fix them without losing the other data already entered.
+
+**Q: What if none of the vendor suggestions match?**
+Shipping can type any vendor name in the custom field. The system saves it and records that it was a custom entry.
+
+---
+
+## Mockup File Index
+
+| File | Screen |
+| ---- | ------ |
+| `Mockups/OutsideService-Request-Entry.svg` | Request Entry - coordinator starts a new request and reviews lines |
+| `Mockups/OutsideService-Add-Line-Modal.svg` | Add Line Modal - coordinator enters Part ID and per-package quantities |
+| `Mockups/OutsideService-Part-Match-Helper.svg` | Part Match Helper - shown when Part ID does not match Infor Visual |
+| `Mockups/OutsideService-Active-Waitlist.svg` | Active Waitlist - grouped by Initialize and Setup |
+| `Mockups/OutsideService-Setup.svg` | Setup Screen - Shipping enters vendor, BOL, and completion |
+| `Mockups/OutsideService-Complete-History.svg` | Completed History - read-only view of finished lines |

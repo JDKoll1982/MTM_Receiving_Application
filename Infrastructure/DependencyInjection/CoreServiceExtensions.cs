@@ -35,6 +35,9 @@ public static class CoreServiceExtensions
         IConfiguration configuration
     )
     {
+        // Populate Helper_Database_Variables from config once so static callers have values.
+        Helper_Database_Variables.Initialize(configuration);
+
         // Configuration Options Registration
         services.Configure<DatabaseSettings>(configuration.GetSection("ConnectionStrings"));
         services.Configure<InforVisualSettings>(configuration.GetSection("InforVisual"));

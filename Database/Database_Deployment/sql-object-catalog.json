@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-28T14:07:43.5373596-05:00",
+  "generatedAt": "2026-03-29T13:22:13.8613281-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1122,6 +1122,140 @@
           "table": "auth_users",
           "columns": [
             "employee_number"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "auth_users",
+          "object": "auth_users"
+        },
+        {
+          "alias": "settings_roles",
+          "object": "settings_roles"
+        },
+        {
+          "alias": "sr",
+          "object": "settings_roles"
+        },
+        {
+          "alias": "settings_user_roles",
+          "object": "settings_user_roles"
+        },
+        {
+          "alias": "sur",
+          "object": "settings_user_roles"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/06_seed_auth_user_bootstrap_accounts.sql",
+      "category": "seed_file",
+      "objectType": "seed",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "auth_users",
+        "settings_roles",
+        "settings_user_roles"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "sr",
+          "resolvedObject": "settings_roles",
+          "column": "id"
+        },
+        {
+          "qualifier": "sr",
+          "resolvedObject": "settings_roles",
+          "column": "role_name"
+        },
+        {
+          "qualifier": "sur",
+          "resolvedObject": "settings_user_roles",
+          "column": "user_id"
+        },
+        {
+          "qualifier": "sur",
+          "resolvedObject": "settings_user_roles",
+          "column": "role_id"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "auth_users",
+          "columns": [
+            "windows_username",
+            "full_name",
+            "pin",
+            "department",
+            "shift",
+            "is_active",
+            "visual_username",
+            "visual_password",
+            "default_receiving_mode",
+            "default_dunnage_mode",
+            "created_by",
+            "created_date",
+            "modified_date"
+          ]
+        },
+        {
+          "table": "settings_user_roles",
+          "columns": [
+            "user_id",
+            "role_id",
+            "assigned_at"
+          ]
+        },
+        {
+          "table": "auth_users",
+          "columns": [
+            "windows_username",
+            "full_name",
+            "pin",
+            "department",
+            "shift",
+            "is_active",
+            "visual_username",
+            "visual_password",
+            "default_receiving_mode",
+            "default_dunnage_mode",
+            "created_by",
+            "created_date",
+            "modified_date"
+          ]
+        },
+        {
+          "table": "settings_user_roles",
+          "columns": [
+            "user_id",
+            "role_id",
+            "assigned_at"
+          ]
+        }
+      ],
+      "updateTargets": [
+        {
+          "table": "auth_users",
+          "columns": [
+            "full_name"
+          ]
+        },
+        {
+          "table": "auth_users",
+          "columns": [
+            "full_name"
           ]
         }
       ],

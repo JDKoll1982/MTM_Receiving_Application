@@ -1,0 +1,100 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_OutsideService.Views.View_OutsideService_Setup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_OutsideService.Models"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid Padding="20" RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="#115ea3" CornerRadius="18" Padding="20">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Outside Service Setup" Style="{StaticResource TitleTextBlockStyle}" Foreground="White" />
+                    <TextBlock Text="Shipping owns vendor selection, BOL setup, and final completion for the selected line." Foreground="#d9ecff" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="16">
+                    <Border Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="18" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Selected Line" Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="{x:Bind ViewModel.CurrentLine.QueueKey, Mode=OneWay}" FontFamily="Consolas" />
+                            <TextBlock Text="{x:Bind ViewModel.CurrentLine.PartId, Mode=OneWay}" FontFamily="Consolas" />
+                            <TextBlock Text="Current phase" Style="{StaticResource CaptionTextBlockStyle}" />
+                            <TextBlock Text="{x:Bind ViewModel.CurrentPhaseText, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind ViewModel.CurrentLine.WaitTimeLabel, Mode=OneWay}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="18" Padding="16">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Vendor And Shipment Setup" Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <ComboBox
+                                Header="Suggested vendor"
+                                ItemsSource="{x:Bind ViewModel.VendorSuggestions, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedVendorSuggestion, Mode=TwoWay}"
+                                DisplayMemberPath="VendorName"
+                                IsEnabled="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <CheckBox Content="Use custom vendor" IsChecked="{x:Bind ViewModel.UseCustomVendor, Mode=TwoWay}" />
+                            <TextBox Header="Custom vendor name" Text="{x:Bind ViewModel.CustomVendorName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <TextBox Header="BOL number" Text="{x:Bind ViewModel.BolNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <DatePicker Header="Scheduled ship" Date="{x:Bind ViewModel.ScheduledShipDate, Mode=TwoWay}" />
+                            <TextBox Header="Shipping contact" Text="{x:Bind ViewModel.ShippingContact, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Setup notes" Text="{x:Bind ViewModel.SetupNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" />
+                            <TextBox Header="Completion notes" Text="{x:Bind ViewModel.CompletionNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.IsSetupPhase, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="16">
+                    <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Package Snapshot" Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="{x:Bind ViewModel.PackageSnapshot, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Before You Save" Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="1. Confirm the vendor choice." TextWrapping="Wrap" />
+                            <TextBlock Text="2. Capture the BOL and shipment timing." TextWrapping="Wrap" />
+                            <TextBlock Text="3. Leave notes for completion when needed." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <InfoBar
+                        IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
+                        Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
+                        Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                        IsClosable="True" />
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                <Button Content="Return To Queue" Command="{x:Bind ViewModel.ReturnToQueueCommand}" />
+                <Button Content="{x:Bind ViewModel.PrimaryActionText, Mode=OneWay}" Command="{x:Bind ViewModel.SavePrimaryActionCommand}" Style="{StaticResource AccentButtonStyle}" IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

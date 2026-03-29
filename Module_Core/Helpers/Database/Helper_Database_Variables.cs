@@ -1,38 +1,62 @@
+using Microsoft.Extensions.Configuration;
+
 namespace MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 /// <summary>
-/// Manages database connection strings for different environments
+/// Manages database connection strings for different environments.
+/// Call <see cref="Initialize"/> once at startup before any DAO is used.
+/// Credentials are loaded from appsettings.json / environment variables — never hardcoded.
 /// </summary>
 public static class Helper_Database_Variables
 {
-    /// <summary>
-    /// Production MySQL connection string
-    /// Server: localhost, Port: 3306, Database: mtm_receiving_application
-    /// </summary>
-    public static string ProductionConnectionString { get; } =
-        "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;CharSet=utf8mb4;";
+    private static string _productionConnectionString = string.Empty;
+    private static string _testConnectionString = string.Empty;
+    private static string _inforVisualConnectionString = string.Empty;
 
     /// <summary>
-    /// Test MySQL connection string (same as production for now)
+    /// Production MySQL connection string. Non-empty after <see cref="Initialize"/> is called.
     /// </summary>
-    public static string TestConnectionString { get; } =
-        "Server=localhost;Port=3306;Database=mtm_receiving_application_test;Uid=root;Pwd=root;CharSet=utf8mb4;";
+    public static string ProductionConnectionString => _productionConnectionString;
 
     /// <summary>
-    /// Gets the connection string based on current environment
+    /// Test MySQL connection string. Non-empty after <see cref="Initialize"/> is called.
     /// </summary>
-    /// <param name="useProduction">True for production, false for test</param>
-    /// <returns>MySQL connection string</returns>
-    public static string GetConnectionString(bool useProduction = true)
+    public static string TestConnectionString => _testConnectionString;
+
+    /// <summary>
+    /// Initializes connection strings from IConfiguration.
+    /// Must be called once during application startup before any DAO is resolved.
+    /// Reads ConnectionStrings:MySql, ConnectionStrings:MySqlTest, and
+    /// ConnectionStrings:InforVisual from appsettings.json.
+    /// </summary>
+    /// <param name="configuration"></param>
+    public static void Initialize(IConfiguration configuration)
     {
-        return useProduction ? ProductionConnectionString : TestConnectionString;
+        _productionConnectionString = configuration.GetConnectionString("MySql") ?? string.Empty;
+
+        _testConnectionString =
+            configuration.GetConnectionString("MySqlTest")
+            ?? configuration.GetConnectionString("MySql")
+            ?? string.Empty;
+
+        _inforVisualConnectionString =
+            configuration.GetConnectionString("InforVisual") ?? string.Empty;
     }
 
     /// <summary>
-    /// Gets the Infor Visual connection string (READ ONLY)
+    /// Returns the MySQL connection string for the requested environment.
+    /// </summary>
+    /// <param name="useProduction">True for production, false for test database.</param>
+    public static string GetConnectionString(bool useProduction = true)
+    {
+        return useProduction ? _productionConnectionString : _testConnectionString;
+    }
+
+    /// <summary>
+    /// Returns the Infor Visual (READ ONLY) connection string.
     /// </summary>
     public static string GetInforVisualConnectionString()
     {
-        return "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
+        return _inforVisualConnectionString;
     }
 }

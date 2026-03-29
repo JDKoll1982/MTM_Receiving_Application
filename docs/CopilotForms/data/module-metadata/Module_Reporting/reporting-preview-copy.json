@@ -2,13 +2,14 @@
   "id": "reporting-preview-copy",
   "module": "Module_Reporting",
   "name": "Preview And Copy",
-  "summary": "Preview-card shaping, modal preview customization, data-aware column selection, and clipboard-ready email formatting for generated report output.",
+  "summary": "Tabbed preview-card shaping, options-driven row grouping, per-module table sorting, forced Loads/Skids combined-row counts in combine modes, data-aware column selection, and clipboard-ready email formatting for generated report output.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Reporting/Contracts/IService_Reporting.cs",
     "Module_Reporting/Contracts/IService_ReportingClipboard.cs",
     "Module_Reporting/Models/Model_ReportingPreviewCell.cs",
     "Module_Reporting/Models/Model_ReportingPreviewColumnOption.cs",
+    "Module_Reporting/Models/Enum_ReportingPreviewRowDisplayMode.cs",
     "Module_Reporting/Models/Model_ReportingPreviewModuleCard.cs",
     "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
     "Module_Reporting/Services/Service_Reporting.cs",
@@ -36,19 +37,37 @@
       "Format and copy email-ready output"
     ],
     "screens": ["View_Reporting_PreviewDialog.xaml"],
-    "currentUiPatterns": ["Toolbar + results list", "Card list", "Modal customization dialog"],
-    "desiredUiPatterns": ["Card list", "Split layout", "Modal customization dialog"],
+    "currentUiPatterns": [
+      "Toolbar + results list",
+      "Tabbed card list",
+      "Modal options dialog"
+    ],
+    "desiredUiPatterns": [
+      "Tabbed card list",
+      "Split layout",
+      "Modal options dialog"
+    ],
     "uiElements": [
-      "Preview cards",
-      "Modal preview customizer",
+      "Tabbed preview cards",
+      "Modal options dialog",
+      "Row display mode selector",
+      "Per-module sort controls",
+      "Forced Loads/Skids column during combine modes",
       "Copy Email Format action"
     ],
     "userActions": [
       "Review the generated output",
-      "Choose preview modules and columns in the modal customizer",
+      "Choose row display mode in the options dialog",
+      "Choose how each module table is sorted in the options dialog",
+      "Choose preview modules and columns in the modal options dialog",
       "Copy the generated output"
     ],
     "validationHints": [
+      "Confirm selected row-display mode shapes both the on-screen detail table and copied output",
+      "Confirm each module table can sort independently without changing the other module tables",
+      "Confirm sort direction and sort field change both the on-screen table and copied output order",
+      "Confirm combine modes force the Loads/Skids column on and prevent it from being disabled in options",
+      "Confirm the Loads/Skids value becomes the number of raw rows combined into each displayed row",
       "Confirm selected preview modules and columns control both the on-screen table and copied output",
       "Confirm columns without data are not enabled by default",
       "Confirm copy-email behavior still works"

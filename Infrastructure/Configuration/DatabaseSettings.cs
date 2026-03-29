@@ -15,4 +15,10 @@ public class DatabaseSettings
     /// Gets or sets the Infor Visual database connection string for ERP integration.
     /// </summary>
     public string InforVisualConnectionString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the command timeout in seconds applied to all stored procedure calls.
+    /// Default: 30 seconds. Override in appsettings.json via ConnectionStrings:CommandTimeoutSeconds.
+    /// </summary>
+    public int CommandTimeoutSeconds { get; set; } = 30;
 }

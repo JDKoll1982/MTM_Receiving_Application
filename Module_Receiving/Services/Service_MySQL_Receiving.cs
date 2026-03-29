@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -14,27 +15,40 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// </summary>
     public class Service_MySQL_Receiving : IService_MySQL_Receiving
     {
+        private const string EditModeOwnershipRestrictionMessage =
+            "You can only view, modify, or remove rows that you created. Admin and Developer users have unrestricted Edit Mode access.";
+
         private readonly Dao_ReceivingLoad _receivingLoadDao;
         private readonly Dao_ReceivingLabelData _receivingLabelDataDao;
         private readonly IService_LoggingUtility _logger;
+        private readonly IService_UserSessionManager? _sessionManager;
+        private readonly IService_UserPrivileges? _userPrivileges;
 
         public Service_MySQL_Receiving(
             Dao_ReceivingLoad receivingLoadDao,
             Dao_ReceivingLabelData receivingLabelDataDao,
-            IService_LoggingUtility logger
+            IService_LoggingUtility logger,
+            IService_UserSessionManager sessionManager,
+            IService_UserPrivileges userPrivileges
         )
         {
             _receivingLoadDao = receivingLoadDao;
             _receivingLabelDataDao = receivingLabelDataDao;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _sessionManager =
+                sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+            _userPrivileges =
+                userPrivileges ?? throw new ArgumentNullException(nameof(userPrivileges));
         }
 
-        // Constructor for backward compatibility if needed, but DI should handle it
+        // Constructor for backward compatibility if needed, but DI should handle it.
         public Service_MySQL_Receiving(string connectionString, IService_LoggingUtility logger)
         {
             _receivingLoadDao = new Dao_ReceivingLoad(connectionString);
             _receivingLabelDataDao = new Dao_ReceivingLabelData(connectionString);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _sessionManager = null;
+            _userPrivileges = null;
         }
 
         public async Task<int> SaveReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -53,11 +67,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogInfo($"Successfully saved {result.Data} loads.");
                 return result.Data;
             }
-            else
-            {
-                _logger.LogError($"Failed to save loads: {result.ErrorMessage}", result.Exception);
-                throw new InvalidOperationException(result.ErrorMessage, result.Exception);
-            }
+
+            _logger.LogError($"Failed to save loads: {result.ErrorMessage}", result.Exception);
+            throw new InvalidOperationException(result.ErrorMessage, result.Exception);
         }
 
         public async Task<int> UpdateReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -65,6 +77,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             if (loads == null)
             {
                 return 0;
+            }
+
+            var accessContext = await GetEditModeAccessContextAsync();
+            if (!accessContext.HasContext)
+            {
+                throw new InvalidOperationException(
+                    "An active user session is required to update Receiving Edit Mode rows."
+                );
+            }
+
+            var unauthorizedLoads = GetUnauthorizedLoads(
+                loads,
+                accessContext.EmployeeNumber,
+                accessContext.WindowsUsername,
+                accessContext.HasFullAccess
+            );
+            if (unauthorizedLoads.Count > 0)
+            {
+                throw new InvalidOperationException(EditModeOwnershipRestrictionMessage);
             }
 
             _logger.LogInfo($"Updating {loads.Count} loads in database.");
@@ -76,14 +107,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogInfo($"Successfully updated {result.Data} loads.");
                 return result.Data;
             }
-            else
-            {
-                _logger.LogError(
-                    $"Failed to update loads: {result.ErrorMessage}",
-                    result.Exception
-                );
-                throw new InvalidOperationException(result.ErrorMessage, result.Exception);
-            }
+
+            _logger.LogError($"Failed to update loads: {result.ErrorMessage}", result.Exception);
+            throw new InvalidOperationException(result.ErrorMessage, result.Exception);
         }
 
         public async Task<int> DeleteReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -91,6 +117,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             if (loads == null)
             {
                 return 0;
+            }
+
+            var accessContext = await GetEditModeAccessContextAsync();
+            if (!accessContext.HasContext)
+            {
+                throw new InvalidOperationException(
+                    "An active user session is required to delete Receiving Edit Mode rows."
+                );
+            }
+
+            var unauthorizedLoads = GetUnauthorizedLoads(
+                loads,
+                accessContext.EmployeeNumber,
+                accessContext.WindowsUsername,
+                accessContext.HasFullAccess
+            );
+            if (unauthorizedLoads.Count > 0)
+            {
+                throw new InvalidOperationException(EditModeOwnershipRestrictionMessage);
             }
 
             _logger.LogInfo($"Deleting {loads.Count} loads from database.");
@@ -102,14 +147,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 _logger.LogInfo($"Successfully deleted {result.Data} loads.");
                 return result.Data;
             }
-            else
-            {
-                _logger.LogError(
-                    $"Failed to delete loads: {result.ErrorMessage}",
-                    result.Exception
-                );
-                throw new InvalidOperationException(result.ErrorMessage, result.Exception);
-            }
+
+            _logger.LogError($"Failed to delete loads: {result.ErrorMessage}", result.Exception);
+            throw new InvalidOperationException(result.ErrorMessage, result.Exception);
         }
 
         public async Task<List<Model_ReceivingLoad>> GetReceivingHistoryAsync(
@@ -124,15 +164,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             {
                 return result.Data ?? new List<Model_ReceivingLoad>();
             }
-            else
-            {
-                _logger.LogError(
-                    $"Failed to get receiving history: {result.ErrorMessage}",
-                    result.Exception
-                );
-                // TODO: Consider whether to throw an exception or return an empty list. For now, returning empty list to avoid breaking calling code.
-                return new List<Model_ReceivingLoad>();
-            }
+
+            _logger.LogError(
+                $"Failed to get receiving history: {result.ErrorMessage}",
+                result.Exception
+            );
+            return new List<Model_ReceivingLoad>();
         }
 
         public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(
@@ -145,15 +182,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             );
 
             var result = await _receivingLoadDao.GetAllAsync(startDate, endDate);
-
-            if (result.IsSuccess)
-            {
-                _logger.LogInfo(
-                    $"Retrieved {result.Data?.Count ?? 0} receiving loads from database"
-                );
-                return result;
-            }
-            else
+            if (!result.IsSuccess)
             {
                 _logger.LogError(
                     $"Failed to retrieve receiving loads: {result.ErrorMessage}",
@@ -161,11 +190,38 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 );
                 return result;
             }
+
+            var accessContext = await GetEditModeAccessContextAsync();
+            if (!accessContext.HasContext)
+            {
+                return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(
+                    "An active user session is required to load Receiving Edit Mode history."
+                );
+            }
+
+            var allLoads = result.Data ?? new List<Model_ReceivingLoad>();
+            var visibleLoads = ApplyOwnershipFilter(
+                allLoads,
+                accessContext.EmployeeNumber,
+                accessContext.WindowsUsername,
+                accessContext.HasFullAccess
+            );
+
+            if (visibleLoads.Count != allLoads.Count)
+            {
+                _logger.LogInfo(
+                    $"Filtered {allLoads.Count - visibleLoads.Count} history rows created by other users.",
+                    nameof(Service_MySQL_Receiving)
+                );
+            }
+
+            result.Data = visibleLoads;
+            _logger.LogInfo($"Retrieved {visibleLoads.Count} receiving loads from database");
+            return result;
         }
 
         public async Task<bool> TestConnectionAsync()
         {
-            // TODO: Implement actual connection test logic, possibly by trying a simple query via DAO or adding a TestConnection method to DAO.
             return true;
         }
 
@@ -193,19 +249,41 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             _logger.LogInfo("Loading current label data from receiving_label_data queue");
             var result = await _receivingLabelDataDao.GetCurrentLabelDataAsync();
-
-            if (result.IsSuccess)
-            {
-                _logger.LogInfo($"Loaded {result.Data?.Count ?? 0} rows from current label queue");
-            }
-            else
+            if (!result.IsSuccess)
             {
                 _logger.LogError(
                     $"Failed to load current label data: {result.ErrorMessage}",
                     result.Exception
                 );
+                return result;
             }
 
+            var accessContext = await GetEditModeAccessContextAsync();
+            if (!accessContext.HasContext)
+            {
+                return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(
+                    "An active user session is required to load Current Labels in Receiving Edit Mode."
+                );
+            }
+
+            var allLoads = result.Data ?? new List<Model_ReceivingLoad>();
+            var visibleLoads = ApplyOwnershipFilter(
+                allLoads,
+                accessContext.EmployeeNumber,
+                accessContext.WindowsUsername,
+                accessContext.HasFullAccess
+            );
+
+            if (visibleLoads.Count != allLoads.Count)
+            {
+                _logger.LogInfo(
+                    $"Filtered {allLoads.Count - visibleLoads.Count} current-label rows created by other users.",
+                    nameof(Service_MySQL_Receiving)
+                );
+            }
+
+            result.Data = visibleLoads;
+            _logger.LogInfo($"Loaded {visibleLoads.Count} rows from current label queue");
             return result;
         }
 
@@ -214,6 +292,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             if (loads == null)
             {
                 return 0;
+            }
+
+            var accessContext = await GetEditModeAccessContextAsync();
+            if (!accessContext.HasContext)
+            {
+                throw new InvalidOperationException(
+                    "An active user session is required to update Current Labels in Receiving Edit Mode."
+                );
+            }
+
+            var unauthorizedLoads = GetUnauthorizedLoads(
+                loads,
+                accessContext.EmployeeNumber,
+                accessContext.WindowsUsername,
+                accessContext.HasFullAccess
+            );
+            if (unauthorizedLoads.Count > 0)
+            {
+                throw new InvalidOperationException(EditModeOwnershipRestrictionMessage);
             }
 
             _logger.LogInfo($"Updating {loads.Count} rows in receiving_label_data");
@@ -239,6 +336,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return 0;
             }
 
+            var accessContext = await GetEditModeAccessContextAsync();
+            if (!accessContext.HasContext)
+            {
+                throw new InvalidOperationException(
+                    "An active user session is required to delete Current Labels in Receiving Edit Mode."
+                );
+            }
+
+            var unauthorizedLoads = GetUnauthorizedLoads(
+                loads,
+                accessContext.EmployeeNumber,
+                accessContext.WindowsUsername,
+                accessContext.HasFullAccess
+            );
+            if (unauthorizedLoads.Count > 0)
+            {
+                throw new InvalidOperationException(EditModeOwnershipRestrictionMessage);
+            }
+
             _logger.LogInfo($"Deleting {loads.Count} rows from receiving_label_data");
             var result = await _receivingLabelDataDao.DeleteCurrentLabelDataAsync(loads);
 
@@ -253,6 +369,112 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 result.Exception
             );
             throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+        }
+
+        private async Task<(
+            bool HasContext,
+            int EmployeeNumber,
+            string? WindowsUsername,
+            bool HasFullAccess
+        )> GetEditModeAccessContextAsync()
+        {
+            var currentUser = _sessionManager?.CurrentSession?.User;
+            if (currentUser == null || currentUser.EmployeeNumber <= 0)
+            {
+                return (false, 0, null, false);
+            }
+
+            if (_userPrivileges != null)
+            {
+                if (
+                    !_userPrivileges.IsInitialized
+                    || _userPrivileges.CurrentUserId != currentUser.EmployeeNumber
+                )
+                {
+                    var initializeResult = await _userPrivileges.InitializeAsync(
+                        currentUser.EmployeeNumber
+                    );
+                    if (!initializeResult.Success)
+                    {
+                        _logger.LogWarning(
+                            initializeResult.ErrorMessage
+                                ?? "Failed to initialize current user privileges for edit mode.",
+                            nameof(Service_MySQL_Receiving)
+                        );
+                    }
+                }
+
+                return (
+                    true,
+                    currentUser.EmployeeNumber,
+                    currentUser.WindowsUsername,
+                    _userPrivileges.IsInitialized
+                        && _userPrivileges.CurrentUserId == currentUser.EmployeeNumber
+                        && _userPrivileges.HasAnyRole("Admin", "Developer")
+                );
+            }
+
+            return (true, currentUser.EmployeeNumber, currentUser.WindowsUsername, false);
+        }
+
+        private static List<Model_ReceivingLoad> ApplyOwnershipFilter(
+            IEnumerable<Model_ReceivingLoad> loads,
+            int employeeNumber,
+            string? windowsUsername,
+            bool hasFullAccess
+        )
+        {
+            var sourceLoads = loads?.ToList() ?? new List<Model_ReceivingLoad>();
+            if (hasFullAccess)
+            {
+                return sourceLoads;
+            }
+
+            return sourceLoads
+                .Where(load => IsLoadOwnedByCurrentUser(load, employeeNumber, windowsUsername))
+                .ToList();
+        }
+
+        private static List<Model_ReceivingLoad> GetUnauthorizedLoads(
+            IEnumerable<Model_ReceivingLoad> loads,
+            int employeeNumber,
+            string? windowsUsername,
+            bool hasFullAccess
+        )
+        {
+            if (hasFullAccess)
+            {
+                return new List<Model_ReceivingLoad>();
+            }
+
+            return (loads ?? Enumerable.Empty<Model_ReceivingLoad>())
+                .Where(load => !IsLoadOwnedByCurrentUser(load, employeeNumber, windowsUsername))
+                .ToList();
+        }
+
+        private static bool IsLoadOwnedByCurrentUser(
+            Model_ReceivingLoad load,
+            int employeeNumber,
+            string? windowsUsername
+        )
+        {
+            if (load == null)
+            {
+                return false;
+            }
+
+            if (
+                employeeNumber > 0
+                && load.EmployeeNumber > 0
+                && load.EmployeeNumber == employeeNumber
+            )
+            {
+                return true;
+            }
+
+            return !string.IsNullOrWhiteSpace(windowsUsername)
+                && !string.IsNullOrWhiteSpace(load.UserId)
+                && string.Equals(load.UserId, windowsUsername, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

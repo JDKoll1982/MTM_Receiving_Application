@@ -25,10 +25,12 @@ public static class Helper_Database_StoredProcedure
     /// <param name="procedureName"></param>
     /// <param name="parameters"></param>
     /// <param name="connectionString"></param>
+    /// <param name="commandTimeoutSeconds"></param>
     public static async Task<Model_Dao_Result> ExecuteAsync(
         string procedureName,
         MySqlParameter[] parameters,
-        string connectionString
+        string connectionString,
+        int commandTimeoutSeconds = 30
     )
     {
         var result = new Model_Dao_Result();
@@ -47,6 +49,7 @@ public static class Helper_Database_StoredProcedure
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = commandTimeoutSeconds,
                 };
 
                 if (parameters != null)
@@ -127,10 +130,12 @@ public static class Helper_Database_StoredProcedure
     /// <param name="connectionString"></param>
     /// <param name="procedureName"></param>
     /// <param name="parameters"></param>
+    /// <param name="commandTimeoutSeconds"></param>
     public static async Task<Model_Dao_Result> ExecuteNonQueryAsync(
         string connectionString,
         string procedureName,
-        Dictionary<string, object>? parameters = null
+        Dictionary<string, object>? parameters = null,
+        int commandTimeoutSeconds = 30
     )
     {
         var result = new Model_Dao_Result();
@@ -153,6 +158,7 @@ public static class Helper_Database_StoredProcedure
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = commandTimeoutSeconds,
                 };
 
                 AddParameters(command, parameters);
@@ -212,11 +218,13 @@ public static class Helper_Database_StoredProcedure
     /// <param name="procedureName"></param>
     /// <param name="mapper"></param>
     /// <param name="parameters"></param>
+    /// <param name="commandTimeoutSeconds"></param>
     public static async Task<Model_Dao_Result<T>> ExecuteSingleAsync<T>(
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
-        Dictionary<string, object>? parameters = null
+        Dictionary<string, object>? parameters = null,
+        int commandTimeoutSeconds = 30
     )
     {
         var result = new Model_Dao_Result<T>();
@@ -239,6 +247,7 @@ public static class Helper_Database_StoredProcedure
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = commandTimeoutSeconds,
                 };
 
                 AddParameters(command, parameters);
@@ -318,11 +327,13 @@ public static class Helper_Database_StoredProcedure
     /// <param name="procedureName"></param>
     /// <param name="mapper"></param>
     /// <param name="parameters"></param>
+    /// <param name="commandTimeoutSeconds"></param>
     public static async Task<Model_Dao_Result<List<T>>> ExecuteListAsync<T>(
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
-        Dictionary<string, object>? parameters = null
+        Dictionary<string, object>? parameters = null,
+        int commandTimeoutSeconds = 30
     )
     {
         var result = new Model_Dao_Result<List<T>>();
@@ -345,6 +356,7 @@ public static class Helper_Database_StoredProcedure
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = commandTimeoutSeconds,
                 };
 
                 AddParameters(command, parameters);
@@ -415,10 +427,12 @@ public static class Helper_Database_StoredProcedure
     /// <param name="connectionString"></param>
     /// <param name="procedureName"></param>
     /// <param name="parameters"></param>
+    /// <param name="commandTimeoutSeconds"></param>
     public static async Task<Model_Dao_Result<DataTable>> ExecuteDataTableAsync(
         string connectionString,
         string procedureName,
-        Dictionary<string, object>? parameters = null
+        Dictionary<string, object>? parameters = null,
+        int commandTimeoutSeconds = 30
     )
     {
         var result = new Model_Dao_Result<DataTable>();
@@ -437,6 +451,7 @@ public static class Helper_Database_StoredProcedure
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = commandTimeoutSeconds,
                 };
 
                 AddParameters(command, parameters);
@@ -485,11 +500,13 @@ public static class Helper_Database_StoredProcedure
     /// <param name="transaction"></param>
     /// <param name="procedureName"></param>
     /// <param name="parameters"></param>
+    /// <param name="commandTimeoutSeconds"></param>
     public static async Task<Model_Dao_Result> ExecuteInTransactionAsync(
         MySqlConnection connection,
         MySqlTransaction transaction,
         string procedureName,
-        Dictionary<string, object>? parameters = null
+        Dictionary<string, object>? parameters = null,
+        int commandTimeoutSeconds = 30
     )
     {
         var result = new Model_Dao_Result();
@@ -500,6 +517,7 @@ public static class Helper_Database_StoredProcedure
             await using var command = new MySqlCommand(procedureName, connection, transaction)
             {
                 CommandType = CommandType.StoredProcedure,
+                CommandTimeout = commandTimeoutSeconds,
             };
 
             AddParameters(command, parameters);

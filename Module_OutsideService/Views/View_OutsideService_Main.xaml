@@ -1,0 +1,59 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_OutsideService.Views.View_OutsideService_Main"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Padding="20" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="12">
+            <Border
+                Background="#115ea3"
+                CornerRadius="18"
+                Padding="20">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        Text="Outside Service"
+                        Style="{StaticResource TitleTextBlockStyle}"
+                        Foreground="White" />
+                    <TextBlock
+                        Text="Create requests, work the active line waitlist, and review completed Outside Service history."
+                        Foreground="#d9ecff"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Content="Request Entry" Command="{x:Bind ViewModel.ShowRequestEntryCommand}" Style="{StaticResource AccentButtonStyle}" />
+                <Button Content="Active Waitlist" Command="{x:Bind ViewModel.ShowWaitlistCommand}" />
+                <Button Content="Setup" Command="{x:Bind ViewModel.ShowSetupCommand}" />
+                <Button Content="Complete History" Command="{x:Bind ViewModel.ShowHistoryCommand}" />
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <ContentControl
+                x:Name="RequestEntryHost"
+                Visibility="{x:Bind ViewModel.IsRequestEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ContentControl
+                x:Name="WaitlistHost"
+                Visibility="{x:Bind ViewModel.IsWaitlistVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ContentControl
+                x:Name="SetupHost"
+                Visibility="{x:Bind ViewModel.IsSetupVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ContentControl
+                x:Name="HistoryHost"
+                Visibility="{x:Bind ViewModel.IsHistoryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+    </Grid>
+</Page>

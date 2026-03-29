@@ -1,0 +1,118 @@
+using FluentAssertions;
+using Moq;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_OutsideService.Data;
+using MTM_Receiving_Application.Module_OutsideService.Models;
+using MTM_Receiving_Application.Module_OutsideService.Services;
+using Xunit;
+
+namespace MTM_Receiving_Application.Tests.Unit.Module_OutsideService.Services;
+
+public class Service_OutsideServiceTests
+{
+    [Fact]
+    public async Task CreateRequestAsync_ShouldFail_WhenPackageRowsDoNotMatchPackageCount()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var loggerMock = new Mock<IService_LoggingUtility>();
+        var service = CreateService(inforVisualMock.Object, loggerMock.Object);
+
+        var request = new Model_OutsideServiceRequest
+        {
+            CreatedByUser = "tester",
+            CreatedByDisplay = "Test User",
+            Lines =
+            {
+                new Model_OutsideServiceRequestLine
+                {
+                    LineNumber = 1,
+                    PartId = "PART-100",
+                    PackageCount = 2,
+                    Packages =
+                    {
+                        new Model_OutsideServiceRequestPackage
+                        {
+                            PackageSequence = 1,
+                            PackageQuantity = 12,
+                        },
+                    },
+                },
+            },
+        };
+
+        var result = await service.CreateRequestAsync(request);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("package rows do not match");
+        inforVisualMock.Verify(mock => mock.PartExistsAsync(It.IsAny<string>()), Times.Never);
+        loggerMock.Verify(
+            mock => mock.LogInfo(It.IsAny<string>(), It.IsAny<string?>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task GetVendorSuggestionsAsync_ShouldReturnDistinctVendorsOrderedByMostRecentDispatch()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var loggerMock = new Mock<IService_LoggingUtility>();
+        var service = CreateService(inforVisualMock.Object, loggerMock.Object);
+
+        var history = new List<Model_OutsideServiceHistory>
+        {
+            new()
+            {
+                VendorID = "V-100",
+                VendorName = "Alpha Heat Treat",
+                VendorCity = "Detroit",
+                VendorState = "MI",
+                DispatchDate = new DateTime(2026, 3, 20),
+            },
+            new()
+            {
+                VendorID = "V-200",
+                VendorName = "Bravo Coating",
+                VendorCity = "Toledo",
+                VendorState = "OH",
+                DispatchDate = new DateTime(2026, 3, 25),
+            },
+            new()
+            {
+                VendorID = "V-100",
+                VendorName = "Alpha Heat Treat",
+                VendorCity = "Detroit",
+                VendorState = "MI",
+                DispatchDate = new DateTime(2026, 3, 27),
+            },
+        };
+
+        inforVisualMock
+            .Setup(mock => mock.GetOutsideServiceHistoryByPartAsync("PART-100"))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(history));
+
+        var result = await service.GetVendorSuggestionsAsync("PART-100");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().HaveCount(2);
+        result.Data![0].VendorId.Should().Be("V-100");
+        result.Data[0].DispatchCount.Should().Be(2);
+        result.Data[0].LastDispatchDate.Should().Be(new DateTime(2026, 3, 27));
+        result.Data[0].LocationDetail.Should().Be("Detroit, MI");
+        result.Data[1].VendorId.Should().Be("V-200");
+    }
+
+    private static Service_OutsideService CreateService(
+        IService_InforVisual inforVisual,
+        IService_LoggingUtility logger
+    )
+    {
+        return new Service_OutsideService(
+            new Dao_OutsideServiceRequest("Server=localhost;Database=test;Uid=test;Pwd=test;"),
+            inforVisual,
+            logger
+        );
+    }
+}

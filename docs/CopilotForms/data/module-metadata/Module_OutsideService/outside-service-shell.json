@@ -1,0 +1,133 @@
+{
+  "id": "outside-service-shell",
+  "module": "Module_OutsideService",
+  "name": "Outside Service Queue",
+  "summary": "Request-entry, active waitlist, setup, and completion history workflow for MySQL-backed outside service requests with Infor Visual part validation and vendor suggestions.",
+  "owner": "Shipping / Receiving Team",
+  "relatedFiles": [
+    "Module_OutsideService/Contracts/IService_OutsideService.cs",
+    "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
+    "Module_OutsideService/Models/Enum_OutsideServiceLinePhase.cs",
+    "Module_OutsideService/Models/Model_OutsideServiceRequest.cs",
+    "Module_OutsideService/Models/Model_OutsideServiceRequestLine.cs",
+    "Module_OutsideService/Models/Model_OutsideServiceRequestPackage.cs",
+    "Module_OutsideService/Models/Model_OutsideServiceVendorSuggestion.cs",
+    "Module_OutsideService/Models/Model_OutsideServicePartMatchSuggestion.cs",
+    "Module_OutsideService/Services/Service_OutsideService.cs",
+    "Module_OutsideService/ViewModels/ViewModel_OutsideService_Main.cs",
+    "Module_OutsideService/ViewModels/ViewModel_OutsideService_RequestEntry.cs",
+    "Module_OutsideService/ViewModels/ViewModel_OutsideService_Waitlist.cs",
+    "Module_OutsideService/ViewModels/ViewModel_OutsideService_Setup.cs",
+    "Module_OutsideService/ViewModels/ViewModel_OutsideService_CompleteHistory.cs",
+    "Module_OutsideService/Views/View_OutsideService_Main.xaml",
+    "Module_OutsideService/Views/View_OutsideService_RequestEntry.xaml",
+    "Module_OutsideService/Views/View_OutsideService_Waitlist.xaml",
+    "Module_OutsideService/Views/View_OutsideService_Setup.xaml",
+    "Module_OutsideService/Views/View_OutsideService_CompleteHistory.xaml",
+    "Module_OutsideService/Views/View_OutsideService_AddLineModal.xaml",
+    "Module_OutsideService/Views/View_OutsideService_PartMatchHelper.xaml",
+    "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
+    "MainWindow.xaml",
+    "MainWindow.xaml.cs",
+    "Database/Database_Deployment/Sql_Files/Tables/32_Table_outside_service_request.sql",
+    "Database/Database_Deployment/Sql_Files/Tables/33_Table_outside_service_request_line.sql",
+    "Database/Database_Deployment/Sql_Files/Tables/34_Table_outside_service_request_package.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_Request_Insert.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestLine_Insert.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestPackage_Insert.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_Request_GetOpen.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_Request_GetCompleted.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestLine_UpdateSetup.sql",
+    "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestLine_MarkComplete.sql"
+  ],
+  "relatedServices": [
+    "IService_OutsideService",
+    "Service_OutsideService",
+    "IService_InforVisual",
+    "Service_InforVisualConnect"
+  ],
+  "promptDefaults": {
+    "audience": "Shipping or Receiving Clerk",
+    "docAudience": "Shipping or Receiving Clerk",
+    "mockupAudience": "Shipping or Receiving Clerk",
+    "reviewScope": "Single module",
+    "testKind": "Mixed",
+    "databaseSystem": "MySQL"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Request entry",
+      "Active waitlist",
+      "Setup and shipment prep",
+      "Completion history"
+    ],
+    "screens": [
+      "View_OutsideService_Main.xaml",
+      "View_OutsideService_RequestEntry.xaml",
+      "View_OutsideService_Waitlist.xaml",
+      "View_OutsideService_Setup.xaml",
+      "View_OutsideService_CompleteHistory.xaml",
+      "View_OutsideService_AddLineModal.xaml",
+      "View_OutsideService_PartMatchHelper.xaml"
+    ],
+    "currentUiPatterns": [
+      "Tabs",
+      "Split layout",
+      "Form",
+      "Dialog",
+      "Card list"
+    ],
+    "desiredUiPatterns": [
+      "Tabs",
+      "Split layout",
+      "Form",
+      "Dialog",
+      "Card list"
+    ],
+    "uiElements": [
+      "Request notes entry",
+      "Add line modal",
+      "Package breakdown editor",
+      "Waitlist detail panel",
+      "Vendor suggestion picker",
+      "Shipment setup form",
+      "Completion history list"
+    ],
+    "userActions": [
+      "Create a new outside service request",
+      "Resolve uncertain part numbers",
+      "Review and prioritize open lines",
+      "Save setup details",
+      "Mark setup lines complete",
+      "Review completed work"
+    ],
+    "preserveRules": [
+      "Keep View to ViewModel to Service to DAO to Database flow intact",
+      "Keep Infor Visual access read-only",
+      "Keep MySQL writes inside stored procedures only"
+    ],
+    "acceptanceCriteria": [
+      "The shell opens from the main navigation",
+      "Request entry can stage and save one or more lines",
+      "Open lines appear in the waitlist after save",
+      "Setup data can be saved and lines can be marked complete",
+      "Completed lines appear in history"
+    ],
+    "validationHints": [
+      "Confirm invalid part IDs are blocked before save",
+      "Confirm package count and package rows must match",
+      "Confirm vendor suggestions are ordered by most recent dispatch",
+      "Confirm waitlist and history filters do not hide valid rows unexpectedly"
+    ],
+    "databaseObjects": [
+      "outside_service_request",
+      "outside_service_request_line",
+      "outside_service_request_package",
+      "sp_OutsideService_Request_Insert",
+      "sp_OutsideService_Request_GetOpen",
+      "sp_OutsideService_Request_GetCompleted",
+      "sp_OutsideService_RequestLine_UpdateSetup",
+      "sp_OutsideService_RequestLine_MarkComplete"
+    ]
+  }
+}

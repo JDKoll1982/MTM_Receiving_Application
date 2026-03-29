@@ -1,0 +1,55 @@
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_OutsideService.Views.View_OutsideService_PartMatchHelper"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_OutsideService.Models"
+    Title="Find A Similar Part"
+    PrimaryButtonText="Use Selected Part"
+    CloseButtonText="Back To Add Line"
+    DefaultButton="Primary">
+    <Grid RowSpacing="16" MinWidth="680">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="8">
+            <Border Background="#e8f2ff" CornerRadius="12" Padding="10,4">
+                <TextBlock Text="Opened from Add Line modal" Foreground="#0f6cbd" FontWeight="SemiBold" />
+            </Border>
+            <TextBlock Text="No exact match was found for the typed value below." TextWrapping="Wrap" />
+            <TextBlock Text="{x:Bind TypedValue, Mode=OneWay}" FontFamily="Consolas" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="16" Padding="12">
+                <ListView x:Name="SuggestionsList" ItemsSource="{x:Bind Suggestions, Mode=OneWay}" SelectionChanged="SuggestionsList_SelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_OutsideServicePartMatchSuggestion">
+                            <Border Margin="0,0,0,8" Background="#ffffff" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="12" Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{x:Bind PartId}" FontFamily="Consolas" FontWeight="SemiBold" />
+                                    <TextBlock Text="{x:Bind Description}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{x:Bind MatchReason}" Opacity="0.75" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+
+            <Border Grid.Column="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="16" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Selected Match" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock x:Name="SelectedSummaryText" Text="Select a suggested part to return it to the Add Line modal." TextWrapping="Wrap" />
+                    <TextBlock x:Name="SelectedReasonText" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentDialog>

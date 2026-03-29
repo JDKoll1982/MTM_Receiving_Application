@@ -93,7 +93,7 @@ services.AddSingleton<IService_InforVisual>(sp =>
    ```sql
    -- Update DECLARE parameters with test values
    DECLARE @PoNumber VARCHAR(20) = 'PO-067101';
-   
+
    -- Execute and verify results
    ```
 
@@ -123,16 +123,16 @@ ApplicationIntent=ReadOnly;
 public class MyViewModel
 {
     private readonly IService_InforVisual _inforVisual;
-    
+
     public MyViewModel(IService_InforVisual inforVisual)
     {
         _inforVisual = inforVisual;
     }
-    
+
     public async Task LoadPOAsync(string poNumber)
     {
         var result = await _inforVisual.GetPOWithPartsAsync(poNumber);
-        
+
         if (result.IsSuccess && result.Data != null)
         {
             var po = result.Data;
@@ -149,7 +149,7 @@ public class MyViewModel
 ✅ **Maintainability**: SQL changes don't require C# code changes  
 ✅ **Mock Data Support**: Can run application without Infor Visual connection  
 ✅ **Type Safety**: Strong typing throughout the layers  
-✅ **Read-Only Safety**: `ApplicationIntent=ReadOnly` prevents accidental writes  
+✅ **Read-Only Safety**: `ApplicationIntent=ReadOnly` prevents accidental writes
 
 ## Migration from Old Code
 
@@ -178,7 +178,7 @@ Or load from `appsettings.json`:
 ```json
 {
   "AppSettings": {
-    "UseInforVisualMockData": false
+    "UseInforVisualMockData": true
   }
 }
 ```

@@ -305,25 +305,22 @@ public class Service_Reporting : IService_Reporting
                         .AppendJoin('\t', includedColumns.Select(column => column.Header))
                         .AppendLine();
 
-                    foreach (var row in section.Rows)
+                    foreach (var previewRow in previewModuleCard.PreviewRows)
                     {
                         html.AppendLine("<tr style='background-color: #ffffff;'>");
 
-                        foreach (var includedColumn in includedColumns)
+                        foreach (var previewCell in previewRow.Cells)
                         {
                             AppendBodyCell(
                                 html,
-                                row.GetColumnValue(includedColumn.Key),
-                                includedColumn.IsNumeric ? "right" : "left"
+                                previewCell.Value,
+                                previewCell.IsNumeric ? "right" : "left"
                             );
                         }
 
                         html.AppendLine("</tr>");
                         plainText
-                            .AppendJoin(
-                                '\t',
-                                includedColumns.Select(column => row.GetColumnValue(column.Key))
-                            )
+                            .AppendJoin('\t', previewRow.Cells.Select(cell => cell.Value))
                             .AppendLine();
                     }
 

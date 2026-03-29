@@ -73,6 +73,22 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private ObservableCollection<Model_ReportingPreviewModuleCard> _includedPreviewModuleCards = [];
 
     [ObservableProperty]
+    private Enum_ReportingPreviewRowDisplayMode _selectedRowDisplayMode =
+        Enum_ReportingPreviewRowDisplayMode.RawRows;
+
+    [ObservableProperty]
+    private bool _isOptionsOpen;
+
+    [ObservableProperty]
+    private Model_ReportingPreviewModuleCard? _receivingPreviewModuleCard;
+
+    [ObservableProperty]
+    private Model_ReportingPreviewModuleCard? _dunnagePreviewModuleCard;
+
+    [ObservableProperty]
+    private Model_ReportingPreviewModuleCard? _volvoPreviewModuleCard;
+
+    [ObservableProperty]
     private string _previewSummaryTitle = string.Empty;
 
     [ObservableProperty]
@@ -83,6 +99,89 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     [ObservableProperty]
     private bool _hasIncludedPreviewModuleCards;
+
+    public bool HasReceivingPreviewModuleCard => ReceivingPreviewModuleCard is not null;
+
+    public bool HasDunnagePreviewModuleCard => DunnagePreviewModuleCard is not null;
+
+    public bool HasVolvoPreviewModuleCard => VolvoPreviewModuleCard is not null;
+
+    public bool HasReceivingIncludedPreviewModuleCard => ReceivingPreviewModuleCard?.IsIncluded == true;
+
+    public bool HasDunnageIncludedPreviewModuleCard => DunnagePreviewModuleCard?.IsIncluded == true;
+
+    public bool HasVolvoIncludedPreviewModuleCard => VolvoPreviewModuleCard?.IsIncluded == true;
+
+    public bool IsRawRowsMode
+    {
+        get => SelectedRowDisplayMode == Enum_ReportingPreviewRowDisplayMode.RawRows;
+        set
+        {
+            if (value)
+            {
+                SelectedRowDisplayMode = Enum_ReportingPreviewRowDisplayMode.RawRows;
+            }
+        }
+    }
+
+    public bool IsUniquePartNumbersEntireDateRangeMode
+    {
+        get =>
+            SelectedRowDisplayMode
+            == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+        set
+        {
+            if (value)
+            {
+                SelectedRowDisplayMode =
+                    Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+            }
+        }
+    }
+
+    public bool IsUniquePartNumbersAndLotNumbersEntireDateRangeMode
+    {
+        get =>
+            SelectedRowDisplayMode
+            == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersEntireDateRange;
+        set
+        {
+            if (value)
+            {
+                SelectedRowDisplayMode =
+                    Enum_ReportingPreviewRowDisplayMode
+                        .UniquePartNumbersAndLotNumbersEntireDateRange;
+            }
+        }
+    }
+
+    public bool IsUniquePartNumbersPerDayMode
+    {
+        get => SelectedRowDisplayMode == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay;
+        set
+        {
+            if (value)
+            {
+                SelectedRowDisplayMode =
+                    Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay;
+            }
+        }
+    }
+
+    public bool IsUniquePartNumbersAndLotNumbersPerDayMode
+    {
+        get =>
+            SelectedRowDisplayMode
+            == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersPerDay;
+        set
+        {
+            if (value)
+            {
+                SelectedRowDisplayMode =
+                    Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersPerDay;
+            }
+        }
+    }
 
     public ViewModel_Reporting_Main(
         IService_Reporting reportingService,
@@ -323,6 +422,18 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanCopyEmail() => IncludedPreviewModuleCards.Count > 0 && !IsBusy;
 
+    [RelayCommand]
+    private void OpenOptions()
+    {
+        IsOptionsOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseOptions()
+    {
+        IsOptionsOpen = false;
+    }
+
     private IEnumerable<SelectedModuleRequest> GetSelectedModules()
     {
         if (IsReceivingChecked && IsReceivingEnabled)
@@ -386,8 +497,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                     ModuleName = section.ModuleName,
                     Title = $"{section.ModuleName} Summary",
                 };
-
-            PreviewModuleCards.Add(CreatePreviewModuleCard(section, summaryTable));
+            var previewModuleCard = CreatePreviewModuleCard(section, summaryTable);
+            PreviewModuleCards.Add(previewModuleCard);
+            SetModulePreviewCard(previewModuleCard);
         }
 
         foreach (var summaryTable in summaryTableList)
@@ -420,6 +532,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             SummaryTable = summaryTable,
             DetailSection = section,
             IsIncluded = GetModuleCheckedState(section.ModuleName),
+            RowDisplayMode = SelectedRowDisplayMode,
         };
 
         previewModuleCard.PropertyChanged += OnPreviewModuleCardPropertyChanged;
@@ -750,7 +863,44 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
 
         HasIncludedPreviewModuleCards = IncludedPreviewModuleCards.Count > 0;
+        NotifyModulePreviewCardStateChanged();
         CopyEmailFormatCommand.NotifyCanExecuteChanged();
+    }
+
+    private void SetModulePreviewCard(Model_ReportingPreviewModuleCard previewModuleCard)
+    {
+        switch (previewModuleCard.ModuleName)
+        {
+            case "Receiving":
+                ReceivingPreviewModuleCard = previewModuleCard;
+                break;
+            case "Dunnage":
+                DunnagePreviewModuleCard = previewModuleCard;
+                break;
+            case "Volvo":
+                VolvoPreviewModuleCard = previewModuleCard;
+                break;
+        }
+
+        NotifyModulePreviewCardStateChanged();
+    }
+
+    private void ApplySelectedRowDisplayModeToPreviewCards()
+    {
+        foreach (var previewModuleCard in PreviewModuleCards)
+        {
+            previewModuleCard.RowDisplayMode = SelectedRowDisplayMode;
+        }
+    }
+
+    private void NotifyModulePreviewCardStateChanged()
+    {
+        OnPropertyChanged(nameof(HasReceivingPreviewModuleCard));
+        OnPropertyChanged(nameof(HasDunnagePreviewModuleCard));
+        OnPropertyChanged(nameof(HasVolvoPreviewModuleCard));
+        OnPropertyChanged(nameof(HasReceivingIncludedPreviewModuleCard));
+        OnPropertyChanged(nameof(HasDunnageIncludedPreviewModuleCard));
+        OnPropertyChanged(nameof(HasVolvoIncludedPreviewModuleCard));
     }
 
     private void ClearPreviewCardSubscriptions()
@@ -879,10 +1029,15 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         PreviewSummaryTables.Clear();
         PreviewModuleCards.Clear();
         IncludedPreviewModuleCards.Clear();
+        ReceivingPreviewModuleCard = null;
+        DunnagePreviewModuleCard = null;
+        VolvoPreviewModuleCard = null;
         PreviewSummaryTitle = string.Empty;
         PreviewCardWidth = 1320d;
         PreviewTableViewportWidth = 1260d;
         HasIncludedPreviewModuleCards = false;
+        IsOptionsOpen = false;
+        NotifyModulePreviewCardStateChanged();
         CopyEmailFormatCommand.NotifyCanExecuteChanged();
     }
 
@@ -943,6 +1098,16 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     {
         SyncPreviewModuleSelection("Volvo", value);
         GenerateReportsCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnSelectedRowDisplayModeChanged(Enum_ReportingPreviewRowDisplayMode value)
+    {
+        ApplySelectedRowDisplayModeToPreviewCards();
+        OnPropertyChanged(nameof(IsRawRowsMode));
+        OnPropertyChanged(nameof(IsUniquePartNumbersEntireDateRangeMode));
+        OnPropertyChanged(nameof(IsUniquePartNumbersAndLotNumbersEntireDateRangeMode));
+        OnPropertyChanged(nameof(IsUniquePartNumbersPerDayMode));
+        OnPropertyChanged(nameof(IsUniquePartNumbersAndLotNumbersPerDayMode));
     }
 
     private sealed record SelectedModuleRequest(

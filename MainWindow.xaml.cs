@@ -144,6 +144,10 @@ namespace MTM_Receiving_Application
                 typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),
                 string.Empty
             ),
+            ["OutsideServiceMainPage"] = (
+                typeof(Module_OutsideService.Views.View_OutsideService_Main),
+                "Outside Service"
+            ),
             ["VolvoShipmentEntry"] = (
                 typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry),
                 "Volvo Dunnage Requisition"
