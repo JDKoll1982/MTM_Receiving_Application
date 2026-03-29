@@ -18,6 +18,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IServiceProvider _serviceProvider;
         private readonly IService_Authentication _authService;
         private readonly IService_UserSessionManager _sessionManager;
+        private readonly IService_UserLoginCoordinator _userLoginCoordinator;
         private readonly IService_ApplicationShutdown _applicationShutdown;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ReceivingLabelData _labelDataService;
@@ -29,6 +30,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IServiceProvider serviceProvider,
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
+            IService_UserLoginCoordinator userLoginCoordinator,
             IService_ApplicationShutdown applicationShutdown,
             IService_ErrorHandler errorHandler,
             IService_ReceivingLabelData labelDataService,
@@ -39,6 +41,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             _serviceProvider = serviceProvider;
             _authService = authService;
             _sessionManager = sessionManager;
+            _userLoginCoordinator = userLoginCoordinator;
             _applicationShutdown = applicationShutdown;
             _errorHandler = errorHandler;
             _labelDataService = labelDataService;
@@ -293,8 +296,27 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 if (authenticatedUser != null)
                 {
                     UpdateSplash(90, "Creating user session...");
-                    _sessionManager.CreateSession(authenticatedUser, workstationConfig, authMethod);
-                    _sessionManager.StartTimeoutMonitoring();
+
+                    var sessionResult =
+                        await _userLoginCoordinator.InitializeAuthenticatedSessionAsync(
+                            authenticatedUser,
+                            workstationConfig,
+                            authMethod
+                        );
+
+                    if (!sessionResult.Success)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            sessionResult.ErrorMessage
+                                ?? "Unable to initialize the authenticated session.",
+                            Models.Enums.Enum_ErrorSeverity.Error,
+                            sessionResult.Exception,
+                            showDialog: false
+                        );
+
+                        RequestShutdown("startup_session_initialization_failed");
+                        return;
+                    }
 
                     // Update MainWindow user display
                     if (App.MainWindow is MainWindow mainWin)
@@ -305,14 +327,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                         });
                     }
 
-                    var settingsFacade = _serviceProvider.GetService<IService_SettingsCoreFacade>();
-                    if (settingsFacade != null)
-                    {
-                        UpdateSplash(95, "Initializing core settings...");
-                        await settingsFacade.InitializeDefaultsAsync(
-                            authenticatedUser.EmployeeNumber
-                        );
-                    }
+                    UpdateSplash(95, "Initializing core settings...");
                 }
                 else
                 {

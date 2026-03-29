@@ -107,21 +107,32 @@
                             Margin="16,0"
                         />
 
-                        <StackPanel
+                        <Button
+                            x:Name="UserMenuButton"
                             Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="12"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
                             Margin="0,0,24,0"
                             VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
                         >
-                            <PersonPicture x:Name="UserPicture" Height="32" Width="32" />
-                            <TextBlock
-                                x:Name="UserDisplayTextBlock"
-                                Text="Not Logged In"
-                                VerticalAlignment="Center"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                            />
-                        </StackPanel>
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Log Out" Click="UserLogOutMenuItem_Click" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <PersonPicture x:Name="UserPicture" Height="32" Width="32" />
+                                <TextBlock
+                                    x:Name="UserDisplayTextBlock"
+                                    Text="Not Logged In"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                />
+                            </StackPanel>
+                        </Button>
                     </Grid>
                     <InfoBar
                         x:Name="StatusInfoBar"

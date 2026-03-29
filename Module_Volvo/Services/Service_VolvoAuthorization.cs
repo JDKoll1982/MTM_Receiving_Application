@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Settings.Core.Data;
 
 namespace MTM_Receiving_Application.Module_Volvo.Services;
 
@@ -16,20 +14,17 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
 {
     private readonly IService_LoggingUtility _logger;
     private readonly IService_UserSessionManager _sessionManager;
-    private readonly Dao_SettingsCoreRoles _rolesDao;
-    private readonly Dao_SettingsCoreUserRoles _userRolesDao;
+    private readonly IService_UserPrivileges _userPrivileges;
 
     public Service_VolvoAuthorization(
         IService_LoggingUtility logger,
         IService_UserSessionManager sessionManager,
-        Dao_SettingsCoreRoles rolesDao,
-        Dao_SettingsCoreUserRoles userRolesDao
+        IService_UserPrivileges userPrivileges
     )
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
-        _rolesDao = rolesDao ?? throw new ArgumentNullException(nameof(rolesDao));
-        _userRolesDao = userRolesDao ?? throw new ArgumentNullException(nameof(userRolesDao));
+        _userPrivileges = userPrivileges ?? throw new ArgumentNullException(nameof(userPrivileges));
     }
 
     /// <summary>
@@ -171,35 +166,22 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
             };
         }
 
-        var rolesResult = await _rolesDao.GetAllAsync();
-        if (!rolesResult.Success || rolesResult.Data == null)
+        if (!_userPrivileges.IsInitialized || _userPrivileges.CurrentUserId != employeeNumber.Value)
         {
-            return new Model_Dao_Result
+            var initializeResult = await _userPrivileges.InitializeAsync(employeeNumber.Value);
+            if (!initializeResult.Success)
             {
-                Success = false,
-                ErrorMessage = rolesResult.ErrorMessage ?? "Failed to load application roles.",
-                Severity = Enum_ErrorSeverity.Error,
-            };
+                return new Model_Dao_Result
+                {
+                    Success = false,
+                    ErrorMessage = initializeResult.ErrorMessage ?? "Failed to load user roles.",
+                    Severity = Enum_ErrorSeverity.Error,
+                    Exception = initializeResult.Exception,
+                };
+            }
         }
 
-        var userRolesResult = await _userRolesDao.GetByUserAsync(employeeNumber.Value);
-        if (!userRolesResult.Success || userRolesResult.Data == null)
-        {
-            return new Model_Dao_Result
-            {
-                Success = false,
-                ErrorMessage = userRolesResult.ErrorMessage ?? "Failed to load user roles.",
-                Severity = Enum_ErrorSeverity.Error,
-            };
-        }
-
-        var userRoleIds = userRolesResult.Data.Select(x => x.RoleId).ToHashSet();
-        var userRoleNames = rolesResult
-            .Data.Where(x => userRoleIds.Contains(x.Id))
-            .Select(x => x.RoleName)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        if (allowedRoles.Any(userRoleNames.Contains))
+        if (_userPrivileges.HasAnyRole(allowedRoles))
         {
             return new Model_Dao_Result { Success = true };
         }

@@ -2,11 +2,13 @@
   "id": "shared-shell-foundation",
   "module": "Module_Shared",
   "name": "Shared Shell Foundation",
-  "summary": "Base shared viewmodel infrastructure and shared shell windows used to support the main window and reusable icon selection UI.",
+  "summary": "Base shared viewmodel infrastructure and shared shell windows used to support the main window, the top-right user menu, and reusable icon selection UI.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Shared/ViewModels/ViewModel_Shared_Base.cs",
     "Module_Shared/ViewModels/ViewModel_Shared_MainWindow.cs",
+    "MainWindow.xaml",
+    "MainWindow.xaml.cs",
     "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml",
     "Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs"
   ],
@@ -16,11 +18,17 @@
     "testKind": "Mixed"
   },
   "uiHints": {
-    "workflowAreas": ["Shared shell support", "Reusable icon selection"],
+    "workflowAreas": [
+      "Shared shell support",
+      "User menu logout flow",
+      "Reusable icon selection"
+    ],
     "screens": ["View_Shared_IconSelectorWindow.xaml"],
     "currentUiPatterns": ["Dialog", "Form"],
     "desiredUiPatterns": ["Dialog", "Form"],
     "validationHints": [
+      "Confirm the top-right shell user menu opens and triggers logout correctly",
+      "Confirm the main shell resets back to Receiving after a successful switch-user login",
       "Confirm shared shell viewmodels and reusable icon selection behavior remain aligned"
     ]
   }

@@ -21,34 +21,31 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
     private readonly Dao_SettingsCoreSystem _systemDao;
     private readonly Dao_SettingsCoreUser _userDao;
     private readonly Dao_SettingsCoreAudit _auditDao;
-    private readonly Dao_SettingsCoreRoles _rolesDao;
-    private readonly Dao_SettingsCoreUserRoles _userRolesDao;
     private readonly ISettingsMetadataRegistry _registry;
     private readonly ISettingsCache _cache;
     private readonly ISettingsEncryptionService _encryptionService;
     private readonly IService_UserSessionManager _sessionManager;
+    private readonly IService_UserPrivileges _userPrivileges;
 
     public SetSettingCommandHandler(
         Dao_SettingsCoreSystem systemDao,
         Dao_SettingsCoreUser userDao,
         Dao_SettingsCoreAudit auditDao,
-        Dao_SettingsCoreRoles rolesDao,
-        Dao_SettingsCoreUserRoles userRolesDao,
         ISettingsMetadataRegistry registry,
         ISettingsCache cache,
         ISettingsEncryptionService encryptionService,
-        IService_UserSessionManager sessionManager
+        IService_UserSessionManager sessionManager,
+        IService_UserPrivileges userPrivileges
     )
     {
         _systemDao = systemDao;
         _userDao = userDao;
         _auditDao = auditDao;
-        _rolesDao = rolesDao;
-        _userRolesDao = userRolesDao;
         _registry = registry;
         _cache = cache;
         _encryptionService = encryptionService;
         _sessionManager = sessionManager;
+        _userPrivileges = userPrivileges;
     }
 
     public async Task<Model_Dao_Result> Handle(
@@ -176,34 +173,16 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
             return false;
         }
 
-        var rolesResult = await _rolesDao.GetAllAsync();
-        if (!rolesResult.Success || rolesResult.Data == null)
+        if (!_userPrivileges.IsInitialized || _userPrivileges.CurrentUserId != userId.Value)
         {
-            return false;
+            var initializeResult = await _userPrivileges.InitializeAsync(userId.Value);
+            if (!initializeResult.Success)
+            {
+                return false;
+            }
         }
 
-        var userRolesResult = await _userRolesDao.GetByUserAsync(userId.Value);
-        if (!userRolesResult.Success || userRolesResult.Data == null)
-        {
-            return false;
-        }
-
-        var userRoleIds = userRolesResult.Data.Select(r => r.RoleId).ToHashSet();
-        var userRoleNames = rolesResult
-            .Data.Where(r => userRoleIds.Contains(r.Id))
-            .Select(r => r.RoleName)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        return required switch
-        {
-            Enum_SettingsPermissionLevel.Supervisor => userRoleNames.Contains("Supervisor")
-                || userRoleNames.Contains("Admin")
-                || userRoleNames.Contains("Developer"),
-            Enum_SettingsPermissionLevel.Admin => userRoleNames.Contains("Admin")
-                || userRoleNames.Contains("Developer"),
-            Enum_SettingsPermissionLevel.Developer => userRoleNames.Contains("Developer"),
-            _ => false,
-        };
+        return _userPrivileges.HasPermissionLevel(required);
     }
 
     private static string BuildCacheKey(

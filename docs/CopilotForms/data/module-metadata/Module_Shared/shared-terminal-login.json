@@ -2,7 +2,7 @@
   "id": "shared-terminal-login",
   "module": "Module_Shared",
   "name": "Shared Terminal Login",
-  "summary": "Shared terminal login dialog used for shared-workstation authentication and access continuation flows.",
+  "summary": "Shared terminal login dialog used for shared-workstation authentication and the manual switch-user flow launched from the shell user menu.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Shared/ViewModels/ViewModel_Shared_SharedTerminalLogin.cs",
@@ -19,9 +19,14 @@
     "screens": ["View_Shared_SharedTerminalLoginDialog.xaml"],
     "currentUiPatterns": ["Dialog", "Form"],
     "desiredUiPatterns": ["Dialog", "Form"],
-    "userActions": ["Authenticate at a shared terminal and continue safely"],
+    "userActions": [
+      "Authenticate at a shared terminal and continue safely",
+      "Authenticate after a manual logout without restarting the app"
+    ],
     "validationHints": [
-      "Confirm shared terminal login continues to present and capture credentials correctly"
+      "Confirm shared terminal login continues to present and capture credentials correctly",
+      "Confirm the dialog can be reused for switch-user login after a shell logout",
+      "Confirm cancel and lockout paths still close the application safely when no active user session remains"
     ]
   }
 }

@@ -12,6 +12,8 @@ using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Help;
 using MTM_Receiving_Application.Module_Core.Services.UI;
 using MTM_Receiving_Application.Module_Core.Services.VisualAutomation;
+using MTM_Receiving_Application.Module_Settings.Core.Data;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Infrastructure.DependencyInjection;
 
@@ -48,7 +50,10 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
         services.AddSingleton<IService_Help, Service_Help>();
-        services.AddSingleton<IService_AuthCredentialProtection, Service_AuthCredentialProtection>();
+        services.AddSingleton<
+            IService_AuthCredentialProtection,
+            Service_AuthCredentialProtection
+        >();
 
         // Dispatcher Service (Singleton - Wraps the UI thread dispatcher)
         // Note: Dispatcher is lazy-initialized on first use since it requires UI thread
@@ -99,12 +104,10 @@ public static class CoreServiceExtensions
             );
 
         // User DAO (Singleton - Stateless data access)
-        services.AddSingleton(sp =>
-            new Dao_User(
-                mySqlConnectionString,
-                sp.GetRequiredService<IService_AuthCredentialProtection>()
-            )
-        );
+        services.AddSingleton(sp => new Dao_User(
+            mySqlConnectionString,
+            sp.GetRequiredService<IService_AuthCredentialProtection>()
+        ));
 
         // Authentication Service (Singleton - Stateless authentication logic)
         services.AddSingleton<IService_Authentication>(sp =>
@@ -121,6 +124,38 @@ public static class CoreServiceExtensions
             var daoUser = sp.GetRequiredService<Dao_User>();
             var dispatcherService = sp.GetRequiredService<IService_Dispatcher>();
             return new Service_UserSessionManager(daoUser, dispatcherService);
+        });
+
+        services.AddSingleton<IService_UserPrivileges>(sp =>
+        {
+            var rolesDao = sp.GetRequiredService<Dao_SettingsCoreRoles>();
+            var userRolesDao = sp.GetRequiredService<Dao_SettingsCoreUserRoles>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_UserPrivileges(rolesDao, userRolesDao, logger);
+        });
+
+        services.AddSingleton<IService_UserLoginCoordinator>(sp =>
+        {
+            var authenticationService = sp.GetRequiredService<IService_Authentication>();
+            var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
+            var userPrivileges = sp.GetRequiredService<IService_UserPrivileges>();
+            var settingsCoreFacade = sp.GetRequiredService<IService_SettingsCoreFacade>();
+            var windowService = sp.GetRequiredService<IService_Window>();
+            var applicationShutdown = sp.GetRequiredService<IService_ApplicationShutdown>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
+
+            return new Service_UserLoginCoordinator(
+                authenticationService,
+                sessionManager,
+                userPrivileges,
+                settingsCoreFacade,
+                windowService,
+                applicationShutdown,
+                logger,
+                errorHandler,
+                sp
+            );
         });
     }
 

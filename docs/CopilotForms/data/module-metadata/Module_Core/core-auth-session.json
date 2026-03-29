@@ -2,17 +2,21 @@
   "id": "core-auth-session",
   "module": "Module_Core",
   "name": "Authentication And Session",
-  "summary": "User authentication, session lifecycle, timer-backed session handling, coordinated session shutdown, protected auth-user secret handling, and user data access used across the application shell.",
+  "summary": "User authentication, session lifecycle, timer-backed session handling, coordinated logout and switch-user flows, session privilege initialization, protected auth-user secret handling, and user data access used across the application shell.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Core/Contracts/Services/IService_Authentication.cs",
     "Module_Core/Contracts/Services/IService_AuthCredentialProtection.cs",
+    "Module_Core/Contracts/Services/IService_UserLoginCoordinator.cs",
+    "Module_Core/Contracts/Services/IService_UserPrivileges.cs",
     "Module_Core/Contracts/Services/IService_SessionManager.cs",
     "Module_Core/Contracts/Services/IService_UserSessionManager.cs",
     "Module_Core/Contracts/Services/ITimer.cs",
     "Module_Core/Data/Authentication/Dao_User.cs",
     "Module_Core/Services/Authentication/Service_Authentication.cs",
     "Module_Core/Services/Authentication/Service_AuthCredentialProtection.cs",
+    "Module_Core/Services/Authentication/Service_UserLoginCoordinator.cs",
+    "Module_Core/Services/Authentication/Service_UserPrivileges.cs",
     "Module_Core/Services/Authentication/Service_UserSessionManager.cs",
     "Module_Core/Services/Service_DispatcherTimerWrapper.cs",
     "Module_Core/Models/Systems/Model_AuthenticationResult.cs",
@@ -24,12 +28,16 @@
   "relatedServices": [
     "IService_Authentication",
     "IService_AuthCredentialProtection",
+    "IService_UserLoginCoordinator",
+    "IService_UserPrivileges",
     "IService_SessionManager",
     "IService_UserSessionManager",
     "ITimer",
     "Service_DispatcherTimerWrapper",
     "Service_Authentication",
     "Service_AuthCredentialProtection",
+    "Service_UserLoginCoordinator",
+    "Service_UserPrivileges",
     "Service_UserSessionManager"
   ],
   "promptDefaults": {
@@ -40,16 +48,21 @@
     "workflowAreas": [
       "User authentication",
       "Session lifetime management",
+      "Logout and switch-user flows",
+      "Session privilege initialization",
       "Session timeout handling",
       "Session cleanup during app shutdown"
     ],
     "userActions": [
       "Sign in successfully",
+      "Log out and sign in as a different user",
       "Stay in an active session",
       "Recover correctly when a session expires"
     ],
     "validationHints": [
       "Confirm authentication still returns the intended user/session result",
+      "Confirm manual logout reuses the shared login dialog and can start a new session without restarting the app",
+      "Confirm session privileges initialize during startup and during switch-user login",
       "Confirm session timeout and user-session handling remain aligned",
       "Confirm manual close, timeout close, and startup-failure shutdown all end the session without leaving timer monitoring active",
       "Confirm client workstations can bootstrap the shared auth environment variable from local or shared secret storage before protected auth data is read or written",

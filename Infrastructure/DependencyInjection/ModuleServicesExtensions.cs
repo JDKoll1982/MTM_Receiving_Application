@@ -242,9 +242,8 @@ public static class ModuleServicesExtensions
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
-            var rolesDao = sp.GetRequiredService<Dao_SettingsCoreRoles>();
-            var userRolesDao = sp.GetRequiredService<Dao_SettingsCoreUserRoles>();
-            return new Service_VolvoAuthorization(logger, sessionManager, rolesDao, userRolesDao);
+            var userPrivileges = sp.GetRequiredService<IService_UserPrivileges>();
+            return new Service_VolvoAuthorization(logger, sessionManager, userPrivileges);
         });
 
         // ViewModels (Transient)

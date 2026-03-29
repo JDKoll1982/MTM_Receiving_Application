@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
@@ -353,6 +354,75 @@ namespace MTM_Receiving_Application
                 var user = _sessionManager.CurrentSession.User;
                 UserDisplayTextBlock.Text = user.DisplayName;
                 UserPicture.DisplayName = user.DisplayName;
+                return;
+            }
+
+            UserDisplayTextBlock.Text = "Not Logged In";
+            UserPicture.DisplayName = string.Empty;
+        }
+
+        private async void UserLogOutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var reloginSucceeded = await ViewModel.LogOutAndPromptForLoginAsync();
+                if (reloginSucceeded)
+                {
+                    await ResetForAuthenticatedUserAsync();
+                }
+                else
+                {
+                    UpdateUserDisplay();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    "Failed to complete the logout and re-login flow.",
+                    ex,
+                    "MainWindow"
+                );
+            }
+        }
+
+        public async Task ResetForAuthenticatedUserAsync()
+        {
+            await ClearCurrentModuleStateAsync();
+            UpdateUserDisplay();
+
+            var receivingNavItem = NavView
+                .MenuItems.OfType<NavigationViewItem>()
+                .FirstOrDefault(item =>
+                    string.Equals(
+                        item.Tag?.ToString(),
+                        "ReceivingWorkflowView",
+                        StringComparison.Ordinal
+                    )
+                );
+
+            if (receivingNavItem != null)
+            {
+                NavView.SelectedItem = receivingNavItem;
+            }
+
+            NavigateWithDI(typeof(Module_Receiving.Views.View_Receiving_Workflow));
+        }
+
+        private async Task ClearCurrentModuleStateAsync()
+        {
+            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow)
+            {
+                var receivingWorkflow =
+                    _serviceProvider.GetRequiredService<IService_ReceivingWorkflow>();
+                await receivingWorkflow.ResetWorkflowAsync();
+                return;
+            }
+
+            if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView)
+            {
+                var dunnageWorkflow =
+                    _serviceProvider.GetRequiredService<IService_DunnageWorkflow>();
+                dunnageWorkflow.ClearSession();
             }
         }
 

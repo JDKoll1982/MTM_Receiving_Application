@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Stored Procedure: sp_Auth_User_ValidatePin
--- Description: Validate username and PIN combination for shared terminal login
+-- Description: Validate username and protected PIN combination for shared terminal login
 -- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
@@ -16,7 +16,7 @@ CREATE PROCEDURE `sp_Auth_User_ValidatePin`(
     IN p_pin VARCHAR(64)
 )
 BEGIN
-    -- Validate username and PIN combination
+    -- Validate username and protected PIN combination
     -- Returns user data if credentials valid and account active
 
     SELECT
@@ -47,5 +47,5 @@ DELIMITER ;
 -- ============================================================================
 -- Test Query (comment out in production)
 -- ============================================================================
--- CALL sp_Auth_User_ValidatePin('JSMITH', '1234');
--- CALL sp_Auth_User_ValidatePin('John Smith', '1234');
+-- CALL sp_Auth_User_ValidatePin('JSMITH', '<protected pin value>');
+-- CALL sp_Auth_User_ValidatePin('John Smith', '<protected pin value>');
