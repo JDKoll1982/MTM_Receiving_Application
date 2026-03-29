@@ -80,6 +80,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetCurrentLabelDataAsync();
 
         /// <summary>
+        /// Deletes rows from the active receiving_label_data print queue.
+        /// Used by Edit Mode when rows are removed from Current Labels.
+        /// </summary>
+        /// <param name="loads">The list of receiving loads to delete.</param>
+        public Task<int> DeleteCurrentLabelDataAsync(List<Model_ReceivingLoad> loads);
+
+        /// <summary>
         /// Updates rows in the active receiving_label_data print queue.
         /// Used by Edit Mode when saving edits to Current Labels records.
         /// </summary>

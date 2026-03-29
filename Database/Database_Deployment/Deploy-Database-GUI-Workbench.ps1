@@ -4,7 +4,7 @@
 # mode, so delimiter-based scripts are normalized before execution in that mode.
 
 param(
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -41,7 +41,7 @@ $script:Config = [ordered]@{
     }
     Providers = [ordered]@{
         Mamp = [ordered]@{
-            Server   = '172.16.1.104'
+            Server   = 'localhost'
             Port     = '3306'
             User     = 'root'
             Password = 'root'
@@ -50,7 +50,7 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-BEGIN
     Security  = [ordered]@{
         EnvironmentVariableName = 'MTM_AUTH_USER_SECRET_KEY'
-        SharedServerIp          = '172.16.1.104'
+        SharedServerIp          = 'localhost'
         LocalSecretDirectory    = Join-Path $env:ProgramData 'MTM Receiving Application\Security'
         LocalSecretFileName     = 'MTM_AUTH_USER_SECRET_KEY.txt'
         SharedSecretDirectory   = '\\MTMANU-FS01\Expo Drive\Software Development\Live Applications\MTM_Application_Keys'
@@ -59,8 +59,8 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
         ShowButton          = $true
-        LocalHostValue      = '172.16.1.104'
-        SharedHostValue     = '172.16.1.104'
+        LocalHostValue      = 'localhost'
+        SharedHostValue     = 'localhost'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
         IncludedExtensions  = @(
             '.bat', '.cmd', '.config', '.cs', '.csproj', '.css', '.fs', '.go', '.htm', '.html',
@@ -689,7 +689,7 @@ function Convert-HostReferenceText {
         [string]$ToHost
     )
 
-    $placeholder = '172.16.1.104'
+    $placeholder = 'localhost'
     return $Content.Replace($FromHost, $placeholder).Replace($ToHost, $FromHost).Replace($placeholder, $ToHost)
 }
 

@@ -8,42 +8,42 @@ using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
 
-public sealed class Dao_ReceivingLoadTests
+public sealed class Dao_ReceivingLabelDataTests
 {
     [Fact]
-    public void MapRowToLoad_ShouldPreserveHistoryRecordId_WhenGuidIsMissing()
+    public void MapRowToLoad_ShouldPreserveLabelDataRecordId_WhenGuidIsMissing()
     {
-        var row = CreateRow(42, DBNull.Value);
+        var row = CreateRow(15, DBNull.Value);
 
         var result = InvokeMapRowToLoad(row);
 
-        result.HistoryRecordID.Should().Be(42);
-        result.LoadID.Should().Be(Guid.Empty);
+        result.LabelDataRecordID.Should().Be(15);
+        result.LoadID.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
-    public void MapRowToLoad_ShouldPreserveBothPersistedIdentifiers_WhenGuidExists()
+    public void MapRowToLoad_ShouldPreserveBothQueueIdentifiers_WhenGuidExists()
     {
         var expectedGuid = Guid.NewGuid();
-        var row = CreateRow(7, expectedGuid.ToString());
+        var row = CreateRow(27, expectedGuid.ToString());
 
         var result = InvokeMapRowToLoad(row);
 
-        result.HistoryRecordID.Should().Be(7);
+        result.LabelDataRecordID.Should().Be(27);
         result.LoadID.Should().Be(expectedGuid);
     }
 
     private static Model_ReceivingLoad InvokeMapRowToLoad(DataRow row)
     {
-        var dao = new Dao_ReceivingLoad("Server=localhost;Database=test;");
-        var methodInfo = typeof(Dao_ReceivingLoad).GetMethod(
+        var dao = new Dao_ReceivingLabelData("Server=localhost;Database=test;");
+        var methodInfo = typeof(Dao_ReceivingLabelData).GetMethod(
             "MapRowToLoad",
-            BindingFlags.Instance | BindingFlags.NonPublic
+            BindingFlags.Static | BindingFlags.NonPublic
         );
 
         methodInfo.Should().NotBeNull();
 
-        var result = methodInfo!.Invoke(dao, new object[] { row });
+        var result = methodInfo!.Invoke(null, new object[] { row });
         return result.Should().BeOfType<Model_ReceivingLoad>().Subject;
     }
 
@@ -51,11 +51,11 @@ public sealed class Dao_ReceivingLoadTests
     {
         var table = new DataTable();
         table.Columns.Add("id", typeof(int));
-        table.Columns.Add("load_guid", typeof(string));
+        table.Columns.Add("load_id", typeof(string));
 
         var row = table.NewRow();
         row["id"] = id;
-        row["load_guid"] = loadGuid;
+        row["load_id"] = loadGuid;
         table.Rows.Add(row);
 
         return row;

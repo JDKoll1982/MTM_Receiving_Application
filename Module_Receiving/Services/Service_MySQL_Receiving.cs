@@ -231,5 +231,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             );
             throw new InvalidOperationException(result.ErrorMessage, result.Exception);
         }
+
+        public async Task<int> DeleteCurrentLabelDataAsync(List<Model_ReceivingLoad> loads)
+        {
+            if (loads == null)
+            {
+                return 0;
+            }
+
+            _logger.LogInfo($"Deleting {loads.Count} rows from receiving_label_data");
+            var result = await _receivingLabelDataDao.DeleteCurrentLabelDataAsync(loads);
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInfo($"Successfully deleted {result.Data} label data rows");
+                return result.Data;
+            }
+
+            _logger.LogError(
+                $"Failed to delete label data: {result.ErrorMessage}",
+                result.Exception
+            );
+            throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+        }
     }
 }

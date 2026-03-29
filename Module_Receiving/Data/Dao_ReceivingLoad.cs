@@ -203,9 +203,7 @@ public class Dao_ReceivingLoad
                     );
                 }
 
-                object loadGuid = load.LoadID == Guid.Empty
-                    ? DBNull.Value
-                    : load.LoadID.ToString();
+                object loadGuid = load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString();
                 object historyRecordId = load.HistoryRecordID.HasValue
                     ? load.HistoryRecordID.Value
                     : DBNull.Value;
@@ -289,9 +287,7 @@ public class Dao_ReceivingLoad
                     );
                 }
 
-                object loadGuid = load.LoadID == Guid.Empty
-                    ? DBNull.Value
-                    : load.LoadID.ToString();
+                object loadGuid = load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString();
                 object historyRecordId = load.HistoryRecordID.HasValue
                     ? load.HistoryRecordID.Value
                     : DBNull.Value;

@@ -14,6 +14,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private Guid _loadID = Guid.NewGuid();
 
         [ObservableProperty]
+        private int? _labelDataRecordID;
+
+        [ObservableProperty]
         private int? _historyRecordID;
 
         [ObservableProperty]

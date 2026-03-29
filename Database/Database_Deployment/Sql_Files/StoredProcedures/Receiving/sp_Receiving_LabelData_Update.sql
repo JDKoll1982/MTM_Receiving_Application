@@ -8,6 +8,7 @@ DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_Update`;
 DELIMITER $$
 
 CREATE PROCEDURE `sp_Receiving_LabelData_Update`(
+    IN p_label_data_record_id INT,
     IN p_load_id CHAR(36),
     IN p_load_number INT,
     IN p_quantity INT,
@@ -73,7 +74,13 @@ BEGIN
         is_quality_hold_required = p_is_quality_hold_required,
         is_quality_hold_acknowledged = p_is_quality_hold_acknowledged,
         quality_hold_restriction_type = p_quality_hold_restriction_type
-    WHERE load_id = p_load_id;
+    WHERE (p_label_data_record_id IS NOT NULL AND id = p_label_data_record_id)
+       OR (
+            p_label_data_record_id IS NULL
+            AND p_load_id IS NOT NULL
+            AND p_load_id <> ''
+            AND load_id = p_load_id
+        );
 END $$
 
 DELIMITER ;

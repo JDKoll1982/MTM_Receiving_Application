@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-27T08:10:51.5847303-05:00",
+  "generatedAt": "2026-03-28T14:07:43.5373596-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1031,8 +1031,8 @@
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/04_seed_receiving_history.sql",
       "category": "seed_file",
-      "objectType": "table",
-      "objectName": "receiving_history",
+      "objectType": "seed",
+      "objectName": null,
       "procedureCount": 0,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
@@ -1047,7 +1047,111 @@
       "calledRoutines": [],
       "parameterTokensUsed": [],
       "variableTokensUsed": [],
+      "temporaryTables": [],
       "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/05_seed_auth_user_john_koll.sql",
+      "category": "seed_file",
+      "objectType": "seed",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "auth_users",
+        "settings_roles",
+        "settings_user_roles"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "sr",
+          "resolvedObject": "settings_roles",
+          "column": "id"
+        },
+        {
+          "qualifier": "sr",
+          "resolvedObject": "settings_roles",
+          "column": "role_name"
+        },
+        {
+          "qualifier": "sur",
+          "resolvedObject": "settings_user_roles",
+          "column": "user_id"
+        },
+        {
+          "qualifier": "sur",
+          "resolvedObject": "settings_user_roles",
+          "column": "role_id"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "auth_users",
+          "columns": [
+            "employee_number",
+            "windows_username",
+            "full_name",
+            "pin",
+            "department",
+            "shift",
+            "is_active",
+            "visual_username",
+            "visual_password",
+            "default_receiving_mode",
+            "default_dunnage_mode",
+            "created_by",
+            "created_date",
+            "modified_date"
+          ]
+        },
+        {
+          "table": "settings_user_roles",
+          "columns": [
+            "user_id",
+            "role_id",
+            "assigned_at"
+          ]
+        }
+      ],
+      "updateTargets": [
+        {
+          "table": "auth_users",
+          "columns": [
+            "employee_number"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "auth_users",
+          "object": "auth_users"
+        },
+        {
+          "alias": "settings_roles",
+          "object": "settings_roles"
+        },
+        {
+          "alias": "sr",
+          "object": "settings_roles"
+        },
+        {
+          "alias": "settings_user_roles",
+          "object": "settings_user_roles"
+        },
+        {
+          "alias": "sur",
+          "object": "settings_user_roles"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Deactivate.sql",
@@ -6058,6 +6162,61 @@
       ]
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_LabelData_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_label_data_record_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_load_id",
+          "sqlType": "CHAR(36)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_label_data"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "receiving_label_data"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_label_data_record_id",
+        "p_load_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_label_data",
+          "object": "receiving_label_data"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_GetAll.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -6351,6 +6510,11 @@
       "parameters": [
         {
           "direction": "IN",
+          "name": "p_label_data_record_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_load_id",
           "sqlType": "CHAR(36)"
         },
@@ -6520,6 +6684,7 @@
       "deleteTargets": [],
       "calledRoutines": [],
       "parameterTokensUsed": [
+        "p_label_data_record_id",
         "p_load_id",
         "p_load_number",
         "p_quantity",
@@ -6682,6 +6847,11 @@
           "direction": "IN",
           "name": "p_LoadID",
           "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_HistoryRecordID",
+          "sqlType": "INT"
         }
       ],
       "declaredVariables": [],
@@ -6698,7 +6868,8 @@
       ],
       "calledRoutines": [],
       "parameterTokensUsed": [
-        "p_LoadID"
+        "p_LoadID",
+        "p_HistoryRecordID"
       ],
       "variableTokensUsed": [],
       "temporaryTables": [],
@@ -6899,6 +7070,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_HistoryRecordID",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_PartID",
           "sqlType": "VARCHAR(50)"
         },
@@ -6974,6 +7150,7 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_LoadID",
+        "p_HistoryRecordID",
         "p_PartID",
         "p_PartType",
         "p_PONumber",

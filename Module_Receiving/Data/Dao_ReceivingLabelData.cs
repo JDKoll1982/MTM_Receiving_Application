@@ -340,8 +340,16 @@ public class Dao_ReceivingLabelData
             int updatedCount = 0;
             foreach (var load in loads)
             {
+                if (load.LoadID == Guid.Empty && !load.LabelDataRecordID.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot update label data without a persisted identifier."
+                    );
+                }
+
                 var parameters = new Dictionary<string, object>
                 {
+                    { "p_label_data_record_id", load.LabelDataRecordID ?? (object)DBNull.Value },
                     { "p_load_id", load.LoadID.ToString() },
                     { "p_load_number", load.LoadNumber },
                     { "p_quantity", (int)load.WeightQuantity },
@@ -390,6 +398,13 @@ public class Dao_ReceivingLabelData
                     );
                 }
 
+                if (execResult.AffectedRows <= 0)
+                {
+                    throw new InvalidOperationException(
+                        $"No receiving_label_data row matched the update request for load '{load.LoadNumber}'."
+                    );
+                }
+
                 updatedCount++;
             }
 
@@ -406,10 +421,79 @@ public class Dao_ReceivingLabelData
         }
     }
 
+    public async Task<Model_Dao_Result<int>> DeleteCurrentLabelDataAsync(
+        List<Model_ReceivingLoad> loads
+    )
+    {
+        if (loads == null || loads.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Success<int>(0);
+        }
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        try
+        {
+            int deletedCount = 0;
+            foreach (var load in loads)
+            {
+                if (load.LoadID == Guid.Empty && !load.LabelDataRecordID.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot delete label data without a persisted identifier."
+                    );
+                }
+
+                var parameters = new Dictionary<string, object>
+                {
+                    { "p_label_data_record_id", load.LabelDataRecordID ?? (object)DBNull.Value },
+                    { "p_load_id", load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString() },
+                };
+
+                var execResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                    connection,
+                    transaction,
+                    "sp_Receiving_LabelData_Delete",
+                    parameters
+                );
+
+                if (!execResult.Success)
+                {
+                    throw new InvalidOperationException(
+                        execResult.ErrorMessage,
+                        execResult.Exception
+                    );
+                }
+
+                if (execResult.AffectedRows <= 0)
+                {
+                    throw new InvalidOperationException(
+                        $"No receiving_label_data row matched the delete request for load '{load.LoadNumber}'."
+                    );
+                }
+
+                deletedCount++;
+            }
+
+            await transaction.CommitAsync();
+            return Model_Dao_Result_Factory.Success<int>(deletedCount);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to delete label data: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     private static Model_ReceivingLoad MapRowToLoad(DataRow row)
     {
         return new Model_ReceivingLoad
         {
+            LabelDataRecordID = ReadNullableInt(row, "id"),
             LoadID = ReadGuid(row, "load_id", "load_guid"),
             PartID = ReadString(row, "part_id"),
             PartDescription = ReadString(row, "part_description"),
@@ -487,6 +571,12 @@ public class Dao_ReceivingLabelData
         }
 
         return Convert.ToInt32(value);
+    }
+
+    private static int? ReadNullableInt(DataRow row, params string[] columnNames)
+    {
+        var value = ReadValue(row, columnNames);
+        return value is null ? null : Convert.ToInt32(value);
     }
 
     private static decimal ReadDecimal(DataRow row, params string[] columnNames)

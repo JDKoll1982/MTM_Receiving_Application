@@ -86,15 +86,15 @@ LABELVIEW requires the **32-bit** administrator:
 3. Select **MySQL ODBC {Version} Unicode Driver** (or the version you installed) → click **Finish**
 4. Fill in the fields:
 
-   | Field | Value |
-   |---|---|
-   | **Data Source Name** | `MTM Receiving Application` |
-   | **Description** | MTM Receiving Application MySQL |
-   | **TCP/IP Server** | `172.16.1.104` |
-   | **Port** | `3306` |
-   | **User** | root |
-   | **Password** | root |
-   | **Database** | `mtm_receiving_application` |
+   | Field                | Value                           |
+   | -------------------- | ------------------------------- |
+   | **Data Source Name** | `MTM Receiving Application`     |
+   | **Description**      | MTM Receiving Application MySQL |
+   | **TCP/IP Server**    | `localhost`                     |
+   | **Port**             | `3306`                          |
+   | **User**             | root                            |
+   | **Password**         | root                            |
+   | **Database**         | `mtm_receiving_application`     |
 
 5. Click **Test** to verify the connection succeeds
 6. Click **OK** to save
@@ -116,22 +116,22 @@ LABELVIEW requires the **32-bit** administrator:
 
 ## Reference Links
 
-| Resource | Link |
-|---|---|
-| MySQL ODBC Connector Downloads | [dev.mysql.com/downloads/connector/odbc](https://dev.mysql.com/downloads/connector/odbc/) |
-| .NET 10 Desktop Runtime (if ever needed) | [dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) |
-| Windows App SDK Runtime (if ever needed) | [learn.microsoft.com — Windows App SDK Downloads](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads) |
-| TEKLYNX LABELVIEW Support | [teklynx.com/en/products/label-design-software/labelview](https://www.teklynx.com/en/products/label-design-software/labelview) |
+| Resource                                 | Link                                                                                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| MySQL ODBC Connector Downloads           | [dev.mysql.com/downloads/connector/odbc](https://dev.mysql.com/downloads/connector/odbc/)                                      |
+| .NET 10 Desktop Runtime (if ever needed) | [dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)                           |
+| Windows App SDK Runtime (if ever needed) | [learn.microsoft.com — Windows App SDK Downloads](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads)    |
+| TEKLYNX LABELVIEW Support                | [teklynx.com/en/products/label-design-software/labelview](https://www.teklynx.com/en/products/label-design-software/labelview) |
 
 ---
 
 ## Troubleshooting
 
-| Symptom | Likely Cause | Fix |
-|---|---|---|
-| App won't launch — network error | Share not mapped or no permissions | Ask IT to map drive and grant Read & Execute |
-| App launches but crashes immediately | Missing Visual C++ runtime (rare) | Install [VC++ Redistributable x64](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist) |
-| ODBC DSN not visible in LABELVIEW | 64-bit driver installed, or 32-bit admin not used | Reinstall using 32-bit MSI; use `SysWOW64\odbcad32.exe` |
-| Add/Configure buttons greyed out in ODBC Admin | Not running as Administrator | Close and reopen `odbcad32.exe` with **Run as administrator** |
-| ODBC test passes but LABELVIEW can't connect | DSN name mismatch | Ensure DSN is named exactly `MTM Receiving Application` |
-| LABELVIEW licence error on new PC | Network licence seat in use | Contact IT — LABELVIEW uses a Network Key licence (Serial: NSPN217883) |
+| Symptom                                        | Likely Cause                                      | Fix                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| App won't launch — network error               | Share not mapped or no permissions                | Ask IT to map drive and grant Read & Execute                                                                 |
+| App launches but crashes immediately           | Missing Visual C++ runtime (rare)                 | Install [VC++ Redistributable x64](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist) |
+| ODBC DSN not visible in LABELVIEW              | 64-bit driver installed, or 32-bit admin not used | Reinstall using 32-bit MSI; use `SysWOW64\odbcad32.exe`                                                      |
+| Add/Configure buttons greyed out in ODBC Admin | Not running as Administrator                      | Close and reopen `odbcad32.exe` with **Run as administrator**                                                |
+| ODBC test passes but LABELVIEW can't connect   | DSN name mismatch                                 | Ensure DSN is named exactly `MTM Receiving Application`                                                      |
+| LABELVIEW licence error on new PC              | Network licence seat in use                       | Contact IT — LABELVIEW uses a Network Key licence (Serial: NSPN217883)                                       |

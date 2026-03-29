@@ -12,7 +12,7 @@ Dynamic questionnaire system that loads department-specific questions based on u
 HTML/
 ├── questions/                    # JSON question definitions
 │   ├── core.json                # Common questions for all departments
-│   ├── production.json          # Production-specific questions  
+│   ├── production.json          # Production-specific questions
 │   ├── material-handling.json   # Material Handling + Forklift questions
 │   ├── it-department.json       # IT-specific questions
 │   └── management.json          # Management/Leadership questions
@@ -23,6 +23,7 @@ HTML/
 ## ✅ COMPLETED
 
 ### Core Functionality
+
 - ✅ Dynamic JSON loading from `questions/` folder
 - ✅ Department-specific question routing **WORKING**
 - ✅ 5 JSON files created (core + 4 departments)
@@ -32,6 +33,7 @@ HTML/
 - ✅ Async loading fixed and tested
 
 ### Department Files Created
+
 - ✅ `core.json` - Base questions for all users (8 questions)
 - ✅ `production.json` - 9 production-specific questions
 - ✅ `material-handling.json` - 12 questions including forklift inspections
@@ -47,6 +49,7 @@ HTML/
 **All 11 JSON files created!** Each department now has unique questions.
 
 ### Testing Results
+
 - Material Handling: Loads 12 dept questions → Total 20 questions ✅
 - Production: Loads 9 dept questions → Total 17 questions ✅
 - Maintenance: Loads 9 dept questions → Total 17 questions ✅
@@ -63,6 +66,7 @@ HTML/
 ## 📋 TODO (Waiting for Management Guidelines)
 
 Create department-specific JSON files for:
+
 - Quality Control
 - Die Shop
 - Fabrication & Welding
@@ -73,6 +77,7 @@ Create department-specific JSON files for:
 - Outside Service Coordinator
 
 **Current temporary mapping:**
+
 - Most departments → `production.json`
 - Maintenance → `material-handling.json`
 - Office roles → `management.json`
@@ -80,6 +85,7 @@ Create department-specific JSON files for:
 ## Usage
 
 ### For End Users (Simple - No Server Required!)
+
 1. Double-click `generated/questionnaire.html` to open in browser
 2. Fill out the questionnaire
 3. Export results to JSON
@@ -89,6 +95,7 @@ Create department-specific JSON files for:
 ### For Developers
 
 #### Making Changes to Questions
+
 1. Edit JSON files in `questions/` folder
 2. Run the embedding script:
 
@@ -99,6 +106,7 @@ Create department-specific JSON files for:
 3. Open `questionnaire.html` to test
 
 #### Two Modes
+
 - **Embedded Mode** (default): JSON data embedded in HTML - works offline, no CORS issues
 - **Fetch Mode**: Loads JSON from files - requires HTTP server but easier to edit/test
 
@@ -106,10 +114,11 @@ To use Fetch Mode during development:
 
 ```powershell
 python -m http.server 8080
-# Open: http://172.16.1.104:8080/generated/questionnaire.html
+# Open: http://localhost:8080/generated/questionnaire.html
 ```
 
 #### Adding New Department
+
 1. Create `questions/department-name.json`
 2. Follow format from existing files
 3. Run `.\Embed-JSONData.ps1` to embed the new data

@@ -13,6 +13,7 @@ DELIMITER $$
 CREATE PROCEDURE `sp_Receiving_LabelData_GetAll`()
 BEGIN
     SELECT
+        id,
         load_id,
         part_id,
         part_description,

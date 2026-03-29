@@ -1491,8 +1491,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     case Enum_DataSourceType.CurrentLabels:
                         // Current Labels are loaded from the DB queue (receiving_label_data).
-                        // Each modified row is updated via sp_Receiving_LabelData_Update.
+                        // Removed rows are deleted and remaining rows are updated.
                         _logger.LogInfo("Updating current label queue records");
+                        int labelDeleted = 0;
+                        if (_deletedLoads.Count > 0)
+                        {
+                            _logger.LogInfo(
+                                $"Deleting {_deletedLoads.Count} removed label queue records"
+                            );
+                            labelDeleted = await _mysqlService.DeleteCurrentLabelDataAsync(
+                                _deletedLoads
+                            );
+                        }
+
                         int labelUpdated = 0;
                         if (_filteredLoads.Count > 0)
                         {
@@ -1500,10 +1511,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                                 _filteredLoads
                             );
                         }
-                        StatusMessage = $"Label queue updated ({labelUpdated} updated)";
+                        StatusMessage =
+                            $"Label queue updated ({labelUpdated} updated, {labelDeleted} deleted)";
                         await _errorHandler.ShowErrorDialogAsync(
                             "Success",
-                            $"{labelUpdated} label record(s) updated successfully.",
+                            $"Label queue updated successfully.\n{labelUpdated} label record(s) updated.\n{labelDeleted} label record(s) deleted.",
                             Enum_ErrorSeverity.Info
                         );
                         break;
