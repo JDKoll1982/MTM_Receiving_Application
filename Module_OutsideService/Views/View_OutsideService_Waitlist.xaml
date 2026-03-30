@@ -86,14 +86,14 @@
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.PartId, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.CreatedByDisplay, Mode=OneWay}" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.PackageSummaryMultiline, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="Select a line to review package quantities and open the next step." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
+                        <TextBlock Text="Select a line to review it and open the next step." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Row="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Actions" Style="{StaticResource SubtitleTextBlockStyle}" />
-                        <TextBlock Text="Open the selected line to continue Setup or to mark a Setup line complete." TextWrapping="Wrap" />
+                        <TextBlock Text="Open the selected line to continue or complete setup." TextWrapping="Wrap" />
                         <Button Content="{x:Bind ViewModel.PrimaryActionText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenSelectedLineCommand}" Style="{StaticResource AccentButtonStyle}" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
                 </Border>

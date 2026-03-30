@@ -26,11 +26,11 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,20">
             <TextBlock
-                Text="Outside Service Provider History"
+                Text="Outside Service History"
                 Style="{StaticResource TitleTextBlockStyle}"
             />
             <TextBlock
-                Text="Search Infor Visual for dispatch history by part number (read-only)."
+                Text="Search dispatch history by part or vendor."
                 Style="{StaticResource BodyTextBlockStyle}"
                 Opacity="0.7"
             />

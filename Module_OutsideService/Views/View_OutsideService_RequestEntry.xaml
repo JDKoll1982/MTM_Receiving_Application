@@ -42,8 +42,8 @@
             <Border Grid.Column="1" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="18" Padding="16">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Request Notes" Style="{StaticResource SubtitleTextBlockStyle}" />
-                    <TextBlock Text="Notes entered here stay at the request level and follow every line for Shipping context." TextWrapping="Wrap" Style="{StaticResource BodyTextBlockStyle}" />
-                    <TextBox Text="{x:Bind ViewModel.RequestNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="110" TextWrapping="Wrap" PlaceholderText="Add request-level notes for Shipping." />
+                    <TextBlock Text="These notes stay with the request." TextWrapping="Wrap" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBox Text="{x:Bind ViewModel.RequestNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="110" TextWrapping="Wrap" PlaceholderText="Add request notes." />
                 </StackPanel>
             </Border>
         </Grid>
@@ -68,7 +68,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <TextBlock Text="Current Request Lines" Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <TextBlock Text="Use Add Line to enter Part ID, package count, and package-by-package quantities." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+                            <TextBlock Text="Use Add Line to enter parts and package quantities." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
                         </StackPanel>
                         <Button Grid.Column="1" Content="Add Line" Command="{x:Bind ViewModel.RequestAddLineCommand}" Style="{StaticResource AccentButtonStyle}" />
                     </Grid>
@@ -120,15 +120,15 @@
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.QueueKey, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.PartId, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.PackageSummaryMultiline, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="Select a line to review its package-by-package summary." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
+                        <TextBlock Text="Select a line to review packages." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Row="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="How New Lines Are Added" Style="{StaticResource SubtitleTextBlockStyle}" />
-                        <TextBlock Text="The Add Line modal is the only place where Part ID, package count, and per-package quantities are entered in Version 1." TextWrapping="Wrap" />
-                        <TextBlock Text="Package quantities can differ from one package to the next, and the request cannot be saved until every quantity is valid." TextWrapping="Wrap" />
+                        <TextBlock Text="Use Add Line to enter the part and package quantities." TextWrapping="Wrap" />
+                        <TextBlock Text="All package quantities must be valid before save." TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
             </Grid>

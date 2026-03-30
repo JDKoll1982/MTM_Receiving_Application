@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:MTM_Receiving_Application.Module_OutsideService.Models"
     Title="Find A Similar Part"
-    PrimaryButtonText="Use Selected Part"
-    CloseButtonText="Back To Add Line"
+    PrimaryButtonText="Use Part"
+    CloseButtonText="Back"
     DefaultButton="Primary">
     <Grid RowSpacing="16" MinWidth="680">
         <Grid.RowDefinitions>
@@ -15,9 +15,9 @@
 
         <StackPanel Grid.Row="0" Spacing="8">
             <Border Background="#e8f2ff" CornerRadius="12" Padding="10,4">
-                <TextBlock Text="Opened from Add Line modal" Foreground="#0f6cbd" FontWeight="SemiBold" />
+                <TextBlock Text="From Add Line" Foreground="#0f6cbd" FontWeight="SemiBold" />
             </Border>
-            <TextBlock Text="No exact match was found for the typed value below." TextWrapping="Wrap" />
+            <TextBlock Text="No exact match was found." TextWrapping="Wrap" />
             <TextBlock x:Name="TypedValueTextBlock" FontFamily="Consolas" />
         </StackPanel>
 
@@ -46,7 +46,7 @@
             <Border Grid.Column="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="16" Padding="12">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Selected Match" Style="{StaticResource SubtitleTextBlockStyle}" />
-                    <TextBlock x:Name="SelectedSummaryText" Text="Select a suggested part to return it to the Add Line modal." TextWrapping="Wrap" />
+                    <TextBlock x:Name="SelectedSummaryText" Text="Select a part to return to Add Line." TextWrapping="Wrap" />
                     <TextBlock x:Name="SelectedReasonText" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>

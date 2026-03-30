@@ -73,8 +73,7 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
             {
                 ToolKey = "OutsideServiceHistory",
                 Title = "Outside Service History",
-                Description =
-                    "Query vendor history for parts sent to outside service providers. Search by part or vendor.",
+                Description = "Search outside service history by part or vendor.",
                 IconGlyph = "\uE7C1",
                 Category = Enum_ToolCategory.Lookup,
                 IsAvailable = true,

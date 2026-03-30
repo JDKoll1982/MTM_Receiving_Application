@@ -25,7 +25,7 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="Line Details" Style="{StaticResource TitleTextBlockStyle}" Foreground="White" />
                 <TextBlock
-                    Text="Enter the Part ID, package count, and package-by-package quantities for one line."
+                    Text="Enter the part and package quantities for this line."
                     Foreground="#d9ecff"
                     TextWrapping="Wrap" />
             </StackPanel>
@@ -43,7 +43,7 @@
                     Grid.Column="0"
                     Header="Part ID"
                     LostFocus="PartIdBox_LostFocus"
-                    PlaceholderText="Enter the Infor Visual part ID" />
+                    PlaceholderText="Enter part ID" />
 
                 <Button
                     Grid.Column="1"
@@ -57,7 +57,7 @@
                     <TextBlock x:Name="PartMatchStatusText" Text="Validation required" FontWeight="SemiBold" />
                     <TextBlock
                         x:Name="PartMatchReasonText"
-                        Text="Enter a part and use the helper when the typed value does not exactly match Infor Visual."
+                        Text="Use the helper if the part does not match Infor Visual."
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
@@ -74,7 +74,7 @@
                     SpinButtonPlacementMode="Compact"
                     ValueChanged="PackageCountBox_ValueChanged" />
                 <TextBlock
-                    Text="Changing the package count adds or removes package rows automatically."
+                    Text="Changing the count adds or removes rows."
                     TextWrapping="Wrap" />
             </StackPanel>
         </Border>
@@ -88,7 +88,7 @@
             <Border Grid.Column="0" Background="#fbfcfe" BorderBrush="#d6dde8" BorderThickness="1" CornerRadius="16" Padding="12">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Package breakdown" Style="{StaticResource SubtitleTextBlockStyle}" />
-                    <TextBlock Text="Each row represents one physical package on the line." TextWrapping="Wrap" />
+                    <TextBlock Text="Each row is one package." TextWrapping="Wrap" />
                     <StackPanel x:Name="PackageRowsPanel" />
                 </StackPanel>
             </Border>
@@ -97,8 +97,8 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Entry Guidance" Style="{StaticResource SubtitleTextBlockStyle}" />
                     <TextBlock Text="Use one row per package." TextWrapping="Wrap" />
-                    <TextBlock Text="Package quantities can differ from one another." TextWrapping="Wrap" />
-                    <TextBlock Text="The request screen shows the line summary after save." TextWrapping="Wrap" />
+                    <TextBlock Text="Quantities may vary by package." TextWrapping="Wrap" />
+                    <TextBlock Text="Saved lines appear in Request Entry." TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
         </Grid>

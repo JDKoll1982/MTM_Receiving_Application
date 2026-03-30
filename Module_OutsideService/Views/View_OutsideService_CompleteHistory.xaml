@@ -79,7 +79,7 @@
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.BOLNumber, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.PackageSummaryMultiline, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock Text="{x:Bind ViewModel.SelectedLine.CompletionNotes, Mode=OneWay}" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="Select a completed line to review its final details." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
+                        <TextBlock Text="Select a line to review final details." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
                     </StackPanel>
                 </Border>
 
