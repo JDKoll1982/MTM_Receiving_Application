@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_OutsideService.ViewModels;
 
@@ -72,6 +73,17 @@ public sealed partial class View_OutsideService_Main : Page
             await waitlistView.ViewModel.RefreshCommand.ExecuteAsync(null);
             await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);
             ViewModel.UpdateSelectedWaitlistLine(waitlistView.ViewModel.SelectedLine);
+        };
+
+        ViewModel.PropertyChanged += async (_, args) =>
+        {
+            if (
+                args.PropertyName == nameof(ViewModel_OutsideService_Main.CurrentSection)
+                && ViewModel.IsHistoryVisible
+            )
+            {
+                await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);
+            }
         };
 
         Loaded += async (_, _) =>

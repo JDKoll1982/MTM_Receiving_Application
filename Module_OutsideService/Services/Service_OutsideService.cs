@@ -232,7 +232,7 @@ public class Service_OutsideService : IService_OutsideService
 
         if (string.IsNullOrWhiteSpace(line.BOLNumber))
         {
-            return Model_Dao_Result_Factory.Failure("BOL number is required.");
+            return Model_Dao_Result_Factory.Failure("Reference number is required.");
         }
 
         _logger.LogInfo(

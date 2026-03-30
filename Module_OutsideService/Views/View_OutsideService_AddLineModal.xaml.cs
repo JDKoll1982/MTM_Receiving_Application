@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_OutsideService.Models;
 
 namespace MTM_Receiving_Application.Module_OutsideService.Views;
@@ -22,6 +23,7 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
     public View_OutsideService_AddLineModal(AddLineDraftState? draftState = null)
     {
         InitializeComponent();
+        Loaded += View_OutsideService_AddLineModal_Loaded;
         RebuildPackageRows(1, null);
         ApplyDraftState(draftState);
         _isInitializing = false;
@@ -52,6 +54,11 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
     public bool RequiresPartMatch => !string.IsNullOrWhiteSpace(PendingPartMatchValue);
 
     public AddLineDraftState DraftState => CreateDraftState();
+
+    private void View_OutsideService_AddLineModal_Loaded(object sender, RoutedEventArgs e)
+    {
+        AttachPackageCountInputHandler();
+    }
 
     private async void PartIdBox_LostFocus(object sender, RoutedEventArgs e)
     {
@@ -183,7 +190,7 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
             {
                 Minimum = 0,
                 SmallChange = 1,
-                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
                 Value =
                     existingValues is not null && index < existingValues.Count
                         ? existingValues[index]
@@ -238,6 +245,42 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
         };
     }
 
+    private void AttachPackageCountInputHandler()
+    {
+        var inputBox = FindDescendant<TextBox>(PackageCountBox);
+        if (inputBox is null)
+        {
+            return;
+        }
+
+        inputBox.TextChanging -= PackageCountInputBox_TextChanging;
+        inputBox.TextChanging += PackageCountInputBox_TextChanging;
+    }
+
+    private void PackageCountInputBox_TextChanging(
+        TextBox sender,
+        TextBoxTextChangingEventArgs args
+    )
+    {
+        if (_isInitializing || _isApplyingDraftState || PackageRowsPanel is null)
+        {
+            return;
+        }
+
+        if (!TryParsePackageCount(sender.Text, out var packageCount))
+        {
+            return;
+        }
+
+        if (packageCount == _packageBoxes.Count)
+        {
+            return;
+        }
+
+        var existingValues = _packageBoxes.ConvertAll(box => box.Value);
+        RebuildPackageRows(packageCount, existingValues);
+    }
+
     private async Task<bool> ValidatePartStatusAsync(bool openPartMatchHelper = false)
     {
         var partId = PartIdBox.Text?.Trim() ?? string.Empty;
@@ -275,6 +318,64 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
         }
 
         return Math.Max(1, Convert.ToInt32(Math.Truncate(rawValue), CultureInfo.InvariantCulture));
+    }
+
+    private static bool TryParsePackageCount(string? rawText, out int packageCount)
+    {
+        if (string.IsNullOrWhiteSpace(rawText))
+        {
+            packageCount = 1;
+            return false;
+        }
+
+        if (
+            double.TryParse(
+                rawText,
+                NumberStyles.Number,
+                CultureInfo.InvariantCulture,
+                out var parsedValue
+            )
+            || double.TryParse(
+                rawText,
+                NumberStyles.Number,
+                CultureInfo.CurrentCulture,
+                out parsedValue
+            )
+        )
+        {
+            packageCount = NormalizePackageCount(parsedValue);
+            return true;
+        }
+
+        packageCount = 1;
+        return false;
+    }
+
+    private static T? FindDescendant<T>(DependencyObject parent)
+        where T : DependencyObject
+    {
+        if (parent is null)
+        {
+            return null;
+        }
+
+        var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+        for (var index = 0; index < childrenCount; index++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, index);
+            if (child is T match)
+            {
+                return match;
+            }
+
+            var descendant = FindDescendant<T>(child);
+            if (descendant is not null)
+            {
+                return descendant;
+            }
+        }
+
+        return null;
     }
 
     private void ShowError(string message)

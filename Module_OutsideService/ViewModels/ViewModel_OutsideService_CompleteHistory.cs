@@ -35,7 +35,7 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
     private string _selectedVendorFilter = "All";
 
     [ObservableProperty]
-    private string _selectedDateRange = "Last 30 days";
+    private string _selectedDateRange = "All";
 
     [ObservableProperty]
     private ObservableCollection<string> _vendorFilterOptions = new(new[] { "All" });

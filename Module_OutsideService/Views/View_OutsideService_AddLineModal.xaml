@@ -58,7 +58,7 @@
                     Minimum="1"
                     Value="1"
                     SmallChange="1"
-                    SpinButtonPlacementMode="Compact"
+                    SpinButtonPlacementMode="Hidden"
                     ValueChanged="PackageCountBox_ValueChanged" />
                 <TextBlock
                     Text="Changing the count adds or removes rows."
@@ -76,7 +76,9 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Package breakdown" Style="{StaticResource SubtitleTextBlockStyle}" />
                     <TextBlock Text="Each row is one package." TextWrapping="Wrap" />
-                    <StackPanel x:Name="PackageRowsPanel" />
+                    <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="PackageRowsPanel" />
+                    </ScrollViewer>
                 </StackPanel>
             </Border>
 

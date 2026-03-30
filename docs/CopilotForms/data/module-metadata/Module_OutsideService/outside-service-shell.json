@@ -126,7 +126,8 @@
       "Confirm Setup stays disabled when no waitlist line is selected",
       "Confirm vendor suggestions are ordered by most recent dispatch",
       "Confirm Infor Visual suggestion and validation paths fall back only when mock data mode is enabled",
-      "Confirm waitlist and history filters do not hide valid rows unexpectedly"
+      "Confirm waitlist and history filters do not hide valid rows unexpectedly",
+      "Confirm Complete History defaults to All so older completed rows remain visible"
     ],
     "databaseObjects": [
       "outside_service_request",

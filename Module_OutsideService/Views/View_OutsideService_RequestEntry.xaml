@@ -107,31 +107,41 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Column="1" RowSpacing="16">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
-                    <StackPanel Spacing="8">
+            <StackPanel Grid.Column="1" Spacing="16" VerticalAlignment="Top">
+                <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16" Height="210">
+                    <Grid RowSpacing="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
                         <TextBlock Text="Selected Line Summary" Style="{StaticResource SubtitleTextBlockStyle}" />
-                        <TextBlock Text="{x:Bind ViewModel.SelectedLine.QueueKey, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="{x:Bind ViewModel.SelectedLine.PartId, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="{x:Bind ViewModel.SelectedLine.PackageSummaryMultiline, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="Select a line to review packages." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
-                    </StackPanel>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedLine.QueueKey, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Text="{x:Bind ViewModel.SelectedLine.PartId, Mode=OneWay}" FontFamily="Consolas" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Text="{x:Bind ViewModel.SelectedLine.PackageSummaryMultiline, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Text="Select a line to review packages." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <Border Grid.Row="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
-                    <StackPanel Spacing="8">
+                <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16" Height="210">
+                    <Grid RowSpacing="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
                         <TextBlock Text="How New Lines Are Added" Style="{StaticResource SubtitleTextBlockStyle}" />
-                        <TextBlock Text="Use Add Line to enter the part and package quantities." TextWrapping="Wrap" />
-                        <TextBlock Text="All package quantities must be valid before save." TextWrapping="Wrap" />
-                    </StackPanel>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Use Add Line to enter the part and package quantities." TextWrapping="Wrap" />
+                                <TextBlock Text="All package quantities must be valid before save." TextWrapping="Wrap" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
-            </Grid>
+            </StackPanel>
         </Grid>
 
         <StackPanel Grid.Row="2" Spacing="12">

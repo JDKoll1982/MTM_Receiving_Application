@@ -49,7 +49,7 @@
                                 IsEnabled="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                             <CheckBox Content="Use custom vendor" IsChecked="{x:Bind ViewModel.UseCustomVendor, Mode=TwoWay}" />
                             <TextBox Header="Custom vendor name" Text="{x:Bind ViewModel.CustomVendorName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                            <TextBox Header="BOL number" Text="{x:Bind ViewModel.BolNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Reference number" Text="{x:Bind ViewModel.BolNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <DatePicker Header="Scheduled ship" Date="{x:Bind ViewModel.ScheduledShipDate, Mode=TwoWay}" />
                             <TextBox Header="Shipping contact" Text="{x:Bind ViewModel.ShippingContact, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="Setup notes" Text="{x:Bind ViewModel.SetupNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" />
@@ -70,7 +70,7 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="Before You Save" Style="{StaticResource SubtitleTextBlockStyle}" />
                             <TextBlock Text="1. Confirm the vendor." TextWrapping="Wrap" />
-                            <TextBlock Text="2. Enter BOL and ship date." TextWrapping="Wrap" />
+                            <TextBlock Text="2. Enter the reference number and ship date." TextWrapping="Wrap" />
                             <TextBlock Text="3. Add notes if needed." TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
