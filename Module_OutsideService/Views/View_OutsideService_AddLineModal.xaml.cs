@@ -15,47 +15,62 @@ namespace MTM_Receiving_Application.Module_OutsideService.Views;
 public sealed partial class View_OutsideService_AddLineModal : ContentDialog
 {
     private readonly List<NumberBox> _packageBoxes = new();
+    private bool _isApplyingDraftState;
     private bool _isPartValidated;
     private bool _isInitializing = true;
 
-    public View_OutsideService_AddLineModal()
+    public View_OutsideService_AddLineModal(AddLineDraftState? draftState = null)
     {
         InitializeComponent();
         RebuildPackageRows(1, null);
+        ApplyDraftState(draftState);
         _isInitializing = false;
+    }
+
+    public sealed class AddLineDraftState
+    {
+        public string PartId { get; set; } = string.Empty;
+
+        public int PackageCount { get; set; } = 1;
+
+        public List<double> PackageQuantities { get; set; } = new();
+
+        public bool IsPartValidated { get; set; }
+
+        public string PartMatchStatusText { get; set; } = "Validation required";
+
+        public string PartMatchReasonText { get; set; } =
+            "The helper opens automatically if the part is not found.";
     }
 
     public Func<string, Task<bool>>? ValidatePartAsync { get; set; }
 
-    public Func<
-        string,
-        Task<Model_OutsideServicePartMatchSuggestion?>
-    >? ResolvePartMatchAsync { get; set; }
-
     public Model_OutsideServiceRequestLine? CreatedLine { get; private set; }
+
+    public string? PendingPartMatchValue { get; private set; }
+
+    public bool RequiresPartMatch => !string.IsNullOrWhiteSpace(PendingPartMatchValue);
+
+    public AddLineDraftState DraftState => CreateDraftState();
 
     private async void PartIdBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        await ValidatePartStatusAsync();
+        await ValidatePartStatusAsync(openPartMatchHelper: true);
     }
 
-    private async void PartMatchHelperButton_Click(object sender, RoutedEventArgs e)
+    private void PartIdBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (ResolvePartMatchAsync is null || string.IsNullOrWhiteSpace(PartIdBox.Text))
+        if (_isApplyingDraftState)
         {
             return;
         }
 
-        var suggestion = await ResolvePartMatchAsync(PartIdBox.Text.Trim());
-        if (suggestion is null)
-        {
-            return;
-        }
-
-        PartIdBox.Text = suggestion.PartId;
-        PartMatchStatusText.Text = "Matched part ready";
-        PartMatchReasonText.Text = suggestion.MatchReason;
-        _isPartValidated = true;
+        PendingPartMatchValue = null;
+        _isPartValidated = false;
+        PartMatchStatusText.Text = "Validation required";
+        PartMatchReasonText.Text = string.IsNullOrWhiteSpace(PartIdBox.Text)
+            ? "Enter a part ID to continue."
+            : "The helper opens automatically if the part is not found.";
     }
 
     private void PackageCountBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -96,23 +111,9 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
 
             if (!_isPartValidated)
             {
-                if (ResolvePartMatchAsync is not null)
-                {
-                    var suggestion = await ResolvePartMatchAsync(partId);
-                    if (suggestion is not null)
-                    {
-                        partId = suggestion.PartId;
-                        PartIdBox.Text = partId;
-                        _isPartValidated = true;
-                    }
-                }
-
-                if (!_isPartValidated)
-                {
-                    args.Cancel = true;
-                    ShowError("Select a valid part before saving the line.");
-                    return;
-                }
+                args.Cancel = true;
+                ShowError("Leave the Part ID field to choose a valid match.");
+                return;
             }
 
             var packages = new List<Model_OutsideServiceRequestPackage>();
@@ -199,23 +200,70 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
         }
     }
 
-    private async Task<bool> ValidatePartStatusAsync()
+    private void ApplyDraftState(AddLineDraftState? draftState)
     {
-        if (ValidatePartAsync is null || string.IsNullOrWhiteSpace(PartIdBox.Text))
+        if (draftState is null)
         {
+            PartMatchStatusText.Text = "Validation required";
+            PartMatchReasonText.Text = "The helper opens automatically if the part is not found.";
+            return;
+        }
+
+        _isApplyingDraftState = true;
+        try
+        {
+            PartIdBox.Text = draftState.PartId;
+            PackageCountBox.Value = draftState.PackageCount;
+            RebuildPackageRows(draftState.PackageCount, draftState.PackageQuantities);
+            _isPartValidated = draftState.IsPartValidated;
+            PartMatchStatusText.Text = draftState.PartMatchStatusText;
+            PartMatchReasonText.Text = draftState.PartMatchReasonText;
+        }
+        finally
+        {
+            _isApplyingDraftState = false;
+        }
+    }
+
+    private AddLineDraftState CreateDraftState()
+    {
+        return new AddLineDraftState
+        {
+            PartId = PartIdBox.Text?.Trim() ?? string.Empty,
+            PackageCount = NormalizePackageCount(PackageCountBox.Value),
+            PackageQuantities = _packageBoxes.ConvertAll(box => box.Value),
+            IsPartValidated = _isPartValidated,
+            PartMatchStatusText = PartMatchStatusText.Text,
+            PartMatchReasonText = PartMatchReasonText.Text,
+        };
+    }
+
+    private async Task<bool> ValidatePartStatusAsync(bool openPartMatchHelper = false)
+    {
+        var partId = PartIdBox.Text?.Trim() ?? string.Empty;
+
+        if (ValidatePartAsync is null || string.IsNullOrWhiteSpace(partId))
+        {
+            PendingPartMatchValue = null;
             _isPartValidated = false;
             PartMatchStatusText.Text = "Validation required";
-            PartMatchReasonText.Text =
-                "Enter a part and use the helper when the typed value does not exactly match Infor Visual.";
+            PartMatchReasonText.Text = "Enter a part ID to continue.";
             return false;
         }
 
-        var isValid = await ValidatePartAsync(PartIdBox.Text.Trim());
+        var isValid = await ValidatePartAsync(partId);
         _isPartValidated = isValid;
+        PendingPartMatchValue = isValid ? null : partId;
         PartMatchStatusText.Text = isValid ? "Matched part ready" : "No exact match found";
         PartMatchReasonText.Text = isValid
-            ? "The part is ready to return to the request entry screen."
-            : "Use the Part Match Helper to apply a suggested part or correct the value manually.";
+            ? "The part is ready to save."
+            : "Choose a suggested part to continue.";
+
+        if (!isValid && openPartMatchHelper)
+        {
+            Hide();
+        }
+
         return isValid;
     }
 

@@ -32,32 +32,19 @@
         </Border>
 
         <StackPanel Grid.Row="1" Spacing="8">
-            <Grid ColumnSpacing="12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <TextBox
-                    x:Name="PartIdBox"
-                    Grid.Column="0"
-                    Header="Part ID"
-                    LostFocus="PartIdBox_LostFocus"
-                    PlaceholderText="Enter part ID" />
-
-                <Button
-                    Grid.Column="1"
-                    Content="Part Match Helper"
-                    Click="PartMatchHelperButton_Click"
-                    VerticalAlignment="Bottom" />
-            </Grid>
+            <TextBox
+                x:Name="PartIdBox"
+                Header="Part ID"
+                LostFocus="PartIdBox_LostFocus"
+                TextChanged="PartIdBox_TextChanged"
+                PlaceholderText="Enter part ID" />
 
             <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="16" Padding="12">
                 <StackPanel Spacing="4">
                     <TextBlock x:Name="PartMatchStatusText" Text="Validation required" FontWeight="SemiBold" />
                     <TextBlock
                         x:Name="PartMatchReasonText"
-                        Text="Use the helper if the part does not match Infor Visual."
+                        Text="The helper opens automatically if the part is not found."
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Border>

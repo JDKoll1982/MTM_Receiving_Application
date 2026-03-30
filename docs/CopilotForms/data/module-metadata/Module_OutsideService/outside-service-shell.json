@@ -120,7 +120,7 @@
       "Completed lines appear in history"
     ],
     "validationHints": [
-      "Confirm invalid part IDs are blocked before save",
+      "Confirm an invalid part ID opens Part Match Helper when the Part ID field loses focus",
       "Confirm package count and package rows must match",
       "Confirm the Add Line modal opens with the wider custom header layout",
       "Confirm Setup stays disabled when no waitlist line is selected",

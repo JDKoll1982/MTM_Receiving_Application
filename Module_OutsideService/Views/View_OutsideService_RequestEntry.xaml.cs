@@ -23,17 +23,45 @@ public sealed partial class View_OutsideService_RequestEntry : Page
 
     private async void OnAddLineRequested()
     {
-        var dialog = new View_OutsideService_AddLineModal
-        {
-            XamlRoot = XamlRoot,
-            ValidatePartAsync = ViewModel.ValidatePartAsync,
-            ResolvePartMatchAsync = ResolvePartMatchAsync,
-        };
+        View_OutsideService_AddLineModal.AddLineDraftState? draftState = null;
 
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary && dialog.CreatedLine is not null)
+        while (true)
         {
-            ViewModel.AddDraftLine(dialog.CreatedLine);
+            var dialog = new View_OutsideService_AddLineModal(draftState)
+            {
+                XamlRoot = XamlRoot,
+                ValidatePartAsync = ViewModel.ValidatePartAsync,
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (dialog.RequiresPartMatch && dialog.PendingPartMatchValue is not null)
+            {
+                draftState = dialog.DraftState;
+                var suggestion = await ResolvePartMatchAsync(dialog.PendingPartMatchValue);
+                if (suggestion is not null)
+                {
+                    draftState.PartId = suggestion.PartId;
+                    draftState.IsPartValidated = true;
+                    draftState.PartMatchStatusText = "Matched part ready";
+                    draftState.PartMatchReasonText = suggestion.MatchReason;
+                }
+                else
+                {
+                    draftState.IsPartValidated = false;
+                    draftState.PartMatchStatusText = "No exact match found";
+                    draftState.PartMatchReasonText = "Edit the part ID or choose a suggested part.";
+                }
+
+                continue;
+            }
+
+            if (result == ContentDialogResult.Primary && dialog.CreatedLine is not null)
+            {
+                ViewModel.AddDraftLine(dialog.CreatedLine);
+            }
+
+            break;
         }
     }
 

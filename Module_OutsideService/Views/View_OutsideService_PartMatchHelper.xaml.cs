@@ -41,7 +41,7 @@ public sealed partial class View_OutsideService_PartMatchHelper : ContentDialog
             SuggestionsList.SelectedItem as Model_OutsideServicePartMatchSuggestion;
         IsPrimaryButtonEnabled = SelectedSuggestion is not null;
         SelectedSummaryText.Text = SelectedSuggestion is null
-            ? "Select a suggested part to return it to the Add Line modal."
+            ? "Select a suggested part to return to Add Line."
             : $"{SelectedSuggestion.PartId} — {SelectedSuggestion.Description}";
         SelectedReasonText.Text = SelectedSuggestion?.MatchReason ?? string.Empty;
     }
