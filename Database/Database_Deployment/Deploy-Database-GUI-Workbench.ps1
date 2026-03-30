@@ -59,7 +59,7 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
         ShowButton          = $true
-        172.16.1.104Value   = '172.16.1.104'
+        localhostValue   = '172.16.1.104'
         SharedHostValue     = '172.16.1.104'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
         IncludedExtensions  = @(
@@ -519,11 +519,11 @@ function Update-ConnectionDisplay {
     $userText.Text = $script:CurrentUser
 
     if ($null -ne $swapHostsButton) {
-        $swapTarget = if (Test-Is172.16.1.104Value -HostName $script:CurrentServer) {
+        $swapTarget = if (Test-IslocalhostValue -HostName $script:CurrentServer) {
             $script:Config.HostSwap.SharedHostValue
         }
         else {
-            $script:Config.HostSwap.172.16.1.104Value
+            $script:Config.HostSwap.localhostValue
         }
 
         $swapHostsButton.Content = "Swap Repo To $swapTarget"
@@ -544,7 +544,7 @@ function Clear-SharedMySqlDefaultsFile {
 }
 
 # AUTH-SECRET-LOGIC-BEGIN
-function Test-Is172.16.1.104Value {
+function Test-IslocalhostValue {
     param(
         [string]$HostName
     )
@@ -565,7 +565,7 @@ function New-AuthSecretValue {
 function Get-AuthSecretSourcePath {
     $securityConfig = $script:Config.Security
 
-    if (Test-Is172.16.1.104Value -HostName $script:CurrentServer) {
+    if (Test-IslocalhostValue -HostName $script:CurrentServer) {
         return Join-Path $securityConfig.LocalSecretDirectory $securityConfig.LocalSecretFileName
     }
 
@@ -772,9 +772,9 @@ function Update-HostProfilesAfterSwap {
 
 function Invoke-RepoHostReferenceSwap {
     $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-    $172.16.1.104 = $script:Config.HostSwap.172.16.1.104Value
+    $172.16.1.104 = $script:Config.HostSwap.localhostValue
     $sharedHost = $script:Config.HostSwap.SharedHostValue
-    $fromHost = if (Test-Is172.16.1.104Value -HostName $script:CurrentServer) { $172.16.1.104 } else { $sharedHost }
+    $fromHost = if (Test-IslocalhostValue -HostName $script:CurrentServer) { $172.16.1.104 } else { $sharedHost }
     $toHost = if ($fromHost -eq $172.16.1.104) { $sharedHost } else { $172.16.1.104 }
     $filesChanged = 0
     $repoFiles = @(Get-RepoFilesForHostSwap -RepoRoot $repoRoot)
