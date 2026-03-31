@@ -10,7 +10,6 @@
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
-        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" HorizontalScrollMode="Disabled">
@@ -46,8 +45,9 @@
                                 ItemsSource="{x:Bind ViewModel.VendorSuggestions, Mode=OneWay}"
                                 SelectedItem="{x:Bind ViewModel.SelectedVendorSuggestion, Mode=TwoWay}"
                                 DisplayMemberPath="VendorName"
+                                Visibility="{x:Bind ViewModel.IsVendorSuggestionPickerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 IsEnabled="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
-                            <CheckBox Content="Use custom vendor" IsChecked="{x:Bind ViewModel.UseCustomVendor, Mode=TwoWay}" />
+                            <CheckBox Content="Use custom vendor" IsChecked="{x:Bind ViewModel.UseCustomVendor, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.CanToggleCustomVendor, Mode=OneWay}" />
                             <TextBox Header="Custom vendor name" Text="{x:Bind ViewModel.CustomVendorName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             <TextBox Header="Reference number" Text="{x:Bind ViewModel.BolNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <CalendarDatePicker
@@ -56,7 +56,6 @@
                                 HorizontalAlignment="Stretch" />
                             <TextBox Header="Shipping contact" Text="{x:Bind ViewModel.ShippingContact, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="Setup notes" Text="{x:Bind ViewModel.SetupNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" />
-                            <TextBox Header="Completion notes" Text="{x:Bind ViewModel.CompletionNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.IsSetupPhase, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -64,25 +63,33 @@
                 <StackPanel Grid.Column="1" Spacing="16">
                     <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                         <StackPanel Spacing="8">
-                            <TextBlock Text="Package Snapshot" Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <TextBlock Text="{x:Bind ViewModel.PackageSnapshot, Mode=OneWay}" FontFamily="Consolas" TextWrapping="Wrap" />
+                            <TextBlock Text="Package Editor" Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <NumberBox Header="Package count" Value="{x:Bind ViewModel.PackageCountInputValue, Mode=TwoWay}" Minimum="1" SmallChange="1" SpinButtonPlacementMode="Compact" />
+                            <ListView ItemsSource="{x:Bind ViewModel.EditablePackages, Mode=OneWay}" MaxHeight="240">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Model_OutsideServiceEditablePackage">
+                                        <Grid ColumnSpacing="12" Padding="0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{x:Bind PackageLabel}" VerticalAlignment="Center" />
+                                            <NumberBox Grid.Column="1" Value="{x:Bind PackageQuantity, Mode=TwoWay}" Minimum="0" SmallChange="1" SpinButtonPlacementMode="Compact" HorizontalAlignment="Stretch" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
                         </StackPanel>
                     </Border>
 
                     <Border Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Before You Save" Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <TextBlock Text="1. Confirm the vendor." TextWrapping="Wrap" />
-                            <TextBlock Text="2. Enter the reference number and ship date." TextWrapping="Wrap" />
-                            <TextBlock Text="3. Add notes if needed." TextWrapping="Wrap" />
+                            <TextBlock Text="1. Confirm the vendor selection or enter a custom vendor." TextWrapping="Wrap" />
+                            <TextBlock Text="2. Update package count and package quantities if the order changed." TextWrapping="Wrap" />
+                            <TextBlock Text="3. Enter the reference number, ship date, shipping contact, and setup notes." TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
-
-                    <InfoBar
-                        IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
-                        Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
-                        Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                        IsClosable="True" />
                 </StackPanel>
             </Grid>
 

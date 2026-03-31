@@ -26,7 +26,8 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedLine))]
-    [NotifyPropertyChangedFor(nameof(PrimaryActionText))]
+    [NotifyPropertyChangedFor(nameof(HasSelectedInitializeLine))]
+    [NotifyPropertyChangedFor(nameof(HasSelectedSetupLine))]
     private Model_OutsideServiceRequestLine? _selectedLine;
 
     [ObservableProperty]
@@ -62,6 +63,8 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
 
     public event Action<Model_OutsideServiceRequestLine>? SetupRequested;
 
+    public event Action? LineCompleted;
+
     public event Action<Model_OutsideServiceRequestLine?>? SelectedLineChanged;
 
     /// <summary>
@@ -70,9 +73,14 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
     public bool HasSelectedLine => SelectedLine is not null;
 
     /// <summary>
-    /// Gets the primary detail-panel action text.
+    /// Gets whether an Initialize-phase line is selected.
     /// </summary>
-    public string PrimaryActionText => SelectedLine?.NextStepLabel ?? "Open Line";
+    public bool HasSelectedInitializeLine => SelectedLine?.IsInitialize == true;
+
+    /// <summary>
+    /// Gets whether a Setup-phase line is selected.
+    /// </summary>
+    public bool HasSelectedSetupLine => SelectedLine?.IsSetup == true;
 
     partial void OnSelectedLineChanged(Model_OutsideServiceRequestLine? value)
     {
@@ -126,12 +134,54 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
     [RelayCommand]
     private void OpenSelectedLine()
     {
-        if (SelectedLine is null)
+        if (SelectedLine is null || !SelectedLine.IsInitialize && !SelectedLine.IsSetup)
         {
             return;
         }
 
         SetupRequested?.Invoke(SelectedLine);
+    }
+
+    [RelayCommand]
+    private async Task MarkSelectedLineCompleteAsync()
+    {
+        if (SelectedLine is null || !SelectedLine.IsSetup || IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+
+            var completionResult = await _outsideService.MarkCompleteAsync(
+                SelectedLine.OutsideServiceRequestLineId,
+                null
+            );
+            if (!completionResult.IsSuccess)
+            {
+                ShowStatus(completionResult.ErrorMessage, InfoBarSeverity.Error);
+                return;
+            }
+
+            SelectedLine.LinePhase = Enum_OutsideServiceLinePhase.Complete;
+            SelectedLine.CompletedUtc = DateTime.UtcNow;
+            ShowStatus($"Marked {SelectedLine.QueueKey} complete.", InfoBarSeverity.Success);
+            LineCompleted?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                nameof(MarkSelectedLineCompleteAsync),
+                nameof(ViewModel_OutsideService_Waitlist)
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     partial void OnSearchTextChanged(string value)

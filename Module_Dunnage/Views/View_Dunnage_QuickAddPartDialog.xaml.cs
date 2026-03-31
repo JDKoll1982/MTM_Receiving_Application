@@ -120,6 +120,24 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
                 checkBox.Unchecked += (s, e) => UpdatePartId();
                 inputControl = checkBox;
             }
+            else if (
+                string.Equals(def.DataType, "Choices", System.StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                var comboBox = new ComboBox
+                {
+                    PlaceholderText = $"Select {spec.SpecKey.ToLower()}",
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                };
+
+                foreach (var choice in def.Choices)
+                {
+                    comboBox.Items.Add(choice);
+                }
+
+                comboBox.SelectionChanged += (s, e) => UpdatePartId();
+                inputControl = comboBox;
+            }
             else // Text
             {
                 var textBox = new TextBox
@@ -156,6 +174,13 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             if (kvp.Value is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text))
             {
                 textSpecs.Add(tb.Text.Trim());
+            }
+            else if (
+                kvp.Value is ComboBox comboBox
+                && comboBox.SelectedItem is string selectedChoice
+            )
+            {
+                textSpecs.Add(selectedChoice.Trim());
             }
         }
 
@@ -256,6 +281,13 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             else if (kvp.Value is CheckBox cb)
             {
                 specValues[kvp.Key] = cb.IsChecked ?? false;
+            }
+            else if (
+                kvp.Value is ComboBox comboBox
+                && comboBox.SelectedItem is string selectedChoice
+            )
+            {
+                specValues[kvp.Key] = selectedChoice.Trim();
             }
         }
 

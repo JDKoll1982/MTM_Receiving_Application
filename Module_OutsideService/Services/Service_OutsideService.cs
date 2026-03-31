@@ -235,6 +235,25 @@ public class Service_OutsideService : IService_OutsideService
             return Model_Dao_Result_Factory.Failure("Reference number is required.");
         }
 
+        if (line.PackageCount <= 0)
+        {
+            return Model_Dao_Result_Factory.Failure("At least one package is required.");
+        }
+
+        if (line.Packages.Count != line.PackageCount)
+        {
+            return Model_Dao_Result_Factory.Failure(
+                "Package rows must match the package count before setup can be saved."
+            );
+        }
+
+        if (line.Packages.Any(package => package.PackageQuantity <= 0))
+        {
+            return Model_Dao_Result_Factory.Failure(
+                "Each package quantity must be greater than zero."
+            );
+        }
+
         _logger.LogInfo(
             $"Saving Outside Service setup for line {line.OutsideServiceRequestLineId}."
         );

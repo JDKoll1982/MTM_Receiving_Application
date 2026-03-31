@@ -327,6 +327,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                             Unit = specItem.Unit,
                             MinValue = specItem.MinValue,
                             MaxValue = specItem.MaxValue,
+                            Choices = specItem.Choices,
                         };
 
                         var specModel = new Model_DunnageSpec
@@ -465,6 +466,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                         Unit = specItem.Unit,
                         MinValue = specItem.MinValue,
                         MaxValue = specItem.MaxValue,
+                        Choices = specItem.Choices,
                     };
                     var json = JsonSerializer.Serialize(specDef);
 

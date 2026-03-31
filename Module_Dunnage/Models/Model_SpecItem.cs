@@ -14,6 +14,7 @@ public class Model_SpecItem
     public string Unit { get; set; } = string.Empty;
     public double? MinValue { get; set; }
     public double? MaxValue { get; set; }
+    public List<string> Choices { get; set; } = new();
 
     public string Description
     {
@@ -35,6 +36,11 @@ public class Model_SpecItem
             if (!string.IsNullOrEmpty(Unit))
             {
                 parts.Add(Unit);
+            }
+
+            if (Choices.Count > 0)
+            {
+                parts.Add($"Choices: {string.Join(", ", Choices)}");
             }
 
             if (parts.Count > 0)

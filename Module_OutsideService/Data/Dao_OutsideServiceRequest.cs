@@ -161,6 +161,8 @@ public class Dao_OutsideServiceRequest
             new Dictionary<string, object>
             {
                 { "outside_service_request_line_id", line.OutsideServiceRequestLineId },
+                { "package_count", line.PackageCount },
+                { "package_summary", line.PackageSummary },
                 {
                     "setup_vendor_id",
                     string.IsNullOrWhiteSpace(line.SetupVendorId)

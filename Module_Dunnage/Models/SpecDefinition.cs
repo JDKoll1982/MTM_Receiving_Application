@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
@@ -5,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Models;
 public class SpecDefinition
 {
     [JsonPropertyName("dataType")]
-    public string DataType { get; set; } = "Text"; // Text, Number, Boolean
+    public string DataType { get; set; } = "Text"; // Text, Number, Boolean, Choices
 
     [JsonPropertyName("type")]
     public string Type
@@ -29,4 +30,7 @@ public class SpecDefinition
 
     [JsonPropertyName("unit")]
     public string Unit { get; set; } = string.Empty;
+
+    [JsonPropertyName("choices")]
+    public List<string> Choices { get; set; } = new();
 }

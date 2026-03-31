@@ -10,7 +10,6 @@
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
-        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
     <Grid RowSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -82,13 +81,6 @@
                         <TextBlock Text="Select a line to review final details." Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
                     </StackPanel>
                 </Border>
-
-                <InfoBar
-                    Grid.Row="1"
-                    IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
-                    Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
-                    Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                    IsClosable="True" />
             </Grid>
         </Grid>
     </Grid>

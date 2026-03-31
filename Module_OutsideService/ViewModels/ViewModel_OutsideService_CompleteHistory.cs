@@ -95,6 +95,13 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
                 VendorFilterOptions.Add(vendor!);
             }
 
+            SelectedVendorFilter = string.IsNullOrWhiteSpace(SelectedVendorFilter)
+                || !VendorFilterOptions.Contains(SelectedVendorFilter)
+                    ? "All"
+                    : SelectedVendorFilter;
+            OnPropertyChanged(nameof(SelectedVendorFilter));
+            OnPropertyChanged(nameof(VendorFilterOptions));
+
             ApplyFilters();
             ShowStatus($"Loaded {_allLines.Count} completed line(s).", InfoBarSeverity.Success);
         }

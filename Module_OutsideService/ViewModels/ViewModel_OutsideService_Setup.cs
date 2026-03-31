@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace MTM_Receiving_Application.Module_OutsideService.ViewModels;
 public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
 {
     private readonly IService_OutsideService _outsideService;
+    private bool _isLoadingLine;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsInitializePhase))]
@@ -34,7 +36,21 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
     private Model_OutsideServiceVendorSuggestion? _selectedVendorSuggestion;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsVendorSuggestionPickerVisible))]
+    private bool _hasVendorSuggestions;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanToggleCustomVendor))]
+    private bool _isCustomVendorForced;
+
+    [ObservableProperty]
     private bool _useCustomVendor;
+
+    [ObservableProperty]
+    private double _packageCountInputValue = 1;
+
+    [ObservableProperty]
+    private ObservableCollection<Model_OutsideServiceEditablePackage> _editablePackages = new();
 
     [ObservableProperty]
     private string _customVendorName = string.Empty;
@@ -81,9 +97,19 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
     public bool IsSetupPhase => CurrentLine?.IsSetup == true;
 
     /// <summary>
+    /// Gets whether the suggested-vendor dropdown should be visible.
+    /// </summary>
+    public bool IsVendorSuggestionPickerVisible => HasVendorSuggestions;
+
+    /// <summary>
+    /// Gets whether the custom-vendor checkbox can be changed.
+    /// </summary>
+    public bool CanToggleCustomVendor => !IsCustomVendorForced;
+
+    /// <summary>
     /// Gets the action button text.
     /// </summary>
-    public string PrimaryActionText => IsInitializePhase ? "Save Setup" : "Mark Complete";
+    public string PrimaryActionText => IsInitializePhase ? "Save Setup" : "Save Changes";
 
     /// <summary>
     /// Gets the current phase label.
@@ -112,56 +138,69 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            var wasInitialize = CurrentLine.IsInitialize;
+            var normalizedPackageCount = NormalizePackageCount(PackageCountInputValue);
 
-            if (CurrentLine.IsInitialize)
+            if (EditablePackages.Count != normalizedPackageCount)
             {
-                CurrentLine.SetupVendorId = UseCustomVendor
-                    ? null
-                    : SelectedVendorSuggestion?.VendorId;
-                CurrentLine.SetupVendorName = UseCustomVendor
-                    ? CustomVendorName.Trim()
-                    : SelectedVendorSuggestion?.VendorName;
-                CurrentLine.SetupVendorSource = UseCustomVendor ? "custom" : "suggested";
-                CurrentLine.BOLNumber = string.IsNullOrWhiteSpace(BolNumber)
-                    ? null
-                    : BolNumber.Trim();
-                CurrentLine.ScheduledShipUtc = ScheduledShipDate.UtcDateTime;
-                CurrentLine.ShippingContact = string.IsNullOrWhiteSpace(ShippingContact)
-                    ? null
-                    : ShippingContact.Trim();
-                CurrentLine.SetupNotes = string.IsNullOrWhiteSpace(SetupNotes)
-                    ? null
-                    : SetupNotes.Trim();
-
-                var setupResult = await _outsideService.SaveSetupAsync(CurrentLine);
-                if (!setupResult.IsSuccess)
-                {
-                    ShowStatus(setupResult.ErrorMessage, InfoBarSeverity.Error);
-                    return;
-                }
-
-                CurrentLine.LinePhase = Enum_OutsideServiceLinePhase.Setup;
-                ShowStatus($"Saved setup for {CurrentLine.QueueKey}.", InfoBarSeverity.Success);
-            }
-            else
-            {
-                var completionResult = await _outsideService.MarkCompleteAsync(
-                    CurrentLine.OutsideServiceRequestLineId,
-                    string.IsNullOrWhiteSpace(CompletionNotes) ? null : CompletionNotes.Trim()
+                ShowStatus(
+                    "Package rows must match the package count before save.",
+                    InfoBarSeverity.Error
                 );
-                if (!completionResult.IsSuccess)
-                {
-                    ShowStatus(completionResult.ErrorMessage, InfoBarSeverity.Error);
-                    return;
-                }
-
-                CurrentLine.LinePhase = Enum_OutsideServiceLinePhase.Complete;
-                CurrentLine.CompletedUtc = DateTime.UtcNow;
-                CurrentLine.CompletionNotes = string.IsNullOrWhiteSpace(CompletionNotes)
-                    ? null
-                    : CompletionNotes.Trim();
-                ShowStatus($"Marked {CurrentLine.QueueKey} complete.", InfoBarSeverity.Success);
+                return;
             }
+
+            if (EditablePackages.Any(package => package.PackageQuantity <= 0))
+            {
+                ShowStatus(
+                    "Each package quantity must be greater than zero.",
+                    InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            CurrentLine.PackageCount = normalizedPackageCount;
+            CurrentLine.Packages = EditablePackages
+                .OrderBy(package => package.PackageSequence)
+                .Select(package => new Model_OutsideServiceRequestPackage
+                {
+                    OutsideServiceRequestLineId = CurrentLine.OutsideServiceRequestLineId,
+                    PackageSequence = package.PackageSequence,
+                    PackageQuantity = Convert.ToDecimal(
+                        package.PackageQuantity,
+                        CultureInfo.InvariantCulture
+                    ),
+                })
+                .ToList();
+
+            CurrentLine.SetupVendorId = UseCustomVendor ? null : SelectedVendorSuggestion?.VendorId;
+            CurrentLine.SetupVendorName = UseCustomVendor
+                ? CustomVendorName.Trim()
+                : SelectedVendorSuggestion?.VendorName;
+            CurrentLine.SetupVendorSource = UseCustomVendor ? "custom" : "suggested";
+            CurrentLine.BOLNumber = string.IsNullOrWhiteSpace(BolNumber) ? null : BolNumber.Trim();
+            CurrentLine.ScheduledShipUtc = ScheduledShipDate.UtcDateTime;
+            CurrentLine.ShippingContact = string.IsNullOrWhiteSpace(ShippingContact)
+                ? null
+                : ShippingContact.Trim();
+            CurrentLine.SetupNotes = string.IsNullOrWhiteSpace(SetupNotes)
+                ? null
+                : SetupNotes.Trim();
+
+            var setupResult = await _outsideService.SaveSetupAsync(CurrentLine);
+            if (!setupResult.IsSuccess)
+            {
+                ShowStatus(setupResult.ErrorMessage, InfoBarSeverity.Error);
+                return;
+            }
+
+            CurrentLine.LinePhase = Enum_OutsideServiceLinePhase.Setup;
+            ShowStatus(
+                wasInitialize
+                    ? $"Saved setup for {CurrentLine.QueueKey}."
+                    : $"Saved changes for {CurrentLine.QueueKey}.",
+                InfoBarSeverity.Success
+            );
 
             OnPropertyChanged(nameof(IsInitializePhase));
             OnPropertyChanged(nameof(IsSetupPhase));
@@ -185,17 +224,36 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         }
     }
 
+    partial void OnPackageCountInputValueChanged(double value)
+    {
+        if (_isLoadingLine)
+        {
+            return;
+        }
+
+        RebuildEditablePackages(NormalizePackageCount(value));
+    }
+
+    partial void OnUseCustomVendorChanged(bool value)
+    {
+        if (value)
+        {
+            SelectedVendorSuggestion = null;
+        }
+    }
+
     public async Task LoadLineAsync(Model_OutsideServiceRequestLine line)
     {
         ArgumentNullException.ThrowIfNull(line);
 
+        _isLoadingLine = true;
         CurrentLine = line;
-        UseCustomVendor = string.Equals(
-            line.SetupVendorSource,
-            "custom",
-            StringComparison.OrdinalIgnoreCase
+        PackageCountInputValue = line.PackageCount <= 0 ? 1 : line.PackageCount;
+        RebuildEditablePackages(
+            NormalizePackageCount(PackageCountInputValue),
+            line.Packages.Select(package => Convert.ToDouble(package.PackageQuantity)).ToList()
         );
-        CustomVendorName = UseCustomVendor ? line.SetupVendorName ?? string.Empty : string.Empty;
+
         BolNumber = line.BOLNumber ?? string.Empty;
         ScheduledShipDate = line.ScheduledShipUtc.HasValue
             ? new DateTimeOffset(line.ScheduledShipUtc.Value)
@@ -214,6 +272,13 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
             }
         }
 
+        HasVendorSuggestions = VendorSuggestions.Count > 0;
+        IsCustomVendorForced = !HasVendorSuggestions;
+        UseCustomVendor = IsCustomVendorForced
+            || string.Equals(line.SetupVendorSource, "custom", StringComparison.OrdinalIgnoreCase)
+            || !HasVendorSuggestions;
+        CustomVendorName = UseCustomVendor ? line.SetupVendorName ?? string.Empty : string.Empty;
+
         SelectedVendorSuggestion = VendorSuggestions.FirstOrDefault(suggestion =>
             string.Equals(
                 suggestion.VendorId,
@@ -227,10 +292,46 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
             )
         );
 
+        if (UseCustomVendor)
+        {
+            SelectedVendorSuggestion = null;
+        }
+
+        _isLoadingLine = false;
+
         OnPropertyChanged(nameof(IsInitializePhase));
         OnPropertyChanged(nameof(IsSetupPhase));
         OnPropertyChanged(nameof(PrimaryActionText));
         OnPropertyChanged(nameof(CurrentPhaseText));
         OnPropertyChanged(nameof(PackageSnapshot));
+        OnPropertyChanged(nameof(IsVendorSuggestionPickerVisible));
+        OnPropertyChanged(nameof(CanToggleCustomVendor));
+    }
+
+    private void RebuildEditablePackages(int packageCount, System.Collections.Generic.IReadOnlyList<double>? existingValues = null)
+    {
+        EditablePackages.Clear();
+        for (var index = 0; index < packageCount; index++)
+        {
+            EditablePackages.Add(
+                new Model_OutsideServiceEditablePackage
+                {
+                    PackageSequence = index + 1,
+                    PackageQuantity = existingValues is not null && index < existingValues.Count
+                        ? existingValues[index]
+                        : 0d,
+                }
+            );
+        }
+    }
+
+    private static int NormalizePackageCount(double rawValue)
+    {
+        if (double.IsNaN(rawValue) || double.IsInfinity(rawValue))
+        {
+            return 1;
+        }
+
+        return Math.Max(1, Convert.ToInt32(Math.Truncate(rawValue), CultureInfo.InvariantCulture));
     }
 }

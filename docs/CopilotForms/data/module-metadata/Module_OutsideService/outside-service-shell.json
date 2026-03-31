@@ -2,7 +2,7 @@
   "id": "outside-service-shell",
   "module": "Module_OutsideService",
   "name": "Outside Service Queue",
-  "summary": "Waitlist-first Outside Service workflow for MySQL-backed requests with gated Setup access, shared-shell section headers, and Infor Visual validation and suggestion flows that honor configured mock-data mode.",
+  "summary": "Waitlist-first Outside Service workflow for MySQL-backed requests with gated Setup access, direct waitlist completion prompts for setup-phase lines, editable setup details, forced custom-vendor fallback when no suggestions exist, and shared-shell section headers that avoid duplicate in-page notifications.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_OutsideService/Contracts/IService_OutsideService.cs",
@@ -91,8 +91,11 @@
       "Add line modal",
       "Package breakdown editor",
       "Waitlist detail panel",
+      "Waitlist edit and complete actions",
       "Vendor suggestion picker",
+      "Forced custom vendor fallback",
       "Shipment setup form",
+      "Setup package editor",
       "Calendar-style scheduled ship picker",
       "Completion history list"
     ],
@@ -101,8 +104,9 @@
       "Create a new outside service request",
       "Resolve uncertain part numbers",
       "Open Setup only after selecting a waitlist line",
-      "Save setup details",
-      "Mark setup lines complete",
+      "Edit setup-phase lines without completing them",
+      "Save setup details and package changes",
+      "Mark setup lines complete from the waitlist after a yes or no prompt",
       "Review completed work"
     ],
     "preserveRules": [
@@ -117,7 +121,8 @@
       "Request entry can stage and save one or more lines",
       "Open lines appear in the waitlist after save",
       "Setup cannot be opened until a waitlist line is selected",
-      "Setup data can be saved and lines can be marked complete",
+      "Setup data can be saved and setup-phase lines can be edited without being completed",
+      "Setup-phase lines can be marked complete directly from the waitlist after confirmation",
       "Completed lines appear in history"
     ],
     "validationHints": [
@@ -130,7 +135,12 @@
       "Confirm Infor Visual suggestion and validation paths fall back only when mock data mode is enabled",
       "Confirm waitlist and history filters do not hide valid rows unexpectedly",
       "Confirm Complete History defaults to a blank Search box with Vendor and Completed both set to All whenever the user navigates into the History tab",
-      "Confirm Complete History defaults to All so older completed rows remain visible"
+      "Confirm Complete History defaults to All so older completed rows remain visible",
+      "Confirm setup-phase waitlist rows show separate Edit and Mark Complete actions",
+      "Confirm Mark Complete prompts for Yes or No and does not navigate into Setup",
+      "Confirm setup editing allows package count, per-package quantities, vendor, reference number, scheduled ship date, shipping contact, and setup notes to be changed",
+      "Confirm the suggested-vendor dropdown hides and custom vendor is forced on when no suggested vendors are returned",
+      "Confirm the shared header toast remains while duplicate in-page Outside Service InfoBars are removed"
     ],
     "databaseObjects": [
       "outside_service_request",

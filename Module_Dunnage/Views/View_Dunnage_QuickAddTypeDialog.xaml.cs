@@ -16,6 +16,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
     private bool _isIconSelected;
     private MaterialIconKind _selectedIcon = MaterialIconKind.PackageVariantClosed; // Default box icon
     private string _selectedIconName = "Box"; // Default icon name
+    private readonly ObservableCollection<string> _currentChoices = new();
 
     public string TypeName { get; private set; } = string.Empty;
     public MaterialIconKind SelectedIconKind { get; private set; } =
@@ -39,6 +40,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
         InitializeComponent();
         IsIconSelected = true;
         SpecsListView.ItemsSource = Specs;
+        ChoicesListView.ItemsSource = _currentChoices;
         NewSpecTypeCombo.SelectionChanged += OnSpecTypeChanged;
     }
 
@@ -49,6 +51,8 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
             var type = item.Content.ToString();
             NumberOptionsPanel.Visibility =
                 type == "Number" ? Visibility.Visible : Visibility.Collapsed;
+            ChoicesOptionsPanel.Visibility =
+                type == "Choices" ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -88,8 +92,38 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
                     Unit = kvp.Value.Unit,
                     MinValue = kvp.Value.MinValue,
                     MaxValue = kvp.Value.MaxValue,
+                    Choices = kvp.Value.Choices?.ToList() ?? new List<string>(),
                 }
             );
+        }
+    }
+
+    private void OnAddChoiceClick(object sender, RoutedEventArgs e)
+    {
+        var choice = NewSpecChoiceBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(choice))
+        {
+            return;
+        }
+
+        if (
+            _currentChoices.Any(existing =>
+                existing.Equals(choice, System.StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            return;
+        }
+
+        _currentChoices.Add(choice);
+        NewSpecChoiceBox.Text = string.Empty;
+    }
+
+    private void OnRemoveChoiceClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.DataContext is string choice)
+        {
+            _currentChoices.Remove(choice);
         }
     }
 
@@ -131,6 +165,10 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
                 maxValue = NewSpecMaxValueBox.Value;
             }
         }
+        else if (type == "Choices" && _currentChoices.Count == 0)
+        {
+            return;
+        }
 
         Specs.Add(
             new Model_SpecItem
@@ -141,6 +179,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
                 Unit = unit,
                 MinValue = minValue,
                 MaxValue = maxValue,
+                Choices = _currentChoices.ToList(),
             }
         );
 
@@ -151,6 +190,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
         NewSpecMaxValueBox.Value = double.NaN;
         NewSpecRequiredCheck.IsChecked = false;
         NewSpecTypeCombo.SelectedIndex = 0;
+        _currentChoices.Clear();
     }
 
     private void OnRemoveSpecClick(object sender, RoutedEventArgs e)

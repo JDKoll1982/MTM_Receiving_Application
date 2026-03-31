@@ -117,4 +117,45 @@ public class ViewModel_OutsideService_CompleteHistoryTests
         viewModel.FilteredLines.Should().Contain(line => line.PartId == "PART-OLD");
         viewModel.FilteredLines.Should().Contain(line => line.PartId == "PART-NEW");
     }
+
+    [Fact]
+    public async Task LoadAsync_ShouldRestoreVendorFilterToAll_WhenVendorSelectionIsBlank()
+    {
+        var outsideServiceMock = new Mock<IService_OutsideService>();
+        outsideServiceMock
+            .Setup(service => service.GetCompletedLinesAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceRequestLine>
+                    {
+                        new()
+                        {
+                            OutsideServiceRequestLineId = 3,
+                            RequestNumber = "OS-1002",
+                            LineNumber = 1,
+                            PartId = "PART-VENDOR",
+                            SetupVendorName = "Acme Heat Treat",
+                            LinePhase = Enum_OutsideServiceLinePhase.Complete,
+                            CreatedUtc = DateTime.UtcNow.AddDays(-10),
+                            CompletedUtc = DateTime.UtcNow.AddDays(-1),
+                        },
+                    }
+                )
+            );
+
+        var viewModel = new ViewModel_OutsideService_CompleteHistory(
+            outsideServiceMock.Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        )
+        {
+            SelectedVendorFilter = string.Empty,
+        };
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        viewModel.SelectedVendorFilter.Should().Be("All");
+        viewModel.VendorFilterOptions.Should().Contain("All");
+    }
 }

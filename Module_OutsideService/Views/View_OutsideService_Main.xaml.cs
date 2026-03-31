@@ -58,17 +58,17 @@ public sealed partial class View_OutsideService_Main : Page
 
         setupView.ViewModel.ReturnRequested += () =>
         {
-            if (setupView.ViewModel.CurrentLine?.IsComplete == true)
-            {
-                ViewModel.ShowHistoryCommand.Execute(null);
-            }
-            else
-            {
-                ViewModel.ShowWaitlistCommand.Execute(null);
-            }
+            ViewModel.ShowWaitlistCommand.Execute(null);
         };
 
         setupView.ViewModel.LineSaved += async () =>
+        {
+            await waitlistView.ViewModel.RefreshCommand.ExecuteAsync(null);
+            await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);
+            ViewModel.UpdateSelectedWaitlistLine(waitlistView.ViewModel.SelectedLine);
+        };
+
+        waitlistView.ViewModel.LineCompleted += async () =>
         {
             await waitlistView.ViewModel.RefreshCommand.ExecuteAsync(null);
             await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);

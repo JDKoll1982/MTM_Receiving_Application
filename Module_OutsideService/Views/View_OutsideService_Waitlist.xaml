@@ -10,7 +10,6 @@
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
-        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
     <Grid RowSpacing="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -91,17 +90,14 @@
                 <Border Grid.Row="1" Background="#f6f9ff" BorderBrush="#cfe1f7" BorderThickness="1" CornerRadius="18" Padding="16">
                     <StackPanel Spacing="8">
                         <TextBlock Text="Actions" Style="{StaticResource SubtitleTextBlockStyle}" />
-                        <TextBlock Text="Open the selected line to continue or complete setup." TextWrapping="Wrap" />
-                        <Button Content="{x:Bind ViewModel.PrimaryActionText, Mode=OneWay}" Command="{x:Bind ViewModel.OpenSelectedLineCommand}" Style="{StaticResource AccentButtonStyle}" Visibility="{x:Bind ViewModel.HasSelectedLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBlock Text="Initialize lines open Setup. Setup lines can be edited or completed directly from the waitlist." TextWrapping="Wrap" />
+                        <Button Content="Open Setup" Command="{x:Bind ViewModel.OpenSelectedLineCommand}" Style="{StaticResource AccentButtonStyle}" Visibility="{x:Bind ViewModel.HasSelectedInitializeLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8" Visibility="{x:Bind ViewModel.HasSelectedSetupLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button Content="Edit" Command="{x:Bind ViewModel.OpenSelectedLineCommand}" />
+                            <Button Content="Mark Complete" Click="OnMarkCompleteClick" Style="{StaticResource AccentButtonStyle}" IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
-
-                <InfoBar
-                    Grid.Row="2"
-                    IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
-                    Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}"
-                    Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                    IsClosable="True" />
             </Grid>
         </Grid>
     </Grid>

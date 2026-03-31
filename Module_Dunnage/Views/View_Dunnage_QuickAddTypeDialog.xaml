@@ -253,6 +253,7 @@
                                 <ComboBoxItem Content="Text" />
                                 <ComboBoxItem Content="Number" />
                                 <ComboBoxItem Content="Boolean" />
+                                <ComboBoxItem Content="Choices" />
                             </ComboBox>
                         </Grid>
 
@@ -294,6 +295,75 @@
                                 />
                             </Grid>
                         </StackPanel>
+
+                        <Border
+                            x:Name="ChoicesOptionsPanel"
+                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="12"
+                            Visibility="Collapsed"
+                        >
+                            <StackPanel Spacing="10">
+                                <TextBlock
+                                    Text="Choice Values"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                />
+                                <TextBlock
+                                    Text="Add the allowed values for this field. Example: Tall, Short."
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    TextWrapping="Wrap"
+                                />
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox
+                                        x:Name="NewSpecChoiceBox"
+                                        PlaceholderText="Add a choice"
+                                        HorizontalAlignment="Stretch"
+                                    />
+                                    <Button
+                                        Grid.Column="1"
+                                        Content="Add Choice"
+                                        Click="OnAddChoiceClick"
+                                        Style="{StaticResource AccentButtonStyle}"
+                                    />
+                                </Grid>
+                                <ListView
+                                    x:Name="ChoicesListView"
+                                    Height="110"
+                                    BorderThickness="1"
+                                    BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                    CornerRadius="6"
+                                    Padding="4"
+                                >
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <Grid Padding="0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{x:Bind}" VerticalAlignment="Center" />
+                                                <Button
+                                                    Grid.Column="1"
+                                                    Content="&#xE74D;"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    ToolTipService.ToolTip="Remove this choice"
+                                                    Click="OnRemoveChoiceClick"
+                                                    Style="{StaticResource SubtleButtonStyle}"
+                                                />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </Border>
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>

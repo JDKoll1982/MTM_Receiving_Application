@@ -155,6 +155,71 @@ public class Service_OutsideServiceTests
         result.Data[0].DispatchCount.Should().Be(3);
     }
 
+    [Fact]
+    public async Task SaveSetupAsync_ShouldFail_WhenPackageRowsDoNotMatchPackageCount()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var loggerMock = new Mock<IService_LoggingUtility>();
+        var service = CreateService(inforVisualMock.Object, loggerMock.Object);
+
+        var line = new Model_OutsideServiceRequestLine
+        {
+            OutsideServiceRequestLineId = 22,
+            PartId = "PART-400",
+            PackageCount = 2,
+            SetupVendorName = "Acme Heat Treat",
+            BOLNumber = "BOL-22",
+            Packages =
+            {
+                new Model_OutsideServiceRequestPackage
+                {
+                    PackageSequence = 1,
+                    PackageQuantity = 12,
+                },
+            },
+        };
+
+        var result = await service.SaveSetupAsync(line);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("Package rows must match");
+    }
+
+    [Fact]
+    public async Task SaveSetupAsync_ShouldFail_WhenAnyPackageQuantityIsInvalid()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var loggerMock = new Mock<IService_LoggingUtility>();
+        var service = CreateService(inforVisualMock.Object, loggerMock.Object);
+
+        var line = new Model_OutsideServiceRequestLine
+        {
+            OutsideServiceRequestLineId = 23,
+            PartId = "PART-401",
+            PackageCount = 2,
+            SetupVendorName = "Acme Heat Treat",
+            BOLNumber = "BOL-23",
+            Packages =
+            {
+                new Model_OutsideServiceRequestPackage
+                {
+                    PackageSequence = 1,
+                    PackageQuantity = 12,
+                },
+                new Model_OutsideServiceRequestPackage
+                {
+                    PackageSequence = 2,
+                    PackageQuantity = 0,
+                },
+            },
+        };
+
+        var result = await service.SaveSetupAsync(line);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("greater than zero");
+    }
+
     private static Service_OutsideService CreateService(
         IService_InforVisual inforVisual,
         IService_LoggingUtility logger,

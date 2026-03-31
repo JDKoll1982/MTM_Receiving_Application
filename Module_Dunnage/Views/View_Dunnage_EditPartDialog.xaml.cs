@@ -105,6 +105,21 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             {
                 inputControl = new CheckBox { Content = "Yes" };
             }
+            else if (string.Equals(def.DataType, "Choices", StringComparison.OrdinalIgnoreCase))
+            {
+                var comboBox = new ComboBox
+                {
+                    PlaceholderText = $"Select {spec.SpecKey.ToLower()}",
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                };
+
+                foreach (var choice in def.Choices)
+                {
+                    comboBox.Items.Add(choice);
+                }
+
+                inputControl = comboBox;
+            }
             else
             {
                 inputControl = new TextBox
@@ -144,6 +159,10 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             else if (kvp.Value is CheckBox cb)
             {
                 cb.IsChecked = GetBool(rawValue);
+            }
+            else if (kvp.Value is ComboBox comboBox)
+            {
+                comboBox.SelectedItem = GetString(rawValue);
             }
             else if (kvp.Value is TextBox tb)
             {
@@ -236,6 +255,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             else if (kvp.Value is CheckBox cb)
             {
                 specValues[kvp.Key] = cb.IsChecked ?? false;
+            }
+            else if (
+                kvp.Value is ComboBox comboBox
+                && comboBox.SelectedItem is string selectedChoice
+            )
+            {
+                specValues[kvp.Key] = selectedChoice.Trim();
             }
         }
 

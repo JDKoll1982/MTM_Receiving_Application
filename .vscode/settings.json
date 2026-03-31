@@ -12,7 +12,7 @@
     "editor.defaultFormatter": null
   },
   "[xaml]": {
-    "editor.defaultFormatter": null
+    "editor.defaultFormatter": "nromanov.dotnet-meteor"
   },
   "prettier.useEditorConfig": true,
   "prettier.requireConfig": false,
