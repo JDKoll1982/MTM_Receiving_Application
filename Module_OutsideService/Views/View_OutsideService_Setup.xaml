@@ -104,7 +104,17 @@
                                 SmallChange="1"
                                 SpinButtonPlacementMode="Compact"
                                 Value="{x:Bind ViewModel.PackageCountInputValue, Mode=TwoWay}" />
-                            <ListView MaxHeight="240" ItemsSource="{x:Bind ViewModel.EditablePackages, Mode=OneWay}">
+                            <ListView
+                                MaxHeight="240"
+                                TabFocusNavigation="Cycle"
+                                ItemsSource="{x:Bind ViewModel.EditablePackages, Mode=OneWay}">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="IsTabStop" Value="False" />
+                                        <Setter Property="Padding" Value="4,0" />
+                                        <Setter Property="MinHeight" Value="0" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:Model_OutsideServiceEditablePackage">
                                         <Grid Padding="0,4" ColumnSpacing="12">

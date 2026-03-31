@@ -164,9 +164,13 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
                 return;
             }
 
-            SelectedLine.LinePhase = Enum_OutsideServiceLinePhase.Complete;
-            SelectedLine.CompletedUtc = DateTime.UtcNow;
-            ShowStatus($"Marked {SelectedLine.QueueKey} complete.", InfoBarSeverity.Success);
+            var completedLine = SelectedLine;
+            completedLine.LinePhase = Enum_OutsideServiceLinePhase.Complete;
+            completedLine.CompletedUtc = DateTime.UtcNow;
+            _allLines.Remove(completedLine);
+            SelectedLine = null;
+            ApplyFilters();
+            ShowStatus($"Marked {completedLine.QueueKey} complete.", InfoBarSeverity.Success);
             LineCompleted?.Invoke();
         }
         catch (Exception ex)
@@ -201,7 +205,8 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
 
     private void ApplyFilters()
     {
-        IEnumerable<Model_OutsideServiceRequestLine> lines = _allLines;
+        IEnumerable<Model_OutsideServiceRequestLine> lines = _allLines
+            .Where(line => line.LinePhase != Enum_OutsideServiceLinePhase.Complete);
 
         if (!string.IsNullOrWhiteSpace(SearchText))
         {

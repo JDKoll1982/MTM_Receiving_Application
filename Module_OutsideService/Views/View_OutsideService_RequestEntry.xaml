@@ -86,7 +86,10 @@
                 BorderBrush="#d6dde8"
                 BorderThickness="1"
                 CornerRadius="18">
-                <Grid RowSpacing="12">
+                <Grid
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    RowSpacing="12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -129,7 +132,6 @@
                                             <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="120" />
                                             <ColumnDefinition Width="100" />
-                                            <ColumnDefinition Width="100" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="100" />
                                         </Grid.ColumnDefinitions>
@@ -156,13 +158,8 @@
                                                 Foreground="#0f6cbd"
                                                 Text="{x:Bind LinePhaseText}" />
                                         </Border>
-                                        <TextBlock
-                                            Grid.Column="4"
-                                            FontFamily="Consolas"
-                                            Text="{x:Bind PackageSummary}"
-                                            TextWrapping="Wrap" />
                                         <Border
-                                            Grid.Column="5"
+                                            Grid.Column="4"
                                             Padding="10,4"
                                             Background="#dff6dd"
                                             CornerRadius="12">
@@ -220,30 +217,6 @@
                     </Grid>
                 </Border>
 
-                <Border
-                    Height="210"
-                    Padding="16"
-                    Background="#f6f9ff"
-                    BorderBrush="#cfe1f7"
-                    BorderThickness="1"
-                    CornerRadius="18">
-                    <Grid RowSpacing="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="How New Lines Are Added" />
-                        <ScrollViewer
-                            Grid.Row="1"
-                            HorizontalScrollBarVisibility="Disabled"
-                            VerticalScrollBarVisibility="Auto">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Use Add Line to enter the part and package quantities." TextWrapping="Wrap" />
-                                <TextBlock Text="All package quantities must be valid before save." TextWrapping="Wrap" />
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
             </StackPanel>
         </Grid>
 

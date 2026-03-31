@@ -231,7 +231,8 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
             return;
         }
 
-        RebuildEditablePackages(NormalizePackageCount(value));
+        var existingValues = EditablePackages.Select(p => p.PackageQuantity).ToList();
+        RebuildEditablePackages(NormalizePackageCount(value), existingValues);
     }
 
     partial void OnUseCustomVendorChanged(bool value)
