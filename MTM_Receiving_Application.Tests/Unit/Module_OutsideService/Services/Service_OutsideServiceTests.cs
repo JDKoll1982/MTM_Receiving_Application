@@ -223,7 +223,7 @@ public class Service_OutsideServiceTests
     )
     {
         return new Service_OutsideService(
-            new Dao_OutsideServiceRequest("Server=172.16.1.104;Database=test;Uid=test;Pwd=test;"),
+            new Dao_OutsideServiceRequest("Server=localhost;Database=test;Uid=test;Pwd=test;"),
             inforVisual,
             logger,
             Options.Create(new InforVisualSettings { UseMockData = useMockData })

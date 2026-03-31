@@ -879,9 +879,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             try
             {
                 await _logger.LogInfoAsync(
-                    $"Updating dunnage load {load.LoadUuid} (Quantity: {load.Quantity}) by user: {CurrentUser}"
+                    $"Updating dunnage history load {load.LoadUuid} (Part: {load.PartId}, Quantity: {load.Quantity}) by user: {CurrentUser}"
                 );
-                return await _daoDunnageLoad.UpdateAsync(load.LoadUuid, load.Quantity, CurrentUser);
+                return await _daoDunnageLoad.UpdateAsync(load, CurrentUser);
             }
             catch (Exception ex)
             {
@@ -892,6 +892,108 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     nameof(Service_MySQL_Dunnage)
                 );
                 return Model_Dao_Result_Factory.Failure($"Error updating load: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result> UpdateHistoryLoadsAsync(List<Model_DunnageLoad> loads)
+        {
+            try
+            {
+                if (loads == null || loads.Count == 0)
+                {
+                    await _logger.LogInfoAsync(
+                        "UpdateHistoryLoadsAsync called with no loads to update"
+                    );
+                    return Model_Dao_Result_Factory.Success();
+                }
+
+                await _logger.LogInfoAsync(
+                    $"Updating {loads.Count} dunnage history row(s) by user: {CurrentUser}"
+                );
+
+                foreach (var load in loads)
+                {
+                    var result = await _daoDunnageLoad.UpdateAsync(load, CurrentUser);
+                    if (!result.IsSuccess)
+                    {
+                        await _logger.LogErrorAsync(
+                            $"Failed to update dunnage history load {load.LoadUuid}: {result.ErrorMessage}"
+                        );
+                        return result;
+                    }
+                }
+
+                await _logger.LogInfoAsync(
+                    $"Successfully updated {loads.Count} dunnage history row(s)"
+                );
+                return Model_Dao_Result_Factory.Success();
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Exception in UpdateHistoryLoadsAsync for {loads?.Count ?? 0} loads: {ex.Message}"
+                );
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(UpdateHistoryLoadsAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error updating history loads: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result> UpdateActiveLabelLoadsAsync(
+            List<Model_DunnageLoad> loads
+        )
+        {
+            try
+            {
+                if (loads == null || loads.Count == 0)
+                {
+                    await _logger.LogInfoAsync(
+                        "UpdateActiveLabelLoadsAsync called with no loads to update"
+                    );
+                    return Model_Dao_Result_Factory.Success();
+                }
+
+                await _logger.LogInfoAsync(
+                    $"Updating {loads.Count} active dunnage label row(s) by user: {CurrentUser}"
+                );
+
+                foreach (var load in loads)
+                {
+                    var result = await _daoDunnageLabelData.UpdateAsync(load, CurrentUser);
+                    if (!result.IsSuccess)
+                    {
+                        await _logger.LogErrorAsync(
+                            $"Failed to update active dunnage label row {load.LoadUuid}: {result.ErrorMessage}"
+                        );
+                        return result;
+                    }
+                }
+
+                await _logger.LogInfoAsync(
+                    $"Successfully updated {loads.Count} active dunnage label row(s)"
+                );
+                return Model_Dao_Result_Factory.Success();
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Exception in UpdateActiveLabelLoadsAsync for {loads?.Count ?? 0} loads: {ex.Message}"
+                );
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(UpdateActiveLabelLoadsAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error updating active label loads: {ex.Message}"
+                );
             }
         }
 

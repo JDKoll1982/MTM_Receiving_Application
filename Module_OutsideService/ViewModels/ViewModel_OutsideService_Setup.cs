@@ -252,7 +252,7 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         PackageCountInputValue = line.PackageCount <= 0 ? 1 : line.PackageCount;
         RebuildEditablePackages(
             NormalizePackageCount(PackageCountInputValue),
-            line.Packages.Select(package => Convert.ToDouble(package.PackageQuantity)).ToList()
+            line.Packages.ConvertAll(package => Convert.ToDouble(package.PackageQuantity))
         );
 
         BolNumber = line.BOLNumber ?? string.Empty;

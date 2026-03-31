@@ -25,6 +25,10 @@ public class Service_OutsideService : IService_OutsideService
     /// <summary>
     /// Initializes a new service instance.
     /// </summary>
+    /// <param name="requestDao"></param>
+    /// <param name="inforVisual"></param>
+    /// <param name="logger"></param>
+    /// <param name="inforVisualSettings"></param>
     public Service_OutsideService(
         Dao_OutsideServiceRequest requestDao,
         IService_InforVisual inforVisual,

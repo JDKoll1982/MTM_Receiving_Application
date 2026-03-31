@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
 
@@ -15,12 +17,16 @@ public partial class Model_DunnageLoad : ObservableObject
     private Guid _loadUuid;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PartIdButtonDisplayText))]
     private string _partId = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(QuantityWholeNumber))]
+    [NotifyPropertyChangedFor(nameof(QuantityDisplay))]
     private decimal _quantity;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EditablePoNumber))]
     private string _poNumber = string.Empty;
 
     [ObservableProperty]
@@ -33,12 +39,14 @@ public partial class Model_DunnageLoad : ObservableObject
     private Dictionary<string, object> _specs = new();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LocationButtonDisplayText))]
     private string? _location = string.Empty;
 
     [ObservableProperty]
     private string? _homeLocation = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TypeButtonDisplayText))]
     private string _typeName = string.Empty;
 
     [ObservableProperty]
@@ -76,6 +84,8 @@ public partial class Model_DunnageLoad : ObservableObject
     private string _createdBy = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CreatedDateDisplay))]
+    [NotifyPropertyChangedFor(nameof(CreatedTimeDisplay))]
     private DateTime _createdDate = DateTime.Now;
 
     [ObservableProperty]
@@ -92,4 +102,78 @@ public partial class Model_DunnageLoad : ObservableObject
 
     [ObservableProperty]
     private bool _isSelected;
+
+    /// <summary>
+    /// Gets the text shown for the Type selector button.
+    /// </summary>
+    public string TypeButtonDisplayText =>
+        string.IsNullOrWhiteSpace(TypeName) ? "Select Type" : TypeName;
+
+    /// <summary>
+    /// Gets the text shown for the Part ID selector button.
+    /// </summary>
+    public string PartIdButtonDisplayText =>
+        string.IsNullOrWhiteSpace(PartId) ? "Select Part ID" : PartId;
+
+    /// <summary>
+    /// Gets the text shown for the Location selector button.
+    /// </summary>
+    public string LocationButtonDisplayText =>
+        string.IsNullOrWhiteSpace(Location) ? "Select Location" : Location!;
+
+    /// <summary>
+    /// Gets or sets the quantity as a whole number for edit-mode display and editing.
+    /// </summary>
+    public int QuantityWholeNumber
+    {
+        get => decimal.ToInt32(decimal.Truncate(Quantity));
+        set => Quantity = Math.Max(0, value);
+    }
+
+    /// <summary>
+    /// Gets the quantity formatted without decimal places.
+    /// </summary>
+    public string QuantityDisplay => QuantityWholeNumber.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Gets or sets the PO number through the Edit Mode formatter.
+    /// </summary>
+    public string EditablePoNumber
+    {
+        get => PoNumber;
+        set => PoNumber = NormalizePoNumber(value);
+    }
+
+    /// <summary>
+    /// Gets the created date formatted as a date-only string.
+    /// </summary>
+    public string CreatedDateDisplay =>
+        CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Gets the created time formatted in 12-hour AM/PM style.
+    /// </summary>
+    public string CreatedTimeDisplay =>
+        CreatedDate
+            .ToString("h:mm tt", CultureInfo.InvariantCulture)
+            .Replace("AM", "A.M.", StringComparison.Ordinal)
+            .Replace("PM", "P.M.", StringComparison.Ordinal);
+
+    private static string NormalizePoNumber(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var trimmedValue = value.Trim();
+
+        if (!trimmedValue.All(char.IsDigit))
+        {
+            return trimmedValue;
+        }
+
+        var paddedValue = trimmedValue.PadLeft(6, '0');
+        return $"PO-{paddedValue}";
+    }
 }

@@ -256,6 +256,59 @@ public class Dao_DunnageLabelData
     }
 
     /// <summary>
+    /// Updates one row in the active <c>dunnage_label_data</c> queue identified by load UUID.
+    /// </summary>
+    /// <param name="load"></param>
+    /// <param name="fallbackUser"></param>
+    public virtual async Task<Model_Dao_Result> UpdateAsync(
+        Model_DunnageLoad load,
+        string fallbackUser
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "load_uuid", load.LoadUuid.ToString() },
+            { "part_id", load.PartId },
+            { "dunnage_type_id", load.TypeId.HasValue ? load.TypeId.Value : DBNull.Value },
+            {
+                "dunnage_type_name",
+                string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName
+            },
+            {
+                "dunnage_type_icon",
+                string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon
+            },
+            { "quantity", load.Quantity },
+            {
+                "po_number",
+                string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber
+            },
+            { "received_date", load.ReceivedDate },
+            {
+                "user_id",
+                string.IsNullOrWhiteSpace(load.CreatedBy) ? fallbackUser : load.CreatedBy
+            },
+            {
+                "location",
+                string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location
+            },
+            {
+                "label_number",
+                string.IsNullOrWhiteSpace(load.LabelNumber)
+                    ? DBNull.Value
+                    : (object)load.LabelNumber
+            },
+            { "specs_json", BuildSpecsJson(load) is { } specsJson ? specsJson : DBNull.Value },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_LabelData_Update",
+            parameters
+        );
+    }
+
+    /// <summary>
     /// Serializes the dynamic spec values from a load into a JSON string for <c>specs_json</c>.
     /// Prefers <see cref="Model_DunnageLoad.SpecValues"/> then falls back to <see cref="Model_DunnageLoad.Specs"/>.
     /// Returns <c>null</c> if both are empty.

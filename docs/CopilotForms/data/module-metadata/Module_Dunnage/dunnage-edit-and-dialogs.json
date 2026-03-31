@@ -2,7 +2,7 @@
   "id": "dunnage-edit-and-dialogs",
   "module": "Module_Dunnage",
   "name": "Edit Mode And Dialogs",
-  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, and supporting DAO flows used outside the main guided path.",
+  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, button-based Type/Part/Location selectors with shared fuzzy search, and source-aware save/update DAO flows used outside the main guided path.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
@@ -15,6 +15,9 @@
     "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml",
     "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml.cs",
+    "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml",
+    "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs",
+    "Module_Dunnage/Data/Dao_DunnageLoad.cs",
     "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
     "Module_Dunnage/Data/Dao_DunnageNonPOEntry.cs",
     "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
@@ -22,7 +25,8 @@
   ],
   "relatedServices": [
     "IService_DunnageAdminWorkflow",
-    "IService_MySQL_Dunnage"
+    "IService_MySQL_Dunnage",
+    "IService_InforVisual"
   ],
   "promptDefaults": {
     "audience": "Receiving Clerk",
@@ -36,7 +40,9 @@
       "Edit existing dunnage records",
       "Non-PO entry",
       "Add-row and inventory dialogs",
-      "Admin shell support"
+      "Admin shell support",
+      "Dialog-based type, part, and location selection",
+      "Source-aware edit-mode save persistence"
     ],
     "screens": [
       "View_Dunnage_EditModeView.xaml",
@@ -45,19 +51,34 @@
       "View_Dunnage_Dialog_AddToInventoriedListDialog.xaml"
     ],
     "currentUiPatterns": ["DataGrid", "Dialog", "Form"],
-    "desiredUiPatterns": ["Split layout", "Dialog", "Form"],
+    "desiredUiPatterns": ["Split layout", "Dialog", "Form", "Picker modal"],
     "uiElements": [
       "Edit-mode results area",
+      "Type selector button cells",
+      "Part selector button cells",
+      "Location selector button cells",
+      "Shared fuzzy-search picker",
+      "Source-aware Save Changes pipeline",
       "Non-PO entry form",
       "Add multiple rows dialog",
       "Add to inventoried list dialog"
     ],
     "userActions": [
       "Edit saved dunnage records",
+      "Choose a dunnage type from a picker",
+      "Choose a part ID limited to the selected type",
+      "Choose an Infor Visual location from a fuzzy-search modal",
+      "Save edited rows back to history or the active label queue without reinserting duplicates",
       "Capture non-PO dunnage entries",
       "Add rows or inventory items through dialogs"
     ],
     "validationHints": [
+      "Confirm the Type column opens a Dunnage Type picker and excludes types with no parts",
+      "Confirm changing Type clears the current Part ID and the Part picker is scoped to the selected type",
+      "Confirm the Location column opens the fuzzy-search picker against Infor Visual warehouse 002",
+      "Confirm the fuzzy-search dialog filters results locally for Type, Part ID, and Location selection",
+      "Confirm Save Changes only writes edited rows and routes updates by source: history vs active label queue",
+      "Confirm a successful save refreshes the same working set and a failed save surfaces a clear error",
       "Confirm edit-mode and non-PO dialog flows still target the correct records",
       "Confirm add-row and inventory dialogs still support the admin workflow correctly"
     ]

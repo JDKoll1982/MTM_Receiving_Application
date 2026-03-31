@@ -21,6 +21,7 @@ public class Dao_OutsideServiceRequest
     /// <summary>
     /// Initializes a new DAO instance.
     /// </summary>
+    /// <param name="connectionString"></param>
     public Dao_OutsideServiceRequest(string connectionString)
     {
         _connectionString =
@@ -30,6 +31,7 @@ public class Dao_OutsideServiceRequest
     /// <summary>
     /// Creates a request header, its lines, and package rows within one transaction.
     /// </summary>
+    /// <param name="request"></param>
     public async Task<Model_Dao_Result<Model_OutsideServiceRequest>> CreateRequestAsync(
         Model_OutsideServiceRequest request
     )
@@ -151,6 +153,7 @@ public class Dao_OutsideServiceRequest
     /// <summary>
     /// Saves Setup-phase data.
     /// </summary>
+    /// <param name="line"></param>
     public Task<Model_Dao_Result> SaveSetupAsync(Model_OutsideServiceRequestLine line)
     {
         ArgumentNullException.ThrowIfNull(line);
@@ -206,6 +209,8 @@ public class Dao_OutsideServiceRequest
     /// <summary>
     /// Marks a line complete.
     /// </summary>
+    /// <param name="lineId"></param>
+    /// <param name="completionNotes"></param>
     public Task<Model_Dao_Result> MarkCompleteAsync(int lineId, string? completionNotes)
     {
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(

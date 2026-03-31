@@ -293,8 +293,11 @@ namespace MTM_Receiving_Application
                 return directProvider;
             }
 
-            if (content is FrameworkElement frameworkElement
-                && frameworkElement.DataContext is IViewModel_HeaderTitleProvider dataContextProvider)
+            if (
+                content is FrameworkElement frameworkElement
+                && frameworkElement.DataContext
+                    is IViewModel_HeaderTitleProvider dataContextProvider
+            )
             {
                 return dataContextProvider;
             }
@@ -310,7 +313,8 @@ namespace MTM_Receiving_Application
                 return string.Empty;
             }
 
-            return _navRoutes.Values.FirstOrDefault(route => route.PageType == pageType).Title ?? string.Empty;
+            return _navRoutes.Values.FirstOrDefault(route => route.PageType == pageType).Title
+                ?? string.Empty;
         }
 
         private void ContentFrame_Navigated(
@@ -672,6 +676,7 @@ namespace MTM_Receiving_Application
         /// Navigate to a page type using dependency injection for view instantiation
         /// </summary>
         /// <param name="pageType"></param>
+        /// <param name="fallbackTitle"></param>
         private bool NavigateWithDI(Type pageType, string? fallbackTitle = null)
         {
             try

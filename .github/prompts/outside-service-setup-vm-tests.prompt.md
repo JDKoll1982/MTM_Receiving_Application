@@ -2,7 +2,20 @@
 name: Outside Service Setup ViewModel Tests
 description: "Generate comprehensive xUnit tests for ViewModel_OutsideService_Setup covering all commands, computed properties, validation paths, and service interactions"
 agent: agent
-tools: ["read_file", "create_file", "replace_string_in_file", "run_in_terminal"]
+tools:
+  [
+    vscode,
+    execute,
+    read,
+    agent,
+    edit,
+    search,
+    web,
+    browser,
+    "filesystem/*",
+    "awesome-copilot/*",
+    todo,
+  ]
 argument-hint: 'Optionally provide a specific test area to focus on (e.g., "validation", "vendor logic", "package count")'
 ---
 

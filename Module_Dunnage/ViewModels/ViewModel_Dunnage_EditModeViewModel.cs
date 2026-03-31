@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
@@ -20,11 +22,31 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// </summary>
 public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 {
+    private enum EditModeLoadSource
+    {
+        None,
+        CurrentMemory,
+        CurrentLabels,
+        History,
+    }
+
+    private sealed record Model_DunnageLoadSnapshot(
+        string PartId,
+        int? TypeId,
+        string TypeName,
+        string TypeIcon,
+        decimal Quantity,
+        string PoNumber,
+        string? Location,
+        string? LabelNumber
+    );
+
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
+    private readonly IService_InforVisual _inforVisualService;
 
     private const int PAGE_SIZE = 50;
 
@@ -33,6 +55,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         IService_Pagination paginationService,
         IService_DunnageWorkflow workflowService,
         IService_Window windowService,
+        IService_InforVisual inforVisualService,
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -44,6 +67,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         _paginationService = paginationService;
         _workflowService = workflowService;
         _windowService = windowService;
+        _inforVisualService = inforVisualService;
         _helpService = helpService;
 
         // T166: Set page size to 50
@@ -64,6 +88,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     [ObservableProperty]
     private ObservableCollection<Model_DunnageLoad> _selectedLoads = new();
+
+    [ObservableProperty]
+    private string _searchText = string.Empty;
 
     [ObservableProperty]
     private DateTimeOffset? _fromDate;
@@ -87,12 +114,21 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     private bool _canNavigate = false;
 
     private List<Model_DunnageLoad> _allLoads = new();
+    private readonly Dictionary<Guid, Model_DunnageLoadSnapshot> _originalLoadSnapshots = new();
+    private EditModeLoadSource _currentLoadSource = EditModeLoadSource.None;
+
+    public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
+
+    partial void OnSearchTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchText));
+        ApplySearchFilter(1);
+    }
 
     // T164: Dynamic button text for date filters
-    public string LastWeekButtonText =>
-        $"Last Week ({DateTime.Now.Date.AddDays(-7):MMM d} - {DateTime.Now.Date:MMM d})";
+    public string LastWeekButtonText => "Last Week";
 
-    public string TodayButtonText => $"Today ({DateTime.Now.Date:MMM d})";
+    public string TodayButtonText => "Today";
 
     public string ThisWeekButtonText
     {
@@ -105,11 +141,11 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 startOfWeek = startOfWeek.AddDays(-7);
             }
 
-            return $"This Week ({startOfWeek:MMM d} - {today:MMM d})";
+            return "This Week";
         }
     }
 
-    public string ThisMonthButtonText => $"This Month ({DateTime.Now:MMMM yyyy})";
+    public string ThisMonthButtonText => "This Month";
 
     public string ThisQuarterButtonText
     {
@@ -119,7 +155,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             var quarter = (today.Month - 1) / 3 + 1;
             var startMonth = (quarter - 1) * 3 + 1;
             var quarterStart = new DateTime(today.Year, startMonth, 1);
-            return $"This Quarter (Q{quarter} {today.Year})";
+            return "This Quarter";
         }
     }
 
@@ -157,17 +193,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             }
 
             _allLoads = _workflowService.CurrentSession.Loads.ToList();
-            TotalRecords = _allLoads.Count;
-
-            // Set pagination source
-            _paginationService.SetSource(_allLoads);
-            TotalPages = _paginationService.TotalPages;
-            CurrentPage = _paginationService.CurrentPage;
-
-            // Load first page
-            LoadPage(1);
-
-            CanNavigate = TotalPages > 1;
+            _currentLoadSource = EditModeLoadSource.CurrentMemory;
+            EnsureDisplayLoadNumbers();
+            CaptureOriginalSnapshots();
+            ApplySearchFilter(1);
             StatusMessage = $"Loaded {TotalRecords} loads from session";
 
             _logger.LogInfo($"Loaded {TotalRecords} loads from current session", "EditMode");
@@ -207,15 +236,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             }
 
             _allLoads = result.Data ?? new List<Model_DunnageLoad>();
-            TotalRecords = _allLoads.Count;
-
-            _paginationService.SetSource(_allLoads);
-            TotalPages = _paginationService.TotalPages;
-            CurrentPage = _paginationService.CurrentPage;
-
-            LoadPage(1);
-
-            CanNavigate = TotalPages > 1;
+            _currentLoadSource = EditModeLoadSource.CurrentLabels;
+            EnsureDisplayLoadNumbers();
+            CaptureOriginalSnapshots();
+            ApplySearchFilter(1);
             StatusMessage = $"Loaded {TotalRecords} active label(s)";
 
             _logger.LogInfo(
@@ -258,17 +282,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             }
 
             _allLoads = result.Data ?? new List<Model_DunnageLoad>();
-            TotalRecords = _allLoads.Count;
-
-            // Set pagination source
-            _paginationService.SetSource(_allLoads);
-            TotalPages = _paginationService.TotalPages;
-            CurrentPage = _paginationService.CurrentPage;
-
-            // Load first page
-            LoadPage(1);
-
-            CanNavigate = TotalPages > 1;
+            _currentLoadSource = EditModeLoadSource.History;
+            EnsureDisplayLoadNumbers();
+            CaptureOriginalSnapshots();
+            ApplySearchFilter(1);
             StatusMessage = $"Loaded {TotalRecords} records";
 
             _logger.LogInfo(
@@ -460,12 +477,12 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private void SelectAll()
     {
-        SelectedLoads.Clear();
         foreach (var load in FilteredLoads)
         {
-            SelectedLoads.Add(load);
+            load.IsSelected = true;
         }
 
+        SyncSelectedLoadsFromFlags();
         UpdateCanSave();
         _logger.LogInfo($"Selected all {FilteredLoads.Count} loads on page", "EditMode");
     }
@@ -473,6 +490,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private void RemoveSelectedRows()
     {
+        SyncSelectedLoadsFromFlags();
+
         if (SelectedLoads.Count == 0)
         {
             return;
@@ -487,10 +506,266 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         }
 
         SelectedLoads.Clear();
-        TotalRecords = _allLoads.Count;
+        EnsureDisplayLoadNumbers();
+        ApplySearchFilter(CurrentPage);
+
         UpdateCanSave();
 
         _logger.LogInfo($"Removed {loadsToRemove.Count} loads", "EditMode");
+    }
+
+    [RelayCommand]
+    private async Task SelectTypeAsync(Model_DunnageLoad? load)
+    {
+        if (load is null)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Loading dunnage types...";
+
+            var typesResult = await _dunnageService.GetAllTypesAsync();
+            if (!typesResult.IsSuccess || typesResult.Data == null)
+            {
+                await _errorHandler.HandleDaoErrorAsync(typesResult, nameof(SelectTypeAsync), true);
+                return;
+            }
+
+            var partsResult = await _dunnageService.GetAllPartsAsync();
+            if (!partsResult.IsSuccess || partsResult.Data == null)
+            {
+                await _errorHandler.HandleDaoErrorAsync(partsResult, nameof(SelectTypeAsync), true);
+                return;
+            }
+
+            var partCountsByType = partsResult
+                .Data.GroupBy(part => part.TypeId)
+                .ToDictionary(group => group.Key, group => group.Count());
+
+            var availableTypes = typesResult
+                .Data.Where(type => partCountsByType.ContainsKey(type.Id))
+                .OrderBy(type => type.TypeName)
+                .ToList();
+
+            if (availableTypes.Count == 0)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No dunnage types with available parts were found.",
+                    Enum_ErrorSeverity.Info,
+                    null,
+                    true
+                );
+                return;
+            }
+
+            var options = availableTypes.ConvertAll(type => new Model_FuzzySearchResult
+            {
+                Key = type.Id.ToString(),
+                Label = type.TypeName,
+                Detail = $"{partCountsByType[type.Id]} part ID(s)",
+            });
+
+            var selection = await ShowFuzzyPickerAsync(
+                options,
+                "Select Dunnage Type",
+                "Choose a dunnage type for this row."
+            );
+
+            if (selection is null)
+            {
+                return;
+            }
+
+            var selectedType = availableTypes.First(type => type.Id.ToString() == selection.Key);
+            var typeChanged = load.TypeId != selectedType.Id;
+
+            load.TypeId = selectedType.Id;
+            load.TypeName = selectedType.TypeName;
+            load.DunnageType = selectedType.TypeName;
+            load.TypeIcon = selectedType.Icon;
+
+            if (typeChanged)
+            {
+                load.PartId = string.Empty;
+            }
+
+            UpdateCanSave();
+            StatusMessage = $"Selected type {selectedType.TypeName}";
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error selecting dunnage type",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectPartAsync(Model_DunnageLoad? load)
+    {
+        if (load is null)
+        {
+            return;
+        }
+
+        if (!load.TypeId.HasValue || load.TypeId.Value <= 0)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Select a dunnage type before choosing a part ID.",
+                Enum_ErrorSeverity.Info,
+                null,
+                true
+            );
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Loading parts...";
+
+            var partsResult = await _dunnageService.GetPartsByTypeAsync(load.TypeId.Value);
+            if (!partsResult.IsSuccess || partsResult.Data == null)
+            {
+                await _errorHandler.HandleDaoErrorAsync(partsResult, nameof(SelectPartAsync), true);
+                return;
+            }
+
+            var availableParts = partsResult.Data.OrderBy(part => part.PartId).ToList();
+            if (availableParts.Count == 0)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No part IDs are available for the selected dunnage type.",
+                    Enum_ErrorSeverity.Info,
+                    null,
+                    true
+                );
+                return;
+            }
+
+            var options = availableParts.ConvertAll(part => new Model_FuzzySearchResult
+            {
+                Key = part.PartId,
+                Label = part.PartId,
+                Detail = string.IsNullOrWhiteSpace(part.HomeLocation)
+                    ? part.DunnageTypeName
+                    : $"Home: {part.HomeLocation}",
+            });
+
+            var selection = await ShowFuzzyPickerAsync(
+                options,
+                "Select Dunnage Part ID",
+                $"Choose a part ID for type {load.TypeName}."
+            );
+
+            if (selection is null)
+            {
+                return;
+            }
+
+            var selectedPart = availableParts.First(part => part.PartId == selection.Key);
+            load.PartId = selectedPart.PartId;
+
+            UpdateCanSave();
+            StatusMessage = $"Selected part ID {selectedPart.PartId}";
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error selecting dunnage part ID",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectLocationAsync(Model_DunnageLoad? load)
+    {
+        if (load is null)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Loading locations...";
+
+            var locationsResult = await _inforVisualService.FuzzySearchLocationsAsync(
+                load.Location ?? string.Empty,
+                "002"
+            );
+
+            if (!locationsResult.IsSuccess || locationsResult.Data == null)
+            {
+                await _errorHandler.HandleDaoErrorAsync(
+                    locationsResult,
+                    nameof(SelectLocationAsync),
+                    true
+                );
+                return;
+            }
+
+            var availableLocations = locationsResult
+                .Data.OrderBy(location => location.Label)
+                .ToList();
+            if (availableLocations.Count == 0)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No matching Dunnage locations were found in Infor Visual warehouse 002.",
+                    Enum_ErrorSeverity.Info,
+                    null,
+                    true
+                );
+                return;
+            }
+
+            var selection = await ShowFuzzyPickerAsync(
+                availableLocations,
+                "Select Dunnage Location",
+                "Choose a location from Infor Visual warehouse 002."
+            );
+
+            if (selection is null)
+            {
+                return;
+            }
+
+            load.Location = string.IsNullOrWhiteSpace(selection.Key)
+                ? selection.Label
+                : selection.Key;
+            UpdateCanSave();
+            StatusMessage = $"Selected location {load.Location}";
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error selecting location",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     #endregion
@@ -511,8 +786,15 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             CanSave = false;
             StatusMessage = "Saving changes...";
 
-            // Validate all loads
-            foreach (var load in _allLoads)
+            var editedLoads = GetEditedLoads();
+            if (editedLoads.Count == 0)
+            {
+                StatusMessage = "No changes to save";
+                _logger.LogInfo("SaveAllAsync invoked with no edited Dunnage rows", "EditMode");
+                return;
+            }
+
+            foreach (var load in editedLoads)
             {
                 if (
                     string.IsNullOrWhiteSpace(load.TypeName)
@@ -524,8 +806,23 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 }
             }
 
-            // Save to database
-            var saveResult = await _dunnageService.SaveLoadsAsync(_allLoads);
+            _logger.LogInfo(
+                $"Saving {editedLoads.Count} edited Dunnage load(s) from source {_currentLoadSource}",
+                "EditMode"
+            );
+
+            Model_Dao_Result saveResult = _currentLoadSource switch
+            {
+                EditModeLoadSource.CurrentMemory => await _dunnageService.SaveLoadsAsync(_allLoads),
+                EditModeLoadSource.CurrentLabels =>
+                    await _dunnageService.UpdateActiveLabelLoadsAsync(editedLoads),
+                EditModeLoadSource.History => await _dunnageService.UpdateHistoryLoadsAsync(
+                    editedLoads
+                ),
+                _ => Model_Dao_Result_Factory.Failure(
+                    "No Dunnage Edit Mode data source is currently loaded."
+                ),
+            };
 
             if (!saveResult.Success)
             {
@@ -533,8 +830,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 return;
             }
 
-            StatusMessage = $"Successfully saved {_allLoads.Count} loads";
-            _logger.LogInfo($"Saved {_allLoads.Count} loads", "EditMode");
+            await ReloadCurrentSourceAsync();
+            StatusMessage = $"Successfully saved {editedLoads.Count} load(s)";
+            _logger.LogInfo($"Saved {editedLoads.Count} Dunnage load(s)", "EditMode");
         }
         catch (Exception ex)
         {
@@ -647,9 +945,184 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     private void UpdateCanSave()
     {
-        CanSave = _allLoads.Any(l =>
-            !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId)
+        CanSave =
+            _allLoads.Count > 0
+            && _allLoads.All(l =>
+                !string.IsNullOrWhiteSpace(l.TypeName) && !string.IsNullOrWhiteSpace(l.PartId)
+            );
+    }
+
+    private void SyncSelectedLoadsFromFlags()
+    {
+        SelectedLoads.Clear();
+
+        foreach (var load in _allLoads.Where(load => load.IsSelected))
+        {
+            SelectedLoads.Add(load);
+        }
+    }
+
+    private void EnsureDisplayLoadNumbers()
+    {
+        if (_allLoads.Count == 0)
+        {
+            return;
+        }
+
+        var needsFallbackLoadNumbers = _allLoads.All(load => load.LoadNumber <= 0);
+        if (!needsFallbackLoadNumbers)
+        {
+            return;
+        }
+
+        for (var index = 0; index < _allLoads.Count; index++)
+        {
+            _allLoads[index].LoadNumber = index + 1;
+        }
+    }
+
+    private void CaptureOriginalSnapshots()
+    {
+        _originalLoadSnapshots.Clear();
+
+        foreach (var load in _allLoads)
+        {
+            _originalLoadSnapshots[load.LoadUuid] = CreateSnapshot(load);
+        }
+
+        UpdateCanSave();
+    }
+
+    private List<Model_DunnageLoad> GetEditedLoads()
+    {
+        return _allLoads.Where(HasChanges).ToList();
+    }
+
+    private bool HasChanges(Model_DunnageLoad load)
+    {
+        if (!_originalLoadSnapshots.TryGetValue(load.LoadUuid, out var original))
+        {
+            return true;
+        }
+
+        return CreateSnapshot(load) != original;
+    }
+
+    private static Model_DunnageLoadSnapshot CreateSnapshot(Model_DunnageLoad load)
+    {
+        return new Model_DunnageLoadSnapshot(
+            load.PartId,
+            load.TypeId,
+            load.TypeName,
+            load.TypeIcon,
+            load.Quantity,
+            load.PoNumber,
+            load.Location,
+            load.LabelNumber
         );
+    }
+
+    private async Task ReloadCurrentSourceAsync()
+    {
+        switch (_currentLoadSource)
+        {
+            case EditModeLoadSource.CurrentMemory:
+                _allLoads =
+                    _workflowService.CurrentSession?.Loads.ToList()
+                    ?? new List<Model_DunnageLoad>();
+                _currentLoadSource = EditModeLoadSource.CurrentMemory;
+                EnsureDisplayLoadNumbers();
+                CaptureOriginalSnapshots();
+                ApplySearchFilter(CurrentPage);
+                break;
+
+            case EditModeLoadSource.CurrentLabels:
+                await LoadFromCurrentLabelsAsync();
+                break;
+
+            case EditModeLoadSource.History:
+                await LoadFromHistoryAsync();
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        SearchText = string.Empty;
+    }
+
+    private void ApplySearchFilter(int pageNumber)
+    {
+        var filteredResults = _allLoads.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            var searchTerm = SearchText.Trim();
+            filteredResults = filteredResults.Where(load => MatchesSearch(load, searchTerm));
+        }
+
+        var filteredList = filteredResults.ToList();
+        TotalRecords = filteredList.Count;
+        _paginationService.SetSource(filteredList);
+        TotalPages = _paginationService.TotalPages;
+        CanNavigate = TotalPages > 1;
+
+        if (filteredList.Count == 0)
+        {
+            CurrentPage = 1;
+            FilteredLoads.Clear();
+            StatusMessage = string.IsNullOrWhiteSpace(SearchText)
+                ? "No loads found"
+                : $"No loads match \"{SearchText}\"";
+            return;
+        }
+
+        var targetPage = Math.Min(Math.Max(pageNumber, 1), TotalPages);
+        LoadPage(targetPage);
+    }
+
+    private static bool MatchesSearch(Model_DunnageLoad load, string searchTerm)
+    {
+        return load.LoadNumber.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || load.PartId.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || load.TypeName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || load.PoNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || (load.Location?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+            || load.CreatedBy.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
+        IReadOnlyList<Model_FuzzySearchResult> options,
+        string title,
+        string subtitle
+    )
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Unable to open the selection dialog.",
+                Enum_ErrorSeverity.Error,
+                null,
+                true
+            );
+            return null;
+        }
+
+        var dialog = new Dialog_FuzzySearchPicker(options, title, subtitle)
+        {
+            XamlRoot = xamlRoot,
+            PrimaryButtonText = "Select",
+            CloseButtonText = "Cancel",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
+            IsPrimaryButtonEnabled = false,
+        };
+
+        var result = await dialog.ShowAsync();
+        return result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary
+            ? dialog.SelectedResult
+            : null;
     }
 
     #endregion

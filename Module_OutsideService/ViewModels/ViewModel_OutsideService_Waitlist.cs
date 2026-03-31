@@ -145,7 +145,7 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
     [RelayCommand]
     private async Task MarkSelectedLineCompleteAsync()
     {
-        if (SelectedLine is null || !SelectedLine.IsSetup || IsBusy)
+        if (SelectedLine?.IsSetup != true || IsBusy)
         {
             return;
         }
@@ -205,8 +205,9 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
 
     private void ApplyFilters()
     {
-        IEnumerable<Model_OutsideServiceRequestLine> lines = _allLines
-            .Where(line => line.LinePhase != Enum_OutsideServiceLinePhase.Complete);
+        IEnumerable<Model_OutsideServiceRequestLine> lines = _allLines.Where(line =>
+            line.LinePhase != Enum_OutsideServiceLinePhase.Complete
+        );
 
         if (!string.IsNullOrWhiteSpace(SearchText))
         {

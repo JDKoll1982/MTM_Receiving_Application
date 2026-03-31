@@ -48,55 +48,55 @@ Non-negotiable rules while using this checklist:
 
 ### Dunnage Edit Mode
 
-- [ ] 1.  Quantity should be whole number
+- [x] 1.  Quantity should be whole number
       File: [01-dunnage-edit-mode-quantity-whole-number.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/01-dunnage-edit-mode-quantity-whole-number.md)
 
-- [ ] 2.  Quantity will not stay edited and resets to original value
+- [x] 2.  Quantity will not stay edited and resets to original value
       File: [02-dunnage-edit-mode-quantity-resets-on-edit.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/02-dunnage-edit-mode-quantity-resets-on-edit.md)
 
-- [ ] 3.  Type should be a button cell that opens a Dunnage Type modal
+- [x] 3.  Type should be a button cell that opens a Dunnage Type modal
       File: [03-dunnage-edit-mode-type-button-modal.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/03-dunnage-edit-mode-type-button-modal.md)
       Also apply: [08-dunnage-edit-mode-modal-fuzzy-search.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/08-dunnage-edit-mode-modal-fuzzy-search.md)
 
-- [ ] 4.  Part ID should be a button cell that opens a Part ID modal for the selected Type
+- [x] 4.  Part ID should be a button cell that opens a Part ID modal for the selected Type
       File: [04-dunnage-edit-mode-part-id-button-modal.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/04-dunnage-edit-mode-part-id-button-modal.md)
       Also apply: [08-dunnage-edit-mode-modal-fuzzy-search.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/08-dunnage-edit-mode-modal-fuzzy-search.md)
 
-- [ ] 5.  Load number is only showing zeros
+- [x] 5.  Load number is only showing zeros
       File: [05-dunnage-edit-mode-load-number-showing-zeros.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/05-dunnage-edit-mode-load-number-showing-zeros.md)
 
-- [ ] 6.  PO Number should auto-format when the input is numeric
+- [x] 6.  PO Number should auto-format when the input is numeric
       File: [06-dunnage-edit-mode-po-auto-format.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/06-dunnage-edit-mode-po-auto-format.md)
 
-- [ ] 7.  Location should be a button cell that opens an Infor Visual location modal
+- [x] 7.  Location should be a button cell that opens an Infor Visual location modal
       File: [07-dunnage-edit-mode-location-button-modal.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/07-dunnage-edit-mode-location-button-modal.md)
       Also apply: [08-dunnage-edit-mode-modal-fuzzy-search.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/08-dunnage-edit-mode-modal-fuzzy-search.md)
 
-- [ ] 8.  Modal searching for Type, Part ID, and Location
+- [x] 8.  Modal searching for Type, Part ID, and Location
       File: [08-dunnage-edit-mode-modal-fuzzy-search.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/08-dunnage-edit-mode-modal-fuzzy-search.md)
 
-- [ ] 9.  Created Date should show only the date
+- [x] 9.  Created Date should show only the date
       File: [09-dunnage-edit-mode-created-date-date-only.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/09-dunnage-edit-mode-created-date-date-only.md)
 
-- [ ] 10. Add Created Time column sourced from Created Date
+- [x] 10. Add Created Time column sourced from Created Date
       File: [10-dunnage-edit-mode-created-time-column.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/10-dunnage-edit-mode-created-time-column.md)
 
-- [ ] 11. Filter buttons are clipped and need shorter text
+- [x] 11. Filter buttons are clipped and need shorter text
       File: [11-dunnage-edit-mode-filter-buttons-clipped.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/11-dunnage-edit-mode-filter-buttons-clipped.md)
 
-- [ ] 12. Remove the duplicate Columns help button
+- [x] 12. Remove the duplicate Columns help button
       File: [12-dunnage-edit-mode-remove-columns-help-button.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/12-dunnage-edit-mode-remove-columns-help-button.md)
 
-- [ ] 13. Select All button is not working
+- [x] 13. Select All button is not working
       File: [13-dunnage-edit-mode-select-all-not-working.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/13-dunnage-edit-mode-select-all-not-working.md)
 
-- [ ] 14. Save Changes button is not working
+- [x] 14. Save Changes button is not working
       File: [14-dunnage-edit-mode-save-changes-not-working.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/14-dunnage-edit-mode-save-changes-not-working.md)
 
-- [ ] 15. Remove Selected is not working
+- [x] 15. Remove Selected is not working
       File: [15-dunnage-edit-mode-remove-selected-not-working.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/15-dunnage-edit-mode-remove-selected-not-working.md)
 
-- [ ] 16. Add the same filtered search bar as Receiving Edit Mode
+- [x] 16. Add the same filtered search bar as Receiving Edit Mode
       File: [16-dunnage-edit-mode-filtered-searchbar.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/16-dunnage-edit-mode-filtered-searchbar.md)
 
 ### Dunnage Workflow / Other Dunnage Screens
@@ -131,8 +131,8 @@ Non-negotiable rules while using this checklist:
 
 Use this section to capture the current stopping point before ending a work session.
 
-- Current item in progress:
-- Blockers:
-- Files already changed:
-- Tests/build already run:
-- Next concrete action:
+- Current item in progress: 17. Completely remove Manual Mode
+- Blockers: Full solution build is intermittently blocked by an existing ARM64 intermediate XAML file lock in `obj/ARM64/...`; project-level build succeeded.
+- Files already changed: `Module_Dunnage/Models/Model_DunnageLoad.cs`, `Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs`, `Module_Dunnage/Views/View_Dunnage_EditModeView.xaml`, `Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs`, `Module_Dunnage/Data/Dao_DunnageLoad.cs`, `Module_Dunnage/Data/Dao_DunnageLabelData.cs`, `Module_Dunnage/Services/Service_MySQL_Dunnage.cs`, and Dunnage stored procedures under `Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/`
+- Tests/build already run: `dotnet build MTM_Receiving_Application.csproj -p:Configuration=Debug -p:TargetFramework=net10.0-windows10.0.22621.0 -p:WindowsPackageType=None -p:WinUISDKReferences=false` succeeded; `Service_DunnageWorkflowTests` passed
+- Next concrete action: Start the Manual Mode decommission checklist and trace every Dunnage navigation path, command, and view reference that still exposes it.

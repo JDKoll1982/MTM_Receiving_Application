@@ -183,6 +183,30 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             }
         }
 
+        private void TypeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: Model_DunnageLoad load })
+            {
+                ViewModel.SelectTypeCommand.Execute(load);
+            }
+        }
+
+        private void PartIdButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: Model_DunnageLoad load })
+            {
+                ViewModel.SelectPartCommand.Execute(load);
+            }
+        }
+
+        private void LocationButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: Model_DunnageLoad load })
+            {
+                ViewModel.SelectLocationCommand.Execute(load);
+            }
+        }
+
         private void SelectFirstEditableCell(DataGrid grid)
         {
             Debug.WriteLine("[Dunnage_EditModeView] SelectFirstEditableCell: Starting");

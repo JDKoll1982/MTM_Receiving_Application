@@ -89,7 +89,7 @@ public class Dao_DunnageType
             { "id", id },
             { "type_name", typeName },
             { "icon", icon },
-            { "user", user },
+            { "modified_by", user },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(

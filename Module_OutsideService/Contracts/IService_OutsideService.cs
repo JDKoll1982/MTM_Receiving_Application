@@ -13,6 +13,7 @@ public interface IService_OutsideService
     /// <summary>
     /// Creates a new Outside Service request with one or more lines and package rows.
     /// </summary>
+    /// <param name="request"></param>
     Task<Model_Dao_Result<Model_OutsideServiceRequest>> CreateRequestAsync(
         Model_OutsideServiceRequest request
     );
@@ -30,11 +31,13 @@ public interface IService_OutsideService
     /// <summary>
     /// Validates an exact part number against Infor Visual.
     /// </summary>
+    /// <param name="partId"></param>
     Task<Model_Dao_Result<bool>> ValidatePartAsync(string partId);
 
     /// <summary>
     /// Returns user-friendly part suggestions for the Part Match Helper.
     /// </summary>
+    /// <param name="searchTerm"></param>
     Task<Model_Dao_Result<List<Model_OutsideServicePartMatchSuggestion>>> GetPartSuggestionsAsync(
         string searchTerm
     );
@@ -42,6 +45,7 @@ public interface IService_OutsideService
     /// <summary>
     /// Returns most-recent-first vendor suggestions for a part.
     /// </summary>
+    /// <param name="partId"></param>
     Task<Model_Dao_Result<List<Model_OutsideServiceVendorSuggestion>>> GetVendorSuggestionsAsync(
         string partId
     );
@@ -49,10 +53,13 @@ public interface IService_OutsideService
     /// <summary>
     /// Saves Setup-phase data for a line.
     /// </summary>
+    /// <param name="line"></param>
     Task<Model_Dao_Result> SaveSetupAsync(Model_OutsideServiceRequestLine line);
 
     /// <summary>
     /// Marks a line complete.
     /// </summary>
+    /// <param name="lineId"></param>
+    /// <param name="completionNotes"></param>
     Task<Model_Dao_Result> MarkCompleteAsync(int lineId, string? completionNotes);
 }

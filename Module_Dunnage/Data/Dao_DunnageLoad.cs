@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.Json;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -58,16 +59,37 @@ public class Dao_DunnageLoad
         );
     }
 
-    public virtual async Task<Model_Dao_Result> UpdateAsync(
-        Guid loadUuid,
-        decimal quantity,
-        string user
-    )
+    public virtual async Task<Model_Dao_Result> UpdateAsync(Model_DunnageLoad load, string user)
     {
         var parameters = new Dictionary<string, object>
         {
-            { "load_uuid", loadUuid.ToString() },
-            { "quantity", quantity },
+            { "load_uuid", load.LoadUuid.ToString() },
+            { "part_id", load.PartId },
+            { "quantity", load.Quantity },
+            {
+                "po_number",
+                string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber
+            },
+            { "type_id", load.TypeId.HasValue ? load.TypeId.Value : DBNull.Value },
+            {
+                "type_name",
+                string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName
+            },
+            {
+                "type_icon",
+                string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon
+            },
+            {
+                "location",
+                string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location
+            },
+            {
+                "label_number",
+                string.IsNullOrWhiteSpace(load.LabelNumber)
+                    ? DBNull.Value
+                    : (object)load.LabelNumber
+            },
+            { "specs_json", SerializeSpecValues(load) is { } specsJson ? specsJson : DBNull.Value },
             { "user", user },
         };
 
@@ -104,7 +126,13 @@ public class Dao_DunnageLoad
             DunnageType = reader.IsDBNull(reader.GetOrdinal("type_name"))
                 ? string.Empty
                 : reader.GetString(reader.GetOrdinal("type_name")),
+            TypeIcon = reader.IsDBNull(reader.GetOrdinal("type_icon"))
+                ? "Help"
+                : reader.GetString(reader.GetOrdinal("type_icon")),
             Quantity = reader.GetDecimal(reader.GetOrdinal("quantity")),
+            PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("po_number")),
             ReceivedDate = reader.GetDateTime(reader.GetOrdinal("received_date")),
             CreatedBy = reader.GetString(reader.GetOrdinal("created_by")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
@@ -114,6 +142,48 @@ public class Dao_DunnageLoad
             ModifiedDate = reader.IsDBNull(reader.GetOrdinal("modified_date"))
                 ? null
                 : reader.GetDateTime(reader.GetOrdinal("modified_date")),
+            Location = reader.IsDBNull(reader.GetOrdinal("location"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("location")),
+            LabelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("label_number")),
+            SpecValues = DeserializeSpecValues(reader),
         };
+    }
+
+    private static string? SerializeSpecValues(Model_DunnageLoad load)
+    {
+        var specs = load.SpecValues ?? load.Specs;
+        if (specs == null || specs.Count == 0)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Serialize(specs);
+    }
+
+    private static Dictionary<string, object>? DeserializeSpecValues(IDataReader reader)
+    {
+        var ordinal = reader.GetOrdinal("specs_json");
+        if (reader.IsDBNull(ordinal))
+        {
+            return null;
+        }
+
+        var json = reader.GetString(ordinal);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }

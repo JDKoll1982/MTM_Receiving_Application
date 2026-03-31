@@ -4,7 +4,7 @@
 # mode, so delimiter-based scripts are normalized before execution in that mode.
 
 param(
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -41,7 +41,7 @@ $script:Config = [ordered]@{
     }
     Providers = [ordered]@{
         Mamp = [ordered]@{
-            Server   = '172.16.1.104'
+            Server   = 'localhost'
             Port     = '3306'
             User     = 'root'
             Password = 'root'
@@ -50,7 +50,7 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-BEGIN
     Security  = [ordered]@{
         EnvironmentVariableName = 'MTM_AUTH_USER_SECRET_KEY'
-        SharedServerIp          = '172.16.1.104'
+        SharedServerIp          = 'localhost'
         LocalSecretDirectory    = Join-Path $env:ProgramData 'MTM Receiving Application\Security'
         LocalSecretFileName     = 'MTM_AUTH_USER_SECRET_KEY.txt'
         SharedSecretDirectory   = '\\MTMANU-FS01\Expo Drive\Software Development\Live Applications\MTM_Application_Keys'
@@ -59,8 +59,8 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
         ShowButton          = $true
-        172.16.1.104Value   = '172.16.1.104'
-        SharedHostValue     = '172.16.1.104'
+        localhostValue      = 'localhost'
+        SharedHostValue     = 'localhost'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
         IncludedExtensions  = @(
             '.bat', '.cmd', '.config', '.cs', '.csproj', '.css', '.fs', '.go', '.htm', '.html',
@@ -519,11 +519,11 @@ function Update-ConnectionDisplay {
     $userText.Text = $script:CurrentUser
 
     if ($null -ne $swapHostsButton) {
-        $swapTarget = if (Test-Is172.16.1.104Value -HostName $script:CurrentServer) {
+        $swapTarget = if (Test-IslocalhostValue -HostName $script:CurrentServer) {
             $script:Config.HostSwap.SharedHostValue
         }
         else {
-            $script:Config.HostSwap.172.16.1.104Value
+            $script:Config.HostSwap.localhostValue
         }
 
         $swapHostsButton.Content = "Swap Repo To $swapTarget"
@@ -544,7 +544,7 @@ function Clear-SharedMySqlDefaultsFile {
 }
 
 # AUTH-SECRET-LOGIC-BEGIN
-function Test-Is172.16.1.104Value {
+function Test-IslocalhostValue {
     param(
         [string]$HostName
     )
@@ -553,7 +553,7 @@ function Test-Is172.16.1.104Value {
         return $false
     }
 
-    return $HostName.Trim().ToLowerInvariant() -in @('172.16.1.104', '127.0.0.1', '::1')
+    return $HostName.Trim().ToLowerInvariant() -in @('localhost', '127.0.0.1', '::1')
 }
 
 function New-AuthSecretValue {
@@ -565,7 +565,7 @@ function New-AuthSecretValue {
 function Get-AuthSecretSourcePath {
     $securityConfig = $script:Config.Security
 
-    if (Test-Is172.16.1.104Value -HostName $script:CurrentServer) {
+    if (Test-IslocalhostValue -HostName $script:CurrentServer) {
         return Join-Path $securityConfig.LocalSecretDirectory $securityConfig.LocalSecretFileName
     }
 
@@ -689,7 +689,7 @@ function Convert-HostReferenceText {
         [string]$ToHost
     )
 
-    $placeholder = '172.16.1.104'
+    $placeholder = 'localhost'
     return $Content.Replace($FromHost, $placeholder).Replace($ToHost, $FromHost).Replace($placeholder, $ToHost)
 }
 
@@ -772,10 +772,10 @@ function Update-HostProfilesAfterSwap {
 
 function Invoke-RepoHostReferenceSwap {
     $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-    $172.16.1.104 = $script:Config.HostSwap.172.16.1.104Value
+    $localhost = $script:Config.HostSwap.localhostValue
     $sharedHost = $script:Config.HostSwap.SharedHostValue
-    $fromHost = if (Test-Is172.16.1.104Value -HostName $script:CurrentServer) { $172.16.1.104 } else { $sharedHost }
-    $toHost = if ($fromHost -eq $172.16.1.104) { $sharedHost } else { $172.16.1.104 }
+    $fromHost = if (Test-IslocalhostValue -HostName $script:CurrentServer) { $localhost } else { $sharedHost }
+    $toHost = if ($fromHost -eq $localhost) { $sharedHost } else { $localhost }
     $filesChanged = 0
     $repoFiles = @(Get-RepoFilesForHostSwap -RepoRoot $repoRoot)
     $totalFiles = $repoFiles.Count
