@@ -1,6 +1,6 @@
 using System;
-using System.Globalization;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -274,7 +274,8 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
 
         HasVendorSuggestions = VendorSuggestions.Count > 0;
         IsCustomVendorForced = !HasVendorSuggestions;
-        UseCustomVendor = IsCustomVendorForced
+        UseCustomVendor =
+            IsCustomVendorForced
             || string.Equals(line.SetupVendorSource, "custom", StringComparison.OrdinalIgnoreCase)
             || !HasVendorSuggestions;
         CustomVendorName = UseCustomVendor ? line.SetupVendorName ?? string.Empty : string.Empty;
@@ -308,7 +309,10 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         OnPropertyChanged(nameof(CanToggleCustomVendor));
     }
 
-    private void RebuildEditablePackages(int packageCount, System.Collections.Generic.IReadOnlyList<double>? existingValues = null)
+    private void RebuildEditablePackages(
+        int packageCount,
+        System.Collections.Generic.IReadOnlyList<double>? existingValues = null
+    )
     {
         EditablePackages.Clear();
         for (var index = 0; index < packageCount; index++)
@@ -317,9 +321,10 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
                 new Model_OutsideServiceEditablePackage
                 {
                     PackageSequence = index + 1,
-                    PackageQuantity = existingValues is not null && index < existingValues.Count
-                        ? existingValues[index]
-                        : 0d,
+                    PackageQuantity =
+                        existingValues is not null && index < existingValues.Count
+                            ? existingValues[index]
+                            : 0d,
                 }
             );
         }

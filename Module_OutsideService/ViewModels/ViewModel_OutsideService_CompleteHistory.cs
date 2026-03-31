@@ -95,7 +95,8 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
                 VendorFilterOptions.Add(vendor!);
             }
 
-            SelectedVendorFilter = string.IsNullOrWhiteSpace(SelectedVendorFilter)
+            SelectedVendorFilter =
+                string.IsNullOrWhiteSpace(SelectedVendorFilter)
                 || !VendorFilterOptions.Contains(SelectedVendorFilter)
                     ? "All"
                     : SelectedVendorFilter;

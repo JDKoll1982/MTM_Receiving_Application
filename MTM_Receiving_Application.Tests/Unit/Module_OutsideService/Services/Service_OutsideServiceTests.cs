@@ -206,11 +206,7 @@ public class Service_OutsideServiceTests
                     PackageSequence = 1,
                     PackageQuantity = 12,
                 },
-                new Model_OutsideServiceRequestPackage
-                {
-                    PackageSequence = 2,
-                    PackageQuantity = 0,
-                },
+                new Model_OutsideServiceRequestPackage { PackageSequence = 2, PackageQuantity = 0 },
             },
         };
 

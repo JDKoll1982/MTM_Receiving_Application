@@ -35,4 +35,3 @@ public class Model_SpecItemTests
         definition.Type.Should().Be("Choices");
     }
 }
-
