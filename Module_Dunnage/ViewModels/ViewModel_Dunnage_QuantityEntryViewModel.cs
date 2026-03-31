@@ -1,4 +1,7 @@
 using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,18 +10,20 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
-/// ViewModel for Dunnage Quantity Entry
+/// ViewModel for Dunnage Quantity Entry.
 /// </summary>
 public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Dispatcher _dispatcher;
     private readonly IService_Help _helpService;
+    private bool _isSynchronizingLoads;
 
     public ViewModel_Dunnage_QuantityEntry(
         IService_DunnageWorkflow workflowService,
@@ -34,7 +39,6 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         _dispatcher = dispatcher;
         _helpService = helpService;
 
-        // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
     }
 
@@ -46,11 +50,16 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         }
     }
 
-    #region Observable Properties
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsValid))]
+    private int _numberOfLoads = 1;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsValid))]
     private int _quantity = 1;
+
+    [ObservableProperty]
+    private ObservableCollection<Model_DunnageLoad> _loads = new();
 
     [ObservableProperty]
     private string _selectedTypeName = string.Empty;
@@ -59,9 +68,6 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
     [NotifyPropertyChangedFor(nameof(SelectedTypeIconKind))]
     private string _selectedTypeIcon = "Help";
 
-    /// <summary>
-    /// Gets the MaterialIconKind for the selected type
-    /// </summary>
     public MaterialIconKind SelectedTypeIconKind
     {
         get
@@ -73,6 +79,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
             {
                 return kind;
             }
+
             return MaterialIconKind.PackageVariantClosed;
         }
     }
@@ -83,18 +90,9 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private string _validationMessage = string.Empty;
 
-    /// <summary>
-    /// Indicates if the quantity is valid
-    /// </summary>
-    public bool IsValid => Quantity > 0;
+    public bool IsValid =>
+        NumberOfLoads > 0 && Loads.Count > 0 && Loads.All(load => load.Quantity > 0);
 
-    #endregion
-
-    #region Initialization
-
-    /// <summary>
-    /// Load context data from workflow session
-    /// </summary>
     public void LoadContextData()
     {
         try
@@ -103,18 +101,11 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
             SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
             SelectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
 
-            // Initialize workflow session quantity with default value if not set
-            if (_workflowService.CurrentSession.Quantity <= 0)
-            {
-                _workflowService.CurrentSession.Quantity = Quantity;
-                _logger.LogInfo(
-                    $"Initialized workflow session quantity to {Quantity}",
-                    "QuantityEntry"
-                );
-            }
+            NumberOfLoads = _workflowService.NumberOfLoads;
+            RebuildLoadEditors();
 
             _logger.LogInfo(
-                $"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}, Quantity={_workflowService.CurrentSession.Quantity}",
+                $"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}, LoadCount={NumberOfLoads}",
                 "QuantityEntry"
             );
         }
@@ -124,15 +115,131 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         }
     }
 
-    #endregion
-
-    #region Validation
-
     partial void OnQuantityChanged(int value)
     {
-        // Update workflow session immediately
-        _workflowService.CurrentSession.Quantity = value;
-        _logger.LogInfo($"Quantity changed to {value}, updated workflow session", "QuantityEntry");
+        if (_isSynchronizingLoads)
+        {
+            return;
+        }
+
+        if (Loads.Count > 0)
+        {
+            Loads[0].Quantity = value;
+        }
+
+        ValidateQuantity();
+        GoNextCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnNumberOfLoadsChanged(int value)
+    {
+        if (_isSynchronizingLoads)
+        {
+            return;
+        }
+
+        _workflowService.NumberOfLoads = value;
+        RebuildLoadEditors();
+        ValidateQuantity();
+        GoNextCommand.NotifyCanExecuteChanged();
+    }
+
+    private void RebuildLoadEditors()
+    {
+        _isSynchronizingLoads = true;
+        try
+        {
+            EnsureSessionLoadQuantities();
+
+            foreach (var load in Loads)
+            {
+                load.PropertyChanged -= Load_PropertyChanged;
+            }
+
+            Loads.Clear();
+            for (var index = 0; index < NumberOfLoads; index++)
+            {
+                var load = new Model_DunnageLoad
+                {
+                    LoadNumber = index + 1,
+                    Quantity = _workflowService.CurrentSession.LoadQuantities[index],
+                    PartId = SelectedPartName,
+                    TypeName = SelectedTypeName,
+                    TypeIcon = SelectedTypeIcon,
+                };
+                load.PropertyChanged += Load_PropertyChanged;
+                Loads.Add(load);
+            }
+
+            Quantity = Loads.FirstOrDefault() is { } firstLoad
+                ? decimal.ToInt32(firstLoad.Quantity)
+                : 1;
+        }
+        finally
+        {
+            _isSynchronizingLoads = false;
+        }
+    }
+
+    private void EnsureSessionLoadQuantities()
+    {
+        if (
+            _workflowService.CurrentSession.LoadQuantities.Count == 0
+            && _workflowService.CurrentSession.Quantity > 0
+        )
+        {
+            _workflowService.CurrentSession.LoadQuantities.Add(
+                _workflowService.CurrentSession.Quantity
+            );
+        }
+
+        while (_workflowService.CurrentSession.LoadQuantities.Count < NumberOfLoads)
+        {
+            var defaultQuantity =
+                _workflowService.CurrentSession.LoadQuantities.Count == 0
+                    ? Math.Max(1, Quantity)
+                    : _workflowService.CurrentSession.LoadQuantities[^1];
+            _workflowService.CurrentSession.LoadQuantities.Add(defaultQuantity);
+        }
+
+        while (_workflowService.CurrentSession.LoadQuantities.Count > NumberOfLoads)
+        {
+            _workflowService.CurrentSession.LoadQuantities.RemoveAt(
+                _workflowService.CurrentSession.LoadQuantities.Count - 1
+            );
+        }
+
+        _workflowService.CurrentSession.NumberOfLoads = NumberOfLoads;
+        _workflowService.CurrentSession.Quantity =
+            _workflowService.CurrentSession.LoadQuantities.FirstOrDefault();
+    }
+
+    private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (
+            sender is not Model_DunnageLoad load
+            || e.PropertyName != nameof(Model_DunnageLoad.Quantity)
+        )
+        {
+            return;
+        }
+
+        var index = Loads.IndexOf(load);
+        if (index < 0 || index >= _workflowService.CurrentSession.LoadQuantities.Count)
+        {
+            return;
+        }
+
+        _workflowService.CurrentSession.LoadQuantities[index] = load.Quantity;
+        _workflowService.CurrentSession.Quantity =
+            _workflowService.CurrentSession.LoadQuantities.FirstOrDefault();
+
+        if (index == 0)
+        {
+            _isSynchronizingLoads = true;
+            Quantity = decimal.ToInt32(load.Quantity);
+            _isSynchronizingLoads = false;
+        }
 
         ValidateQuantity();
         GoNextCommand.NotifyCanExecuteChanged();
@@ -140,20 +247,19 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
 
     private void ValidateQuantity()
     {
-        if (Quantity <= 0)
+        if (NumberOfLoads <= 0)
         {
-            ValidationMessage = "Quantity must be greater than 0";
+            ValidationMessage = "Number of loads must be at least 1";
+        }
+        else if (Loads.Any(load => load.Quantity <= 0))
+        {
+            ValidationMessage = "Every load quantity must be greater than 0";
         }
         else
         {
             ValidationMessage = string.Empty;
         }
     }
-
-    /// <summary>\n    /// Shows contextual help for quantity entry\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.QuantityEntry\");\n    }
-    #endregion
-
-    #region Navigation Commands
 
     [RelayCommand]
     private void GoBack()
@@ -173,20 +279,21 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            StatusMessage = "Saving quantity...";
+            StatusMessage = "Saving load quantities...";
 
-            // Set quantity in workflow session
-            _workflowService.CurrentSession.Quantity = Quantity;
+            _workflowService.CurrentSession.NumberOfLoads = NumberOfLoads;
 
-            _logger.LogInfo($"Quantity set to {Quantity}", "QuantityEntry");
+            _logger.LogInfo(
+                $"Prepared {NumberOfLoads} dunnage load(s) for the current part",
+                "QuantityEntry"
+            );
 
-            // Navigate to Details Entry
             _workflowService.GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error saving quantity",
+                "Error saving load quantities",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -198,27 +305,15 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         }
     }
 
-    #endregion
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.QuantityEntry");
+    }
 
-    #region Help Content Helpers
-
-    /// <summary>
-    /// Gets a tooltip by key from the help service
-    /// </summary>
-    /// <param name="key"></param>
     public string GetTooltip(string key) => _helpService.GetTooltip(key);
 
-    /// <summary>
-    /// Gets a placeholder by key from the help service
-    /// </summary>
-    /// <param name="key"></param>
     public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
 
-    /// <summary>
-    /// Gets a tip by key from the help service
-    /// </summary>
-    /// <param name="key"></param>
     public string GetTip(string key) => _helpService.GetTip(key);
-
-    #endregion
 }

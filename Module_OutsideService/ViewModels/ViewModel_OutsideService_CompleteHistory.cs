@@ -119,6 +119,17 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
         await LoadAsync();
     }
 
+    /// <summary>
+    /// Restores the history page filters to the intended entry defaults.
+    /// </summary>
+    public void ResetFiltersToDefaults()
+    {
+        SearchText = string.Empty;
+        SelectedVendorFilter = "All";
+        SelectedDateRange = "All";
+        ApplyFilters();
+    }
+
     partial void OnSearchTextChanged(string value)
     {
         ApplyFilters();

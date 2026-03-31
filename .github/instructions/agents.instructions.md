@@ -320,7 +320,7 @@ tools: ['playwright/*']  # All Playwright tools
 tools: ['playwright/navigate', 'playwright/screenshot']  # Specific tools
 ```
 
-- Configured to access 172.16.1.104 only
+- Configured to access localhost only
 - Useful for browser automation and testing
 
 ### Tool Selection Best Practices

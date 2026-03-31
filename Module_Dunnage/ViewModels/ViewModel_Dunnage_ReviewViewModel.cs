@@ -272,7 +272,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
                 session.SelectedTypeId = 0;
                 session.SelectedTypeName = string.Empty;
                 session.SelectedPart = null;
+                session.NumberOfLoads = 1;
                 session.Quantity = 0;
+                session.LoadQuantities.Clear();
                 session.PONumber = string.Empty;
                 session.Location = string.Empty;
                 // Preserve Loads collection - these are already reviewed

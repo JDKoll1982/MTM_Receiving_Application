@@ -5,6 +5,7 @@
     xmlns:mi="using:Material.Icons.WinUI3"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
     xmlns:views="using:MTM_Receiving_Application.Module_Dunnage.Views"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d"
@@ -13,6 +14,7 @@
 >
     <UserControl.Resources>
         <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter" />
+        <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
     </UserControl.Resources>
 
     <Grid Padding="16">
@@ -24,9 +26,9 @@
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
-            <TextBlock Text="Enter Quantity" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Enter Loads" Style="{StaticResource TitleTextBlockStyle}" />
             <TextBlock
-                Text="Specify how many labels you need to generate."
+                Text="Set the number of loads and enter the quantity for each load."
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                 Style="{StaticResource BodyTextBlockStyle}"
             />
@@ -80,7 +82,7 @@
         <!-- Quantity Input -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="12">
-                <!-- Quantity Card -->
+                <!-- Load Count Card -->
                 <Border
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -90,18 +92,84 @@
                 >
                     <StackPanel Spacing="6">
                         <TextBlock
-                            Text="Quantity"
+                            Text="Number of Loads"
                             Style="{StaticResource SubtitleTextBlockStyle}"
                         />
                         <NumberBox
-                            x:Name="QuantityNumberBox"
-                            Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}"
+                            x:Name="NumberOfLoadsNumberBox"
+                            Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="1"
-                            Maximum="9999"
+                            Maximum="99"
+                            SmallChange="1"
+                            LargeChange="10"
+                            AcceptsExpression="False"
+                            ValidationMode="InvalidInputOverwritten"
                             SpinButtonPlacementMode="Inline"
                             HorizontalAlignment="Stretch"
-                            PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.Quantity'), Mode=OneWay}"
+                            PlaceholderText="1-99"
+                            Loaded="NumberOfLoadsNumberBox_Loaded"
+                            Unloaded="IntegerNumberBox_Unloaded"
                         />
+                        <TextBlock
+                            Text="Choose how many separate dunnage loads to generate for this part."
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            TextWrapping="Wrap"
+                        />
+                    </StackPanel>
+                </Border>
+
+                <!-- Per-Load Quantities -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16"
+                >
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            Text="Quantity Per Load"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                        />
+
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_DunnageLoad">
+                                    <Grid Margin="0,0,0,8" ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                                            <FontIcon
+                                                FontSize="14"
+                                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                Glyph="&#xE7B8;"
+                                            />
+                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}">
+                                                    <Run Text="Load #" />
+                                                    <Run Text="{x:Bind LoadNumber}" />
+                                                </TextBlock>
+                                        </StackPanel>
+
+                                        <NumberBox
+                                            Grid.Column="1"
+                                            Minimum="0"
+                                            AcceptsExpression="False"
+                                            ValidationMode="InvalidInputOverwritten"
+                                            SpinButtonPlacementMode="Inline"
+                                            Header="Quantity"
+                                            PlaceholderText="Enter quantity"
+                                            Value="{x:Bind Quantity, Mode=TwoWay, Converter={StaticResource DecimalToDoubleConverter}}"
+                                            Loaded="LoadQuantityNumberBox_Loaded"
+                                            Unloaded="IntegerNumberBox_Unloaded"
+                                        />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
                         <!-- Validation Message -->
                         <TextBlock

@@ -76,7 +76,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Package breakdown" Style="{StaticResource SubtitleTextBlockStyle}" />
                     <TextBlock Text="Each row is one package." TextWrapping="Wrap" />
-                    <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel x:Name="PackageRowsPanel" />
                     </ScrollViewer>
                 </StackPanel>

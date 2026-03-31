@@ -133,7 +133,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                 break;
             case Enum_DunnageWorkflowStep.QuantityEntry:
                 IsQuantityEntryVisible = true;
-                CurrentStepTitle = "Dunnage - Enter Quantity";
+                CurrentStepTitle = "Dunnage - Enter Loads";
                 break;
             case Enum_DunnageWorkflowStep.DetailsEntry:
                 IsDetailsEntryVisible = true;

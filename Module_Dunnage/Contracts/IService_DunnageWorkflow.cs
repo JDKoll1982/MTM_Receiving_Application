@@ -12,6 +12,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
     {
         public Enum_DunnageWorkflowStep CurrentStep { get; }
         public Model_DunnageSession CurrentSession { get; }
+        public int NumberOfLoads { get; set; }
 
         public event EventHandler StepChanged;
         public event EventHandler<string> StatusMessageRaised;

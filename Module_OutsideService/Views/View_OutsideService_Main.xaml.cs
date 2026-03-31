@@ -82,6 +82,7 @@ public sealed partial class View_OutsideService_Main : Page
                 && ViewModel.IsHistoryVisible
             )
             {
+                historyView.ViewModel.ResetFiltersToDefaults();
                 await historyView.ViewModel.RefreshCommand.ExecuteAsync(null);
             }
         };

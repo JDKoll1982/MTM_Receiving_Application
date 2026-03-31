@@ -20,11 +20,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly List<Model_DunnageLoad> _currentEntryLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
 
         public Enum_DunnageWorkflowStep CurrentStep { get; private set; }
         public Model_DunnageSession CurrentSession { get; private set; } = new();
+
+        public int NumberOfLoads
+        {
+            get => CurrentSession.NumberOfLoads <= 0 ? 1 : CurrentSession.NumberOfLoads;
+            set => CurrentSession.NumberOfLoads = Math.Max(1, value);
+        }
 
         public event EventHandler? StepChanged
         {
@@ -52,8 +59,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _errorHandler = errorHandler;
             _viewModelRegistry = viewModelRegistry;
 
-            // Clear any stale session data when the user's session times out,
-            // so a subsequent login cannot see a prior user's workflow loads.
             _sessionManager.SessionTimedOut += OnSessionTimedOut;
         }
 
@@ -66,11 +71,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             ClearSession();
 
-            // Check if user has a default mode set
             var currentUser = _sessionManager.CurrentSession?.User;
             if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultDunnageMode))
             {
-                // Skip mode selection and go directly to the default mode
                 switch (currentUser.DefaultDunnageMode.ToLower())
                 {
                     case "guided":
@@ -86,7 +89,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         _statusMessageRaised.Raise(this, "Starting Edit mode");
                         break;
                     default:
-                        // Invalid default, show mode selection
                         GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
                         _statusMessageRaised.Raise(this, "Workflow started");
                         break;
@@ -94,7 +96,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
             else
             {
-                // No default mode, show mode selection
                 GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
                 _statusMessageRaised.Raise(this, "Workflow started");
             }
@@ -123,6 +124,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                                 }
                             );
                         }
+
                         GoToStep(Enum_DunnageWorkflowStep.PartSelection);
                         break;
 
@@ -137,25 +139,44 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                                 }
                             );
                         }
+
                         GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
                         break;
 
                     case Enum_DunnageWorkflowStep.QuantityEntry:
-                        if (CurrentSession.Quantity <= 0)
+                        EnsureLoadQuantitySlots();
+                        if (NumberOfLoads < 1)
                         {
                             return Task.FromResult(
                                 new Model_WorkflowStepResult
                                 {
                                     IsSuccess = false,
-                                    ErrorMessage = "Quantity must be greater than zero.",
+                                    ErrorMessage = "Number of loads must be at least 1.",
                                 }
                             );
                         }
+
+                        for (var index = 0; index < CurrentSession.LoadQuantities.Count; index++)
+                        {
+                            if (CurrentSession.LoadQuantities[index] <= 0)
+                            {
+                                return Task.FromResult(
+                                    new Model_WorkflowStepResult
+                                    {
+                                        IsSuccess = false,
+                                        ErrorMessage =
+                                            $"Load {index + 1}: Quantity must be greater than zero.",
+                                    }
+                                );
+                            }
+                        }
+
+                        GenerateCurrentEntryLoads();
                         GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
                         break;
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
-                        AddCurrentLoadToSession();
+                        ApplySessionDetailsToCurrentEntryLoads();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
 
@@ -189,8 +210,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public void GoToStep(Enum_DunnageWorkflowStep step)
         {
-            // If navigating to TypeSelection from a mid-workflow step (not normal back-navigation)
-            // clear accumulated session loads so stale data from a previous run is not shown at Review.
+            if (
+                step == Enum_DunnageWorkflowStep.TypeSelection
+                && CurrentStep == Enum_DunnageWorkflowStep.Review
+            )
+            {
+                _currentEntryLoads.Clear();
+            }
+
             if (
                 step == Enum_DunnageWorkflowStep.TypeSelection
                 && CurrentStep != Enum_DunnageWorkflowStep.ModeSelection
@@ -215,25 +242,20 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             try
             {
-                var loads = new System.Collections.Generic.List<Model_DunnageLoad>(
-                    CurrentSession.Loads
-                );
+                if (CurrentSession.Loads.Count == 0)
+                {
+                    GenerateCurrentEntryLoads();
+                    ApplySessionDetailsToCurrentEntryLoads();
+                }
 
+                var loads = new List<Model_DunnageLoad>(CurrentSession.Loads);
                 if (loads.Count == 0)
                 {
-                    if (CurrentSession.SelectedPart != null && CurrentSession.Quantity > 0)
+                    return new Model_SaveResult
                     {
-                        var load = CreateLoadFromCurrentSession();
-                        loads.Add(load);
-                    }
-                    else
-                    {
-                        return new Model_SaveResult
-                        {
-                            IsSuccess = false,
-                            ErrorMessage = "No data to save.",
-                        };
-                    }
+                        IsSuccess = false,
+                        ErrorMessage = "No data to save.",
+                    };
                 }
 
                 var dbResult = await _dunnageService.SaveLoadsAsync(loads);
@@ -264,7 +286,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public void ClearSession()
         {
+            _currentEntryLoads.Clear();
             CurrentSession = new Model_DunnageSession();
+            NumberOfLoads = 1;
             _viewModelRegistry.ClearAllInputs();
             _statusMessageRaised.Raise(this, "Session cleared");
         }
@@ -288,6 +312,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         $"Clear Label Data failed: {result.ErrorMessage}"
                     );
                 }
+
                 return result;
             }
             catch (Exception ex)
@@ -308,41 +333,16 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             try
             {
-                if (CurrentSession.SelectedPart != null && CurrentSession.Quantity > 0)
+                GenerateCurrentEntryLoads();
+                ApplySessionDetailsToCurrentEntryLoads();
+
+                if (_currentEntryLoads.Count > 0)
                 {
-                    // Default location to part's home location if not specified
-                    var location = string.IsNullOrWhiteSpace(CurrentSession.Location)
-                        ? CurrentSession.SelectedPart.HomeLocation
-                        : CurrentSession.Location;
-
-                    // Default PO number if not specified
-                    var poNumber = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
-                        ? "Nothing Entered"
-                        : CurrentSession.PONumber;
-
-                    var load = new Model_DunnageLoad
-                    {
-                        LoadUuid = Guid.NewGuid(),
-                        PartId = CurrentSession.SelectedPart.PartId,
-                        Quantity = CurrentSession.Quantity,
-                        PoNumber = poNumber,
-                        Location = location,
-                        TypeName = CurrentSession.SelectedTypeName,
-                        TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help",
-                        DunnageType = CurrentSession.SelectedTypeName,
-                        TypeId = CurrentSession.SelectedTypeId,
-                        Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
-                        ReceivedDate = DateTime.Now,
-                        CreatedBy =
-                            _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
-                    };
-
-                    CurrentSession.Loads.Add(load);
                     _logger.LogInfo(
-                        $"Added load to session: Part {load.PartId}, Qty {load.Quantity}",
+                        $"Added {_currentEntryLoads.Count} load(s) to session for part {CurrentSession.SelectedPart?.PartId}",
                         "DunnageWorkflow"
                     );
-                    _statusMessageRaised.Raise(this, "Added load to session");
+                    _statusMessageRaised.Raise(this, "Added loads to session");
                 }
             }
             catch (Exception ex)
@@ -356,32 +356,109 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
-        private Model_DunnageLoad CreateLoadFromCurrentSession()
+        private void EnsureLoadQuantitySlots()
         {
-            // Default location to part's home location if not specified
+            while (CurrentSession.LoadQuantities.Count < NumberOfLoads)
+            {
+                var defaultQuantity =
+                    CurrentSession.LoadQuantities.Count == 0 && CurrentSession.Quantity > 0
+                        ? CurrentSession.Quantity
+                        : 0m;
+                CurrentSession.LoadQuantities.Add(defaultQuantity);
+            }
+
+            while (CurrentSession.LoadQuantities.Count > NumberOfLoads)
+            {
+                CurrentSession.LoadQuantities.RemoveAt(CurrentSession.LoadQuantities.Count - 1);
+            }
+
+            CurrentSession.Quantity = CurrentSession.LoadQuantities.FirstOrDefault();
+        }
+
+        private void GenerateCurrentEntryLoads()
+        {
+            if (CurrentSession.SelectedPart is null || NumberOfLoads < 1)
+            {
+                return;
+            }
+
+            EnsureLoadQuantitySlots();
+
+            foreach (var load in _currentEntryLoads)
+            {
+                CurrentSession.Loads.Remove(load);
+            }
+
+            _currentEntryLoads.Clear();
+
+            var existingReviewedCount = CurrentSession.Loads.Count;
+            for (var index = 0; index < NumberOfLoads; index++)
+            {
+                var load = CreateLoadFromCurrentSession(
+                    existingReviewedCount + index + 1,
+                    CurrentSession.LoadQuantities[index]
+                );
+                CurrentSession.Loads.Add(load);
+                _currentEntryLoads.Add(load);
+            }
+        }
+
+        private void ApplySessionDetailsToCurrentEntryLoads()
+        {
+            if (_currentEntryLoads.Count == 0)
+            {
+                GenerateCurrentEntryLoads();
+            }
+
             var location = string.IsNullOrWhiteSpace(CurrentSession.Location)
                 ? CurrentSession.SelectedPart?.HomeLocation
                 : CurrentSession.Location;
-
-            // Default PO number if not specified
             var poNumber = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
                 ? "Nothing Entered"
                 : CurrentSession.PONumber;
+            var specs = CurrentSession.SpecValues ?? new Dictionary<string, object>();
+            var createdBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
 
+            foreach (var load in _currentEntryLoads)
+            {
+                load.PoNumber = poNumber;
+                load.Location = location;
+                load.HomeLocation = CurrentSession.SelectedPart?.HomeLocation;
+                load.TypeName = CurrentSession.SelectedTypeName;
+                load.TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help";
+                load.DunnageType = CurrentSession.SelectedTypeName;
+                load.TypeId = CurrentSession.SelectedTypeId;
+                load.Specs = new Dictionary<string, object>(specs);
+                load.SpecValues = new Dictionary<string, object>(specs);
+                load.InventoryMethod = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
+                    ? "Adjust In"
+                    : "Receive In";
+                load.CreatedBy = createdBy;
+                load.ReceivedDate = DateTime.Now;
+            }
+        }
+
+        private Model_DunnageLoad CreateLoadFromCurrentSession(int loadNumber, decimal quantity)
+        {
             return new Model_DunnageLoad
             {
                 LoadUuid = Guid.NewGuid(),
                 PartId = CurrentSession.SelectedPart?.PartId ?? "Unknown",
-                Quantity = CurrentSession.Quantity,
-                PoNumber = poNumber,
-                Location = location,
+                Quantity = quantity,
+                PoNumber = CurrentSession.PONumber,
+                Location = CurrentSession.Location,
+                HomeLocation = CurrentSession.SelectedPart?.HomeLocation,
                 DunnageType = CurrentSession.SelectedTypeName,
                 TypeName = CurrentSession.SelectedTypeName,
                 TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help",
                 TypeId = CurrentSession.SelectedTypeId,
                 Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
+                SpecValues = CurrentSession.SpecValues is null
+                    ? null
+                    : new Dictionary<string, object>(CurrentSession.SpecValues),
                 ReceivedDate = DateTime.Now,
                 CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
+                LoadNumber = loadNumber,
             };
         }
     }

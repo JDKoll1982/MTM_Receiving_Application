@@ -8,10 +8,12 @@ public class Model_DunnageSession : ObservableObject
     private int _selectedTypeId;
     private string _selectedTypeName = string.Empty;
     private Model_DunnagePart? _selectedPart;
+    private int _numberOfLoads = 1;
     private decimal _quantity;
     private string _poNumber = string.Empty;
     private string _location = string.Empty;
     private ObservableCollection<Model_DunnageLoad> _loads = new();
+    private ObservableCollection<decimal> _loadQuantities = new();
     private System.Collections.Generic.Dictionary<string, object>? _specValues;
     private Model_DunnageType? _selectedType;
 
@@ -31,6 +33,12 @@ public class Model_DunnageSession : ObservableObject
     {
         get => _selectedPart;
         set => SetProperty(ref _selectedPart, value);
+    }
+
+    public int NumberOfLoads
+    {
+        get => _numberOfLoads;
+        set => SetProperty(ref _numberOfLoads, value);
     }
 
     public decimal Quantity
@@ -64,6 +72,12 @@ public class Model_DunnageSession : ObservableObject
         }
     }
 
+    public ObservableCollection<decimal> LoadQuantities
+    {
+        get => _loadQuantities;
+        set => SetProperty(ref _loadQuantities, value);
+    }
+
     public System.Collections.Generic.Dictionary<string, object>? SpecValues
     {
         get => _specValues;
@@ -81,5 +95,6 @@ public class Model_DunnageSession : ObservableObject
     public Model_DunnageSession()
     {
         _loads.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasLoads));
+        _loadQuantities.CollectionChanged += (s, e) => OnPropertyChanged(nameof(LoadQuantities));
     }
 }
