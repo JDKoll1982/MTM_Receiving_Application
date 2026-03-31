@@ -134,14 +134,14 @@ git commit -m "Add Serena project memories from initial onboarding"
 
 ## Managing Memories via Dashboard
 
-The Serena dashboard (`http://localhost:24282/dashboard`) provides a graphical UI
+The Serena dashboard (`http://172.16.1.104:24282/dashboard`) provides a graphical UI
 for viewing, creating, editing, and deleting memories while Serena is running.
 
 To open:
 
 ```
 "Open the Serena dashboard"
-# or navigate directly to http://localhost:24282/dashboard
+# or navigate directly to http://172.16.1.104:24282/dashboard
 ```
 
 ---
