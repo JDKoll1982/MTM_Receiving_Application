@@ -22,6 +22,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// </summary>
 public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 {
+    private const string PartSelectionPlaceholderText = "Select Part ID";
+
     private enum EditModeLoadSource
     {
         None,
@@ -115,6 +117,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     private List<Model_DunnageLoad> _allLoads = new();
     private readonly Dictionary<Guid, Model_DunnageLoadSnapshot> _originalLoadSnapshots = new();
+    private readonly List<Model_DunnageLoad> _removedLoads = new();
     private EditModeLoadSource _currentLoadSource = EditModeLoadSource.None;
 
     public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
@@ -501,6 +504,11 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
         foreach (var load in loadsToRemove)
         {
+            if (_currentLoadSource != EditModeLoadSource.CurrentMemory)
+            {
+                _removedLoads.Add(load);
+            }
+
             FilteredLoads.Remove(load);
             _allLoads.Remove(load);
         }
@@ -708,7 +716,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             StatusMessage = "Loading locations...";
 
             var locationsResult = await _inforVisualService.FuzzySearchLocationsAsync(
-                load.Location ?? string.Empty,
+                string.Empty,
                 "002"
             );
 
@@ -787,19 +795,25 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             StatusMessage = "Saving changes...";
 
             var editedLoads = GetEditedLoads();
-            if (editedLoads.Count == 0)
+            var removedLoadCount = _removedLoads.Count;
+            if (editedLoads.Count == 0 && _removedLoads.Count == 0)
             {
                 StatusMessage = "No changes to save";
                 _logger.LogInfo("SaveAllAsync invoked with no edited Dunnage rows", "EditMode");
                 return;
             }
 
+            var userConfirmedSave = await ConfirmSaveAsync(editedLoads.Count, removedLoadCount);
+            if (!userConfirmedSave)
+            {
+                StatusMessage = "Save cancelled";
+                _logger.LogInfo("User cancelled Dunnage Edit Mode save", "EditMode");
+                return;
+            }
+
             foreach (var load in editedLoads)
             {
-                if (
-                    string.IsNullOrWhiteSpace(load.TypeName)
-                    || string.IsNullOrWhiteSpace(load.PartId)
-                )
+                if (!HasValidRequiredSelections(load))
                 {
                     StatusMessage = "All loads must have Type and Part ID";
                     return;
@@ -807,9 +821,16 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             }
 
             _logger.LogInfo(
-                $"Saving {editedLoads.Count} edited Dunnage load(s) from source {_currentLoadSource}",
+                $"Saving {editedLoads.Count} edited and {removedLoadCount} removed Dunnage load(s) from source {_currentLoadSource}",
                 "EditMode"
             );
+
+            var deleteResult = await DeleteRemovedLoadsAsync();
+            if (!deleteResult.Success)
+            {
+                await _errorHandler.HandleDaoErrorAsync(deleteResult, "SaveAllAsync", true);
+                return;
+            }
 
             Model_Dao_Result saveResult = _currentLoadSource switch
             {
@@ -831,8 +852,13 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             }
 
             await ReloadCurrentSourceAsync();
-            StatusMessage = $"Successfully saved {editedLoads.Count} load(s)";
-            _logger.LogInfo($"Saved {editedLoads.Count} Dunnage load(s)", "EditMode");
+            StatusMessage =
+                $"Successfully saved {editedLoads.Count} updated and {removedLoadCount} removed load(s)";
+            _logger.LogInfo(
+                $"Saved {editedLoads.Count} updated and {removedLoadCount} removed Dunnage load(s)",
+                "EditMode"
+            );
+            await ShowSaveCompletedAsync(editedLoads.Count, removedLoadCount);
         }
         catch (Exception ex)
         {
@@ -945,10 +971,20 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     private void UpdateCanSave()
     {
-        CanSave =
-            _allLoads.Count > 0
-            && _allLoads.All(l =>
-                !string.IsNullOrWhiteSpace(l.TypeName) && !string.IsNullOrWhiteSpace(l.PartId)
+        var hasValidRemainingRows =
+            _allLoads.Count == 0 || _allLoads.All(HasValidRequiredSelections);
+
+        CanSave = hasValidRemainingRows && (GetEditedLoads().Count > 0 || _removedLoads.Count > 0);
+    }
+
+    private static bool HasValidRequiredSelections(Model_DunnageLoad load)
+    {
+        return !string.IsNullOrWhiteSpace(load.TypeName)
+            && !string.IsNullOrWhiteSpace(load.PartId)
+            && !string.Equals(
+                load.PartId.Trim(),
+                PartSelectionPlaceholderText,
+                StringComparison.OrdinalIgnoreCase
             );
     }
 
@@ -984,6 +1020,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     private void CaptureOriginalSnapshots()
     {
         _originalLoadSnapshots.Clear();
+        _removedLoads.Clear();
 
         foreach (var load in _allLoads)
         {
@@ -1044,6 +1081,115 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 await LoadFromHistoryAsync();
                 break;
         }
+    }
+
+    private async Task<bool> ConfirmSaveAsync(int editedLoadCount, int removedLoadCount)
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Unable to display the save confirmation dialog.",
+                Enum_ErrorSeverity.Error,
+                null,
+                true
+            );
+            return false;
+        }
+
+        var content = BuildSaveConfirmationMessage(editedLoadCount, removedLoadCount);
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Save Changes?",
+            Content = content,
+            PrimaryButtonText = "Save",
+            CloseButtonText = "Cancel",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
+            XamlRoot = xamlRoot,
+        };
+
+        var result = await dialog.ShowAsync().AsTask();
+        return result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary;
+    }
+
+    private async Task ShowSaveCompletedAsync(int editedLoadCount, int removedLoadCount)
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            return;
+        }
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Save Complete",
+            Content = BuildSaveCompletedMessage(editedLoadCount, removedLoadCount),
+            CloseButtonText = "OK",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+            XamlRoot = xamlRoot,
+        };
+
+        await dialog.ShowAsync().AsTask();
+    }
+
+    private static string BuildSaveConfirmationMessage(int editedLoadCount, int removedLoadCount)
+    {
+        if (editedLoadCount > 0 && removedLoadCount > 0)
+        {
+            return $"This will save {editedLoadCount} edited row(s) and remove {removedLoadCount} row(s).";
+        }
+
+        if (editedLoadCount > 0)
+        {
+            return $"This will save {editedLoadCount} edited row(s).";
+        }
+
+        return $"This will remove {removedLoadCount} row(s).";
+    }
+
+    private static string BuildSaveCompletedMessage(int editedLoadCount, int removedLoadCount)
+    {
+        if (editedLoadCount > 0 && removedLoadCount > 0)
+        {
+            return $"Saved {editedLoadCount} row(s) and removed {removedLoadCount} row(s).";
+        }
+
+        if (editedLoadCount > 0)
+        {
+            return $"Saved {editedLoadCount} row(s).";
+        }
+
+        return $"Removed {removedLoadCount} row(s).";
+    }
+
+    private async Task<Model_Dao_Result> DeleteRemovedLoadsAsync()
+    {
+        if (_removedLoads.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Success();
+        }
+
+        foreach (var removedLoad in _removedLoads)
+        {
+            Model_Dao_Result deleteResult = _currentLoadSource switch
+            {
+                EditModeLoadSource.CurrentLabels =>
+                    await _dunnageService.DeleteActiveLabelLoadAsync(
+                        removedLoad.LoadUuid.ToString()
+                    ),
+                EditModeLoadSource.History => await _dunnageService.DeleteLoadAsync(
+                    removedLoad.LoadUuid.ToString()
+                ),
+                _ => Model_Dao_Result_Factory.Success(),
+            };
+
+            if (!deleteResult.Success)
+            {
+                return deleteResult;
+            }
+        }
+
+        return Model_Dao_Result_Factory.Success();
     }
 
     [RelayCommand]

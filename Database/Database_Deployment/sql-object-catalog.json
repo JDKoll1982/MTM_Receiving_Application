@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-31T08:30:06.3122652-05:00",
+  "generatedAt": "2026-03-31T17:52:44.6555842-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -3567,6 +3567,117 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_Update.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_LabelData_Update",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_load_uuid",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_dunnage_type_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_dunnage_type_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_dunnage_type_icon",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity",
+          "sqlType": "DECIMAL(10"
+        },
+        {
+          "direction": "IN",
+          "name": "p_po_number",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_received_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_location",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_label_number",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_specs_json",
+          "sqlType": "JSON"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "dunnage_label_data",
+          "columns": [
+            "part_id"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_load_uuid",
+        "p_part_id",
+        "p_dunnage_type_id",
+        "p_dunnage_type_name",
+        "p_dunnage_type_icon",
+        "p_quantity",
+        "p_po_number",
+        "p_received_date",
+        "p_user_id",
+        "p_location",
+        "p_label_number",
+        "p_specs_json"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_loads_delete.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -3643,9 +3754,19 @@
           "column": "part_id"
         },
         {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "type_id"
+        },
+        {
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "type_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "type_name"
         },
         {
           "qualifier": "t",
@@ -3655,7 +3776,17 @@
         {
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
+          "column": "type_icon"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
           "column": "quantity"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "po_number"
         },
         {
           "qualifier": "l",
@@ -3681,6 +3812,21 @@
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
           "column": "modified_date"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "location"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "label_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "specs_json"
         },
         {
           "qualifier": "p",
@@ -3766,9 +3912,19 @@
           "column": "part_id"
         },
         {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "type_id"
+        },
+        {
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "type_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "type_name"
         },
         {
           "qualifier": "t",
@@ -3778,7 +3934,17 @@
         {
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
+          "column": "type_icon"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
           "column": "quantity"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "po_number"
         },
         {
           "qualifier": "l",
@@ -3804,6 +3970,21 @@
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
           "column": "modified_date"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "location"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "label_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "specs_json"
         },
         {
           "qualifier": "p",
@@ -3887,9 +4068,19 @@
           "column": "part_id"
         },
         {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "type_id"
+        },
+        {
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "type_id"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "type_name"
         },
         {
           "qualifier": "t",
@@ -3899,7 +4090,17 @@
         {
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
+          "column": "type_icon"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
           "column": "quantity"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "po_number"
         },
         {
           "qualifier": "l",
@@ -3925,6 +4126,21 @@
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
           "column": "modified_date"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "location"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "label_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "specs_json"
         },
         {
           "qualifier": "p",
@@ -3998,8 +4214,48 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
           "name": "p_quantity",
           "sqlType": "DECIMAL(10"
+        },
+        {
+          "direction": "IN",
+          "name": "p_po_number",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_type_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_type_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_type_icon",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_location",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_label_number",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_specs_json",
+          "sqlType": "JSON"
         },
         {
           "direction": "IN",
@@ -4015,7 +4271,7 @@
         {
           "table": "dunnage_history",
           "columns": [
-            "quantity"
+            "part_id"
           ]
         }
       ],
@@ -4023,7 +4279,15 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_load_uuid",
+        "p_part_id",
         "p_quantity",
+        "p_po_number",
+        "p_type_id",
+        "p_type_name",
+        "p_type_icon",
+        "p_location",
+        "p_label_number",
+        "p_specs_json",
         "p_user"
       ],
       "variableTokensUsed": [],

@@ -58,6 +58,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> UpdateLoadAsync(Model_DunnageLoad load);
         public Task<Model_Dao_Result> UpdateHistoryLoadsAsync(List<Model_DunnageLoad> loads);
         public Task<Model_Dao_Result> UpdateActiveLabelLoadsAsync(List<Model_DunnageLoad> loads);
+        public Task<Model_Dao_Result> DeleteActiveLabelLoadAsync(string loadUuid);
         public Task<Model_Dao_Result> DeleteLoadAsync(string loadUuid);
 
         // ==================== Inventory Operations (6 methods) ====================

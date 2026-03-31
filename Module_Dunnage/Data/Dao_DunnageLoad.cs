@@ -61,42 +61,62 @@ public class Dao_DunnageLoad
 
     public virtual async Task<Model_Dao_Result> UpdateAsync(Model_DunnageLoad load, string user)
     {
-        var parameters = new Dictionary<string, object>
+        var specsJson = SerializeSpecValues(load);
+        var parameters = new MySqlParameter[]
         {
-            { "load_uuid", load.LoadUuid.ToString() },
-            { "part_id", load.PartId },
-            { "quantity", load.Quantity },
+            new("@p_load_uuid", MySqlDbType.VarChar, 36) { Value = load.LoadUuid.ToString() },
+            new("@p_part_id", MySqlDbType.VarChar, 50) { Value = load.PartId },
+            new("@p_quantity", MySqlDbType.Decimal)
             {
-                "po_number",
-                string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber
+                Value = load.Quantity,
+                Precision = 10,
+                Scale = 2,
             },
-            { "type_id", load.TypeId.HasValue ? load.TypeId.Value : DBNull.Value },
+            new("@p_po_number", MySqlDbType.VarChar, 50)
             {
-                "type_name",
-                string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName
-            },
-            {
-                "type_icon",
-                string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon
-            },
-            {
-                "location",
-                string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location
-            },
-            {
-                "label_number",
-                string.IsNullOrWhiteSpace(load.LabelNumber)
+                Value = string.IsNullOrWhiteSpace(load.PoNumber)
                     ? DBNull.Value
-                    : (object)load.LabelNumber
+                    : (object)load.PoNumber,
             },
-            { "specs_json", SerializeSpecValues(load) is { } specsJson ? specsJson : DBNull.Value },
-            { "user", user },
+            new("@p_type_id", MySqlDbType.Int32)
+            {
+                Value = load.TypeId.HasValue ? (object)load.TypeId.Value : DBNull.Value,
+            },
+            new("@p_type_name", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.TypeName)
+                    ? DBNull.Value
+                    : (object)load.TypeName,
+            },
+            new("@p_type_icon", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.TypeIcon)
+                    ? DBNull.Value
+                    : (object)load.TypeIcon,
+            },
+            new("@p_location", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.Location)
+                    ? DBNull.Value
+                    : (object)load.Location,
+            },
+            new("@p_label_number", MySqlDbType.VarChar, 50)
+            {
+                Value = string.IsNullOrWhiteSpace(load.LabelNumber)
+                    ? DBNull.Value
+                    : (object)load.LabelNumber,
+            },
+            new("@p_specs_json", MySqlDbType.JSON)
+            {
+                Value = specsJson is null ? DBNull.Value : (object)specsJson,
+            },
+            new("@p_user", MySqlDbType.VarChar, 50) { Value = user },
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            _connectionString,
+        return await Helper_Database_StoredProcedure.ExecuteAsync(
             "sp_Dunnage_Loads_Update",
-            parameters
+            parameters,
+            _connectionString
         );
     }
 

@@ -1023,6 +1023,34 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
+        public async Task<Model_Dao_Result> DeleteActiveLabelLoadAsync(string loadUuid)
+        {
+            try
+            {
+                if (!Guid.TryParse(loadUuid, out var guid))
+                {
+                    return Model_Dao_Result_Factory.Failure("Invalid load UUID format.");
+                }
+
+                await _logger.LogInfoAsync(
+                    $"Deleting active dunnage label row {loadUuid} by user: {CurrentUser}"
+                );
+                return await _daoDunnageLabelData.DeleteAsync(guid);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(DeleteActiveLabelLoadAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error deleting active label load: {ex.Message}"
+                );
+            }
+        }
+
         // ==================== Inventory Operations ====================
 
         public async Task<bool> IsPartInventoriedAsync(string partId)

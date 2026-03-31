@@ -256,6 +256,20 @@ public class Dao_DunnageLabelData
     }
 
     /// <summary>
+    /// Deletes one row from the active label queue identified by load UUID.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result> DeleteAsync(Guid loadUuid)
+    {
+        var parameters = new Dictionary<string, object> { { "load_uuid", loadUuid.ToString() } };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_LabelData_Delete",
+            parameters
+        );
+    }
+
+    /// <summary>
     /// Updates one row in the active <c>dunnage_label_data</c> queue identified by load UUID.
     /// </summary>
     /// <param name="load"></param>
@@ -265,46 +279,66 @@ public class Dao_DunnageLabelData
         string fallbackUser
     )
     {
-        var parameters = new Dictionary<string, object>
+        var specsJson = BuildSpecsJson(load);
+        var parameters = new MySqlParameter[]
         {
-            { "load_uuid", load.LoadUuid.ToString() },
-            { "part_id", load.PartId },
-            { "dunnage_type_id", load.TypeId.HasValue ? load.TypeId.Value : DBNull.Value },
+            new("@p_load_uuid", MySqlDbType.VarChar, 36) { Value = load.LoadUuid.ToString() },
+            new("@p_part_id", MySqlDbType.VarChar, 50) { Value = load.PartId },
+            new("@p_dunnage_type_id", MySqlDbType.Int32)
             {
-                "dunnage_type_name",
-                string.IsNullOrWhiteSpace(load.TypeName) ? DBNull.Value : (object)load.TypeName
+                Value = load.TypeId.HasValue ? (object)load.TypeId.Value : DBNull.Value,
             },
+            new("@p_dunnage_type_name", MySqlDbType.VarChar, 100)
             {
-                "dunnage_type_icon",
-                string.IsNullOrWhiteSpace(load.TypeIcon) ? DBNull.Value : (object)load.TypeIcon
-            },
-            { "quantity", load.Quantity },
-            {
-                "po_number",
-                string.IsNullOrWhiteSpace(load.PoNumber) ? DBNull.Value : (object)load.PoNumber
-            },
-            { "received_date", load.ReceivedDate },
-            {
-                "user_id",
-                string.IsNullOrWhiteSpace(load.CreatedBy) ? fallbackUser : load.CreatedBy
-            },
-            {
-                "location",
-                string.IsNullOrWhiteSpace(load.Location) ? DBNull.Value : (object)load.Location
-            },
-            {
-                "label_number",
-                string.IsNullOrWhiteSpace(load.LabelNumber)
+                Value = string.IsNullOrWhiteSpace(load.TypeName)
                     ? DBNull.Value
-                    : (object)load.LabelNumber
+                    : (object)load.TypeName,
             },
-            { "specs_json", BuildSpecsJson(load) is { } specsJson ? specsJson : DBNull.Value },
+            new("@p_dunnage_type_icon", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.TypeIcon)
+                    ? DBNull.Value
+                    : (object)load.TypeIcon,
+            },
+            new("@p_quantity", MySqlDbType.Decimal)
+            {
+                Value = load.Quantity,
+                Precision = 10,
+                Scale = 2,
+            },
+            new("@p_po_number", MySqlDbType.VarChar, 50)
+            {
+                Value = string.IsNullOrWhiteSpace(load.PoNumber)
+                    ? DBNull.Value
+                    : (object)load.PoNumber,
+            },
+            new("@p_received_date", MySqlDbType.DateTime) { Value = load.ReceivedDate },
+            new("@p_user_id", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.CreatedBy) ? fallbackUser : load.CreatedBy,
+            },
+            new("@p_location", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.Location)
+                    ? DBNull.Value
+                    : (object)load.Location,
+            },
+            new("@p_label_number", MySqlDbType.VarChar, 50)
+            {
+                Value = string.IsNullOrWhiteSpace(load.LabelNumber)
+                    ? DBNull.Value
+                    : (object)load.LabelNumber,
+            },
+            new("@p_specs_json", MySqlDbType.JSON)
+            {
+                Value = specsJson is null ? DBNull.Value : (object)specsJson,
+            },
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            _connectionString,
+        return await Helper_Database_StoredProcedure.ExecuteAsync(
             "sp_Dunnage_LabelData_Update",
-            parameters
+            parameters,
+            _connectionString
         );
     }
 

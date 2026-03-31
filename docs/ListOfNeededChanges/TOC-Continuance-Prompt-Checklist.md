@@ -93,7 +93,7 @@ Non-negotiable rules while using this checklist:
 - [x] 14. Save Changes button is not working
       File: [14-dunnage-edit-mode-save-changes-not-working.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/14-dunnage-edit-mode-save-changes-not-working.md)
 
-- [x] 15. Remove Selected is not working
+- [ ] 15. Remove Selected is not working - Still not working.
       File: [15-dunnage-edit-mode-remove-selected-not-working.md](c:/Users/johnk/source/repos/MTM_Receiving_Application/docs/ListOfNeededChanges/15-dunnage-edit-mode-remove-selected-not-working.md)
 
 - [x] 16. Add the same filtered search bar as Receiving Edit Mode

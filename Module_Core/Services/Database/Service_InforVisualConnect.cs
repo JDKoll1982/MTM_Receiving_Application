@@ -16,6 +16,16 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database;
 /// </summary>
 public class Service_InforVisualConnect : IService_InforVisual
 {
+    private static readonly string[] MockLocationSuggestions =
+    [
+        "A-RECV-01",
+        "B-RECV-02",
+        "C-RECV-03",
+        "QA-RECV",
+        "DOCK-4",
+        "RECV",
+    ];
+
     private readonly Dao_InforVisualConnection _dao;
     private readonly IService_LoggingUtility? _logger;
     private readonly bool _useMockData;
@@ -699,13 +709,6 @@ public class Service_InforVisualConnect : IService_InforVisual
         string warehouseCode
     )
     {
-        if (string.IsNullOrWhiteSpace(term))
-        {
-            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
-                "Search term cannot be empty"
-            );
-        }
-
         if (string.IsNullOrWhiteSpace(warehouseCode))
         {
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
@@ -713,15 +716,17 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
+        var normalizedTerm = term?.Trim() ?? string.Empty;
+
         if (_useMockData)
         {
             _logger?.LogInfo(
-                $"[MOCK DATA MODE] Returning mock location results for term '{term}' in warehouse '{warehouseCode}'"
+                $"[MOCK DATA MODE] Returning mock location results for term '{normalizedTerm}' in warehouse '{warehouseCode}'"
             );
-            return CreateMockFuzzyLocations(term, warehouseCode);
+            return CreateMockFuzzyLocations(normalizedTerm, warehouseCode);
         }
 
-        return await _dao.FuzzySearchLocationsByWarehouseAsync(term, warehouseCode);
+        return await _dao.FuzzySearchLocationsByWarehouseAsync(normalizedTerm, warehouseCode);
     }
 
     /// <inheritdoc />
@@ -759,29 +764,22 @@ public class Service_InforVisualConnect : IService_InforVisual
         string warehouseCode
     )
     {
-        var results = new List<Model_FuzzySearchResult>
-        {
-            new Model_FuzzySearchResult
+        var normalizedTerm = term.Trim();
+        var filteredResults = MockLocationSuggestions
+            .Where(location =>
+                string.IsNullOrWhiteSpace(normalizedTerm)
+                || location.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+            )
+            .OrderBy(location => location, StringComparer.OrdinalIgnoreCase)
+            .Select(location => new Model_FuzzySearchResult
             {
-                Key = $"A-{term.ToUpper()}-01",
-                Label = $"A-{term.ToUpper()}-01",
-                Detail = $"Warehouse {warehouseCode} — Aisle A",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = $"B-{term.ToUpper()}-02",
-                Label = $"B-{term.ToUpper()}-02",
-                Detail = $"Warehouse {warehouseCode} — Aisle B",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = $"C-{term.ToUpper()}-03",
-                Label = $"C-{term.ToUpper()}-03",
-                Detail = $"Warehouse {warehouseCode} — Aisle C",
-            },
-        };
+                Key = location,
+                Label = location,
+                Detail = $"Warehouse {warehouseCode} — Mock location",
+            })
+            .ToList();
 
-        return Model_Dao_Result_Factory.Success(results);
+        return Model_Dao_Result_Factory.Success(filteredResults);
     }
 
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPurchaseOrdersByPart(
