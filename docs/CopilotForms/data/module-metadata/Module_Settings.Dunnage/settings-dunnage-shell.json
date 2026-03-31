@@ -2,7 +2,7 @@
   "id": "settings-dunnage-shell",
   "module": "Module_Settings.Dunnage",
   "name": "Dunnage Settings Shell",
-  "summary": "Card-based dunnage settings shell with placeholder overview, user preference, UI/UX, workflow, permissions, and audit pages that document intended controls without implementing persistence yet.",
+  "summary": "Card-based dunnage settings shell with placeholder overview, UI/UX, workflow, permissions, and audit pages plus a real user-preference page for the default Dunnage location backed by user-scoped settings and Infor Visual fuzzy validation.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_NavigationHub.cs",
@@ -38,6 +38,7 @@
     "workflowAreas": [
       "Settings overview",
       "User preferences",
+      "Default Dunnage location",
       "UI and UX tuning",
       "Workflow defaults and guardrails",
       "Permissions",
@@ -56,8 +57,10 @@
     "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
     "uiElements": [
       "Navigation cards",
+      "Default location editor",
+      "Save and reset actions",
+      "Fuzzy location picker",
       "Placeholder overview content",
-      "Suggested controls notes",
       "Permission matrix guidance",
       "Audit grid guidance",
       "Date and user filter guidance",
@@ -65,24 +68,29 @@
     ],
     "userActions": [
       "Browse dunnage settings areas from the hub",
+      "Change the default Dunnage location used when guided entry leaves location blank",
+      "Resolve mistyped default locations with fuzzy search against Infor Visual",
       "Review placeholder guidance for future settings implementation",
       "Inspect suggested controls for permissions and audit history",
       "Understand which dunnage settings areas still need full implementation"
     ],
     "preserveRules": [
-      "Keep the placeholder status explicit in metadata",
-      "Do not describe placeholder pages as fully implemented settings editors",
+      "Keep the placeholder status explicit for Dunnage settings pages that still lack persistence",
+      "Do not describe the non-user-preferences Dunnage settings pages as fully implemented settings editors",
       "Keep the existing navigation hub step list unchanged unless the code changes"
     ],
     "acceptanceCriteria": [
       "The hub still routes to overview, preferences, UI/UX, workflow, permissions, and audit pages",
-      "Metadata makes it clear these screens are currently placeholders with suggested controls",
+      "Metadata makes it clear the Dunnage User Preferences page now persists a default Dunnage location",
+      "Metadata still calls out the remaining Dunnage settings pages as placeholders where persistence is not implemented",
       "Metadata does not claim data persistence or business logic that the module does not implement"
     ],
     "validationHints": [
+      "Confirm the Dunnage User Preferences page saves and resets the default location for the active user",
+      "Confirm the Dunnage User Preferences page validates the configured location against Infor Visual warehouse 002 and offers fuzzy suggestions",
       "Confirm each dunnage card still opens the intended placeholder screen",
-      "Confirm titles and descriptions still match the current placeholder content",
-      "Confirm metadata continues to describe suggested controls as future-facing guidance"
+      "Confirm titles and descriptions still match the current content for implemented and placeholder pages",
+      "Confirm metadata continues to describe only the remaining unimplemented pages as future-facing guidance"
     ]
   }
 }

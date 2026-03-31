@@ -9,17 +9,26 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
     public class Service_DunnageWorkflow : IService_DunnageWorkflow, IDisposable
     {
+        private const string SettingsCategory = "Dunnage";
+        private const string WarehouseCode = "002";
+        private const string FallbackDefaultLocation = "RECV";
+
         private readonly IService_MySQL_Dunnage _dunnageService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly IService_SettingsCoreFacade _settingsCore;
+        private readonly IService_ReceivingValidation _receivingValidation;
         private readonly List<Model_DunnageLoad> _currentEntryLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
@@ -50,7 +59,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IService_ErrorHandler errorHandler,
-            IService_ViewModelRegistry viewModelRegistry
+            IService_ViewModelRegistry viewModelRegistry,
+            IService_SettingsCoreFacade settingsCore,
+            IService_ReceivingValidation receivingValidation
         )
         {
             _dunnageService = dunnageService;
@@ -58,6 +69,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _logger = logger;
             _errorHandler = errorHandler;
             _viewModelRegistry = viewModelRegistry;
+            _settingsCore = settingsCore;
+            _receivingValidation = receivingValidation;
 
             _sessionManager.SessionTimedOut += OnSessionTimedOut;
         }
@@ -103,7 +116,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             return Task.FromResult(true);
         }
 
-        public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync()
+        public async Task<Model_WorkflowStepResult> AdvanceToNextStepAsync()
         {
             try
             {
@@ -116,13 +129,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.TypeSelection:
                         if (CurrentSession.SelectedTypeId <= 0)
                         {
-                            return Task.FromResult(
-                                new Model_WorkflowStepResult
-                                {
-                                    IsSuccess = false,
-                                    ErrorMessage = "Please select a dunnage type.",
-                                }
-                            );
+                            return new Model_WorkflowStepResult
+                            {
+                                IsSuccess = false,
+                                ErrorMessage = "Please select a dunnage type.",
+                            };
                         }
 
                         GoToStep(Enum_DunnageWorkflowStep.PartSelection);
@@ -131,13 +142,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.PartSelection:
                         if (CurrentSession.SelectedPart == null)
                         {
-                            return Task.FromResult(
-                                new Model_WorkflowStepResult
-                                {
-                                    IsSuccess = false,
-                                    ErrorMessage = "Please select a part.",
-                                }
-                            );
+                            return new Model_WorkflowStepResult
+                            {
+                                IsSuccess = false,
+                                ErrorMessage = "Please select a part.",
+                            };
                         }
 
                         GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
@@ -147,27 +156,23 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         EnsureLoadQuantitySlots();
                         if (NumberOfLoads < 1)
                         {
-                            return Task.FromResult(
-                                new Model_WorkflowStepResult
-                                {
-                                    IsSuccess = false,
-                                    ErrorMessage = "Number of loads must be at least 1.",
-                                }
-                            );
+                            return new Model_WorkflowStepResult
+                            {
+                                IsSuccess = false,
+                                ErrorMessage = "Number of loads must be at least 1.",
+                            };
                         }
 
                         for (var index = 0; index < CurrentSession.LoadQuantities.Count; index++)
                         {
                             if (CurrentSession.LoadQuantities[index] <= 0)
                             {
-                                return Task.FromResult(
-                                    new Model_WorkflowStepResult
-                                    {
-                                        IsSuccess = false,
-                                        ErrorMessage =
-                                            $"Load {index + 1}: Quantity must be greater than zero.",
-                                    }
-                                );
+                                return new Model_WorkflowStepResult
+                                {
+                                    IsSuccess = false,
+                                    ErrorMessage =
+                                        $"Load {index + 1}: Quantity must be greater than zero.",
+                                };
                             }
                         }
 
@@ -176,35 +181,43 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         break;
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
+                        var locationValidation = await EnsureDefaultAndValidatedLocationAsync();
+                        if (!locationValidation.IsValid)
+                        {
+                            return new Model_WorkflowStepResult
+                            {
+                                IsSuccess = false,
+                                ErrorMessage = locationValidation.Message,
+                            };
+                        }
+
                         ApplySessionDetailsToCurrentEntryLoads();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
 
                     case Enum_DunnageWorkflowStep.Review:
-                        return Task.FromResult(
-                            new Model_WorkflowStepResult
-                            {
-                                IsSuccess = false,
-                                ErrorMessage = "Already at Review step. Use Save to finish.",
-                            }
-                        );
+                        return new Model_WorkflowStepResult
+                        {
+                            IsSuccess = false,
+                            ErrorMessage = "Already at Review step. Use Save to finish.",
+                        };
                 }
 
-                return Task.FromResult(
-                    new Model_WorkflowStepResult { IsSuccess = true, TargetStep = CurrentStep }
-                );
+                return new Model_WorkflowStepResult { IsSuccess = true, TargetStep = CurrentStep };
             }
             catch (Exception ex)
             {
-                _errorHandler.HandleErrorAsync(
+                await _errorHandler.HandleErrorAsync(
                     "Error advancing step",
                     Enum_ErrorSeverity.Error,
                     ex,
                     true
                 );
-                return Task.FromResult(
-                    new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = ex.Message }
-                );
+                return new Model_WorkflowStepResult
+                {
+                    IsSuccess = false,
+                    ErrorMessage = ex.Message,
+                };
             }
         }
 
@@ -411,8 +424,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
 
             var location = string.IsNullOrWhiteSpace(CurrentSession.Location)
-                ? CurrentSession.SelectedPart?.HomeLocation
-                : CurrentSession.Location;
+                ? FallbackDefaultLocation
+                : CurrentSession.Location.Trim();
             var poNumber = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
                 ? "Nothing Entered"
                 : CurrentSession.PONumber;
@@ -460,6 +473,55 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
                 LoadNumber = loadNumber,
             };
+        }
+
+        private async Task<Model_ReceivingValidationResult> EnsureDefaultAndValidatedLocationAsync()
+        {
+            var resolvedLocation = string.IsNullOrWhiteSpace(CurrentSession.Location)
+                ? await GetDefaultLocationAsync()
+                : CurrentSession.Location.Trim();
+
+            var validation = await _receivingValidation.ValidateLocationAsync(
+                resolvedLocation,
+                WarehouseCode
+            );
+            if (!validation.IsValid)
+            {
+                return validation;
+            }
+
+            CurrentSession.Location = resolvedLocation;
+            return Model_ReceivingValidationResult.Success();
+        }
+
+        private async Task<string> GetDefaultLocationAsync()
+        {
+            try
+            {
+                var result = await _settingsCore.GetSettingAsync(
+                    SettingsCategory,
+                    DunnageSettingsKeys.UserPreferences.DefaultLocation,
+                    _sessionManager.CurrentSession?.User?.EmployeeNumber
+                );
+
+                if (result.IsSuccess && result.Data is not null)
+                {
+                    var configuredLocation = result.Data.Value?.Trim();
+                    if (!string.IsNullOrWhiteSpace(configuredLocation))
+                    {
+                        return configuredLocation;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Failed to load default Dunnage location. Falling back to {FallbackDefaultLocation}. Error: {ex.Message}",
+                    "DunnageWorkflow"
+                );
+            }
+
+            return FallbackDefaultLocation;
         }
     }
 }

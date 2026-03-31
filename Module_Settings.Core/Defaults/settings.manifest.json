@@ -2410,6 +2410,17 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.UserPreferences.DefaultLocation",
+      "displayName": "User Preferences - Default Dunnage Location",
+      "defaultValue": "RECV",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
     }
   ]
 }

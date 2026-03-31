@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -20,16 +26,28 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// </summary>
 public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 {
+    private const string SettingsCategory = "Dunnage";
+    private const string WarehouseCode = "002";
+    private const string FallbackDefaultLocation = "RECV";
+
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Help _helpService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Dispatcher _dispatcher;
+    private readonly IService_ReceivingValidation _receivingValidation;
+    private readonly IService_InforVisual _inforVisualService;
+    private readonly IService_SettingsCoreFacade _settingsCore;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_Dunnage_DetailsEntry(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Dispatcher dispatcher,
         IService_Help helpService,
+        IService_ReceivingValidation receivingValidation,
+        IService_InforVisual inforVisualService,
+        IService_SettingsCoreFacade settingsCore,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -40,6 +58,10 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         _helpService = helpService;
         _dunnageService = dunnageService;
         _dispatcher = dispatcher;
+        _receivingValidation = receivingValidation;
+        _inforVisualService = inforVisualService;
+        _settingsCore = settingsCore;
+        _sessionManager = sessionManager;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -107,6 +129,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Loading spec inputs...";
+
+            await InitializeStepStateAsync();
 
             var selectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
             if (selectedTypeId <= 0)
@@ -334,6 +358,76 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         _workflowService.CurrentSession.Location = value;
     }
 
+    public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
+    {
+        var locationToValidate = string.IsNullOrWhiteSpace(Location)
+            ? await GetDefaultLocationAsync()
+            : Location.Trim();
+
+        var validation = await _receivingValidation.ValidateLocationAsync(
+            locationToValidate,
+            WarehouseCode
+        );
+        if (validation.IsValid)
+        {
+            Location = locationToValidate;
+        }
+
+        return validation;
+    }
+
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetLocationSuggestionsAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Location))
+        {
+            return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
+        }
+
+        if (_receivingValidation.UseMockLocationList)
+        {
+            var normalizedSearch = NormalizeLocationForMatch(Location);
+            var locationSuggestions = _receivingValidation
+                .PresetLocations.Where(presetLocation =>
+                {
+                    var normalizedPreset = NormalizeLocationForMatch(presetLocation);
+                    return normalizedPreset.Contains(
+                        normalizedSearch,
+                        StringComparison.OrdinalIgnoreCase
+                    );
+                })
+                .OrderByDescending(presetLocation =>
+                    presetLocation.StartsWith(Location.Trim(), StringComparison.OrdinalIgnoreCase)
+                )
+                .ThenBy(presetLocation => presetLocation, StringComparer.OrdinalIgnoreCase)
+                .Select(presetLocation => new Model_FuzzySearchResult
+                {
+                    Key = presetLocation,
+                    Label = presetLocation,
+                    Detail = "Preset mock location",
+                })
+                .ToList();
+
+            return Model_Dao_Result_Factory.Success(locationSuggestions);
+        }
+
+        var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
+            Location.Trim(),
+            WarehouseCode
+        );
+        if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null)
+        {
+            return fuzzyResult;
+        }
+
+        var suggestions = fuzzyResult
+            .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
+            .GroupBy(static result => result.Label.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(static group => group.First())
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(suggestions);
+    }
+
     private void UpdateInventoryMessage()
     {
         if (IsInventoryNotificationVisible)
@@ -452,4 +546,54 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
     public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
+
+    private async Task InitializeStepStateAsync()
+    {
+        PoNumber = _workflowService.CurrentSession.PONumber?.Trim() ?? string.Empty;
+
+        var currentLocation = _workflowService.CurrentSession.Location?.Trim();
+        Location = string.IsNullOrWhiteSpace(currentLocation)
+            ? await GetDefaultLocationAsync()
+            : currentLocation;
+    }
+
+    private async Task<string> GetDefaultLocationAsync()
+    {
+        try
+        {
+            var result = await _settingsCore.GetSettingAsync(
+                SettingsCategory,
+                DunnageSettingsKeys.UserPreferences.DefaultLocation,
+                _sessionManager.CurrentSession?.User?.EmployeeNumber
+            );
+
+            if (result.IsSuccess && result.Data is not null)
+            {
+                var configuredLocation = result.Data.Value?.Trim();
+                if (!string.IsNullOrWhiteSpace(configuredLocation))
+                {
+                    return configuredLocation;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"Failed to load default Dunnage location. Falling back to {FallbackDefaultLocation}. Error: {ex.Message}",
+                "DetailsEntry"
+            );
+        }
+
+        return FallbackDefaultLocation;
+    }
+
+    private static string NormalizeLocationForMatch(string? location)
+    {
+        return new string(
+            (location ?? string.Empty)
+                .Where(char.IsLetterOrDigit)
+                .Select(char.ToUpperInvariant)
+                .ToArray()
+        );
+    }
 }

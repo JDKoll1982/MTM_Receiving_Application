@@ -205,6 +205,8 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
             PackageRowsPanel.Children.Add(row);
             _packageBoxes.Add(numberBox);
         }
+
+        PackageRowsScrollViewer?.ChangeView(null, 0, null, true);
     }
 
     private void ApplyDraftState(AddLineDraftState? draftState)

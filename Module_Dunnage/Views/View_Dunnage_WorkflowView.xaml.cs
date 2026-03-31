@@ -1,7 +1,9 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -105,6 +107,11 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private async void OnSaveAndReviewClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (!await EnsureDetailsLocationResolvedAsync())
+        {
+            return;
+        }
+
         // If no PO entered, give the user a chance to supply a non-PO reference
         // before we advance. The dialog also persists commonly-used reasons.
         if (string.IsNullOrWhiteSpace(_workflowService.CurrentSession.PONumber))
@@ -155,6 +162,58 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 await errorDialog.ShowAsync();
             }
         }
+    }
+
+    private async Task<bool> EnsureDetailsLocationResolvedAsync()
+    {
+        var validation = await DetailsEntryView.ViewModel.ValidateLocationAsync();
+        if (validation.IsValid)
+        {
+            return true;
+        }
+
+        var suggestionsResult = await DetailsEntryView.ViewModel.GetLocationSuggestionsAsync();
+        if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
+        {
+            var dialog = new Dialog_FuzzySearchPicker(
+                suggestionsResult.Data,
+                "Select Location",
+                $"No exact match was found for '{DetailsEntryView.ViewModel.Location?.Trim()}'. Select a matching location."
+            )
+            {
+                XamlRoot = this.XamlRoot,
+            };
+
+            var dialogResult = await dialog.ShowAsync();
+            if (
+                dialogResult == ContentDialogResult.Primary
+                && dialog.SelectedResult is not null
+                && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
+            )
+            {
+                DetailsEntryView.ViewModel.Location = dialog.SelectedResult.Label.Trim();
+                return true;
+            }
+        }
+
+        var statusMessage = validation.Message;
+        if (
+            !suggestionsResult.IsSuccess
+            && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false
+        )
+        {
+            statusMessage = $"{validation.Message} {suggestionsResult.ErrorMessage}";
+        }
+
+        var errorDialog = new ContentDialog
+        {
+            Title = "Cannot Proceed",
+            Content = statusMessage,
+            CloseButtonText = "OK",
+            XamlRoot = this.XamlRoot,
+        };
+        await errorDialog.ShowAsync();
+        return false;
     }
 
     private void OnBackClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

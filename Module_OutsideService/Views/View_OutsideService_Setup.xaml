@@ -50,7 +50,10 @@
                             <CheckBox Content="Use custom vendor" IsChecked="{x:Bind ViewModel.UseCustomVendor, Mode=TwoWay}" />
                             <TextBox Header="Custom vendor name" Text="{x:Bind ViewModel.CustomVendorName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{x:Bind ViewModel.UseCustomVendor, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             <TextBox Header="Reference number" Text="{x:Bind ViewModel.BolNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <DatePicker Header="Scheduled ship" Date="{x:Bind ViewModel.ScheduledShipDate, Mode=TwoWay}" />
+                            <CalendarDatePicker
+                                Header="Scheduled ship"
+                                Date="{x:Bind ViewModel.ScheduledShipDate, Mode=TwoWay}"
+                                HorizontalAlignment="Stretch" />
                             <TextBox Header="Shipping contact" Text="{x:Bind ViewModel.ShippingContact, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="Setup notes" Text="{x:Bind ViewModel.SetupNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" />
                             <TextBox Header="Completion notes" Text="{x:Bind ViewModel.CompletionNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="100" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.IsSetupPhase, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />

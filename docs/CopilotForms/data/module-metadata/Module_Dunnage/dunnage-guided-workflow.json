@@ -2,7 +2,7 @@
   "id": "dunnage-guided-workflow",
   "module": "Module_Dunnage",
   "name": "Guided Workflow",
-  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, manual and detail entry, final review, a denser 4x4 type card selector, weak-event workflow notifications, and module-scoped unsaved state.",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with user-default location fallback plus Infor Visual fuzzy validation, final review, a denser 4x4 type card selector, weak-event workflow notifications, and module-scoped unsaved state.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
@@ -12,6 +12,7 @@
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs",
+    "Module_Dunnage/Settings/DunnageSettingsKeys.cs",
     "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml",
     "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs",
@@ -31,9 +32,19 @@
     "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
     "Module_Dunnage/Models/Model_DunnageType.cs",
     "Module_Dunnage/Models/Model_DunnagePart.cs",
-    "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs"
+    "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs",
+    "Module_Core/Contracts/Services/IService_InforVisual.cs",
+    "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
+    "Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs",
+    "Module_Core/Dialogs/Dialog_FuzzySearchPicker.xaml.cs"
   ],
-  "relatedServices": ["IService_DunnageWorkflow", "IService_MySQL_Dunnage"],
+  "relatedServices": [
+    "IService_DunnageWorkflow",
+    "IService_MySQL_Dunnage",
+    "IService_InforVisual",
+    "IService_ReceivingValidation",
+    "IService_SettingsCoreFacade"
+  ],
   "promptDefaults": {
     "audience": "Receiving Clerk",
     "docAudience": "Receiving Clerk",
@@ -47,6 +58,8 @@
       "Guided dunnage entry",
       "Manual and detail entry",
       "Review before save",
+      "Default Dunnage location fallback",
+      "Infor Visual location validation with fuzzy-match recovery",
       "Unsaved state survives only inside the current module"
     ],
     "screens": [
@@ -66,6 +79,8 @@
       "Part selector",
       "Number of loads field",
       "Per-load quantity editors",
+      "Defaulted location field",
+      "Fuzzy location picker",
       "Manual entry fields",
       "Review summary"
     ],
@@ -74,10 +89,15 @@
       "Move through guided steps",
       "Set the number of loads and quantity for each load",
       "Capture manual or detailed information",
+      "Leave location blank and still receive a validated default location",
+      "Recover from mistyped Dunnage locations via fuzzy selection",
       "Review and finish the workflow",
       "Lose unsaved work when leaving the module or exiting before save"
     ],
     "validationHints": [
+      "Confirm the Dunnage details step prefills the user default location when the session location is blank",
+      "Confirm blank Dunnage locations resolve to the configured user preference and fall back to RECV when no preference is stored",
+      "Confirm invalid Dunnage locations are validated against Infor Visual warehouse 002 and offer fuzzy suggestions before Review",
       "Confirm the guided workflow still advances correctly between steps",
       "Confirm changing the number of loads rebuilds the per-load quantity editors without losing values that still apply",
       "Confirm each generated load reaches Review with the correct load number and quantity",

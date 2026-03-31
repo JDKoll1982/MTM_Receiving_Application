@@ -2,10 +2,16 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Models;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Services;
@@ -60,14 +66,107 @@ public sealed class Service_DunnageWorkflowTests
         service.CurrentSession.Loads.Should().OnlyContain(load => load.Specs.ContainsKey("Length"));
     }
 
-    private static Service_DunnageWorkflow CreateService()
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldApplyConfiguredDefaultLocation_WhenSessionLocationIsBlank()
     {
+        var service = CreateService(defaultLocation: "QA-RECV");
+
+        service.CurrentSession.SelectedTypeId = 5;
+        service.CurrentSession.SelectedTypeName = "Pallet";
+        service.CurrentSession.SelectedType = new Model_DunnageType
+        {
+            Id = 5,
+            TypeName = "Pallet",
+            Icon = "PackageVariantClosed",
+        };
+        service.CurrentSession.SelectedPart = new Model_DunnagePart
+        {
+            PartId = "DUN-100",
+            HomeLocation = "RACK-A1",
+        };
+        service.NumberOfLoads = 1;
+        service.CurrentSession.LoadQuantities.Add(10m);
+
+        service.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
+        await service.AdvanceToNextStepAsync();
+
+        service.CurrentSession.PONumber = "PO-7788";
+        service.CurrentSession.Location = string.Empty;
+
+        var detailsStepResult = await service.AdvanceToNextStepAsync();
+
+        detailsStepResult.IsSuccess.Should().BeTrue();
+        service.CurrentSession.Location.Should().Be("QA-RECV");
+        service.CurrentSession.Loads.Should().OnlyContain(load => load.Location == "QA-RECV");
+    }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldReturnFailure_WhenResolvedLocationIsInvalid()
+    {
+        var service = CreateService(
+            defaultLocation: "BAD-LOC",
+            locationValidationResult: Model_ReceivingValidationResult.Error("Invalid location")
+        );
+
+        service.CurrentSession.SelectedTypeId = 5;
+        service.CurrentSession.SelectedTypeName = "Pallet";
+        service.CurrentSession.SelectedType = new Model_DunnageType
+        {
+            Id = 5,
+            TypeName = "Pallet",
+            Icon = "PackageVariantClosed",
+        };
+        service.CurrentSession.SelectedPart = new Model_DunnagePart { PartId = "DUN-100" };
+        service.NumberOfLoads = 1;
+        service.CurrentSession.LoadQuantities.Add(10m);
+
+        service.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
+        await service.AdvanceToNextStepAsync();
+
+        var detailsStepResult = await service.AdvanceToNextStepAsync();
+
+        detailsStepResult.IsSuccess.Should().BeFalse();
+        detailsStepResult.ErrorMessage.Should().Be("Invalid location");
+        service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.DetailsEntry);
+    }
+
+    private static Service_DunnageWorkflow CreateService(
+        string defaultLocation = "RECV",
+        Model_ReceivingValidationResult? locationValidationResult = null
+    )
+    {
+        var settingsCore = new Mock<IService_SettingsCoreFacade>();
+        settingsCore
+            .Setup(service =>
+                service.GetSettingAsync(
+                    "Dunnage",
+                    DunnageSettingsKeys.UserPreferences.DefaultLocation,
+                    It.IsAny<int?>()
+                )
+            )
+            .ReturnsAsync(
+                new Model_Dao_Result<Model_SettingsValue>
+                {
+                    Success = true,
+                    Data = new Model_SettingsValue { Value = defaultLocation },
+                }
+            );
+
+        var receivingValidation = new Mock<IService_ReceivingValidation>();
+        receivingValidation
+            .Setup(service =>
+                service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>())
+            )
+            .ReturnsAsync(locationValidationResult ?? Model_ReceivingValidationResult.Success());
+
         return new Service_DunnageWorkflow(
             new Mock<IService_MySQL_Dunnage>().Object,
             new Mock<IService_UserSessionManager>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_ErrorHandler>().Object,
-            new Mock<IService_ViewModelRegistry>().Object
+            new Mock<IService_ViewModelRegistry>().Object,
+            settingsCore.Object,
+            receivingValidation.Object
         );
     }
 }

@@ -86,7 +86,9 @@
                                 Style="{StaticResource SubtitleTextBlockStyle}"
                             />
                             <TextBox
+                                x:Name="LocationTextBox"
                                 Text="{x:Bind ViewModel.Location, Mode=TwoWay}"
+                                LostFocus="LocationTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.Location'), Mode=OneWay}"
                                 HorizontalAlignment="Stretch"
                             />
