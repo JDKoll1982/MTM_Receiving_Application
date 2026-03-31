@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-30T07:23:25.5590743-05:00",
+  "generatedAt": "2026-03-31T08:30:06.3122652-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -6447,6 +6447,16 @@
         },
         {
           "direction": "IN",
+          "name": "p_package_count",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_package_summary",
+          "sqlType": "VARCHAR(500)"
+        },
+        {
+          "direction": "IN",
           "name": "p_setup_vendor_id",
           "sqlType": "VARCHAR(50)"
         },
@@ -6481,22 +6491,48 @@
           "sqlType": "TEXT"
         }
       ],
-      "declaredVariables": [],
-      "referencedObjects": [],
+      "declaredVariables": [
+        {
+          "name": "v_package_index",
+          "sqlType": "INT DEFAULT 1"
+        },
+        {
+          "name": "v_package_quantity_text",
+          "sqlType": "VARCHAR(50)"
+        }
+      ],
+      "referencedObjects": [
+        "outside_service_request_package"
+      ],
       "qualifiedColumns": [],
-      "insertTargets": [],
+      "insertTargets": [
+        {
+          "table": "outside_service_request_package",
+          "columns": [
+            "outside_service_request_line_id",
+            "package_sequence",
+            "package_quantity"
+          ]
+        }
+      ],
       "updateTargets": [
         {
           "table": "outside_service_request_line",
           "columns": [
-            "setup_vendor_id"
+            "package_count"
           ]
         }
       ],
-      "deleteTargets": [],
+      "deleteTargets": [
+        {
+          "table": "outside_service_request_package"
+        }
+      ],
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_outside_service_request_line_id",
+        "p_package_count",
+        "p_package_summary",
         "p_setup_vendor_id",
         "p_setup_vendor_name",
         "p_setup_vendor_source",
@@ -6505,9 +6541,17 @@
         "p_shipping_contact",
         "p_setup_notes"
       ],
-      "variableTokensUsed": [],
+      "variableTokensUsed": [
+        "v_package_index",
+        "v_package_quantity_text"
+      ],
       "temporaryTables": [],
-      "aliasMap": []
+      "aliasMap": [
+        {
+          "alias": "outside_service_request_package",
+          "object": "outside_service_request_package"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/OutsideService/sp_OutsideService_RequestPackage_Insert.sql",
