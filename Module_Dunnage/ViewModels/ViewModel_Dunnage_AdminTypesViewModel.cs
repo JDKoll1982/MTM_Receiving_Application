@@ -170,7 +170,9 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
         try
         {
-            var customFieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(SelectedType.Id);
+            var customFieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(
+                SelectedType.Id
+            );
             if (!customFieldsResult.Success)
             {
                 await _errorHandler.HandleDaoErrorAsync(
@@ -379,7 +381,9 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
                     var row = new Grid { ColumnSpacing = 8 };
                     row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                    row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    row.ColumnDefinitions.Add(
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                    );
                     row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
                     row.Children.Add(
@@ -403,9 +407,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                         {
                             Text = $"{field.GetSummary()} | Column: {field.DatabaseColumnName}",
                             Foreground = (Microsoft.UI.Xaml.Media.Brush)
-                                Application.Current.Resources[
-                                    "TextFillColorSecondaryBrush"
-                                ],
+                                Application.Current.Resources["TextFillColorSecondaryBrush"],
                             FontSize = 12,
                         }
                     );
@@ -480,9 +482,10 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                         new Model_CustomFieldDefinition
                         {
                             FieldName = customFieldNameBox.Text.Trim(),
-                            DatabaseColumnName = Model_CustomFieldDefinition.BuildDatabaseColumnName(
-                                customFieldNameBox.Text
-                            ),
+                            DatabaseColumnName =
+                                Model_CustomFieldDefinition.BuildDatabaseColumnName(
+                                    customFieldNameBox.Text
+                                ),
                             FieldType = customFieldTypeBox.SelectedItem?.ToString() ?? "Text",
                             IsRequired = customFieldRequiredBox.IsChecked ?? false,
                         }
@@ -510,15 +513,13 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
             customFieldButtons.Children.Add(cancelEditFieldButton);
             customFieldButtons.Children.Add(addOrUpdateFieldButton);
             stackPanel.Children.Add(customFieldButtons);
-            stackPanel.Children.Add(new ScrollViewer { Content = customFieldsPanel, MaxHeight = 260 });
+            stackPanel.Children.Add(
+                new ScrollViewer { Content = customFieldsPanel, MaxHeight = 260 }
+            );
 
             RenderCustomFields();
 
-            dialog.Content = new ScrollViewer
-            {
-                Content = stackPanel,
-                MaxHeight = 640,
-            };
+            dialog.Content = new ScrollViewer { Content = stackPanel, MaxHeight = 640 };
 
             var result = await dialog.ShowAsync();
 
@@ -759,7 +760,10 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
         NormalizeAndReindexCustomFields(currentFields);
 
         var originalById = originalFields.ToDictionary(field => field.Id);
-        var currentIds = currentFields.Where(field => field.Id > 0).Select(field => field.Id).ToHashSet();
+        var currentIds = currentFields
+            .Where(field => field.Id > 0)
+            .Select(field => field.Id)
+            .ToHashSet();
 
         foreach (var deletedField in originalFields.Where(field => !currentIds.Contains(field.Id)))
         {
@@ -783,7 +787,10 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 continue;
             }
 
-            if (originalById.TryGetValue(field.Id, out var originalField) && HasCustomFieldChanges(originalField, field))
+            if (
+                originalById.TryGetValue(field.Id, out var originalField)
+                && HasCustomFieldChanges(originalField, field)
+            )
             {
                 var updateResult = await _dunnageService.UpdateCustomFieldAsync(field.Id, field);
                 if (!updateResult.Success)
@@ -818,13 +825,21 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
         Model_CustomFieldDefinition currentField
     )
     {
-        return !string.Equals(originalField.FieldName, currentField.FieldName, StringComparison.Ordinal)
+        return !string.Equals(
+                originalField.FieldName,
+                currentField.FieldName,
+                StringComparison.Ordinal
+            )
             || !string.Equals(
                 originalField.DatabaseColumnName,
                 currentField.DatabaseColumnName,
                 StringComparison.Ordinal
             )
-            || !string.Equals(originalField.FieldType, currentField.FieldType, StringComparison.Ordinal)
+            || !string.Equals(
+                originalField.FieldType,
+                currentField.FieldType,
+                StringComparison.Ordinal
+            )
             || originalField.DisplayOrder != currentField.DisplayOrder
             || originalField.IsRequired != currentField.IsRequired
             || !string.Equals(
@@ -841,9 +856,8 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
         for (var index = 0; index < customFields.Count; index++)
         {
             customFields[index].DisplayOrder = index + 1;
-            customFields[index].DatabaseColumnName = Model_CustomFieldDefinition.BuildDatabaseColumnName(
-                customFields[index].FieldName
-            );
+            customFields[index].DatabaseColumnName =
+                Model_CustomFieldDefinition.BuildDatabaseColumnName(customFields[index].FieldName);
         }
     }
 
@@ -872,7 +886,11 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
         if (
             existingFields.Any(field =>
                 !ReferenceEquals(field, editingField)
-                && string.Equals(field.FieldName, trimmedFieldName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(
+                    field.FieldName,
+                    trimmedFieldName,
+                    StringComparison.OrdinalIgnoreCase
+                )
             )
         )
         {
