@@ -16,6 +16,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         public event EventHandler StepChanged;
         public event EventHandler<string> StatusMessageRaised;
+        public event EventHandler LabelDataCleared;
 
         public Task<bool> StartWorkflowAsync();
         public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync();

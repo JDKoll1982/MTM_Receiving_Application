@@ -32,6 +32,8 @@ public sealed partial class View_Dunnage_DetailsEntryView : UserControl
             return;
         }
 
+        ViewModel.Location = textBox.Text.Trim();
+
         var validation = await ViewModel.ValidateLocationAsync();
         if (validation.IsValid)
         {

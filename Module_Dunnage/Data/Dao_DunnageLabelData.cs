@@ -363,6 +363,9 @@ public class Dao_DunnageLabelData
     {
         return new Model_DunnageLoad
         {
+            QueueRowId = reader.IsDBNull(reader.GetOrdinal("id"))
+                ? 0
+                : reader.GetInt32(reader.GetOrdinal("id")),
             // GetValue().ToString() handles both string and Guid returns from the connector.
             LoadUuid = Guid.Parse(reader.GetValue(reader.GetOrdinal("load_uuid")).ToString()!),
             PartId = reader.GetString(reader.GetOrdinal("part_id")),
@@ -384,6 +387,9 @@ public class Dao_DunnageLabelData
                 : reader.GetString(reader.GetOrdinal("po_number")),
             ReceivedDate = reader.GetDateTime(reader.GetOrdinal("received_date")),
             CreatedBy = reader.GetString(reader.GetOrdinal("user_id")),
+            CreatedDate = reader.IsDBNull(reader.GetOrdinal("created_at"))
+                ? default
+                : reader.GetDateTime(reader.GetOrdinal("created_at")),
             Location = reader.IsDBNull(reader.GetOrdinal("location"))
                 ? null
                 : reader.GetString(reader.GetOrdinal("location")),

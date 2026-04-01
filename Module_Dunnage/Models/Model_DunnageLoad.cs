@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
 
@@ -13,6 +14,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Models;
 /// </summary>
 public partial class Model_DunnageLoad : ObservableObject
 {
+    [ObservableProperty]
+    private int _queueRowId;
+
     [ObservableProperty]
     private Guid _loadUuid;
 
@@ -135,6 +139,8 @@ public partial class Model_DunnageLoad : ObservableObject
     /// </summary>
     public string QuantityDisplay => QuantityWholeNumber.ToString(CultureInfo.InvariantCulture);
 
+    public string LoadUuidDisplay => LoadUuid == Guid.Empty ? string.Empty : LoadUuid.ToString();
+
     /// <summary>
     /// Gets or sets the PO number through the Edit Mode formatter.
     /// </summary>
@@ -150,6 +156,14 @@ public partial class Model_DunnageLoad : ObservableObject
     public string CreatedDateDisplay =>
         CreatedDate.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
 
+    public string CreatedDateTimeDisplay =>
+        CreatedDate == default
+            ? string.Empty
+            : CreatedDate
+                .ToString("M/d/yyyy h:mm tt", CultureInfo.InvariantCulture)
+                .Replace("AM", "A.M.", StringComparison.Ordinal)
+                .Replace("PM", "P.M.", StringComparison.Ordinal);
+
     /// <summary>
     /// Gets the created time formatted in 12-hour AM/PM style.
     /// </summary>
@@ -158,6 +172,32 @@ public partial class Model_DunnageLoad : ObservableObject
             .ToString("h:mm tt", CultureInfo.InvariantCulture)
             .Replace("AM", "A.M.", StringComparison.Ordinal)
             .Replace("PM", "P.M.", StringComparison.Ordinal);
+
+    public string ReceivedDateTimeDisplay =>
+        ReceivedDate == default
+            ? string.Empty
+            : ReceivedDate
+                .ToString("M/d/yyyy h:mm tt", CultureInfo.InvariantCulture)
+                .Replace("AM", "A.M.", StringComparison.Ordinal)
+                .Replace("PM", "P.M.", StringComparison.Ordinal);
+
+    public string SpecsJsonDisplay
+    {
+        get
+        {
+            if (SpecValues is { Count: > 0 })
+            {
+                return JsonSerializer.Serialize(SpecValues);
+            }
+
+            if (Specs.Count > 0)
+            {
+                return JsonSerializer.Serialize(Specs);
+            }
+
+            return string.Empty;
+        }
+    }
 
     private static string NormalizePoNumber(string? value)
     {

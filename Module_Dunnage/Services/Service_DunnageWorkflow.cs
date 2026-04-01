@@ -32,6 +32,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly List<Model_DunnageLoad> _currentEntryLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
+        private readonly WeakEventSource _labelDataCleared = new();
 
         public Enum_DunnageWorkflowStep CurrentStep { get; private set; }
         public Model_DunnageSession CurrentSession { get; private set; } = new();
@@ -52,6 +53,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             add => _statusMessageRaised.Subscribe(value);
             remove => _statusMessageRaised.Unsubscribe(value);
+        }
+
+        public event EventHandler? LabelDataCleared
+        {
+            add => _labelDataCleared.Subscribe(value);
+            remove => _labelDataCleared.Unsubscribe(value);
         }
 
         public Service_DunnageWorkflow(
@@ -317,6 +324,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         this,
                         $"Label data cleared — {result.Data} row(s) archived"
                     );
+                    _labelDataCleared.Raise(this, EventArgs.Empty);
                 }
                 else
                 {
@@ -431,6 +439,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 : CurrentSession.PONumber;
             var specs = CurrentSession.SpecValues ?? new Dictionary<string, object>();
             var createdBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
+            var inventoryMethod = string.IsNullOrWhiteSpace(CurrentSession.InventoryMethod)
+                ? string.IsNullOrWhiteSpace(CurrentSession.PONumber)
+                    ? "Adjust In"
+                    : "Receive In"
+                : CurrentSession.InventoryMethod.Trim();
 
             foreach (var load in _currentEntryLoads)
             {
@@ -443,9 +456,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 load.TypeId = CurrentSession.SelectedTypeId;
                 load.Specs = new Dictionary<string, object>(specs);
                 load.SpecValues = new Dictionary<string, object>(specs);
-                load.InventoryMethod = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
-                    ? "Adjust In"
-                    : "Receive In";
+                load.InventoryMethod = inventoryMethod;
                 load.CreatedBy = createdBy;
                 load.ReceivedDate = DateTime.Now;
             }

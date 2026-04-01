@@ -12,6 +12,7 @@ public class Model_DunnageSession : ObservableObject
     private decimal _quantity;
     private string _poNumber = string.Empty;
     private string _location = string.Empty;
+    private string _inventoryMethod = string.Empty;
     private ObservableCollection<Model_DunnageLoad> _loads = new();
     private ObservableCollection<decimal> _loadQuantities = new();
     private System.Collections.Generic.Dictionary<string, object>? _specValues;
@@ -57,6 +58,12 @@ public class Model_DunnageSession : ObservableObject
     {
         get => _location;
         set => SetProperty(ref _location, value);
+    }
+
+    public string InventoryMethod
+    {
+        get => _inventoryMethod;
+        set => SetProperty(ref _inventoryMethod, value);
     }
 
     public ObservableCollection<Model_DunnageLoad> Loads

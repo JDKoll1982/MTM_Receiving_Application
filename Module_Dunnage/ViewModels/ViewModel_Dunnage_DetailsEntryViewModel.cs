@@ -289,7 +289,25 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                 if (isInventoried)
                 {
                     IsInventoryNotificationVisible = true;
+
+                    var inventoryDetails = await _dunnageService.GetInventoryDetailsAsync(
+                        selectedPart.PartId
+                    );
+                    if (
+                        inventoryDetails.IsSuccess
+                        && inventoryDetails.Data is not null
+                        && string.IsNullOrWhiteSpace(inventoryDetails.Data.InventoryMethod) is false
+                    )
+                    {
+                        InventoryMethod = inventoryDetails.Data.InventoryMethod;
+                        _workflowService.CurrentSession.InventoryMethod = InventoryMethod;
+                    }
+
                     UpdateInventoryMessage();
+                }
+                else
+                {
+                    _workflowService.CurrentSession.InventoryMethod = string.Empty;
                 }
             }
         }
@@ -341,7 +359,11 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         // reads the value the user has typed, not a stale empty string.
         _workflowService.CurrentSession.PONumber = value;
 
-        if (string.IsNullOrWhiteSpace(value))
+        if (!string.IsNullOrWhiteSpace(_workflowService.CurrentSession.InventoryMethod))
+        {
+            InventoryMethod = _workflowService.CurrentSession.InventoryMethod;
+        }
+        else if (string.IsNullOrWhiteSpace(value))
         {
             InventoryMethod = "Adjust In";
         }
@@ -555,6 +577,11 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         Location = string.IsNullOrWhiteSpace(currentLocation)
             ? await GetDefaultLocationAsync()
             : currentLocation;
+
+        if (!string.IsNullOrWhiteSpace(_workflowService.CurrentSession.InventoryMethod))
+        {
+            InventoryMethod = _workflowService.CurrentSession.InventoryMethod;
+        }
     }
 
     private async Task<string> GetDefaultLocationAsync()

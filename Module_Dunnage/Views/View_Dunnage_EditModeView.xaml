@@ -203,6 +203,7 @@
             IsReadOnly="False"
             ItemsSource="{x:Bind ViewModel.FilteredLoads, Mode=OneWay}"
             KeyDown="EditModeDataGrid_KeyDown"
+            SelectedItem="{x:Bind ViewModel.FocusedLoad, Mode=TwoWay}"
             SelectionMode="Single"
             Tapped="EditModeDataGrid_Tapped">
             <controls:DataGrid.Columns>
@@ -226,6 +227,18 @@
                     Binding="{Binding LoadNumber}"
                     Header="Load #"
                     IsReadOnly="True" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding QueueRowId}"
+                    Header="Queue ID"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding LoadUuidDisplay}"
+                    Header="Load UUID"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
                 <controls:DataGridTemplateColumn
                     Width="*"
                     Header="Type"
@@ -242,6 +255,18 @@
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding TypeId}"
+                    Header="Type ID"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding TypeIcon}"
+                    Header="Type Icon"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
                 <controls:DataGridTemplateColumn
                     Width="*"
                     Header="Part ID"
@@ -266,6 +291,12 @@
                     Width="Auto"
                     Binding="{Binding EditablePoNumber}"
                     Header="PO Number" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding ReceivedDateTimeDisplay}"
+                    Header="Received Date"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
                 <controls:DataGridTemplateColumn
                     Width="Auto"
                     Header="Location"
@@ -284,6 +315,23 @@
                 </controls:DataGridTemplateColumn>
                 <controls:DataGridTextColumn
                     Width="Auto"
+                    Binding="{Binding LabelNumber}"
+                    Header="Label Number"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding SpecsJsonDisplay}"
+                    Header="Specs JSON"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding CreatedDateTimeDisplay}"
+                    Header="Created At"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
                     Binding="{Binding CreatedDateDisplay}"
                     Header="Created Date"
                     IsReadOnly="True" />
@@ -295,7 +343,7 @@
                 <controls:DataGridTextColumn
                     Width="Auto"
                     Binding="{Binding CreatedBy}"
-                    Header="Created By"
+                    Header="User ID"
                     IsReadOnly="True" />
             </controls:DataGrid.Columns>
         </controls:DataGrid>

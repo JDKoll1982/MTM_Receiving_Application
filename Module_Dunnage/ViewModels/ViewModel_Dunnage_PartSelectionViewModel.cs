@@ -295,23 +295,27 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     {
         try
         {
-            var isInventoried = await _dunnageService.IsPartInventoriedAsync(part.PartId);
+            var inventoryDetails = await _dunnageService.GetInventoryDetailsAsync(part.PartId);
 
-            if (isInventoried)
+            if (inventoryDetails.IsSuccess && inventoryDetails.Data is not null)
             {
-                // Part is inventoried - show notification
                 IsInventoryNotificationVisible = true;
-                InventoryMethod = "Adjust In"; // No PO context yet
+                InventoryMethod = string.IsNullOrWhiteSpace(inventoryDetails.Data.InventoryMethod)
+                    ? "Adjust In"
+                    : inventoryDetails.Data.InventoryMethod;
+                _workflowService.CurrentSession.InventoryMethod = InventoryMethod;
                 UpdateInventoryMessage();
 
                 _logger.LogInfo(
-                    $"Part {part.PartId} is inventoried - showing notification",
+                    $"Part {part.PartId} is inventoried with method {InventoryMethod}",
                     "PartSelection"
                 );
             }
             else
             {
                 IsInventoryNotificationVisible = false;
+                InventoryMethod = string.Empty;
+                _workflowService.CurrentSession.InventoryMethod = string.Empty;
             }
         }
         catch (Exception ex)
@@ -319,6 +323,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
             _logger.LogError($"Error checking inventory status: {ex.Message}", ex, "PartSelection");
             // Don't show error to user - just hide notification
             IsInventoryNotificationVisible = false;
+            InventoryMethod = string.Empty;
+            _workflowService.CurrentSession.InventoryMethod = string.Empty;
         }
     }
 
@@ -397,6 +403,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
             // Set selected part in workflow
             _workflowService.CurrentSession.SelectedPart = SelectedPart;
+            await CheckInventoryStatusAsync(SelectedPart);
 
             _logger.LogInfo($"Selected part: {SelectedPart.PartId}", "PartSelection");
 

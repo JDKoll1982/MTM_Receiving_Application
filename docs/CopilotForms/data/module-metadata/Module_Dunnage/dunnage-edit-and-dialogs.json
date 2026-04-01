@@ -2,7 +2,7 @@
   "id": "dunnage-edit-and-dialogs",
   "module": "Module_Dunnage",
   "name": "Edit Mode And Dialogs",
-  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, button-based Type/Part/Location selectors with shared fuzzy search, and source-aware save/update DAO flows used outside the main guided path.",
+  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, button-based Type/Part/Location selectors with shared fuzzy search, full active-label column toggling, and source-aware save/update/delete flows used outside the main guided path.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
@@ -42,7 +42,8 @@
       "Add-row and inventory dialogs",
       "Admin shell support",
       "Dialog-based type, part, and location selection",
-      "Source-aware edit-mode save persistence"
+      "Source-aware edit-mode save persistence",
+      "Active label queue maintenance"
     ],
     "screens": [
       "View_Dunnage_EditModeView.xaml",
@@ -57,6 +58,8 @@
       "Type selector button cells",
       "Part selector button cells",
       "Location selector button cells",
+      "Current-label archive refresh hook",
+      "Choose visible columns modal",
       "Shared fuzzy-search picker",
       "Source-aware Save Changes pipeline",
       "Non-PO entry form",
@@ -69,6 +72,8 @@
       "Choose a part ID limited to the selected type",
       "Choose an Infor Visual location from a fuzzy-search modal",
       "Save edited rows back to history or the active label queue without reinserting duplicates",
+      "Delete removed rows from the active label queue or history based on the loaded source",
+      "Toggle any available active-label table column in the edit grid",
       "Capture non-PO dunnage entries",
       "Add rows or inventory items through dialogs"
     ],
@@ -77,7 +82,10 @@
       "Confirm changing Type clears the current Part ID and the Part picker is scoped to the selected type",
       "Confirm the Location column opens the fuzzy-search picker against Infor Visual warehouse 002",
       "Confirm the fuzzy-search dialog filters results locally for Type, Part ID, and Location selection",
-      "Confirm Save Changes only writes edited rows and routes updates by source: history vs active label queue",
+      "Confirm Save Changes persists the remaining edit-mode rows correctly whether the source is Current Labels or History",
+      "Confirm removed rows are deleted from dunnage_label_data when Current Labels is the active source",
+      "Confirm Clear All Labels immediately clears the Current Labels edit grid when the active queue is archived",
+      "Confirm the Columns modal includes the available dunnage_label_data fields, including hidden queue metadata columns",
       "Confirm a successful save refreshes the same working set and a failed save surfaces a clear error",
       "Confirm edit-mode and non-PO dialog flows still target the correct records",
       "Confirm add-row and inventory dialogs still support the admin workflow correctly"

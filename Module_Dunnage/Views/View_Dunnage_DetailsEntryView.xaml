@@ -81,7 +81,7 @@
                                 HorizontalAlignment="Stretch"
                                 LostFocus="LocationTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.Location'), Mode=OneWay}"
-                                Text="{x:Bind ViewModel.Location, Mode=TwoWay}" />
+                                Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"

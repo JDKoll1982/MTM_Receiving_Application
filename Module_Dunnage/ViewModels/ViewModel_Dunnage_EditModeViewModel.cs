@@ -72,6 +72,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         _inforVisualService = inforVisualService;
         _helpService = helpService;
 
+        _workflowService.LabelDataCleared += OnLabelDataCleared;
+
         // T166: Set page size to 50
         _paginationService.PageSize = PAGE_SIZE;
 
@@ -90,6 +92,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
     [ObservableProperty]
     private ObservableCollection<Model_DunnageLoad> _selectedLoads = new();
+
+    [ObservableProperty]
+    private Model_DunnageLoad? _focusedLoad;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -495,6 +500,11 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     {
         SyncSelectedLoadsFromFlags();
 
+        if (SelectedLoads.Count == 0 && FocusedLoad is not null)
+        {
+            SelectedLoads.Add(FocusedLoad);
+        }
+
         if (SelectedLoads.Count == 0)
         {
             return;
@@ -514,6 +524,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         }
 
         SelectedLoads.Clear();
+    FocusedLoad = null;
         EnsureDisplayLoadNumbers();
         ApplySearchFilter(CurrentPage);
 
@@ -832,13 +843,17 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
                 return;
             }
 
+            var remainingLoads = _allLoads.ToList();
+
             Model_Dao_Result saveResult = _currentLoadSource switch
             {
-                EditModeLoadSource.CurrentMemory => await _dunnageService.SaveLoadsAsync(_allLoads),
+                EditModeLoadSource.CurrentMemory => await _dunnageService.SaveLoadsAsync(
+                    remainingLoads
+                ),
                 EditModeLoadSource.CurrentLabels =>
-                    await _dunnageService.UpdateActiveLabelLoadsAsync(editedLoads),
+                    await _dunnageService.UpdateActiveLabelLoadsAsync(remainingLoads),
                 EditModeLoadSource.History => await _dunnageService.UpdateHistoryLoadsAsync(
-                    editedLoads
+                    remainingLoads
                 ),
                 _ => Model_Dao_Result_Factory.Failure(
                     "No Dunnage Edit Mode data source is currently loaded."
@@ -967,6 +982,27 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         StatusMessage = $"Page {CurrentPage} of {TotalPages}";
 
         _logger.LogInfo($"Page changed to {CurrentPage} of {TotalPages}", "EditMode");
+    }
+
+    private void OnLabelDataCleared(object? sender, EventArgs e)
+    {
+        if (_currentLoadSource != EditModeLoadSource.CurrentLabels)
+        {
+            return;
+        }
+
+        _allLoads.Clear();
+        FilteredLoads.Clear();
+        SelectedLoads.Clear();
+        _removedLoads.Clear();
+        _originalLoadSnapshots.Clear();
+        _currentLoadSource = EditModeLoadSource.None;
+        TotalRecords = 0;
+        CurrentPage = 1;
+        TotalPages = 1;
+        CanNavigate = false;
+        CanSave = false;
+        StatusMessage = "Current Labels were cleared. Reload data to continue editing.";
     }
 
     private void UpdateCanSave()

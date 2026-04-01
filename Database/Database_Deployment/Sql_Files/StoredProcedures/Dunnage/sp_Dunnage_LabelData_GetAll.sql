@@ -12,6 +12,7 @@ DELIMITER $$
 CREATE PROCEDURE `sp_Dunnage_LabelData_GetAll`()
 BEGIN
     SELECT
+        id,
         load_uuid,
         part_id,
         dunnage_type_id,
@@ -23,7 +24,8 @@ BEGIN
         user_id,
         location,
         label_number,
-        specs_json
+        specs_json,
+        created_at
     FROM dunnage_label_data
     ORDER BY received_date ASC;
 END $$
