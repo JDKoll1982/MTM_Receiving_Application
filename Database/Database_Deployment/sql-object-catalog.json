@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-01T05:52:30.1631378-05:00",
+  "generatedAt": "2026-04-01T10:25:28.7256451-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1092,132 +1092,7 @@
       ]
     },
     {
-      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/04_seed_receiving_history.sql",
-      "category": "seed_file",
-      "objectType": "seed",
-      "objectName": null,
-      "procedureCount": 0,
-      "codebaseReferenceCount": 0,
-      "codebaseReferenceFileCount": 0,
-      "codebaseReferences": [],
-      "parameters": [],
-      "declaredVariables": [],
-      "referencedObjects": [],
-      "qualifiedColumns": [],
-      "insertTargets": [],
-      "updateTargets": [],
-      "deleteTargets": [],
-      "calledRoutines": [],
-      "parameterTokensUsed": [],
-      "variableTokensUsed": [],
-      "temporaryTables": [],
-      "aliasMap": []
-    },
-    {
-      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/05_seed_auth_user_john_koll.sql",
-      "category": "seed_file",
-      "objectType": "seed",
-      "objectName": null,
-      "procedureCount": 0,
-      "codebaseReferenceCount": 0,
-      "codebaseReferenceFileCount": 0,
-      "codebaseReferences": [],
-      "parameters": [],
-      "declaredVariables": [],
-      "referencedObjects": [
-        "auth_users",
-        "settings_roles",
-        "settings_user_roles"
-      ],
-      "qualifiedColumns": [
-        {
-          "qualifier": "sr",
-          "resolvedObject": "settings_roles",
-          "column": "id"
-        },
-        {
-          "qualifier": "sr",
-          "resolvedObject": "settings_roles",
-          "column": "role_name"
-        },
-        {
-          "qualifier": "sur",
-          "resolvedObject": "settings_user_roles",
-          "column": "user_id"
-        },
-        {
-          "qualifier": "sur",
-          "resolvedObject": "settings_user_roles",
-          "column": "role_id"
-        }
-      ],
-      "insertTargets": [
-        {
-          "table": "auth_users",
-          "columns": [
-            "employee_number",
-            "windows_username",
-            "full_name",
-            "pin",
-            "department",
-            "shift",
-            "is_active",
-            "visual_username",
-            "visual_password",
-            "default_receiving_mode",
-            "default_dunnage_mode",
-            "created_by",
-            "created_date",
-            "modified_date"
-          ]
-        },
-        {
-          "table": "settings_user_roles",
-          "columns": [
-            "user_id",
-            "role_id",
-            "assigned_at"
-          ]
-        }
-      ],
-      "updateTargets": [
-        {
-          "table": "auth_users",
-          "columns": [
-            "employee_number"
-          ]
-        }
-      ],
-      "deleteTargets": [],
-      "calledRoutines": [],
-      "parameterTokensUsed": [],
-      "variableTokensUsed": [],
-      "temporaryTables": [],
-      "aliasMap": [
-        {
-          "alias": "auth_users",
-          "object": "auth_users"
-        },
-        {
-          "alias": "settings_roles",
-          "object": "settings_roles"
-        },
-        {
-          "alias": "sr",
-          "object": "settings_roles"
-        },
-        {
-          "alias": "settings_user_roles",
-          "object": "settings_user_roles"
-        },
-        {
-          "alias": "sur",
-          "object": "settings_user_roles"
-        }
-      ]
-    },
-    {
-      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/06_seed_auth_user_bootstrap_accounts.sql",
+      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/04_seed_auth_user_bootstrap_accounts.sql",
       "category": "seed_file",
       "objectType": "seed",
       "objectName": null,
@@ -3087,6 +2962,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
           "name": "p_inventory_method",
           "sqlType": "VARCHAR(100)"
         },
@@ -3109,7 +2989,7 @@
         {
           "table": "dunnage_requires_inventory",
           "columns": [
-            "inventory_method"
+            "part_id"
           ]
         }
       ],
@@ -3117,6 +2997,7 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_id",
+        "p_part_id",
         "p_inventory_method",
         "p_notes",
         "p_user"
@@ -4994,6 +4875,113 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_InsertWithInventory.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_Parts_InsertWithInventory",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnagePart.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_type_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_spec_values",
+          "sqlType": "JSON"
+        },
+        {
+          "direction": "IN",
+          "name": "p_home_location",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_inventory_method",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_inventory_notes",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_user",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_new_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "EXIT",
+          "sqlType": "HANDLER FOR SQLEXCEPTION"
+        }
+      ],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "dunnage_parts",
+          "columns": [
+            "part_id",
+            "type_id",
+            "spec_values",
+            "home_location",
+            "created_by",
+            "created_date"
+          ]
+        },
+        {
+          "table": "dunnage_requires_inventory",
+          "columns": [
+            "part_id",
+            "inventory_method",
+            "notes",
+            "created_by",
+            "created_date"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id",
+        "p_type_id",
+        "p_spec_values",
+        "p_home_location",
+        "p_inventory_method",
+        "p_inventory_notes",
+        "p_user",
+        "p_new_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_dunnage_parts_search.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -5125,6 +5113,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
           "name": "p_spec_values",
           "sqlType": "JSON"
         },
@@ -5147,7 +5140,7 @@
         {
           "table": "dunnage_parts",
           "columns": [
-            "spec_values"
+            "part_id"
           ]
         }
       ],
@@ -5155,6 +5148,7 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_id",
+        "p_part_id",
         "p_spec_values",
         "p_home_location",
         "p_user"
@@ -5162,6 +5156,144 @@
       "variableTokensUsed": [],
       "temporaryTables": [],
       "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Parts_UpdateWithReferences.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_Parts_UpdateWithReferences",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnagePart.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_original_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_new_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_spec_values",
+          "sqlType": "JSON"
+        },
+        {
+          "direction": "IN",
+          "name": "p_home_location",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_inventory_method",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_inventory_notes",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_user",
+          "sqlType": "VARCHAR(50)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "EXIT",
+          "sqlType": "HANDLER FOR SQLEXCEPTION"
+        }
+      ],
+      "referencedObjects": [
+        "dunnage_requires_inventory"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "dunnage_requires_inventory",
+          "columns": [
+            "part_id",
+            "inventory_method",
+            "notes",
+            "created_by",
+            "created_date"
+          ]
+        }
+      ],
+      "updateTargets": [
+        {
+          "table": "dunnage_parts",
+          "columns": [
+            "part_id"
+          ]
+        },
+        {
+          "table": "dunnage_history",
+          "columns": [
+            "part_id"
+          ]
+        },
+        {
+          "table": "dunnage_label_data",
+          "columns": [
+            "part_id"
+          ]
+        },
+        {
+          "table": "dunnage_requires_inventory",
+          "columns": [
+            "part_id"
+          ]
+        },
+        {
+          "table": "dunnage_requires_inventory",
+          "columns": [
+            "inventory_method"
+          ]
+        }
+      ],
+      "deleteTargets": [
+        {
+          "table": "dunnage_requires_inventory"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id",
+        "p_original_part_id",
+        "p_new_part_id",
+        "p_spec_values",
+        "p_home_location",
+        "p_inventory_method",
+        "p_inventory_notes",
+        "p_user"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_requires_inventory",
+          "object": "dunnage_requires_inventory"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_CountPartsUsingSpec.sql",
