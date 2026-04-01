@@ -1,0 +1,64 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_InsertWithInventory`$$
+
+CREATE PROCEDURE `sp_Dunnage_Parts_InsertWithInventory`(
+    IN p_part_id VARCHAR(50),
+    IN p_type_id INT,
+    IN p_spec_values JSON,
+    IN p_home_location VARCHAR(100),
+    IN p_inventory_method VARCHAR(100),
+    IN p_inventory_notes TEXT,
+    IN p_user VARCHAR(50),
+    OUT p_new_id INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO dunnage_parts (
+        part_id,
+        type_id,
+        spec_values,
+        home_location,
+        created_by,
+        created_date
+    ) VALUES (
+        p_part_id,
+        p_type_id,
+        p_spec_values,
+        p_home_location,
+        p_user,
+        NOW()
+    );
+
+    SET p_new_id = LAST_INSERT_ID();
+
+    IF p_inventory_method IS NOT NULL
+        AND TRIM(p_inventory_method) <> ''
+        AND UPPER(TRIM(p_inventory_method)) <> 'NOT INVENTORIED'
+    THEN
+        INSERT INTO dunnage_requires_inventory (
+            part_id,
+            inventory_method,
+            notes,
+            created_by,
+            created_date
+        ) VALUES (
+            p_part_id,
+            p_inventory_method,
+            NULLIF(p_inventory_notes, ''),
+            p_user,
+            NOW()
+        );
+    END IF;
+
+    COMMIT;
+END $$
+
+DELIMITER ;

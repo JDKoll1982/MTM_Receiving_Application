@@ -95,6 +95,7 @@ public class Dao_InventoriedDunnage
 
     public virtual async Task<Model_Dao_Result> UpdateAsync(
         int id,
+        string partId,
         string inventoryMethod,
         string notes,
         string user
@@ -103,6 +104,7 @@ public class Dao_InventoriedDunnage
         var parameters = new Dictionary<string, object>
         {
             { "id", id },
+            { "part_id", partId },
             { "inventory_method", inventoryMethod },
             { "notes", notes },
             { "user", user },

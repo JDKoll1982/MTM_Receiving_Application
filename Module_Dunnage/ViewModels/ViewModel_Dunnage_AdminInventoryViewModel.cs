@@ -243,6 +243,7 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
                 // Save changes
                 var updateResult = await _daoInventory.UpdateAsync(
                     SelectedInventoriedPart.Id,
+                    SelectedInventoriedPart.PartId,
                     methodCombo.SelectedItem?.ToString() ?? "Both",
                     notesBox.Text,
                     Environment.UserName

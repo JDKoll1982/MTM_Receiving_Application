@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -11,9 +11,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 {
     public string PartId { get; private set; } = string.Empty;
-    public int TypeId { get; private set; }
-    public string TypeName { get; private set; } = string.Empty;
-    public string SpecValuesJson { get; private set; } = string.Empty;
+    public int TypeId { get; }
+    public string TypeName { get; }
+    public string SpecValuesJson { get; private set; } = "{}";
+    public string HomeLocation { get; private set; } = string.Empty;
+    public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
 
     private readonly List<Model_DunnageSpec> _specs;
     private readonly Dictionary<string, Control> _specInputs = new();
@@ -32,295 +34,187 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         _specs = specs;
 
         GenerateSpecFields();
-        UpdatePartId();
+        PartIdTextBox.Text = BuildSuggestedPartId();
     }
 
     private void GenerateSpecFields()
     {
-        if (_specs == null || _specs.Count == 0)
+        for (var index = 0; index < _specs.Count; index++)
         {
-            return;
-        }
-
-        foreach (var spec in _specs)
-        {
-            // Skip dimensions as they are handled by the static fields
-            if (
-                string.Equals(spec.SpecKey, "Width", System.StringComparison.OrdinalIgnoreCase)
-                || string.Equals(spec.SpecKey, "Height", System.StringComparison.OrdinalIgnoreCase)
-                || string.Equals(spec.SpecKey, "Depth", System.StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                continue;
-            }
-
-            SpecDefinition? def = null;
-            try
-            {
-                def = JsonSerializer.Deserialize<SpecDefinition>(spec.SpecValue);
-            }
-            catch
-            {
-                // Intentionally empty - fallback to null
-            }
-
-            if (def == null)
-            {
-                def = new SpecDefinition { DataType = "Text" }; // Fallback
-            }
-
-            var stackPanel = new StackPanel { Spacing = 4 };
-
-            var labelText = spec.SpecKey;
-            if (def.Required)
-            {
-                labelText += " *";
-            }
-
-            if (!string.IsNullOrEmpty(def.Unit))
-            {
-                labelText += $" ({def.Unit})";
-            }
-
-            var label = new TextBlock
-            {
-                Text = labelText,
-                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"],
-            };
-            stackPanel.Children.Add(label);
-
-            Control? inputControl = null;
-
-            if (string.Equals(def.DataType, "Number", System.StringComparison.OrdinalIgnoreCase))
-            {
-                var numberBox = new NumberBox
-                {
-                    PlaceholderText = "0",
-                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
-                };
-                if (def.MinValue.HasValue)
-                {
-                    numberBox.Minimum = def.MinValue.Value;
-                }
-
-                if (def.MaxValue.HasValue)
-                {
-                    numberBox.Maximum = def.MaxValue.Value;
-                }
-
-                numberBox.ValueChanged += (s, e) => UpdatePartId();
-                inputControl = numberBox;
-            }
-            else if (
-                string.Equals(def.DataType, "Boolean", System.StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                var checkBox = new CheckBox { Content = "Yes" };
-                checkBox.Checked += (s, e) => UpdatePartId();
-                checkBox.Unchecked += (s, e) => UpdatePartId();
-                inputControl = checkBox;
-            }
-            else if (
-                string.Equals(def.DataType, "Choices", System.StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                var comboBox = new ComboBox
-                {
-                    PlaceholderText = $"Select {spec.SpecKey.ToLower()}",
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                };
-
-                foreach (var choice in def.Choices)
-                {
-                    comboBox.Items.Add(choice);
-                }
-
-                comboBox.SelectionChanged += (s, e) => UpdatePartId();
-                inputControl = comboBox;
-            }
-            else // Text
-            {
-                var textBox = new TextBox
-                {
-                    PlaceholderText = $"Enter {spec.SpecKey.ToLower()}",
-                    MaxLength = 100,
-                };
-                textBox.TextChanged += (s, e) => UpdatePartId();
-                inputControl = textBox;
-            }
-
-            stackPanel.Children.Add(inputControl);
-            DynamicSpecsPanel.Children.Add(stackPanel);
+            var spec = _specs[index];
+            var definition = ParseDefinition(spec.SpecValue);
+            var panel = CreateSpecPanel(spec.SpecKey, definition, out var inputControl);
+            AddPanelToGrid(panel, index);
             _specInputs[spec.SpecKey] = inputControl;
         }
     }
 
-    private void OnDimensionChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private SpecDefinition ParseDefinition(string json)
     {
-        UpdatePartId();
+        try
+        {
+            return JsonSerializer.Deserialize<SpecDefinition>(json)
+                ?? new SpecDefinition { DataType = "Text" };
+        }
+        catch
+        {
+            return new SpecDefinition { DataType = "Text" };
+        }
     }
 
-    private void UpdatePartId()
+    private StackPanel CreateSpecPanel(
+        string specKey,
+        SpecDefinition definition,
+        out Control inputControl
+    )
     {
-        var parts = new List<string>();
-
-        // 1. Type name
-        parts.Add(TypeName);
-
-        // 2. Text specs (if any)
-        var textSpecs = new List<string>();
-        foreach (var kvp in _specInputs)
+        var panel = new StackPanel { Spacing = 4 };
+        var labelText = specKey;
+        if (definition.Required)
         {
-            if (kvp.Value is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text))
+            labelText += " *";
+        }
+
+        if (!string.IsNullOrWhiteSpace(definition.Unit))
+        {
+            labelText += $" ({definition.Unit})";
+        }
+
+        panel.Children.Add(
+            new TextBlock
             {
-                textSpecs.Add(tb.Text.Trim());
+                Text = labelText,
+                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"],
             }
-            else if (
-                kvp.Value is ComboBox comboBox
-                && comboBox.SelectedItem is string selectedChoice
-            )
+        );
+
+        inputControl = CreateInputControl(specKey, definition);
+        panel.Children.Add(inputControl);
+        return panel;
+    }
+
+    private Control CreateInputControl(string specKey, SpecDefinition definition)
+    {
+        if (string.Equals(definition.DataType, "Number", StringComparison.OrdinalIgnoreCase))
+        {
+            var numberBox = new NumberBox
             {
-                textSpecs.Add(selectedChoice.Trim());
-            }
-        }
-
-        // 3. Number specs in parentheses with x separator
-        var numbers = new List<double>();
-        if (!double.IsNaN(WidthNumberBox.Value) && WidthNumberBox.Value > 0)
-        {
-            numbers.Add(WidthNumberBox.Value);
-        }
-
-        if (!double.IsNaN(HeightNumberBox.Value) && HeightNumberBox.Value > 0)
-        {
-            numbers.Add(HeightNumberBox.Value);
-        }
-
-        if (!double.IsNaN(DepthNumberBox.Value) && DepthNumberBox.Value > 0)
-        {
-            numbers.Add(DepthNumberBox.Value);
-        }
-
-        // Add other number specs from dynamic inputs
-        foreach (var kvp in _specInputs)
-        {
-            if (kvp.Value is NumberBox nb && !double.IsNaN(nb.Value) && nb.Value > 0)
+                PlaceholderText = "0",
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            };
+            if (definition.MinValue.HasValue)
             {
-                numbers.Add(nb.Value);
+                numberBox.Minimum = definition.MinValue.Value;
             }
-        }
 
-        if (numbers.Count > 0)
-        {
-            // Format numbers: remove decimals if whole numbers
-            var formattedNumbers = numbers.Select(n =>
-                n == Math.Floor(n) ? ((int)n).ToString() : n.ToString("0.##")
-            );
-            parts.Add($"({string.Join("x", formattedNumbers)})");
-        }
-
-        // 4. Boolean specs (only if true, abbreviated if >2 words)
-        var boolSpecs = new List<string>();
-        foreach (var kvp in _specInputs)
-        {
-            if (kvp.Value is CheckBox cb && cb.IsChecked == true)
+            if (definition.MaxValue.HasValue)
             {
-                var specName = kvp.Key;
-                var words = specName.Split(
-                    new[] { ' ', '_' },
-                    System.StringSplitOptions.RemoveEmptyEntries
-                );
+                numberBox.Maximum = definition.MaxValue.Value;
+            }
 
-                if (words.Length > 2)
-                {
-                    // Abbreviate: use first letter of each word
-                    boolSpecs.Add(string.Join("", words.Select(w => char.ToUpper(w[0]))));
-                }
-                else
-                {
-                    // Use full name
-                    boolSpecs.Add(specName);
-                }
+            return numberBox;
+        }
+
+        if (string.Equals(definition.DataType, "Boolean", StringComparison.OrdinalIgnoreCase))
+        {
+            return new CheckBox { Content = "Yes" };
+        }
+
+        if (string.Equals(definition.DataType, "Choices", StringComparison.OrdinalIgnoreCase))
+        {
+            var comboBox = new ComboBox
+            {
+                PlaceholderText = $"Select {specKey.ToLowerInvariant()}",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+            };
+
+            foreach (var choice in definition.Choices)
+            {
+                comboBox.Items.Add(choice);
+            }
+
+            return comboBox;
+        }
+
+        return new TextBox
+        {
+            PlaceholderText = $"Enter {specKey.ToLowerInvariant()}",
+            MaxLength = 100,
+        };
+    }
+
+    private void AddPanelToGrid(FrameworkElement panel, int index)
+    {
+        var row = index / 2;
+        while (DynamicSpecsGrid.RowDefinitions.Count <= row)
+        {
+            DynamicSpecsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        }
+
+        Grid.SetRow(panel, row);
+        Grid.SetColumn(panel, index % 2);
+        DynamicSpecsGrid.Children.Add(panel);
+    }
+
+    private Dictionary<string, object?> GetCurrentSpecValues()
+    {
+        var specValues = new Dictionary<string, object?>();
+        foreach (var pair in _specInputs)
+        {
+            if (pair.Value is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+            {
+                specValues[pair.Key] = textBox.Text.Trim();
+            }
+            else if (pair.Value is NumberBox numberBox && !double.IsNaN(numberBox.Value))
+            {
+                specValues[pair.Key] = numberBox.Value;
+            }
+            else if (pair.Value is CheckBox checkBox)
+            {
+                specValues[pair.Key] = checkBox.IsChecked ?? false;
+            }
+            else if (pair.Value is ComboBox comboBox && comboBox.SelectedItem is string choice)
+            {
+                specValues[pair.Key] = choice.Trim();
             }
         }
 
-        if (boolSpecs.Count > 0)
-        {
-            parts.Add(string.Join(", ", boolSpecs));
-        }
+        return specValues;
+    }
 
-        // Add text specs if any
-        if (textSpecs.Count > 0)
-        {
-            // Insert text specs after type name
-            parts.Insert(1, string.Join(", ", textSpecs));
-        }
+    private string BuildSuggestedPartId()
+    {
+        return Helper_Dunnage_PartIdSuggestion.BuildSuggestedPartId(
+            TypeName,
+            GetCurrentSpecValues()
+        );
+    }
 
-        PartIdTextBox.Text = string.Join(" - ", parts);
+    private void SuggestPartIdButton_Click(object sender, RoutedEventArgs e)
+    {
+        PartIdTextBox.Text = BuildSuggestedPartId();
     }
 
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        // Set Part ID
         PartId = PartIdTextBox.Text.Trim();
-
-        // Build spec values dictionary
-        var specValues = new Dictionary<string, object>();
-
-        // Add dynamic specs
-        foreach (var kvp in _specInputs)
+        if (string.IsNullOrWhiteSpace(PartId))
         {
-            if (kvp.Value is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text))
-            {
-                specValues[kvp.Key] = tb.Text.Trim();
-            }
-            else if (kvp.Value is NumberBox nb && !double.IsNaN(nb.Value))
-            {
-                specValues[kvp.Key] = nb.Value;
-            }
-            else if (kvp.Value is CheckBox cb)
-            {
-                specValues[kvp.Key] = cb.IsChecked ?? false;
-            }
-            else if (
-                kvp.Value is ComboBox comboBox
-                && comboBox.SelectedItem is string selectedChoice
-            )
-            {
-                specValues[kvp.Key] = selectedChoice.Trim();
-            }
+            args.Cancel = true;
+            PartIdTextBox.Focus(FocusState.Programmatic);
+            return;
         }
 
-        // Add dimensions if provided
-        if (!double.IsNaN(WidthNumberBox.Value) && WidthNumberBox.Value > 0)
-        {
-            specValues["Width"] = WidthNumberBox.Value;
-        }
-
-        if (!double.IsNaN(HeightNumberBox.Value) && HeightNumberBox.Value > 0)
-        {
-            specValues["Height"] = HeightNumberBox.Value;
-        }
-
-        if (!double.IsNaN(DepthNumberBox.Value) && DepthNumberBox.Value > 0)
-        {
-            specValues["Depth"] = DepthNumberBox.Value;
-        }
-
-        // Add notes if provided
+        var specValues = GetCurrentSpecValues();
         if (!string.IsNullOrWhiteSpace(NotesTextBox.Text))
         {
             specValues["Notes"] = NotesTextBox.Text.Trim();
         }
 
-        // Serialize to JSON
-        if (specValues.Count > 0)
-        {
-            SpecValuesJson = JsonSerializer.Serialize(specValues);
-        }
-        else
-        {
-            SpecValuesJson = "{}";
-        }
+        SpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
+        HomeLocation = HomeLocationTextBox.Text.Trim();
+        SelectedInventoryMethod =
+            (InventoryTypeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString()
+            ?? "Not Inventoried";
     }
 }

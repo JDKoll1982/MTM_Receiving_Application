@@ -37,7 +37,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result<List<Model_DunnagePart>>> GetPartsByTypeAsync(int typeId);
         public Task<Model_Dao_Result<Model_DunnagePart>> GetPartByIdAsync(string partId);
         public Task<Model_Dao_Result> InsertPartAsync(Model_DunnagePart part);
+        public Task<Model_Dao_Result> InsertPartWithInventoryAsync(
+            Model_DunnagePart part,
+            string inventoryMethod,
+            string inventoryNotes = ""
+        );
         public Task<Model_Dao_Result> UpdatePartAsync(Model_DunnagePart part);
+        public Task<Model_Dao_Result> UpdatePartWithInventoryAndReferencesAsync(
+            Model_DunnagePart part,
+            string originalPartId,
+            string inventoryMethod,
+            string inventoryNotes = ""
+        );
         public Task<Model_Dao_Result> DeletePartAsync(string partId);
         public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(
             string searchText,
@@ -76,6 +87,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync();
         public Task<Model_Dao_Result> UpdateInventoriedPartAsync(
             int id,
+            string partId,
             string inventoryMethod,
             string notes,
             string username

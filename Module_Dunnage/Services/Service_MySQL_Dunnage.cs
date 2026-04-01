@@ -592,6 +592,62 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
+        public async Task<Model_Dao_Result> InsertPartWithInventoryAsync(
+            Model_DunnagePart part,
+            string inventoryMethod,
+            string inventoryNotes = ""
+        )
+        {
+            try
+            {
+                var existingParts = await _daoDunnagePart.GetAllAsync();
+                if (
+                    existingParts.IsSuccess
+                    && existingParts.Data?.Any(existingPart =>
+                        existingPart.PartId.Equals(part.PartId, StringComparison.OrdinalIgnoreCase)
+                    ) == true
+                )
+                {
+                    return Model_Dao_Result_Factory.Failure(
+                        $"A dunnage part with Part ID '{part.PartId}' already exists."
+                    );
+                }
+
+                var result = await _daoDunnagePart.InsertWithInventoryAsync(
+                    part.PartId,
+                    part.TypeId,
+                    part.SpecValues,
+                    part.HomeLocation,
+                    inventoryMethod,
+                    inventoryNotes,
+                    CurrentUser
+                );
+
+                if (result.IsSuccess)
+                {
+                    part.Id = result.Data;
+                    return Model_Dao_Result_Factory.Success();
+                }
+
+                return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Exception in InsertPartWithInventoryAsync for part '{part.PartId}': {ex.Message}"
+                );
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(InsertPartWithInventoryAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error inserting part with inventory: {ex.Message}"
+                );
+            }
+        }
+
         public async Task<Model_Dao_Result> UpdatePartAsync(Model_DunnagePart part)
         {
             try
@@ -601,6 +657,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 var result = await _daoDunnagePart.UpdateAsync(
                     part.Id,
+                    part.PartId,
                     part.SpecValues,
                     part.HomeLocation,
                     CurrentUser
@@ -629,6 +686,60 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     nameof(Service_MySQL_Dunnage)
                 );
                 return Model_Dao_Result_Factory.Failure($"Error updating part: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result> UpdatePartWithInventoryAndReferencesAsync(
+            Model_DunnagePart part,
+            string originalPartId,
+            string inventoryMethod,
+            string inventoryNotes = ""
+        )
+        {
+            try
+            {
+                var existingParts = await _daoDunnagePart.GetAllAsync();
+                if (
+                    existingParts.IsSuccess
+                    && existingParts.Data?.Any(existingPart =>
+                        existingPart.Id != part.Id
+                        && existingPart.PartId.Equals(
+                            part.PartId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    ) == true
+                )
+                {
+                    return Model_Dao_Result_Factory.Failure(
+                        $"A dunnage part with Part ID '{part.PartId}' already exists."
+                    );
+                }
+
+                return await _daoDunnagePart.UpdateWithInventoryAndReferencesAsync(
+                    part.Id,
+                    originalPartId,
+                    part.PartId,
+                    part.SpecValues,
+                    part.HomeLocation,
+                    inventoryMethod,
+                    inventoryNotes,
+                    CurrentUser
+                );
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Exception in UpdatePartWithInventoryAndReferencesAsync for part '{part.PartId}': {ex.Message}"
+                );
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(UpdatePartWithInventoryAndReferencesAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error updating part with linked references: {ex.Message}"
+                );
             }
         }
 
@@ -1171,9 +1282,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public async Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId)
         {
-            return Model_Dao_Result_Factory.Failure(
-                "Remove from inventory list not implemented in DAO yet."
-            );
+            var existingEntry = await _daoInventoriedDunnage.GetByPartAsync(partId);
+            if (!existingEntry.IsSuccess || existingEntry.Data is null)
+            {
+                return Model_Dao_Result_Factory.Success();
+            }
+
+            return await _daoInventoriedDunnage.DeleteAsync(existingEntry.Data.Id);
         }
 
         public async Task<Model_Dao_Result> UpdateInventoriedPartAsync(
@@ -1184,6 +1299,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             {
                 return await _daoInventoriedDunnage.UpdateAsync(
                     item.Id,
+                    item.PartId,
                     item.InventoryMethod ?? string.Empty,
                     item.Notes ?? string.Empty,
                     CurrentUser
@@ -1212,6 +1328,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// <param name="username"></param>
         public async Task<Model_Dao_Result> UpdateInventoriedPartAsync(
             int id,
+            string partId,
             string inventoryMethod,
             string notes,
             string username
@@ -1220,6 +1337,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             var part = new Model_InventoriedDunnage
             {
                 Id = id,
+                PartId = partId,
                 InventoryMethod = inventoryMethod,
                 Notes = notes,
                 ModifiedBy = username,

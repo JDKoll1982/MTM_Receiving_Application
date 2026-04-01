@@ -133,34 +133,18 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             DetailsEntryView.ViewModel.PoNumber = nonPoDialog.Result;
         }
 
-        var confirmDialog = new ContentDialog
+        var result = await _workflowService.AdvanceToNextStepAsync();
+
+        if (!result.IsSuccess)
         {
-            Title = "Review",
-            Content =
-                "Are you ready to save this load and proceed to review?\n\nYou will be able to add more loads from the review screen.",
-            PrimaryButtonText = "Review",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = this.XamlRoot,
-        };
-
-        var confirmResult = await confirmDialog.ShowAsync();
-
-        if (confirmResult == ContentDialogResult.Primary)
-        {
-            var result = await _workflowService.AdvanceToNextStepAsync();
-
-            if (!result.IsSuccess)
+            var errorDialog = new ContentDialog
             {
-                var errorDialog = new ContentDialog
-                {
-                    Title = "Cannot Proceed",
-                    Content = result.ErrorMessage,
-                    CloseButtonText = "OK",
-                    XamlRoot = this.XamlRoot,
-                };
-                await errorDialog.ShowAsync();
-            }
+                Title = "Cannot Proceed",
+                Content = result.ErrorMessage,
+                CloseButtonText = "OK",
+                XamlRoot = this.XamlRoot,
+            };
+            await errorDialog.ShowAsync();
         }
     }
 

@@ -17,7 +17,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
-/// ViewModel for Dunnage Type Selection with 4x4 paginated grid
+/// ViewModel for Dunnage Type Selection with a 3x4 paginated grid.
 /// </summary>
 public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IResettableViewModel
 {
@@ -156,11 +156,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
             if (result.IsSuccess && result.Data != null)
             {
-                // Configure pagination for 4x4 grid (16 items per page)
-                _paginationService.PageSize = 16;
+                // Configure pagination for 3x4 grid (12 items per page)
+                _paginationService.PageSize = 12;
                 _paginationService.SetSource(result.Data);
                 _logger.LogInfo(
-                    $"TypeSelection: Pagination configured with PageSize=16, TotalItems={result.Data.Count}",
+                    $"TypeSelection: Pagination configured with PageSize=12, TotalItems={result.Data.Count}",
                     "ViewModel_dunnage_typeselection"
                 );
 

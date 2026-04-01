@@ -34,92 +34,88 @@
                 Text="{x:Bind ViewModel.GetTip('Dunnage.TypeSelection'), Mode=OneWay}" />
         </StackPanel>
 
-        <!--  4x4 Type Grid  -->
-        <GridView
-            Grid.Row="1"
-            Width="912"
-            Height="520"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            IsItemClickEnabled="True"
-            ItemClick="TypeCard_ItemClick"
-            ItemsSource="{x:Bind ViewModel.DisplayedTypes, Mode=OneWay}"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            ScrollViewer.HorizontalScrollMode="Disabled"
-            ScrollViewer.VerticalScrollBarVisibility="Hidden"
-            ScrollViewer.VerticalScrollMode="Disabled"
-            SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
-            SelectionMode="None">
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
-            <GridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem">
-                    <Setter Property="Margin" Value="4" />
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                </Style>
-            </GridView.ItemContainerStyle>
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="models:Model_DunnageType">
-                    <Border
-                        Width="220"
-                        Height="112"
-                        Padding="12"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                        <Border.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem
-                                    Command="{Binding ElementName=RootUserControl, Path=ViewModel.EditTypeCommand}"
-                                    CommandParameter="{x:Bind}"
-                                    Icon="Edit"
-                                    Text="Edit" />
-                                <MenuFlyoutItem
-                                    Command="{Binding ElementName=RootUserControl, Path=ViewModel.DeleteTypeCommand}"
-                                    CommandParameter="{x:Bind}"
-                                    Icon="Delete"
-                                    Text="Delete" />
-                            </MenuFlyout>
-                        </Border.ContextFlyout>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+        <!--  3x4 Type Grid  -->
+        <Grid x:Name="CardAreaHost" Grid.Row="1">
+            <GridView
+                x:Name="TypeGridView"
+                MaxWidth="912"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Stretch"
+                IsItemClickEnabled="True"
+                ItemClick="TypeCard_ItemClick"
+                ItemsSource="{x:Bind ViewModel.DisplayedTypes, Mode=OneWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.HorizontalScrollMode="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                ScrollViewer.VerticalScrollMode="Disabled"
+                SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
+                SelectionMode="None">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.ItemContainerStyle>
+                    <Style TargetType="GridViewItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                    </Style>
+                </GridView.ItemContainerStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_DunnageType">
+                        <Border
+                            Margin="4"
+                            Padding="12"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <Border.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem
+                                        Command="{Binding ElementName=RootUserControl, Path=ViewModel.EditTypeCommand}"
+                                        CommandParameter="{x:Bind}"
+                                        Icon="Edit"
+                                        Text="Edit" />
+                                    <MenuFlyoutItem
+                                        Command="{Binding ElementName=RootUserControl, Path=ViewModel.DeleteTypeCommand}"
+                                        CommandParameter="{x:Bind}"
+                                        Icon="Delete"
+                                        Text="Delete" />
+                                </MenuFlyout>
+                            </Border.ContextFlyout>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
 
-                            <!--  Icon  -->
-                            <materialIcons:MaterialIcon
-                                Grid.Row="0"
-                                Width="30"
-                                Height="30"
-                                Margin="0,0,0,8"
-                                HorizontalAlignment="Center"
-                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                Kind="{x:Bind IconKind, Mode=OneWay}" />
+                                <materialIcons:MaterialIcon
+                                    Grid.Row="0"
+                                    Width="30"
+                                    Height="30"
+                                    Margin="0,0,0,8"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                    Kind="{x:Bind IconKind, Mode=OneWay}" />
 
-                            <!--  Type Name  -->
-                            <TextBlock
-                                Grid.Row="1"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="15"
-                                FontWeight="SemiBold"
-                                MaxLines="2"
-                                Text="{x:Bind TypeName}"
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    FontWeight="SemiBold"
+                                    MaxLines="2"
+                                    Text="{x:Bind TypeName}"
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </Grid>
 
         <!--  Pagination Controls  -->
         <StackPanel

@@ -2,7 +2,7 @@
   "id": "dunnage-admin-maintenance",
   "module": "Module_Dunnage",
   "name": "Admin Maintenance",
-  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current, including timer-backed add-type validation cleanup and choice-based spec definitions for quick-add type and part dialogs.",
+  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current, including timer-backed add-type validation cleanup and choice-based spec definitions for quick-add type and part dialogs, with Edit Part now relying on spec-defined fields instead of hardcoded dimension inputs.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs",
@@ -89,6 +89,7 @@
       "Confirm quick-add dialogs still feed the correct admin screens",
       "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
       "Confirm Quick Add Part and Edit Part render Choices specs as dropdowns using the configured array values",
+      "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions",
       "Confirm the Add Type dialog tears down its validation timer when the dialog closes"
     ]
   }

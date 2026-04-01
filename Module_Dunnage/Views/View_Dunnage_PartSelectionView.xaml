@@ -2,16 +2,15 @@
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_PartSelectionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mi="using:Material.Icons.WinUI3"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mi="using:Material.Icons.WinUI3"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
     xmlns:views="using:MTM_Receiving_Application.Module_Dunnage.Views"
-    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
-    mc:Ignorable="d"
     x:DataType="views:View_Dunnage_PartSelectionView"
     Loaded="OnLoaded"
->
+    mc:Ignorable="d">
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter" />
@@ -24,83 +23,78 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+        <!--  Header  -->
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,0,0,24"
+            Spacing="8">
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Select Part - " />
                 <mi:MaterialIcon
-                    Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}"
                     Width="24"
                     Height="24"
-                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     VerticalAlignment="Center"
-                />
-                <TextBlock
-                    Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"
-                    Style="{StaticResource TitleTextBlockStyle}"
-                />
+                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                    Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}" />
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}" />
             </StackPanel>
             <TextBlock
-                Text="{x:Bind ViewModel.GetTip('Dunnage.PartSelection'), Mode=OneWay}"
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                 Style="{StaticResource BodyTextBlockStyle}"
-            />
+                Text="{x:Bind ViewModel.GetTip('Dunnage.PartSelection'), Mode=OneWay}" />
         </StackPanel>
 
-        <!-- Inventory Notification -->
+        <!--  Inventory Notification  -->
         <InfoBar
             Grid.Row="1"
-            IsOpen="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}"
-            Severity="Warning"
-            Message="{x:Bind ViewModel.InventoryNotificationMessage, Mode=OneWay}"
             Margin="0,0,0,16"
-        />
+            IsOpen="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}"
+            Message="{x:Bind ViewModel.InventoryNotificationMessage, Mode=OneWay}"
+            Severity="Warning" />
 
-        <!-- Part Selection Form -->
+        <!--  Part Selection Form  -->
         <ScrollViewer Grid.Row="2">
             <StackPanel Spacing="24">
-                <!-- Part Dropdown -->
+                <!--  Part Dropdown  -->
                 <StackPanel Spacing="12">
-                    <TextBlock
-                        Text="Select Part"
-                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                    />
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Select Part" />
                     <ComboBox
                         x:Name="PartNumberComboBox"
-                        ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
-                        SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
-                        DisplayMemberPath="PartId"
-                        PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartSelection'), Mode=OneWay}"
-                        HorizontalAlignment="Stretch"
                         MinWidth="300"
-                    />
+                        HorizontalAlignment="Stretch"
+                        DisplayMemberPath="PartId"
+                        ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
+                        PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartSelection'), Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}" />
                 </StackPanel>
 
-                <!-- Part Details Card -->
+                <!--  Part Details Card  -->
                 <Border
+                    Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
-                    Padding="20"
-                    Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                >
+                    Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Grid RowSpacing="12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- Header -->
+                        <!--  Header  -->
                         <TextBlock
                             Grid.Row="0"
-                            Text="Part Details"
                             Style="{StaticResource SubtitleTextBlockStyle}"
-                        />
+                            Text="Part Details" />
 
-                        <!-- Details Grid -->
-                        <Grid Grid.Row="1" ColumnSpacing="24" RowSpacing="12">
+                        <!--  Details Grid  -->
+                        <Grid
+                            Grid.Row="1"
+                            ColumnSpacing="24"
+                            RowSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -108,100 +102,108 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!-- Part ID -->
+                            <!--  Part ID  -->
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="0"
-                                Text="Part ID:"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
+                                Text="Part ID:" />
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                Text="{x:Bind ViewModel.SelectedPart.PartId, Mode=OneWay}"
                                 FontWeight="SemiBold"
-                            />
+                                Text="{x:Bind ViewModel.SelectedPart.PartId, Mode=OneWay}" />
 
-                            <!-- Type -->
+                            <!--  Type  -->
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="0"
-                                Text="Type:"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
+                                Text="Type:" />
                             <StackPanel
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 Orientation="Horizontal"
-                                Spacing="6"
-                            >
+                                Spacing="6">
                                 <mi:MaterialIcon
-                                    Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}"
                                     Width="16"
                                     Height="16"
                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                />
+                                    Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}" />
                                 <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}" />
+                            </StackPanel>
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                VerticalAlignment="Top"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="Specs:" />
+                            <StackPanel
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Spacing="4">
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedPartSpecSummaries, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{x:Bind}" TextWrapping="WrapWholeWords" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="No specs available for this part."
+                                    Visibility="{x:Bind ViewModel.HasSelectedPartSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                             </StackPanel>
                         </Grid>
 
-                        <!-- Inventory Method (if applicable) -->
+                        <!--  Inventory Method (if applicable)  -->
                         <StackPanel
-                            Grid.Row="2"
+                            Grid.Row="3"
                             Orientation="Horizontal"
                             Spacing="8"
-                            Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        >
+                            Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <FontIcon
-                                Glyph="&#xE946;"
                                 FontSize="16"
                                 Foreground="{ThemeResource SystemFillColorCautionBrush}"
-                            />
+                                Glyph="&#xE946;" />
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Inventory Method:" />
                             <TextBlock
-                                Text="Inventory Method:"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
-                            <TextBlock
-                                Text="{x:Bind ViewModel.InventoryMethod, Mode=OneWay}"
                                 FontWeight="SemiBold"
                                 Foreground="{ThemeResource SystemFillColorCautionBrush}"
-                            />
+                                Text="{x:Bind ViewModel.InventoryMethod, Mode=OneWay}" />
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Action Buttons -->
+                <!--  Action Buttons  -->
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Button
-                        Command="{x:Bind ViewModel.QuickAddPartCommand}"
-                        HorizontalAlignment="Left"
-                    >
+                    <Button HorizontalAlignment="Left" Command="{x:Bind ViewModel.QuickAddPartCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE710;" FontSize="16" />
+                            <FontIcon FontSize="16" Glyph="&#xE710;" />
                             <TextBlock Text="Add New Part" />
                         </StackPanel>
                     </Button>
 
                     <Button
-                        Command="{x:Bind ViewModel.EditPartCommand}"
                         HorizontalAlignment="Left"
-                        ToolTipService.ToolTip="Edit the selected part's specifications and home location"
-                    >
+                        Command="{x:Bind ViewModel.EditPartCommand}"
+                        ToolTipService.ToolTip="Edit the selected part's specifications and home location">
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE70F;" FontSize="16" />
+                            <FontIcon FontSize="16" Glyph="&#xE70F;" />
                             <TextBlock Text="Edit Part" />
                         </StackPanel>
                     </Button>
 
                     <Button
-                        Command="{x:Bind ViewModel.LoadPartsCommand}"
                         HorizontalAlignment="Left"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Refresh'), Mode=OneWay}"
-                    >
+                        Command="{x:Bind ViewModel.LoadPartsCommand}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Refresh'), Mode=OneWay}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE72C;" FontSize="16" />
+                            <FontIcon FontSize="16" Glyph="&#xE72C;" />
                             <TextBlock Text="Refresh Parts" />
                         </StackPanel>
                     </Button>

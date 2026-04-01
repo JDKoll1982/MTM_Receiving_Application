@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -113,6 +114,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
     [ObservableProperty]
     private int _selectedTypeId;
+
+    [ObservableProperty]
+    private ObservableCollection<string> _selectedPartSpecSummaries = new();
+
+    [ObservableProperty]
+    private bool _hasSelectedPartSpecs;
 
     /// <summary>
     /// Helper property for UI binding
@@ -268,12 +275,15 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                 "PartSelection"
             );
 
+            UpdateSelectedPartSpecs(newValue);
             _ = CheckInventoryStatusAsync(newValue);
         }
         else
         {
             _workflowService.CurrentSession.SelectedPart = null;
             IsInventoryNotificationVisible = false;
+            SelectedPartSpecSummaries.Clear();
+            HasSelectedPartSpecs = false;
         }
 
         // Notify that command can execute state changed
@@ -316,6 +326,50 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     {
         InventoryNotificationMessage =
             $"This part requires inventory in Visual. Method: {InventoryMethod}";
+    }
+
+    private void UpdateSelectedPartSpecs(Model_DunnagePart part)
+    {
+        SelectedPartSpecSummaries.Clear();
+
+        foreach (var pair in part.SpecValuesDict.OrderBy(item => item.Key))
+        {
+            var formattedValue = FormatSpecValue(pair.Value);
+            if (string.IsNullOrWhiteSpace(formattedValue))
+            {
+                continue;
+            }
+
+            SelectedPartSpecSummaries.Add($"{pair.Key}: {formattedValue}");
+        }
+
+        HasSelectedPartSpecs = SelectedPartSpecSummaries.Count > 0;
+    }
+
+    private static string FormatSpecValue(object? rawValue)
+    {
+        if (rawValue is null)
+        {
+            return string.Empty;
+        }
+
+        if (rawValue is JsonElement element)
+        {
+            return element.ValueKind switch
+            {
+                JsonValueKind.String => element.GetString() ?? string.Empty,
+                JsonValueKind.True => "Yes",
+                JsonValueKind.False => "No",
+                JsonValueKind.Number => element.ToString(),
+                JsonValueKind.Array => string.Join(
+                    ", ",
+                    element.EnumerateArray().Select(item => item.ToString())
+                ),
+                _ => element.ToString(),
+            };
+        }
+
+        return rawValue.ToString() ?? string.Empty;
     }
 
     #endregion
@@ -416,10 +470,13 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     TypeId = SelectedTypeId,
                     SpecValues = specValuesJson,
                     DunnageTypeName = SelectedTypeName,
+                    HomeLocation = dialog.HomeLocation,
                 };
 
-                // Insert new part
-                var insertResult = await _dunnageService.InsertPartAsync(newPart);
+                var insertResult = await _dunnageService.InsertPartWithInventoryAsync(
+                    newPart,
+                    dialog.SelectedInventoryMethod
+                );
 
                 if (insertResult.IsSuccess)
                 {
@@ -476,7 +533,24 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     ? specsResult.Data
                     : new List<Model_DunnageSpec>();
 
-            var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(SelectedPart, specs)
+            var inventoryDetailsResult = await _dunnageService.GetInventoryDetailsAsync(
+                SelectedPart.PartId
+            );
+            var currentInventoryMethod =
+                inventoryDetailsResult.IsSuccess && inventoryDetailsResult.Data != null
+                    ? inventoryDetailsResult.Data.InventoryMethod ?? "Not Inventoried"
+                    : "Not Inventoried";
+            var currentInventoryNotes =
+                inventoryDetailsResult.IsSuccess && inventoryDetailsResult.Data != null
+                    ? inventoryDetailsResult.Data.Notes ?? string.Empty
+                    : string.Empty;
+
+            var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(
+                SelectedPart,
+                specs,
+                SelectedTypeName,
+                currentInventoryMethod
+            )
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
             };
@@ -492,37 +566,41 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 var partIdToReselect = SelectedPart.PartId;
+                var updatedPartId = dialog.UpdatedPartId;
 
                 var updatedPart = new Model_DunnagePart
                 {
                     Id = SelectedPart.Id,
-                    PartId = SelectedPart.PartId,
+                    PartId = updatedPartId,
                     TypeId = SelectedPart.TypeId,
-                    DunnageTypeName = SelectedPart.DunnageTypeName,
+                    DunnageTypeName = SelectedTypeName,
                     SpecValues = dialog.UpdatedSpecValuesJson,
                     HomeLocation = dialog.UpdatedHomeLocation,
                 };
 
-                var updateResult = await _dunnageService.UpdatePartAsync(updatedPart);
+                var updateResult = await _dunnageService.UpdatePartWithInventoryAndReferencesAsync(
+                    updatedPart,
+                    partIdToReselect,
+                    dialog.SelectedInventoryMethod,
+                    currentInventoryNotes
+                );
 
                 if (updateResult.IsSuccess)
                 {
                     _logger.LogInfo(
-                        $"Successfully updated part: {partIdToReselect}",
+                        $"Successfully updated part: {partIdToReselect} -> {updatedPartId}",
                         "PartSelection"
                     );
 
                     await LoadPartsAsync();
 
-                    var refreshed = AvailableParts.FirstOrDefault(p =>
-                        p.PartId == partIdToReselect
-                    );
+                    var refreshed = AvailableParts.FirstOrDefault(p => p.PartId == updatedPartId);
                     if (refreshed != null)
                     {
                         SelectedPart = refreshed;
                     }
 
-                    StatusMessage = $"Updated part: {partIdToReselect}";
+                    StatusMessage = $"Updated part: {updatedPartId}";
                 }
                 else
                 {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-31T17:52:44.6555842-05:00",
+  "generatedAt": "2026-04-01T05:52:30.1631378-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -3292,6 +3292,55 @@
         },
         {
           "alias": "dld",
+          "object": "dunnage_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_LabelData_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_load_uuid",
+          "sqlType": "CHAR(36)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_label_data"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "dunnage_label_data"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_load_uuid"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_label_data",
           "object": "dunnage_label_data"
         }
       ]

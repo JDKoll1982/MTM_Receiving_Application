@@ -1,205 +1,267 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 {
+    public string UpdatedPartId { get; private set; } = string.Empty;
     public string UpdatedSpecValuesJson { get; private set; } = "{}";
     public string UpdatedHomeLocation { get; private set; } = string.Empty;
+    public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
 
     private readonly Model_DunnagePart _existingPart;
     private readonly List<Model_DunnageSpec> _specs;
     private readonly Dictionary<string, Control> _specInputs = new();
+    private readonly string _typeName;
 
     public View_Dunnage_EditPartDialog(
         Model_DunnagePart existingPart,
-        List<Model_DunnageSpec> specs
+        List<Model_DunnageSpec> specs,
+        string typeName,
+        string inventoryMethod
     )
     {
         InitializeComponent();
 
         _existingPart = existingPart;
         _specs = specs;
+        _typeName = typeName;
 
-        PartIdTextBlock.Text = existingPart.PartId;
-        TypeNameTextBlock.Text = existingPart.DunnageTypeName;
+        CurrentPartIdTextBlock.Text = existingPart.PartId;
+        TypeNameTextBlock.Text = typeName;
 
         GenerateSpecFields();
-        PrePopulateFromExistingPart();
+        PrePopulateFromExistingPart(inventoryMethod);
     }
 
     private void GenerateSpecFields()
     {
-        if (_specs == null || _specs.Count == 0)
+        for (var index = 0; index < _specs.Count; index++)
         {
-            return;
-        }
-
-        foreach (var spec in _specs)
-        {
-            // Dimensions handled by static fields
-            if (
-                string.Equals(spec.SpecKey, "Width", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(spec.SpecKey, "Height", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(spec.SpecKey, "Depth", StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                continue;
-            }
-
-            SpecDefinition? def = null;
-            try
-            {
-                def = JsonSerializer.Deserialize<SpecDefinition>(spec.SpecValue);
-            }
-            catch
-            {
-                // Intentionally empty — fallback below
-            }
-
-            def ??= new SpecDefinition { DataType = "Text" };
-
-            var stackPanel = new StackPanel { Spacing = 4 };
-
-            var labelText = spec.SpecKey;
-            if (def.Required)
-            {
-                labelText += " *";
-            }
-
-            if (!string.IsNullOrEmpty(def.Unit))
-            {
-                labelText += $" ({def.Unit})";
-            }
-
-            stackPanel.Children.Add(
-                new TextBlock
-                {
-                    Text = labelText,
-                    Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"],
-                }
-            );
-
-            Control? inputControl = null;
-
-            if (string.Equals(def.DataType, "Number", StringComparison.OrdinalIgnoreCase))
-            {
-                var numberBox = new NumberBox
-                {
-                    PlaceholderText = "0",
-                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
-                };
-                if (def.MinValue.HasValue)
-                    numberBox.Minimum = def.MinValue.Value;
-                if (def.MaxValue.HasValue)
-                    numberBox.Maximum = def.MaxValue.Value;
-                inputControl = numberBox;
-            }
-            else if (string.Equals(def.DataType, "Boolean", StringComparison.OrdinalIgnoreCase))
-            {
-                inputControl = new CheckBox { Content = "Yes" };
-            }
-            else if (string.Equals(def.DataType, "Choices", StringComparison.OrdinalIgnoreCase))
-            {
-                var comboBox = new ComboBox
-                {
-                    PlaceholderText = $"Select {spec.SpecKey.ToLower()}",
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                };
-
-                foreach (var choice in def.Choices)
-                {
-                    comboBox.Items.Add(choice);
-                }
-
-                inputControl = comboBox;
-            }
-            else
-            {
-                inputControl = new TextBox
-                {
-                    PlaceholderText = $"Enter {spec.SpecKey.ToLower()}",
-                    MaxLength = 100,
-                };
-            }
-
-            stackPanel.Children.Add(inputControl);
-            DynamicSpecsPanel.Children.Add(stackPanel);
+            var spec = _specs[index];
+            var definition = ParseDefinition(spec.SpecValue);
+            var panel = CreateSpecPanel(spec.SpecKey, definition, out var inputControl);
+            AddPanelToGrid(panel, index);
             _specInputs[spec.SpecKey] = inputControl;
         }
     }
 
-    private void PrePopulateFromExistingPart()
+    private SpecDefinition ParseDefinition(string json)
     {
-        var dict = _existingPart.SpecValuesDict;
-
-        // Dimensions
-        TryPopulateNumberBox(WidthNumberBox, dict, "Width");
-        TryPopulateNumberBox(HeightNumberBox, dict, "Height");
-        TryPopulateNumberBox(DepthNumberBox, dict, "Depth");
-
-        // Dynamic spec inputs
-        foreach (var kvp in _specInputs)
+        try
         {
-            if (!dict.TryGetValue(kvp.Key, out var rawValue))
+            return JsonSerializer.Deserialize<SpecDefinition>(json)
+                ?? new SpecDefinition { DataType = "Text" };
+        }
+        catch
+        {
+            return new SpecDefinition { DataType = "Text" };
+        }
+    }
+
+    private StackPanel CreateSpecPanel(
+        string specKey,
+        SpecDefinition definition,
+        out Control inputControl
+    )
+    {
+        var panel = new StackPanel { Spacing = 4 };
+        var labelText = specKey;
+        if (definition.Required)
+        {
+            labelText += " *";
+        }
+
+        if (!string.IsNullOrWhiteSpace(definition.Unit))
+        {
+            labelText += $" ({definition.Unit})";
+        }
+
+        panel.Children.Add(
+            new TextBlock
+            {
+                Text = labelText,
+                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"],
+            }
+        );
+
+        inputControl = CreateInputControl(specKey, definition);
+        panel.Children.Add(inputControl);
+        return panel;
+    }
+
+    private Control CreateInputControl(string specKey, SpecDefinition definition)
+    {
+        if (string.Equals(definition.DataType, "Number", StringComparison.OrdinalIgnoreCase))
+        {
+            var numberBox = new NumberBox
+            {
+                PlaceholderText = "0",
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            };
+            if (definition.MinValue.HasValue)
+            {
+                numberBox.Minimum = definition.MinValue.Value;
+            }
+
+            if (definition.MaxValue.HasValue)
+            {
+                numberBox.Maximum = definition.MaxValue.Value;
+            }
+
+            return numberBox;
+        }
+
+        if (string.Equals(definition.DataType, "Boolean", StringComparison.OrdinalIgnoreCase))
+        {
+            return new CheckBox { Content = "Yes" };
+        }
+
+        if (string.Equals(definition.DataType, "Choices", StringComparison.OrdinalIgnoreCase))
+        {
+            var comboBox = new ComboBox
+            {
+                PlaceholderText = $"Select {specKey.ToLowerInvariant()}",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+            };
+
+            foreach (var choice in definition.Choices)
+            {
+                comboBox.Items.Add(choice);
+            }
+
+            return comboBox;
+        }
+
+        return new TextBox
+        {
+            PlaceholderText = $"Enter {specKey.ToLowerInvariant()}",
+            MaxLength = 100,
+        };
+    }
+
+    private void AddPanelToGrid(FrameworkElement panel, int index)
+    {
+        var row = index / 2;
+        while (DynamicSpecsGrid.RowDefinitions.Count <= row)
+        {
+            DynamicSpecsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        }
+
+        Grid.SetRow(panel, row);
+        Grid.SetColumn(panel, index % 2);
+        DynamicSpecsGrid.Children.Add(panel);
+    }
+
+    private void PrePopulateFromExistingPart(string inventoryMethod)
+    {
+        PartIdTextBox.Text = _existingPart.PartId;
+        HomeLocationTextBox.Text = _existingPart.HomeLocation ?? string.Empty;
+        SelectInventoryMethod(inventoryMethod);
+
+        foreach (var pair in _specInputs)
+        {
+            if (!_existingPart.SpecValuesDict.TryGetValue(pair.Key, out var rawValue))
             {
                 continue;
             }
 
-            if (kvp.Value is NumberBox nb)
+            if (pair.Value is NumberBox numberBox)
             {
-                nb.Value = GetDouble(rawValue);
+                numberBox.Value = GetDouble(rawValue);
             }
-            else if (kvp.Value is CheckBox cb)
+            else if (pair.Value is CheckBox checkBox)
             {
-                cb.IsChecked = GetBool(rawValue);
+                checkBox.IsChecked = GetBool(rawValue);
             }
-            else if (kvp.Value is ComboBox comboBox)
+            else if (pair.Value is ComboBox comboBox)
             {
                 comboBox.SelectedItem = GetString(rawValue);
             }
-            else if (kvp.Value is TextBox tb)
+            else if (pair.Value is TextBox textBox)
             {
-                tb.Text = GetString(rawValue);
+                textBox.Text = GetString(rawValue);
             }
         }
 
-        // Home location
-        HomeLocationTextBox.Text = _existingPart.HomeLocation ?? string.Empty;
-
-        // Notes (stored in spec_values under "Notes")
-        if (dict.TryGetValue("Notes", out var notesVal))
+        if (_existingPart.SpecValuesDict.TryGetValue("Notes", out var notesValue))
         {
-            NotesTextBox.Text = GetString(notesVal);
+            NotesTextBox.Text = GetString(notesValue);
         }
     }
 
-    private static void TryPopulateNumberBox(
-        NumberBox numberBox,
-        Dictionary<string, object> dict,
-        string key
-    )
+    private void SelectInventoryMethod(string inventoryMethod)
     {
-        if (dict.TryGetValue(key, out var rawValue))
+        foreach (var item in InventoryTypeComboBox.Items)
         {
-            numberBox.Value = GetDouble(rawValue);
+            if (item is ComboBoxItem comboBoxItem)
+            {
+                var content = comboBoxItem.Content?.ToString() ?? string.Empty;
+                if (string.Equals(content, inventoryMethod, StringComparison.OrdinalIgnoreCase))
+                {
+                    InventoryTypeComboBox.SelectedItem = comboBoxItem;
+                    return;
+                }
+            }
         }
+
+        InventoryTypeComboBox.SelectedIndex = 0;
+    }
+
+    private Dictionary<string, object?> GetCurrentSpecValues()
+    {
+        var specValues = new Dictionary<string, object?>();
+        foreach (var pair in _specInputs)
+        {
+            if (pair.Value is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+            {
+                specValues[pair.Key] = textBox.Text.Trim();
+            }
+            else if (pair.Value is NumberBox numberBox && !double.IsNaN(numberBox.Value))
+            {
+                specValues[pair.Key] = numberBox.Value;
+            }
+            else if (pair.Value is CheckBox checkBox)
+            {
+                specValues[pair.Key] = checkBox.IsChecked ?? false;
+            }
+            else if (pair.Value is ComboBox comboBox && comboBox.SelectedItem is string choice)
+            {
+                specValues[pair.Key] = choice.Trim();
+            }
+        }
+
+        return specValues;
+    }
+
+    private string BuildSuggestedPartId()
+    {
+        return Helper_Dunnage_PartIdSuggestion.BuildSuggestedPartId(
+            _typeName,
+            GetCurrentSpecValues()
+        );
+    }
+
+    private void SuggestPartIdButton_Click(object sender, RoutedEventArgs e)
+    {
+        PartIdTextBox.Text = BuildSuggestedPartId();
     }
 
     private static double GetDouble(object rawValue)
     {
-        if (rawValue is JsonElement el)
+        if (rawValue is JsonElement element)
         {
-            return el.ValueKind switch
+            return element.ValueKind switch
             {
-                JsonValueKind.Number => el.GetDouble(),
-                JsonValueKind.String when double.TryParse(el.GetString(), out var d) => d,
+                JsonValueKind.Number => element.GetDouble(),
+                JsonValueKind.String when double.TryParse(element.GetString(), out var parsed) =>
+                    parsed,
                 _ => double.NaN,
             };
         }
@@ -209,15 +271,14 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private static bool GetBool(object rawValue)
     {
-        if (rawValue is JsonElement el)
+        if (rawValue is JsonElement element)
         {
-            return el.ValueKind switch
+            return element.ValueKind switch
             {
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                JsonValueKind.String => el.GetString()
-                    ?.Equals("true", StringComparison.OrdinalIgnoreCase)
-                    ?? false,
+                JsonValueKind.String => bool.TryParse(element.GetString(), out var parsed)
+                    && parsed,
                 _ => false,
             };
         }
@@ -227,11 +288,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private static string GetString(object rawValue)
     {
-        if (rawValue is JsonElement el)
+        if (rawValue is JsonElement element)
         {
-            return el.ValueKind == JsonValueKind.String
-                ? el.GetString() ?? string.Empty
-                : el.ToString();
+            return element.ValueKind == JsonValueKind.String
+                ? element.GetString() ?? string.Empty
+                : element.ToString();
         }
 
         return rawValue?.ToString() ?? string.Empty;
@@ -239,47 +300,24 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        var specValues = new Dictionary<string, object>();
-
-        // Dynamic spec fields
-        foreach (var kvp in _specInputs)
+        UpdatedPartId = PartIdTextBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(UpdatedPartId))
         {
-            if (kvp.Value is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text))
-            {
-                specValues[kvp.Key] = tb.Text.Trim();
-            }
-            else if (kvp.Value is NumberBox nb && !double.IsNaN(nb.Value))
-            {
-                specValues[kvp.Key] = nb.Value;
-            }
-            else if (kvp.Value is CheckBox cb)
-            {
-                specValues[kvp.Key] = cb.IsChecked ?? false;
-            }
-            else if (
-                kvp.Value is ComboBox comboBox
-                && comboBox.SelectedItem is string selectedChoice
-            )
-            {
-                specValues[kvp.Key] = selectedChoice.Trim();
-            }
+            args.Cancel = true;
+            PartIdTextBox.Focus(FocusState.Programmatic);
+            return;
         }
 
-        // Dimensions
-        if (!double.IsNaN(WidthNumberBox.Value) && WidthNumberBox.Value > 0)
-            specValues["Width"] = WidthNumberBox.Value;
-
-        if (!double.IsNaN(HeightNumberBox.Value) && HeightNumberBox.Value > 0)
-            specValues["Height"] = HeightNumberBox.Value;
-
-        if (!double.IsNaN(DepthNumberBox.Value) && DepthNumberBox.Value > 0)
-            specValues["Depth"] = DepthNumberBox.Value;
-
-        // Notes
+        var specValues = GetCurrentSpecValues();
         if (!string.IsNullOrWhiteSpace(NotesTextBox.Text))
+        {
             specValues["Notes"] = NotesTextBox.Text.Trim();
+        }
 
         UpdatedSpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
         UpdatedHomeLocation = HomeLocationTextBox.Text.Trim();
+        SelectedInventoryMethod =
+            (InventoryTypeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString()
+            ?? "Not Inventoried";
     }
 }

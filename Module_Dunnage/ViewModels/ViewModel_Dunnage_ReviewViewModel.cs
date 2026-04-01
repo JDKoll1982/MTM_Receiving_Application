@@ -342,8 +342,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             await _logger.LogInfoAsync(
                 $"Completed SaveAllAsync: {LoadCount} loads processed successfully"
             );
-
-            // Auto-navigation removed to allow user to see success message and choose next action
+            await ShowSaveCompleteDialogAsync();
         }
         catch (Exception ex)
         {
@@ -365,7 +364,14 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     [RelayCommand]
     private void StartNewEntry()
     {
-        // Clear session and return to Mode Selection
+        // Clear session and return to Type Selection for another guided entry.
+        _workflowService.ClearSession();
+        _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+    }
+
+    [RelayCommand]
+    private void ReturnToModeSelectionAfterSave()
+    {
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
     }
@@ -387,6 +393,35 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         // Clear session and return to Mode Selection
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+    }
+
+    private async Task ShowSaveCompleteDialogAsync()
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot is null)
+        {
+            _logger.LogWarning("Review success dialog skipped because XamlRoot is null", "Review");
+            return;
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = "Dunnage Saved",
+            Content = $"Successfully saved {LoadCount} load(s). What would you like to do next?",
+            PrimaryButtonText = "Start New Entry",
+            SecondaryButtonText = "Mode Selection",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = xamlRoot,
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            StartNewEntry();
+            return;
+        }
+
+        ReturnToModeSelectionAfterSave();
     }
 
     #endregion

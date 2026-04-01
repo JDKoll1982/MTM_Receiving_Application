@@ -80,7 +80,7 @@ serena start-mcp-server [options]
 By default, Serena:
 
 - Uses **stdio** transport (client starts the server as a subprocess)
-- Opens the **web dashboard** at `http://localhost:24282/dashboard/index.html`
+- Opens the **web dashboard** at `http://172.16.1.104:24282/dashboard/index.html`
 - Uses the **desktop-app** context (full toolset)
 
 ### Transport Modes
@@ -98,7 +98,7 @@ For scenarios where multiple agents share one Serena instance:
 
 ```bash
 serena start-mcp-server --transport streamable-http --port 8765
-# Access at http://localhost:8765
+# Access at http://172.16.1.104:8765
 ```
 
 **⚠️ Caution:** Only one project can be active at a time in a single Serena instance.

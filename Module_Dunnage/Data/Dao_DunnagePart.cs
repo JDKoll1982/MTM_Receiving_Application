@@ -101,8 +101,55 @@ public class Dao_DunnagePart
         return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
+    public virtual async Task<Model_Dao_Result<int>> InsertWithInventoryAsync(
+        string partId,
+        int typeId,
+        string specValues,
+        string homeLocation,
+        string inventoryMethod,
+        string inventoryNotes,
+        string user
+    )
+    {
+        var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
+        {
+            Direction = ParameterDirection.Output,
+        };
+
+        var parameters = new MySqlParameter[]
+        {
+            new MySqlParameter("@p_part_id", partId),
+            new MySqlParameter("@p_type_id", typeId),
+            new MySqlParameter("@p_spec_values", specValues),
+            new MySqlParameter("@p_home_location", homeLocation),
+            new MySqlParameter("@p_inventory_method", inventoryMethod),
+            new MySqlParameter("@p_inventory_notes", inventoryNotes),
+            new MySqlParameter("@p_user", user),
+            pNewId,
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteAsync(
+            "sp_Dunnage_Parts_InsertWithInventory",
+            parameters,
+            _connectionString
+        );
+
+        if (result.IsSuccess)
+        {
+            if (pNewId.Value != null && pNewId.Value != DBNull.Value)
+            {
+                return Model_Dao_Result_Factory.Success<int>(Convert.ToInt32(pNewId.Value));
+            }
+
+            return Model_Dao_Result_Factory.Failure<int>("Failed to retrieve new ID");
+        }
+
+        return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
+    }
+
     public virtual async Task<Model_Dao_Result> UpdateAsync(
         int id,
+        string partId,
         string specValues,
         string homeLocation,
         string user
@@ -111,6 +158,7 @@ public class Dao_DunnagePart
         var parameters = new Dictionary<string, object>
         {
             { "id", id },
+            { "part_id", partId },
             { "spec_values", specValues },
             { "home_location", homeLocation },
             { "user", user },
@@ -119,6 +167,36 @@ public class Dao_DunnagePart
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_dunnage_parts_update",
+            parameters
+        );
+    }
+
+    public virtual async Task<Model_Dao_Result> UpdateWithInventoryAndReferencesAsync(
+        int id,
+        string originalPartId,
+        string newPartId,
+        string specValues,
+        string homeLocation,
+        string inventoryMethod,
+        string inventoryNotes,
+        string user
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "id", id },
+            { "original_part_id", originalPartId },
+            { "new_part_id", newPartId },
+            { "spec_values", specValues },
+            { "home_location", homeLocation },
+            { "inventory_method", inventoryMethod },
+            { "inventory_notes", inventoryNotes },
+            { "user", user },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_Parts_UpdateWithReferences",
             parameters
         );
     }
