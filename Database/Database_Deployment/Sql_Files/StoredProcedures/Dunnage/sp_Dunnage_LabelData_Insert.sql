@@ -20,6 +20,8 @@ CREATE PROCEDURE `sp_Dunnage_LabelData_Insert`(
     IN p_user_id            VARCHAR(100),
     IN p_location           VARCHAR(100),
     IN p_label_number       VARCHAR(50),
+    IN p_part_skid_sequence INT,
+    IN p_part_skid_total    INT,
     IN p_specs_json         JSON
 )
 BEGIN
@@ -36,6 +38,10 @@ BEGIN
         user_id,
         location,
         label_number,
+        part_skid_sequence,
+        part_skid_total,
+        p_part_skid_sequence,
+        p_part_skid_total,
         specs_json
     )
     VALUES

@@ -2,7 +2,7 @@
   "id": "dunnage-edit-and-dialogs",
   "module": "Module_Dunnage",
   "name": "Edit Mode And Dialogs",
-  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, button-based Type/Part/Location selectors with shared fuzzy search, full active-label column toggling, and source-aware save/update/delete flows used outside the main guided path.",
+  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, button-based Type/Part/Location selectors with shared fuzzy search, full active-label column toggling, source-aware save/update/delete flows, and per-part Dunnage skid counters preserved across the active queue and history archive.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
@@ -43,7 +43,8 @@
       "Admin shell support",
       "Dialog-based type, part, and location selection",
       "Source-aware edit-mode save persistence",
-      "Active label queue maintenance"
+      "Active label queue maintenance",
+      "Per-part skid counter persistence"
     ],
     "screens": [
       "View_Dunnage_EditModeView.xaml",
@@ -74,6 +75,7 @@
       "Save edited rows back to history or the active label queue without reinserting duplicates",
       "Delete removed rows from the active label queue or history based on the loaded source",
       "Toggle any available active-label table column in the edit grid",
+      "Preserve Dunnage per-part skid counters when rows move from the active queue into history",
       "Capture non-PO dunnage entries",
       "Add rows or inventory items through dialogs"
     ],
@@ -86,6 +88,7 @@
       "Confirm removed rows are deleted from dunnage_label_data when Current Labels is the active source",
       "Confirm Clear All Labels immediately clears the Current Labels edit grid when the active queue is archived",
       "Confirm the Columns modal includes the available dunnage_label_data fields, including hidden queue metadata columns",
+      "Confirm Dunnage active-label and history rows retain part_skid_sequence and part_skid_total values after save, edit, and archive operations",
       "Confirm a successful save refreshes the same working set and a failed save surfaces a clear error",
       "Confirm edit-mode and non-PO dialog flows still target the correct records",
       "Confirm add-row and inventory dialogs still support the admin workflow correctly"

@@ -22,6 +22,8 @@ BEGIN
         l.modified_date,
         l.location,
         l.label_number,
+        l.part_skid_sequence,
+        l.part_skid_total,
         l.specs_json
     FROM dunnage_history l
     LEFT JOIN dunnage_parts p ON l.part_id = p.part_id

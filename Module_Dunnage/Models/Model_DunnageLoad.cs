@@ -102,6 +102,12 @@ public partial class Model_DunnageLoad : ObservableObject
     private string? _labelNumber;
 
     [ObservableProperty]
+    private int? _partSkidSequence;
+
+    [ObservableProperty]
+    private int? _partSkidTotal;
+
+    [ObservableProperty]
     private int _loadNumber;
 
     [ObservableProperty]
@@ -198,6 +204,11 @@ public partial class Model_DunnageLoad : ObservableObject
             return string.Empty;
         }
     }
+
+    public string PartSkidDisplay =>
+        PartSkidSequence.HasValue && PartSkidTotal.HasValue
+            ? $"{PartSkidSequence.Value} of {PartSkidTotal.Value}"
+            : string.Empty;
 
     private static string NormalizePoNumber(string? value)
     {

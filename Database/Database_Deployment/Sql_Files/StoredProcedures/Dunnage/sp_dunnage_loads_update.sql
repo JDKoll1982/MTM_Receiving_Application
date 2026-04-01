@@ -12,6 +12,8 @@ CREATE PROCEDURE `sp_Dunnage_Loads_Update`(
     IN p_type_icon VARCHAR(100),
     IN p_location VARCHAR(100),
     IN p_label_number VARCHAR(50),
+    IN p_part_skid_sequence INT,
+    IN p_part_skid_total INT,
     IN p_specs_json JSON,
     IN p_user VARCHAR(50)
 )
@@ -26,6 +28,8 @@ BEGIN
         type_icon = p_type_icon,
         location = p_location,
         label_number = p_label_number,
+        part_skid_sequence = p_part_skid_sequence,
+        part_skid_total = p_part_skid_total,
         specs_json = p_specs_json,
         modified_by = p_user,
         modified_date = NOW()

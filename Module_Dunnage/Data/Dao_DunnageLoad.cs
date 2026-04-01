@@ -106,6 +106,18 @@ public class Dao_DunnageLoad
                     ? DBNull.Value
                     : (object)load.LabelNumber,
             },
+            new("@p_part_skid_sequence", MySqlDbType.Int32)
+            {
+                Value = load.PartSkidSequence.HasValue
+                    ? (object)load.PartSkidSequence.Value
+                    : DBNull.Value,
+            },
+            new("@p_part_skid_total", MySqlDbType.Int32)
+            {
+                Value = load.PartSkidTotal.HasValue
+                    ? (object)load.PartSkidTotal.Value
+                    : DBNull.Value,
+            },
             new("@p_specs_json", MySqlDbType.JSON)
             {
                 Value = specsJson is null ? DBNull.Value : (object)specsJson,
@@ -168,6 +180,12 @@ public class Dao_DunnageLoad
             LabelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
                 ? null
                 : reader.GetString(reader.GetOrdinal("label_number")),
+            PartSkidSequence = reader.IsDBNull(reader.GetOrdinal("part_skid_sequence"))
+                ? null
+                : reader.GetInt32(reader.GetOrdinal("part_skid_sequence")),
+            PartSkidTotal = reader.IsDBNull(reader.GetOrdinal("part_skid_total"))
+                ? null
+                : reader.GetInt32(reader.GetOrdinal("part_skid_total")),
             SpecValues = DeserializeSpecValues(reader),
         };
     }

@@ -115,7 +115,24 @@
                     Grid.Row="2"
                     Grid.ColumnSpan="2"
                     Spacing="12">
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Specifications" />
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="Specifications" />
+                        <Button
+                            Grid.Column="1"
+                            Click="ChooseExistingSpecsButton_Click"
+                            Content="Choose Existing Specs" />
+                    </Grid>
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Reuse a saved spec set from another part, then adjust any values you need before saving." />
                     <Grid
                         x:Name="DynamicSpecsGrid"
                         ColumnSpacing="16"

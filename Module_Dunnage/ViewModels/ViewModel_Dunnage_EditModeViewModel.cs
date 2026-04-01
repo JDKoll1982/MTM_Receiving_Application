@@ -524,7 +524,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         }
 
         SelectedLoads.Clear();
-    FocusedLoad = null;
+        FocusedLoad = null;
         EnsureDisplayLoadNumbers();
         ApplySearchFilter(CurrentPage);
 

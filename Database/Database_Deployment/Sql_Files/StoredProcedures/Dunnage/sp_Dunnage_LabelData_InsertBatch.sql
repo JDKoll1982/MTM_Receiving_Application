@@ -15,6 +15,8 @@
 --     "user_id":           "<VARCHAR(100)>",
 --     "location":          "<VARCHAR(100)|null>",
 --     "label_number":      "<VARCHAR(50)|null>",
+--     "part_skid_sequence":<INT|null>,
+--     "part_skid_total":   <INT|null>,
 --     "specs_json":        {<key>:<value>, ...} or null
 --   }
 
@@ -41,6 +43,8 @@ BEGIN
     DECLARE v_received_date     DATETIME;
     DECLARE v_location          VARCHAR(100);
     DECLARE v_label_number      VARCHAR(50);
+    DECLARE v_part_skid_sequence INT;
+    DECLARE v_part_skid_total    INT;
     DECLARE v_specs_json        JSON;
 
     SET cnt = JSON_LENGTH(p_load_data);
@@ -56,6 +60,8 @@ BEGIN
         SET v_received_date     = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].received_date')));
         SET v_location          = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].location')));
         SET v_label_number      = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].label_number')));
+        SET v_part_skid_sequence = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].part_skid_sequence'));
+        SET v_part_skid_total    = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].part_skid_total'));
         SET v_specs_json        = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].specs_json'));
 
         INSERT INTO dunnage_label_data
@@ -71,6 +77,8 @@ BEGIN
             user_id,
             location,
             label_number,
+            part_skid_sequence,
+            part_skid_total,
             specs_json
         )
         VALUES
@@ -86,6 +94,8 @@ BEGIN
             p_user,
             NULLIF(v_location, 'null'),
             NULLIF(v_label_number, 'null'),
+            v_part_skid_sequence,
+            v_part_skid_total,
             v_specs_json
         );
 

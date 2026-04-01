@@ -24,6 +24,8 @@ BEGIN
         user_id,
         location,
         label_number,
+        part_skid_sequence,
+        part_skid_total,
         specs_json,
         created_at
     FROM dunnage_label_data

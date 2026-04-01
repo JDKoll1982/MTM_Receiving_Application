@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS dunnage_label_data (
     user_id VARCHAR(100) NOT NULL COMMENT 'Application user identifier (Windows username)',
     location VARCHAR(100) NULL COMMENT 'Warehouse location for received dunnage',
     label_number VARCHAR(50) NULL COMMENT 'Label number for this row (supports multi-label splits)',
+    part_skid_sequence INT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
+    part_skid_total INT NULL COMMENT 'Total skids for the same part in the saved batch',
     specs_json JSON NULL COMMENT 'Snapshot of all per-line dynamic spec key/value pairs as JSON object',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the queue record was inserted',
     INDEX idx_load_uuid (load_uuid) COMMENT 'Lookup by workflow session GUID',

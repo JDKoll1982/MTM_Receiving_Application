@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,6 +15,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     public string UpdatedSpecValuesJson { get; private set; } = "{}";
     public string UpdatedHomeLocation { get; private set; } = string.Empty;
     public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
+    public bool RequestChooseExistingSpecs { get; private set; }
 
     private readonly Model_DunnagePart _existingPart;
     private readonly List<Model_DunnageSpec> _specs;
@@ -24,7 +26,8 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         Model_DunnagePart existingPart,
         List<Model_DunnageSpec> specs,
         string typeName,
-        string inventoryMethod
+        string inventoryMethod,
+        Model_DunnagePartDialogDraft? initialDraft = null
     )
     {
         InitializeComponent();
@@ -38,6 +41,44 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
         GenerateSpecFields();
         PrePopulateFromExistingPart(inventoryMethod);
+
+        if (initialDraft is not null)
+        {
+            ApplyDraft(initialDraft);
+        }
+    }
+
+    public Model_DunnagePartDialogDraft GetDraft()
+    {
+        var draft = new Model_DunnagePartDialogDraft
+        {
+            PartId = PartIdTextBox.Text.Trim(),
+            HomeLocation = HomeLocationTextBox.Text.Trim(),
+            Notes = NotesTextBox.Text.Trim(),
+            SelectedInventoryMethod = GetSelectedInventoryMethod(),
+            SpecValues = new Dictionary<string, object?>(GetCurrentSpecValues()),
+        };
+
+        draft.SpecValues.Remove("Notes");
+        return draft;
+    }
+
+    private void ApplyDraft(Model_DunnagePartDialogDraft draft)
+    {
+        PartIdTextBox.Text = draft.PartId;
+        HomeLocationTextBox.Text = draft.HomeLocation;
+        NotesTextBox.Text = draft.Notes;
+        SelectInventoryMethod(draft.SelectedInventoryMethod);
+
+        foreach (var pair in _specInputs)
+        {
+            if (!draft.SpecValues.TryGetValue(pair.Key, out var rawValue))
+            {
+                continue;
+            }
+
+            ApplyControlValue(pair.Value, rawValue);
+        }
     }
 
     private void GenerateSpecFields()
@@ -52,7 +93,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         }
     }
 
-    private SpecDefinition ParseDefinition(string json)
+    private static SpecDefinition ParseDefinition(string json)
     {
         try
         {
@@ -96,7 +137,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         return panel;
     }
 
-    private Control CreateInputControl(string specKey, SpecDefinition definition)
+    private static Control CreateInputControl(string specKey, SpecDefinition definition)
     {
         if (string.Equals(definition.DataType, "Number", StringComparison.OrdinalIgnoreCase))
         {
@@ -172,22 +213,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
                 continue;
             }
 
-            if (pair.Value is NumberBox numberBox)
-            {
-                numberBox.Value = GetDouble(rawValue);
-            }
-            else if (pair.Value is CheckBox checkBox)
-            {
-                checkBox.IsChecked = GetBool(rawValue);
-            }
-            else if (pair.Value is ComboBox comboBox)
-            {
-                comboBox.SelectedItem = GetString(rawValue);
-            }
-            else if (pair.Value is TextBox textBox)
-            {
-                textBox.Text = GetString(rawValue);
-            }
+            ApplyControlValue(pair.Value, rawValue);
         }
 
         if (_existingPart.SpecValuesDict.TryGetValue("Notes", out var notesValue))
@@ -198,16 +224,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private void SelectInventoryMethod(string inventoryMethod)
     {
-        foreach (var item in InventoryTypeComboBox.Items)
+        foreach (var item in InventoryTypeComboBox.Items.OfType<ComboBoxItem>())
         {
-            if (item is ComboBoxItem comboBoxItem)
+            var content = item.Content?.ToString() ?? string.Empty;
+            if (string.Equals(content, inventoryMethod, StringComparison.OrdinalIgnoreCase))
             {
-                var content = comboBoxItem.Content?.ToString() ?? string.Empty;
-                if (string.Equals(content, inventoryMethod, StringComparison.OrdinalIgnoreCase))
-                {
-                    InventoryTypeComboBox.SelectedItem = comboBoxItem;
-                    return;
-                }
+                InventoryTypeComboBox.SelectedItem = item;
+                return;
             }
         }
 
@@ -253,7 +276,55 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         PartIdTextBox.Text = BuildSuggestedPartId();
     }
 
-    private static double GetDouble(object rawValue)
+    private void ChooseExistingSpecsButton_Click(object sender, RoutedEventArgs e)
+    {
+        RequestChooseExistingSpecs = true;
+        Hide();
+    }
+
+    private string GetSelectedInventoryMethod()
+    {
+        return (InventoryTypeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString()
+            ?? "Not Inventoried";
+    }
+
+    private static void ApplyControlValue(Control control, object? rawValue)
+    {
+        if (control is TextBox textBox)
+        {
+            textBox.Text = GetString(rawValue);
+            return;
+        }
+
+        if (control is NumberBox numberBox)
+        {
+            numberBox.Value = GetDouble(rawValue);
+            return;
+        }
+
+        if (control is CheckBox checkBox)
+        {
+            checkBox.IsChecked = GetBool(rawValue);
+            return;
+        }
+
+        if (control is ComboBox comboBox)
+        {
+            var stringValue = GetString(rawValue);
+            foreach (var item in comboBox.Items)
+            {
+                if (
+                    string.Equals(item?.ToString(), stringValue, StringComparison.OrdinalIgnoreCase)
+                )
+                {
+                    comboBox.SelectedItem = item;
+                    return;
+                }
+            }
+        }
+    }
+
+    private static double GetDouble(object? rawValue)
     {
         if (rawValue is JsonElement element)
         {
@@ -266,10 +337,10 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             };
         }
 
-        return Convert.ToDouble(rawValue);
+        return rawValue is null ? double.NaN : Convert.ToDouble(rawValue);
     }
 
-    private static bool GetBool(object rawValue)
+    private static bool GetBool(object? rawValue)
     {
         if (rawValue is JsonElement element)
         {
@@ -283,10 +354,10 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             };
         }
 
-        return Convert.ToBoolean(rawValue);
+        return rawValue is not null && Convert.ToBoolean(rawValue);
     }
 
-    private static string GetString(object rawValue)
+    private static string GetString(object? rawValue)
     {
         if (rawValue is JsonElement element)
         {
@@ -300,6 +371,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
+        RequestChooseExistingSpecs = false;
         UpdatedPartId = PartIdTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(UpdatedPartId))
         {
@@ -316,8 +388,6 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
         UpdatedSpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
         UpdatedHomeLocation = HomeLocationTextBox.Text.Trim();
-        SelectedInventoryMethod =
-            (InventoryTypeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString()
-            ?? "Not Inventoried";
+        SelectedInventoryMethod = GetSelectedInventoryMethod();
     }
 }

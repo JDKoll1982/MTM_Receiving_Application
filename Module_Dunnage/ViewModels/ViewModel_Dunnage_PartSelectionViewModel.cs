@@ -11,6 +11,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -442,26 +443,48 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     ? specsResult.Data
                     : new List<Model_DunnageSpec>();
 
-            // Show dialog with type pre-selected and specs
-            var dialog = new Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog(
-                SelectedTypeId,
-                SelectedTypeName,
-                specs
-            )
-            {
-                XamlRoot = App.MainWindow?.Content?.XamlRoot,
-            };
+            var existingPartsResult = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
+            var existingParts =
+                existingPartsResult.IsSuccess && existingPartsResult.Data != null
+                    ? existingPartsResult.Data
+                    : new List<Model_DunnagePart>();
 
-            if (dialog.XamlRoot == null)
-            {
-                _logger.LogInfo("Cannot show dialog: XamlRoot is null", "PartSelection");
-                return;
-            }
+            Model_DunnagePartDialogDraft? dialogDraft = null;
 
-            var result = await dialog.ShowAsync();
-
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            while (true)
             {
+                var dialog = new Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog(
+                    SelectedTypeId,
+                    SelectedTypeName,
+                    specs,
+                    dialogDraft
+                )
+                {
+                    XamlRoot = App.MainWindow?.Content?.XamlRoot,
+                };
+
+                if (dialog.XamlRoot == null)
+                {
+                    _logger.LogInfo("Cannot show dialog: XamlRoot is null", "PartSelection");
+                    return;
+                }
+
+                var result = await dialog.ShowAsync();
+
+                if (dialog.RequestChooseExistingSpecs)
+                {
+                    dialogDraft = await SelectExistingSpecsDraftAsync(
+                        existingParts,
+                        dialog.GetDraft()
+                    );
+                    continue;
+                }
+
+                if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
                 var partId = dialog.PartId;
                 var specValuesJson = dialog.SpecValuesJson;
 
@@ -509,6 +532,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                         true
                     );
                 }
+
+                break;
             }
         }
         catch (Exception ex)
@@ -540,6 +565,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     ? specsResult.Data
                     : new List<Model_DunnageSpec>();
 
+            var existingPartsResult = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
+            var existingParts =
+                existingPartsResult.IsSuccess && existingPartsResult.Data != null
+                    ? existingPartsResult.Data
+                    : new List<Model_DunnagePart>();
+
             var inventoryDetailsResult = await _dunnageService.GetInventoryDetailsAsync(
                 SelectedPart.PartId
             );
@@ -552,26 +583,43 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     ? inventoryDetailsResult.Data.Notes ?? string.Empty
                     : string.Empty;
 
-            var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(
-                SelectedPart,
-                specs,
-                SelectedTypeName,
-                currentInventoryMethod
-            )
-            {
-                XamlRoot = App.MainWindow?.Content?.XamlRoot,
-            };
+            Model_DunnagePartDialogDraft? dialogDraft = null;
 
-            if (dialog.XamlRoot == null)
+            while (true)
             {
-                _logger.LogInfo("Cannot show dialog: XamlRoot is null", "PartSelection");
-                return;
-            }
+                var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(
+                    SelectedPart,
+                    specs,
+                    SelectedTypeName,
+                    currentInventoryMethod,
+                    dialogDraft
+                )
+                {
+                    XamlRoot = App.MainWindow?.Content?.XamlRoot,
+                };
 
-            var result = await dialog.ShowAsync();
+                if (dialog.XamlRoot == null)
+                {
+                    _logger.LogInfo("Cannot show dialog: XamlRoot is null", "PartSelection");
+                    return;
+                }
 
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-            {
+                var result = await dialog.ShowAsync();
+
+                if (dialog.RequestChooseExistingSpecs)
+                {
+                    dialogDraft = await SelectExistingSpecsDraftAsync(
+                        existingParts,
+                        dialog.GetDraft()
+                    );
+                    continue;
+                }
+
+                if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
                 var partIdToReselect = SelectedPart.PartId;
                 var updatedPartId = dialog.UpdatedPartId;
 
@@ -617,6 +665,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                         true
                     );
                 }
+
+                break;
             }
         }
         catch (Exception ex)
@@ -660,6 +710,119 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     /// </summary>
     /// <param name="key"></param>
     public string GetTip(string key) => _helpService.GetTip(key);
+
+    private async Task<Model_DunnagePartDialogDraft> SelectExistingSpecsDraftAsync(
+        List<Model_DunnagePart> existingParts,
+        Model_DunnagePartDialogDraft currentDraft
+    )
+    {
+        var templateOptions = existingParts
+            .Select(CreateSpecTemplateOption)
+            .Where(option =>
+                option.SpecValues.Count > 0 || !string.IsNullOrWhiteSpace(option.Notes)
+            )
+            .OrderBy(option => option.PartId)
+            .ToList();
+
+        if (templateOptions.Count == 0)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "No saved specs were found for this dunnage type.",
+                Enum_ErrorSeverity.Info,
+                null,
+                true
+            );
+            return currentDraft;
+        }
+
+        var dialog = new Module_Dunnage.Views.View_Dunnage_SelectExistingSpecsDialog(
+            templateOptions
+        )
+        {
+            XamlRoot = App.MainWindow?.Content?.XamlRoot,
+        };
+
+        if (dialog.XamlRoot == null)
+        {
+            return currentDraft;
+        }
+
+        var result = await dialog.ShowAsync();
+        if (
+            result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary
+            || dialog.SelectedTemplate is null
+        )
+        {
+            return currentDraft;
+        }
+
+        var nextDraft = currentDraft.Clone();
+        nextDraft.SpecValues = new Dictionary<string, object?>(dialog.SelectedTemplate.SpecValues);
+        nextDraft.Notes = dialog.SelectedTemplate.Notes;
+
+        if (string.IsNullOrWhiteSpace(nextDraft.PartId))
+        {
+            nextDraft.PartId = Helper_Dunnage_PartIdSuggestion.BuildSuggestedPartId(
+                SelectedTypeName,
+                nextDraft.SpecValues
+            );
+        }
+
+        return nextDraft;
+    }
+
+    private static Model_DunnageSpecTemplateOption CreateSpecTemplateOption(Model_DunnagePart part)
+    {
+        var specValues = part.SpecValuesDict.ToDictionary(
+            pair => pair.Key,
+            pair => NormalizeSpecValue(pair.Value)
+        );
+
+        var notes = specValues.TryGetValue("Notes", out var notesValue)
+            ? notesValue?.ToString() ?? string.Empty
+            : string.Empty;
+        specValues.Remove("Notes");
+
+        return new Model_DunnageSpecTemplateOption
+        {
+            PartId = part.PartId,
+            HomeLocation = part.HomeLocation ?? string.Empty,
+            Notes = notes,
+            SpecValues = specValues,
+            SpecSummary = BuildSpecSummary(specValues),
+        };
+    }
+
+    private static object? NormalizeSpecValue(object? rawValue)
+    {
+        if (rawValue is JsonElement element)
+        {
+            return element.ValueKind switch
+            {
+                JsonValueKind.String => element.GetString(),
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.Number when element.TryGetInt64(out var integerValue) => integerValue,
+                JsonValueKind.Number => element.GetDouble(),
+                _ => element.ToString(),
+            };
+        }
+
+        return rawValue;
+    }
+
+    private static string BuildSpecSummary(Dictionary<string, object?> specValues)
+    {
+        if (specValues.Count == 0)
+        {
+            return "No saved spec values";
+        }
+
+        return string.Join(
+            " | ",
+            specValues.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}: {pair.Value}")
+        );
+    }
 
     #endregion
 }
