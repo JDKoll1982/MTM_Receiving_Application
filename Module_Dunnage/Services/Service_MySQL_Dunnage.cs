@@ -1469,6 +1469,29 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
+        public async Task<Model_Dao_Result> UpdateCustomFieldAsync(
+            int fieldId,
+            Model_CustomFieldDefinition field
+        )
+        {
+            try
+            {
+                return await _daoCustomField.UpdateAsync(fieldId, field);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(UpdateCustomFieldAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error updating custom field: {ex.Message}"
+                );
+            }
+        }
+
         public async Task<
             Model_Dao_Result<List<Model_CustomFieldDefinition>>
         > GetCustomFieldsByTypeAsync(int typeId)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
@@ -39,6 +40,37 @@ public partial class Model_CustomFieldDefinition : ObservableObject
 
     [ObservableProperty]
     private string _createdBy = string.Empty;
+
+    public static string BuildDatabaseColumnName(string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(fieldName))
+        {
+            return string.Empty;
+        }
+
+        var builder = new StringBuilder(fieldName.Length);
+        var previousWasUnderscore = false;
+
+        foreach (var character in fieldName.Trim().ToLowerInvariant())
+        {
+            if (char.IsLetterOrDigit(character))
+            {
+                builder.Append(character);
+                previousWasUnderscore = false;
+                continue;
+            }
+
+            if (previousWasUnderscore)
+            {
+                continue;
+            }
+
+            builder.Append('_');
+            previousWasUnderscore = true;
+        }
+
+        return builder.ToString().Trim('_');
+    }
 
     /// <summary>
     /// Returns a summary string for display in the UI

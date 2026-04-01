@@ -186,6 +186,9 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base, ID
         {
             // Update existing field
             EditingField.FieldName = FieldName;
+            EditingField.DatabaseColumnName = Model_CustomFieldDefinition.BuildDatabaseColumnName(
+                FieldName
+            );
             EditingField.FieldType = FieldType;
             EditingField.IsRequired = IsFieldRequired;
             EditingField = null;
@@ -196,6 +199,7 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base, ID
             var field = new Model_CustomFieldDefinition
             {
                 FieldName = FieldName,
+                DatabaseColumnName = Model_CustomFieldDefinition.BuildDatabaseColumnName(FieldName),
                 FieldType = FieldType,
                 IsRequired = IsFieldRequired,
                 DisplayOrder = CustomFields.Count + 1,

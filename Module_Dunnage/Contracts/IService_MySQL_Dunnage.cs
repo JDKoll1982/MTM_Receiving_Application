@@ -115,6 +115,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
             int typeId,
             Model_CustomFieldDefinition field
         );
+        public Task<Model_Dao_Result> UpdateCustomFieldAsync(
+            int fieldId,
+            Model_CustomFieldDefinition field
+        );
         public Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetCustomFieldsByTypeAsync(
             int typeId
         );

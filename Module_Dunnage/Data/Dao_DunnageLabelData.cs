@@ -51,37 +51,10 @@ public class Dao_DunnageLabelData
         try
         {
             int savedCount = 0;
-            var orderedLoads = loads
-                .OrderBy(load => load.PartId, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(load => load.LoadNumber)
-                .ThenBy(load => load.LoadUuid)
-                .ToList();
-
-            var partTotals = orderedLoads
-                .GroupBy(load => load.PartId, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.Count(),
-                    StringComparer.OrdinalIgnoreCase
-                );
-            var partSequenceCounters = new Dictionary<string, int>(
-                StringComparer.OrdinalIgnoreCase
-            );
+            var orderedLoads = OrderLoadsAndAssignPartSkidCounters(loads);
 
             foreach (var load in orderedLoads)
             {
-                if (!partSequenceCounters.ContainsKey(load.PartId))
-                {
-                    partSequenceCounters[load.PartId] = 0;
-                }
-
-                partSequenceCounters[load.PartId]++;
-                var skidSequence = partSequenceCounters[load.PartId];
-                var skidTotal = partTotals[load.PartId];
-
-                load.PartSkidSequence = skidSequence;
-                load.PartSkidTotal = skidTotal;
-
                 await using var command = new MySqlCommand(
                     "sp_Dunnage_LabelData_Insert",
                     connection,
@@ -177,12 +150,15 @@ public class Dao_DunnageLabelData
                 command.Parameters.Add(
                     new MySqlParameter("p_part_skid_sequence", MySqlDbType.Int32)
                     {
-                        Value = skidSequence,
+                        Value = load.PartSkidSequence ?? (object)DBNull.Value,
                     }
                 );
 
                 command.Parameters.Add(
-                    new MySqlParameter("p_part_skid_total", MySqlDbType.Int32) { Value = skidTotal }
+                    new MySqlParameter("p_part_skid_total", MySqlDbType.Int32)
+                    {
+                        Value = load.PartSkidTotal ?? (object)DBNull.Value,
+                    }
                 );
 
                 var specsJson = BuildSpecsJson(load);
@@ -392,6 +368,43 @@ public class Dao_DunnageLabelData
             parameters,
             _connectionString
         );
+    }
+
+    /// <summary>
+    /// Orders loads consistently for label generation and assigns per-part skid counters.
+    /// </summary>
+    private static List<Model_DunnageLoad> OrderLoadsAndAssignPartSkidCounters(
+        IEnumerable<Model_DunnageLoad> loads
+    )
+    {
+        var orderedLoads = loads
+            .OrderBy(load => load.PartId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(load => load.LoadNumber)
+            .ThenBy(load => load.LoadUuid)
+            .ToList();
+
+        var partTotals = orderedLoads
+            .GroupBy(load => load.PartId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Count(),
+                StringComparer.OrdinalIgnoreCase
+            );
+        var partSequenceCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var load in orderedLoads)
+        {
+            if (!partSequenceCounters.ContainsKey(load.PartId))
+            {
+                partSequenceCounters[load.PartId] = 0;
+            }
+
+            partSequenceCounters[load.PartId]++;
+            load.PartSkidSequence = partSequenceCounters[load.PartId];
+            load.PartSkidTotal = partTotals[load.PartId];
+        }
+
+        return orderedLoads;
     }
 
     /// <summary>
