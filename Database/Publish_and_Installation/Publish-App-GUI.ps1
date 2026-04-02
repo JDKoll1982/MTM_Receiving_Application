@@ -37,6 +37,35 @@ $script:BaseShare = "X:\Software Development\Live Applications"
 $script:ProjectFile = $defaultProjectFile
 $script:PublishVerbosity = 'detailed'
 $script:SatelliteResourceLanguages = ''
+$script:PublishLogFile = $null
+$script:LastStatusMessage = ''
+
+function Add-PublishLogText {
+    param(
+        [string]$Text
+    )
+
+    if ([string]::IsNullOrEmpty($script:PublishLogFile) -or [string]::IsNullOrEmpty($Text)) {
+        return
+    }
+
+    Add-Content -LiteralPath $script:PublishLogFile -Value $Text -Encoding UTF8
+}
+
+function Update-PublishStatus {
+    param(
+        [string]$Message
+    )
+
+    $statusText.Text = $Message
+
+    if ([string]::IsNullOrWhiteSpace($Message) -or $Message -eq $script:LastStatusMessage) {
+        return
+    }
+
+    $script:LastStatusMessage = $Message
+    Add-PublishLogText "[STATUS $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $Message`r`n"
+}
 
 $script:Options = @(
     @{
@@ -261,7 +290,7 @@ $projectPathText.Text = $script:ProjectFile
 $satelliteLanguagesText.Text = $script:SatelliteResourceLanguages
 
 if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
-    $statusText.Text = "Project file not found. Review the Project path before publishing."
+    Update-PublishStatus "Project file not found. Review the Project path before publishing."
 }
 
 # ---------------------------------------------------------------------------
@@ -314,7 +343,7 @@ $optionList.Add_SelectionChanged({
         $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
         $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
         $outputText.Text = ""
-        $statusText.Text = "Ready to publish: $($script:selectedOption.Label)"
+        Update-PublishStatus "Ready to publish: $($script:selectedOption.Label)"
         $publishButton.IsEnabled = $true
     })
 
@@ -333,7 +362,7 @@ $publishButton.Add_Click({
             $errorText.Text = "The selected project file does not exist. Update the Project path to the current MTM_Receiving_Application.csproj before publishing."
             $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
             $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
-            $statusText.Text = "Publish blocked — project file path is invalid."
+            Update-PublishStatus "Publish blocked — project file path is invalid."
             return
         }
 
@@ -345,6 +374,10 @@ $publishButton.Add_Click({
             " -p:SatelliteResourceLanguages=$satelliteLanguages"
         }
         $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $($script:PublishVerbosity) -o `"$($script:currentOutputPath)`""
+        $logDirectory = Join-Path $script:currentOutputPath "_PublishLogs"
+        New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+        $script:PublishLogFile = Join-Path $logDirectory ("publish-{0}.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        $script:LastStatusMessage = ''
 
         # Reset UI
         $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
@@ -359,11 +392,13 @@ Output: $($script:currentOutputPath)
 Verbosity: $($script:PublishVerbosity)
 SatelliteResourceLanguages: $(if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) { 'all' } else { $satelliteLanguages })
 Command: $publishCommand
+LogFile: $($script:PublishLogFile)
 
 "@
+        Set-Content -LiteralPath $script:PublishLogFile -Value $outputText.Text -Encoding UTF8
         $publishProgress.Visibility = [System.Windows.Visibility]::Visible
         $publishButton.IsEnabled = $false
-        $statusText.Text = "Publishing — please wait..."
+        Update-PublishStatus "Publishing — please wait..."
 
         # Redirect stdout+stderr to a temp file via cmd /c.
         # This avoids DataReceived event callbacks crossing into the PowerShell runspace
@@ -403,9 +438,10 @@ Command: $publishCommand
 
                     if ($newText.Length -gt 0) {
                         $outputText.Text += $newText
+                        Add-PublishLogText $newText
                         # Show last non-empty line in the status bar while building
                         $lastLine = ($newText -split "`n" | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 1)
-                        if ($lastLine) { $statusText.Text = $lastLine.Trim() }
+                        if ($lastLine) { Update-PublishStatus $lastLine.Trim() }
                         $outputScrollViewer.ScrollToEnd()
                     }
                 }
@@ -425,7 +461,10 @@ Command: $publishCommand
                     $tail = $reader.ReadToEnd()
                     $reader.Dispose()
                     $fs.Dispose()
-                    if ($tail.Length -gt 0) { $outputText.Text += $tail }
+                    if ($tail.Length -gt 0) {
+                        $outputText.Text += $tail
+                        Add-PublishLogText $tail
+                    }
                 }
                 catch { }
 
@@ -437,14 +476,16 @@ Command: $publishCommand
 
                 if ($script:publishProcess.ExitCode -eq 0) {
                     $successBorder.Visibility = [System.Windows.Visibility]::Visible
-                    $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath"
-                    $statusText.Text = "Publish completed successfully!"
+                    $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath`nLog file: $script:PublishLogFile"
+                    Update-PublishStatus "Publish completed successfully!"
                 }
                 else {
                     $errorBorder.Visibility = [System.Windows.Visibility]::Visible
-                    $errorText.Text = "Publish failed (exit code $($script:publishProcess.ExitCode)). See the build output above for details."
-                    $statusText.Text = "Publish failed — check build output."
+                    $errorText.Text = "Publish failed (exit code $($script:publishProcess.ExitCode)). See the build output above for details.`nLog file: $script:PublishLogFile"
+                    Update-PublishStatus "Publish failed — check build output."
                 }
+
+                Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $($script:publishProcess.ExitCode)`r`n"
             })
         $script:pollTimer.Start()
     })

@@ -18,6 +18,9 @@ locally on each PC. This means:
 All commands target `Release` configuration, `win-x64` runtime identifier, and output directly to the server share.
 All deployment targets are x64 Windows PCs — x86 and ARM64 are not supported.
 
+Every publish run from `Publish-App-GUI.ps1` also writes a timestamped log file to `<output-folder>\_PublishLogs\`.
+The log contains the same command header, streaming publish output, and status messages shown in the GUI.
+
 ---
 
 ## 1. Self-Contained (Standard — Recommended ✅)
