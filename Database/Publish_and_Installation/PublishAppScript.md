@@ -34,7 +34,7 @@ running `.exe` files from the share (check with IT if users get a "can't run fro
 > **Reference:** [dotnet publish command](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
+dotnet publish "<repo-root>\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -o "X:\Software Development\Live Applications\MTM_Receiving_Application"
 ```
 
 ---
@@ -64,7 +64,7 @@ deployed to every user machine via group policy or an endpoint management tool (
 - [Windows App SDK Runtime](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads) installed on **every** user PC
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained false -o "X:\Software Development\Live Applications\MTM_Receiving_Application_FD"
+dotnet publish "<repo-root>\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained false -o "X:\Software Development\Live Applications\MTM_Receiving_Application_FD"
 ```
 
 ---
@@ -93,7 +93,7 @@ reliably since all files are already loose on disk.
 > **Reference:** [Single-file deployment docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/single-file/overview)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_SingleFile"
+dotnet publish "<repo-root>\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_SingleFile"
 ```
 
 ---
@@ -113,7 +113,7 @@ user PC must do on launch, which partially compensates for the network file-read
 > **Reference:** [ReadyToRun compilation docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_R2R"
+dotnet publish "<repo-root>\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_R2R"
 ```
 
 ---
@@ -140,7 +140,7 @@ missing-at-runtime errors before deploying to users.
 > **Reference:** [Trim self-contained deployments docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/trim-self-contained)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishTrimmed=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Trimmed"
+dotnet publish "<repo-root>\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishTrimmed=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Trimmed"
 ```
 
 ---
@@ -168,7 +168,7 @@ but see the single-file caveat in Option 3 regarding first-run extraction time.
 > - [ReadyToRun compilation docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run)
 
 ```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Optimized"
+dotnet publish "<repo-root>\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Optimized"
 ```
 
 ---

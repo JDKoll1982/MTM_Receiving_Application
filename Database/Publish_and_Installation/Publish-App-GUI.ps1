@@ -27,11 +27,14 @@ $n5 = "HIGH RISK with WinUI 3 — test thoroughly before deploying.`n`nRemoves u
 
 $n5arm64 = "FOR ARM64 MACHINES — publish to a separate folder with a separate shortcut.`n`nSame as Self-Contained but compiled for ARM64 machines (e.g., Surface Pro X, Snapdragon-based PCs). The .csproj already declares win-arm64 as a supported RID.`n`n  WHY CHOOSE THIS:`n  - Required for native ARM64 performance — x64 emulation uses more CPU/battery`n  - Separate output folder keeps x64 and ARM64 deployments fully independent`n  - Both folders can coexist on the same server share`n`n  HOW TO DEPLOY:`n  - Output goes to: MTM_Receiving_Application_ARM64`n  - Create a separate desktop shortcut for ARM64 users pointing to this folder`n  - Do NOT overwrite the standard x64 share folder"
 
+$repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$defaultProjectFile = Join-Path $repoRoot "MTM_Receiving_Application.csproj"
+
 # ---------------------------------------------------------------------------
 # Publish option definitions — mirrors PublishAppScript.md
 # ---------------------------------------------------------------------------
 $script:BaseShare = "X:\Software Development\Live Applications"
-$script:ProjectFile = "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj"
+$script:ProjectFile = $defaultProjectFile
 $script:PublishVerbosity = 'detailed'
 $script:SatelliteResourceLanguages = ''
 
@@ -257,6 +260,10 @@ $closeButton = $window.FindName("CloseButton")
 $projectPathText.Text = $script:ProjectFile
 $satelliteLanguagesText.Text = $script:SatelliteResourceLanguages
 
+if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
+    $statusText.Text = "Project file not found. Review the Project path before publishing."
+}
+
 # ---------------------------------------------------------------------------
 # Populate option ListBox
 # ---------------------------------------------------------------------------
@@ -320,6 +327,16 @@ $publishButton.Add_Click({
         $opt = $script:selectedOption
         $script:currentOutputPath = "$($script:BaseShare)\$($opt.Folder)"
         $projectPath = $projectPathText.Text
+
+        if ([string]::IsNullOrWhiteSpace($projectPath) -or -not (Test-Path -LiteralPath $projectPath)) {
+            $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+            $errorText.Text = "The selected project file does not exist. Update the Project path to the current MTM_Receiving_Application.csproj before publishing."
+            $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
+            $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
+            $statusText.Text = "Publish blocked — project file path is invalid."
+            return
+        }
+
         $satelliteLanguages = $satelliteLanguagesText.Text.Trim()
         $satelliteLanguagesArg = if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) {
             ''
