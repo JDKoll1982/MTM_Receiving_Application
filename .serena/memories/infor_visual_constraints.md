@@ -129,7 +129,7 @@ public async Task<Model_Dao_Result<Model_InforVisualPO>> GetPOAsync(string poNum
 ## Registration in DI
 
 ```csharp
-// App.xaml.cs
+// Infrastructure/DependencyInjection/ extension methods
 var inforConnectionString = Helper_Database_Variables.GetInforVisualConnectionString();
 
 services.AddSingleton(sp => new Dao_InforVisualPO(inforConnectionString));

@@ -15,7 +15,7 @@ You are an expert WinUI 3 developer specializing in MVVM architecture for the MT
 
 **Domain Expertise:**
 
-- WinUI 3 desktop application development on .NET 8
+- WinUI 3 desktop application development on .NET 10
 - MVVM architecture using CommunityToolkit.Mvvm
 - Manufacturing receiving workflows and database operations
 - MySQL and SQL Server integration patterns
@@ -46,7 +46,7 @@ Implement features and fix issues in the MTM Receiving Application while strictl
 - Follow project naming conventions (ViewModel_Module_Feature, Dao_EntityName, etc.)
 - Ensure all async methods end with `Async` suffix
 - Implement proper error handling with `IService_ErrorHandler`
-- Register all components in dependency injection (`App.xaml.cs`)
+- Register all components in dependency injection (`Infrastructure/DependencyInjection/` extension methods)
 - Write tests using xUnit and FluentAssertions
 
 ## Approach and Methodology
@@ -92,7 +92,7 @@ Implement features and fix issues in the MTM Receiving Application while strictl
 
 **Step 5: Registration**
 
-- Register DAOs as Singletons in `App.xaml.cs`
+- Register DAOs as Singletons in `Infrastructure/DependencyInjection/` extension methods
 - Register Services as Singleton or Transient
 - Register ViewModels as Transient
 - Register Views as Transient
@@ -128,7 +128,7 @@ Before completing any task:
 ✅ Use `x:Bind` in XAML Views (compile-time binding)
 ✅ Call stored procedures for all MySQL operations
 ✅ Return `Model_Dao_Result` from DAOs (never throw)
-✅ Register services in `App.xaml.cs`
+✅ Register services in `Infrastructure/DependencyInjection/` extension methods
 ✅ Handle exceptions with `IService_ErrorHandler`
 ✅ Set `IsBusy = true` during async operations
 ✅ Use PascalCase for methods, properties, classes
@@ -191,7 +191,7 @@ Whenever you are about to make a **major assumption** during coding or planning,
 ⚠️ Modifying database schemas
 ⚠️ Changing base classes
 ⚠️ Adding third-party dependencies
-⚠️ Modifying `App.xaml.cs` DI structure
+⚠️ Modifying `Infrastructure/DependencyInjection/` registrations or `App.xaml.cs` host wiring
 ⚠️ Creating new stored procedures
 
 ## Output Expectations
@@ -220,7 +220,8 @@ public partial class ViewModel_Module_Feature : ViewModel_Shared_Base
     public ViewModel_Module_Feature(
         IService_Feature service,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _service = service;
     }
@@ -235,7 +236,7 @@ public partial class ViewModel_Module_Feature : ViewModel_Shared_Base
             var result = await _service.MethodAsync();
             if (!result.IsSuccess)
             {
-                _errorHandler.ShowUserError(result.ErrorMessage, "Error", nameof(MethodNameAsync));
+                await _errorHandler.ShowUserErrorAsync(result.ErrorMessage, "Error", nameof(MethodNameAsync));
             }
         }
         catch (Exception ex)
@@ -272,14 +273,19 @@ public class Dao_EntityName
                 { "p_id", id }
             };
 
-            return await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync<EntityType>(
+            return await Helper_Database_StoredProcedure.ExecuteSingleAsync<EntityType>(
                 _connectionString,
                 "sp_get_entity",
+                reader => new EntityType
+                {
+                    // Map reader columns to properties
+                    // e.g., Id = Convert.ToInt32(reader["id"])
+                },
                 parameters);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result<EntityType>.Failure($"Error retrieving entity: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<EntityType>($"Error retrieving entity: {ex.Message}", ex);
         }
     }
 }
@@ -368,9 +374,9 @@ When implementing features:
 
 ## Technology Stack Reference
 
-**Framework**: WinUI 3 (Windows App SDK 1.6+)
-**Language**: C# 12
-**Platform**: .NET 8
+**Framework**: WinUI 3 (Windows App SDK 1.8+)
+**Language**: C# 13
+**Platform**: .NET 10
 **Architecture**: MVVM with CommunityToolkit.Mvvm
 **Databases**:
 

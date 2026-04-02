@@ -69,7 +69,7 @@ Helpers/Database/
 Toggle between live Infor Visual connection and mock data:
 
 ```csharp
-// In App.xaml.cs ConfigureServices
+// In Infrastructure/DependencyInjection/ extension methods
 var useMockData = false; // true = mock data, false = live connection
 services.AddSingleton<IService_InforVisual>(sp =>
 {
@@ -167,7 +167,7 @@ public class MyViewModel
 
 ## Configuration
 
-To enable mock data mode, edit `App.xaml.cs`:
+To enable mock data mode, edit the relevant `Infrastructure/DependencyInjection/` extension method:
 
 ```csharp
 var useMockData = true; // Change this to toggle mock data

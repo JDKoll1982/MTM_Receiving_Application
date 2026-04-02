@@ -77,7 +77,7 @@ MTM_Receiving_Application.Tests/
 
 ### Prerequisites
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Main MTM Receiving Application compiled (x64 platform)
 - MySQL database (for integration tests)
 
@@ -670,5 +670,5 @@ dotnet watch test
 ---
 
 **Last Updated**: January 11, 2026
-**Framework**: xUnit 2.9.0
-**Target**: .NET 8 (net8.0-windows10.0.22621.0)
+**Framework**: xUnit 2.9.3
+**Target**: .NET 10 (net10.0-windows10.0.22621.0)

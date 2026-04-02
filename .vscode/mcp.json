@@ -1,57 +1,43 @@
 {
-    "servers": {
-        "oraios/serena": {
-            "type": "stdio",
-            "command": "uvx",
-            "args": [
-                "--from",
-                "git+https://github.com/oraios/serena",
-                "serena",
-                "start-mcp-server",
-                "--context",
-                "ide",
-                "--project",
-                "${workspaceFolder}"
-            ]
-        },
-        "githubRemote": {
-            "type": "http",
-            "url": "https://api.githubcopilot.com/mcp/"
-        },
-        "githubLocal": {
-            "type": "stdio",
-            "command": "docker",
-            "args": [
-                "run",
-                "-i",
-                "--rm",
-                "-e",
-                "GITHUB_PERSONAL_ACCESS_TOKEN=${input:github_token}",
-                "ghcr.io/github/github-mcp-server"
-            ]
-        },
-        "playwright": {
-            "type": "stdio",
-            "command": "npx",
-            "args": [
-                "@playwright/mcp@latest"
-            ]
-        },
-        "filesystem": {
-            "type": "stdio",
-            "command": "node",
-            "args": [
-                "${workspaceFolder}/Scripts/McpServers/filesystem-win/index.mjs",
-                "${workspaceFolder}"
-            ]
-        }
+  "servers": {
+    "oraios/serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide",
+        "--project",
+        "${workspaceFolder}"
+      ]
     },
-    "inputs": [
-        {
-            "type": "promptString",
-            "id": "github_token",
-            "description": "GitHub Personal Access Token (only needed for githubLocal)",
-            "password": true
-        }
-    ]
+    "githubRemote": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/Scripts/McpServers/filesystem-win/index.mjs",
+        "${workspaceFolder}"
+      ]
+    }
+  },
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "github_token",
+      "description": "GitHub Personal Access Token (only needed for githubLocal)",
+      "password": true
+    }
+  ]
 }

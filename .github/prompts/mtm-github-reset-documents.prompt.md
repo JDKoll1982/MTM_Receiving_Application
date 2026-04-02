@@ -314,7 +314,7 @@ Before creating this file:
 3. **Create data-driven diagrams:**
    - Use actual class names discovered via Serena
    - Show real dependency chains (not theoretical examples)
-   - Reference actual service registrations from App.xaml.cs
+   - Reference actual service registrations from `Infrastructure/DependencyInjection/` extension methods
      **Specific Requirements:**
 
 - **Use PlantUML diagrams, NOT Mermaid** (per markdown-documentation.instructions.md standards)
@@ -449,7 +449,7 @@ Before creating this file:
 - Read existing `.editorconfig`
 - Verify it aligns with:
   - Constitution Principle IX (Code Quality & Maintainability)
-  - C# 12 and .NET 8 best practices
+  - C# 13 and .NET 10 best practices
   - Naming conventions (PascalCase for public, \_camelCase for private fields)
   - Bracing rules (`csharp_prefer_braces = true:error`)
   - Async method naming (`Async` suffix required)

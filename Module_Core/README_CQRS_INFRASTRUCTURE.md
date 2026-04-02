@@ -6,21 +6,21 @@ Your existing Module_Core now includes complete CQRS (Command Query Responsibili
 
 ### 1. **MediatR** - CQRS Pattern Framework
 
-- **Version:** 12.4.1
+- **Version:** 14.0.0
 - **Purpose:** Enables CQRS pattern with handlers for commands and queries
-- **Configuration:** Auto-registered in `App.xaml.cs` with assembly scanning
+- **Configuration:** Registered through dependency-injection extension methods wired from `App.xaml.cs`
 
 ### 2. **FluentValidation** - Declarative Validation
 
-- **Version:** 11.10.0
+- **Version:** 12.1.1
 - **Purpose:** Automatic validation of commands before handlers execute
-- **Configuration:** Auto-discovery enabled in `App.xaml.cs`
+- **Configuration:** Auto-discovery enabled through the CQRS/dependency-injection setup
 
 ### 3. **Serilog** - Structured Logging
 
-- **Version:** 4.1.0
+- **Version:** 4.3.0
 - **Purpose:** Replaces basic logging with structured, searchable logs
-- **Configuration:** Configured in `App.xaml.cs` before creating the host. Daily rolling logs in `logs/app-.txt` with 30-day retention
+- **Configuration:** Configured during host setup in `App.xaml.cs`. Daily rolling logs in `logs/app-.txt` with 30-day retention
 - **Note:** Serilog is configured BEFORE the host builder to capture early startup errors
 
 ### 4. **Global Pipeline Behaviors** (Module_Core/Behaviors/)
@@ -88,7 +88,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries
 {
-    public class GetReceivingLineHandler : 
+    public class GetReceivingLineHandler :
         IRequestHandler<GetReceivingLineQuery, Model_Dao_Result<Model_ReceivingLine>>
     {
         private readonly Dao_ReceivingLine _dao;
@@ -103,7 +103,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries
         }
 
         public async Task<Model_Dao_Result<Model_ReceivingLine>> Handle(
-            GetReceivingLineQuery request, 
+            GetReceivingLineQuery request,
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("Retrieving receiving line {LineId}", request.LineId);
@@ -196,7 +196,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ViewModel_Receiving_POEntry(
             IMediator mediator,
             IService_ErrorHandler errorHandler,
-            ILogger<ViewModel_Receiving_POEntry> logger) : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
         {
             _mediator = mediator;
         }
@@ -229,7 +230,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
                 else
                 {
-                    _errorHandler.ShowUserError(
+                    await _errorHandler.ShowUserErrorAsync(
                         result.ErrorMessage,
                         "Save Error",
                         nameof(SaveLineAsync));
@@ -239,7 +240,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 // Validation failed - show user-friendly errors
                 var errors = string.Join(", ", ex.Errors.Select(e => e.ErrorMessage));
-                _errorHandler.ShowUserError(errors, "Validation Error", nameof(SaveLineAsync));
+                await _errorHandler.ShowUserErrorAsync(errors, "Validation Error", nameof(SaveLineAsync));
             }
             catch (Exception ex)
             {

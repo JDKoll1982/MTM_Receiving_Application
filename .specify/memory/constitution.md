@@ -26,7 +26,7 @@ All workflows are modeled as commands/queries via MediatR with single-responsibi
 
 ### IV. Dependency Injection and Modular Boundaries
 
-Constructor injection is mandatory; registrations live in App.xaml.cs; ViewModels are transient, infra/DAO services singleton unless stateful; module-specific logic remains within its module, Module_Core provides only generic infrastructure (error handling, dispatcher, windowing, logging scaffolding).
+Constructor injection is mandatory; registrations live in `Infrastructure/DependencyInjection/` extension methods called from `App.xaml.cs`; ViewModels are transient, infra/DAO services singleton unless stateful; module-specific logic remains within its module, Module_Core provides only generic infrastructure (error handling, dispatcher, windowing, logging scaffolding).
 
 ### V. Validation, Errors, and Structured Logging
 
@@ -38,15 +38,15 @@ Authentication/session flows honor workstation type, timeouts, and lockouts; aud
 
 ### VII. Library-First Reuse
 
-Prefer proven libraries over custom services: MediatR for orchestration, FluentValidation for rules, Serilog for logging, CsvHelper for exports, AutoMapper/Mapster for mapping, Scrutor for DI scanning/decorators, Polly for resilience, Ardalis.GuardClauses for guards, FluentAssertions/Bogus for tests; new utilities must justify gaps before custom code is added.
+Prefer proven libraries over custom services: MediatR for orchestration, FluentValidation for rules, Serilog for logging, Mapster for mapping, Ardalis.GuardClauses for guards, FluentAssertions/Bogus for tests; new utilities must justify gaps before custom code is added.
 
 ## Architecture and Technical Constraints
 
-- Stack: WinUI 3 (.NET 8), CommunityToolkit.Mvvm, MediatR, FluentValidation, Serilog, CsvHelper, OpenTelemetry (future), MySQL 8, SQL Server (read-only).
+- Stack: WinUI 3 (.NET 10), CommunityToolkit.Mvvm, MediatR, FluentValidation, Serilog, OpenTelemetry 1.15.0, MySQL 5.7, SQL Server (read-only).
 - Patterns: CQRS with pipeline behaviors; DAOs use Helper_Database_StoredProcedure; no static/global service locators; no raw SQL for MySQL; no writes to Infor Visual.
 - Performance/observability: structured logs on handler start/stop; capture timing at validation, handler, DAO, and end-to-end; favor caching on queries where safe; avoid blocking UI thread.
 - UI conventions: use x:Bind, keep Views free of business logic, window sizing via WindowHelper standards, converters from Module_Core where applicable.
-- Library-first mapping: prefer mapping libraries over manual mapping; prefer Scrutor for DI assembly scanning; apply Polly policies for external/unstable calls.
+- Library-first mapping: prefer mapping libraries (Mapster) over manual mapping.
 
 ## Development Workflow and Quality Gates
 

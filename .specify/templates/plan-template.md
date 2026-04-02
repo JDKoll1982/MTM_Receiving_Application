@@ -29,17 +29,17 @@
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 Verify alignment with the constitution:
 
 - MVVM purity (partial ViewModels, x:Bind only, no code-behind business logic).
 - Data access integrity (MySQL stored procedures only; Infor Visual read-only; instance DAOs returning Model_Dao_Result; no static DAOs).
 - CQRS/MediatR usage with pipeline behaviors (validation/logging/audit) and mediator-first ViewModels.
-- DI registration in App.xaml.cs with module boundaries (Module_Core infra only; module-specific logic stays local).
+- DI registration in `Infrastructure/DependencyInjection/` extension methods, wired from `App.xaml.cs`, with module boundaries (Module_Core infra only; module-specific logic stays local).
 - Validation/logging/error handling (FluentValidation + IService_ErrorHandler + Serilog structured logs; no exception leakage to UI).
 - Security/session discipline (auth tiers, timeouts, auditability; no secrets in code).
-- Library-first approach (use approved libraries before writing custom services: MediatR, FluentValidation, Serilog, CsvHelper, AutoMapper/Mapster, Scrutor, Polly, Ardalis.GuardClauses, FluentAssertions/Bogus).
+- Library-first approach (use approved libraries before writing custom services: MediatR, FluentValidation, Serilog, Mapster, Ardalis.GuardClauses, FluentAssertions/Bogus).
 
 ## Project Structure
 
@@ -56,6 +56,7 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
+
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
@@ -106,7 +107,7 @@ directories captured above]
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-01T10:25:28.7256451-05:00",
+  "generatedAt": "2026-04-01T18:27:16.7959638-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -221,6 +221,65 @@
         {
           "alias": "__system__:statistics",
           "object": "__system__:statistics"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/04_Migration_dunnage_part_skid_counters.sql",
+      "category": "migration_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_mig42_add_column_if_missing",
+      "procedureCount": 2,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_table_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_column_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_ddl",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "__system__:columns"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [
+        "sp_mig42_add_column_if_missing",
+        "sp_mig42_apply"
+      ],
+      "parameterTokensUsed": [
+        "p_table_name",
+        "p_column_name",
+        "p_ddl"
+      ],
+      "variableTokensUsed": [
+        "v_exists"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "__system__:columns",
+          "object": "__system__:columns"
         }
       ]
     },
@@ -2385,6 +2444,55 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_CustomFields_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_field_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_custom_fields"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "dunnage_custom_fields"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_field_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_custom_fields",
+          "object": "dunnage_custom_fields"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_GetByType.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -2545,6 +2653,87 @@
           "object": "dunnage_custom_fields"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_CustomFields_Update.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_CustomFields_Update",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_field_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_field_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_database_column_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_field_type",
+          "sqlType": "VARCHAR(20)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_display_order",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_is_required",
+          "sqlType": "BOOLEAN"
+        },
+        {
+          "direction": "IN",
+          "name": "p_validation_rules",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "dunnage_custom_fields",
+          "columns": [
+            "FieldName"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_field_id",
+        "p_field_name",
+        "p_database_column_name",
+        "p_field_type",
+        "p_display_order",
+        "p_is_required",
+        "p_validation_rules"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Check.sql",
@@ -3122,6 +3311,16 @@
         {
           "qualifier": "dld",
           "resolvedObject": "dunnage_label_data",
+          "column": "part_skid_sequence"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
+          "column": "part_skid_total"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
           "column": "specs_json"
         }
       ],
@@ -3141,6 +3340,8 @@
             "type_icon",
             "location",
             "label_number",
+            "part_skid_sequence",
+            "part_skid_total",
             "specs_json",
             "archived_at",
             "archived_by",
@@ -3330,6 +3531,16 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_skid_sequence",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_skid_total",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_specs_json",
           "sqlType": "JSON"
         }
@@ -3352,6 +3563,10 @@
             "user_id",
             "location",
             "label_number",
+            "part_skid_sequence",
+            "part_skid_total",
+            "p_part_skid_sequence",
+            "p_part_skid_total",
             "specs_json"
           ]
         }
@@ -3371,6 +3586,8 @@
         "p_user_id",
         "p_location",
         "p_label_number",
+        "p_part_skid_sequence",
+        "p_part_skid_total",
         "p_specs_json"
       ],
       "variableTokensUsed": [],
@@ -3448,6 +3665,14 @@
           "sqlType": "VARCHAR(50)"
         },
         {
+          "name": "v_part_skid_sequence",
+          "sqlType": "INT"
+        },
+        {
+          "name": "v_part_skid_total",
+          "sqlType": "INT"
+        },
+        {
           "name": "v_specs_json",
           "sqlType": "JSON"
         }
@@ -3469,6 +3694,8 @@
             "user_id",
             "location",
             "label_number",
+            "part_skid_sequence",
+            "part_skid_total",
             "specs_json"
           ]
         }
@@ -3491,6 +3718,8 @@
         "v_received_date",
         "v_location",
         "v_label_number",
+        "v_part_skid_sequence",
+        "v_part_skid_total",
         "v_specs_json"
       ],
       "temporaryTables": [],
@@ -3571,6 +3800,16 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_skid_sequence",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_skid_total",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_specs_json",
           "sqlType": "JSON"
         }
@@ -3601,6 +3840,8 @@
         "p_user_id",
         "p_location",
         "p_label_number",
+        "p_part_skid_sequence",
+        "p_part_skid_total",
         "p_specs_json"
       ],
       "variableTokensUsed": [],
@@ -3752,6 +3993,16 @@
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
           "column": "label_number"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "part_skid_sequence"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "part_skid_total"
         },
         {
           "qualifier": "l",
@@ -3914,6 +4165,16 @@
         {
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
+          "column": "part_skid_sequence"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "part_skid_total"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
           "column": "specs_json"
         },
         {
@@ -4070,6 +4331,16 @@
         {
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
+          "column": "part_skid_sequence"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "part_skid_total"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
           "column": "specs_json"
         },
         {
@@ -4184,6 +4455,16 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_skid_sequence",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_skid_total",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_specs_json",
           "sqlType": "JSON"
         },
@@ -4217,6 +4498,8 @@
         "p_type_icon",
         "p_location",
         "p_label_number",
+        "p_part_skid_sequence",
+        "p_part_skid_total",
         "p_specs_json",
         "p_user"
       ],

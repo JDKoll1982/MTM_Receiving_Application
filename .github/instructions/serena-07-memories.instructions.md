@@ -89,7 +89,7 @@ All 15 MTM project memories and their purpose:
 | `project_overview.md`         | High-level: modules, database inventory, team context                      |
 | `suggested_commands.md`       | `dotnet build`, `dotnet test`, MySQL connection commands                   |
 | `task_completion_workflow.md` | How to complete a coding task: build → test → validate                     |
-| `tech_stack.md`               | .NET 8, WinUI 3, MySQL 5.7, SQL Server, CommunityToolkit.Mvvm              |
+| `tech_stack.md`               | .NET 10, WinUI 3, MySQL 5.7, SQL Server, CommunityToolkit.Mvvm             |
 | `xaml_binding_patterns.md`    | `x:Bind` patterns, Mode, UpdateSourceTrigger                               |
 
 **Reading memories at session start:**

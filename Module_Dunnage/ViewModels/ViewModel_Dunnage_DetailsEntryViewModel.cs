@@ -307,7 +307,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _workflowService.CurrentSession.InventoryMethod = string.Empty;
+                    _workflowService.CurrentSession.InventoryMethod = "Not Inventoried";
+                    InventoryMethod = "Not Inventoried";
                 }
             }
         }

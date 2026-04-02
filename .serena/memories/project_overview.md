@@ -5,7 +5,7 @@ Last Updated: 2026-03-22
 **Project Name:** MTM Receiving Application
 
 **Purpose:**
-A modern WinUI 3 / .NET 8 desktop application for manufacturing receiving operations. It handles
+A modern WinUI 3 / .NET 10 desktop application for manufacturing receiving operations. It handles
 authentication, label generation (receiving, dunnage, Volvo), reporting,
 and integrates with MySQL (application data) and SQL Server / Infor Visual ERP (read-only lookup).
 

@@ -15,8 +15,8 @@ locally on each PC. This means:
 - When you publish Option 1, you overwrite the live folder on the server. All users get the update automatically
   the next time they launch the app via their shortcut — no re-deployment to individual machines required.
 
-All commands target `Release` configuration and output directly to the server share.
-Replace `-r win-x64` with `-r win-x86` or `-r win-arm64` as needed for the target machine.
+All commands target `Release` configuration, `win-x64` runtime identifier, and output directly to the server share.
+All deployment targets are x64 Windows PCs — x86 and ARM64 are not supported.
 
 ---
 
@@ -52,12 +52,14 @@ missing, the app will fail to launch with a cryptic error.
 deployed to every user machine via group policy or an endpoint management tool (e.g., Intune, SCCM).
 
 **Why you might still choose this:**
+
 - IT already manages workstations via Intune/SCCM and deploys runtimes as part of the standard image — the prereqs will always be present.
 - The publish output is significantly smaller, so pushing updates to the server share is faster.
 - Keeps the .NET runtime version centrally controlled by IT — patching a .NET security vulnerability only requires IT to push a runtime update, not a full app republish.
 - Useful in environments where disk space on the server share is constrained.
 
 **Prerequisites:**
+
 - [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed on **every** user PC
 - [Windows App SDK Runtime](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads) installed on **every** user PC
 
@@ -78,6 +80,7 @@ For a server-share deployment the standard Self-Contained (Option 1) typically l
 reliably since all files are already loose on disk.
 
 **Why you might still choose this:**
+
 - You want a visually clean share folder with a single `.exe` rather than hundreds of loose files — easier to explain to users what to shortcut.
 - Simpler to back up or version a single file on the server.
 - The first-run extraction delay only happens once per user (files are cached in `%TEMP%\.net`); after that, launches are as fast as Option 1.
@@ -124,6 +127,7 @@ launch. This can improve startup speed on slower network connections. However, t
 runtime failures due to trimming is high with WinUI 3.
 
 **Why you might still choose this:**
+
 - The server share is on a genuinely slow link (e.g., remote site over VPN) and folder size is causing noticeable launch delays — trimming can cut the output by 30–60%.
 - Disk space on the server share is heavily constrained.
 - You have already addressed all trim warnings in the codebase and run a full test pass with no runtime failures — in that case, the risk is reduced to acceptable.
@@ -150,6 +154,7 @@ Best balance of deployment simplicity and startup performance without the risks 
 but see the single-file caveat in Option 3 regarding first-run extraction time.
 
 **Why you might still choose this:**
+
 - You want the fastest possible startup after the first-run extraction has happened — this is the best performing option once the cache is warm.
 - You prefer a cleaner share folder (single file) AND need fast startup for power users who launch the app many times per day.
 - The one-time first-run delay is acceptable as a trade-off for better ongoing performance.
@@ -158,29 +163,12 @@ but see the single-file caveat in Option 3 regarding first-run extraction time.
 **Prerequisites:** None on user PCs. Same server share accessibility requirement as Option 1.
 
 > **References:**
+>
 > - [Single-file deployment docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/single-file/overview)
 > - [ReadyToRun compilation docs](https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run)
 
 ```cmd
 dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_Optimized"
-```
-
----
-
-## 7. ARM64 Variant (Self-Contained)
-
-**What it does:** Same as Option 1, but compiled for ARM64 machines (e.g., Surface Pro X,
-Snapdragon-based PCs). The csproj already declares `win-arm64` as a supported RID.
-
-**Server-share note:** Publish to a separate output folder so x64 and ARM64 users each have
-their own shortcut pointing to the correct build. Both folders can live on the same server share.
-
-**Prerequisites:** None on user PCs. Can be cross-compiled from any Windows machine.
-
-> **Reference:** [.NET Runtime Identifier (RID) catalog](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog)
-
-```cmd
-dotnet publish "c:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" -c Release -r win-arm64 --self-contained true -o "X:\Software Development\Live Applications\MTM_Receiving_Application_ARM64"
 ```
 
 ---
@@ -201,12 +189,11 @@ X:\Software Development\Live Applications\MTM_Receiving_Application\MTM_Receivin
 
 ## Quick Reference
 
-| Option | Output Folder | Runtime Bundled | Single EXE | Faster Startup | Smaller Size | Safe for WinUI 3 | Server-Share Suitable |
-|---|---|---|---|---|---|---|---|
-| 1. Self-Contained | `MTM_Receiving_Application` | ✅ | ❌ | — | — | ✅ | ✅ Best choice |
-| 2. Framework-Dependent | `MTM_Receiving_Application_FD` | ❌ | ❌ | — | ✅ | ✅ | ⚠️ Avoid unless IT managed |
-| 3. Single File | `MTM_Receiving_Application_SingleFile` | ✅ | ~✅ | ❌ slight | — | ✅ | ⚠️ Slower first launch |
-| 4. ReadyToRun | `MTM_Receiving_Application_R2R` | ✅ | ❌ | ✅ | ❌ larger | ✅ | ✅ Good for slow networks |
-| 5. Trimmed | `MTM_Receiving_Application_Trimmed` | ✅ | ❌ | — | ✅ | ⚠️ Test thoroughly | ⚠️ Test before deploying |
-| 6. Single File + R2R | `MTM_Receiving_Application_Optimized` | ✅ | ~✅ | ✅ | — | ✅ | ⚠️ Slower first launch |
-| 7. ARM64 | `MTM_Receiving_Application_ARM64` | ✅ | ❌ | — | — | ✅ | ✅ Separate folder/shortcut |
+| Option                 | Output Folder                          | Runtime Bundled | Single EXE | Faster Startup | Smaller Size | Safe for WinUI 3   | Server-Share Suitable      |
+| ---------------------- | -------------------------------------- | --------------- | ---------- | -------------- | ------------ | ------------------ | -------------------------- |
+| 1. Self-Contained      | `MTM_Receiving_Application`            | ✅              | ❌         | —              | —            | ✅                 | ✅ Best choice             |
+| 2. Framework-Dependent | `MTM_Receiving_Application_FD`         | ❌              | ❌         | —              | ✅           | ✅                 | ⚠️ Avoid unless IT managed |
+| 3. Single File         | `MTM_Receiving_Application_SingleFile` | ✅              | ~✅        | ❌ slight      | —            | ✅                 | ⚠️ Slower first launch     |
+| 4. ReadyToRun          | `MTM_Receiving_Application_R2R`        | ✅              | ❌         | ✅             | ❌ larger    | ✅                 | ✅ Good for slow networks  |
+| 5. Trimmed             | `MTM_Receiving_Application_Trimmed`    | ✅              | ❌         | —              | ✅           | ⚠️ Test thoroughly | ⚠️ Test before deploying   |
+| 6. Single File + R2R   | `MTM_Receiving_Application_Optimized`  | ✅              | ~✅        | ✅             | —            | ✅                 | ⚠️ Slower first launch     |

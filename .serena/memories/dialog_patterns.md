@@ -71,7 +71,7 @@ var result = await dialog.ShowAsync();
 
 ### DI Registration Pattern
 
-Dialogs are registered in `App.xaml.cs`:
+Dialogs are registered in `Infrastructure/DependencyInjection/` extension methods, wired from `App.xaml.cs`:
 
 **Transient Registration** (New instance each time):
 

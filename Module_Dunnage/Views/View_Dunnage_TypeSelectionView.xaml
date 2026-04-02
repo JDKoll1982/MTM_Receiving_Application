@@ -34,8 +34,9 @@
                 Text="{x:Bind ViewModel.GetTip('Dunnage.TypeSelection'), Mode=OneWay}" />
         </StackPanel>
 
-        <!--  3x4 Type Grid  -->
+        <!--  4x3 Type Grid  -->
         <Grid x:Name="CardAreaHost" Grid.Row="1">
+
             <GridView
                 x:Name="TypeGridView"
                 MaxWidth="912"
@@ -46,13 +47,13 @@
                 ItemsSource="{x:Bind ViewModel.DisplayedTypes, Mode=OneWay}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.HorizontalScrollMode="Disabled"
-                ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                ScrollViewer.VerticalScrollMode="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                ScrollViewer.VerticalScrollMode="Auto"
                 SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
                 SelectionMode="None">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                        <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
                 <GridView.ItemContainerStyle>

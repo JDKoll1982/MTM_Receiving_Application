@@ -95,18 +95,18 @@
 ## Technology Constraints
 
 - **OS**: Windows 10 1809+ / Windows 11
-- **Framework**: .NET 8.0
+- **Framework**: .NET 10.0
 - **UI**: WinUI 3 (Windows App SDK 1.8+)
 - **Application DB**: MySQL 5.7+
 - **ERP DB**: SQL Server (Infor Visual MTMFG) - **READ ONLY**
 
 ## Key NuGet Packages
 
-- CommunityToolkit.Mvvm (8.2+)
+- CommunityToolkit.Mvvm (8.4+)
 - CommunityToolkit.WinUI.UI.Controls (7.1+)
-- Microsoft.Extensions.DependencyInjection (8.0+)
+- Microsoft.Extensions.DependencyInjection (10.0+)
 - MySql.Data (9.0+)
-- Microsoft.Data.SqlClient (5.2+)
+- Microsoft.Data.SqlClient (6.1+)
 
 ## Development Workflow
 

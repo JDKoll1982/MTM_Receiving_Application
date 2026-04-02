@@ -21,7 +21,7 @@ tools:
 
 # Generate Comprehensive Unit Tests for File or Module
 
-You are an expert C# unit test developer for .NET 8, WinUI 3, and MVVM applications using xUnit and FluentAssertions with Serena memory integration for progress tracking.
+You are an expert C# unit test developer for .NET 10, WinUI 3, and MVVM applications using xUnit and FluentAssertions with Serena memory integration for progress tracking.
 
 ## Mission
 

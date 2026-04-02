@@ -55,7 +55,7 @@ public List<Model_Entity> GetAll() // Not async
 ### For MySQL Operations
 
 ```csharp
-public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
+public async Task<Model_Dao_Result> InsertAsync(Model_ReceivingLine line)
 {
     try
     {
@@ -66,7 +66,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
             { "p_po_number", line.PONumber }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Receiving_Line_Insert",
             parameters
@@ -74,7 +74,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
     }
     catch (Exception ex)
     {
-        return Model_Dao_Result_Factory.Failure<int>(
+        return Model_Dao_Result_Factory.Failure(
             $"Error inserting receiving line: {ex.Message}",
             ex);
     }
@@ -154,9 +154,15 @@ private void ConfigureServices(HostBuilderContext context, IServiceCollection se
 ```csharp
 public async Task<Model_Dao_Result<List<Model_ReceivingLine>>> GetAllAsync()
 {
-    return await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync<Model_ReceivingLine>(
+    return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_ReceivingLine>(
         _connectionString,
         "sp_receiving_line_get_all",
+        reader => new Model_ReceivingLine
+        {
+            PartID = reader["part_id"].ToString() ?? string.Empty,
+            Quantity = Convert.ToInt32(reader["quantity"]),
+            PONumber = reader["po_number"].ToString() ?? string.Empty,
+        },
         new Dictionary<string, object>()
     );
 }
@@ -246,6 +252,6 @@ Data/
 - [ ] All methods are async
 - [ ] Use `Helper_Database_StoredProcedure` for MySQL
 - [ ] No exceptions thrown (return failure results)
-- [ ] Registered in DI container (`App.xaml.cs`)
+- [ ] Registered in DI container (`Infrastructure/DependencyInjection/` extension methods)
 - [ ] Integration tests written
 - [ ] XML documentation comments added

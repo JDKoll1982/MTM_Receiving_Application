@@ -14,7 +14,7 @@ The MTM Receiving Application implements a centralized help system that replaces
 
 **Interface**: `Contracts/Services/IService_Help.cs`
 
-**Registered as**: Singleton in `App.xaml.cs`
+**Registered as**: Singleton in `Infrastructure/DependencyInjection/` extension methods
 
 **Key Methods**:
 
@@ -161,14 +161,15 @@ Examples:
 All ViewModels inject `IService_Help` via constructor:
 
 ```csharp
-public partial class MyViewModel : BaseViewModel
+public partial class MyViewModel : ViewModel_Shared_Base
 {
     private readonly IService_Help _helpService;
 
     public MyViewModel(
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _helpService = helpService;
     }

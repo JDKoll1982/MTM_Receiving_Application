@@ -59,7 +59,7 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
         ShowButton          = $true
-        localValue   = '172.16.1.104'
+        localValue          = '172.16.1.104'
         SharedHostValue     = '172.16.1.104'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
         IncludedExtensions  = @(

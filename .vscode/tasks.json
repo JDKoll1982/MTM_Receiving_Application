@@ -2,23 +2,6 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Fix All Markdown Lint Violations",
-      "type": "shell",
-      "command": "npx",
-      "args": ["markdownlint-cli", "--fix", "**/*.md"],
-      "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      }
-    },
-    {
       "label": "build",
       "command": "dotnet",
       "type": "process",
@@ -27,6 +10,20 @@
         "${workspaceFolder}/MTM_Receiving_Application.slnx",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build startup app",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/MTM_Receiving_Application.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign",
+        "/p:Platform=x64",
+        "/m:1"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -147,4 +144,3 @@
     }
   ]
 }
-

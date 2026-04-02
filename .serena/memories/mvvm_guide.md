@@ -29,7 +29,8 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
     public ViewModel_Receiving_Workflow(
         IService_MySQL_Receiving service,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _service = service;
         Items = new ObservableCollection<Model_ReceivingLine>();
@@ -53,7 +54,7 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(result.ErrorMessage, "Load Error", nameof(LoadDataAsync));
+                await _errorHandler.ShowUserErrorAsync(result.ErrorMessage, "Load Error", nameof(LoadDataAsync));
             }
         }
         catch (Exception ex)
@@ -93,10 +94,6 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Receiving">
 
-    <Page.DataContext>
-        <viewmodels:MyFeatureViewModel />
-    </Page.DataContext>
-
     <Grid Padding="20">
         <StackPanel Spacing="10">
             <TextBox
@@ -113,6 +110,8 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
     </Grid>
 </Page>
 ```
+
+The view exposes a `ViewModel` property and sets `DataContext = ViewModel` in code-behind after resolving the ViewModel from DI.
 
 ## Code-Behind Pattern
 

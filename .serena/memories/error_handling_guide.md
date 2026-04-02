@@ -36,7 +36,7 @@ private async Task SaveAsync()
         }
         else
         {
-            _errorHandler.ShowUserError(
+            await _errorHandler.ShowUserErrorAsync(
                 result.ErrorMessage,
                 "Save Error",
                 nameof(SaveAsync));
@@ -60,7 +60,7 @@ private async Task SaveAsync()
 ### In DAOs
 
 ```csharp
-public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
+public async Task<Model_Dao_Result> InsertAsync(Model_Entity entity)
 {
     try
     {
@@ -69,7 +69,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
             { "p_field", entity.Field }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_entity_insert",
             parameters
@@ -78,7 +78,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
     catch (Exception ex)
     {
         // NEVER throw - return failure result
-        return Model_Dao_Result_Factory.Failure<int>(
+        return Model_Dao_Result_Factory.Failure(
             $"Error inserting entity: {ex.Message}",
             ex);
     }

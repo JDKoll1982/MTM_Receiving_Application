@@ -120,7 +120,7 @@ services.AddTransient<ViewModel_Receiving_Workflow>();
 All DAO methods MUST return `Model_Dao_Result<T>` or `Model_Dao_Result`.
 
 ```csharp
-public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
+public async Task<Model_Dao_Result> InsertAsync(Model_ReceivingLine line)
 {
     try
     {
@@ -130,7 +130,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
             { "p_quantity", line.Quantity }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Receiving_Line_Insert",
             parameters
@@ -138,7 +138,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
     }
     catch (Exception ex)
     {
-        return Model_Dao_Result_Factory.Failure<int>($"Error inserting line: {ex.Message}", ex);
+        return Model_Dao_Result_Factory.Failure($"Error inserting line: {ex.Message}", ex);
     }
 }
 ```

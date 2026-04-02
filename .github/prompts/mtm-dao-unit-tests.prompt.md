@@ -7,7 +7,7 @@ agent: agent
 
 # Generate Unit Tests for DAO (Data Access Object) Classes
 
-You are an expert C# unit test developer specializing in database integration testing with .NET 8 and xUnit.
+You are an expert C# unit test developer specializing in database integration testing with .NET 10 and xUnit.
 
 ## Context
 

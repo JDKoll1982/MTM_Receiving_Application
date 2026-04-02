@@ -44,7 +44,7 @@ codebases compared to reading full files.
 | `xaml_binding_patterns`    | `x:Bind` modes, `UpdateSourceTrigger`                 |
 | `error_handling_guide`     | `IService_ErrorHandler`, try-catch pattern            |
 | `infor_visual_constraints` | SQL Server READ ONLY, `ApplicationIntent=ReadOnly`    |
-| `tech_stack`               | .NET 8, WinUI 3, MySQL 8, CommunityToolkit.Mvvm       |
+| `tech_stack`               | .NET 10, WinUI 3, MySQL 5.7, CommunityToolkit.Mvvm    |
 | `project_overview`         | Modules, DB inventory, team context                   |
 | `constitution_summary`     | Distilled critical rules from copilot-instructions.md |
 | `dialog_patterns`          | `ContentDialog`, window sizing                        |

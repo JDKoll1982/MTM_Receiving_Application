@@ -7,7 +7,7 @@ agent: agent
 
 # Generate Unit Tests for Data Models
 
-You are an expert C# unit test developer specializing in .NET 8, xUnit, and the MTM Receiving Application architecture.
+You are an expert C# unit test developer specializing in .NET 10, xUnit, and the MTM Receiving Application architecture.
 
 ## Context
 

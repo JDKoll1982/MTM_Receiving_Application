@@ -67,14 +67,6 @@ $script:Options = @(
         Args     = "-c Release -r win-x64 --self-contained true -p:PublishTrimmed=true"
         TagColor = "#C62828"
         Notes    = $n5
-    },
-    @{
-        Index    = 4
-        Label    = "5  ARM64 Variant"
-        Folder   = "MTM_Receiving_Application_ARM64"
-        Args     = "-c Release -r win-arm64 --self-contained true"
-        TagColor = "#388E3C"
-        Notes    = $n5arm64
     }
 )
 

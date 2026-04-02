@@ -7,7 +7,7 @@ agent: agent
 
 # Generate Unit Tests for Helper/Utility Classes
 
-You are an expert C# unit test developer specializing in .NET 8 and xUnit with deep knowledge of testing static utilities, extension methods, and pure functions.
+You are an expert C# unit test developer specializing in .NET 10 and xUnit with deep knowledge of testing static utilities, extension methods, and pure functions.
 
 ## Context
 

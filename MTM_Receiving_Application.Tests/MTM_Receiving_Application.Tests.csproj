@@ -1,21 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <NoWarn>WIN2D0001</NoWarn>
     <Platform>x64</Platform>
-    <Platforms>x64;ARM64</Platforms>
+    <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup>
-    <_WinUITestAssetRuntime Condition="'$(Platform)' == 'ARM64'">win-arm64</_WinUITestAssetRuntime>
-    <_WinUITestAssetRuntime Condition="'$(_WinUITestAssetRuntime)' == '' and '$(Platform)' == 'x86'">win-x86</_WinUITestAssetRuntime>
-    <_WinUITestAssetRuntime Condition="'$(_WinUITestAssetRuntime)' == ''">win-x64</_WinUITestAssetRuntime>
+    <_WinUITestAssetRuntime>win-x64</_WinUITestAssetRuntime>
     <_ReferencedAppWinUIAssetSourceDir>$(PkgMicrosoft_WindowsAppSDK_WinUI)\runtimes-framework\$(_WinUITestAssetRuntime)\native\Microsoft.UI.Xaml\Assets</_ReferencedAppWinUIAssetSourceDir>
     <_ReferencedAppWinUIAssetOutputDir>$(MSBuildThisFileDirectory)..\bin\$(Platform)\$(Configuration)\$(TargetFramework)\Microsoft.UI.Xaml\Assets</_ReferencedAppWinUIAssetOutputDir>
   </PropertyGroup>
@@ -61,10 +59,12 @@
     </ProjectReference>
   </ItemGroup>
 
-  <Target Name="RestoreReferencedWinUIAssetsForTests"
-          AfterTargets="ResolveProjectReferences"
-          BeforeTargets="CopyFilesToOutputDirectory"
-          Condition="Exists('$(_ReferencedAppWinUIAssetSourceDir)')">
+  <Target
+    Name="RestoreReferencedWinUIAssetsForTests"
+    AfterTargets="ResolveProjectReferences"
+    BeforeTargets="CopyFilesToOutputDirectory"
+    Condition="Exists('$(_ReferencedAppWinUIAssetSourceDir)')"
+  >
     <ItemGroup>
       <_ReferencedWinUIAsset Include="$(_ReferencedAppWinUIAssetSourceDir)\map.html">
         <TargetPath>$(_ReferencedAppWinUIAssetOutputDir)\map.html</TargetPath>
@@ -75,8 +75,10 @@
     </ItemGroup>
 
     <MakeDir Directories="$(_ReferencedAppWinUIAssetOutputDir)" />
-    <Copy SourceFiles="@(_ReferencedWinUIAsset)"
-          DestinationFiles="@(_ReferencedWinUIAsset->'%(TargetPath)')"
-          SkipUnchangedFiles="true" />
+    <Copy
+      SourceFiles="@(_ReferencedWinUIAsset)"
+      DestinationFiles="@(_ReferencedWinUIAsset->'%(TargetPath)')"
+      SkipUnchangedFiles="true"
+    />
   </Target>
 </Project>

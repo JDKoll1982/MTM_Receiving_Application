@@ -1,18 +1,16 @@
 {
   "dotnet.defaultSolution": "MTM_Receiving_Application.slnx",
   "dotnet.unitTests.runSettingsPath": "MTM_Receiving_Application.Tests/.runsettings",
+  "dotnet.codeLens.enableTestsCodeLens": true,
   "dotnetAcquisitionExtension.enableTelemetry": false,
   "omnisharp.enableEditorConfigSupport": true,
   "dotnet.unitTestDebuggingOptions": {},
-  "dotnet.preferCSharpExtension": false,
+  "dotnet.preferCSharpExtension": true,
   "[csharp]": {
     "editor.defaultFormatter": "csharpier.csharpier-vscode"
   },
   "[xml]": {
     "editor.defaultFormatter": null
-  },
-  "[xaml]": {
-    "editor.defaultFormatter": "nromanov.dotnet-meteor"
   },
   "prettier.useEditorConfig": true,
   "prettier.requireConfig": false,

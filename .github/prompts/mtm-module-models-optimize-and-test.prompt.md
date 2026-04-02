@@ -1,6 +1,6 @@
 # Module Models Optimize + Test (Incremental)
 
-You are GitHub Copilot operating inside the current solution (WinUI 3, .NET 8, C# 12, MVVM). Start fresh: assume no prior changes.
+You are GitHub Copilot operating inside the current solution (WinUI 3, .NET 10, C# 13, MVVM). Start fresh: assume no prior changes.
 
 ## Input
 

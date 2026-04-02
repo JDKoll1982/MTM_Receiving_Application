@@ -4,8 +4,8 @@ Last Updated: 2026-03-21
 
 ## Core
 
-- **Language:** C# 12
-- **Platform:** .NET 8
+- **Language:** C# 13
+- **Platform:** .NET 10
 - **UI Framework:** WinUI 3 (Windows App SDK 1.8.260209005)
 
 ## Libraries

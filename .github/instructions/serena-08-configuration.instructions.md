@@ -102,7 +102,7 @@ ignore_patterns:
 
 # Initial prompt shown to LLM each time this project activates
 initial_prompt: >
-  This is the MTM Receiving Application — a WinUI 3 .NET 8 MVVM desktop application
+  This is the MTM Receiving Application — a WinUI 3 .NET 10 MVVM desktop application
   for manufacturing receiving operations. Before making any changes:
   1. Read the 'architectural_patterns' memory
   2. Read the 'forbidden_practices' memory

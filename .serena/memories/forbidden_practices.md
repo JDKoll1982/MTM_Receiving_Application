@@ -154,7 +154,7 @@ public Dao_Entity(string connectionString) { _connectionString = connectionStrin
 MessageBox.Show("Error occurred");
 
 // REQUIRED
-_errorHandler.ShowUserError("Error occurred", "Error", nameof(MethodName));
+await _errorHandler.ShowUserErrorAsync("Error occurred", "Error", nameof(MethodName));
 ```
 
 ## Validation Checklist

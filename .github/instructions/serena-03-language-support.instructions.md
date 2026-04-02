@@ -161,6 +161,6 @@ uvx --from git+https://github.com/oraios/serena serena project index
 ### OmniSharp vs Roslyn Decision
 
 Use **Roslyn** (default) for MTM — it is the current Microsoft-supported Language Server
-for C# and provides better support for .NET 8 / C# 12 features.
+for C# and provides better support for .NET 10 / C# 13 features.
 
 Use `csharp_omnisharp` only if you encounter specific compatibility issues.

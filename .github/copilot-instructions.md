@@ -85,9 +85,9 @@ Whenever the AI agent is about to make a **major assumption** during coding or p
 
 ## Technology Stack
 
-- **Framework:** WinUI 3 (Windows App SDK 1.6+)
-- **Language:** C# 12
-- **Platform:** .NET 8
+- **Framework:** WinUI 3 (Windows App SDK 1.8+)
+- **Language:** C# 13
+- **Platform:** .NET 10
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
 - **Database:** MySQL 5.7 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
 - **Testing:** xUnit with FluentAssertions
@@ -226,7 +226,8 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
     public ViewModel_Receiving_Workflow(
         IService_ReceivingWorkflow workflowService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         Items = new ObservableCollection<Model_Item>();
@@ -253,7 +254,7 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage,
                     "Load Error",
                     nameof(LoadDataAsync));
@@ -423,7 +424,7 @@ public static class Dao_ReceivingLine
 
 ### Dependency Injection Registration
 
-**Service Registration Pattern (App.xaml.cs):**
+**Service Registration Pattern (add to `Infrastructure/DependencyInjection/` extension methods, NOT directly in `App.xaml.cs`):**
 
 // Singletons (shared state, stateless)
 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
@@ -646,7 +647,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 4. Inject services (never DAOs) via constructor
 5. Implement error handling with `_errorHandler`
 6. Set `IsBusy = true` during async operations
-7. Register in `App.xaml.cs` as Transient
+7. Register in `Infrastructure/DependencyInjection/` extension methods as Transient
 
 ### Creating New View
 
@@ -667,7 +668,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 3. Inject DAOs and dependencies via constructor
 4. Add logging for key operations
 5. Return `Model_Dao_Result` or appropriate types
-6. Register in `App.xaml.cs`
+6. Register in `Infrastructure/DependencyInjection/` extension methods
 
 ### Creating New DAO
 
@@ -679,7 +680,7 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 4. Return `Model_Dao_Result` or `Model_Dao_Result<T>`
 5. Never throw exceptions - return failure results
 6. Use `MySqlParameter[]` for parameter mapping
-7. Register as Singleton in `App.xaml.cs`
+7. Register as Singleton in `Infrastructure/DependencyInjection/` extension methods
 
 ## Database Access
 
@@ -778,7 +779,7 @@ try
     var result = await _service.SaveAsync(item);
     if (!result.IsSuccess)
     {
-        _errorHandler.ShowUserError(
+        await _errorHandler.ShowUserErrorAsync(
             result.ErrorMessage,
             "Save Error",
             nameof(SaveAsync));
@@ -839,7 +840,7 @@ catch (Exception ex)
 
 When debugging issues, verify:
 
-- [ ] DI registration in `App.xaml.cs`
+- [ ] DI registration in `Infrastructure/DependencyInjection/` extension methods
 - [ ] ViewModel is `partial` class
 - [ ] ViewModel inherits from `ViewModel_Shared_Base`
 - [ ] XAML uses `x:Bind` (not `Binding`)

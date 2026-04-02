@@ -51,7 +51,7 @@ mcp_oraios_serena_onboarding()
 - `forbidden_practices` - Critical violations to avoid (ViewModels calling DAOs, etc.)
 - `infor_visual_constraints` - READ-ONLY database rules
 - `error_handling_guide` - IService_ErrorHandler usage, logging standards
-- `tech_stack` - .NET 8, WinUI 3, MySQL, libraries
+- `tech_stack` - .NET 10, WinUI 3, MySQL, libraries
 - `task_completion_workflow` - Build/test/documentation workflow
 - `suggested_commands` - Common PowerShell commands
 
@@ -251,7 +251,7 @@ After reading all documentation, synthesize your understanding of:
 
 ### Critical Architecture Patterns
 - **MVVM Architecture:** Strict layer separation (ViewModels → Services → DAOs)
-- **Dependency Injection:** All services and DAOs registered in App.xaml.cs
+- **Dependency Injection:** All services and DAOs registered in `Infrastructure/DependencyInjection/` extension methods, wired from `App.xaml.cs`
 - **Instance-Based DAOs:** No static DAOs, all must use DI with connection string injection
 - **Model_Dao_Result Pattern:** All database operations return structured results
 - **Error Handling:** Never throw from DAOs, always use IService_ErrorHandler in ViewModels

@@ -351,11 +351,11 @@ public async Task<Model_Dao_Result<List<Model_PurchaseOrderLine>>> GetPOLinesAsy
             sql,
             new { PoNumber = poNumber });
 
-        return Model_Dao_Result<List<Model_PurchaseOrderLine>>.Success(rows.ToList());
+        return Model_Dao_Result_Factory.Success(rows.ToList());
     }
     catch (Exception ex)
     {
-        return Model_Dao_Result<List<Model_PurchaseOrderLine>>.Failure(
+        return Model_Dao_Result_Factory.Failure<List<Model_PurchaseOrderLine>>(
             $"Error retrieving PO lines for {poNumber}: {ex.Message}");
     }
 }
