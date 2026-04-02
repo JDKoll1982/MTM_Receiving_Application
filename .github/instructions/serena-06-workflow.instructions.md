@@ -244,7 +244,7 @@ Start Serena in HTTP mode so multiple agents share one instance:
 serena start-mcp-server --transport streamable-http --port 8765
 ```
 
-Each agent connects to `http://localhost:8765`.
+Each agent connects to `http://172.16.1.104:8765`.
 
 ### Reading from an External Project (Dependency Inspection)
 

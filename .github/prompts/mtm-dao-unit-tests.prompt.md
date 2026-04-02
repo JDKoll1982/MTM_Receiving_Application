@@ -80,7 +80,7 @@ public class Dao_[DaoName]Tests :  IDisposable
 
     public Dao_[DaoName]Tests()
     {
-        _testConnectionString = "Server=localhost;Database=MTM_Test;... ";
+        _testConnectionString = "Server=172.16.1.104;Database=MTM_Test;... ";
         _dao = new Dao_[DaoName](_testConnectionString);
     }
 
