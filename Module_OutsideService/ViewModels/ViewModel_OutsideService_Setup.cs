@@ -59,7 +59,7 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
     private string _bolNumber = string.Empty;
 
     [ObservableProperty]
-    private DateTimeOffset _scheduledShipDate = DateTimeOffset.Now;
+    private DateTimeOffset? _scheduledShipDate = DateTimeOffset.Now;
 
     [ObservableProperty]
     private string _shippingContact = string.Empty;
@@ -179,7 +179,7 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
                 : SelectedVendorSuggestion?.VendorName;
             CurrentLine.SetupVendorSource = UseCustomVendor ? "custom" : "suggested";
             CurrentLine.BOLNumber = string.IsNullOrWhiteSpace(BolNumber) ? null : BolNumber.Trim();
-            CurrentLine.ScheduledShipUtc = ScheduledShipDate.UtcDateTime;
+            CurrentLine.ScheduledShipUtc = ScheduledShipDate?.UtcDateTime;
             CurrentLine.ShippingContact = string.IsNullOrWhiteSpace(ShippingContact)
                 ? null
                 : ShippingContact.Trim();
@@ -258,7 +258,7 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         BolNumber = line.BOLNumber ?? string.Empty;
         ScheduledShipDate = line.ScheduledShipUtc.HasValue
             ? new DateTimeOffset(line.ScheduledShipUtc.Value)
-            : DateTimeOffset.Now;
+            : null;
         ShippingContact = line.ShippingContact ?? string.Empty;
         SetupNotes = line.SetupNotes ?? string.Empty;
         CompletionNotes = line.CompletionNotes ?? string.Empty;

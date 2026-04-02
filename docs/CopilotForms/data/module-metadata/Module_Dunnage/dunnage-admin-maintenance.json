@@ -2,7 +2,7 @@
   "id": "dunnage-admin-maintenance",
   "module": "Module_Dunnage",
   "name": "Admin Maintenance",
-  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current, including timer-backed add-type validation cleanup, persisted custom-field definitions with normalized database column names, Edit Type management for saved custom fields, choice-based spec definitions for quick-add type and part dialogs, and a reusable existing-spec-template picker that lets Quick Add Part and Edit Part reuse saved spec sets.",
+  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current, including timer-backed add-type validation cleanup, persisted custom-field definitions with normalized database column names, Edit Type management for saved custom fields, choice-based spec definitions for quick-add type and part dialogs, part-specific extra spec rows on Quick Add Part and Edit Part, and a reusable existing-spec-template picker that lets Quick Add Part and Edit Part reuse saved spec sets.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs",
@@ -33,6 +33,7 @@
     "Module_Dunnage/Data/Dao_InventoriedDunnage.cs",
     "Module_Dunnage/Models/Model_CustomFieldDefinition.cs",
     "Module_Dunnage/Models/Model_DunnagePart.cs",
+    "Module_Dunnage/Models/Model_DunnagePartCustomSpecEntry.cs",
     "Module_Dunnage/Models/Model_DunnagePartDialogDraft.cs",
     "Module_Dunnage/Models/Model_DunnageSpecTemplateOption.cs",
     "Module_Dunnage/Models/Model_DunnageSpec.cs",
@@ -90,6 +91,7 @@
       "Persist Add Type custom-field definitions with a consistent insert and delete database contract",
       "Manage saved custom fields for an existing type from Edit Type",
       "Reuse an existing part's saved spec values when adding or editing a part",
+      "Add part-specific key/value specs when quick-adding or editing a part",
       "Define a spec field with a controlled list of allowed choices"
     ],
     "validationHints": [
@@ -97,6 +99,8 @@
       "Confirm quick-add dialogs still feed the correct admin screens",
       "Confirm Quick Add Part and Edit Part can temporarily close, open the existing-spec picker, and reopen with the selected specs applied",
       "Confirm choosing existing specs reuses only the saved spec values and notes, without forcing the source part ID or inventory type",
+      "Confirm Quick Add Part and Edit Part can save extra part-specific specs alongside the configured type specs",
+      "Confirm part-specific specs reject duplicate names and reserved keys that collide with configured specs or Notes",
       "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
       "Confirm Add Type custom fields save with a normalized DatabaseColumnName and can be deleted through the Dunnage custom-field stored procedure path",
       "Confirm Edit Type loads persisted custom fields, supports add/edit/delete, and saves the final state back to dunnage_custom_fields",

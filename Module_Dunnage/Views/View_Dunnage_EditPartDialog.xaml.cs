@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
@@ -20,6 +21,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private readonly Model_DunnagePart _existingPart;
     private readonly List<Model_DunnageSpec> _specs;
     private readonly Dictionary<string, Control> _specInputs = new();
+    private readonly ObservableCollection<Model_DunnagePartCustomSpecEntry> _customSpecs = new();
     private readonly string _typeName;
 
     public View_Dunnage_EditPartDialog(
@@ -35,6 +37,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         _existingPart = existingPart;
         _specs = specs;
         _typeName = typeName;
+        CustomSpecsListView.ItemsSource = _customSpecs;
 
         CurrentPartIdTextBlock.Text = existingPart.PartId;
         TypeNameTextBlock.Text = typeName;
@@ -50,13 +53,14 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     public Model_DunnagePartDialogDraft GetDraft()
     {
+        var specValues = BuildMergedSpecValues(requireValidCustomSpecs: false, out _);
         var draft = new Model_DunnagePartDialogDraft
         {
             PartId = PartIdTextBox.Text.Trim(),
             HomeLocation = HomeLocationTextBox.Text.Trim(),
             Notes = NotesTextBox.Text.Trim(),
             SelectedInventoryMethod = GetSelectedInventoryMethod(),
-            SpecValues = new Dictionary<string, object?>(GetCurrentSpecValues()),
+            SpecValues = new Dictionary<string, object?>(specValues),
         };
 
         draft.SpecValues.Remove("Notes");
@@ -79,6 +83,8 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
             ApplyControlValue(pair.Value, rawValue);
         }
+
+        LoadCustomSpecs(draft.SpecValues);
     }
 
     private void GenerateSpecFields()
@@ -220,6 +226,12 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         {
             NotesTextBox.Text = GetString(notesValue);
         }
+
+        var existingSpecValues = _existingPart.SpecValuesDict.ToDictionary(
+            pair => pair.Key,
+            pair => (object?)pair.Value
+        );
+        LoadCustomSpecs(existingSpecValues);
     }
 
     private void SelectInventoryMethod(string inventoryMethod)
@@ -237,7 +249,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         InventoryTypeComboBox.SelectedIndex = 0;
     }
 
-    private Dictionary<string, object?> GetCurrentSpecValues()
+    private Dictionary<string, object?> GetConfiguredSpecValues()
     {
         var specValues = new Dictionary<string, object?>();
         foreach (var pair in _specInputs)
@@ -263,17 +275,199 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         return specValues;
     }
 
+    private Dictionary<string, object?> BuildMergedSpecValues(
+        bool requireValidCustomSpecs,
+        out string validationMessage
+    )
+    {
+        HideCustomSpecValidation();
+
+        var specValues = GetConfiguredSpecValues();
+        var customSpecValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var customSpec in _customSpecs)
+        {
+            var name = customSpec.Name.Trim();
+            var value = customSpec.Value.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                if (requireValidCustomSpecs && !string.IsNullOrWhiteSpace(value))
+                {
+                    validationMessage = "Each part-specific spec needs a name.";
+                    return specValues;
+                }
+
+                continue;
+            }
+
+            if (string.Equals(name, "Notes", StringComparison.OrdinalIgnoreCase))
+            {
+                if (requireValidCustomSpecs)
+                {
+                    validationMessage = "Part-specific specs cannot use the reserved name 'Notes'.";
+                    return specValues;
+                }
+
+                continue;
+            }
+
+            if (
+                _specInputs.Keys.Any(key =>
+                    string.Equals(key, name, StringComparison.OrdinalIgnoreCase)
+                )
+            )
+            {
+                if (requireValidCustomSpecs)
+                {
+                    validationMessage = $"'{name}' is already defined as a type spec.";
+                    return specValues;
+                }
+
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (requireValidCustomSpecs)
+                {
+                    validationMessage = $"Enter a value for part-specific spec '{name}'.";
+                    return specValues;
+                }
+
+                customSpecValues[name] = string.Empty;
+                continue;
+            }
+
+            if (!customSpecValues.TryAdd(name, value))
+            {
+                if (requireValidCustomSpecs)
+                {
+                    validationMessage = $"Part-specific spec '{name}' is listed more than once.";
+                    return specValues;
+                }
+
+                customSpecValues[name] = value;
+            }
+        }
+
+        foreach (var pair in customSpecValues)
+        {
+            specValues[pair.Key] = pair.Value;
+        }
+
+        validationMessage = string.Empty;
+        return specValues;
+    }
+
+    private void LoadCustomSpecs(IReadOnlyDictionary<string, object?> specValues)
+    {
+        _customSpecs.Clear();
+
+        foreach (var pair in specValues.OrderBy(item => item.Key))
+        {
+            if (string.Equals(pair.Key, "Notes", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (
+                _specInputs.Keys.Any(key =>
+                    string.Equals(key, pair.Key, StringComparison.OrdinalIgnoreCase)
+                )
+            )
+            {
+                continue;
+            }
+
+            _customSpecs.Add(
+                new Model_DunnagePartCustomSpecEntry
+                {
+                    Name = pair.Key,
+                    Value = GetString(pair.Value),
+                }
+            );
+        }
+    }
+
     private string BuildSuggestedPartId()
     {
         return Helper_Dunnage_PartIdSuggestion.BuildSuggestedPartId(
             _typeName,
-            GetCurrentSpecValues()
+            GetConfiguredSpecValues()
         );
     }
 
     private void SuggestPartIdButton_Click(object sender, RoutedEventArgs e)
     {
         PartIdTextBox.Text = BuildSuggestedPartId();
+    }
+
+    private void AddCustomSpecButton_Click(object sender, RoutedEventArgs e)
+    {
+        var name = NewCustomSpecNameTextBox.Text.Trim();
+        var value = NewCustomSpecValueTextBox.Text.Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            ShowCustomSpecValidation("Enter a name for the part-specific spec.");
+            NewCustomSpecNameTextBox.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            ShowCustomSpecValidation("Enter a value for the part-specific spec.");
+            NewCustomSpecValueTextBox.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        if (string.Equals(name, "Notes", StringComparison.OrdinalIgnoreCase))
+        {
+            ShowCustomSpecValidation("'Notes' is reserved for the dialog notes field.");
+            NewCustomSpecNameTextBox.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        if (
+            _specInputs.Keys.Any(key =>
+                string.Equals(key, name, StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            ShowCustomSpecValidation($"'{name}' is already defined as a type spec.");
+            NewCustomSpecNameTextBox.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        if (
+            _customSpecs.Any(spec =>
+                string.Equals(spec.Name, name, StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            ShowCustomSpecValidation($"'{name}' is already in the part-specific spec list.");
+            NewCustomSpecNameTextBox.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        _customSpecs.Add(new Model_DunnagePartCustomSpecEntry { Name = name, Value = value });
+        HideCustomSpecValidation();
+        NewCustomSpecNameTextBox.Text = string.Empty;
+        NewCustomSpecValueTextBox.Text = string.Empty;
+        NewCustomSpecNameTextBox.Focus(FocusState.Programmatic);
+    }
+
+    private void RemoveCustomSpecButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (
+            sender is Button button
+            && button.DataContext is Model_DunnagePartCustomSpecEntry customSpec
+        )
+        {
+            _customSpecs.Remove(customSpec);
+            HideCustomSpecValidation();
+        }
     }
 
     private void ChooseExistingSpecsButton_Click(object sender, RoutedEventArgs e)
@@ -380,7 +574,17 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             return;
         }
 
-        var specValues = GetCurrentSpecValues();
+        var specValues = BuildMergedSpecValues(
+            requireValidCustomSpecs: true,
+            out var validationMessage
+        );
+        if (!string.IsNullOrWhiteSpace(validationMessage))
+        {
+            args.Cancel = true;
+            ShowCustomSpecValidation(validationMessage);
+            return;
+        }
+
         if (!string.IsNullOrWhiteSpace(NotesTextBox.Text))
         {
             specValues["Notes"] = NotesTextBox.Text.Trim();
@@ -389,5 +593,17 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         UpdatedSpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
         UpdatedHomeLocation = HomeLocationTextBox.Text.Trim();
         SelectedInventoryMethod = GetSelectedInventoryMethod();
+    }
+
+    private void ShowCustomSpecValidation(string message)
+    {
+        CustomSpecsValidationTextBlock.Text = message;
+        CustomSpecsValidationTextBlock.Visibility = Visibility.Visible;
+    }
+
+    private void HideCustomSpecValidation()
+    {
+        CustomSpecsValidationTextBlock.Text = string.Empty;
+        CustomSpecsValidationTextBlock.Visibility = Visibility.Collapsed;
     }
 }

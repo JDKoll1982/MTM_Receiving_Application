@@ -21,15 +21,15 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public void Constructor_ShouldThrow_WhenOutsideServiceIsNull()
     {
-        var act = () => new ViewModel_OutsideService_Setup(
-            null!,
-            new Mock<IService_ErrorHandler>().Object,
-            new Mock<IService_LoggingUtility>().Object,
-            new Mock<IService_Notification>().Object
-        );
+        var act = () =>
+            new ViewModel_OutsideService_Setup(
+                null!,
+                new Mock<IService_ErrorHandler>().Object,
+                new Mock<IService_LoggingUtility>().Object,
+                new Mock<IService_Notification>().Object
+            );
 
-        act.Should().Throw<ArgumentNullException>()
-            .WithParameterName("outsideService");
+        act.Should().Throw<ArgumentNullException>().WithParameterName("outsideService");
     }
 
     [Fact]
@@ -99,7 +99,25 @@ public class ViewModel_OutsideService_SetupTests
         viewModel.ShippingContact.Should().Be("Jane");
         viewModel.SetupNotes.Should().Be("Field notes");
         viewModel.CompletionNotes.Should().Be("Done notes");
-        viewModel.ScheduledShipDate.UtcDateTime.Should().BeCloseTo(scheduledDate, TimeSpan.FromSeconds(1));
+        viewModel.ScheduledShipDate.Should().NotBeNull();
+        viewModel
+            .ScheduledShipDate!.Value.UtcDateTime.Should()
+            .BeCloseTo(scheduledDate, TimeSpan.FromSeconds(1));
+    }
+
+    [Fact]
+    [Trait("Category", "Unit")]
+    [Trait("Layer", "ViewModel")]
+    public async Task LoadLineAsync_ShouldLeaveScheduledShipDateNull_WhenLineHasNoScheduledDate()
+    {
+        var outsideServiceMock = SetupNoSuggestions("PART-NODATE");
+        var viewModel = CreateViewModel(outsideServiceMock.Object);
+        var line = CreateLine("PART-NODATE", Enum_OutsideServiceLinePhase.Setup);
+        line.ScheduledShipUtc = null;
+
+        await viewModel.LoadLineAsync(line);
+
+        viewModel.ScheduledShipDate.Should().BeNull();
     }
 
     #endregion
@@ -135,11 +153,19 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public async Task LoadLineAsync_ShouldEnableSuggestionPicker_WhenSuggestionsExistAndSourceIsNotCustom()
     {
-        var suggestion = new Model_OutsideServiceVendorSuggestion { VendorId = "V1", VendorName = "Acme" };
+        var suggestion = new Model_OutsideServiceVendorSuggestion
+        {
+            VendorId = "V1",
+            VendorName = "Acme",
+        };
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-V1"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion> { suggestion }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceVendorSuggestion> { suggestion }
+                )
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateLine("PART-V1", Enum_OutsideServiceLinePhase.Setup);
@@ -159,11 +185,19 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public async Task LoadLineAsync_ShouldUseCustomVendor_WhenSuggestionsExistButSourceIsCustom()
     {
-        var suggestion = new Model_OutsideServiceVendorSuggestion { VendorId = "V2", VendorName = "Beta Corp" };
+        var suggestion = new Model_OutsideServiceVendorSuggestion
+        {
+            VendorId = "V2",
+            VendorName = "Beta Corp",
+        };
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-V2"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion> { suggestion }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceVendorSuggestion> { suggestion }
+                )
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateLine("PART-V2", Enum_OutsideServiceLinePhase.Setup);
@@ -182,11 +216,19 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public async Task LoadLineAsync_ShouldPreselectMatchingSuggestion_WhenVendorIdMatches()
     {
-        var suggestion = new Model_OutsideServiceVendorSuggestion { VendorId = "V3", VendorName = "Gamma Ltd" };
+        var suggestion = new Model_OutsideServiceVendorSuggestion
+        {
+            VendorId = "V3",
+            VendorName = "Gamma Ltd",
+        };
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-V3"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion> { suggestion }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceVendorSuggestion> { suggestion }
+                )
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateLine("PART-V3", Enum_OutsideServiceLinePhase.Setup);
@@ -207,7 +249,11 @@ public class ViewModel_OutsideService_SetupTests
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-FAIL"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceVendorSuggestion>>("DB error"));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<Model_OutsideServiceVendorSuggestion>>(
+                    "DB error"
+                )
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateLine("PART-FAIL", Enum_OutsideServiceLinePhase.Setup);
@@ -310,7 +356,10 @@ public class ViewModel_OutsideService_SetupTests
         viewModel.PackageCountInputValue = 1;
 
         viewModel.EditablePackages.Should().HaveCount(1);
-        viewModel.EditablePackages[0].PackageQuantity.Should().Be(7, "first row quantity preserved");
+        viewModel
+            .EditablePackages[0]
+            .PackageQuantity.Should()
+            .Be(7, "first row quantity preserved");
     }
 
     [Fact]
@@ -343,18 +392,28 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public async Task UseCustomVendor_ShouldClearSelectedSuggestion_WhenSetToTrue()
     {
-        var suggestion = new Model_OutsideServiceVendorSuggestion { VendorId = "V10", VendorName = "Toggle Corp" };
+        var suggestion = new Model_OutsideServiceVendorSuggestion
+        {
+            VendorId = "V10",
+            VendorName = "Toggle Corp",
+        };
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-TOG"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion> { suggestion }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceVendorSuggestion> { suggestion }
+                )
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateLine("PART-TOG", Enum_OutsideServiceLinePhase.Setup);
         line.SetupVendorSource = "suggested";
         line.SetupVendorId = "V10";
         await viewModel.LoadLineAsync(line);
-        viewModel.SelectedVendorSuggestion.Should().NotBeNull("precondition: suggestion was selected");
+        viewModel
+            .SelectedVendorSuggestion.Should()
+            .NotBeNull("precondition: suggestion was selected");
 
         viewModel.UseCustomVendor = true;
 
@@ -366,11 +425,19 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public async Task UseCustomVendor_ShouldNotClearSelectedSuggestion_WhenSetToFalse()
     {
-        var suggestion = new Model_OutsideServiceVendorSuggestion { VendorId = "V11", VendorName = "No-Clear Corp" };
+        var suggestion = new Model_OutsideServiceVendorSuggestion
+        {
+            VendorId = "V11",
+            VendorName = "No-Clear Corp",
+        };
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-NC"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion> { suggestion }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceVendorSuggestion> { suggestion }
+                )
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateLine("PART-NC", Enum_OutsideServiceLinePhase.Setup);
@@ -380,7 +447,11 @@ public class ViewModel_OutsideService_SetupTests
         viewModel.UseCustomVendor = true;
         viewModel.UseCustomVendor = false;
 
-        viewModel.SelectedVendorSuggestion.Should().BeNull("suggestion was cleared when going to custom; setting back to false doesn't restore it");
+        viewModel
+            .SelectedVendorSuggestion.Should()
+            .BeNull(
+                "suggestion was cleared when going to custom; setting back to false doesn't restore it"
+            );
     }
 
     #endregion
@@ -395,7 +466,9 @@ public class ViewModel_OutsideService_SetupTests
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>())
+            );
 
         var viewModel = CreateViewModel(outsideServiceMock.Object);
         var line = CreateSetupLine("PART-VALID");
@@ -439,7 +512,9 @@ public class ViewModel_OutsideService_SetupTests
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>())
+            );
         outsideServiceMock
             .Setup(service => service.SaveSetupAsync(It.IsAny<Model_OutsideServiceRequestLine>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
@@ -464,9 +539,12 @@ public class ViewModel_OutsideService_SetupTests
         await viewModel.SavePrimaryActionCommand.ExecuteAsync(null);
 
         outsideServiceMock.Verify(
-            service => service.SaveSetupAsync(
-                It.Is<Model_OutsideServiceRequestLine>(saved =>
-                    saved.LinePhase == Enum_OutsideServiceLinePhase.Setup)),
+            service =>
+                service.SaveSetupAsync(
+                    It.Is<Model_OutsideServiceRequestLine>(saved =>
+                        saved.LinePhase == Enum_OutsideServiceLinePhase.Setup
+                    )
+                ),
             Times.Once
         );
         lineSavedRaised.Should().BeTrue("LineSaved event must fire on success");
@@ -527,7 +605,9 @@ public class ViewModel_OutsideService_SetupTests
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>())
+            );
         outsideServiceMock
             .Setup(service => service.SaveSetupAsync(It.IsAny<Model_OutsideServiceRequestLine>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
@@ -542,11 +622,14 @@ public class ViewModel_OutsideService_SetupTests
         await viewModel.SavePrimaryActionCommand.ExecuteAsync(null);
 
         outsideServiceMock.Verify(
-            service => service.SaveSetupAsync(
-                It.Is<Model_OutsideServiceRequestLine>(saved =>
-                    saved.SetupVendorSource == "custom"
-                    && saved.SetupVendorName == "Hand Typed Vendor"
-                    && saved.SetupVendorId == null)),
+            service =>
+                service.SaveSetupAsync(
+                    It.Is<Model_OutsideServiceRequestLine>(saved =>
+                        saved.SetupVendorSource == "custom"
+                        && saved.SetupVendorName == "Hand Typed Vendor"
+                        && saved.SetupVendorId == null
+                    )
+                ),
             Times.Once
         );
     }
@@ -556,11 +639,19 @@ public class ViewModel_OutsideService_SetupTests
     [Trait("Layer", "ViewModel")]
     public async Task SavePrimaryActionAsync_ShouldPersistSuggestedVendorData_WhenUseCustomVendorIsFalse()
     {
-        var suggestion = new Model_OutsideServiceVendorSuggestion { VendorId = "V99", VendorName = "Suggested Vendor" };
+        var suggestion = new Model_OutsideServiceVendorSuggestion
+        {
+            VendorId = "V99",
+            VendorName = "Suggested Vendor",
+        };
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync("PART-SUG"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion> { suggestion }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceVendorSuggestion> { suggestion }
+                )
+            );
         outsideServiceMock
             .Setup(service => service.SaveSetupAsync(It.IsAny<Model_OutsideServiceRequestLine>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
@@ -580,11 +671,14 @@ public class ViewModel_OutsideService_SetupTests
         await viewModel.SavePrimaryActionCommand.ExecuteAsync(null);
 
         outsideServiceMock.Verify(
-            service => service.SaveSetupAsync(
-                It.Is<Model_OutsideServiceRequestLine>(saved =>
-                    saved.SetupVendorSource == "suggested"
-                    && saved.SetupVendorName == "Suggested Vendor"
-                    && saved.SetupVendorId == "V99")),
+            service =>
+                service.SaveSetupAsync(
+                    It.Is<Model_OutsideServiceRequestLine>(saved =>
+                        saved.SetupVendorSource == "suggested"
+                        && saved.SetupVendorName == "Suggested Vendor"
+                        && saved.SetupVendorId == "V99"
+                    )
+                ),
             Times.Once
         );
     }
@@ -601,7 +695,9 @@ public class ViewModel_OutsideService_SetupTests
         var outsideServiceMock = new Mock<IService_OutsideService>();
         outsideServiceMock
             .Setup(service => service.GetVendorSuggestionsAsync(It.IsAny<string>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>())
+            );
         outsideServiceMock
             .Setup(service => service.SaveSetupAsync(It.IsAny<Model_OutsideServiceRequestLine>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Failure("DB write failed"));
@@ -663,7 +759,9 @@ public class ViewModel_OutsideService_SetupTests
     {
         var mock = new Mock<IService_OutsideService>();
         mock.Setup(service => service.GetVendorSuggestionsAsync(partId))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_OutsideServiceVendorSuggestion>())
+            );
         return mock;
     }
 

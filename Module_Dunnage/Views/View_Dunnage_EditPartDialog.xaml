@@ -3,6 +3,7 @@
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_EditPartDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
     Title="Edit Dunnage Part"
     Width="820"
     CloseButtonText="Cancel"
@@ -142,6 +143,83 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                     </Grid>
+
+                    <Border
+                        Padding="12"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6">
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="Part-Specific Specs" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Add or edit extra key/value specs that should stay with this part only." />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    x:Name="NewCustomSpecNameTextBox"
+                                    PlaceholderText="Spec name" />
+                                <TextBox
+                                    x:Name="NewCustomSpecValueTextBox"
+                                    Grid.Column="1"
+                                    PlaceholderText="Spec value" />
+                                <Button
+                                    Grid.Column="2"
+                                    Click="AddCustomSpecButton_Click"
+                                    Content="Add Spec" />
+                            </Grid>
+                            <TextBlock
+                                x:Name="CustomSpecsValidationTextBlock"
+                                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                TextWrapping="Wrap"
+                                Visibility="Collapsed" />
+                            <ListView
+                                x:Name="CustomSpecsListView"
+                                MinHeight="80"
+                                MaxHeight="180"
+                                BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="4">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Model_DunnagePartCustomSpecEntry">
+                                        <Grid Padding="0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox
+                                                PlaceholderText="Spec name"
+                                                Text="{x:Bind Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <TextBox
+                                                Grid.Column="1"
+                                                Margin="8,0,0,0"
+                                                PlaceholderText="Spec value"
+                                                Text="{x:Bind Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <Button
+                                                Grid.Column="2"
+                                                Margin="8,0,0,0"
+                                                Click="RemoveCustomSpecButton_Click"
+                                                Content="&#xE74D;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Style="{StaticResource SubtleButtonStyle}"
+                                                ToolTipService.ToolTip="Remove this part-specific spec" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Grid>
         </StackPanel>

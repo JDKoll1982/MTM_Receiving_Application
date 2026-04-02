@@ -132,6 +132,7 @@
       "Confirm Setup stays disabled when no waitlist line is selected",
       "Confirm vendor suggestions are ordered by most recent dispatch",
       "Confirm the Scheduled ship field uses the same calendar popup experience as Module_Reporting instead of the wheel-style DatePicker",
+      "Confirm the Setup scheduled ship calendar can be cleared and reselected without crashing the screen",
       "Confirm Infor Visual suggestion and validation paths fall back only when mock data mode is enabled",
       "Confirm waitlist and history filters do not hide valid rows unexpectedly",
       "Confirm Complete History defaults to a blank Search box with Vendor and Completed both set to All whenever the user navigates into the History tab",
