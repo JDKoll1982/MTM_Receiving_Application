@@ -25,8 +25,6 @@ $n4 = "GOOD CHOICE for server-share — faster startup over a network.`n`nPre-co
 
 $n5 = "HIGH RISK with WinUI 3 — test thoroughly before deploying.`n`nRemoves unused assemblies and types to reduce output folder size. WinUI 3 relies heavily on reflection and dynamic type loading, which conflicts with aggressive trimming.`n`n  WHY YOU MIGHT STILL CHOOSE THIS:`n  - Server share is on a slow/VPN link and folder size affects launch time`n  - Disk space on the share is severely constrained`n  - All trim warnings resolved and a full end-to-end test pass is done`n  - Smallest possible artifact for automated deployment pipelines`n`n  RISKS:`n  - Runtime failures from missing types are common with WinUI 3`n  - ALWAYS test every screen before deploying to users`n  - Do not use as the primary production build until fully validated"
 
-$n5arm64 = "FOR ARM64 MACHINES — publish to a separate folder with a separate shortcut.`n`nSame as Self-Contained but compiled for ARM64 machines (e.g., Surface Pro X, Snapdragon-based PCs). The .csproj already declares win-arm64 as a supported RID.`n`n  WHY CHOOSE THIS:`n  - Required for native ARM64 performance — x64 emulation uses more CPU/battery`n  - Separate output folder keeps x64 and ARM64 deployments fully independent`n  - Both folders can coexist on the same server share`n`n  HOW TO DEPLOY:`n  - Output goes to: MTM_Receiving_Application_ARM64`n  - Create a separate desktop shortcut for ARM64 users pointing to this folder`n  - Do NOT overwrite the standard x64 share folder"
-
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $defaultProjectFile = Join-Path $repoRoot "MTM_Receiving_Application.csproj"
 
