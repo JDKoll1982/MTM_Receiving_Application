@@ -39,17 +39,70 @@ $script:PublishVerbosity = 'detailed'
 $script:SatelliteResourceLanguages = ''
 $script:PublishLogFile = $null
 $script:LastStatusMessage = ''
+$script:PublishLogBuffer = $null
+$script:PublishProcess = $null
+$script:PollTimer = $null
+$script:OutFile = $null
+
+function Get-Utf8Encoding {
+    return [System.Text.UTF8Encoding]::new($false)
+}
 
 function Add-PublishLogText {
     param(
         [string]$Text
     )
 
-    if ([string]::IsNullOrEmpty($script:PublishLogFile) -or [string]::IsNullOrEmpty($Text)) {
+    if ($null -eq $script:PublishLogBuffer -or [string]::IsNullOrEmpty($Text)) {
         return
     }
 
-    Add-Content -LiteralPath $script:PublishLogFile -Value $Text -Encoding UTF8
+    [void]$script:PublishLogBuffer.Append($Text)
+}
+
+function Save-PublishLog {
+    if ([string]::IsNullOrEmpty($script:PublishLogFile) -or $null -eq $script:PublishLogBuffer) {
+        return
+    }
+
+    $logDirectory = Split-Path -Path $script:PublishLogFile -Parent
+    if (-not [string]::IsNullOrWhiteSpace($logDirectory)) {
+        New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+    }
+
+    [System.IO.File]::WriteAllText($script:PublishLogFile, $script:PublishLogBuffer.ToString(), (Get-Utf8Encoding))
+}
+
+function Stop-PublishSession {
+    if ($null -ne $script:PollTimer) {
+        try {
+            $script:PollTimer.Stop()
+        }
+        catch {
+        }
+
+        $script:PollTimer = $null
+    }
+
+    if ($null -ne $script:PublishProcess) {
+        try {
+            $script:PublishProcess.Dispose()
+        }
+        catch {
+        }
+
+        $script:PublishProcess = $null
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($script:OutFile)) {
+        try {
+            Remove-Item -LiteralPath $script:OutFile -Force -ErrorAction SilentlyContinue
+        }
+        catch {
+        }
+
+        $script:OutFile = $null
+    }
 }
 
 function Update-PublishStatus {
@@ -378,6 +431,7 @@ $publishButton.Add_Click({
         New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
         $script:PublishLogFile = Join-Path $logDirectory ("publish-{0}.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
         $script:LastStatusMessage = ''
+        $script:PublishLogBuffer = [System.Text.StringBuilder]::new()
 
         # Reset UI
         $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
@@ -395,7 +449,7 @@ Command: $publishCommand
 LogFile: $($script:PublishLogFile)
 
 "@
-        Set-Content -LiteralPath $script:PublishLogFile -Value $outputText.Text -Encoding UTF8
+        Add-PublishLogText $outputText.Text
         $publishProgress.Visibility = [System.Windows.Visibility]::Visible
         $publishButton.IsEnabled = $false
         Update-PublishStatus "Publishing — please wait..."
@@ -468,7 +522,15 @@ LogFile: $($script:PublishLogFile)
                 }
                 catch { }
 
-                try { Remove-Item $script:outFile -Force -ErrorAction SilentlyContinue } catch { }
+                try {
+                    Save-PublishLog
+                }
+                catch {
+                    $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+                    $errorText.Text = "Publish completed, but the log file could not be written to $($script:PublishLogFile). $($_.Exception.Message)"
+                }
+
+                Stop-PublishSession
 
                 $outputScrollViewer.ScrollToEnd()
                 $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
@@ -493,7 +555,14 @@ LogFile: $($script:PublishLogFile)
 # ---------------------------------------------------------------------------
 # Close button
 # ---------------------------------------------------------------------------
-$closeButton.Add_Click({ $window.Close() })
+$closeButton.Add_Click({
+        Stop-PublishSession
+        $window.Close()
+    })
+
+$window.Add_Closing({
+        Stop-PublishSession
+    })
 
 # ---------------------------------------------------------------------------
 # Show window
