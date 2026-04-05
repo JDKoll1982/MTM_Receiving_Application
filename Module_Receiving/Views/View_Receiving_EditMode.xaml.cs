@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Dialogs;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Windows.System;
@@ -89,79 +90,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private async Task ShowColumnChooserDialogAsync()
         {
-            // Build a CheckBox list from ColumnSettings, skipping always-visible columns
-            var items = ViewModel.ColumnSettings.Where(c => !c.IsAlwaysVisible).ToList();
-
-            var panel = new StackPanel { Spacing = 6 };
-            var checkBoxes = new List<(CheckBox Box, string Key)>();
-
-            // Select All / Clear All quick buttons
-            var quickRow = new StackPanel
+            var dialog = new Dialog_Receiving_EditModeColumnChooser(ViewModel.ColumnSettings)
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = 8,
-                Margin = new Thickness(0, 0, 0, 8),
-            };
-            var selectAllBtn = new Button { Content = "Select All" };
-            var clearAllBtn = new Button { Content = "Clear All" };
-            quickRow.Children.Add(selectAllBtn);
-            quickRow.Children.Add(clearAllBtn);
-            panel.Children.Add(quickRow);
-
-            foreach (var col in items)
-            {
-                var cb = new CheckBox
-                {
-                    Content = col.Header,
-                    IsChecked = col.IsVisible,
-                    Tag = col.Key,
-                };
-                panel.Children.Add(cb);
-                checkBoxes.Add((cb, col.Key));
-            }
-
-            selectAllBtn.Click += (_, _) =>
-            {
-                foreach (var (cb, _) in checkBoxes)
-                    cb.IsChecked = true;
-            };
-            clearAllBtn.Click += (_, _) =>
-            {
-                foreach (var (cb, _) in checkBoxes)
-                    cb.IsChecked = false;
-            };
-
-            var scrollViewer = new ScrollViewer
-            {
-                Content = panel,
-                MaxHeight = 400,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            };
-
-            var dialog = new ContentDialog
-            {
-                Title = "Choose visible columns",
-                Content = scrollViewer,
-                PrimaryButtonText = "Apply",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.XamlRoot,
             };
+            dialog.PrepareDialogSize();
 
             var result = await dialog.ShowAsync();
             if (result != ContentDialogResult.Primary)
             {
                 return;
-            }
-
-            // Apply user choices back to ColumnSettings
-            foreach (var (box, key) in checkBoxes)
-            {
-                var colSetting = ViewModel.ColumnSettings.FirstOrDefault(c => c.Key == key);
-                if (colSetting != null)
-                {
-                    colSetting.IsVisible = box.IsChecked == true;
-                }
             }
 
             // Persist to settings

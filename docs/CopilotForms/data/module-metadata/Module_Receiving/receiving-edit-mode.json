@@ -6,6 +6,8 @@
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+    "Module_Receiving/Dialogs/Dialog_Receiving_EditModeColumnChooser.xaml",
+    "Module_Receiving/Dialogs/Dialog_Receiving_EditModeColumnChooser.xaml.cs",
     "Module_Receiving/Views/View_Receiving_EditMode.xaml",
     "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
     "Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs",
@@ -76,6 +78,7 @@
       "Search-by selector",
       "Sort controls",
       "Column chooser",
+      "Grouped column chooser dialog",
       "Page size selector",
       "Pagination controls",
       "Select All action",
@@ -122,6 +125,7 @@
       "Ownership-based save/delete enforcement",
       "Current-label clear behavior",
       "Grid-to-card regressions",
+      "Column chooser layout and reset behavior",
       "Search and paging behavior",
       "Saved grid preferences",
       "Save path stability",
@@ -134,6 +138,7 @@
       "Clearing label data while Current Labels is active empties the edit grid immediately",
       "Search still finds matching results",
       "Paging still moves through records correctly",
+      "The column chooser groups options clearly, restores the starting selection when Reset is used, and keeps labels readable without clipping",
       "Saved column visibility and page-size preferences restore correctly",
       "Editing a record preserves the correct values",
       "Save Changes keeps the current business flow intact"
@@ -198,6 +203,8 @@
       "name": "Edit Grid",
       "relatedFiles": [
         "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/Dialogs/Dialog_Receiving_EditModeColumnChooser.xaml",
+        "Module_Receiving/Dialogs/Dialog_Receiving_EditModeColumnChooser.xaml.cs",
         "Module_Receiving/Views/View_Receiving_EditMode.xaml",
         "Module_Receiving/Views/View_Receiving_EditMode.xaml.cs",
         "Module_Receiving/Models/Model_EditModeColumn.cs",
