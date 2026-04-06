@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,6 +15,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 public partial class ViewModel_Receiving_LocationReconciliationReview : ViewModel_Shared_Base
 {
+    private static readonly Regex _poNumberPartRegex = new(
+        "^(\\d{1,6})([Bb]?)$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant
+    );
+
     private readonly IService_ReceivingLocationReconciliation _locationReconciliationService;
     private readonly Queue<Model_ReceivingLocationReconciliationItem> _pendingItems = new();
 
@@ -48,7 +54,8 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     public ObservableCollection<Model_ReceivingLocationReconciliationItem> SavedItems { get; } = [];
 
-    public ObservableCollection<Model_ReceivingLocationReconciliationItem> IgnoredItems { get; } = [];
+    public ObservableCollection<Model_ReceivingLocationReconciliationItem> IgnoredItems { get; } =
+    [];
 
     public int TotalCandidateCount => PreviewSummary?.UpdatedItems.Count ?? 0;
 
@@ -64,21 +71,25 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     public bool HasUnresolvedItems => NeedsAttentionCount > 0;
 
-    public string DialogTitle => IsSummaryVisible
-        ? "InforVisual Reconciliation Summary"
-        : "Review InforVisual Location Changes";
+    public string DialogTitle =>
+        IsSummaryVisible
+            ? "InforVisual Reconciliation Summary"
+            : "Review InforVisual Location Changes";
 
-    public string DialogDescription => IsSummaryVisible
-        ? "All rows that needed review have been saved or ignored. Review the outcome before closing this window."
-        : "Review each suggested location update before it is saved to MTM. Save applies the new location. Ignore leaves the saved row unchanged.";
+    public string DialogDescription =>
+        IsSummaryVisible
+            ? "All rows that needed review have been saved or ignored. Review the outcome before closing this window."
+            : "Review each suggested location update before it is saved to MTM. Save applies the new location. Ignore leaves the saved row unchanged.";
 
-    public string ProgressText => TotalCandidateCount == 0
-        ? "No saved rows need a location change review."
-        : $"{SavedCount + IgnoredCount + 1} of {TotalCandidateCount}";
+    public string ProgressText =>
+        TotalCandidateCount == 0
+            ? "No saved rows need a location change review."
+            : $"{SavedCount + IgnoredCount + 1} of {TotalCandidateCount}";
 
-    public double ProgressPercent => TotalCandidateCount == 0
-        ? 0
-        : ((double)(SavedCount + IgnoredCount) / TotalCandidateCount) * 100;
+    public double ProgressPercent =>
+        TotalCandidateCount == 0
+            ? 0
+            : ((double)(SavedCount + IgnoredCount) / TotalCandidateCount) * 100;
 
     public string CurrentPartIdText => CurrentItem?.PartID ?? string.Empty;
 
@@ -86,41 +97,39 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     public string CurrentNewLocationText => ValueOrUnknown(CurrentItem?.ProposedLocation);
 
-    public string CurrentSavedRowQuantityText => CurrentItem == null
-        ? "Unknown"
+    public string CurrentSavedRowQuantityText =>
+        CurrentItem == null ? "Unknown"
         : string.IsNullOrWhiteSpace(CurrentItem.QuantityUnitOfMeasure)
             ? $"{CurrentItem.SavedRowQuantity:0.##}"
-            : $"{CurrentItem.SavedRowQuantity:0.##} {CurrentItem.QuantityUnitOfMeasure}";
+        : $"{CurrentItem.SavedRowQuantity:0.##} {CurrentItem.QuantityUnitOfMeasure}";
 
-    public string CurrentQuantityMovedText => CurrentItem == null
-        ? "Unknown"
+    public string CurrentQuantityMovedText =>
+        CurrentItem == null ? "Unknown"
         : string.IsNullOrWhiteSpace(CurrentItem.QuantityUnitOfMeasure)
             ? $"{CurrentItem.MatchedLocationQuantity:0.##}"
-            : $"{CurrentItem.MatchedLocationQuantity:0.##} {CurrentItem.QuantityUnitOfMeasure}";
+        : $"{CurrentItem.MatchedLocationQuantity:0.##} {CurrentItem.QuantityUnitOfMeasure}";
 
     public string CurrentAllocationMethodText => ValueOrUnknown(CurrentItem?.AllocationMethod);
 
     public string CurrentMovedByUserIdText => ValueOrUnknown(CurrentItem?.MovedByUserId);
 
-    public string CurrentMovedDateText => CurrentItem?.MovedAt?.ToLocalTime().ToString("M/d/yyyy")
-        ?? "Unknown";
+    public string CurrentMovedDateText =>
+        CurrentItem?.MovedAt?.ToLocalTime().ToString("M/d/yyyy") ?? "Unknown";
 
-    public string CurrentMovedTimeText => CurrentItem?.MovedAt?.ToLocalTime().ToString("h:mm tt")
-        ?? "Unknown";
+    public string CurrentMovedTimeText =>
+        CurrentItem?.MovedAt?.ToLocalTime().ToString("h:mm tt") ?? "Unknown";
 
-    public string CurrentPurchaseOrderText => CurrentItem == null
-        ? string.Empty
-        : string.IsNullOrWhiteSpace(CurrentItem.POLineNumber)
-            ? CurrentItem.PONumber
-            : $"{CurrentItem.PONumber} / Line {CurrentItem.POLineNumber}";
+    public string CurrentPurchaseOrderText =>
+        CurrentItem == null ? string.Empty : FormatPONumber(CurrentItem.PONumber);
+
+    public string CurrentPurchaseOrderLineText => ValueOrUnknown(CurrentItem?.POLineNumber);
 
     public string CurrentDataSourceText => CurrentItem?.DataSource ?? string.Empty;
 
     public string CurrentReasonText => CurrentItem?.Details ?? string.Empty;
 
-    public string SummaryHeadline => SavedCount > 0
-        ? "Reconciliation review completed"
-        : "No location changes were saved";
+    public string SummaryHeadline =>
+        SavedCount > 0 ? "Reconciliation review completed" : "No location changes were saved";
 
     public string SummaryDescription =>
         $"Saved {SavedCount} row(s), ignored {IgnoredCount} row(s), left {PreviewSummary?.UnchangedCount ?? 0} unchanged, and found {NeedsAttentionCount} row(s) that still need manual attention.";
@@ -254,6 +263,7 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
         OnPropertyChanged(nameof(CurrentMovedDateText));
         OnPropertyChanged(nameof(CurrentMovedTimeText));
         OnPropertyChanged(nameof(CurrentPurchaseOrderText));
+        OnPropertyChanged(nameof(CurrentPurchaseOrderLineText));
         OnPropertyChanged(nameof(CurrentDataSourceText));
         OnPropertyChanged(nameof(CurrentReasonText));
         OnPropertyChanged(nameof(SummaryHeadline));
@@ -267,5 +277,39 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     private static string ValueOrUnknown(string? value)
     {
         return string.IsNullOrWhiteSpace(value) ? "Unknown" : value.Trim();
+    }
+
+    private static string FormatPONumber(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = input.Trim();
+        string numberPart;
+
+        if (trimmed.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
+        {
+            numberPart = trimmed.Substring(3);
+        }
+        else if (trimmed.StartsWith("po", StringComparison.OrdinalIgnoreCase) && trimmed.Length > 2)
+        {
+            numberPart = trimmed.Substring(2);
+        }
+        else
+        {
+            numberPart = trimmed;
+        }
+
+        var match = _poNumberPartRegex.Match(numberPart);
+        if (!match.Success)
+        {
+            return trimmed;
+        }
+
+        var digits = match.Groups[1].Value;
+        var suffix = match.Groups[2].Value.ToUpperInvariant();
+        return $"PO-{digits.PadLeft(6, '0')}{suffix}";
     }
 }

@@ -6,20 +6,24 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
-    mc:Ignorable="d"
+    Title="{x:Bind ViewModel.DialogTitle, Mode=OneWay}"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
     CloseButtonText="Close"
     DefaultButton="Close"
-    Opened="Dialog_Opened"
-    Title="{x:Bind ViewModel.DialogTitle, Mode=OneWay}"
->
+    mc:Ignorable="d">
+
     <ContentDialog.Resources>
-        <x:Double x:Key="ContentDialogMaxWidth">1240</x:Double>
-        <x:Double x:Key="ContentDialogMinWidth">1180</x:Double>
+        <x:Double x:Key="ContentDialogMaxWidth">1600</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">900</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">760</x:Double>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </ContentDialog.Resources>
 
-    <Grid x:Name="RootGrid" MinWidth="1120" MaxWidth="1240">
+    <Grid
+        x:Name="RootGrid"
+        MinWidth="900"
+        MaxWidth="1600">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -27,185 +31,411 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,16" Spacing="8">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="{x:Bind ViewModel.DialogTitle, Mode=OneWay}" />
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{ThemeResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.DialogDescription, Mode=OneWay}"
-                TextWrapping="Wrap"
-            />
-        </StackPanel>
+        <TextBlock
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{ThemeResource BodyTextBlockStyle}"
+            Text="{x:Bind ViewModel.DialogDescription, Mode=OneWay}"
+            TextWrapping="Wrap" />
 
         <StackPanel
             Grid.Row="1"
-            Margin="0,0,0,16"
+            Padding="8"
             Spacing="8"
-            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-        >
-            <ProgressBar Height="6" Maximum="100" Value="{x:Bind ViewModel.ProgressPercent, Mode=OneWay}" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock FontWeight="SemiBold" Text="Review Progress" />
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}"
-                />
+            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ProgressBar
+                Height="6"
+                Maximum="100"
+                Value="{x:Bind ViewModel.ProgressPercent, Mode=OneWay}" />
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="6">
+                <TextBlock FontWeight="SemiBold" Text="Review Progress:" />
+                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" />
             </StackPanel>
         </StackPanel>
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <Grid>
-                <StackPanel
-                    Spacing="16"
-                    Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                >
+                <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    <Grid ColumnSpacing="8" RowSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <Grid ColumnSpacing="8" RowSpacing="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="7"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Part Information"
+                                    TextAlignment="Center"
+                                    TextDecorations="Underline" />
+
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Part #:" />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="PO #:" />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="4"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Line #:" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="4"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Source:" />
+
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentPartIdText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentPurchaseOrderText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.Column="5"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentPurchaseOrderLineText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="5"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+
+                            </Grid>
+                        </Border>
+
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <Grid ColumnSpacing="8" RowSpacing="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="7"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Transaction Information"
+                                    TextAlignment="Center"
+                                    TextDecorations="Underline" />
+
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Moved Date: " />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="4"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Moved Time: " />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Moved By:" />
+
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentMovedDateText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="5"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentMovedTimeText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    MinWidth="150"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentMovedByUserIdText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+
+                            </Grid>
+                        </Border>
+
+                        <Border
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Spacing="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalTextAlignment="Center"
+                                    Text="Old Location"
+                                    TextDecorations="Underline" />
+
+                                <Grid ColumnSpacing="4" RowSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Location:" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Quantity:" />
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Reference:" />
+
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentOriginalLocationText, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentSavedRowQuantityText, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+                                    <TextBox
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Spacing="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalTextAlignment="Center"
+                                    Text="New Location"
+                                    TextDecorations="Underline" />
+
+                                <Grid ColumnSpacing="4" RowSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Location:" />
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentNewLocationText, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Quantity:" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentQuantityMovedText, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+
+
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Reference:" />
+                                    <TextBox
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+
+                                </Grid>
+
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                </StackPanel>
+
+                <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.IsSummaryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Border
                         Padding="16"
                         Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
-                        CornerRadius="10"
-                    >
+                        CornerRadius="10">
                         <StackPanel Spacing="6">
-                            <TextBlock FontSize="20" FontWeight="SemiBold" Text="Suggested Location Update" />
+                            <TextBlock
+                                FontSize="22"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ViewModel.SummaryHeadline, Mode=OneWay}" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{ThemeResource BodyTextBlockStyle}"
-                                Text="{x:Bind ViewModel.CurrentReasonText, Mode=OneWay}"
-                                TextWrapping="Wrap"
-                            />
-                        </StackPanel>
-                    </Border>
-
-                    <Border
-                        Padding="16"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                    >
-                        <Grid ColumnSpacing="16" RowSpacing="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Part Number" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentPartIdText, Mode=OneWay}" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="0" Grid.Column="2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Purchase Order" />
-                            <TextBlock Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentPurchaseOrderText, Mode=OneWay}" TextWrapping="Wrap" />
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Saved Row Source" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="1" Grid.Column="2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved By" />
-                            <TextBlock Grid.Row="1" Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedByUserIdText, Mode=OneWay}" TextWrapping="Wrap" />
-                        </Grid>
-                    </Border>
-
-                    <Grid ColumnSpacing="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Border
-                            Grid.Column="0"
-                            Padding="18"
-                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                        >
-                            <StackPanel Spacing="14">
-                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="Old Location" />
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Location" />
-                                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentOriginalLocationText, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Quantity" />
-                                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentSavedRowQuantityText, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Reference" />
-                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <Border
-                            Grid.Column="1"
-                            Padding="18"
-                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                        >
-                            <StackPanel Spacing="14">
-                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="New Location" />
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Location" />
-                                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentNewLocationText, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Quantity" />
-                                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentQuantityMovedText, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Reference" />
-                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-
-                    <Border
-                        Padding="16"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                    >
-                        <Grid ColumnSpacing="16" RowSpacing="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved Date" />
-                            <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedDateText, Mode=OneWay}" TextWrapping="Wrap" />
-                            <TextBlock Grid.Column="2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved Time" />
-                            <TextBlock Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedTimeText, Mode=OneWay}" TextWrapping="Wrap" />
-                            <TextBlock Grid.Column="4" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Reason" />
-                            <TextBlock Grid.Column="5" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}" TextWrapping="Wrap" />
-                        </Grid>
-                    </Border>
-                </StackPanel>
-
-                <StackPanel
-                    Spacing="16"
-                    Visibility="{x:Bind ViewModel.IsSummaryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                >
-                    <Border Padding="16" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10">
-                        <StackPanel Spacing="6">
-                            <TextBlock FontSize="22" FontWeight="SemiBold" Text="{x:Bind ViewModel.SummaryHeadline, Mode=OneWay}" />
-                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{ThemeResource BodyTextBlockStyle}" Text="{x:Bind ViewModel.SummaryDescription, Mode=OneWay}" TextWrapping="Wrap" />
+                                Text="{x:Bind ViewModel.SummaryDescription, Mode=OneWay}"
+                                TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
 
@@ -217,42 +447,93 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                        <Border
+                            Grid.Column="0"
+                            Padding="14"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
                             <StackPanel Spacing="4">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Saved" />
-                                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.SavedCount, Mode=OneWay}" />
+                                <TextBlock
+                                    FontSize="24"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind ViewModel.SavedCount, Mode=OneWay}" />
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Column="1" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                        <Border
+                            Grid.Column="1"
+                            Padding="14"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
                             <StackPanel Spacing="4">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Ignored" />
-                                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.IgnoredCount, Mode=OneWay}" />
+                                <TextBlock
+                                    FontSize="24"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind ViewModel.IgnoredCount, Mode=OneWay}" />
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Column="2" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                        <Border
+                            Grid.Column="2"
+                            Padding="14"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
                             <StackPanel Spacing="4">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Unchanged" />
-                                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.PreviewSummary.UnchangedCount, Mode=OneWay}" />
+                                <TextBlock
+                                    FontSize="24"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind ViewModel.PreviewSummary.UnchangedCount, Mode=OneWay}" />
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Column="3" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                        <Border
+                            Grid.Column="3"
+                            Padding="14"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
                             <StackPanel Spacing="4">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Needs Attention" />
-                                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.NeedsAttentionCount, Mode=OneWay}" />
+                                <TextBlock
+                                    FontSize="24"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind ViewModel.NeedsAttentionCount, Mode=OneWay}" />
                             </StackPanel>
                         </Border>
                     </Grid>
 
-                    <Border Padding="16" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Visibility="{x:Bind ViewModel.HasSavedItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border
+                        Padding="16"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Visibility="{x:Bind ViewModel.HasSavedItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Spacing="12">
-                            <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.SavedSectionTitle, Mode=OneWay}" />
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ViewModel.SavedSectionTitle, Mode=OneWay}" />
                             <ItemsControl ItemsSource="{x:Bind ViewModel.SavedItems, Mode=OneWay}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:Model_ReceivingLocationReconciliationItem">
-                                        <Border Margin="0,0,0,8" Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                                        <Border
+                                            Margin="0,0,0,8"
+                                            Padding="12"
+                                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="10">
                                             <StackPanel Spacing="4">
                                                 <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneWay}" />
@@ -266,13 +547,28 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Padding="16" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Visibility="{x:Bind ViewModel.HasIgnoredItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border
+                        Padding="16"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Visibility="{x:Bind ViewModel.HasIgnoredItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Spacing="12">
-                            <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.IgnoredSectionTitle, Mode=OneWay}" />
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ViewModel.IgnoredSectionTitle, Mode=OneWay}" />
                             <ItemsControl ItemsSource="{x:Bind ViewModel.IgnoredItems, Mode=OneWay}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:Model_ReceivingLocationReconciliationItem">
-                                        <Border Margin="0,0,0,8" Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                                        <Border
+                                            Margin="0,0,0,8"
+                                            Padding="12"
+                                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="10">
                                             <StackPanel Spacing="4">
                                                 <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneWay}" />
@@ -286,13 +582,28 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Padding="16" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Visibility="{x:Bind ViewModel.HasUnresolvedItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border
+                        Padding="16"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Visibility="{x:Bind ViewModel.HasUnresolvedItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Spacing="12">
-                            <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.UnresolvedSectionTitle, Mode=OneWay}" />
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ViewModel.UnresolvedSectionTitle, Mode=OneWay}" />
                             <ItemsControl ItemsSource="{x:Bind ViewModel.PreviewSummary.UnresolvedItems, Mode=OneWay}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:Model_ReceivingLocationReconciliationItem">
-                                        <Border Margin="0,0,0,8" Padding="12" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                                        <Border
+                                            Margin="0,0,0,8"
+                                            Padding="12"
+                                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="10">
                                             <StackPanel Spacing="4">
                                                 <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind Resolution, Mode=OneWay}" />
@@ -314,17 +625,18 @@
             HorizontalAlignment="Right"
             Orientation="Horizontal"
             Spacing="12"
-            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-        >
-            <Button Command="{x:Bind ViewModel.IgnoreCurrentCommand}" Content="Ignore" MinWidth="120" />
+            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button
+                MinWidth="120"
+                Command="{x:Bind ViewModel.IgnoreCurrentCommand}"
+                Content="Ignore" />
             <Button
                 MinWidth="120"
                 Background="{ThemeResource AccentFillColorDefaultBrush}"
                 BorderThickness="0"
                 Command="{x:Bind ViewModel.SaveCurrentCommand}"
                 Content="Save"
-                Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-            />
+                Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
         </StackPanel>
     </Grid>
 </ContentDialog>

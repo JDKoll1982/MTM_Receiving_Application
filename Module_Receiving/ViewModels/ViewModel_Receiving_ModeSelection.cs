@@ -211,24 +211,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     currentUserId
                 );
 
-                var confirmDialog = new ContentDialog
-                {
-                    Title = "Reconcile Saved Locations from InforVisual",
-                    Content = includeAllHistory
-                        ? "This will scan all visible Current Labels and all visible Receiving History rows, then prepare a review list that tries to place each saved load in the closest matching current location by quantity using InforVisual transfer history and current inventory. You can save or ignore each suggested change before anything is updated. Continue?"
-                        : "This will scan all visible Current Labels and today’s visible Receiving History rows, then prepare a review list that tries to place each saved load in the closest matching current location by quantity using InforVisual transfer history and current inventory. You can save or ignore each suggested change before anything is updated. Continue?",
-                    PrimaryButtonText = "Reconcile",
-                    CloseButtonText = "Cancel",
-                    DefaultButton = ContentDialogButton.Primary,
-                    XamlRoot = xamlRoot,
-                };
-
-                var confirmResult = await confirmDialog.ShowAsync();
-                if (confirmResult != ContentDialogResult.Primary)
-                {
-                    return;
-                }
-
                 IsBusy = true;
                 StatusMessage = "Reconciling saved locations from InforVisual...";
 
@@ -248,6 +230,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 _locationReconciliationReviewDialog.XamlRoot = xamlRoot;
                 _locationReconciliationReviewDialog.Initialize(previewResult.Data);
+                _locationReconciliationReviewDialog.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center;
+                _locationReconciliationReviewDialog.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
                 _locationReconciliationReviewDialog.PrepareDialogSize();
 
                 await _locationReconciliationReviewDialog.ShowAsync();

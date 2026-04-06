@@ -44,9 +44,4 @@ public sealed partial class View_Receiving_Dialog_LocationReconciliationReview :
         MinHeight = Math.Min(680, availableHeight);
         MaxHeight = availableHeight;
     }
-
-    private void Dialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
-    {
-        PrepareDialogSize();
-    }
 }
