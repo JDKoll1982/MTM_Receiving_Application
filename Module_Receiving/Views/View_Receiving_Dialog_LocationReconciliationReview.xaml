@@ -77,101 +77,124 @@
                         </StackPanel>
                     </Border>
 
-                    <Grid ColumnSpacing="12" RowSpacing="12">
+                    <Border
+                        Padding="16"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                    >
+                        <Grid ColumnSpacing="16" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Part Number" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentPartIdText, Mode=OneWay}" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Purchase Order" />
+                            <TextBlock Grid.Row="0" Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentPurchaseOrderText, Mode=OneWay}" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Saved Row Source" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved By" />
+                            <TextBlock Grid.Row="1" Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedByUserIdText, Mode=OneWay}" TextWrapping="Wrap" />
+                        </Grid>
+                    </Border>
+
+                    <Grid ColumnSpacing="16">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
 
-                        <Border Grid.Row="0" Grid.Column="0" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Part Number" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentPartIdText, Mode=OneWay}" />
+                        <Border
+                            Grid.Column="0"
+                            Padding="18"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                        >
+                            <StackPanel Spacing="14">
+                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="Old Location" />
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Location" />
+                                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentOriginalLocationText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Quantity" />
+                                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentSavedRowQuantityText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Reference" />
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Row="0" Grid.Column="1" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Purchase Order" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentPurchaseOrderText, Mode=OneWay}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
+                        <Border
+                            Grid.Column="1"
+                            Padding="18"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                        >
+                            <StackPanel Spacing="14">
+                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="New Location" />
 
-                        <Border Grid.Row="1" Grid.Column="0" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Original Location" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentOriginalLocationText, Mode=OneWay}" />
-                            </StackPanel>
-                        </Border>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Location" />
+                                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentNewLocationText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </StackPanel>
 
-                        <Border Grid.Row="1" Grid.Column="1" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="New Location" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentNewLocationText, Mode=OneWay}" />
-                            </StackPanel>
-                        </Border>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Quantity" />
+                                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentQuantityMovedText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </StackPanel>
 
-                        <Border Grid.Row="2" Grid.Column="0" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Saved Row Quantity" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentSavedRowQuantityText, Mode=OneWay}" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="2" Grid.Column="1" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Matched Destination Quantity" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentQuantityMovedText, Mode=OneWay}" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="3" Grid.Column="0" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved By User ID" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedByUserIdText, Mode=OneWay}" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="3" Grid.Column="1" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Allocation Method" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="4" Grid.Column="0" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved Date" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedDateText, Mode=OneWay}" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="4" Grid.Column="1" Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
-                            <StackPanel Spacing="4">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved Time" />
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedTimeText, Mode=OneWay}" />
+                                <StackPanel Spacing="4">
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Reference" />
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </Grid>
 
                     <Border
-                        Padding="14"
+                        Padding="16"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
-                        CornerRadius="8"
+                        CornerRadius="10"
                     >
-                        <StackPanel Spacing="4">
-                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Saved Row Source" />
-                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}" />
-                        </StackPanel>
+                        <Grid ColumnSpacing="16" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved Date" />
+                            <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedDateText, Mode=OneWay}" TextWrapping="Wrap" />
+                            <TextBlock Grid.Column="2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Moved Time" />
+                            <TextBlock Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentMovedTimeText, Mode=OneWay}" TextWrapping="Wrap" />
+                            <TextBlock Grid.Column="4" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Reason" />
+                            <TextBlock Grid.Column="5" FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}" TextWrapping="Wrap" />
+                        </Grid>
                     </Border>
                 </StackPanel>
 

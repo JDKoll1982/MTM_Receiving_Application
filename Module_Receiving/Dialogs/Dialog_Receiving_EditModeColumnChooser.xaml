@@ -4,11 +4,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Choose visible columns"
-    PrimaryButtonText="Apply"
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     Opened="Dialog_Opened"
-    PrimaryButtonClick="Dialog_PrimaryButtonClick">
+    PrimaryButtonClick="Dialog_PrimaryButtonClick"
+    PrimaryButtonText="Apply">
     <Grid
         x:Name="RootGrid"
         Padding="8"
@@ -20,9 +20,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Spacing="6">
-            <TextBlock
-                Text="Choose which columns appear in Edit Mode. Columns are grouped to make the list easier to scan."
-                TextWrapping="Wrap" />
+            <TextBlock Text="Choose which columns appear in Edit Mode. Columns are grouped to make the list easier to scan." TextWrapping="Wrap" />
             <TextBlock
                 x:Name="AlwaysVisibleTextBlock"
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -54,11 +52,9 @@
 
         <ScrollViewer
             Grid.Row="2"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled">
-            <StackPanel
-                x:Name="GroupsPanel"
-                Spacing="16" />
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="GroupsPanel" Spacing="16" />
         </ScrollViewer>
     </Grid>
 </ContentDialog>
