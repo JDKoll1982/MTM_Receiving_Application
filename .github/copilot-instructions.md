@@ -38,6 +38,7 @@ Manufacturing receiving operations desktop application for streamlined label gen
 6. **Async Methods:** All must end with `Async` suffix
 7. **Error Handling:** DAOs return errors, Services handle them, ViewModels display them
 8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY (`V_` prefix tables are base tables, not views)
+9. **Collection Reloads:** When rebuilding an entire `ObservableCollection`, prefer replacing the collection instance over `Clear()` plus repeated `Add()` calls to avoid excessive UI notifications
 
 ### 🛑 ASSUMPTION DOCUMENTATION — REQUIRED BEFORE PROCEEDING
 
@@ -245,11 +246,7 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
             var result = await _workflowService.GetDataAsync();
             if (result.IsSuccess)
             {
-                Items.Clear();
-                foreach (var item in result.Data)
-                {
-                    Items.Add(item);
-                }
+                Items = new ObservableCollection<Model_Item>(result.Data);
                 StatusMessage = $"Loaded {Items.Count} items";
             }
             else

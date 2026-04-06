@@ -84,14 +84,9 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
                 return;
             }
 
-            Types.Clear();
-            if (result.Data != null)
-            {
-                foreach (var type in result.Data)
-                {
-                    Types.Add(type);
-                }
-            }
+            Types = new ObservableCollection<Model_DunnageType>(
+                result.Data is null ? new List<Model_DunnageType>() : result.Data
+            );
 
             StatusMessage = $"Loaded {Types.Count} types";
             await _logger.LogInfoAsync($"Loaded {Types.Count} dunnage types", "TypeManagement");

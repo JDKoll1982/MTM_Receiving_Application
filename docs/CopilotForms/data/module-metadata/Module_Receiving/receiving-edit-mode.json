@@ -106,6 +106,7 @@
       "Keep DAO/data flow unchanged",
       "Keep search behavior unless explicitly changed",
       "Keep paging unless explicitly changed",
+      "Keep whole-collection page reloads preserving the existing row-property handler behavior",
       "Keep Admin and Developer edit access unrestricted"
     ],
     "acceptanceCriteria": [
@@ -160,6 +161,7 @@
       "Confirm clearing label data empties the grid when Current Labels is active",
       "Confirm search still works",
       "Confirm paging still works",
+      "Confirm page changes still repopulate the visible rows correctly after whole-collection replacement",
       "Confirm saved grid preferences still apply",
       "Confirm saving still uses the existing logic",
       "Confirm row actions still work correctly"

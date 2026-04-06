@@ -99,13 +99,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            SessionLoads.Clear();
-
             var loads = _workflowService.CurrentSession.Loads;
-            foreach (var load in loads)
-            {
-                SessionLoads.Add(load);
-            }
+            SessionLoads = new ObservableCollection<Model_DunnageLoad>(loads);
 
             LoadCount = SessionLoads.Count;
             CanSave = LoadCount > 0;

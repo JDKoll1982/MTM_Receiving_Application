@@ -468,11 +468,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 
         var pageLoads = _paginationService.GetCurrentPageItems<Model_DunnageLoad>();
 
-        FilteredLoads.Clear();
-        foreach (var load in pageLoads)
-        {
-            FilteredLoads.Add(load);
-        }
+        ReplaceFilteredLoads(pageLoads);
 
         StatusMessage = $"Page {CurrentPage} of {TotalPages}";
         _logger.LogInfo($"Loaded page {CurrentPage} of {TotalPages}", "EditMode");
@@ -971,11 +967,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         // Update FilteredLoads with current page items
         var pageLoads = _paginationService.GetCurrentPageItems<Model_DunnageLoad>();
 
-        FilteredLoads.Clear();
-        foreach (var load in pageLoads)
-        {
-            FilteredLoads.Add(load);
-        }
+        ReplaceFilteredLoads(pageLoads);
 
         CurrentPage = _paginationService.CurrentPage;
         TotalPages = _paginationService.TotalPages;
@@ -992,7 +984,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         }
 
         _allLoads.Clear();
-        FilteredLoads.Clear();
+        ReplaceFilteredLoads(Array.Empty<Model_DunnageLoad>());
         SelectedLoads.Clear();
         _removedLoads.Clear();
         _originalLoadSnapshots.Clear();
@@ -1253,7 +1245,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         if (filteredList.Count == 0)
         {
             CurrentPage = 1;
-            FilteredLoads.Clear();
+            ReplaceFilteredLoads(Array.Empty<Model_DunnageLoad>());
             StatusMessage = string.IsNullOrWhiteSpace(SearchText)
                 ? "No loads found"
                 : $"No loads match \"{SearchText}\"";
@@ -1272,6 +1264,11 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             || load.PoNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
             || (load.Location?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
             || load.CreatedBy.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void ReplaceFilteredLoads(IEnumerable<Model_DunnageLoad> loads)
+    {
+        FilteredLoads = new ObservableCollection<Model_DunnageLoad>(loads);
     }
 
     private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(

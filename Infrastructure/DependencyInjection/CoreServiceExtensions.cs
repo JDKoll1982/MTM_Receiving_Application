@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
@@ -47,6 +48,11 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
         services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
         services.AddSingleton<IService_ApplicationShutdown, Service_ApplicationShutdown>();
+        services.AddSingleton<IService_AppSettings>(sp => new Service_AppSettings(
+            sp.GetRequiredService<IConfiguration>(),
+            sp.GetRequiredService<IHostEnvironment>(),
+            sp.GetService<IService_LoggingUtility>()
+        ));
 
         // UI Services (Singleton - Stateless utilities)
         services.AddSingleton<IService_Notification, Service_Notification>();
@@ -194,16 +200,21 @@ public static class CoreServiceExtensions
             return new Dao_InforVisualPart(inforVisualConnectionString, logger);
         });
 
+        services.AddSingleton<IService_InforVisualMockDataCatalog>(sp =>
+        {
+            var logger = sp.GetService<IService_LoggingUtility>();
+            return new Service_InforVisualMockDataCatalog(logger);
+        });
+
         // Infor Visual Service (Singleton - Stateless integration service)
-        // Uses IOptions<InforVisualSettings> for mock data configuration
+        // Uses AppSettings:UseInforVisualMockData for mock data configuration
         services.AddSingleton<IService_InforVisual>(sp =>
         {
             var dao = sp.GetRequiredService<Dao_InforVisualConnection>();
+            var appSettings = sp.GetRequiredService<IService_AppSettings>();
             var logger = sp.GetService<IService_LoggingUtility>();
-            var settings =
-                configuration.GetSection("InforVisual").Get<InforVisualSettings>()
-                ?? new InforVisualSettings();
-            return new Service_InforVisualConnect(dao, settings.UseMockData, logger);
+            var mockCatalog = sp.GetRequiredService<IService_InforVisualMockDataCatalog>();
+            return new Service_InforVisualConnect(dao, appSettings, logger, mockCatalog);
         });
     }
 }

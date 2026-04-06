@@ -265,7 +265,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _allLoads.Clear();
             _filteredLoads = new List<Model_ReceivingLoad>();
             _deletedLoads.Clear();
-            Loads.Clear();
+            ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
             SelectedLoad = null;
             CurrentDataSource = Enum_DataSourceType.Memory;
             SearchText = string.Empty;
@@ -632,6 +632,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 new() { Key = "POLineNumber", Header = "PO Line #" },
                 new() { Key = "WeightQuantity", Header = "Weight/Qty" },
                 new() { Key = "HeatLotNumber", Header = "Heat/Lot" },
+                new() { Key = "InitialLocation", Header = "Location" },
                 new() { Key = "RemainingQuantity", Header = "Remaining Qty" },
                 new() { Key = "PackagesPerLoad", Header = "Pkgs/Load" },
                 new() { Key = "PackageType", Header = "Pkg Type" },
@@ -654,10 +655,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             key
                 is "LoadNumber"
                     or "ReceivedDate"
+                    or "IsNonPOItem"
                     or "PartID"
                     or "PONumber"
                     or "WeightQuantity"
                     or "HeatLotNumber"
+                    or "InitialLocation"
                     or "PackagesPerLoad"
                     or "PackageType"
                     or "WeightPerPackage";
@@ -719,6 +722,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             .ToList()
                         : lst.OrderByDescending(
                                 l => l.HeatLotNumber,
+                                StringComparer.OrdinalIgnoreCase
+                            )
+                            .ToList(),
+                "InitialLocation" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.InitialLocation, StringComparer.OrdinalIgnoreCase)
+                            .ToList()
+                        : lst.OrderByDescending(
+                                l => l.InitialLocation,
                                 StringComparer.OrdinalIgnoreCase
                             )
                             .ToList(),
@@ -830,11 +842,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             var pageItems = _paginationService.GetCurrentPageItems<Model_ReceivingLoad>();
 
-            Loads.Clear();
-            foreach (var item in pageItems)
-            {
-                Loads.Add(item);
-            }
+            ReplaceLoads(pageItems);
 
             CurrentPage = _paginationService.CurrentPage;
             TotalPages = _paginationService.TotalPages;
@@ -924,7 +932,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _deletedLoads.Clear();
             _allLoads.Clear();
             _filteredLoads = new List<Model_ReceivingLoad>();
-            Loads.Clear();
+            ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
             SelectedLoad = null;
             ResultSummary = "0 records";
             StatusMessage = "Current label queue cleared.";
@@ -937,6 +945,41 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             NotifyPaginationCommands();
             NotifyCommands();
+        }
+
+        partial void OnLoadsChanging(
+            ObservableCollection<Model_ReceivingLoad>? oldValue,
+            ObservableCollection<Model_ReceivingLoad> newValue
+        )
+        {
+            if (oldValue is null)
+            {
+                return;
+            }
+
+            oldValue.CollectionChanged -= Loads_CollectionChanged;
+
+            foreach (var item in oldValue)
+            {
+                item.PropertyChanged -= Load_PropertyChanged;
+            }
+        }
+
+        partial void OnLoadsChanged(ObservableCollection<Model_ReceivingLoad> value)
+        {
+            value.CollectionChanged += Loads_CollectionChanged;
+
+            foreach (var item in value)
+            {
+                item.PropertyChanged += Load_PropertyChanged;
+            }
+
+            NotifyCommands();
+        }
+
+        private void ReplaceLoads(IEnumerable<Model_ReceivingLoad> loads)
+        {
+            Loads = new ObservableCollection<Model_ReceivingLoad>(loads);
         }
 
         /// <summary>
@@ -1229,9 +1272,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _allLoads.Add(load);
                 }
 
-                StatusMessage = visibleLoads.Count == currentLoads.Count
-                    ? $"Loaded {_allLoads.Count} loads from current session"
-                    : $"Loaded {visibleLoads.Count} of {currentLoads.Count} loads from current session. Rows created by other users are hidden.";
+                StatusMessage =
+                    visibleLoads.Count == currentLoads.Count
+                        ? $"Loaded {_allLoads.Count} loads from current session"
+                        : $"Loaded {visibleLoads.Count} of {currentLoads.Count} loads from current session. Rows created by other users are hidden.";
                 _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from current memory");
                 CurrentDataSource = Enum_DataSourceType.Memory;
                 SelectAllButtonText = "Select All";
@@ -1293,10 +1337,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
-                var visibleLoads = ApplyOwnershipVisibilityRules(
-                    loadedData,
-                    "current label queue"
-                );
+                var visibleLoads = ApplyOwnershipVisibilityRules(loadedData, "current label queue");
                 if (visibleLoads.Count == 0)
                 {
                     await _errorHandler.ShowErrorDialogAsync(
@@ -1313,9 +1354,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     _allLoads.Add(load);
                 }
-                StatusMessage = visibleLoads.Count == loadedData.Count
-                    ? $"Loaded {_allLoads.Count} loads from current label queue"
-                    : $"Loaded {visibleLoads.Count} of {loadedData.Count} loads from current label queue. Rows created by other users are hidden.";
+                StatusMessage =
+                    visibleLoads.Count == loadedData.Count
+                        ? $"Loaded {_allLoads.Count} loads from current label queue"
+                        : $"Loaded {visibleLoads.Count} of {loadedData.Count} loads from current label queue. Rows created by other users are hidden.";
                 _logger.LogInfo(
                     $"Successfully loaded {_allLoads.Count} loads from current label queue"
                 );
@@ -1372,9 +1414,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             _allLoads.Add(load);
                             _workflowService.CurrentSession.Loads.Add(load);
                         }
-                        StatusMessage = visibleLoads.Count == loadedData.Count
-                            ? $"Loaded {_allLoads.Count} loads from network labels"
-                            : $"Loaded {visibleLoads.Count} of {loadedData.Count} loads from network labels. Rows created by other users are hidden.";
+                        StatusMessage =
+                            visibleLoads.Count == loadedData.Count
+                                ? $"Loaded {_allLoads.Count} loads from network labels"
+                                : $"Loaded {visibleLoads.Count} of {loadedData.Count} loads from network labels. Rows created by other users are hidden.";
                         _logger.LogInfo(
                             $"Successfully loaded {_allLoads.Count} loads from network labels"
                         );
@@ -1455,9 +1498,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _workflowService.CurrentSession.Loads.Add(load);
                 }
 
-                StatusMessage = visibleLoads.Count == result.Data.Count
-                    ? $"Loaded {_allLoads.Count} loads from history"
-                    : $"Loaded {visibleLoads.Count} of {result.Data.Count} loads from history. Rows created by other users are hidden.";
+                StatusMessage =
+                    visibleLoads.Count == result.Data.Count
+                        ? $"Loaded {_allLoads.Count} loads from history"
+                        : $"Loaded {visibleLoads.Count} of {result.Data.Count} loads from history. Rows created by other users are hidden.";
                 _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from history");
                 CurrentDataSource = Enum_DataSourceType.History;
                 SelectAllButtonText = "Select All";

@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Receiving.Views;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -20,6 +21,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Help _helpService;
         private readonly IService_Window _windowService;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_ReceivingLocationReconciliation _locationReconciliationService;
+        private readonly View_Receiving_Dialog_LocationReconciliationReview _locationReconciliationReviewDialog;
 
         [ObservableProperty]
         private bool _isGuidedModeDefault;
@@ -71,6 +74,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Help helpService,
             IService_Window windowService,
             IService_ReceivingSettings receivingSettings,
+            IService_ReceivingLocationReconciliation locationReconciliationService,
+            View_Receiving_Dialog_LocationReconciliationReview locationReconciliationReviewDialog,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Notification notificationService
@@ -83,6 +88,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _windowService = windowService;
             _receivingSettings = receivingSettings;
+            _locationReconciliationService = locationReconciliationService;
+            _locationReconciliationReviewDialog = locationReconciliationReviewDialog;
 
             // Load current default mode
             LoadDefaultMode();
@@ -183,6 +190,100 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 await _workflowService.ResetWorkflowAsync();
                 _workflowService.RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ReconcileSavedLocationsAsync()
+        {
+            try
+            {
+                var xamlRoot = _windowService.GetXamlRoot();
+                if (xamlRoot == null)
+                {
+                    _logger.LogError("Cannot show reconciliation dialog: XamlRoot is null");
+                    return;
+                }
+
+                var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+                var includeAllHistory = await _receivingSettings.GetBoolAsync(
+                    ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation,
+                    currentUserId
+                );
+
+                var confirmDialog = new ContentDialog
+                {
+                    Title = "Reconcile Saved Locations from InforVisual",
+                    Content = includeAllHistory
+                        ? "This will scan all visible Current Labels and all visible Receiving History rows, then prepare a review list that tries to place each saved load in the closest matching current location by quantity using InforVisual transfer history and current inventory. You can save or ignore each suggested change before anything is updated. Continue?"
+                        : "This will scan all visible Current Labels and today’s visible Receiving History rows, then prepare a review list that tries to place each saved load in the closest matching current location by quantity using InforVisual transfer history and current inventory. You can save or ignore each suggested change before anything is updated. Continue?",
+                    PrimaryButtonText = "Reconcile",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = xamlRoot,
+                };
+
+                var confirmResult = await confirmDialog.ShowAsync();
+                if (confirmResult != ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
+                IsBusy = true;
+                StatusMessage = "Reconciling saved locations from InforVisual...";
+
+                var previewResult = await _locationReconciliationService.PreviewLocationsAsync(
+                    includeAllHistory
+                );
+
+                if (!previewResult.IsSuccess || previewResult.Data == null)
+                {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "InforVisual Reconciliation Failed",
+                        previewResult.ErrorMessage,
+                        Enum_ErrorSeverity.Error
+                    );
+                    return;
+                }
+
+                _locationReconciliationReviewDialog.XamlRoot = xamlRoot;
+                _locationReconciliationReviewDialog.Initialize(previewResult.Data);
+                _locationReconciliationReviewDialog.PrepareDialogSize();
+
+                await _locationReconciliationReviewDialog.ShowAsync();
+
+                if (_locationReconciliationReviewDialog.ViewModel.HasPendingItems)
+                {
+                    StatusMessage =
+                        $"Location reconciliation review closed with {_locationReconciliationReviewDialog.ViewModel.SavedCount} saved, {_locationReconciliationReviewDialog.ViewModel.IgnoredCount} ignored, and {_locationReconciliationReviewDialog.ViewModel.ItemsRemainingCount} row(s) still pending review.";
+                }
+                else if (_locationReconciliationReviewDialog.ViewModel.SavedCount == 0)
+                {
+                    StatusMessage =
+                        _locationReconciliationReviewDialog.ViewModel.TotalCandidateCount == 0
+                            ? _locationReconciliationReviewDialog.ViewModel.NeedsAttentionCount == 0
+                                ? "Location reconciliation found no rows that needed a change."
+                                : $"Location reconciliation found no automatic changes to save. {_locationReconciliationReviewDialog.ViewModel.NeedsAttentionCount} row(s) still need manual review."
+                            : $"Location reconciliation review finished with {_locationReconciliationReviewDialog.ViewModel.IgnoredCount} ignored row(s).";
+                }
+                else
+                {
+                    StatusMessage =
+                        $"Location reconciliation saved {_locationReconciliationReviewDialog.ViewModel.SavedCount} row(s) and ignored {_locationReconciliationReviewDialog.ViewModel.IgnoredCount} row(s).";
+                }
+            }
+            catch (Exception ex)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    $"Failed to reconcile saved locations: {ex.Message}",
+                    Enum_ErrorSeverity.Error,
+                    ex,
+                    true
+                );
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

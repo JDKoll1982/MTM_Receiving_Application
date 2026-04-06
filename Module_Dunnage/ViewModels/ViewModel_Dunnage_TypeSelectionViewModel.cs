@@ -600,10 +600,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             "ViewModel_dunnage_typeselection"
         );
 
-        DisplayedTypes.Clear();
-        foreach (var type in currentItems)
+        var currentItemList = currentItems.ToList();
+        DisplayedTypes = new ObservableCollection<Model_DunnageType>(currentItemList);
+
+        foreach (var type in currentItemList)
         {
-            DisplayedTypes.Add(type);
             _logger.LogInfo(
                 $"TypeSelection: Added type to DisplayedTypes - ID: {type.Id}, Name: {type.TypeName}",
                 "ViewModel_dunnage_typeselection"

@@ -85,7 +85,7 @@
 
         <!-- Row 1: Notes (Full Width, Compact) -->
         <TextBox
-            Grid.Row="1"
+            Grid.Row="2"
             Header="Notes (applies to entire shipment)"
             PlaceholderText="Optional notes..."
             x:Name="NotesBox"
@@ -95,8 +95,8 @@
             HorizontalAlignment="Stretch"
         />
 
-        <!-- Row 2: Parts Section (Main Content) -->
-        <Grid Grid.Row="2">
+        <!-- Row 3: Parts Section (Main Content) -->
+        <Grid Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

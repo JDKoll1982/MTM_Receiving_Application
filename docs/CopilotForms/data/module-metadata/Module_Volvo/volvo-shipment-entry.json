@@ -82,6 +82,7 @@
     ],
     "validationHints": [
       "Confirm pending shipment restore still loads the correct shipment state",
+      "Confirm pending shipment restore and part suggestions still repopulate bound collections correctly after whole-collection replacement",
       "Confirm shipment-line commands and completion still follow the intended guarded behavior",
       "Confirm shipment-line persistence still behaves transactionally after transaction ownership moved out of the service layer"
     ]

@@ -20,6 +20,9 @@
     "currentUiPatterns": ["Dialog"],
     "desiredUiPatterns": ["Dialog"],
     "userActions": ["Read contextual help content when guidance is needed"],
-    "validationHints": ["Confirm help dialog presentation remains intact"]
+    "validationHints": [
+      "Confirm help dialog presentation remains intact",
+      "Confirm related help topics replace the bound list cleanly when the dialog loads a different article"
+    ]
   }
 }

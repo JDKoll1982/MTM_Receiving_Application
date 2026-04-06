@@ -94,7 +94,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     {
         IsSearchByPartMode = true;
         SearchTerm = string.Empty;
-        Results.Clear();
+        ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus("Enter a part number and click Search.");
     }
 
@@ -103,7 +103,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     {
         IsSearchByPartMode = false;
         SearchTerm = string.Empty;
-        Results.Clear();
+        ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus("Enter a vendor name and click Search.");
     }
 
@@ -218,11 +218,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         _sortPropertyName = string.Empty;
         _sortAscending = true;
         ResetSortIndicators?.Invoke();
-        Results.Clear();
-        foreach (var item in _allResults)
-        {
-            Results.Add(item);
-        }
+        ReplaceResults(_allResults);
 
         var summary =
             Results.Count > 0
@@ -312,11 +308,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         _sortPropertyName = string.Empty;
         _sortAscending = true;
         ResetSortIndicators?.Invoke();
-        Results.Clear();
-        foreach (var item in _allResults)
-        {
-            Results.Add(item);
-        }
+        ReplaceResults(_allResults);
 
         var summary =
             Results.Count > 0
@@ -337,7 +329,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         _sortPropertyName = string.Empty;
         _sortAscending = true;
         ResetSortIndicators?.Invoke();
-        Results.Clear();
+        ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus($"Enter a {(IsSearchByPartMode ? "part number" : "vendor name")} to search.");
     }
 
@@ -403,10 +395,11 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             _ => _allResults,
         };
 
-        Results.Clear();
-        foreach (var item in sorted)
-        {
-            Results.Add(item);
-        }
+        ReplaceResults(sorted);
+    }
+
+    private void ReplaceResults(IEnumerable<Model_OutsideServiceHistory> results)
+    {
+        Results = new ObservableCollection<Model_OutsideServiceHistory>(results);
     }
 }

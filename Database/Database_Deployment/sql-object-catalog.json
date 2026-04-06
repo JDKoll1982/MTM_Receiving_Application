@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-01T18:27:16.7959638-05:00",
+  "generatedAt": "2026-04-05T22:13:53.8432944-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -3565,8 +3565,6 @@
             "label_number",
             "part_skid_sequence",
             "part_skid_total",
-            "p_part_skid_sequence",
-            "p_part_skid_total",
             "specs_json"
           ]
         }
@@ -8752,6 +8750,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_InitialLocation",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
           "name": "p_PackagesPerLoad",
           "sqlType": "INT"
         },
@@ -8800,6 +8803,7 @@
         "p_LoadNumber",
         "p_WeightQuantity",
         "p_HeatLotNumber",
+        "p_InitialLocation",
         "p_PackagesPerLoad",
         "p_PackageTypeName",
         "p_WeightPerPackage",

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
@@ -24,6 +25,12 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
     private bool _isSaveVisible;
     private bool _isResetVisible;
 
+    [ObservableProperty]
+    private ObservableCollection<Model_SettingsNavigationStep> _steps = new();
+
+    [ObservableProperty]
+    private ObservableCollection<Model_SettingsNavigationStep> _visibleSteps = new();
+
     protected ViewModel_SettingsNavigationHubBase(
         IService_SettingsPagination pagination,
         IService_ErrorHandler errorHandler,
@@ -33,15 +40,9 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
         : base(errorHandler, logger, notificationService)
     {
         _pagination = pagination;
-        Steps = new ObservableCollection<Model_SettingsNavigationStep>();
-        VisibleSteps = new ObservableCollection<Model_SettingsNavigationStep>();
 
         RecalculatePagination();
     }
-
-    public ObservableCollection<Model_SettingsNavigationStep> Steps { get; }
-
-    public ObservableCollection<Model_SettingsNavigationStep> VisibleSteps { get; }
 
     public bool HasStep(int index)
     {
@@ -197,11 +198,9 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
 
     public void SetSteps(params Model_SettingsNavigationStep[] steps)
     {
-        Steps.Clear();
-        foreach (var step in steps.Where(s => s != null))
-        {
-            Steps.Add(step);
-        }
+        Steps = new ObservableCollection<Model_SettingsNavigationStep>(
+            steps.Where(step => step != null)
+        );
 
         CurrentButtonPage = 1;
         RecalculatePagination();
@@ -236,15 +235,10 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
 
     private void RebuildVisibleSteps()
     {
-        VisibleSteps.Clear();
         var indices = _pagination.GetPageIndices(Steps.Count, CurrentButtonPage);
-        foreach (var idx in indices)
-        {
-            if (idx >= 0 && idx < Steps.Count)
-            {
-                VisibleSteps.Add(Steps[idx]);
-            }
-        }
+        VisibleSteps = new ObservableCollection<Model_SettingsNavigationStep>(
+            indices.Where(idx => idx >= 0 && idx < Steps.Count).Select(idx => Steps[idx])
+        );
     }
 
     public void PrevButtonPage()

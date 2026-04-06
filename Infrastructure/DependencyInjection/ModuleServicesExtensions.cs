@@ -109,6 +109,10 @@ public static class ModuleServicesExtensions
         });
         services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
         services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
+        services.AddSingleton<
+            IService_ReceivingLocationReconciliation,
+            Service_ReceivingLocationReconciliation
+        >();
         services.AddTransient<IService_Pagination, Service_Pagination>();
 
         // Settings
@@ -128,6 +132,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Receiving_HeatLot>();
         services.AddTransient<ViewModel_Receiving_PackageType>();
         services.AddTransient<ViewModel_Receiving_Review>();
+        services.AddTransient<ViewModel_Receiving_LocationReconciliationReview>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Receiving.Views.View_Receiving_Workflow>();
@@ -140,6 +145,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Receiving.Views.View_Receiving_HeatLot>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_PackageType>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_Review>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_Dialog_LocationReconciliationReview>();
 
         return services;
     }

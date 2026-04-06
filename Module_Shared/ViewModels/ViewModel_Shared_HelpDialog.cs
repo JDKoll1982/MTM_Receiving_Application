@@ -59,7 +59,7 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
             }
 
             // Load related topics
-            RelatedTopics.Clear();
+            var relatedTopics = new ObservableCollection<Model_HelpContent>();
             if (content.RelatedKeys?.Count > 0)
             {
                 foreach (var relatedKey in content.RelatedKeys)
@@ -67,13 +67,16 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
                     var relatedContent = _helpService.GetHelpContent(relatedKey);
                     if (relatedContent != null)
                     {
-                        RelatedTopics.Add(relatedContent);
+                        relatedTopics.Add(relatedContent);
                     }
                 }
+
+                RelatedTopics = relatedTopics;
                 IsRelatedHelpAvailable = RelatedTopics.Count > 0;
             }
             else
             {
+                RelatedTopics = [];
                 IsRelatedHelpAvailable = false;
             }
 

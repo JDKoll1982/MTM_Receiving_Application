@@ -263,6 +263,91 @@
                     </StackPanel>
                 </Border>
 
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                >
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock
+                                Text="Location Reconciliation Preferences"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                            />
+                            <TextBlock
+                                Text="Keep reconciliation options together and manage any InforVisual locations you never want applied automatically. Added locations are validated the same way as Receiving Load Entry locations."
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                TextWrapping="Wrap"
+                            />
+                        </StackPanel>
+
+                        <ToggleSwitch
+                            Header="Validate All History During Reconciliation"
+                            ToolTipService.ToolTip="When turned on, the InforVisual location reconciliation action checks all visible receiving history rows instead of only today and Current Labels."
+                            IsOn="{x:Bind ViewModel.ValidateAllHistoryForLocationReconciliation, Mode=TwoWay}"
+                        />
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                x:Name="IgnoredLocationTextBox"
+                                Grid.Column="0"
+                                Header="Ignored Reconciliation Locations"
+                                PlaceholderText="Enter a location to exclude from reconciliation"
+                                Text="{x:Bind ViewModel.PendingIgnoredLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LostFocus="IgnoredLocationTextBox_LostFocus"
+                            />
+
+                            <Button
+                                Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                Click="AddIgnoredLocationButton_Click"
+                                MinWidth="120"
+                            >
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE710;" FontSize="14" />
+                                    <TextBlock Text="Add Location" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock
+                            Text="If the location is not an exact match, you will be prompted to choose a fuzzy-match result just like the Receiving Load Entry location field."
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            TextWrapping="Wrap"
+                        />
+
+                        <Border
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            MinHeight="140"
+                        >
+                            <ListView
+                                ItemsSource="{x:Bind ViewModel.IgnoredReconciliationLocations, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedIgnoredLocation, Mode=TwoWay}"
+                                SelectionMode="Single"
+                            />
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                            <Button
+                                Content="Remove Selected"
+                                Command="{x:Bind ViewModel.RemoveIgnoredLocationCommand}"
+                            />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Test Padding Card -->
                 <Border
                     Padding="20"

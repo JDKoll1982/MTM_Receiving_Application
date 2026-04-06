@@ -22,6 +22,7 @@
     "userActions": ["Complete first-run setup steps successfully"],
     "validationHints": [
       "Confirm new-user setup still guides first-run configuration correctly",
+      "Confirm department loading still replaces the bound collection cleanly on repeated loads",
       "Confirm first and last name inputs compose the saved full name in the expected format",
       "Confirm optional ERP credentials can still be entered during first-run account setup"
     ]

@@ -40,10 +40,7 @@
     "Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs",
     "Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs"
   ],
-  "relatedServices": [
-    "IService_VolvoMasterData",
-    "Service_VolvoMasterData"
-  ],
+  "relatedServices": ["IService_VolvoMasterData", "Service_VolvoMasterData"],
   "promptDefaults": {
     "audience": "Supervisor",
     "docAudience": "Supervisor",
@@ -58,10 +55,7 @@
       "Part add and edit dialogs",
       "CSV part import"
     ],
-    "screens": [
-      "View_Volvo_Settings.xaml",
-      "VolvoPartAddEditDialog.xaml"
-    ],
+    "screens": ["View_Volvo_Settings.xaml", "VolvoPartAddEditDialog.xaml"],
     "currentUiPatterns": ["Form", "Table"],
     "desiredUiPatterns": ["Split layout", "Form", "Card list"],
     "uiElements": [
@@ -75,7 +69,8 @@
       "Import parts from CSV"
     ],
     "validationHints": [
-      "Confirm part search, add, update, deactivate, and import flows still affect the intended part records"
+      "Confirm part search, add, update, deactivate, and import flows still affect the intended part records",
+      "Confirm repeated part-catalog refreshes replace the bound list cleanly without keeping stale rows"
     ]
   }
 }

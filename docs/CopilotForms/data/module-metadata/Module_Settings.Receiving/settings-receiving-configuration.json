@@ -2,7 +2,7 @@
   "id": "settings-receiving-configuration",
   "module": "Module_Settings.Receiving",
   "name": "Receiving Settings Configuration",
-  "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and workflow options backed by the shared settings facade.",
+  "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and user-scoped reconciliation preferences including the history-scope toggle, a validated ignored-location list, and a developer-only mock-data toggle backed by appsettings.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
@@ -20,6 +20,10 @@
     "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml.cs",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml.cs",
+    "Module_Core/Contracts/Services/IService_AppSettings.cs",
+    "Module_Core/Services/Service_AppSettings.cs",
+    "appsettings.json",
+    "appsettings.Development.json",
     "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
     "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
   ],
@@ -36,7 +40,8 @@
       "Receiving defaults",
       "Validation rules and limits",
       "Part number auto-padding preferences",
-      "Workflow options"
+      "Workflow options",
+      "Reconciliation user preferences"
     ],
     "screens": [
       "View_Settings_Receiving_WorkflowHub.xaml",
@@ -57,7 +62,10 @@
       "Auto-padding rules list",
       "Rule add and remove actions",
       "Auto-padding preview",
-      "Workflow option toggles"
+      "Workflow option toggles",
+      "Location reconciliation history-scope toggle",
+      "Ignored reconciliation locations list",
+      "Developer-only InforVisual mock-data toggle"
     ],
     "userActions": [
       "Open a receiving settings area from the hub",
@@ -66,13 +74,18 @@
       "Adjust min and max receiving limits",
       "Add, edit, test, and remove auto-padding rules",
       "Change workflow startup and review-table behavior",
+      "Choose whether location reconciliation checks only today’s history or all visible history",
+      "Add and remove validated reconciliation locations to ignore",
+      "Enable or disable InforVisual mock data when the signed-in user has Developer rights",
       "Save, reset, or cancel settings changes"
     ],
     "preserveRules": [
       "Keep settings persistence routed through IService_SettingsCoreFacade",
+      "Keep the mock-data flag routed through IService_AppSettings instead of the shared settings facade",
       "Keep navigation actions wired through ISettingsNavigationActions",
       "Keep x:Bind-based forms unchanged unless the request is explicitly about UI",
-      "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId"
+      "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId",
+      "Keep rule reloads replacing the bound collection without leaving SelectedRule in a stale state"
     ],
     "acceptanceCriteria": [
       "Each hub card still opens the intended receiving settings page",
@@ -84,7 +97,11 @@
       "Confirm default receiving mode and location still load and save",
       "Confirm validation toggles and numeric limits still bind correctly",
       "Confirm auto-padding rule editing and test preview still work",
-      "Confirm workflow option values still load, save, and reset through the shared settings facade"
+      "Confirm selected rule behavior stays sane after rule collection reloads",
+      "Confirm workflow option values still load, save, and reset through the shared settings facade",
+      "Confirm the mock-data toggle is visible only for Developer users and persists to appsettings",
+      "Confirm the location-reconciliation history-scope toggle still loads and saves correctly from User Preferences",
+      "Confirm ignored reconciliation locations validate like Receiving Load Entry locations and persist per user"
     ],
     "reviewFocusAreas": [
       "Correctness and regressions",

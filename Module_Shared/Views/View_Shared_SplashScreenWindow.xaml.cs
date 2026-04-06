@@ -13,6 +13,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
     {
         private const int WindowWidth = 850;
         private const int WindowHeight = 700;
+        private bool _isClosingOrClosed;
 
         public ViewModel_Shared_SplashScreen ViewModel { get; }
 
@@ -39,6 +40,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
         private void SplashScreenWindow_Closed(object sender, WindowEventArgs args)
         {
+            _isClosingOrClosed = true;
+
             if (!IsProgrammaticClose)
             {
                 App.GetService<Module_Core.Contracts.Services.IService_ApplicationShutdown>()
@@ -76,10 +79,26 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             System.ComponentModel.PropertyChangedEventArgs e
         )
         {
+            if (_isClosingOrClosed)
+            {
+                return;
+            }
+
             DispatcherQueue.TryEnqueue(
                 Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal,
                 () =>
                 {
+                    if (
+                        _isClosingOrClosed
+                        || Content is null
+                        || StatusMessageTextBlock is null
+                        || MainProgressBar is null
+                        || ProgressPercentageTextBlock is null
+                    )
+                    {
+                        return;
+                    }
+
                     StatusMessageTextBlock.Text = ViewModel.StatusMessage;
                     MainProgressBar.Value = ViewModel.ProgressPercentage;
                     MainProgressBar.IsIndeterminate = ViewModel.IsIndeterminate;

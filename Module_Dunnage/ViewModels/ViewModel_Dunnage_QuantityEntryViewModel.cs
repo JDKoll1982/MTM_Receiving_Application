@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -151,12 +152,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         {
             EnsureSessionLoadQuantities();
 
-            foreach (var load in Loads)
-            {
-                load.PropertyChanged -= Load_PropertyChanged;
-            }
-
-            Loads.Clear();
+            var rebuiltLoads = new List<Model_DunnageLoad>(NumberOfLoads);
             for (var index = 0; index < NumberOfLoads; index++)
             {
                 var load = new Model_DunnageLoad
@@ -167,9 +163,10 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
                     TypeName = SelectedTypeName,
                     TypeIcon = SelectedTypeIcon,
                 };
-                load.PropertyChanged += Load_PropertyChanged;
-                Loads.Add(load);
+                rebuiltLoads.Add(load);
             }
+
+            ReplaceLoads(rebuiltLoads);
 
             Quantity = Loads.FirstOrDefault() is { } firstLoad
                 ? decimal.ToInt32(firstLoad.Quantity)
@@ -243,6 +240,21 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
 
         ValidateQuantity();
         GoNextCommand.NotifyCanExecuteChanged();
+    }
+
+    private void ReplaceLoads(IEnumerable<Model_DunnageLoad> loads)
+    {
+        foreach (var load in Loads)
+        {
+            load.PropertyChanged -= Load_PropertyChanged;
+        }
+
+        Loads = new ObservableCollection<Model_DunnageLoad>(loads);
+
+        foreach (var load in Loads)
+        {
+            load.PropertyChanged += Load_PropertyChanged;
+        }
     }
 
     private void ValidateQuantity()

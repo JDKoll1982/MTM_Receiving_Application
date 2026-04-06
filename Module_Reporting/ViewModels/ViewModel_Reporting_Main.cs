@@ -106,7 +106,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     public bool HasVolvoPreviewModuleCard => VolvoPreviewModuleCard is not null;
 
-    public bool HasReceivingIncludedPreviewModuleCard => ReceivingPreviewModuleCard?.IsIncluded == true;
+    public bool HasReceivingIncludedPreviewModuleCard =>
+        ReceivingPreviewModuleCard?.IsIncluded == true;
 
     public bool HasDunnageIncludedPreviewModuleCard => DunnagePreviewModuleCard?.IsIncluded == true;
 
@@ -149,15 +150,15 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             if (value)
             {
                 SelectedRowDisplayMode =
-                    Enum_ReportingPreviewRowDisplayMode
-                        .UniquePartNumbersAndLotNumbersEntireDateRange;
+                    Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersEntireDateRange;
             }
         }
     }
 
     public bool IsUniquePartNumbersPerDayMode
     {
-        get => SelectedRowDisplayMode == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay;
+        get =>
+            SelectedRowDisplayMode == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay;
         set
         {
             if (value)
@@ -471,13 +472,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     )
     {
         ClearPreviewCardSubscriptions();
-        PreviewSections.Clear();
-        PreviewSummaryTables.Clear();
-        PreviewModuleCards.Clear();
-        IncludedPreviewModuleCards.Clear();
+        ReceivingPreviewModuleCard = null;
+        DunnagePreviewModuleCard = null;
+        VolvoPreviewModuleCard = null;
 
         var sectionList = sections.Where(section => section.Rows.Count > 0).ToList();
         var summaryTableList = summaryTables.ToList();
+        var previewModuleCards = new List<Model_ReportingPreviewModuleCard>();
         var summaryLookup = summaryTableList.ToDictionary(
             table => table.ModuleName,
             StringComparer.OrdinalIgnoreCase
@@ -485,8 +486,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
         foreach (var section in sectionList)
         {
-            PreviewSections.Add(section);
-
             var summaryTable = summaryLookup.TryGetValue(
                 section.ModuleName,
                 out var matchedSummaryTable
@@ -498,14 +497,15 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                     Title = $"{section.ModuleName} Summary",
                 };
             var previewModuleCard = CreatePreviewModuleCard(section, summaryTable);
-            PreviewModuleCards.Add(previewModuleCard);
+            previewModuleCards.Add(previewModuleCard);
             SetModulePreviewCard(previewModuleCard);
         }
 
-        foreach (var summaryTable in summaryTableList)
-        {
-            PreviewSummaryTables.Add(summaryTable);
-        }
+        PreviewSections = new ObservableCollection<Model_ReportSection>(sectionList);
+        PreviewSummaryTables = new ObservableCollection<Model_ReportSummaryTable>(summaryTableList);
+        PreviewModuleCards = new ObservableCollection<Model_ReportingPreviewModuleCard>(
+            previewModuleCards
+        );
 
         RefreshIncludedPreviewModuleCards();
 
@@ -855,12 +855,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private void RefreshIncludedPreviewModuleCards()
     {
-        IncludedPreviewModuleCards.Clear();
-
-        foreach (var previewModuleCard in PreviewModuleCards.Where(card => card.IsIncluded))
-        {
-            IncludedPreviewModuleCards.Add(previewModuleCard);
-        }
+        IncludedPreviewModuleCards = new ObservableCollection<Model_ReportingPreviewModuleCard>(
+            PreviewModuleCards.Where(card => card.IsIncluded)
+        );
 
         HasIncludedPreviewModuleCards = IncludedPreviewModuleCards.Count > 0;
         NotifyModulePreviewCardStateChanged();
@@ -1025,10 +1022,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private void ClearPreviewState()
     {
         ClearPreviewCardSubscriptions();
-        PreviewSections.Clear();
-        PreviewSummaryTables.Clear();
-        PreviewModuleCards.Clear();
-        IncludedPreviewModuleCards.Clear();
+        PreviewSections = [];
+        PreviewSummaryTables = [];
+        PreviewModuleCards = [];
+        IncludedPreviewModuleCards = [];
         ReceivingPreviewModuleCard = null;
         DunnagePreviewModuleCard = null;
         VolvoPreviewModuleCard = null;

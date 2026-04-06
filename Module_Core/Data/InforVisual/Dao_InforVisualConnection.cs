@@ -182,6 +182,207 @@ public class Dao_InforVisualConnection
 
     #endregion
 
+    #region Receiving Location Reconciliation Queries
+
+    /// <summary>
+    /// Retrieves receipt-history and current-inventory evidence used to infer the current
+    /// location for a saved receiving row.
+    /// Uses: 16_GetReceivingLocationEvidence.sql
+    /// </summary>
+    /// <param name="poNumber"></param>
+    /// <param name="partNumber"></param>
+    /// <param name="poLineNumber"></param>
+    /// <param name="receivedDate"></param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationEvidence>>
+    > GetReceivingLocationEvidenceAsync(
+        string poNumber,
+        string partNumber,
+        string? poLineNumber,
+        DateTime? receivedDate
+    )
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Retrieving receiving location evidence for PO {poNumber}, part {partNumber}, line {poLineNumber ?? "(any)"}"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "16_GetReceivingLocationEvidence.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PoNumber", poNumber);
+            command.Parameters.AddWithValue("@PartId", partNumber);
+            command.Parameters.AddWithValue(
+                "@PoLineNumber",
+                string.IsNullOrWhiteSpace(poLineNumber) ? DBNull.Value : poLineNumber
+            );
+            command.Parameters.AddWithValue("@ReceivedDate", receivedDate ?? (object)DBNull.Value);
+
+            var evidenceRows = new List<Model_InforVisualLocationEvidence>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                evidenceRows.Add(
+                    new Model_InforVisualLocationEvidence
+                    {
+                        CurrentWarehouseId =
+                            reader["CurrentWarehouseId"].ToString() ?? string.Empty,
+                        CurrentLocationId = reader["CurrentLocationId"].ToString() ?? string.Empty,
+                        CurrentQuantity =
+                            reader["CurrentQuantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["CurrentQuantity"]),
+                        MatchedTransactionQuantity =
+                            reader["MatchedTransactionQuantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["MatchedTransactionQuantity"]),
+                        MatchedTransactionCount =
+                            reader["MatchedTransactionCount"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["MatchedTransactionCount"]),
+                        MatchedTransactionDate = reader["MatchedTransactionDate"] as DateTime?,
+                        MatchedTransactionUserId =
+                            reader["MatchedTransactionUserId"].ToString() ?? string.Empty,
+                        MatchedTransactionId =
+                            reader["MatchedTransactionId"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["MatchedTransactionId"]),
+                        ReceiptCount =
+                            reader["ReceiptCount"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["ReceiptCount"]),
+                        FirstReceivedDate = reader["FirstReceivedDate"] as DateTime?,
+                        LastReceivedDate = reader["LastReceivedDate"] as DateTime?,
+                        LatestReceiptWarehouseId =
+                            reader["LatestReceiptWarehouseId"].ToString() ?? string.Empty,
+                        LatestReceiptLocationId =
+                            reader["LatestReceiptLocationId"].ToString() ?? string.Empty,
+                        LatestReceiptEvidenceDate =
+                            reader["LatestReceiptEvidenceDate"] as DateTime?,
+                        LatestTransactionWarehouseId =
+                            reader["LatestTransactionWarehouseId"].ToString() ?? string.Empty,
+                        LatestTransactionLocationId =
+                            reader["LatestTransactionLocationId"].ToString() ?? string.Empty,
+                        LatestTransactionQuantity =
+                            reader["LatestTransactionQuantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["LatestTransactionQuantity"]),
+                        LatestTransactionDate = reader["LatestTransactionDate"] as DateTime?,
+                        LatestTransactionUserId =
+                            reader["LatestTransactionUserId"].ToString() ?? string.Empty,
+                        LatestTransactionId =
+                            reader["LatestTransactionId"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["LatestTransactionId"]),
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(evidenceRows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving receiving location evidence for PO {poNumber}, part {partNumber}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationEvidence>>(
+                $"Error retrieving receiving location evidence: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Retrieves ordered PO transaction-history rows used during smart-fix reconciliation.
+    /// Uses: 17_GetReceivingLocationTransactionHistory.sql
+    /// </summary>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationTransaction>>
+    > GetReceivingLocationTransactionHistoryAsync(
+        string poNumber,
+        string partNumber,
+        string? poLineNumber,
+        DateTime? receivedDate
+    )
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Retrieving receiving location transaction history for PO {poNumber}, part {partNumber}, line {poLineNumber ?? "(any)"}"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "17_GetReceivingLocationTransactionHistory.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PoNumber", poNumber);
+            command.Parameters.AddWithValue("@PartId", partNumber);
+            command.Parameters.AddWithValue(
+                "@PoLineNumber",
+                string.IsNullOrWhiteSpace(poLineNumber) ? DBNull.Value : poLineNumber
+            );
+            command.Parameters.AddWithValue("@ReceivedDate", receivedDate ?? (object)DBNull.Value);
+
+            var transactions = new List<Model_InforVisualLocationTransaction>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                transactions.Add(
+                    new Model_InforVisualLocationTransaction
+                    {
+                        WarehouseId = reader["WarehouseId"].ToString() ?? string.Empty,
+                        LocationId = reader["LocationId"].ToString() ?? string.Empty,
+                        Quantity =
+                            reader["Quantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["Quantity"]),
+                        TransactionDate =
+                            reader["TransactionDate"] == DBNull.Value
+                                ? DateTime.MinValue
+                                : Convert.ToDateTime(reader["TransactionDate"]),
+                        UserId = reader["TransactionUserId"].ToString() ?? string.Empty,
+                        TransactionId =
+                            reader["TransactionId"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["TransactionId"]),
+                        ReceiptWarehouseId =
+                            reader["ReceiptWarehouseId"].ToString() ?? string.Empty,
+                        ReceiptLocationId =
+                            reader["ReceiptLocationId"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(transactions);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving receiving location transaction history for PO {poNumber}, part {partNumber}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransaction>>(
+                $"Error retrieving receiving location transaction history: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    #endregion
+
     #region Part Queries
 
     /// <summary>

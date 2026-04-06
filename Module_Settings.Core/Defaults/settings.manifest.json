@@ -2237,6 +2237,28 @@
     },
     {
       "category": "Receiving",
+      "key": "Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation",
+      "displayName": "Business Rules - Validate All History During Reconciliation",
+      "defaultValue": "false",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UserPreferences.IgnoredReconciliationLocationsJson",
+      "displayName": "User Preferences - Ignored Reconciliation Locations",
+      "defaultValue": "[]",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
       "key": "Receiving.Defaults.DefaultPackageType",
       "displayName": "Defaults - Default Package Type",
       "defaultValue": "Pallet",

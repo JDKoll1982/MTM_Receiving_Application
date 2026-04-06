@@ -48,8 +48,7 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
             var result = await _service.GetDataAsync();
             if (result.IsSuccess)
             {
-                Items.Clear();
-                foreach (var item in result.Data) Items.Add(item);
+                Items = new ObservableCollection<Model_ReceivingLine>(result.Data);
                 StatusMessage = "Loaded successfully";
             }
             else

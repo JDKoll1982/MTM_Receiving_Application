@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -18,7 +16,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// </summary>
     public class Service_ReceivingValidation : IService_ReceivingValidation
     {
+        private readonly IService_AppSettings _appSettings;
         private readonly IService_InforVisual _inforVisualService;
+        private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
         private readonly IService_ReceivingSettings _receivingSettings;
 
         // Allows optional "PO-" prefix, 1-6 digits, and an optional B/b suffix for blanket POs (e.g. PO-064489B)
@@ -30,32 +30,24 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             @"(MMFSR|MMCSR)",
             RegexOptions.IgnoreCase
         );
-        private static readonly IReadOnlyList<string> _presetLocations = new[]
-        {
-            "A-RECV-01",
-            "B-RECV-02",
-            "C-RECV-03",
-            "DOCK-01",
-            "QC-HOLD-01",
-            "STAGE-01",
-        };
+        public bool UseMockLocationList => _appSettings.GetUseInforVisualMockData();
 
-        public bool UseMockLocationList { get; }
-
-        public IReadOnlyList<string> PresetLocations => _presetLocations;
+        public IReadOnlyList<string> PresetLocations => _mockDataCatalog.GetLocations();
 
         public Service_ReceivingValidation(
             IService_InforVisual inforVisualService,
             IService_ReceivingSettings receivingSettings,
-            IOptions<InforVisualSettings> inforVisualSettings
+            IService_InforVisualMockDataCatalog mockDataCatalog,
+            IService_AppSettings appSettings
         )
         {
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _inforVisualService =
                 inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
             _receivingSettings =
                 receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
-            ArgumentNullException.ThrowIfNull(inforVisualSettings);
-            UseMockLocationList = inforVisualSettings.Value.UseMockData;
+            _mockDataCatalog =
+                mockDataCatalog ?? throw new ArgumentNullException(nameof(mockDataCatalog));
         }
 
         private bool GetBoolSetting(string key, bool fallback)
@@ -256,13 +248,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             if (UseMockLocationList)
             {
-                return _presetLocations.Contains(
+                return PresetLocations.Contains(
                     normalizedLocation,
                     StringComparer.OrdinalIgnoreCase
                 )
                     ? Model_ReceivingValidationResult.Success()
                     : Model_ReceivingValidationResult.Error(
-                        $"Location must match one of the preset mock locations: {string.Join(", ", _presetLocations)}"
+                        $"Location must match one of the preset mock locations: {string.Join(", ", PresetLocations)}"
                     );
             }
 

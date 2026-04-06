@@ -1323,6 +1323,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// Update an inventoried part with specific values
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="partId"></param>
         /// <param name="inventoryMethod"></param>
         /// <param name="notes"></param>
         /// <param name="username"></param>

@@ -274,6 +274,7 @@ public class Dao_DunnageLabelData
     /// <summary>
     /// Deletes one row from the active label queue identified by load UUID.
     /// </summary>
+    /// <param name="loadUuid"></param>
     public virtual async Task<Model_Dao_Result> DeleteAsync(Guid loadUuid)
     {
         var parameters = new Dictionary<string, object> { { "load_uuid", loadUuid.ToString() } };
@@ -373,6 +374,7 @@ public class Dao_DunnageLabelData
     /// <summary>
     /// Orders loads consistently for label generation and assigns per-part skid counters.
     /// </summary>
+    /// <param name="loads"></param>
     private static List<Model_DunnageLoad> OrderLoadsAndAssignPartSkidCounters(
         IEnumerable<Model_DunnageLoad> loads
     )

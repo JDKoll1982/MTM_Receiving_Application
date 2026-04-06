@@ -2,10 +2,11 @@
   "id": "core-database-inforvisual",
   "module": "Module_Core",
   "name": "Database And Infor Visual",
-  "summary": "Database helpers, Infor Visual connection and query infrastructure with read-only enforcement, credential validation, defaults, and shared Infor Visual models.",
+  "summary": "Database helpers, Infor Visual connection and query infrastructure with read-only enforcement, credential validation, defaults, shared Infor Visual models, and a JSON-backed mock catalog generated from receiving-history CSV data.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Core/Contracts/Services/IService_InforVisual.cs",
+    "Module_Core/Contracts/Services/IService_InforVisualMockDataCatalog.cs",
     "Module_Core/Contracts/Services/IService_VisualCredentialValidator.cs",
     "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
     "Module_Core/Data/InforVisual/Dao_InforVisualPart.cs",
@@ -15,19 +16,25 @@
     "Module_Core/Helpers/Database/Helper_Database_Variables.cs",
     "Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs",
     "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+    "Module_Core/Services/Database/Service_InforVisualMockDataCatalog.cs",
     "Module_Core/Services/Database/Service_VisualCredentialValidator.cs",
     "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs",
     "Module_Core/Models/InforVisual/Model_InforVisualConnection.cs",
     "Module_Core/Models/InforVisual/Model_InforVisualPart.cs",
     "Module_Core/Models/InforVisual/Model_InforVisualPartInfo.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualMockDataCatalog.cs",
     "Module_Core/Models/InforVisual/Model_InforVisualPO.cs",
     "Module_Core/Models/InforVisual/Model_InforVisualPOLine.cs",
-    "Module_Core/Models/InforVisual/Model_OutsideServiceHistory.cs"
+    "Module_Core/Models/InforVisual/Model_OutsideServiceHistory.cs",
+    "Module_Settings.Core/Defaults/inforvisual.mock-data.json",
+    "Database/InforVisualScripts/PowerShell_Scripts/Export-InforVisualMockDataCatalog.ps1"
   ],
   "relatedServices": [
     "IService_InforVisual",
+    "IService_InforVisualMockDataCatalog",
     "IService_VisualCredentialValidator",
     "Service_InforVisualConnect",
+    "Service_InforVisualMockDataCatalog",
     "Service_VisualCredentialValidator"
   ],
   "promptDefaults": {
@@ -38,6 +45,7 @@
   "uiHints": {
     "workflowAreas": [
       "Infor Visual connectivity",
+      "JSON-backed mock data catalog",
       "Credential validation",
       "Database helper infrastructure"
     ],
@@ -47,6 +55,7 @@
     ],
     "validationHints": [
       "Confirm Infor Visual connection and credential checks still target the intended data source",
+      "Confirm mock-mode PO, part, location, and outside-service responses now come from the generated JSON catalog instead of hard-coded C# lists",
       "Confirm database helper behavior remains aligned with existing DAO usage",
       "Confirm Infor Visual DAO construction now rejects connection strings that are not explicitly read-only"
     ]

@@ -263,14 +263,16 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         SetupNotes = line.SetupNotes ?? string.Empty;
         CompletionNotes = line.CompletionNotes ?? string.Empty;
 
-        VendorSuggestions.Clear();
         var suggestions = await _outsideService.GetVendorSuggestionsAsync(line.PartId);
         if (suggestions.IsSuccess && suggestions.Data is not null)
         {
-            foreach (var suggestion in suggestions.Data)
-            {
-                VendorSuggestions.Add(suggestion);
-            }
+            VendorSuggestions = new ObservableCollection<Model_OutsideServiceVendorSuggestion>(
+                suggestions.Data
+            );
+        }
+        else
+        {
+            VendorSuggestions = [];
         }
 
         HasVendorSuggestions = VendorSuggestions.Count > 0;
@@ -315,10 +317,10 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
         System.Collections.Generic.IReadOnlyList<double>? existingValues = null
     )
     {
-        EditablePackages.Clear();
+        var editablePackages = new ObservableCollection<Model_OutsideServiceEditablePackage>();
         for (var index = 0; index < packageCount; index++)
         {
-            EditablePackages.Add(
+            editablePackages.Add(
                 new Model_OutsideServiceEditablePackage
                 {
                     PackageSequence = index + 1,
@@ -329,6 +331,8 @@ public partial class ViewModel_OutsideService_Setup : ViewModel_Shared_Base
                 }
             );
         }
+
+        EditablePackages = editablePackages;
     }
 
     private static int NormalizePackageCount(double rawValue)

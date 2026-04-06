@@ -2,21 +2,28 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, package-type updates for Manual Mode rows, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, package-type updates for Manual Mode rows, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence, a resized reconciliation review modal that presents proposed changes more cleanly before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
     "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
     "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
+    "Module_Receiving/Contracts/IService_ReceivingLocationReconciliation.cs",
     "Module_Core/Contracts/Services/IService_InforVisual.cs",
+    "Module_Core/Contracts/Services/IService_InforVisualMockDataCatalog.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualLocationTransaction.cs",
     "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+    "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
+    "Module_Receiving/ViewModels/ViewModel_Receiving_LocationReconciliationReview.cs",
     "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
     "Module_Receiving/Services/Service_ReceivingSettings.cs",
     "Module_Receiving/Services/Service_ReceivingValidation.cs",
+    "Module_Receiving/Services/Service_ReceivingLocationReconciliation.cs",
     "Module_Receiving/Services/Service_SessionManager.cs",
     "Module_Receiving/Services/Service_MySQL_Receiving.cs",
     "Module_Receiving/Services/Service_ReceivingLabelData.cs",
     "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+    "Module_Core/Services/Database/Service_InforVisualMockDataCatalog.cs",
     "Module_Receiving/Data/Dao_ReceivingLoad.cs",
     "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
     "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
@@ -25,6 +32,8 @@
     "Module_Receiving/Models/Model_ReceivingSession.cs",
     "Module_Receiving/Models/Model_ReceivingLoad.cs",
     "Module_Receiving/Models/Model_ReceivingValidationResult.cs",
+    "Module_Receiving/Models/Model_ReceivingLocationReconciliationItem.cs",
+    "Module_Receiving/Models/Model_ReceivingLocationReconciliationSummary.cs",
     "Module_Receiving/Models/Model_UserPreference.cs",
     "Module_Receiving/Models/Model_WorkflowStepResult.cs",
     "Module_Receiving/Models/Model_ReceivingWorkflowStepResult.cs",
@@ -33,7 +42,10 @@
     "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
     "Module_Receiving/Views/View_Receiving_Workflow.xaml",
     "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
     "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+    "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml",
+    "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml.cs",
     "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs",
     "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs",
     "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs",
@@ -42,19 +54,27 @@
     "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
     "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
     "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs",
+    "Database/InforVisualScripts/Queries/01_GetPOWithParts.sql",
     "Database/InforVisualScripts/Queries/14_FuzzySearchPOsByPart.sql",
+    "Database/InforVisualScripts/Queries/16_GetReceivingLocationEvidence.sql",
+    "Database/InforVisualScripts/Queries/17_GetReceivingLocationTransactionHistory.sql",
     "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
-    "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql"
+    "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql",
+    "Module_Settings.Core/Defaults/inforvisual.mock-data.json",
+    "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json",
+    "Database/InforVisualScripts/PowerShell_Scripts/Export-InforVisualMockDataCatalog.ps1"
   ],
   "relatedServices": [
     "IService_ReceivingWorkflow",
     "IService_ReceivingSettings",
     "IService_ReceivingValidation",
+    "IService_ReceivingLocationReconciliation",
     "IService_InforVisual",
     "IService_MySQL_Receiving",
     "Service_ReceivingWorkflow",
     "Service_ReceivingSettings",
     "Service_ReceivingValidation",
+    "Service_ReceivingLocationReconciliation",
     "Service_SessionManager",
     "Service_InforVisualConnect",
     "Service_MySQL_Receiving",
@@ -73,8 +93,10 @@
       "Guided receiving workflow",
       "Manual Mode part-first matching",
       "Manual Mode PO-first part selection",
+      "PO-assisted part ordering by expected receive date",
       "Manual Mode package-type dialog updates",
       "Manual Mode textbox-based location editing",
+      "Mode-selection location reconciliation",
       "Startup routing",
       "Step-by-step wizard",
       "Unsaved state survives only inside the current module",
@@ -107,7 +129,12 @@
       "Manual Mode package type button",
       "Manual Mode package type dialog",
       "Review area",
-      "Save action"
+      "Save action",
+      "Edit Mode location column",
+      "Edit Mode column chooser",
+      "Location reconciliation action",
+      "Location reconciliation review modal",
+      "Reconciliation ignore-location preferences"
     ],
     "userActions": [
       "Move through the workflow one step at a time",
@@ -118,7 +145,12 @@
       "Understand what to do next quickly",
       "Lose unsaved work when leaving the module or exiting before save",
       "Review entries before saving",
-      "Recover from mistakes without confusion"
+      "Recover from mistakes without confusion",
+      "See the same core receiving columns in Edit Mode that are available in Manual Mode",
+      "Choose from all schema-backed Edit Mode columns including Location",
+      "Run InforVisual location reconciliation for saved rows",
+      "Exclude specific destination locations from automatic reconciliation",
+      "Review each suggested location change and choose Save or Ignore"
     ],
     "accessibilityNeeds": [
       "Make the screen easier to scan",
@@ -129,13 +161,15 @@
       "Keep business logic unchanged",
       "Keep validation rules unchanged",
       "Keep service and DAO flow unchanged",
-      "Keep current save behavior unchanged except for the intended PO due-date and receiving-history field persistence updates"
+      "Keep whole-collection step and row reloads behaviorally equivalent to the previous guided and manual refresh flows",
+      "Keep current save behavior unchanged except for the intended PO due-date, PO-assisted part ordering, and receiving-history field persistence updates"
     ],
     "acceptanceCriteria": [
       "The workflow remains step-based",
       "The user can still complete the same task from start to finish",
       "No unintended business logic regressions",
-      "The UI is easier to understand at a glance"
+      "The UI is easier to understand at a glance",
+      "Edit Mode defaults surface the same core columns used in Manual Mode"
     ],
     "reviewFocusAreas": [
       "Workflow regressions",
@@ -157,7 +191,13 @@
       "Manual Mode location entry validates typed values through the textbox lost-focus handler",
       "Manual Mode package type button opens a dialog with standard and custom package type options",
       "Manual Mode Change all existing Rows updates only matching rows in the current UI collection",
+      "Edit Mode shows Non-PO and Location in the default column set",
+      "The Edit Mode Columns dialog includes Location with the schema-backed snapshot fields",
       "The review step shows the correct information before save",
+      "The reconciliation review modal opens at a readable size for the current window",
+      "The reconciliation review modal shows original location, new location, part number, quantity moved, user ID, moved date, and moved time before save",
+      "User-configured ignored reconciliation locations are skipped automatically instead of being offered as save candidates",
+      "Saving or ignoring the last reconciliation row shows a final summary of the review outcome",
       "Saving preserves the existing business behavior"
     ],
     "docTopics": [
@@ -178,10 +218,22 @@
       "Confirm validation still blocks invalid input",
       "Confirm Clear Label Data archives load, package, PO, user, and quality-hold fields into the snake_case receiving_history columns",
       "Confirm guided and manual PO-assisted entry both persist po_due_date by preferring the selected line-level due date and falling back to the PO header promise date",
+      "Confirm mock-mode PO auto-fill and receiving mock locations now come from the generated JSON-backed Infor Visual catalog",
+      "Confirm mock-mode saves append receiving transactions that keep the receipt location but move current inventory to the mocked destination location so reconciliation can detect an update",
+      "Confirm the reconciliation review modal shows original location, new location, part, quantity moved, user ID, moved date, and moved time for each proposed change",
+      "Confirm the reconciliation review modal sizes itself correctly for the current window before it is shown",
+      "Confirm user-configured ignored reconciliation locations are skipped during preview generation",
+      "Confirm Save applies only the reviewed row and Ignore leaves the reviewed row unchanged",
+      "Confirm the final reconciliation summary shows saved, ignored, unchanged, and needs-attention counts",
+      "Confirm guided and manual PO-assisted part lists now order active dated lines by expected receive date, then active undated lines, then lines whose received quantity exceeds 75 percent of ordered quantity",
       "Confirm workflow step and status updates still refresh the UI correctly after repeated navigation between receiving views",
+      "Confirm guided and manual step lists still repopulate correctly after whole-collection replacement during navigation",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm Manual Mode location editing stays textbox-based in all cases",
       "Confirm Manual Mode package type dialog changes only the in-memory UI rows unless the user later saves",
+      "Confirm Edit Mode shows the Manual Mode baseline columns by default, including Non-PO and Location",
+      "Confirm the Edit Mode Columns dialog includes Location together with the rest of the schema-backed snapshot fields",
+      "Confirm the mode-selection reconciliation action updates only rows with a clear location match from InforVisual receipt history and current inventory",
       "Confirm review and save behavior are unchanged"
     ],
     "mockupSections": [
@@ -203,7 +255,9 @@
       "sp_Receiving_LabelData_Insert",
       "sp_Receiving_LabelData_Update",
       "receiving label data tables",
-      "14_FuzzySearchPOsByPart.sql"
+      "01_GetPOWithParts.sql",
+      "14_FuzzySearchPOsByPart.sql",
+      "16_GetReceivingLocationEvidence.sql"
     ],
     "loggingEvents": [
       "Step transitions",
@@ -211,6 +265,7 @@
       "Validation failures",
       "Manual Mode part/PO resolution dialogs",
       "Manual Mode package type dialog apply actions",
+      "Location reconciliation requests",
       "Save requests",
       "Save failures"
     ],
@@ -227,8 +282,18 @@
         "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
         "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
         "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_LocationReconciliationReview.cs",
+        "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml",
+        "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml.cs",
+        "Module_Receiving/Contracts/IService_ReceivingLocationReconciliation.cs",
+        "Module_Receiving/Services/Service_ReceivingLocationReconciliation.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
         "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
-        "Module_Receiving/Services/Service_ReceivingSettings.cs"
+        "Module_Receiving/Services/Service_ReceivingSettings.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualLocationEvidence.cs",
+        "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+        "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+        "Database/InforVisualScripts/Queries/16_GetReceivingLocationEvidence.sql"
       ],
       "uiHints": {
         "screens": ["View_Receiving_ModeSelection.xaml"],
@@ -238,11 +303,16 @@
           "Guided mode option",
           "Manual mode option",
           "Edit mode option",
-          "Default mode toggles"
+          "Default mode toggles",
+          "Location reconciliation action",
+          "Quantity-based reconciliation review dialog",
+          "Split-location match explanation"
         ],
         "userActions": [
           "Choose the right starting mode quickly",
-          "Understand the difference between the three modes"
+          "Understand the difference between the three modes",
+          "Run InforVisual location reconciliation for saved rows",
+          "Review quantity-based split matches when one receipt was transferred into multiple current locations"
         ],
         "mockupSections": [
           "Mode selection choices",

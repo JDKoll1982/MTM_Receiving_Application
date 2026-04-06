@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -113,11 +114,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                History.Clear();
-                foreach (var shipment in result.Data)
-                {
-                    History.Add(shipment);
-                }
+                ReplaceHistory(result.Data);
                 StatusMessage = $"Loaded {History.Count} shipment(s)";
             }
             else
@@ -173,11 +170,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                History.Clear();
-                foreach (var shipment in result.Data)
-                {
-                    History.Add(shipment);
-                }
+                ReplaceHistory(result.Data);
                 StatusMessage = $"Loaded {History.Count} shipment(s)";
             }
             else
@@ -204,6 +197,15 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         {
             IsBusy = false;
         }
+    }
+
+    private void ReplaceHistory(IEnumerable<Model_VolvoShipment> shipments)
+    {
+        var selectedShipmentId = SelectedShipment?.Id;
+        History = new ObservableCollection<Model_VolvoShipment>(shipments);
+        SelectedShipment = selectedShipmentId is null
+            ? null
+            : History.FirstOrDefault(shipment => shipment.Id == selectedShipmentId.Value);
     }
 
     /// <summary>

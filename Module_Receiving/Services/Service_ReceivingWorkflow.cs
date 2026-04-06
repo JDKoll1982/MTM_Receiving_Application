@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.Events;
@@ -19,11 +20,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// </summary>
     public class Service_ReceivingWorkflow : IService_ReceivingWorkflow
     {
+        private static readonly Regex MockPoPattern = new(
+            @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[A-Za-z]?)$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant
+        );
+
         private readonly IService_SessionManager _sessionManager;
         private readonly IService_ReceivingLabelData _labelDataService;
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_AppSettings _appSettings;
+        private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
@@ -83,6 +91,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
             IService_ReceivingSettings receivingSettings,
+            IService_AppSettings appSettings,
+            IService_InforVisualMockDataCatalog mockDataCatalog,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
             IService_UserSessionManager userSessionManager
@@ -97,6 +107,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
             _receivingSettings =
                 receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _mockDataCatalog =
+                mockDataCatalog ?? throw new ArgumentNullException(nameof(mockDataCatalog));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _viewModelRegistry =
                 viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
@@ -508,6 +521,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(
                     CurrentSession.Loads
                 );
+
+                if (_appSettings.GetUseInforVisualMockData())
+                {
+                    var mockTransactions = BuildMockReceivingTransactions(CurrentSession.Loads);
+                    var mockAppendResult = await _mockDataCatalog.AppendReceivingTransactionsAsync(
+                        mockTransactions
+                    );
+
+                    if (!mockAppendResult.IsSuccess)
+                    {
+                        result.Warnings.Add(
+                            $"Mock data update failed: {mockAppendResult.ErrorMessage}"
+                        );
+                        _logger.LogError(
+                            $"Mock data update failed after receiving save: {mockAppendResult.ErrorMessage}"
+                        );
+                    }
+                }
+
                 result.DatabaseSuccess = true;
                 result.LoadsSaved = savedCount;
                 if (savedCount < CurrentSession.Loads.Count)
@@ -669,6 +701,179 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             {
                 await _sessionManager.ClearSessionAsync();
             }
+        }
+
+        private static string NormalizeLocation(string? location)
+        {
+            return string.IsNullOrWhiteSpace(location)
+                ? "RECV"
+                : location.Trim().ToUpperInvariant();
+        }
+
+        private List<Model_InforVisualMockReceivingTransaction> BuildMockReceivingTransactions(
+            IReadOnlyList<Model_ReceivingLoad> loads
+        )
+        {
+            var transactions = new List<Model_InforVisualMockReceivingTransaction>();
+
+            foreach (
+                var receiptGroup in loads.GroupBy(load => new
+                {
+                    PONumber = NormalizeMockPoNumber(load.PoNumber),
+                    PartId = load.PartID?.Trim().ToUpperInvariant() ?? string.Empty,
+                    POLineNumber = load.PoLineNumber?.Trim() ?? string.Empty,
+                    ReceivedDate = load.ReceivedDate.Date,
+                })
+            )
+            {
+                var orderedLoads = receiptGroup
+                    .OrderByDescending(load => load.WeightQuantity)
+                    .ThenBy(load => load.LoadNumber)
+                    .ThenBy(load => load.LoadID)
+                    .ToList();
+                var assignedLocations = ResolveMockCurrentLocations(orderedLoads);
+
+                transactions.AddRange(
+                    orderedLoads.Select(load => new Model_InforVisualMockReceivingTransaction
+                    {
+                        SourceLoadId = load.LoadID.ToString(),
+                        PONumber = NormalizeMockPoNumber(load.PoNumber),
+                        PartID = load.PartID,
+                        POLineNumber = load.PoLineNumber,
+                        Quantity = load.WeightQuantity,
+                        UnitOfMeasure = load.UnitOfMeasure,
+                        ReceivedDate = load.ReceivedDate,
+                        TransactionDate = load.ReceivedDate,
+                        ReceiptWarehouseId = "002",
+                        ReceiptLocationId = NormalizeLocation(load.InitialLocation),
+                        CurrentWarehouseId = "002",
+                        CurrentLocationId = assignedLocations[load.LoadID],
+                        EmployeeNumber = load.EmployeeNumber,
+                        UserId = load.UserId ?? string.Empty,
+                    })
+                );
+            }
+
+            return transactions;
+        }
+
+        private Dictionary<Guid, string> ResolveMockCurrentLocations(
+            IReadOnlyList<Model_ReceivingLoad> loads
+        )
+        {
+            var assignedLocations = new Dictionary<Guid, string>();
+            if (loads.Count == 0)
+            {
+                return assignedLocations;
+            }
+
+            if (loads.Count == 1)
+            {
+                assignedLocations[loads[0].LoadID] = ResolveMockCurrentLocation(loads[0]);
+                return assignedLocations;
+            }
+
+            var primaryLocation = ResolveMockCurrentLocation(loads[0]);
+            var receiptLocation = NormalizeLocation(loads[0].InitialLocation);
+            var catalogLocations = _mockDataCatalog
+                .GetLocations()
+                .Select(NormalizeLocation)
+                .Where(location =>
+                    !string.IsNullOrWhiteSpace(location)
+                    && !string.Equals(location, receiptLocation, StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(location, primaryLocation, StringComparison.OrdinalIgnoreCase)
+                )
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var candidateLocations = new List<string> { receiptLocation, primaryLocation };
+            candidateLocations.AddRange(catalogLocations);
+
+            var randomSeed = HashCode.Combine(
+                NormalizeMockPoNumber(loads[0].PoNumber),
+                loads[0].PartID?.Trim().ToUpperInvariant() ?? string.Empty,
+                loads[0].PoLineNumber?.Trim() ?? string.Empty,
+                loads[0].ReceivedDate.Date,
+                loads.Count
+            );
+            var random = new Random(randomSeed);
+            var shuffledLocations = candidateLocations
+                .Where(location => !string.IsNullOrWhiteSpace(location))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(_ => random.Next())
+                .ToList();
+
+            for (var index = 0; index < loads.Count; index++)
+            {
+                var destinationLocation = index < shuffledLocations.Count
+                    ? shuffledLocations[index]
+                    : $"V-C0-{index + 1:00}";
+
+                assignedLocations[loads[index].LoadID] = destinationLocation;
+            }
+
+            return assignedLocations;
+        }
+
+        private string ResolveMockCurrentLocation(Model_ReceivingLoad load)
+        {
+            var catalog = _mockDataCatalog.GetCatalog();
+            var normalizedPoNumber = NormalizeMockPoNumber(load.PoNumber);
+            var normalizedPartId = load.PartID?.Trim().ToUpperInvariant() ?? string.Empty;
+            var normalizedLineNumber = load.PoLineNumber?.Trim() ?? string.Empty;
+
+            var matchedPurchaseOrderPart = catalog
+                .PurchaseOrders.Where(po =>
+                    string.Equals(
+                        po.PONumber,
+                        normalizedPoNumber,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .SelectMany(po => po.Parts)
+                .FirstOrDefault(part =>
+                    string.Equals(part.PartID, normalizedPartId, StringComparison.OrdinalIgnoreCase)
+                    && (
+                        string.IsNullOrWhiteSpace(normalizedLineNumber)
+                        || string.Equals(
+                            part.POLineNumber,
+                            normalizedLineNumber,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                );
+
+            if (!string.IsNullOrWhiteSpace(matchedPurchaseOrderPart?.DefaultLocationId))
+            {
+                return NormalizeLocation(matchedPurchaseOrderPart.DefaultLocationId);
+            }
+
+            var matchedPart = catalog.Parts.FirstOrDefault(part =>
+                string.Equals(part.PartID, normalizedPartId, StringComparison.OrdinalIgnoreCase)
+            );
+
+            return !string.IsNullOrWhiteSpace(matchedPart?.DefaultLocationId)
+                ? NormalizeLocation(matchedPart.DefaultLocationId)
+                : NormalizeLocation(load.InitialLocation);
+        }
+
+        private static string NormalizeMockPoNumber(string? poNumber)
+        {
+            if (string.IsNullOrWhiteSpace(poNumber))
+            {
+                return string.Empty;
+            }
+
+            var trimmed = poNumber.Trim().ToUpperInvariant();
+            var match = MockPoPattern.Match(trimmed);
+            if (!match.Success)
+            {
+                return trimmed;
+            }
+
+            var digits = match.Groups["digits"].Value;
+            var suffix = match.Groups["suffix"].Value.ToUpperInvariant();
+            return $"PO-{digits.PadLeft(6, '0')}{suffix}";
         }
     }
 }

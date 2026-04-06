@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_OutsideService.Contracts;
@@ -19,28 +17,34 @@ public class Service_OutsideService : IService_OutsideService
 {
     private readonly Dao_OutsideServiceRequest _requestDao;
     private readonly IService_InforVisual _inforVisual;
+    private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
+    private readonly IService_AppSettings _appSettings;
     private readonly IService_LoggingUtility _logger;
-    private readonly bool _useInforVisualMockData;
+
+    private bool UseInforVisualMockData => _appSettings.GetUseInforVisualMockData();
 
     /// <summary>
     /// Initializes a new service instance.
     /// </summary>
     /// <param name="requestDao"></param>
     /// <param name="inforVisual"></param>
+    /// <param name="mockDataCatalog"></param>
     /// <param name="logger"></param>
-    /// <param name="inforVisualSettings"></param>
+    /// <param name="appSettings"></param>
     public Service_OutsideService(
         Dao_OutsideServiceRequest requestDao,
         IService_InforVisual inforVisual,
+        IService_InforVisualMockDataCatalog mockDataCatalog,
         IService_LoggingUtility logger,
-        IOptions<InforVisualSettings> inforVisualSettings
+        IService_AppSettings appSettings
     )
     {
         _requestDao = requestDao ?? throw new ArgumentNullException(nameof(requestDao));
         _inforVisual = inforVisual ?? throw new ArgumentNullException(nameof(inforVisual));
+        _mockDataCatalog =
+            mockDataCatalog ?? throw new ArgumentNullException(nameof(mockDataCatalog));
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        ArgumentNullException.ThrowIfNull(inforVisualSettings);
-        _useInforVisualMockData = inforVisualSettings.Value.UseMockData;
     }
 
     /// <inheritdoc />
@@ -61,7 +65,7 @@ public class Service_OutsideService : IService_OutsideService
             var partValidation = await _inforVisual.PartExistsAsync(line.PartId);
             if (!partValidation.IsSuccess)
             {
-                if (_useInforVisualMockData)
+                if (UseInforVisualMockData)
                 {
                     _logger.LogWarning(
                         $"Infor Visual part validation failed for '{line.PartId}'. Using Outside Service mock validation because mock data mode is enabled.",
@@ -121,7 +125,7 @@ public class Service_OutsideService : IService_OutsideService
         var result = await _inforVisual.FuzzySearchPartsAsync(searchTerm.Trim());
         if (!result.IsSuccess || result.Data is null || result.Data.Count == 0)
         {
-            if (_useInforVisualMockData)
+            if (UseInforVisualMockData)
             {
                 _logger.LogWarning(
                     $"Infor Visual part suggestion lookup failed for '{searchTerm}'. Using Outside Service mock suggestions because mock data mode is enabled.",
@@ -171,7 +175,7 @@ public class Service_OutsideService : IService_OutsideService
         var history = await _inforVisual.GetOutsideServiceHistoryByPartAsync(partId.Trim());
         if (!history.IsSuccess || history.Data is null || history.Data.Count == 0)
         {
-            if (_useInforVisualMockData)
+            if (UseInforVisualMockData)
             {
                 _logger.LogWarning(
                     $"Infor Visual vendor history lookup failed for '{partId}'. Using Outside Service mock vendor suggestions because mock data mode is enabled.",
@@ -279,7 +283,7 @@ public class Service_OutsideService : IService_OutsideService
     private async Task<Model_Dao_Result<bool>> ValidatePartInternalAsync(string partId)
     {
         var result = await _inforVisual.PartExistsAsync(partId);
-        if (!result.IsSuccess && _useInforVisualMockData)
+        if (!result.IsSuccess && UseInforVisualMockData)
         {
             _logger.LogWarning(
                 $"Infor Visual exact part validation failed for '{partId}'. Using Outside Service mock validation because mock data mode is enabled.",
@@ -291,52 +295,69 @@ public class Service_OutsideService : IService_OutsideService
         return result;
     }
 
-    private static List<Model_OutsideServicePartMatchSuggestion> CreateMockPartSuggestions(
+    private List<Model_OutsideServicePartMatchSuggestion> CreateMockPartSuggestions(
         string searchTerm
     )
     {
-        var normalizedTerm = searchTerm.Trim().ToUpperInvariant();
-        return
-        [
-            new Model_OutsideServicePartMatchSuggestion
-            {
-                PartId = $"MOCK-{normalizedTerm}-001",
-                Description = "Mock Part - Outside Service heat treat candidate",
-                MatchReason = "Mock data mode best match",
-            },
-            new Model_OutsideServicePartMatchSuggestion
-            {
-                PartId = $"MOCK-{normalizedTerm}-002",
-                Description = "Mock Part - Outside Service plating candidate",
-                MatchReason = "Mock data mode similar match",
-            },
-        ];
+        var normalizedTerm = searchTerm.Trim();
+        return _mockDataCatalog
+            .GetCatalog()
+            .Parts.Where(part =>
+                part.PartID.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+                || part.Description.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+            )
+            .OrderBy(part => part.PartID, StringComparer.OrdinalIgnoreCase)
+            .Take(10)
+            .Select(
+                (part, index) =>
+                    new Model_OutsideServicePartMatchSuggestion
+                    {
+                        PartId = part.PartID,
+                        Description = part.Description,
+                        MatchReason =
+                            index == 0
+                                ? "Mock data mode best match"
+                                : "Mock data mode similar match",
+                    }
+            )
+            .ToList();
     }
 
-    private static List<Model_OutsideServiceVendorSuggestion> CreateMockVendorSuggestions(
-        string partId
-    )
+    private List<Model_OutsideServiceVendorSuggestion> CreateMockVendorSuggestions(string partId)
     {
-        var normalizedPartId = partId.Trim().ToUpperInvariant();
-        return
-        [
-            new Model_OutsideServiceVendorSuggestion
+        var normalizedPartId = partId.Trim();
+        return _mockDataCatalog
+            .GetCatalog()
+            .OutsideServiceHistory.Where(record =>
+                string.Equals(
+                    record.PartNumber,
+                    normalizedPartId,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            .GroupBy(record => new
             {
-                VendorId = "MOCK-VENDOR-001",
-                VendorName = "Acme Heat Treating Co.",
-                LocationDetail = $"Detroit, MI | {normalizedPartId}",
-                LastDispatchDate = DateTime.Today.AddDays(-7),
-                DispatchCount = 3,
-            },
-            new Model_OutsideServiceVendorSuggestion
+                record.VendorID,
+                record.VendorName,
+                record.VendorCity,
+                record.VendorState,
+            })
+            .Select(group => new Model_OutsideServiceVendorSuggestion
             {
-                VendorId = "MOCK-VENDOR-002",
-                VendorName = "Precision Plating Inc.",
-                LocationDetail = $"Grand Rapids, MI | {normalizedPartId}",
-                LastDispatchDate = DateTime.Today.AddDays(-21),
-                DispatchCount = 2,
-            },
-        ];
+                VendorId = group.Key.VendorID,
+                VendorName = group.Key.VendorName,
+                LocationDetail = string.Join(
+                    ", ",
+                    new[] { group.Key.VendorCity, group.Key.VendorState }.Where(value =>
+                        !string.IsNullOrWhiteSpace(value)
+                    )
+                ),
+                LastDispatchDate = group.Max(record => record.DispatchDate),
+                DispatchCount = group.Count(),
+            })
+            .OrderByDescending(suggestion => suggestion.LastDispatchDate)
+            .ThenBy(suggestion => suggestion.VendorName)
+            .ToList();
     }
 
     private static Model_Dao_Result<Model_OutsideServiceRequest> ValidateRequest(

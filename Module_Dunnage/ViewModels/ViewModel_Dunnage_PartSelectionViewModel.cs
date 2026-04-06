@@ -219,11 +219,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                AvailableParts.Clear();
-                foreach (var part in result.Data)
-                {
-                    AvailableParts.Add(part);
-                }
+                AvailableParts = new ObservableCollection<Model_DunnagePart>(result.Data);
 
                 _logger.LogInfo(
                     $"PartSelection: Successfully loaded {AvailableParts.Count} parts",
@@ -283,7 +279,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         {
             _workflowService.CurrentSession.SelectedPart = null;
             IsInventoryNotificationVisible = false;
-            SelectedPartSpecSummaries.Clear();
+            ReplaceSelectedPartSpecSummaries(Array.Empty<string>());
             HasSelectedPartSpecs = false;
         }
 
@@ -337,7 +333,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
     private void UpdateSelectedPartSpecs(Model_DunnagePart part)
     {
-        SelectedPartSpecSummaries.Clear();
+        var specSummaries = new List<string>();
 
         foreach (var pair in part.SpecValuesDict.OrderBy(item => item.Key))
         {
@@ -347,10 +343,16 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                 continue;
             }
 
-            SelectedPartSpecSummaries.Add($"{pair.Key}: {formattedValue}");
+            specSummaries.Add($"{pair.Key}: {formattedValue}");
         }
 
+        ReplaceSelectedPartSpecSummaries(specSummaries);
         HasSelectedPartSpecs = SelectedPartSpecSummaries.Count > 0;
+    }
+
+    private void ReplaceSelectedPartSpecSummaries(IEnumerable<string> specSummaries)
+    {
+        SelectedPartSpecSummaries = new ObservableCollection<string>(specSummaries);
     }
 
     private static string FormatSpecValue(object? rawValue)

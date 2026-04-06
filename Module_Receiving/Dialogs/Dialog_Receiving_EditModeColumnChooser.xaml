@@ -21,7 +21,7 @@
 
         <StackPanel Grid.Row="0" Spacing="6">
             <TextBlock
-                Text="Choose which columns appear in Edit Mode. Grouped labels use clearer names so each field is easier to understand."
+                Text="Choose which columns appear in Edit Mode. Columns are grouped to make the list easier to scan."
                 TextWrapping="Wrap" />
             <TextBlock
                 x:Name="AlwaysVisibleTextBlock"

@@ -7,12 +7,6 @@ namespace MTM_Receiving_Application.Infrastructure.Configuration;
 public class InforVisualSettings
 {
     /// <summary>
-    /// Gets or sets whether to use mock data instead of connecting to actual Infor Visual database.
-    /// Useful for development and testing environments.
-    /// </summary>
-    public bool UseMockData { get; set; }
-
-    /// <summary>
     /// Gets or sets the connection timeout in seconds for Infor Visual database queries.
     /// Default: 30 seconds.
     /// </summary>

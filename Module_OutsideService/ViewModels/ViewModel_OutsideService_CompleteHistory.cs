@@ -82,8 +82,7 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
             }
 
             _allLines = result.Data;
-            VendorFilterOptions.Clear();
-            VendorFilterOptions.Add("All");
+            var vendorFilterOptions = new List<string> { "All" };
             foreach (
                 var vendor in _allLines
                     .Select(line => line.SetupVendorName)
@@ -92,8 +91,10 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
                     .Order()
             )
             {
-                VendorFilterOptions.Add(vendor!);
+                vendorFilterOptions.Add(vendor!);
             }
+
+            VendorFilterOptions = new ObservableCollection<string>(vendorFilterOptions);
 
             SelectedVendorFilter =
                 string.IsNullOrWhiteSpace(SelectedVendorFilter)
@@ -101,7 +102,6 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
                     ? "All"
                     : SelectedVendorFilter;
             OnPropertyChanged(nameof(SelectedVendorFilter));
-            OnPropertyChanged(nameof(VendorFilterOptions));
 
             ApplyFilters();
             ShowStatus($"Loaded {_allLines.Count} completed line(s).", InfoBarSeverity.Success);
@@ -198,15 +198,17 @@ public partial class ViewModel_OutsideService_CompleteHistory : ViewModel_Shared
             .OrderByDescending(line => line.CompletedUtc ?? DateTime.MinValue)
             .ThenByDescending(line => line.CreatedUtc);
 
-        FilteredLines.Clear();
-        foreach (var line in lines)
-        {
-            FilteredLines.Add(line);
-        }
+        ReplaceFilteredLines(lines);
+    }
 
-        if (SelectedLine is null || !FilteredLines.Contains(SelectedLine))
-        {
-            SelectedLine = FilteredLines.FirstOrDefault();
-        }
+    private void ReplaceFilteredLines(IEnumerable<Model_OutsideServiceRequestLine> lines)
+    {
+        var selectedLineId = SelectedLine?.OutsideServiceRequestLineId;
+        FilteredLines = new ObservableCollection<Model_OutsideServiceRequestLine>(lines);
+        SelectedLine = selectedLineId is null
+            ? FilteredLines.FirstOrDefault()
+            : FilteredLines.FirstOrDefault(line =>
+                line.OutsideServiceRequestLineId == selectedLineId.Value
+            ) ?? FilteredLines.FirstOrDefault();
     }
 }

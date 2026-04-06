@@ -76,22 +76,14 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             var typesResult = await _dunnageService.GetAllTypesAsync();
             if (typesResult.Success && typesResult.Data != null)
             {
-                AvailableTypes.Clear();
-                foreach (var type in typesResult.Data)
-                {
-                    AvailableTypes.Add(type);
-                }
+                AvailableTypes = new ObservableCollection<Model_DunnageType>(typesResult.Data);
             }
 
             // Load available parts
             var partsResult = await _dunnageService.GetAllPartsAsync();
             if (partsResult.Success && partsResult.Data != null)
             {
-                AvailableParts.Clear();
-                foreach (var part in partsResult.Data)
-                {
-                    AvailableParts.Add(part);
-                }
+                AvailableParts = new ObservableCollection<Model_DunnagePart>(partsResult.Data);
             }
 
             // Load dynamic spec columns
@@ -269,11 +261,7 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             .ThenBy(l => l.TypeName)
             .ToList();
 
-        Loads.Clear();
-        foreach (var load in sorted)
-        {
-            Loads.Add(load);
-        }
+        ReplaceLoads(sorted);
 
         StatusMessage = "Sorted (Part ID → PO → Type)";
         _logger.LogInfo("Sort for printing executed", "ManualEntry");
@@ -480,6 +468,16 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
     private async Task ShowHelpAsync()
     {
         await _helpService.ShowHelpAsync("Dunnage.ManualEntry");
+    }
+
+    private void ReplaceLoads(IEnumerable<Model_DunnageLoad> loads)
+    {
+        var selectedLoadId = SelectedLoad?.LoadUuid;
+        Loads = new ObservableCollection<Model_DunnageLoad>(loads);
+        SelectedLoad = selectedLoadId is null
+            ? Loads.LastOrDefault()
+            : Loads.FirstOrDefault(load => load.LoadUuid == selectedLoadId.Value)
+                ?? Loads.LastOrDefault();
     }
 
     #endregion

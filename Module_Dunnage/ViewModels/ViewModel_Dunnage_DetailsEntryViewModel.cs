@@ -183,10 +183,10 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
             }
 
             // Create spec inputs from database specs
-            SpecInputs.Clear();
-            TextSpecs.Clear();
-            NumberSpecs.Clear();
-            BooleanSpecs.Clear();
+            var specInputs = new List<Model_SpecInput>();
+            var textSpecs = new List<Model_SpecInput>();
+            var numberSpecs = new List<Model_SpecInput>();
+            var booleanSpecs = new List<Model_SpecInput>();
 
             foreach (var spec in specs)
             {
@@ -242,7 +242,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                     Value = typedValue,
                 };
 
-                SpecInputs.Add(input);
+                specInputs.Add(input);
 
                 var typeFromDb = specValueDict.ContainsKey("type")
                     ? specValueDict["type"]?.ToString() ?? "null"
@@ -255,20 +255,25 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
                 // Add to type-specific collection
                 if (specType == "boolean")
                 {
-                    BooleanSpecs.Add(input);
+                    booleanSpecs.Add(input);
                     _logger.LogInfo($"Added {spec.SpecKey} to BooleanSpecs", "DetailsEntry");
                 }
                 else if (specType == "number")
                 {
-                    NumberSpecs.Add(input);
+                    numberSpecs.Add(input);
                     _logger.LogInfo($"Added {spec.SpecKey} to NumberSpecs", "DetailsEntry");
                 }
                 else
                 {
-                    TextSpecs.Add(input);
+                    textSpecs.Add(input);
                     _logger.LogInfo($"Added {spec.SpecKey} to TextSpecs", "DetailsEntry");
                 }
             }
+
+            SpecInputs = new ObservableCollection<Model_SpecInput>(specInputs);
+            TextSpecs = new ObservableCollection<Model_SpecInput>(textSpecs);
+            NumberSpecs = new ObservableCollection<Model_SpecInput>(numberSpecs);
+            BooleanSpecs = new ObservableCollection<Model_SpecInput>(booleanSpecs);
 
             // Update visibility flags
             HasTextSpecs = TextSpecs.Count > 0;

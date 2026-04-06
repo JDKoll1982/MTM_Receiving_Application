@@ -16,36 +16,31 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database;
 /// </summary>
 public class Service_InforVisualConnect : IService_InforVisual
 {
-    private static readonly string[] MockLocationSuggestions =
-    [
-        "A-RECV-01",
-        "B-RECV-02",
-        "C-RECV-03",
-        "QA-RECV",
-        "DOCK-4",
-        "RECV",
-    ];
-
     private readonly Dao_InforVisualConnection _dao;
+    private readonly IService_AppSettings _appSettings;
     private readonly IService_LoggingUtility? _logger;
-    private readonly bool _useMockData;
+    private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
+
+    private bool UseMockData => _appSettings.GetUseInforVisualMockData();
 
     public Service_InforVisualConnect(
         Dao_InforVisualConnection dao,
-        bool useMockData = false,
-        IService_LoggingUtility? logger = null
+        IService_AppSettings appSettings,
+        IService_LoggingUtility? logger = null,
+        IService_InforVisualMockDataCatalog? mockDataCatalog = null
     )
     {
         _dao = dao ?? throw new ArgumentNullException(nameof(dao));
-        _useMockData = useMockData;
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         _logger = logger;
+        _mockDataCatalog = mockDataCatalog ?? new Service_InforVisualMockDataCatalog(logger);
     }
 
     #region Connection Testing
 
     public async Task<bool> TestConnectionAsync()
     {
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo("[MOCK DATA MODE] Simulating successful Infor Visual connection test");
             return true;
@@ -90,7 +85,7 @@ public class Service_InforVisualConnect : IService_InforVisual
         // Use the PO number as provided - Infor Visual IDs include the prefix (e.g. "PO-123456")
         string cleanPoNumber = poNumber;
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning mock data for PO: {cleanPoNumber}");
             return CreateMockPO(cleanPoNumber);
@@ -145,7 +140,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning mock data for Part: {partID}");
             return CreateMockPart(partID);
@@ -197,7 +192,7 @@ public class Service_InforVisualConnect : IService_InforVisual
         DateTime date
     )
     {
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning 0 for same-day receiving");
             return Model_Dao_Result_Factory.Success<decimal>(0);
@@ -224,10 +219,27 @@ public class Service_InforVisualConnect : IService_InforVisual
             return Model_Dao_Result_Factory.Failure<int>("Part ID cannot be null or empty");
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
-            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock remaining quantity: 100");
-            return Model_Dao_Result_Factory.Success<int>(100);
+            var matchingLine = _mockDataCatalog
+                .GetCatalog()
+                .PurchaseOrders.FirstOrDefault(po =>
+                    string.Equals(po.PONumber, poNumber, StringComparison.OrdinalIgnoreCase)
+                )
+                ?.Parts.FirstOrDefault(part =>
+                    string.Equals(part.PartID, partID, StringComparison.OrdinalIgnoreCase)
+                );
+
+            if (matchingLine == null)
+            {
+                _logger?.LogWarning($"Mock part {partID} not found on mock PO {poNumber}");
+                return Model_Dao_Result_Factory.Failure<int>("Part not found on PO");
+            }
+
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning mock remaining quantity: {matchingLine.RemainingQuantity}"
+            );
+            return Model_Dao_Result_Factory.Success<int>(matchingLine.RemainingQuantity);
         }
 
         try
@@ -261,6 +273,238 @@ public class Service_InforVisualConnect : IService_InforVisual
         {
             _logger?.LogError($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<int>($"Unexpected error: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationEvidence>>
+    > GetReceivingLocationEvidenceAsync(
+        string poNumber,
+        string partID,
+        string? poLineNumber,
+        DateTime? receivedDate
+    )
+    {
+        if (string.IsNullOrWhiteSpace(poNumber))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationEvidence>>(
+                "PO number cannot be null or empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(partID))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationEvidence>>(
+                "Part ID cannot be null or empty"
+            );
+        }
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning mock receiving location evidence for PO {poNumber}, part {partID}"
+            );
+
+            var normalizedPo = poNumber.Trim().ToUpperInvariant();
+            var normalizedPart = partID.Trim().ToUpperInvariant();
+            var normalizedLine = string.IsNullOrWhiteSpace(poLineNumber)
+                ? string.Empty
+                : poLineNumber.Trim();
+            var matchingTransactions = (_mockDataCatalog.GetReceivingTransactions() ?? []).Where(transaction =>
+                    string.Equals(
+                        transaction.PONumber,
+                        normalizedPo,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && string.Equals(
+                        transaction.PartID,
+                        normalizedPart,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && (
+                        string.IsNullOrWhiteSpace(normalizedLine)
+                        || string.Equals(
+                            transaction.POLineNumber,
+                            normalizedLine,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    && (
+                        !receivedDate.HasValue
+                        || transaction.ReceivedDate.Date >= receivedDate.Value.Date.AddDays(-2)
+                            && transaction.ReceivedDate.Date <= receivedDate.Value.Date.AddDays(2)
+                    )
+                )
+                .OrderByDescending(transaction => transaction.TransactionDate)
+                .ToList();
+
+            if (matchingTransactions.Count == 0)
+            {
+                return Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationEvidence>()
+                );
+            }
+
+            var latestTransaction = matchingTransactions[0];
+            var receiptCount = matchingTransactions.Count;
+            var firstReceivedDate = matchingTransactions.Min(transaction =>
+                transaction.ReceivedDate
+            );
+            var lastReceivedDate = matchingTransactions.Max(transaction =>
+                transaction.ReceivedDate
+            );
+
+            var evidenceRows = matchingTransactions
+                .GroupBy(transaction => new
+                {
+                    Warehouse = transaction.CurrentWarehouseId,
+                    Location = transaction.CurrentLocationId,
+                })
+                .Select(group =>
+                {
+                    var latestLocationTransaction = group
+                        .OrderByDescending(transaction => transaction.TransactionDate)
+                        .ThenByDescending(transaction => transaction.ReceivedDate)
+                        .First();
+
+                    return new Model_InforVisualLocationEvidence
+                    {
+                        CurrentWarehouseId = group.Key.Warehouse,
+                        CurrentLocationId = group.Key.Location,
+                        CurrentQuantity = group.Sum(transaction => transaction.Quantity),
+                        MatchedTransactionQuantity = group.Sum(transaction => transaction.Quantity),
+                        MatchedTransactionCount = group.Count(),
+                        MatchedTransactionDate = latestLocationTransaction.TransactionDate,
+                        MatchedTransactionUserId = latestLocationTransaction.UserId,
+                        MatchedTransactionId = null,
+                        ReceiptCount = receiptCount,
+                        FirstReceivedDate = firstReceivedDate,
+                        LastReceivedDate = lastReceivedDate,
+                        LatestReceiptWarehouseId = latestTransaction.ReceiptWarehouseId,
+                        LatestReceiptLocationId = latestTransaction.ReceiptLocationId,
+                        LatestReceiptEvidenceDate = latestTransaction.ReceivedDate,
+                        LatestTransactionWarehouseId = latestTransaction.CurrentWarehouseId,
+                        LatestTransactionLocationId = latestTransaction.CurrentLocationId,
+                        LatestTransactionQuantity = latestTransaction.Quantity,
+                        LatestTransactionDate = latestTransaction.TransactionDate,
+                        LatestTransactionUserId = latestTransaction.UserId,
+                        LatestTransactionId = null,
+                    };
+                })
+                .ToList();
+
+            return Model_Dao_Result_Factory.Success(evidenceRows);
+        }
+
+        try
+        {
+            return await _dao.GetReceivingLocationEvidenceAsync(
+                poNumber,
+                partID,
+                poLineNumber,
+                receivedDate
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Unexpected error retrieving receiving location evidence for PO {poNumber}, part {partID}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationEvidence>>(
+                $"Unexpected error: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationTransaction>>
+    > GetReceivingLocationTransactionHistoryAsync(
+        string poNumber,
+        string partID,
+        string? poLineNumber,
+        DateTime? receivedDate
+    )
+    {
+        if (string.IsNullOrWhiteSpace(poNumber))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransaction>>(
+                "PO number cannot be null or empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(partID))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransaction>>(
+                "Part ID cannot be null or empty"
+            );
+        }
+
+        if (UseMockData)
+        {
+            var normalizedPo = poNumber.Trim().ToUpperInvariant();
+            var normalizedPart = partID.Trim().ToUpperInvariant();
+            var normalizedLine = string.IsNullOrWhiteSpace(poLineNumber)
+                ? string.Empty
+                : poLineNumber.Trim();
+
+            var transactions = (_mockDataCatalog.GetReceivingTransactions() ?? [])
+                .Where(transaction =>
+                    string.Equals(transaction.PONumber, normalizedPo, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(transaction.PartID, normalizedPart, StringComparison.OrdinalIgnoreCase)
+                    && (
+                        string.IsNullOrWhiteSpace(normalizedLine)
+                        || string.Equals(
+                            transaction.POLineNumber,
+                            normalizedLine,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    && (
+                        !receivedDate.HasValue
+                        || transaction.ReceivedDate.Date >= receivedDate.Value.Date.AddDays(-2)
+                            && transaction.ReceivedDate.Date <= receivedDate.Value.Date.AddDays(2)
+                    )
+                )
+                .OrderByDescending(transaction => transaction.TransactionDate)
+                .ThenByDescending(transaction => transaction.Quantity)
+                .Select(transaction => new Model_InforVisualLocationTransaction
+                {
+                    SourceLoadId = transaction.SourceLoadId,
+                    WarehouseId = transaction.CurrentWarehouseId,
+                    LocationId = transaction.CurrentLocationId,
+                    Quantity = transaction.Quantity,
+                    TransactionDate = transaction.TransactionDate,
+                    UserId = transaction.UserId,
+                    TransactionId = null,
+                    ReceiptWarehouseId = transaction.ReceiptWarehouseId,
+                    ReceiptLocationId = transaction.ReceiptLocationId,
+                })
+                .ToList();
+
+            return Model_Dao_Result_Factory.Success(transactions);
+        }
+
+        try
+        {
+            return await _dao.GetReceivingLocationTransactionHistoryAsync(
+                poNumber,
+                partID,
+                poLineNumber,
+                receivedDate
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Unexpected error retrieving receiving location transaction history for PO {poNumber}, part {partID}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransaction>>(
+                $"Unexpected error: {ex.Message}",
+                ex
+            );
         }
     }
 
@@ -324,101 +568,41 @@ public class Service_InforVisualConnect : IService_InforVisual
 
     private Model_Dao_Result<Model_InforVisualPO?> CreateMockPO(string poNumber)
     {
-        var mockPO = new Model_InforVisualPO
-        {
-            PONumber = poNumber,
-            Vendor = "MOCK_VENDOR",
-            Status = "O",
-            Parts = new List<Model_InforVisualPart>
-            {
-                new Model_InforVisualPart
-                {
-                    PartID = "MOCK-PART-001",
-                    POLineNumber = "1",
-                    PartType = "RAW",
-                    DefaultLocationId = "A-RECV-01",
-                    QtyOrdered = 100,
-                    Description = "Mock Part 1 Description",
-                    RemainingQuantity = 50,
-                    UnitOfMeasure = "EA",
-                },
-                new Model_InforVisualPart
-                {
-                    PartID = "MOCK-PART-002",
-                    POLineNumber = "2",
-                    PartType = "FG",
-                    DefaultLocationId = "B-RECV-02",
-                    QtyOrdered = 50,
-                    Description = "Mock Part 2 Description",
-                    RemainingQuantity = 10,
-                    UnitOfMeasure = "EA",
-                },
-            },
-        };
+        var match = _mockDataCatalog
+            .GetCatalog()
+            .PurchaseOrders.FirstOrDefault(po =>
+                string.Equals(po.PONumber, poNumber, StringComparison.OrdinalIgnoreCase)
+            );
 
-        return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(mockPO);
+        return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(
+            match is null ? null : ClonePurchaseOrder(match)
+        );
     }
 
     private Model_Dao_Result<Model_InforVisualPart?> CreateMockPart(string partID)
     {
-        var mockPart = new Model_InforVisualPart
-        {
-            PartID = partID,
-            PartType = "MOCK_TYPE",
-            Description = "Mock Part Description",
-            POLineNumber = "N/A",
-            DefaultLocationId = "A-RECV-01",
-            QtyOrdered = 0,
-            RemainingQuantity = 100,
-            UnitOfMeasure = "EA",
-        };
+        var match = _mockDataCatalog
+            .GetCatalog()
+            .Parts.FirstOrDefault(part =>
+                string.Equals(part.PartID, partID, StringComparison.OrdinalIgnoreCase)
+            );
 
-        return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(mockPart);
+        return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+            match is null ? null : ClonePart(match)
+        );
     }
 
     private Model_Dao_Result<List<Model_OutsideServiceHistory>> CreateMockOutsideServiceHistory(
         string partNumber
     )
     {
-        var records = new List<Model_OutsideServiceHistory>
-        {
-            new Model_OutsideServiceHistory
-            {
-                VendorID = "MOCK-VENDOR-001",
-                VendorName = "Acme Heat Treating Co.",
-                VendorCity = "Detroit",
-                VendorState = "MI",
-                DispatchID = "SD-001234",
-                DispatchDate = DateTime.Today.AddMonths(-1),
-                PartNumber = partNumber,
-                QuantitySent = 25,
-                DispatchStatus = "Closed",
-            },
-            new Model_OutsideServiceHistory
-            {
-                VendorID = "MOCK-VENDOR-002",
-                VendorName = "Precision Plating Inc.",
-                VendorCity = "Grand Rapids",
-                VendorState = "MI",
-                DispatchID = "SD-001189",
-                DispatchDate = DateTime.Today.AddMonths(-3),
-                PartNumber = partNumber,
-                QuantitySent = 50,
-                DispatchStatus = "Closed",
-            },
-            new Model_OutsideServiceHistory
-            {
-                VendorID = "MOCK-VENDOR-001",
-                VendorName = "Acme Heat Treating Co.",
-                VendorCity = "Detroit",
-                VendorState = "MI",
-                DispatchID = "SD-001302",
-                DispatchDate = DateTime.Today.AddDays(-7),
-                PartNumber = partNumber,
-                QuantitySent = 10,
-                DispatchStatus = "Open",
-            },
-        };
+        var records = _mockDataCatalog
+            .GetCatalog()
+            .OutsideServiceHistory.Where(record =>
+                string.Equals(record.PartNumber, partNumber, StringComparison.OrdinalIgnoreCase)
+            )
+            .Select(CloneOutsideServiceHistory)
+            .ToList();
 
         return Model_Dao_Result_Factory.Success(records);
     }
@@ -427,114 +611,90 @@ public class Service_InforVisualConnect : IService_InforVisual
         List<Model_OutsideServiceHistory>
     > CreateMockOutsideServiceHistoryByVendor(string vendorId)
     {
-        var records = new List<Model_OutsideServiceHistory>
-        {
-            new Model_OutsideServiceHistory
-            {
-                VendorID = vendorId,
-                VendorName = "Mock Vendor Corp.",
-                VendorCity = "Detroit",
-                VendorState = "MI",
-                DispatchID = "SD-002100",
-                DispatchDate = DateTime.Today.AddMonths(-2),
-                PartNumber = "MOCK-PART-A",
-                QuantitySent = 30,
-                DispatchStatus = "Closed",
-            },
-            new Model_OutsideServiceHistory
-            {
-                VendorID = vendorId,
-                VendorName = "Mock Vendor Corp.",
-                VendorCity = "Detroit",
-                VendorState = "MI",
-                DispatchID = "SD-002250",
-                DispatchDate = DateTime.Today.AddDays(-14),
-                PartNumber = "MOCK-PART-B",
-                QuantitySent = 15,
-                DispatchStatus = "Open",
-            },
-        };
+        var records = _mockDataCatalog
+            .GetCatalog()
+            .OutsideServiceHistory.Where(record =>
+                string.Equals(record.VendorID, vendorId, StringComparison.OrdinalIgnoreCase)
+            )
+            .Select(CloneOutsideServiceHistory)
+            .ToList();
 
         return Model_Dao_Result_Factory.Success(records);
     }
 
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyParts(string term)
     {
-        var results = new List<Model_FuzzySearchResult>
-        {
-            new Model_FuzzySearchResult
+        var normalizedTerm = term.Trim();
+        var results = _mockDataCatalog
+            .GetCatalog()
+            .Parts.Where(part =>
+                part.PartID.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+                || part.Description.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+            )
+            .OrderBy(part => part.PartID, StringComparer.OrdinalIgnoreCase)
+            .Take(10)
+            .Select(part => new Model_FuzzySearchResult
             {
-                Key = $"21-{term.ToUpper()}-001",
-                Label = $"21-{term.ToUpper()}-001",
-                Detail = "Mock Part — Heat Treated Rod Assembly",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = $"21-{term.ToUpper()}-002",
-                Label = $"21-{term.ToUpper()}-002",
-                Detail = "Mock Part — Plated Bracket",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = $"MMC-{term.ToUpper()}",
-                Label = $"MMC-{term.ToUpper()}",
-                Detail = "Mock Part — Machined Component",
-            },
-        };
+                Key = part.PartID,
+                Label = part.PartID,
+                Detail = part.Description,
+            })
+            .ToList();
 
         return Model_Dao_Result_Factory.Success(results);
     }
 
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyVendors(string term)
     {
-        var results = new List<Model_FuzzySearchResult>
-        {
-            new Model_FuzzySearchResult
+        var normalizedTerm = term.Trim();
+        var results = _mockDataCatalog
+            .GetCatalog()
+            .OutsideServiceHistory.Where(record =>
+                record.VendorID.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+                || record.VendorName.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+            )
+            .GroupBy(record => new
             {
-                Key = "MOCK-V001",
-                Label = $"Acme {term} Co.",
-                Detail = "Detroit, MI",
-            },
-            new Model_FuzzySearchResult
+                record.VendorID,
+                record.VendorName,
+                record.VendorCity,
+                record.VendorState,
+            })
+            .OrderBy(group => group.Key.VendorName, StringComparer.OrdinalIgnoreCase)
+            .Take(10)
+            .Select(group => new Model_FuzzySearchResult
             {
-                Key = "MOCK-V002",
-                Label = $"Precision {term} Inc.",
-                Detail = "Grand Rapids, MI",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = "MOCK-V003",
-                Label = $"Allied {term} Solutions",
-                Detail = "Toledo, OH",
-            },
-        };
+                Key = group.Key.VendorID,
+                Label = group.Key.VendorName,
+                Detail = string.Join(
+                    ", ",
+                    new[] { group.Key.VendorCity, group.Key.VendorState }.Where(value =>
+                        !string.IsNullOrWhiteSpace(value)
+                    )
+                ),
+            })
+            .ToList();
 
         return Model_Dao_Result_Factory.Success(results);
     }
 
-    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string _)
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string vendorId)
     {
-        var results = new List<Model_FuzzySearchResult>
-        {
-            new Model_FuzzySearchResult
+        var results = _mockDataCatalog
+            .GetCatalog()
+            .OutsideServiceHistory.Where(record =>
+                string.Equals(record.VendorID, vendorId, StringComparison.OrdinalIgnoreCase)
+            )
+            .GroupBy(record => record.PartNumber ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new Model_FuzzySearchResult
             {
-                Key = "MOCK-PART-A",
-                Label = "MOCK-PART-A",
-                Detail = "3 dispatch(es) — last 01/15/2025",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = "MOCK-PART-B",
-                Label = "MOCK-PART-B",
-                Detail = "1 dispatch(es) — last 03/20/2025",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = "MOCK-PART-C",
-                Label = "MOCK-PART-C",
-                Detail = "5 dispatch(es) — last 04/01/2025",
-            },
-        };
+                Key = group.Key,
+                Label = group.Key,
+                Detail =
+                    $"{group.Count()} dispatch(es) — last {group.Max(record => record.DispatchDate):MM/dd/yyyy}",
+            })
+            .ToList();
 
         return Model_Dao_Result_Factory.Success(results);
     }
@@ -555,7 +715,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo(
                 $"[MOCK DATA MODE] Returning mock outside service history for part: {partNumber}"
@@ -578,7 +738,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo(
                 $"[MOCK DATA MODE] Returning mock outside service history for vendor: {vendorId}"
@@ -601,7 +761,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning mock fuzzy part results for: {term}");
             return CreateMockFuzzyParts(term);
@@ -622,7 +782,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning mock purchase orders for part: {partId}");
             return CreateMockPurchaseOrdersByPart(partId);
@@ -643,7 +803,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning mock fuzzy vendor results for: {term}");
             return CreateMockFuzzyVendors(term);
@@ -664,7 +824,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo($"[MOCK DATA MODE] Returning mock parts for vendor: {vendorId}");
             return CreateMockPartsByVendor(vendorId);
@@ -692,7 +852,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             );
         }
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo(
                 $"[MOCK DATA MODE] Returning mock history for vendor {vendorId}, part {partNumber}"
@@ -718,7 +878,7 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         var normalizedTerm = term?.Trim() ?? string.Empty;
 
-        if (_useMockData)
+        if (UseMockData)
         {
             _logger?.LogInfo(
                 $"[MOCK DATA MODE] Returning mock location results for term '{normalizedTerm}' in warehouse '{warehouseCode}'"
@@ -735,8 +895,14 @@ public class Service_InforVisualConnect : IService_InforVisual
         if (string.IsNullOrWhiteSpace(partId))
             return Model_Dao_Result_Factory.Failure<bool>("Part ID cannot be empty");
 
-        if (_useMockData)
-            return Model_Dao_Result_Factory.Success(true);
+        if (UseMockData)
+            return Model_Dao_Result_Factory.Success(
+                _mockDataCatalog
+                    .GetCatalog()
+                    .Parts.Any(part =>
+                        string.Equals(part.PartID, partId, StringComparison.OrdinalIgnoreCase)
+                    )
+            );
 
         return await _dao.PartExistsAsync(partId);
     }
@@ -753,8 +919,14 @@ public class Service_InforVisualConnect : IService_InforVisual
         if (string.IsNullOrWhiteSpace(warehouseCode))
             return Model_Dao_Result_Factory.Failure<bool>("Warehouse code cannot be empty");
 
-        if (_useMockData)
-            return Model_Dao_Result_Factory.Success(true);
+        if (UseMockData)
+            return Model_Dao_Result_Factory.Success(
+                _mockDataCatalog
+                    .GetLocations()
+                    .Any(location =>
+                        string.Equals(location, locationId, StringComparison.OrdinalIgnoreCase)
+                    )
+            );
 
         return await _dao.LocationExistsAsync(locationId, warehouseCode);
     }
@@ -765,7 +937,8 @@ public class Service_InforVisualConnect : IService_InforVisual
     )
     {
         var normalizedTerm = term.Trim();
-        var filteredResults = MockLocationSuggestions
+        var filteredResults = _mockDataCatalog
+            .GetLocations()
             .Where(location =>
                 string.IsNullOrWhiteSpace(normalizedTerm)
                 || location.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
@@ -787,31 +960,72 @@ public class Service_InforVisualConnect : IService_InforVisual
     )
     {
         var normalizedPartId = partId.Trim().ToUpperInvariant();
-        var results = new List<Model_FuzzySearchResult>
-        {
-            new Model_FuzzySearchResult
+        var results = _mockDataCatalog
+            .GetCatalog()
+            .PurchaseOrders.Where(po =>
+                po.Parts.Any(part =>
+                    string.Equals(part.PartID, normalizedPartId, StringComparison.OrdinalIgnoreCase)
+                )
+            )
+            .OrderBy(po => po.PONumber, StringComparer.OrdinalIgnoreCase)
+            .Select(po => new Model_FuzzySearchResult
             {
-                Key = "PO-064543",
-                Label = "PO-064543",
-                Detail = $"Vendor: Mock Metals Supply | Status: Open | Contains {normalizedPartId}",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = "PO-064112",
-                Label = "PO-064112",
+                Key = po.PONumber,
+                Label = po.PONumber,
                 Detail =
-                    $"Vendor: Allied Service Group | Status: Closed | Contains {normalizedPartId}",
-            },
-            new Model_FuzzySearchResult
-            {
-                Key = "PO-063998",
-                Label = "PO-063998",
-                Detail =
-                    $"Vendor: Precision Steel Works | Status: Open | Contains {normalizedPartId}",
-            },
-        };
+                    $"Vendor: {po.Vendor} | Status: {po.StatusDescription} | Contains {normalizedPartId}",
+            })
+            .ToList();
 
         return Model_Dao_Result_Factory.Success(results);
+    }
+
+    private static Model_InforVisualPO ClonePurchaseOrder(Model_InforVisualPO source)
+    {
+        return new Model_InforVisualPO
+        {
+            PONumber = source.PONumber,
+            Vendor = source.Vendor,
+            Status = source.Status,
+            HeaderPromiseDate = source.HeaderPromiseDate,
+            HeaderDesiredReceiveDate = source.HeaderDesiredReceiveDate,
+            FreeOnBoard = source.FreeOnBoard,
+            Parts = source.Parts.ConvertAll(ClonePart),
+        };
+    }
+
+    private static Model_InforVisualPart ClonePart(Model_InforVisualPart source)
+    {
+        return new Model_InforVisualPart
+        {
+            PartID = source.PartID,
+            POLineNumber = source.POLineNumber,
+            PartType = source.PartType,
+            QtyOrdered = source.QtyOrdered,
+            UnitOfMeasure = source.UnitOfMeasure,
+            Description = source.Description,
+            DefaultLocationId = source.DefaultLocationId,
+            RemainingQuantity = source.RemainingQuantity,
+            DueDate = source.DueDate,
+        };
+    }
+
+    private static Model_OutsideServiceHistory CloneOutsideServiceHistory(
+        Model_OutsideServiceHistory source
+    )
+    {
+        return new Model_OutsideServiceHistory
+        {
+            VendorID = source.VendorID,
+            VendorName = source.VendorName,
+            VendorCity = source.VendorCity,
+            VendorState = source.VendorState,
+            DispatchID = source.DispatchID,
+            DispatchDate = source.DispatchDate,
+            PartNumber = source.PartNumber,
+            QuantitySent = source.QuantitySent,
+            DispatchStatus = source.DispatchStatus,
+        };
     }
 
     #endregion

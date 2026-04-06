@@ -22,6 +22,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <StackPanel
@@ -179,6 +180,40 @@
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"
                 />
             </StackPanel>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="12,24,12,0"
+                Padding="16"
+                HorizontalAlignment="Stretch"
+                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Command="{x:Bind ViewModel.ReconcileSavedLocationsCommand}"
+                CornerRadius="8"
+            >
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon
+                        FontSize="28"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE895;"
+                    />
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="Reconcile Saved Locations from InforVisual"
+                        />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Use InforVisual transaction history plus current inventory to place each saved load in the closest matching current location by quantity."
+                            TextWrapping="Wrap"
+                        />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
         </Grid>
     </Border>
 </UserControl>

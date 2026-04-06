@@ -158,4 +158,62 @@ public class ViewModel_OutsideService_CompleteHistoryTests
         viewModel.SelectedVendorFilter.Should().Be("All");
         viewModel.VendorFilterOptions.Should().Contain("All");
     }
+
+    [Fact]
+    public async Task LoadAsync_ShouldReplaceVendorFilterOptions_WhenResultsChange()
+    {
+        var outsideServiceMock = new Mock<IService_OutsideService>();
+        outsideServiceMock
+            .SetupSequence(service => service.GetCompletedLinesAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceRequestLine>
+                    {
+                        new()
+                        {
+                            OutsideServiceRequestLineId = 10,
+                            RequestNumber = "OS-1100",
+                            LineNumber = 1,
+                            PartId = "PART-A",
+                            SetupVendorName = "Vendor A",
+                            LinePhase = Enum_OutsideServiceLinePhase.Complete,
+                            CreatedUtc = DateTime.UtcNow.AddDays(-5),
+                            CompletedUtc = DateTime.UtcNow.AddDays(-2),
+                        },
+                    }
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_OutsideServiceRequestLine>
+                    {
+                        new()
+                        {
+                            OutsideServiceRequestLineId = 11,
+                            RequestNumber = "OS-1101",
+                            LineNumber = 1,
+                            PartId = "PART-B",
+                            SetupVendorName = "Vendor B",
+                            LinePhase = Enum_OutsideServiceLinePhase.Complete,
+                            CreatedUtc = DateTime.UtcNow.AddDays(-1),
+                            CompletedUtc = DateTime.UtcNow,
+                        },
+                    }
+                )
+            );
+
+        var viewModel = new ViewModel_OutsideService_CompleteHistory(
+            outsideServiceMock.Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        );
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        viewModel.VendorFilterOptions.Should().Contain("All");
+        viewModel.VendorFilterOptions.Should().Contain("Vendor B");
+        viewModel.VendorFilterOptions.Should().NotContain("Vendor A");
+    }
 }

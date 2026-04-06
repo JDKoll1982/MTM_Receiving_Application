@@ -2,7 +2,7 @@
   "id": "outside-service-shell",
   "module": "Module_OutsideService",
   "name": "Outside Service Queue",
-  "summary": "Waitlist-first Outside Service workflow for MySQL-backed requests with gated Setup access, direct waitlist completion prompts for setup-phase lines, editable setup details, forced custom-vendor fallback when no suggestions exist, and shared-shell section headers that avoid duplicate in-page notifications.",
+  "summary": "Waitlist-first Outside Service workflow for MySQL-backed requests with gated Setup access, direct waitlist completion prompts for setup-phase lines, editable setup details, forced custom-vendor fallback when no suggestions exist, shared-shell section headers that avoid duplicate in-page notifications, and JSON-backed mock vendor and part suggestions when Infor Visual mock mode is enabled.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_OutsideService/Contracts/IService_OutsideService.cs",
@@ -14,6 +14,9 @@
     "Module_OutsideService/Models/Model_OutsideServiceVendorSuggestion.cs",
     "Module_OutsideService/Models/Model_OutsideServicePartMatchSuggestion.cs",
     "Module_OutsideService/Services/Service_OutsideService.cs",
+    "Module_Core/Contracts/Services/IService_InforVisualMockDataCatalog.cs",
+    "Module_Core/Services/Database/Service_InforVisualMockDataCatalog.cs",
+    "Module_Settings.Core/Defaults/inforvisual.mock-data.json",
     "Module_OutsideService/ViewModels/ViewModel_OutsideService_Main.cs",
     "Module_OutsideService/ViewModels/ViewModel_OutsideService_RequestEntry.cs",
     "Module_OutsideService/ViewModels/ViewModel_OutsideService_Waitlist.cs",
@@ -44,7 +47,9 @@
     "IService_OutsideService",
     "Service_OutsideService",
     "IService_InforVisual",
-    "Service_InforVisualConnect"
+    "IService_InforVisualMockDataCatalog",
+    "Service_InforVisualConnect",
+    "Service_InforVisualMockDataCatalog"
   ],
   "promptDefaults": {
     "audience": "Shipping or Receiving Clerk",
@@ -112,6 +117,7 @@
     "preserveRules": [
       "Keep View to ViewModel to Service to DAO to Database flow intact",
       "Keep Infor Visual access read-only",
+      "Keep whole-collection waitlist, history, vendor-suggestion, and package-editor refreshes behaviorally equivalent",
       "Keep MySQL writes inside stored procedures only"
     ],
     "acceptanceCriteria": [
@@ -134,7 +140,9 @@
       "Confirm the Scheduled ship field uses the same calendar popup experience as Module_Reporting instead of the wheel-style DatePicker",
       "Confirm the Setup scheduled ship calendar can be cleared and reselected without crashing the screen",
       "Confirm Infor Visual suggestion and validation paths fall back only when mock data mode is enabled",
+      "Confirm mock fallback part and vendor suggestions now use the generated JSON-backed Infor Visual catalog",
       "Confirm waitlist and history filters do not hide valid rows unexpectedly",
+      "Confirm waitlist rows, history rows, vendor suggestions, and setup package editors still repopulate correctly after whole-collection replacement",
       "Confirm Complete History defaults to a blank Search box with Vendor and Completed both set to All whenever the user navigates into the History tab",
       "Confirm Complete History defaults to All so older completed rows remain visible",
       "Confirm setup-phase waitlist rows show separate Edit and Mark Complete actions",

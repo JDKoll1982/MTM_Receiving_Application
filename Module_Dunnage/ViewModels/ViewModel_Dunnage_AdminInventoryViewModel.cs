@@ -92,11 +92,9 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                InventoriedParts.Clear();
-                foreach (var part in result.Data)
-                {
-                    InventoriedParts.Add(part);
-                }
+                InventoriedParts = new ObservableCollection<Model_InventoriedDunnage>(
+                    result.Data
+                );
                 StatusMessage = $"Loaded {InventoriedParts.Count} inventoried parts";
             }
             else

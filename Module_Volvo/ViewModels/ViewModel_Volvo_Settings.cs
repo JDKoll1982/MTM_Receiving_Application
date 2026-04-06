@@ -70,11 +70,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                Parts.Clear();
-                foreach (var part in result.Data.OrderBy(p => p.PartNumber))
-                {
-                    Parts.Add(part);
-                }
+                Parts = new ObservableCollection<Model_VolvoPart>(
+                    result.Data.OrderBy(part => part.PartNumber)
+                );
 
                 TotalPartsCount = Parts.Count;
                 ActivePartsCount = Parts.Count(p => p.IsActive);

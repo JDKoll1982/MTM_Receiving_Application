@@ -282,6 +282,9 @@ public static class ReceivingSettingsDefaults
 
             // Business Rules defaults
             [ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup] = "ModeSelection",
+
+            // User Preferences defaults
+            [ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson] = "[]",
         };
 
     public static IReadOnlyDictionary<string, bool> BoolDefaults { get; } =
@@ -300,6 +303,8 @@ public static class ReceivingSettingsDefaults
             // Business Rules
             [ReceivingSettingsKeys.BusinessRules.ConfirmModeChange] = true,
             [ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault] = false,
+            [ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation] =
+                false,
 
             // Integrations
             [ReceivingSettingsKeys.Integrations.ErpSyncEnabled] = true,

@@ -16,7 +16,7 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
     [
         (
             "Part and receiving details",
-            ["ReceivedDate", "PartType", "PartDescription", "UnitOfMeasure"]
+            ["ReceivedDate", "PartType", "PartDescription", "UnitOfMeasure", "InitialLocation"]
         ),
         (
             "Purchase order details",
@@ -110,7 +110,7 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
     {
         var alwaysVisibleLabels = _columns
             .Where(column => column.IsAlwaysVisible)
-            .Select(column => GetColumnPresentation(column.Key).Label)
+            .Select(column => GetColumnLabel(column.Key))
             .ToList();
 
         return alwaysVisibleLabels.Count == 0
@@ -207,31 +207,19 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
 
     private FrameworkElement BuildOptionCell(Model_EditModeColumn column)
     {
-        var presentation = GetColumnPresentation(column.Key);
+        var label = GetColumnLabel(column.Key);
 
-        var contentPanel = new StackPanel { Spacing = 2 };
-        contentPanel.Children.Add(
-            new TextBlock
-            {
-                Text = presentation.Label,
-                TextWrapping = TextWrapping.WrapWholeWords,
-                FontWeight = FontWeights.Medium,
-            }
-        );
-        contentPanel.Children.Add(
-            new TextBlock
-            {
-                Text = presentation.Description,
-                TextWrapping = TextWrapping.WrapWholeWords,
-                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
-                Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
-            }
-        );
+        var labelTextBlock = new TextBlock
+        {
+            Text = label,
+            TextWrapping = TextWrapping.WrapWholeWords,
+            FontWeight = FontWeights.Medium,
+        };
 
         var checkBox = new CheckBox
         {
             IsChecked = column.IsVisible,
-            Content = contentPanel,
+            Content = labelTextBlock,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Top,
             MinWidth = 0,
@@ -243,69 +231,40 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
         return new Border
         {
             Padding = new Thickness(8),
-            MinHeight = 80,
+            MinHeight = 44,
             Child = checkBox,
         };
     }
 
-    private static (string Label, string Description) GetColumnPresentation(string key) =>
+    private static string GetColumnLabel(string key) =>
         key switch
         {
-            "LoadNumber" => ("Load Number", "The system load number for the received row."),
-            "ReceivedDate" => ("Received Date", "When the load was originally received."),
-            "PartID" => ("Part ID", "The received part number."),
-            "PartType" => ("Part Type", "The part category or type assigned to the row."),
-            "PONumber" => ("Purchase Order Number", "The purchase order tied to the load."),
-            "POLineNumber" => (
-                "Purchase Order Line",
-                "The specific line number on the purchase order."
-            ),
-            "WeightQuantity" => (
-                "Received Weight / Quantity",
-                "The amount received for this load."
-            ),
-            "HeatLotNumber" => ("Heat / Lot Number", "The traceability heat or lot reference."),
-            "RemainingQuantity" => (
-                "Remaining Quantity",
-                "The quantity still open on the PO line."
-            ),
-            "PackagesPerLoad" => ("Packages per Load", "How many packages are on the load."),
-            "PackageType" => ("Package Type", "The package or container type used for the load."),
-            "WeightPerPackage" => ("Weight per Package", "The recorded weight for each package."),
-            "IsNonPOItem" => (
-                "Non-PO Item",
-                "Shows whether the row is not tied to a purchase order."
-            ),
-            "UserId" => ("Created By User", "The user account that created the row."),
-            "EmployeeNumber" => (
-                "Created By Employee Number",
-                "The employee number tied to the creator."
-            ),
-            "IsQualityHoldRequired" => (
-                "Quality Hold Required",
-                "Shows whether the part requires a quality hold check."
-            ),
-            "IsQualityHoldAcknowledged" => (
-                "Quality Hold Acknowledged",
-                "Shows whether the quality hold warning was acknowledged."
-            ),
-            "QualityHoldRestrictionType" => (
-                "Quality Hold Restriction",
-                "The restriction returned by the quality hold rule."
-            ),
-            "PartDescription" => (
-                "Part Description",
-                "The description pulled from the part record."
-            ),
-            "UnitOfMeasure" => ("Unit of Measure", "EA, LB, KG, or another unit used for the row."),
-            "QtyOrdered" => ("Quantity Ordered", "The total quantity ordered on the PO line."),
-            "POVendor" => ("Vendor", "The supplier listed on the purchase order."),
-            "POStatus" => ("Purchase Order Status", "The current status of the purchase order."),
-            "PODueDate" => (
-                "Purchase Order Due Date",
-                "The scheduled due date from the purchase order."
-            ),
-            _ => (key, "Column visibility setting."),
+            "LoadNumber" => "Load Number",
+            "ReceivedDate" => "Received Date",
+            "PartID" => "Part ID",
+            "PartType" => "Part Type",
+            "PONumber" => "Purchase Order Number",
+            "POLineNumber" => "Purchase Order Line",
+            "WeightQuantity" => "Received Weight / Quantity",
+            "HeatLotNumber" => "Heat / Lot Number",
+            "InitialLocation" => "Initial Location",
+            "RemainingQuantity" => "Remaining Quantity",
+            "PackagesPerLoad" => "Packages per Load",
+            "PackageType" => "Package Type",
+            "WeightPerPackage" => "Weight per Package",
+            "IsNonPOItem" => "Non-PO Item",
+            "UserId" => "Created By User",
+            "EmployeeNumber" => "Created By Employee Number",
+            "IsQualityHoldRequired" => "Quality Hold Required",
+            "IsQualityHoldAcknowledged" => "Quality Hold Acknowledged",
+            "QualityHoldRestrictionType" => "Quality Hold Restriction",
+            "PartDescription" => "Part Description",
+            "UnitOfMeasure" => "Unit of Measure",
+            "QtyOrdered" => "Quantity Ordered",
+            "POVendor" => "Vendor",
+            "POStatus" => "Purchase Order Status",
+            "PODueDate" => "Purchase Order Due Date",
+            _ => key,
         };
 
     private void ApplySelection()

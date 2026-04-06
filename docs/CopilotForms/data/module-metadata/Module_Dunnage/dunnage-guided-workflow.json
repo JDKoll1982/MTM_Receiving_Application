@@ -125,6 +125,7 @@
       "Confirm inventoried parts carry their configured inventory method into Details Entry and Review instead of always showing Receive In",
       "Confirm Dunnage saves assign each row a part_skid_sequence and part_skid_total based on the number of loads saved for the same part in the batch",
       "Confirm changing the number of loads rebuilds the per-load quantity editors without losing values that still apply",
+      "Confirm guided-step collections and spec groups still repopulate correctly after whole-collection replacement",
       "Confirm Enter Loads uses a single combined quantity card and no longer shows the tip card",
       "Confirm each generated load reaches Review with the correct load number and quantity",
       "Confirm Enter Details proceeds directly to Review when validation passes, without an extra confirmation modal",

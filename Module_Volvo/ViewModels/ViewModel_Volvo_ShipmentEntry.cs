@@ -206,11 +206,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 Notes = shipment.Notes ?? string.Empty;
 
                 // Load lines
-                Parts.Clear();
-                foreach (var line in detailResult.Data.Lines)
-                {
-                    Parts.Add(line);
-                }
+                ReplaceParts(detailResult.Data.Lines);
 
                 ApplyCachedQuantitiesToLines();
 
@@ -294,11 +290,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (partsResult.IsSuccess && partsResult.Data != null)
             {
-                AvailableParts.Clear();
-                foreach (var part in partsResult.Data.OrderBy(p => p.PartNumber))
-                {
-                    AvailableParts.Add(part);
-                }
+                AvailableParts = new ObservableCollection<Model_VolvoPart>(
+                    partsResult.Data.OrderBy(p => p.PartNumber)
+                );
             }
         }
         catch (Exception ex)
@@ -316,8 +310,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         if (string.IsNullOrWhiteSpace(queryText))
         {
-            SuggestedParts.Clear();
-            SelectedPartToAdd = null;
+            ReplaceSuggestedParts(Array.Empty<Model_VolvoPart>(), clearSelection: true);
             return;
         }
 
@@ -330,18 +323,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (searchResult.IsSuccess && searchResult.Data != null)
             {
-                // Update suggestions collection
-                SuggestedParts.Clear();
-                foreach (var part in searchResult.Data)
-                {
-                    SuggestedParts.Add(part);
-                }
-
-                // Check if text matches a part exactly
-                var exactMatch = searchResult.Data.FirstOrDefault(p =>
-                    p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase)
-                );
-                SelectedPartToAdd = exactMatch;
+                ReplaceSuggestedParts(searchResult.Data, preferredPartNumber: queryText);
             }
         }
         catch (Exception ex)
@@ -468,7 +450,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             SelectedPartToAdd = null;
             ReceivedSkidsToAdd = string.Empty;
             PartSearchText = string.Empty;
-            SuggestedParts.Clear();
+            ReplaceSuggestedParts(Array.Empty<Model_VolvoPart>(), clearSelection: true);
 
             ValidateSaveEligibility();
         }
@@ -1900,6 +1882,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         ValidateSaveEligibility();
     }
 
+    partial void OnPartsChanging(
+        ObservableCollection<Model_VolvoShipmentLine>? oldValue,
+        ObservableCollection<Model_VolvoShipmentLine> newValue
+    )
+    {
+        DetachPartsCollectionHandlers(oldValue);
+    }
+
     partial void OnSelectedPartToAddChanged(Model_VolvoPart? value)
     {
         AddPartCommand.NotifyCanExecuteChanged();
@@ -1925,15 +1915,41 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// </summary>
     private void ClearShipmentForm()
     {
-        Parts.Clear();
+        ReplaceParts(Array.Empty<Model_VolvoShipmentLine>());
         Notes = string.Empty;
         ShipmentNumber = 1;
         _currentShipmentId = null;
         SelectedPartToAdd = null;
         ReceivedSkidsToAdd = string.Empty;
         PartSearchText = string.Empty;
-        SuggestedParts.Clear();
+        ReplaceSuggestedParts(Array.Empty<Model_VolvoPart>(), clearSelection: true);
         RefreshCommandStates();
+    }
+
+    private void ReplaceParts(IEnumerable<Model_VolvoShipmentLine> lines)
+    {
+        var selectedPartNumber = SelectedPart?.PartNumber;
+        Parts = new ObservableCollection<Model_VolvoShipmentLine>(lines);
+        SelectedPart = string.IsNullOrWhiteSpace(selectedPartNumber)
+            ? null
+            : Parts.FirstOrDefault(part =>
+                part.PartNumber.Equals(selectedPartNumber, StringComparison.OrdinalIgnoreCase)
+            );
+    }
+
+    private void ReplaceSuggestedParts(
+        IEnumerable<Model_VolvoPart> parts,
+        string? preferredPartNumber = null,
+        bool clearSelection = false
+    )
+    {
+        var selectedPartNumber = clearSelection ? null : preferredPartNumber;
+        SuggestedParts = new ObservableCollection<Model_VolvoPart>(parts);
+        SelectedPartToAdd = string.IsNullOrWhiteSpace(selectedPartNumber)
+            ? null
+            : SuggestedParts.FirstOrDefault(part =>
+                part.PartNumber.Equals(selectedPartNumber, StringComparison.OrdinalIgnoreCase)
+            );
     }
 
     private void AttachPartsCollectionHandlers(ObservableCollection<Model_VolvoShipmentLine>? parts)
@@ -1949,6 +1965,21 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         foreach (var line in parts)
         {
             AttachShipmentLineHandlers(line);
+        }
+    }
+
+    private void DetachPartsCollectionHandlers(ObservableCollection<Model_VolvoShipmentLine>? parts)
+    {
+        if (parts == null)
+        {
+            return;
+        }
+
+        parts.CollectionChanged -= OnPartsCollectionChanged;
+
+        foreach (var line in parts)
+        {
+            DetachShipmentLineHandlers(line);
         }
     }
 

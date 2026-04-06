@@ -241,15 +241,17 @@ public partial class ViewModel_OutsideService_Waitlist : ViewModel_Shared_Base
             _ => lines.OrderBy(line => line.CreatedUtc),
         };
 
-        FilteredLines.Clear();
-        foreach (var line in lines)
-        {
-            FilteredLines.Add(line);
-        }
+        ReplaceFilteredLines(lines);
+    }
 
-        if (SelectedLine is null || !FilteredLines.Contains(SelectedLine))
-        {
-            SelectedLine = FilteredLines.FirstOrDefault();
-        }
+    private void ReplaceFilteredLines(IEnumerable<Model_OutsideServiceRequestLine> lines)
+    {
+        var selectedLineId = SelectedLine?.OutsideServiceRequestLineId;
+        FilteredLines = new ObservableCollection<Model_OutsideServiceRequestLine>(lines);
+        SelectedLine = selectedLineId is null
+            ? FilteredLines.FirstOrDefault()
+            : FilteredLines.FirstOrDefault(line =>
+                line.OutsideServiceRequestLineId == selectedLineId.Value
+            ) ?? FilteredLines.FirstOrDefault();
     }
 }

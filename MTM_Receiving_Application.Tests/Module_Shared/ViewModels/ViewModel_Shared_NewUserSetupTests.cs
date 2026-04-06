@@ -69,6 +69,24 @@ public class ViewModel_Shared_NewUserSetupTests
         capturedUser.EmployeeNumber.Should().Be(42);
     }
 
+    [Fact]
+    public async Task LoadDepartmentsAsync_ShouldReplaceDepartmentsWithLatestValues()
+    {
+        var authServiceMock = new Mock<IService_Authentication>();
+        authServiceMock
+            .SetupSequence(service => service.GetActiveDepartmentsAsync())
+            .ReturnsAsync(["IT", "HR"])
+            .ReturnsAsync(["Operations"]);
+
+        var viewModel = CreateViewModel(authServiceMock);
+
+        await viewModel.LoadDepartmentsAsync();
+        await viewModel.LoadDepartmentsAsync();
+
+        viewModel.Departments.Should().ContainSingle().Which.Should().Be("Operations");
+        viewModel.StatusMessage.Should().Be("Loaded 1 departments");
+    }
+
     private static ViewModel_Shared_NewUserSetup CreateViewModel(
         Mock<IService_Authentication>? authServiceMock = null
     )

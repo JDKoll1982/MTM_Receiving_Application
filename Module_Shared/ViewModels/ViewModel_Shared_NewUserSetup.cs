@@ -58,13 +58,10 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         [ObservableProperty]
         private string? _visualPassword;
 
-        public string FullName => CombineFullName(FirstName, LastName);
+        [ObservableProperty]
+        private ObservableCollection<string> _departments = new();
 
-        /// <summary>
-        /// List of available departments from database
-        /// </summary>
-        public ObservableCollection<string> Departments { get; } =
-            new ObservableCollection<string>();
+        public string FullName => CombineFullName(FirstName, LastName);
 
         /// <summary>
         /// The new employee number assigned after successful account creation
@@ -119,11 +116,7 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
 
                 var departmentList = await _authService.GetActiveDepartmentsAsync();
 
-                Departments.Clear();
-                foreach (var dept in departmentList)
-                {
-                    Departments.Add(dept);
-                }
+                Departments = new ObservableCollection<string>(departmentList);
 
                 StatusMessage = $"Loaded {Departments.Count} departments";
                 _logger.LogInfo($"Loaded {Departments.Count} departments for new user setup");

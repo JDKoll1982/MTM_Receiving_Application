@@ -21,6 +21,7 @@ CREATE PROCEDURE `sp_Receiving_Load_Update`(
     IN p_LoadNumber       INT,
     IN p_WeightQuantity   DECIMAL(18,4),
     IN p_HeatLotNumber    VARCHAR(100),
+    IN p_InitialLocation  VARCHAR(50),
     IN p_PackagesPerLoad  INT,
     IN p_PackageTypeName  VARCHAR(100),
     IN p_WeightPerPackage DECIMAL(18,4),
@@ -34,6 +35,7 @@ BEGIN
         po_number        = p_PONumber,
         quantity         = ROUND(p_WeightQuantity, 0),
         heat             = p_HeatLotNumber,
+        initial_location = p_InitialLocation,
         transaction_date = DATE(p_ReceivedDate),
         label_number     = IFNULL(p_LoadNumber, 1),
         is_non_po_item   = IFNULL(p_IsNonPOItem, 0)

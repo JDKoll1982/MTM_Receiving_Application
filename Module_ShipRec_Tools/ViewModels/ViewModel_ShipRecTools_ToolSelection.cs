@@ -62,24 +62,15 @@ public partial class ViewModel_ShipRecTools_ToolSelection : ViewModel_Shared_Bas
     {
         try
         {
-            LookupTools.Clear();
-            AnalysisTools.Clear();
-            UtilityTools.Clear();
-
-            foreach (var tool in _navigationService.GetToolsByCategory(Enum_ToolCategory.Lookup))
-            {
-                LookupTools.Add(tool);
-            }
-
-            foreach (var tool in _navigationService.GetToolsByCategory(Enum_ToolCategory.Analysis))
-            {
-                AnalysisTools.Add(tool);
-            }
-
-            foreach (var tool in _navigationService.GetToolsByCategory(Enum_ToolCategory.Utilities))
-            {
-                UtilityTools.Add(tool);
-            }
+            LookupTools = new ObservableCollection<Model_ToolDefinition>(
+                _navigationService.GetToolsByCategory(Enum_ToolCategory.Lookup)
+            );
+            AnalysisTools = new ObservableCollection<Model_ToolDefinition>(
+                _navigationService.GetToolsByCategory(Enum_ToolCategory.Analysis)
+            );
+            UtilityTools = new ObservableCollection<Model_ToolDefinition>(
+                _navigationService.GetToolsByCategory(Enum_ToolCategory.Utilities)
+            );
 
             HasLookupTools = LookupTools.Count > 0;
             HasAnalysisTools = AnalysisTools.Count > 0;

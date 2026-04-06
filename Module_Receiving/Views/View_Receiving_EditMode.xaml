@@ -393,6 +393,14 @@
                     Width="Auto"
                 />
 
+                <!-- InitialLocation -->
+                <controls:DataGridTextColumn
+                    Tag="InitialLocation"
+                    Header="Location"
+                    Binding="{Binding InitialLocation}"
+                    Width="Auto"
+                />
+
                 <!-- RemainingQuantity -->
                 <controls:DataGridTextColumn
                     Tag="RemainingQuantity"

@@ -152,7 +152,7 @@ public class Service_OutsideServiceTests
         result.Data.Should().NotBeNull();
         result.Data.Should().HaveCount(2);
         result.Data![0].VendorId.Should().Be("MOCK-VENDOR-001");
-        result.Data[0].DispatchCount.Should().Be(3);
+        result.Data[0].DispatchCount.Should().Be(2);
     }
 
     [Fact]
@@ -222,11 +222,67 @@ public class Service_OutsideServiceTests
         bool useMockData = false
     )
     {
+        var appSettings = new Mock<IService_AppSettings>();
+        appSettings.Setup(service => service.GetUseInforVisualMockData()).Returns(useMockData);
+
         return new Service_OutsideService(
             new Dao_OutsideServiceRequest("Server=localhost;Database=test;Uid=test;Pwd=test;"),
             inforVisual,
+            CreateMockCatalog().Object,
             logger,
-            Options.Create(new InforVisualSettings { UseMockData = useMockData })
+            appSettings.Object
         );
+    }
+
+    private static Mock<IService_InforVisualMockDataCatalog> CreateMockCatalog()
+    {
+        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        mockCatalog
+            .Setup(service => service.GetCatalog())
+            .Returns(
+                new Model_InforVisualMockDataCatalog
+                {
+                    Parts =
+                    [
+                        new Model_InforVisualPart
+                        {
+                            PartID = "PART-404",
+                            Description = "Mock outside service part",
+                        },
+                    ],
+                    OutsideServiceHistory =
+                    [
+                        new Model_OutsideServiceHistory
+                        {
+                            VendorID = "MOCK-VENDOR-001",
+                            VendorName = "Acme Heat Treating Co.",
+                            VendorCity = "Detroit",
+                            VendorState = "MI",
+                            DispatchDate = DateTime.Today.AddDays(-7),
+                            PartNumber = "PART-404",
+                        },
+                        new Model_OutsideServiceHistory
+                        {
+                            VendorID = "MOCK-VENDOR-001",
+                            VendorName = "Acme Heat Treating Co.",
+                            VendorCity = "Detroit",
+                            VendorState = "MI",
+                            DispatchDate = DateTime.Today.AddDays(-14),
+                            PartNumber = "PART-404",
+                        },
+                        new Model_OutsideServiceHistory
+                        {
+                            VendorID = "MOCK-VENDOR-002",
+                            VendorName = "Precision Plating Inc.",
+                            VendorCity = "Grand Rapids",
+                            VendorState = "MI",
+                            DispatchDate = DateTime.Today.AddDays(-21),
+                            PartNumber = "PART-404",
+                        },
+                    ],
+                }
+            );
+
+        return mockCatalog;
     }
 }

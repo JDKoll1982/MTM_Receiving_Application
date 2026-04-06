@@ -119,11 +119,7 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
             var typesResult = await _dunnageService.GetAllTypesAsync();
             if (typesResult.Success && typesResult.Data != null)
             {
-                AvailableTypes.Clear();
-                foreach (var type in typesResult.Data)
-                {
-                    AvailableTypes.Add(type);
-                }
+                AvailableTypes = new ObservableCollection<Model_DunnageType>(typesResult.Data);
             }
 
             // Load all parts
@@ -328,11 +324,7 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
     {
         var pageItems = _paginationService.GetCurrentPageItems<Model_DunnagePart>();
 
-        Parts.Clear();
-        foreach (var item in pageItems)
-        {
-            Parts.Add(item);
-        }
+        Parts = new ObservableCollection<Model_DunnagePart>(pageItems);
 
         CurrentPage = _paginationService.CurrentPage;
         TotalPages = _paginationService.TotalPages;

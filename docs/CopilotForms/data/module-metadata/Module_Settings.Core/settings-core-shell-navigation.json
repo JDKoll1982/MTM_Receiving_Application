@@ -64,10 +64,12 @@
     ],
     "preserveRules": [
       "Keep navigation paging behavior unchanged",
-      "Keep window hosting behavior unchanged"
+      "Keep window hosting behavior unchanged",
+      "Keep step and visible-step replacement preserving the current pagination semantics"
     ],
     "validationHints": [
       "Confirm navigation buttons still page correctly",
+      "Confirm visible steps still match the current button page after whole-collection replacement",
       "Confirm the built-in back button returns to the selected module hub when a child page is active",
       "Confirm the shell still hosts the selected settings page correctly"
     ]

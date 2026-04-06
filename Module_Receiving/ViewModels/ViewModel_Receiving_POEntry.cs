@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -22,10 +24,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
+        private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IService_ReceivingSettings _receivingSettings;
         private DateTime? _currentPoHeaderPromiseDate;
+        private NotifyCollectionChangedEventHandler? _partsCollectionChangedHandler;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -131,6 +135,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Help helpService,
+            IService_InforVisualMockDataCatalog mockDataCatalog,
             IService_ViewModelRegistry viewModelRegistry,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
             IService_ReceivingSettings receivingSettings,
@@ -141,14 +146,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
             _helpService = helpService;
+            _mockDataCatalog = mockDataCatalog;
             _viewModelRegistry = viewModelRegistry;
             _configuration = configuration;
             _receivingSettings = receivingSettings;
 
             _viewModelRegistry.Register(this);
 
-            // Update visibility when parts collection changes
-            Parts.CollectionChanged += (s, e) => IsPartsListVisible = Parts.Count > 0;
+            AttachPartsCollectionHandler();
 
             // Load UI text from settings
             _ = LoadUITextAsync();
@@ -236,8 +241,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsNonPOItem = false;
             IsLoadPOEnabled = false;
             PoValidationMessage = string.Empty;
-            Parts.Clear();
-            SelectedPart = null;
+            ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
             PackageType = "Skids";
             PoStatus = string.Empty;
             _currentPoHeaderPromiseDate = null;
@@ -294,7 +298,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var result = await _inforVisualService.GetPOWithPartsAsync(PoNumber);
                 if (result.IsSuccess && result.Data != null)
                 {
-                    Parts.Clear();
+                    var parts = result.Data.Parts.ToList();
 
                     // Set PO status in ViewModel
                     PoStatus = result.Data.Status;
@@ -308,7 +312,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _workflowService.CurrentPODueDate = _currentPoHeaderPromiseDate;
 
                     // Load parts and populate remaining quantity for each
-                    foreach (var part in result.Data.Parts)
+                    foreach (var part in parts)
                     {
                         // Get remaining quantity for this part
                         var remainingQtyResult =
@@ -320,9 +324,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         {
                             part.RemainingQuantity = remainingQtyResult.Data;
                         }
-
-                        Parts.Add(part);
                     }
+
+                    ReplaceParts(parts, clearSelection: true);
 
                     var msg = await _receivingSettings.FormatAsync(
                         ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts,
@@ -339,7 +343,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             ReceivingSettingsKeys.Messages.ErrorPoNotFound
                         );
                     await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
-                    Parts.Clear();
+                    ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
                     _currentPoHeaderPromiseDate = null;
                     _workflowService.CurrentPODueDate = null;
                     _workflowService.CurrentLocation = string.Empty;
@@ -355,8 +359,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void ToggleNonPO()
         {
             IsNonPOItem = !IsNonPOItem;
-            Parts.Clear();
-            SelectedPart = null;
+            ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
             PoNumber = string.Empty;
             PartID = string.Empty;
             _workflowService.IsNonPOItem = IsNonPOItem;
@@ -390,8 +393,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _workflowService.CurrentPODueDate = null;
                     // For Non-PO items, we might want to show it in the list or just set SelectedPart directly.
                     // Setting SelectedPart directly is enough for the workflow, but the UI might want to show it.
-                    Parts.Clear();
-                    Parts.Add(result.Data);
+                    ReplaceParts([result.Data], result.Data);
                     var msg = await _receivingSettings.FormatAsync(
                         ReceivingSettingsKeys.Messages.InfoPartFound,
                         PartID
@@ -407,8 +409,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                             ),
                         Enum_ErrorSeverity.Error
                     );
-                    SelectedPart = null;
-                    Parts.Clear();
+                    ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
                     _workflowService.CurrentLocation = string.Empty;
                 }
             }
@@ -416,6 +417,38 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        private void ReplaceParts(
+            IEnumerable<Model_InforVisualPart> parts,
+            Model_InforVisualPart? selectedPart = null,
+            bool clearSelection = false
+        )
+        {
+            var selectedPartId = clearSelection
+                ? null
+                : selectedPart?.PartID ?? SelectedPart?.PartID;
+
+            Parts = new ObservableCollection<Model_InforVisualPart>(parts);
+            AttachPartsCollectionHandler();
+            IsPartsListVisible = Parts.Count > 0;
+            SelectedPart = string.IsNullOrWhiteSpace(selectedPartId)
+                ? null
+                : Parts.FirstOrDefault(part =>
+                    string.Equals(part.PartID, selectedPartId, StringComparison.OrdinalIgnoreCase)
+                );
+        }
+
+        private void AttachPartsCollectionHandler()
+        {
+            if (_partsCollectionChangedHandler != null)
+            {
+                Parts.CollectionChanged -= _partsCollectionChangedHandler;
+            }
+
+            _partsCollectionChangedHandler = (s, e) => IsPartsListVisible = Parts.Count > 0;
+            Parts.CollectionChanged += _partsCollectionChangedHandler;
+            IsPartsListVisible = Parts.Count > 0;
         }
 
         partial void OnPoNumberChanged(string value)
@@ -565,8 +598,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (useMockData)
                 {
                     var defaultPO =
-                        _configuration.GetValue<string>("AppSettings:DefaultMockPONumber")
-                        ?? "PO-066868";
+                        _mockDataCatalog.GetDefaultPurchaseOrderNumber()
+                        ?? _configuration.GetValue<string>("AppSettings:DefaultMockPONumber");
+
+                    if (string.IsNullOrWhiteSpace(defaultPO))
+                    {
+                        await _logger.LogWarningAsync(
+                            "[MOCK DATA MODE] No default mock PO number was found in the mock catalog."
+                        );
+                        return;
+                    }
+
                     await _logger.LogInfoAsync(
                         $"[MOCK DATA MODE] Auto-filling PO number: {defaultPO}"
                     );

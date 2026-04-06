@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -296,20 +297,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public async Task OnNavigatedToAsync()
         {
-            Loads.Clear();
-            if (_workflowService.CurrentSession?.Loads != null)
-            {
-                foreach (var load in _workflowService.CurrentSession.Loads)
-                {
-                    Loads.Add(load);
-                }
+            IEnumerable<Model_ReceivingLoad> sessionLoads = _workflowService.CurrentSession is null
+                ? new List<Model_ReceivingLoad>()
+                : _workflowService.CurrentSession.Loads;
+            Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
 
-                // Set current entry to first load if available
-                if (Loads.Count > 0)
-                {
-                    CurrentEntryIndex = 0;
-                    CurrentEntry = Loads[0];
-                }
+            // Set current entry to first load if available
+            if (Loads.Count > 0)
+            {
+                CurrentEntryIndex = 0;
+                CurrentEntry = Loads[0];
             }
 
             IsSingleView = !await _receivingSettings.GetBoolAsync(

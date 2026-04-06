@@ -113,13 +113,15 @@
       "id": "receiving-workflow",
       "module": "Module_Receiving",
       "name": "Receiving Workflow",
-      "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, and final save orchestration.",
+      "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, a resized reconciliation review modal with Save and Ignore actions, user-scoped ignored-location reconciliation preferences, transaction-history-based reconciliation smart-fix behavior, and mock-mode save behavior that preserves whole-load quantities while moving current inventory totals for reconciliation.",
       "owner": "Receiving Team",
       "relatedFiles": [
         "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
         "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
         "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
         "Module_Core/Contracts/Services/IService_InforVisual.cs",
+        "Module_Core/Contracts/Services/IService_InforVisualMockDataCatalog.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualLocationTransaction.cs",
         "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
         "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
         "Module_Receiving/Services/Service_ReceivingSettings.cs",
@@ -128,6 +130,7 @@
         "Module_Receiving/Services/Service_MySQL_Receiving.cs",
         "Module_Receiving/Services/Service_ReceivingLabelData.cs",
         "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+        "Module_Core/Services/Database/Service_InforVisualMockDataCatalog.cs",
         "Module_Receiving/Data/Dao_ReceivingLoad.cs",
         "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
         "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
@@ -152,8 +155,12 @@
         "Module_Receiving/Views/View_Receiving_PackageType.xaml.cs",
         "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
         "Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs",
+        "Database/InforVisualScripts/Queries/16_GetReceivingLocationEvidence.sql",
+        "Database/InforVisualScripts/Queries/17_GetReceivingLocationTransactionHistory.sql",
         "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
-        "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql"
+        "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql",
+        "Module_Settings.Core/Defaults/inforvisual.mock-data.json",
+        "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json"
       ],
       "relatedServices": [
         "IService_ReceivingWorkflow",
@@ -213,14 +220,21 @@
           "Mode-specific startup routing",
           "Help text",
           "Review area",
-          "Save action"
+          "Save action",
+          "Edit Mode location column",
+          "Edit Mode column chooser",
+          "Reconciliation ignore-location preferences",
+          "Location reconciliation review modal"
         ],
         "userActions": [
           "Move through the workflow one step at a time",
           "Understand what to do next quickly",
           "Lose unsaved work when leaving the module or exiting before save",
           "Review entries before saving",
-          "Recover from mistakes without confusion"
+          "See the same core columns in Edit Mode that are available in Manual Mode",
+          "Recover from mistakes without confusion",
+          "Exclude specific destination locations from automatic reconciliation",
+          "Review each proposed location update and choose Save or Ignore"
         ],
         "accessibilityNeeds": [
           "Make the screen easier to scan",
@@ -237,7 +251,9 @@
           "The workflow remains step-based",
           "The user can still complete the same task from start to finish",
           "No business logic or save behavior changes",
-          "The UI is easier to understand at a glance"
+          "The UI is easier to understand at a glance",
+          "Edit Mode defaults surface the same core columns used in Manual Mode",
+          "Ignored reconciliation locations are skipped automatically during preview"
         ],
         "reviewFocusAreas": [
           "Workflow regressions",
@@ -252,6 +268,8 @@
           "Configured startup mode sends the user to the intended first screen",
           "The user can move step to step when required values are present",
           "Validation blocks progress when required values are missing",
+          "The reconciliation review modal shows original location, new location, part number, quantity moved, user ID, moved date, and moved time before save",
+          "Saving or ignoring the final reconciliation row shows a clean review summary",
           "The review step shows the correct information before save",
           "Saving preserves the existing business behavior"
         ],
@@ -265,6 +283,7 @@
         ],
         "validationHints": [
           "Confirm leaving Receiving or exiting before save discards unsaved receiving drafts",
+          "Confirm mock-mode saves append receiving transactions that keep the receipt location but move current inventory to the mocked destination location so reconciliation can detect an update",
           "Confirm default-mode routing still sends the user to the intended startup screen",
           "Confirm the same workflow can still be completed from start to finish",
           "Confirm validation still blocks invalid input",
@@ -310,8 +329,18 @@
             "Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs",
             "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
             "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
+            "Module_Receiving/ViewModels/ViewModel_Receiving_LocationReconciliationReview.cs",
+            "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml",
+            "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml.cs",
+            "Module_Receiving/Contracts/IService_ReceivingLocationReconciliation.cs",
+            "Module_Receiving/Services/Service_ReceivingLocationReconciliation.cs",
+            "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
             "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
-            "Module_Receiving/Services/Service_ReceivingSettings.cs"
+            "Module_Receiving/Services/Service_ReceivingSettings.cs",
+            "Module_Core/Models/InforVisual/Model_InforVisualLocationEvidence.cs",
+            "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+            "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
+            "Database/InforVisualScripts/Queries/16_GetReceivingLocationEvidence.sql"
           ],
           "uiHints": {
             "screens": ["View_Receiving_ModeSelection.xaml"],
@@ -321,11 +350,16 @@
               "Guided mode option",
               "Manual mode option",
               "Edit mode option",
-              "Default mode toggles"
+              "Default mode toggles",
+              "Location reconciliation action",
+              "Quantity-based reconciliation review dialog",
+              "Split-location match explanation"
             ],
             "userActions": [
               "Choose the right starting mode quickly",
-              "Understand the difference between the three modes"
+              "Understand the difference between the three modes",
+              "Run InforVisual location reconciliation for saved rows",
+              "Review quantity-based split matches when one receipt was transferred into multiple current locations"
             ],
             "mockupSections": [
               "Mode selection choices",
@@ -2832,7 +2866,7 @@
       "id": "settings-receiving-configuration",
       "module": "Module_Settings.Receiving",
       "name": "Receiving Settings Configuration",
-      "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and workflow options backed by the shared settings facade.",
+      "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and user-scoped reconciliation preferences including the history-scope toggle, a validated ignored-location list, and a developer-only mock-data toggle backed by appsettings.",
       "owner": "Receiving Team",
       "relatedFiles": [
         "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
@@ -2850,6 +2884,10 @@
         "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml.cs",
         "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml",
         "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml.cs",
+        "Module_Core/Contracts/Services/IService_AppSettings.cs",
+        "Module_Core/Services/Service_AppSettings.cs",
+        "appsettings.json",
+        "appsettings.Development.json",
         "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
         "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
       ],
@@ -2887,7 +2925,10 @@
           "Auto-padding rules list",
           "Rule add and remove actions",
           "Auto-padding preview",
-          "Workflow option toggles"
+          "Workflow option toggles",
+          "Location reconciliation history-scope toggle",
+          "Ignored reconciliation locations list",
+          "Developer-only InforVisual mock-data toggle"
         ],
         "userActions": [
           "Open a receiving settings area from the hub",
@@ -2896,10 +2937,14 @@
           "Adjust min and max receiving limits",
           "Add, edit, test, and remove auto-padding rules",
           "Change workflow startup and review-table behavior",
+          "Choose whether location reconciliation checks only today’s history or all visible history",
+          "Add and remove validated reconciliation locations to ignore",
+          "Enable or disable InforVisual mock data when the signed-in user has Developer rights",
           "Save, reset, or cancel settings changes"
         ],
         "preserveRules": [
           "Keep settings persistence routed through IService_SettingsCoreFacade",
+          "Keep the mock-data flag routed through IService_AppSettings instead of the shared settings facade",
           "Keep navigation actions wired through ISettingsNavigationActions",
           "Keep x:Bind-based forms unchanged unless the request is explicitly about UI",
           "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId"
@@ -2914,7 +2959,10 @@
           "Confirm default receiving mode and location still load and save",
           "Confirm validation toggles and numeric limits still bind correctly",
           "Confirm auto-padding rule editing and test preview still work",
-          "Confirm workflow option values still load, save, and reset through the shared settings facade"
+          "Confirm workflow option values still load, save, and reset through the shared settings facade",
+          "Confirm the mock-data toggle is visible only for Developer users and persists to appsettings",
+          "Confirm the location-reconciliation history-scope toggle still loads and saves correctly from User Preferences",
+          "Confirm ignored reconciliation locations validate like Receiving Load Entry locations and persist per user"
         ],
         "reviewFocusAreas": [
           "Correctness and regressions",

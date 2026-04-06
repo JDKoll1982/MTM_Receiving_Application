@@ -56,7 +56,8 @@
     ],
     "preserveRules": [
       "Keep the category grouping behavior unchanged",
-      "Keep tool-card command routing unchanged"
+      "Keep tool-card command routing unchanged",
+      "Keep whole-collection category reloads updating the Has* visibility flags correctly"
     ],
     "acceptanceCriteria": [
       "Available tools still appear in the correct category",
@@ -64,6 +65,7 @@
     ],
     "validationHints": [
       "Confirm tool counts and category visibility still reflect the registry",
+      "Confirm category sections still refresh correctly after whole-collection replacement",
       "Confirm card selection still routes to the intended tool"
     ]
   }

@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Services.Database;
 using Xunit;
 
@@ -51,17 +52,107 @@ public sealed class Service_InforVisualConnectTests
         result.ErrorMessage.Should().Be("Warehouse code cannot be empty");
     }
 
+    [Fact]
+    public async Task GetReceivingLocationEvidenceAsync_ShouldReturnMockTransactions_WhenCatalogContainsSavedReceivingRows()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.GetReceivingLocationEvidenceAsync(
+            "PO-066868",
+            "MMC-100",
+            "1",
+            new System.DateTime(2026, 4, 5)
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().ContainSingle();
+        result.Data![0].CurrentLocationId.Should().Be("A-01");
+        result.Data[0].MatchedTransactionQuantity.Should().Be(10);
+        result.Data[0].MatchedTransactionCount.Should().Be(1);
+        result.Data[0].MatchedTransactionUserId.Should().Be("seed-user");
+        result.Data[0].LatestTransactionLocationId.Should().Be("A-01");
+        result.Data[0].LatestTransactionQuantity.Should().Be(10);
+        result.Data[0].LatestTransactionUserId.Should().Be("seed-user");
+        result.Data[0].ReceiptCount.Should().Be(1);
+    }
+
     private static Service_InforVisualConnect CreateService(bool useMockData)
     {
         var dao = new Dao_InforVisualConnection(
             "Server=VISUAL;Database=MTMFG;ApplicationIntent=ReadOnly;Trusted_Connection=True;",
             new Mock<IService_LoggingUtility>().Object
         );
+        var appSettings = new Mock<IService_AppSettings>();
+        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        var locations = new[]
+        {
+            "A-RECV-01",
+            "B-RECV-02",
+            "C-RECV-03",
+            "DOCK-4",
+            "QA-RECV",
+            "RECV",
+        };
+
+        mockCatalog.Setup(service => service.GetLocations()).Returns(locations);
+        appSettings.Setup(service => service.GetUseInforVisualMockData()).Returns(useMockData);
+        mockCatalog
+            .Setup(service => service.GetCatalog())
+            .Returns(
+                new Model_InforVisualMockDataCatalog
+                {
+                    Locations = new List<string>(locations),
+                    ReceivingTransactions = new List<Model_InforVisualMockReceivingTransaction>
+                    {
+                        new()
+                        {
+                            SourceLoadId = "seed-load-1",
+                            PONumber = "PO-066868",
+                            PartID = "MMC-100",
+                            POLineNumber = "1",
+                            Quantity = 10,
+                            UnitOfMeasure = "EA",
+                            ReceivedDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
+                            TransactionDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
+                            ReceiptWarehouseId = "002",
+                            ReceiptLocationId = "RECV",
+                            CurrentWarehouseId = "002",
+                            CurrentLocationId = "A-01",
+                            UserId = "seed-user",
+                        },
+                    },
+                }
+            );
+        mockCatalog
+            .Setup(service => service.GetReceivingTransactions())
+            .Returns(
+                new List<Model_InforVisualMockReceivingTransaction>
+                {
+                    new()
+                    {
+                        SourceLoadId = "seed-load-1",
+                        PONumber = "PO-066868",
+                        PartID = "MMC-100",
+                        POLineNumber = "1",
+                        Quantity = 10,
+                        UnitOfMeasure = "EA",
+                        ReceivedDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
+                        TransactionDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
+                        ReceiptWarehouseId = "002",
+                        ReceiptLocationId = "RECV",
+                        CurrentWarehouseId = "002",
+                        CurrentLocationId = "A-01",
+                        UserId = "seed-user",
+                    },
+                }
+            );
 
         return new Service_InforVisualConnect(
             dao,
-            useMockData,
-            new Mock<IService_LoggingUtility>().Object
+            appSettings.Object,
+            new Mock<IService_LoggingUtility>().Object,
+            mockCatalog.Object
         );
     }
 }

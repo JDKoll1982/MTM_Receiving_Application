@@ -9,6 +9,7 @@
 -- NOTE: Using base tables (PURCHASE_ORDER, PURC_ORDER_LINE) instead of views (po, po_line)
 -- Adjust table names if your environment uses different names (e.g. PURCHASE_ORDER)
 -- NOTE: No status check is performed. Returns all POs regardless of status (Open, Closed, etc.)
+-- NOTE: PO lines are ordered by expected receive date first, with mostly satisfied lines pushed last.
 SELECT 
     po.ID AS PoNumber,
     pol.LINE_NO AS PoLine,
@@ -19,7 +20,7 @@ SELECT
     pol.TOTAL_RECEIVED_QTY AS ReceivedQty,
     (pol.ORDER_QTY - pol.TOTAL_RECEIVED_QTY) AS RemainingQty,
     pol.PURCHASE_UM AS UnitOfMeasure,
-    pol.PROMISE_DATE AS DueDate,
+    sortData.SelectedDueDate AS DueDate,
     po.VENDOR_ID AS VendorCode,
     v.NAME AS VendorName,
     po.STATUS AS PoStatus,
@@ -45,10 +46,32 @@ OUTER APPLY
                 CASE WHEN cpl.AUTO_ISSUE_LOC = 'Y' THEN 0 ELSE 1 END,
                 cpl.LOCATION_ID
 ) fallback
+CROSS APPLY
+(
+        SELECT
+                COALESCE(
+                    pol.DESIRED_RECV_DATE,
+                    pol.PROMISE_DATE,
+                    po.DESIRED_RECV_DATE,
+                    po.PROMISE_DATE
+                ) AS SelectedDueDate,
+                CASE
+                    WHEN NULLIF(pol.ORDER_QTY, 0) IS NULL THEN CAST(0 AS decimal(20, 8))
+                    ELSE pol.TOTAL_RECEIVED_QTY / NULLIF(pol.ORDER_QTY, 0)
+                END AS ReceivedSatisfactionRatio
+) sortData
 LEFT JOIN dbo.VENDOR v ON po.VENDOR_ID = v.ID
 WHERE po.ID = @PoNumber
 -- AND po.SITE_ID = '002' -- Commented out to allow finding POs in other sites for testing
-ORDER BY pol.LINE_NO;
+ORDER BY
+    CASE
+        WHEN sortData.ReceivedSatisfactionRatio > 0.75 AND sortData.SelectedDueDate IS NOT NULL THEN 2
+        WHEN sortData.ReceivedSatisfactionRatio > 0.75 THEN 3
+        WHEN sortData.SelectedDueDate IS NULL THEN 1
+        ELSE 0
+    END,
+    sortData.SelectedDueDate,
+    pol.LINE_NO;
 
 -- Expected Results:
 -- - PoNumber: PO number
@@ -59,7 +82,7 @@ ORDER BY pol.LINE_NO;
 -- - ReceivedQty: Quantity already received
 -- - RemainingQty: Calculated remaining quantity (ordered - received)
 -- - UnitOfMeasure: Unit of measure (e.g., EA, LB, FT)
--- - DueDate: Selected line-level due date for this line
+-- - DueDate: Selected expected receive date (line desired receive date, then promise date, then PO header fallback)
 -- - VendorCode: Vendor ID
 -- - VendorName: Vendor name
 -- - PoStatus: PO status code

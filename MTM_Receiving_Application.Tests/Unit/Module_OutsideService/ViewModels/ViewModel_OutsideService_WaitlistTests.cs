@@ -29,7 +29,7 @@ public class ViewModel_OutsideService_WaitlistTests
 
         var lineCompletedRaised = false;
         viewModel.LineCompleted += () => lineCompletedRaised = true;
-        viewModel.SelectedLine = new Model_OutsideServiceRequestLine
+        var selectedLine = new Model_OutsideServiceRequestLine
         {
             OutsideServiceRequestLineId = 15,
             RequestNumber = "OS-3000",
@@ -38,11 +38,13 @@ public class ViewModel_OutsideService_WaitlistTests
             LinePhase = Enum_OutsideServiceLinePhase.Setup,
             CreatedUtc = DateTime.UtcNow.AddHours(-4),
         };
+        viewModel.SelectedLine = selectedLine;
 
         await viewModel.MarkSelectedLineCompleteCommand.ExecuteAsync(null);
 
         outsideServiceMock.Verify(service => service.MarkCompleteAsync(15, null), Times.Once);
-        viewModel.SelectedLine.IsComplete.Should().BeTrue();
+        selectedLine.IsComplete.Should().BeTrue();
+        viewModel.SelectedLine.Should().BeNull();
         lineCompletedRaised.Should().BeTrue();
     }
 }

@@ -54,6 +54,40 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Retrieves receipt-history and current-inventory evidence that can be used to infer
+        /// the current location for a saved receiving row.
+        /// </summary>
+        /// <param name="poNumber">Canonical Infor Visual PO number.</param>
+        /// <param name="partID">Exact part identifier.</param>
+        /// <param name="poLineNumber">Optional PO line number for additional narrowing.</param>
+        /// <param name="receivedDate">Optional local receipt date anchor.</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualLocationEvidence>>
+        > GetReceivingLocationEvidenceAsync(
+            string poNumber,
+            string partID,
+            string? poLineNumber,
+            DateTime? receivedDate
+        );
+
+        /// <summary>
+        /// Retrieves ordered transaction-history rows for one PO and part.
+        /// Used when reconciliation needs movement-level evidence to break smart-fix ties.
+        /// </summary>
+        /// <param name="poNumber">Canonical Infor Visual PO number.</param>
+        /// <param name="partID">Exact part identifier.</param>
+        /// <param name="poLineNumber">Optional PO line number for additional narrowing.</param>
+        /// <param name="receivedDate">Optional local receipt date anchor.</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualLocationTransaction>>
+        > GetReceivingLocationTransactionHistoryAsync(
+            string poNumber,
+            string partID,
+            string? poLineNumber,
+            DateTime? receivedDate
+        );
+
+        /// <summary>
         /// Validates that the Infor Visual database connection is available.
         /// </summary>
         /// <returns>True if connection successful, false otherwise</returns>

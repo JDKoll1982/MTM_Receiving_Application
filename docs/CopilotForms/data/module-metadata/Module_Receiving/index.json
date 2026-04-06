@@ -1,7 +1,7 @@
 {
   "module": "Module_Receiving",
   "owner": "Receiving Team",
-  "lastUpdated": "2026-04-03",
+  "lastUpdated": "2026-04-05",
   "featureFiles": [
     "receiving-workflow.json",
     "receiving-edit-mode.json",

@@ -61,7 +61,8 @@
     "preserveRules": [
       "Keep all Infor Visual access read-only",
       "Keep fuzzy-search confirmation behavior unchanged",
-      "Keep current sort behavior unchanged"
+      "Keep current sort behavior unchanged",
+      "Keep whole-collection result reloads behaviorally equivalent to the prior grid refresh flow"
     ],
     "acceptanceCriteria": [
       "Part and vendor search modes still return the correct history data",
@@ -71,7 +72,8 @@
     "validationHints": [
       "Confirm vendor and part modes still hit the intended Infor Visual queries",
       "Confirm fuzzy picker flow still occurs when multiple matches are returned",
-      "Confirm the results grid still shows dispatch history without enabling edits"
+      "Confirm the results grid still shows dispatch history without enabling edits",
+      "Confirm search and sort operations still repopulate the results grid correctly after whole-collection replacement"
     ],
     "databaseObjects": [
       "Infor Visual outside service history queries",

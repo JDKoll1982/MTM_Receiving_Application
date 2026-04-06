@@ -155,13 +155,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public void ResetToDefaults()
         {
-            var existingLoads = Loads.ToList();
-            foreach (var load in existingLoads)
-            {
-                DetachLoadHandlers(load);
-            }
-
-            Loads.Clear();
+            ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
             SelectedLoad = null;
             StatusMessage = string.Empty;
         }
@@ -1573,18 +1567,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private void SyncLoadsFromCurrentSession(bool ensureInitialRows)
         {
-            var existingLoads = Loads.ToList();
-            foreach (var load in existingLoads)
-            {
-                DetachLoadHandlers(load);
-            }
-
-            Loads.Clear();
-
-            foreach (var load in _workflowService.CurrentSession.Loads)
-            {
-                Loads.Add(load);
-            }
+            ReplaceLoads(_workflowService.CurrentSession.Loads);
 
             if (ensureInitialRows)
             {
@@ -1604,6 +1587,39 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void DetachLoadHandlers(Model_ReceivingLoad load)
         {
             load.PropertyChanged -= Load_PropertyChanged;
+        }
+
+        partial void OnLoadsChanging(
+            ObservableCollection<Model_ReceivingLoad>? oldValue,
+            ObservableCollection<Model_ReceivingLoad> newValue
+        )
+        {
+            if (oldValue is null)
+            {
+                return;
+            }
+
+            oldValue.CollectionChanged -= Loads_CollectionChanged;
+
+            foreach (var load in oldValue)
+            {
+                DetachLoadHandlers(load);
+            }
+        }
+
+        partial void OnLoadsChanged(ObservableCollection<Model_ReceivingLoad> value)
+        {
+            value.CollectionChanged += Loads_CollectionChanged;
+
+            foreach (var load in value)
+            {
+                AttachLoadHandlers(load);
+            }
+        }
+
+        private void ReplaceLoads(IEnumerable<Model_ReceivingLoad> loads)
+        {
+            Loads = new ObservableCollection<Model_ReceivingLoad>(loads);
         }
 
         private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)

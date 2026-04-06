@@ -19,10 +19,7 @@
     "Module_Volvo/Models/Model_VolvoShipment.cs",
     "Module_Volvo/Models/Model_VolvoShipmentLine.cs"
   ],
-  "relatedServices": [
-    "IService_Volvo",
-    "Service_Volvo"
-  ],
+  "relatedServices": ["IService_Volvo", "Service_Volvo"],
   "promptDefaults": {
     "audience": "Supervisor",
     "docAudience": "Supervisor",
@@ -49,7 +46,8 @@
       "Open shipment details from history"
     ],
     "validationHints": [
-      "Confirm shipment history and recent shipment queries still return the expected records"
+      "Confirm shipment history and recent shipment queries still return the expected records",
+      "Confirm repeated history reloads replace the bound shipment collection without leaving stale rows selected"
     ]
   }
 }

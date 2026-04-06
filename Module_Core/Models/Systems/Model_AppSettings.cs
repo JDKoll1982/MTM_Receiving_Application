@@ -9,7 +9,7 @@ public class Model_AppSettings
     /// If true, uses mock data instead of querying Infor Visual database
     /// Useful for development/testing when Infor Visual server is unavailable
     /// </summary>
-    public bool UseInforVisualMockData { get; set; } = true;
+    public bool UseInforVisualMockData { get; set; } = false;
 
     /// <summary>
     /// Environment name (Development, Production, etc.)
