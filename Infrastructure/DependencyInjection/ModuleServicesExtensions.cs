@@ -178,6 +178,8 @@ public static class ModuleServicesExtensions
 
         // Services
         services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
+        services.AddSingleton<IService_DunnageImageStorage, Service_DunnageImageStorage>();
+        services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
         services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 

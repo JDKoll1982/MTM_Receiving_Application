@@ -12,6 +12,7 @@ CREATE PROCEDURE `sp_Dunnage_Types_Update`(
     IN p_id INT,
     IN p_type_name VARCHAR(100),
     IN p_icon VARCHAR(50),
+    IN p_image_path VARCHAR(255),
     IN p_modified_by VARCHAR(50)
 )
 BEGIN
@@ -24,6 +25,7 @@ BEGIN
     UPDATE dunnage_types
     SET type_name = p_type_name,
         icon = p_icon,
+        image_path = NULLIF(p_image_path, ''),
         modified_by = p_modified_by,
         modified_date = CURRENT_TIMESTAMP
     WHERE id = p_id;

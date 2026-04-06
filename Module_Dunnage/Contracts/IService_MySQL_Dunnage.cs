@@ -16,7 +16,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         public Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllTypesAsync();
         public Task<Model_Dao_Result<Model_DunnageType>> GetTypeByIdAsync(int typeId);
-        public Task<Model_Dao_Result<int>> InsertTypeAsync(string typeName, string icon);
+        public Task<Model_Dao_Result<int>> InsertTypeAsync(
+            string typeName,
+            string icon,
+            string? imagePath = null
+        );
         public Task<Model_Dao_Result> InsertTypeAsync(Model_DunnageType type);
         public Task<Model_Dao_Result> UpdateTypeAsync(Model_DunnageType type);
         public Task<Model_Dao_Result> DeleteTypeAsync(int typeId);

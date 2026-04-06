@@ -4,7 +4,7 @@ param(
     [string]$CsvPath = (Join-Path $PSScriptRoot '..\..\..\docs\GoogleSheetsVersion\CSV Imports\Receiving Data\Receiving Data - History 2025.csv'),
 
     [Parameter()]
-    [string]$OutputPath = (Join-Path $PSScriptRoot '..\..\..\Module_Settings.Core\Defaults\inforvisual.mock-data.json')
+    [string]$OutputPath = (Join-Path $PSScriptRoot '..\..\..\Module_Settings.Core\Defaults\inforvisual-mock-data.json')
 )
 
 Set-StrictMode -Version Latest

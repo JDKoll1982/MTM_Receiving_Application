@@ -43,6 +43,7 @@ public class Dao_DunnageType
     public virtual async Task<Model_Dao_Result<int>> InsertAsync(
         string typeName,
         string icon,
+        string? imagePath,
         string user
     )
     {
@@ -55,6 +56,10 @@ public class Dao_DunnageType
         {
             new MySqlParameter("@p_type_name", typeName),
             new MySqlParameter("@p_icon", icon),
+            new MySqlParameter(
+                "@p_image_path",
+                string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath
+            ),
             new MySqlParameter("@p_user", user),
             pNewId,
         };
@@ -81,6 +86,7 @@ public class Dao_DunnageType
         int id,
         string typeName,
         string icon,
+        string? imagePath,
         string user
     )
     {
@@ -89,6 +95,7 @@ public class Dao_DunnageType
             { "id", id },
             { "type_name", typeName },
             { "icon", icon },
+            { "image_path", string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath },
             { "modified_by", user },
         };
 
@@ -187,6 +194,9 @@ public class Dao_DunnageType
             Icon = reader.IsDBNull(reader.GetOrdinal("icon"))
                 ? "Help"
                 : reader.GetString(reader.GetOrdinal("icon")),
+            ImagePath = reader.IsDBNull(reader.GetOrdinal("image_path"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("image_path")),
             CreatedBy = reader.GetString(reader.GetOrdinal("created_by")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
             ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by"))

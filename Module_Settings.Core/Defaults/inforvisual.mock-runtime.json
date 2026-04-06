@@ -1,6 +1,61 @@
 {
   "DefaultPurchaseOrderNumber": "",
-  "Locations": [],
+  "Locations": [
+    "V-C0-09",
+    "V-F0-06",
+    "W-K0-07"
+  ],
   "PurchaseOrders": [],
-  "ReceivingTransactions": []
+  "Parts": [],
+  "ReceivingTransactions": [
+    {
+      "SourceLoadId": "48fff6cc-6fe5-40cf-979f-1366476634e8",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 2236,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-06T15:30:32.513446-05:00",
+      "TransactionDate": "2026-04-06T15:30:32.513446-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "V-F0-06",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    },
+    {
+      "SourceLoadId": "71415fdc-7f94-4c23-93dd-1b6457308d34",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 1955,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-06T15:30:32.5134361-05:00",
+      "TransactionDate": "2026-04-06T15:30:32.5134361-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "V-C0-09",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    },
+    {
+      "SourceLoadId": "2095c672-d346-4891-9fcc-cdd4045d8706",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 1640,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-06T15:30:32.5112161-05:00",
+      "TransactionDate": "2026-04-06T15:30:32.5112161-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "W-K0-07",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    }
+  ],
+  "OutsideServiceHistory": []
 }

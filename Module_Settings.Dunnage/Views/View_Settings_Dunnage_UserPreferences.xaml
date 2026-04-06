@@ -2,48 +2,44 @@
     x:Class="MTM_Receiving_Application.Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:views="using:MTM_Receiving_Application.Module_Settings.Dunnage.Views"
-    x:DataType="views:View_Settings_Dunnage_UserPreferences"
->
+    x:DataType="views:View_Settings_Dunnage_UserPreferences">
     <ScrollViewer>
         <Grid Padding="24">
-            <StackPanel HorizontalAlignment="Center" Width="960" Spacing="20">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
                 <Border
                     Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Default Dunnage Location" />
                             <TextBlock
-                                Text="Default Dunnage Location"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                            />
-                            <TextBlock
-                                Text="This location is applied automatically when the Dunnage details step is left blank. The value must match a valid Infor Visual location in warehouse 002."
-                                Style="{StaticResource BodyTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                TextWrapping="Wrap"
-                            />
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="This location is applied automatically when the Dunnage details step is left blank. The value must match a valid Infor Visual location in warehouse 002."
+                                TextWrapping="Wrap" />
                         </StackPanel>
 
                         <TextBox
                             x:Name="DefaultLocationTextBox"
+                            HorizontalAlignment="Stretch"
                             Header="Default Location"
-                            Text="{x:Bind ViewModel.DefaultLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             LostFocus="DefaultLocationTextBox_LostFocus"
                             PlaceholderText="RECV"
-                            HorizontalAlignment="Stretch"
-                        />
+                            Text="{x:Bind ViewModel.DefaultLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock
-                            Text="If the entered location does not match exactly, you will be prompted to choose a fuzzy-match result just like Receiving location entry."
-                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            TextWrapping="Wrap"
-                        />
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="If the entered location does not match exactly, you will be prompted to choose a fuzzy-match result just like Receiving location entry."
+                            TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
 
@@ -52,31 +48,58 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            Text="Behavior"
-                            Style="{StaticResource SubtitleTextBlockStyle}"
-                        />
-                        <TextBlock
-                            Text="When a Dunnage user does not enter a location during the guided workflow, the workflow now uses this user preference instead of leaving the location unresolved."
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            TextWrapping="Wrap"
-                        />
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Visual Preferences" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="These preferences only affect the current user when custom Dunnage images are available."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <NumberBox
+                            Header="Preferred Thumbnail Size"
+                            LargeChange="32"
+                            Maximum="192"
+                            Minimum="48"
+                            SmallChange="16"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.PreferredThumbnailSize, Mode=TwoWay}" />
+
+                        <ToggleSwitch
+                            Header="Prefer part images over type images"
+                            IsOn="{x:Bind ViewModel.PreferPartImages, Mode=TwoWay}"
+                            OffContent="Allow type images to lead"
+                            OnContent="Use part images first" />
                     </StackPanel>
                 </Border>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Behavior" />
+                        <TextBlock
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="When a Dunnage user does not enter a location during the guided workflow, the workflow now uses this user preference instead of leaving the location unresolved."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
                     <Button
-                        Content="Reset"
-                        Command="{x:Bind ViewModel.ResetCommand}"
-                    />
-                    <Button
-                        Content="Save"
                         Command="{x:Bind ViewModel.SaveCommand}"
-                        Style="{StaticResource AccentButtonStyle}"
-                    />
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
                 </StackPanel>
             </StackPanel>
         </Grid>

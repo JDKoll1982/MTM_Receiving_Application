@@ -25,6 +25,17 @@ public class Service_SettingsWindowHost : IService_SettingsWindowHost
 
     public void ShowSettingsWindow()
     {
+        ShowSettingsWindowInternal(targetPageType: null);
+    }
+
+    public void ShowSettingsWindow(Type targetPageType)
+    {
+        ArgumentNullException.ThrowIfNull(targetPageType);
+        ShowSettingsWindowInternal(targetPageType);
+    }
+
+    private void ShowSettingsWindowInternal(Type? targetPageType)
+    {
         if (_settingsWindow == null)
         {
             _settingsWindow = _serviceProvider.GetRequiredService<View_Settings_CoreWindow>();
@@ -43,6 +54,11 @@ public class Service_SettingsWindowHost : IService_SettingsWindowHost
                     _ = mainWindow.RefreshSettingsDependentStateAsync();
                 }
             };
+        }
+
+        if (targetPageType != null && _settingsWindow is View_Settings_CoreWindow settingsWindow)
+        {
+            settingsWindow.NavigateToPage(targetPageType);
         }
 
         _ownerWindow ??= App.MainWindow;

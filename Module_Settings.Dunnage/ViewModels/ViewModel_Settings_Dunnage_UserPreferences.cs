@@ -8,6 +8,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -23,6 +24,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
     private const string FallbackDefaultLocation = "RECV";
 
     private readonly IService_SettingsCoreFacade _settingsCore;
+    private readonly IService_DunnageSettings _dunnageSettings;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_ReceivingValidation _receivingValidation;
     private readonly IService_InforVisual _inforVisualService;
@@ -30,8 +32,15 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
     [ObservableProperty]
     private string _defaultLocation = FallbackDefaultLocation;
 
+    [ObservableProperty]
+    private int _preferredThumbnailSize = 96;
+
+    [ObservableProperty]
+    private bool _preferPartImages = true;
+
     public ViewModel_Settings_Dunnage_UserPreferences(
         IService_SettingsCoreFacade settingsCore,
+        IService_DunnageSettings dunnageSettings,
         IService_UserSessionManager sessionManager,
         IService_ReceivingValidation receivingValidation,
         IService_InforVisual inforVisualService,
@@ -42,6 +51,8 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
         : base(errorHandler, logger, notificationService)
     {
         _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
+        _dunnageSettings =
+            dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
         _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
         _receivingValidation =
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
@@ -83,6 +94,17 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 );
                 return;
             }
+
+            await _dunnageSettings.SaveStringAsync(
+                DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize,
+                PreferredThumbnailSize.ToString(),
+                CurrentUserId
+            );
+            await _dunnageSettings.SaveStringAsync(
+                DunnageSettingsKeys.UserPreferences.PreferPartImages,
+                PreferPartImages.ToString(),
+                CurrentUserId
+            );
 
             ShowStatus("Default Dunnage location saved.", InfoBarSeverity.Success);
         }
@@ -231,6 +253,19 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                         ? FallbackDefaultLocation
                         : result.Data.Value.Trim()
                     : FallbackDefaultLocation;
+            PreferredThumbnailSize = await _dunnageSettings.GetIntAsync(
+                DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize,
+                CurrentUserId
+            );
+            if (PreferredThumbnailSize <= 0)
+            {
+                PreferredThumbnailSize = 96;
+            }
+
+            PreferPartImages = await _dunnageSettings.GetBoolAsync(
+                DunnageSettingsKeys.UserPreferences.PreferPartImages,
+                CurrentUserId
+            );
         }
         catch (Exception ex)
         {

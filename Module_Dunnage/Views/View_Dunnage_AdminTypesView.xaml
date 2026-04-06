@@ -2,15 +2,14 @@
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_AdminTypesView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialIcons="using:Material.Icons.WinUI3"
-    mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded"
->
+    mc:Ignorable="d">
     <Page.Resources>
         <converters:Converter_IconCodeToGlyph x:Key="IconCodeToGlyphConverter" />
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
@@ -25,172 +24,171 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
+        <!--  Header  -->
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Manage Dunnage Types" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Manage Dunnage Types" />
             <TextBlock
-                Text="Add, edit, and delete dunnage types with impact analysis"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                 Margin="0,8,0,0"
-            />
+                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="Add, edit, and delete dunnage types with impact analysis" />
         </StackPanel>
 
-        <!-- Toolbar -->
-        <CommandBar Grid.Row="1" DefaultLabelPosition="Right" Margin="0,0,0,16">
+        <!--  Toolbar  -->
+        <CommandBar
+            Grid.Row="1"
+            Margin="0,0,0,16"
+            DefaultLabelPosition="Right">
             <AppBarButton
                 Icon="Add"
                 Label="Add New Type"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.CreateType'), Mode=OneWay}"
-            />
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.CreateType'), Mode=OneWay}" />
             <AppBarSeparator />
             <AppBarButton
-                Icon="Edit"
-                Label="Edit Type"
                 Command="{x:Bind ViewModel.ShowEditTypeCommand}"
+                Icon="Edit"
                 IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.EditType'), Mode=OneWay}"
-            />
+                Label="Edit Type"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.EditType'), Mode=OneWay}" />
             <AppBarButton
-                Icon="Delete"
-                Label="Delete Type"
                 Command="{x:Bind ViewModel.ShowDeleteConfirmationCommand}"
+                Icon="Delete"
                 IsEnabled="{x:Bind ViewModel.CanDelete, Mode=OneWay}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.DeleteType'), Mode=OneWay}"
-            />
+                Label="Delete Type"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.DeleteType'), Mode=OneWay}" />
             <AppBarSeparator />
             <AppBarButton
+                Command="{x:Bind ViewModel.ReturnToAdminHubCommand}"
                 Icon="Back"
                 Label="Back to Admin Hub"
-                Command="{x:Bind ViewModel.ReturnToAdminHubCommand}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ReturnToAdmin'), Mode=OneWay}"
-            />
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ReturnToAdmin'), Mode=OneWay}" />
         </CommandBar>
 
-        <!-- DataGrid -->
+        <!--  DataGrid  -->
         <Border
             Grid.Row="2"
+            Padding="1"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            CornerRadius="8"
-            Padding="1"
-        >
+            CornerRadius="8">
             <Grid>
                 <controls:DataGrid
-                    ItemsSource="{x:Bind ViewModel.Types, Mode=OneWay}"
-                    SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
+                    AlternatingRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}"
                     AutoGenerateColumns="False"
-                    IsReadOnly="True"
-                    GridLinesVisibility="Horizontal"
-                    HeadersVisibility="Column"
-                    SelectionMode="Single"
                     CanUserReorderColumns="False"
                     CanUserSortColumns="True"
-                    VerticalScrollBarVisibility="Auto"
+                    GridLinesVisibility="Horizontal"
+                    HeadersVisibility="Column"
                     HorizontalScrollBarVisibility="Auto"
-                    AlternatingRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}"
-                >
+                    IsReadOnly="True"
+                    ItemsSource="{x:Bind ViewModel.Types, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    VerticalScrollBarVisibility="Auto">
                     <controls:DataGrid.Columns>
-                        <!-- Icon Column -->
-                        <controls:DataGridTemplateColumn Header="Icon" Width="60">
+                        <!--  Icon Column  -->
+                        <controls:DataGridTemplateColumn Width="60" Header="Icon">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <materialIcons:MaterialIcon
-                                        Kind="{Binding IconKind}"
-                                        Width="24"
-                                        Height="24"
-                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                    />
+                                    <StackPanel HorizontalAlignment="Center" Spacing="6">
+                                        <Border
+                                            Width="40"
+                                            Height="40"
+                                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="6">
+                                            <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
+                                        </Border>
+                                        <materialIcons:MaterialIcon
+                                            Width="20"
+                                            Height="20"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                            Kind="{Binding IconKind}" />
+                                    </StackPanel>
                                 </DataTemplate>
                             </controls:DataGridTemplateColumn.CellTemplate>
                         </controls:DataGridTemplateColumn>
 
-                        <!-- Type Name Column -->
+                        <!--  Type Name Column  -->
                         <controls:DataGridTextColumn
-                            Header="Type Name"
-                            Binding="{Binding DunnageType}"
                             Width="2*"
+                            Binding="{Binding DunnageType}"
                             CanUserResize="True"
-                        />
+                            Header="Type Name" />
 
-                        <!-- Date Added Column -->
+                        <!--  Date Added Column  -->
                         <controls:DataGridTextColumn
-                            Header="Date Added"
+                            Width="*"
                             Binding="{Binding DateAdded, Converter={StaticResource DateTimeToStringConverter}}"
-                            Width="*"
                             CanUserResize="True"
-                        />
+                            Header="Date Added" />
 
-                        <!-- Added By Column -->
+                        <!--  Added By Column  -->
                         <controls:DataGridTextColumn
-                            Header="Added By"
+                            Width="*"
                             Binding="{Binding AddedBy}"
-                            Width="*"
                             CanUserResize="True"
-                        />
+                            Header="Added By" />
 
-                        <!-- Last Modified Column -->
+                        <!--  Last Modified Column  -->
                         <controls:DataGridTextColumn
-                            Header="Last Modified"
+                            Width="*"
                             Binding="{Binding LastModified, Converter={StaticResource DateTimeToStringConverter}}"
-                            Width="*"
                             CanUserResize="True"
-                        />
+                            Header="Last Modified" />
 
-                        <!-- Modified By Column -->
+                        <!--  Modified By Column  -->
                         <controls:DataGridTextColumn
-                            Header="Modified By"
-                            Binding="{Binding ModifiedBy}"
                             Width="*"
+                            Binding="{Binding ModifiedBy}"
                             CanUserResize="True"
-                        />
+                            Header="Modified By" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
 
-                <!-- Empty State -->
+                <!--  Empty State  -->
                 <StackPanel
-                    VerticalAlignment="Center"
                     HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
                     Spacing="16"
-                    Visibility="{x:Bind ViewModel.Types.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"
-                >
+                    Visibility="{x:Bind ViewModel.Types.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}">
                     <FontIcon
-                        Glyph="&#xE7C3;"
                         FontSize="72"
                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                    />
+                        Glyph="&#xE7C3;" />
                     <TextBlock
-                        Text="No types found"
+                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                    />
+                        Text="No types found" />
                     <TextBlock
-                        Text="Click 'Add New Type' to create your first dunnage type"
-                        Style="{StaticResource CaptionTextBlockStyle}"
                         Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                    />
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Click 'Add New Type' to create your first dunnage type" />
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Status Bar -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" Margin="0,16,0,0">
+        <!--  Status Bar  -->
+        <StackPanel
+            Grid.Row="3"
+            Margin="0,16,0,0"
+            Orientation="Horizontal"
+            Spacing="8">
             <ProgressRing
-                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                 Width="20"
                 Height="20"
-            />
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
             <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
             <TextBlock
-                Text="|"
-                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                 Margin="8,0,8,0"
-            />
+                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                Text="|" />
             <TextBlock>
                 <Run Text="Total Types:" />
-                <Run Text="{x:Bind ViewModel.Types.Count, Mode=OneWay}" FontWeight="SemiBold" />
+                <Run FontWeight="SemiBold" Text="{x:Bind ViewModel.Types.Count, Mode=OneWay}" />
             </TextBlock>
         </StackPanel>
     </Grid>

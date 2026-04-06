@@ -308,7 +308,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 {
                     TypeName = typeName,
                     Icon = iconName,
-                    // Note: Icon storage would need to be added to database schema
+                    ImagePath = dialog.SelectedImagePath,
                 };
 
                 var insertResult = await _dunnageService.InsertTypeAsync(newType);
@@ -414,7 +414,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 }
             }
 
-            dialog.InitializeForEdit(type.TypeName, type.Icon, existingSpecsDict);
+            dialog.InitializeForEdit(type.TypeName, type.Icon, type.ImagePath, existingSpecsDict);
 
             var result = await dialog.ShowAsync();
 
@@ -425,10 +425,15 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 var newSpecs = dialog.Specs; // Collection of SpecItem
 
                 // Update Type info
-                if (newName != type.TypeName || newIcon != type.Icon)
+                if (
+                    newName != type.TypeName
+                    || newIcon != type.Icon
+                    || dialog.SelectedImagePath != type.ImagePath
+                )
                 {
                     type.TypeName = newName;
                     type.Icon = newIcon;
+                    type.ImagePath = dialog.SelectedImagePath;
 
                     var updateResult = await _dunnageService.UpdateTypeAsync(type);
                     if (!updateResult.IsSuccess)

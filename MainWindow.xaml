@@ -81,7 +81,10 @@
                 Margin="8,0,8,0"
                 VerticalAlignment="Center"
                 PlaceholderText="Search"
-                QueryIcon="Find" />
+                QueryIcon="Find"
+                QuerySubmitted="TitleBarSearchBox_QuerySubmitted"
+                SuggestionChosen="TitleBarSearchBox_SuggestionChosen"
+                TextChanged="TitleBarSearchBox_TextChanged" />
         </Grid>
 
         <NavigationView

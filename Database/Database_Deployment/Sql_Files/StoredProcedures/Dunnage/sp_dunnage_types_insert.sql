@@ -13,6 +13,7 @@ DROP PROCEDURE IF EXISTS `sp_Dunnage_Types_Insert`$$
 CREATE PROCEDURE `sp_Dunnage_Types_Insert`(
     IN  p_type_name VARCHAR(100),
     IN  p_icon      VARCHAR(50),
+    IN  p_image_path VARCHAR(255),
     IN  p_user      VARCHAR(50),
     OUT p_new_id    INT
 )
@@ -23,8 +24,8 @@ BEGIN
         SET MESSAGE_TEXT = 'Dunnage type name already exists';
     END IF;
 
-    INSERT INTO dunnage_types (type_name, icon, created_by, created_date)
-    VALUES (p_type_name, p_icon, p_user, NOW());
+    INSERT INTO dunnage_types (type_name, icon, image_path, created_by, created_date)
+    VALUES (p_type_name, p_icon, NULLIF(p_image_path, ''), p_user, NOW());
 
     SET p_new_id = LAST_INSERT_ID();
 END $$

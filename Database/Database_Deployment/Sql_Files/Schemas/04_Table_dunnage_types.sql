@@ -10,6 +10,7 @@ CREATE TABLE dunnage_types (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for dunnage type',
     type_name VARCHAR(100) NOT NULL UNIQUE COMMENT 'Display name of dunnage type (e.g., Box, Pallet, Container)',
     icon VARCHAR(50) NOT NULL DEFAULT 'PackageVariantClosed' COMMENT 'MaterialIconKind name for UI display (e.g., PackageVariantClosed, Folder)',
+    image_path VARCHAR(255) NULL COMMENT 'Relative PNG path for app-managed type imagery stored in local app data',
     created_by VARCHAR(50) NOT NULL COMMENT 'Username of user who created this record',
     created_date DATETIME NOT NULL COMMENT 'Timestamp when record was created',
     modified_by VARCHAR(50) COMMENT 'Username of user who last modified this record',

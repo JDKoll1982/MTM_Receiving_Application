@@ -6,4 +6,5 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 public interface IService_SettingsWindowHost
 {
     void ShowSettingsWindow();
+    void ShowSettingsWindow(System.Type targetPageType);
 }

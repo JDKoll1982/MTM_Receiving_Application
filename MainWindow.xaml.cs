@@ -9,6 +9,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
@@ -28,8 +30,66 @@ namespace MTM_Receiving_Application
         private readonly IService_SettingsWindowHost _settingsWindowHost;
         private readonly IServiceProvider _serviceProvider;
         private bool _hasNavigatedOnStartup = false;
+        private bool _isUpdatingNavSelection;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
+
+        private enum SearchDestinationKind
+        {
+            FrameRoute,
+            SettingsPage,
+        }
+
+        private sealed class SearchDestination
+        {
+            private readonly string[] _aliases;
+
+            public SearchDestination(
+                string key,
+                string label,
+                SearchDestinationKind kind,
+                string? routeTag,
+                Type? settingsPageType,
+                string detail,
+                params string[] aliases
+            )
+            {
+                Key = key;
+                Label = label;
+                Kind = kind;
+                RouteTag = routeTag;
+                SettingsPageType = settingsPageType;
+                Detail = detail;
+                _aliases = aliases;
+            }
+
+            public string Key { get; }
+            public string Label { get; }
+            public SearchDestinationKind Kind { get; }
+            public string? RouteTag { get; }
+            public Type? SettingsPageType { get; }
+            public string Detail { get; }
+
+            public IEnumerable<string> SearchTerms
+            {
+                get
+                {
+                    yield return Label;
+
+                    if (!string.IsNullOrWhiteSpace(RouteTag))
+                    {
+                        yield return RouteTag;
+                    }
+
+                    foreach (var alias in _aliases)
+                    {
+                        yield return alias;
+                    }
+                }
+            }
+
+            public override string ToString() => Label;
+        }
 
         /// <summary>
         /// Gets the main content frame for navigation
@@ -175,11 +235,25 @@ namespace MTM_Receiving_Application
             ),
         };
 
+        private static readonly List<SearchDestination> _searchDestinations =
+            CreateSearchDestinations();
+
+        private static readonly Dictionary<string, SearchDestination> _searchDestinationsByKey =
+            _searchDestinations.ToDictionary(
+                destination => destination.Key,
+                StringComparer.Ordinal
+            );
+
         private async void NavView_SelectionChanged(
             NavigationView sender,
             NavigationViewSelectionChangedEventArgs args
         )
         {
+            if (_isUpdatingNavSelection)
+            {
+                return;
+            }
+
             if (args.IsSettingsSelected)
             {
                 _settingsWindowHost.ShowSettingsWindow();
@@ -199,6 +273,642 @@ namespace MTM_Receiving_Application
 
             await ClearModuleDraftStateBeforeNavigationAsync(route.PageType);
             NavigateWithDI(route.PageType, route.Title);
+        }
+
+        private static List<SearchDestination> CreateSearchDestinations()
+        {
+            static SearchDestination CreateFrameDestination(
+                string routeTag,
+                string label,
+                string detail,
+                params string[] aliases
+            )
+            {
+                return new SearchDestination(
+                    key: routeTag,
+                    label: label,
+                    kind: SearchDestinationKind.FrameRoute,
+                    routeTag: routeTag,
+                    settingsPageType: null,
+                    detail: detail,
+                    aliases: aliases
+                );
+            }
+
+            static SearchDestination CreateSettingsDestination(
+                Type pageType,
+                string label,
+                string detail,
+                params string[] aliases
+            )
+            {
+                return new SearchDestination(
+                    key: pageType.FullName ?? pageType.Name,
+                    label: label,
+                    kind: SearchDestinationKind.SettingsPage,
+                    routeTag: null,
+                    settingsPageType: pageType,
+                    detail: detail,
+                    aliases: aliases
+                );
+            }
+
+            return
+            [
+                CreateFrameDestination(
+                    "ReceivingWorkflowView",
+                    "Receiving Labels",
+                    "Guided, manual, and edit receiving workflow",
+                    "receiving",
+                    "receiving labels",
+                    "receiving workflow",
+                    "receiving mode selection",
+                    "guided receiving",
+                    "manual receiving",
+                    "edit receiving"
+                ),
+                CreateFrameDestination(
+                    "DunnageLabelPage",
+                    "Dunnage Labels",
+                    "Guided and manual dunnage workflow",
+                    "dunnage",
+                    "dunnage labels",
+                    "dunnage workflow",
+                    "dunnage mode selection",
+                    "guided dunnage",
+                    "manual dunnage"
+                ),
+                CreateFrameDestination(
+                    "OutsideServiceMainPage",
+                    "Outside Service",
+                    "Outside service main workflow and requests",
+                    "outside service",
+                    "outside service main",
+                    "service"
+                ),
+                CreateFrameDestination(
+                    "VolvoShipmentEntry",
+                    "Volvo Dunnage Requisition",
+                    "Volvo requisition entry page",
+                    "volvo",
+                    "volvo requisition",
+                    "volvo shipment entry"
+                ),
+                CreateFrameDestination(
+                    "VolvoHistory",
+                    "Volvo Shipment History",
+                    "Historical Volvo shipment and requisition lookup",
+                    "volvo history",
+                    "shipment history",
+                    "volvo shipment history"
+                ),
+                CreateFrameDestination(
+                    "ReportingMainPage",
+                    "End of Day Reports",
+                    "Reporting and export entry point",
+                    "reports",
+                    "reporting",
+                    "end of day reports"
+                ),
+                CreateFrameDestination(
+                    "ShipRecToolsPage",
+                    "Ship/Rec Tools",
+                    "Shipping and receiving tools hub",
+                    "ship rec",
+                    "ship rec tools",
+                    "shipping receiving tools",
+                    "tools"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_CoreNavigationHub),
+                    "Configuration",
+                    "Core settings shell",
+                    "settings",
+                    "configuration",
+                    "core settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_System),
+                    "System Settings",
+                    "Core system defaults and application behavior",
+                    "system",
+                    "system settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_Users),
+                    "User Management",
+                    "Application users and account setup",
+                    "users",
+                    "user settings",
+                    "user management"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_Theme),
+                    "Theme Settings",
+                    "Application appearance and theme options",
+                    "theme",
+                    "theme settings",
+                    "appearance"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_Database),
+                    "Database Settings",
+                    "Core database configuration and connection options",
+                    "database",
+                    "database settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_Logging),
+                    "Logging Settings",
+                    "Diagnostics and logging configuration",
+                    "logging",
+                    "logging settings",
+                    "diagnostics"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_SharedPaths),
+                    "Shared Paths",
+                    "Shared file paths and output locations",
+                    "paths",
+                    "shared paths",
+                    "file paths"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub),
+                    "Receiving Settings",
+                    "Receiving settings hub",
+                    "receiving settings",
+                    "receiving navigation"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults),
+                    "Receiving Defaults",
+                    "Default values used in the receiving workflow",
+                    "receiving defaults",
+                    "receiving default settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_Validation),
+                    "Receiving Validation",
+                    "Receiving validation rules and required fields",
+                    "receiving validation",
+                    "validation settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_UserPreferences),
+                    "Part Number Auto Padding",
+                    "Receiving part-number normalization and padding",
+                    "part number auto padding",
+                    "receiving user preferences",
+                    "part padding"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules),
+                    "Workflow Options",
+                    "Receiving workflow defaults and behavior rules",
+                    "workflow options",
+                    "receiving workflow options",
+                    "receiving business rules"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub),
+                    "Dunnage Settings",
+                    "Dunnage settings hub",
+                    "dunnage settings",
+                    "dunnage navigation"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_SettingsOverview),
+                    "Dunnage Settings Overview",
+                    "Dunnage configuration overview and shortcuts",
+                    "dunnage settings overview",
+                    "dunnage overview"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences),
+                    "Dunnage User Preferences",
+                    "User-specific dunnage workflow behavior",
+                    "dunnage user preferences",
+                    "dunnage preferences"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx),
+                    "Dunnage UI/UX",
+                    "Dunnage user interface and experience settings",
+                    "dunnage ui",
+                    "dunnage ui ux",
+                    "dunnage interface"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_Workflow),
+                    "Dunnage Workflow Settings",
+                    "Dunnage workflow behavior and automation",
+                    "dunnage workflow settings",
+                    "dunnage workflow"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_Permissions),
+                    "Dunnage Permissions",
+                    "Access controls for dunnage features",
+                    "dunnage permissions"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_Audit),
+                    "Dunnage Audit Log",
+                    "Audit history for dunnage operations",
+                    "dunnage audit",
+                    "audit log"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
+                    "Reporting Settings",
+                    "Reporting settings hub",
+                    "reporting settings",
+                    "reporting navigation"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_SettingsOverview),
+                    "Reporting Settings Overview",
+                    "Reporting configuration overview and shortcuts",
+                    "reporting overview",
+                    "report settings overview"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_FileIO),
+                    "File I/O Settings",
+                    "Reporting export file paths and output options",
+                    "file io",
+                    "reporting file io",
+                    "report file settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_EmailUx),
+                    "Email Settings",
+                    "Email delivery and formatting options for reports",
+                    "email settings",
+                    "report email"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_BusinessRules),
+                    "Reporting Business Rules",
+                    "Business rules that govern report generation",
+                    "reporting business rules",
+                    "report business rules"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_Permissions),
+                    "Reporting Permissions",
+                    "Permissions for reporting features",
+                    "reporting permissions"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub),
+                    "Volvo Settings",
+                    "Volvo settings hub",
+                    "volvo settings",
+                    "volvo navigation"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_SettingsOverview),
+                    "Volvo Settings Overview",
+                    "Volvo configuration overview and shortcuts",
+                    "volvo overview",
+                    "volvo settings overview"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_DatabaseSettings),
+                    "Volvo Database Settings",
+                    "Volvo-specific database options",
+                    "volvo database",
+                    "volvo database settings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_ConnectionStrings),
+                    "Connection Strings",
+                    "Volvo connection-string management",
+                    "connection strings",
+                    "volvo connection strings"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_FilePaths),
+                    "Volvo File Paths",
+                    "Volvo file locations and external paths",
+                    "volvo file paths",
+                    "volvo paths"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_UiConfiguration),
+                    "Volvo UI Configuration",
+                    "Volvo interface and visual configuration",
+                    "volvo ui",
+                    "volvo ui configuration"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog),
+                    "Backlog",
+                    "Pending Volvo externalization work",
+                    "volvo backlog",
+                    "externalization backlog"
+                ),
+            ];
+        }
+
+        private static IReadOnlyList<SearchDestination> GetSearchMatches(string queryText)
+        {
+            var normalizedQuery = NormalizeSearchText(queryText);
+            if (string.IsNullOrWhiteSpace(normalizedQuery))
+            {
+                return Array.Empty<SearchDestination>();
+            }
+
+            return _searchDestinations
+                .Select(destination => new
+                {
+                    Destination = destination,
+                    Rank = GetSearchMatchRank(destination, normalizedQuery),
+                })
+                .Where(result => result.Rank < int.MaxValue)
+                .OrderBy(result => result.Rank)
+                .ThenBy(result => result.Destination.Label, StringComparer.OrdinalIgnoreCase)
+                .Select(result => result.Destination)
+                .ToList();
+        }
+
+        private static bool TryResolveConfidentSearchDestination(
+            string queryText,
+            out SearchDestination? destination
+        )
+        {
+            var normalizedQuery = NormalizeSearchText(queryText);
+            if (string.IsNullOrWhiteSpace(normalizedQuery))
+            {
+                destination = null;
+                return false;
+            }
+
+            var exactMatches = _searchDestinations
+                .Where(candidate =>
+                    candidate.SearchTerms.Any(term =>
+                        string.Equals(term, normalizedQuery, StringComparison.OrdinalIgnoreCase)
+                    )
+                )
+                .ToList();
+            if (exactMatches.Count == 1)
+            {
+                destination = exactMatches[0];
+                return true;
+            }
+
+            var startsWithMatches = _searchDestinations
+                .Where(candidate =>
+                    candidate.SearchTerms.Any(term =>
+                        term.StartsWith(normalizedQuery, StringComparison.OrdinalIgnoreCase)
+                    )
+                )
+                .ToList();
+            if (startsWithMatches.Count == 1)
+            {
+                destination = startsWithMatches[0];
+                return true;
+            }
+
+            var containsMatches = _searchDestinations
+                .Where(candidate =>
+                    candidate.SearchTerms.Any(term =>
+                        term.Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase)
+                    )
+                )
+                .ToList();
+            if (containsMatches.Count == 1)
+            {
+                destination = containsMatches[0];
+                return true;
+            }
+
+            destination = null;
+            return false;
+        }
+
+        private static string NormalizeSearchText(string queryText)
+        {
+            return queryText.Trim();
+        }
+
+        private static int GetSearchMatchRank(SearchDestination destination, string normalizedQuery)
+        {
+            if (
+                destination.SearchTerms.Any(term =>
+                    string.Equals(term, normalizedQuery, StringComparison.OrdinalIgnoreCase)
+                )
+            )
+            {
+                return 0;
+            }
+
+            if (
+                destination.SearchTerms.Any(term =>
+                    term.StartsWith(normalizedQuery, StringComparison.OrdinalIgnoreCase)
+                )
+            )
+            {
+                return 1;
+            }
+
+            if (
+                destination.SearchTerms.Any(term =>
+                    term.Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase)
+                )
+            )
+            {
+                return 2;
+            }
+
+            return int.MaxValue;
+        }
+
+        private void TitleBarSearchBox_TextChanged(
+            AutoSuggestBox sender,
+            AutoSuggestBoxTextChangedEventArgs args
+        )
+        {
+            if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                return;
+            }
+
+            var queryText = sender.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(queryText))
+            {
+                sender.ItemsSource = null;
+                return;
+            }
+
+            sender.ItemsSource = GetSearchMatches(queryText).Take(8).ToList();
+        }
+
+        private void TitleBarSearchBox_SuggestionChosen(
+            AutoSuggestBox sender,
+            AutoSuggestBoxSuggestionChosenEventArgs args
+        )
+        {
+            if (args.SelectedItem is SearchDestination destination)
+            {
+                sender.Text = destination.Label;
+            }
+        }
+
+        private async void TitleBarSearchBox_QuerySubmitted(
+            AutoSuggestBox sender,
+            AutoSuggestBoxQuerySubmittedEventArgs args
+        )
+        {
+            if (args.ChosenSuggestion is SearchDestination chosenDestination)
+            {
+                await NavigateToSearchDestinationAsync(chosenDestination);
+                return;
+            }
+
+            var queryText = args.QueryText?.Trim();
+            if (string.IsNullOrWhiteSpace(queryText))
+            {
+                return;
+            }
+
+            if (TryResolveConfidentSearchDestination(queryText, out var resolvedDestination))
+            {
+                await NavigateToSearchDestinationAsync(resolvedDestination!);
+                return;
+            }
+
+            var matches = GetSearchMatches(queryText).Take(10).ToList();
+            if (matches.Count == 0)
+            {
+                ViewModel.NotificationService.ShowStatus(
+                    $"No page matched '{queryText}'.",
+                    global::MTM_Receiving_Application
+                        .Module_Core
+                        .Models
+                        .Enums
+                        .InfoBarSeverity
+                        .Warning
+                );
+                return;
+            }
+
+            await ShowSearchDisambiguationAsync(queryText, matches);
+        }
+
+        private async Task ShowSearchDisambiguationAsync(
+            string queryText,
+            IReadOnlyList<SearchDestination> matches
+        )
+        {
+            var pickerItems = matches
+                .Select(match => new Model_FuzzySearchResult
+                {
+                    Key = match.Key,
+                    Label = match.Label,
+                    Detail = match.Detail,
+                })
+                .ToList();
+
+            var dialog = new Dialog_FuzzySearchPicker(
+                pickerItems,
+                "Open Page",
+                $"Matching pages for '{queryText}'"
+            );
+
+            if (Content is FrameworkElement rootElement)
+            {
+                dialog.XamlRoot = rootElement.XamlRoot;
+            }
+
+            var dialogResult = await dialog.ShowAsync();
+            if (
+                dialogResult != ContentDialogResult.Primary
+                || dialog.SelectedResult is null
+                || !_searchDestinationsByKey.TryGetValue(
+                    dialog.SelectedResult.Key,
+                    out var destination
+                )
+            )
+            {
+                return;
+            }
+
+            await NavigateToSearchDestinationAsync(destination);
+        }
+
+        private async Task NavigateToSearchDestinationAsync(SearchDestination destination)
+        {
+            bool navigationSucceeded;
+            if (destination.Kind == SearchDestinationKind.FrameRoute)
+            {
+                navigationSucceeded = await NavigateToRouteTagAsync(destination.RouteTag!);
+            }
+            else
+            {
+                _settingsWindowHost.ShowSettingsWindow(destination.SettingsPageType!);
+                navigationSucceeded = true;
+            }
+
+            if (!navigationSucceeded)
+            {
+                ViewModel.NotificationService.ShowStatus(
+                    $"Unable to open {destination.Label}.",
+                    global::MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            TitleBarSearchBox.ItemsSource = null;
+            TitleBarSearchBox.Text = destination.Label;
+        }
+
+        private async Task<bool> NavigateToRouteTagAsync(string routeTag)
+        {
+            if (!_navRoutes.TryGetValue(routeTag, out var route))
+            {
+                return false;
+            }
+
+            await ClearModuleDraftStateBeforeNavigationAsync(route.PageType);
+            SetNavigationSelectionByTag(routeTag);
+            return NavigateWithDI(route.PageType, route.Title);
+        }
+
+        private void SetNavigationSelectionByTag(string? routeTag)
+        {
+            try
+            {
+                _isUpdatingNavSelection = true;
+                NavView.SelectedItem = FindNavigationItemByTag(routeTag);
+            }
+            finally
+            {
+                _isUpdatingNavSelection = false;
+            }
+        }
+
+        private NavigationViewItem? FindNavigationItemByTag(string? routeTag)
+        {
+            return GetNavigationItems()
+                .FirstOrDefault(item =>
+                    string.Equals(item.Tag?.ToString(), routeTag, StringComparison.Ordinal)
+                );
+        }
+
+        private IEnumerable<NavigationViewItem> GetNavigationItems()
+        {
+            foreach (var menuItem in NavView.MenuItems.OfType<NavigationViewItem>())
+            {
+                yield return menuItem;
+            }
+
+            foreach (var footerItem in NavView.FooterMenuItems.OfType<NavigationViewItem>())
+            {
+                yield return footerItem;
+            }
         }
 
         private async Task ClearModuleDraftStateBeforeNavigationAsync(Type destinationPageType)
@@ -376,20 +1086,7 @@ namespace MTM_Receiving_Application
             await ClearCurrentModuleStateAsync();
             UpdateUserDisplay();
 
-            var receivingNavItem = NavView
-                .MenuItems.OfType<NavigationViewItem>()
-                .FirstOrDefault(item =>
-                    string.Equals(
-                        item.Tag?.ToString(),
-                        "ReceivingWorkflowView",
-                        StringComparison.Ordinal
-                    )
-                );
-
-            if (receivingNavItem != null)
-            {
-                NavView.SelectedItem = receivingNavItem;
-            }
+            SetNavigationSelectionByTag("ReceivingWorkflowView");
 
             NavigateWithDI(typeof(Module_Receiving.Views.View_Receiving_Workflow));
         }

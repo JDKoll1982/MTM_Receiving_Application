@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database;
 /// </summary>
 public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCatalog
 {
-    private const string CatalogPath = "Module_Settings.Core/Defaults/inforvisual.mock-data.json";
+    private const string CatalogPath = "Module_Settings.Core/Defaults/inforvisual-mock-data.json";
     private const string RuntimeCatalogPath = "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json";
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {

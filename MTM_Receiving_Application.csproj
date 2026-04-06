@@ -42,7 +42,7 @@
     <Content Include="Module_Settings.Core\Defaults\settings.manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Module_Settings.Core\Defaults\inforvisual.mock-data.json">
+    <Content Include="Module_Settings.Core\Defaults\inforvisual-mock-data.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

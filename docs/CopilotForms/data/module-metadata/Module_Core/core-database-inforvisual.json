@@ -26,7 +26,7 @@
     "Module_Core/Models/InforVisual/Model_InforVisualPO.cs",
     "Module_Core/Models/InforVisual/Model_InforVisualPOLine.cs",
     "Module_Core/Models/InforVisual/Model_OutsideServiceHistory.cs",
-    "Module_Settings.Core/Defaults/inforvisual.mock-data.json",
+    "Module_Settings.Core/Defaults/inforvisual-mock-data.json",
     "Database/InforVisualScripts/PowerShell_Scripts/Export-InforVisualMockDataCatalog.ps1"
   ],
   "relatedServices": [

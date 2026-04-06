@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -95,6 +96,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     [NotifyPropertyChangedFor(nameof(SelectedTypeIconKind))]
     private string _selectedTypeIcon = "Help";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedTypeImage))]
+    [NotifyPropertyChangedFor(nameof(SelectedTypeImageSource))]
+    private string? _selectedTypeImagePath;
+
     /// <summary>
     /// Gets the MaterialIconKind for the selected type
     /// </summary>
@@ -127,6 +133,18 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     /// </summary>
     public bool IsPartSelected => SelectedPart != null;
 
+    public bool HasSelectedTypeImage => SelectedTypeImageSource is not null;
+
+    public ImageSource? SelectedTypeImageSource =>
+        Helper_DunnageImagePaths.CreateImageSource(SelectedTypeImagePath);
+
+    public bool HasSelectedPartVisual => SelectedPartVisualSource is not null;
+
+    public ImageSource? SelectedPartVisualSource =>
+        SelectedPart?.ImageSource
+        ?? SelectedPart?.DunnageTypeImageSource
+        ?? SelectedTypeImageSource;
+
     #endregion
 
     #region Initialization
@@ -155,6 +173,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
             SelectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
             SelectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
             SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
+            SelectedTypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath;
 
             _logger.LogInfo(
                 $"PartSelection: SelectedTypeId={SelectedTypeId}, SelectedTypeName={SelectedTypeName}, SelectedTypeIcon={SelectedTypeIcon}",
@@ -284,6 +303,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         }
 
         // Notify that command can execute state changed
+        OnPropertyChanged(nameof(SelectedPartVisualSource));
+        OnPropertyChanged(nameof(HasSelectedPartVisual));
         SelectPartCommand.NotifyCanExecuteChanged();
         EditPartCommand.NotifyCanExecuteChanged();
     }
@@ -501,6 +522,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     PartId = partId,
                     TypeId = SelectedTypeId,
                     SpecValues = specValuesJson,
+                    ImagePath = dialog.SelectedImagePath,
                     DunnageTypeName = SelectedTypeName,
                     HomeLocation = dialog.HomeLocation,
                 };
@@ -632,6 +654,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     TypeId = SelectedPart.TypeId,
                     DunnageTypeName = SelectedTypeName,
                     SpecValues = dialog.UpdatedSpecValuesJson,
+                    ImagePath = dialog.SelectedImagePath,
                     HomeLocation = dialog.UpdatedHomeLocation,
                 };
 

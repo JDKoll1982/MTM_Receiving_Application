@@ -60,7 +60,7 @@
     "Database/InforVisualScripts/Queries/17_GetReceivingLocationTransactionHistory.sql",
     "Database/InforVisualScripts/Queries/11_FuzzySearchLocationsByWarehouse.sql",
     "Database/InforVisualScripts/Queries/13_ValidateLocationExists.sql",
-    "Module_Settings.Core/Defaults/inforvisual.mock-data.json",
+    "Module_Settings.Core/Defaults/inforvisual-mock-data.json",
     "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json",
     "Database/InforVisualScripts/PowerShell_Scripts/Export-InforVisualMockDataCatalog.ps1"
   ],

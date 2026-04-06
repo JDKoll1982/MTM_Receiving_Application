@@ -12,6 +12,8 @@ BEGIN
         p.type_id,
         t.type_name,
         p.spec_values,
+        p.image_path,
+        t.image_path AS type_image_path,
         p.home_location,
         p.created_by,
         p.created_date,

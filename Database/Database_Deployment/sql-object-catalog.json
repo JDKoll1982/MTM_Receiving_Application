@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-05T22:13:53.8432944-05:00",
+  "generatedAt": "2026-04-06T17:19:07.7312234-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -4766,6 +4766,16 @@
         {
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
+          "column": "image_path"
+        },
+        {
+          "qualifier": "t",
+          "resolvedObject": "dunnage_types",
+          "column": "image_path"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
           "column": "home_location"
         },
         {
@@ -4866,6 +4876,16 @@
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "spec_values"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "image_path"
+        },
+        {
+          "qualifier": "t",
+          "resolvedObject": "dunnage_types",
+          "column": "image_path"
         },
         {
           "qualifier": "p",
@@ -4972,6 +4992,16 @@
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "spec_values"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "image_path"
+        },
+        {
+          "qualifier": "t",
+          "resolvedObject": "dunnage_types",
+          "column": "image_path"
         },
         {
           "qualifier": "p",
@@ -5110,6 +5140,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_image_path",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
           "name": "p_home_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -5134,6 +5169,7 @@
             "part_id",
             "type_id",
             "spec_values",
+            "image_path",
             "home_location",
             "created_by",
             "created_date"
@@ -5147,6 +5183,7 @@
         "p_part_id",
         "p_type_id",
         "p_spec_values",
+        "p_image_path",
         "p_home_location",
         "p_user",
         "p_new_id"
@@ -5190,6 +5227,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_image_path",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
           "name": "p_home_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -5229,6 +5271,7 @@
             "part_id",
             "type_id",
             "spec_values",
+            "image_path",
             "home_location",
             "created_by",
             "created_date"
@@ -5252,6 +5295,7 @@
         "p_part_id",
         "p_type_id",
         "p_spec_values",
+        "p_image_path",
         "p_home_location",
         "p_inventory_method",
         "p_inventory_notes",
@@ -5313,6 +5357,21 @@
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "spec_values"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "image_path"
+        },
+        {
+          "qualifier": "t",
+          "resolvedObject": "dunnage_types",
+          "column": "image_path"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "home_location"
         },
         {
           "qualifier": "p",
@@ -5404,6 +5463,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_image_path",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
           "name": "p_home_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -5431,6 +5495,7 @@
         "p_id",
         "p_part_id",
         "p_spec_values",
+        "p_image_path",
         "p_home_location",
         "p_user"
       ],
@@ -5475,6 +5540,11 @@
           "direction": "IN",
           "name": "p_spec_values",
           "sqlType": "JSON"
+        },
+        {
+          "direction": "IN",
+          "name": "p_image_path",
+          "sqlType": "VARCHAR(255)"
         },
         {
           "direction": "IN",
@@ -5562,6 +5632,7 @@
         "p_original_part_id",
         "p_new_part_id",
         "p_spec_values",
+        "p_image_path",
         "p_home_location",
         "p_inventory_method",
         "p_inventory_notes",
@@ -6508,6 +6579,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_image_path",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
           "name": "p_user",
           "sqlType": "VARCHAR(50)"
         },
@@ -6528,6 +6604,7 @@
           "columns": [
             "type_name",
             "icon",
+            "image_path",
             "created_by",
             "created_date"
           ]
@@ -6539,6 +6616,7 @@
       "parameterTokensUsed": [
         "p_type_name",
         "p_icon",
+        "p_image_path",
         "p_user",
         "p_new_id"
       ],
@@ -6586,6 +6664,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_image_path",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
           "name": "p_modified_by",
           "sqlType": "VARCHAR(50)"
         }
@@ -6610,6 +6693,7 @@
         "p_id",
         "p_type_name",
         "p_icon",
+        "p_image_path",
         "p_modified_by"
       ],
       "variableTokensUsed": [],

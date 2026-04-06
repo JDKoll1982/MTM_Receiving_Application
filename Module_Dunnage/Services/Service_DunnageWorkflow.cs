@@ -452,6 +452,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 load.HomeLocation = CurrentSession.SelectedPart?.HomeLocation;
                 load.TypeName = CurrentSession.SelectedTypeName;
                 load.TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help";
+                load.TypeImagePath = CurrentSession.SelectedType?.ImagePath;
+                load.PartImagePath = CurrentSession.SelectedPart?.ImagePath;
                 load.DunnageType = CurrentSession.SelectedTypeName;
                 load.TypeId = CurrentSession.SelectedTypeId;
                 load.Specs = new Dictionary<string, object>(specs);
@@ -475,6 +477,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 DunnageType = CurrentSession.SelectedTypeName,
                 TypeName = CurrentSession.SelectedTypeName,
                 TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help",
+                TypeImagePath = CurrentSession.SelectedType?.ImagePath,
+                PartImagePath = CurrentSession.SelectedPart?.ImagePath,
                 TypeId = CurrentSession.SelectedTypeId,
                 Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
                 SpecValues = CurrentSession.SpecValues is null

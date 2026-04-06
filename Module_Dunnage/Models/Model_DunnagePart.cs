@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
@@ -14,6 +16,8 @@ public class Model_DunnagePart : INotifyPropertyChanged
     private string _specValues = string.Empty; // JSON string
     private Dictionary<string, object> _specValuesDict = new();
     private string _dunnageTypeName = string.Empty;
+    private string? _imagePath;
+    private string? _dunnageTypeImagePath;
     private string _createdBy = string.Empty;
     private DateTime _createdDate = DateTime.Now;
     private string? _modifiedBy;
@@ -69,6 +73,32 @@ public class Model_DunnagePart : INotifyPropertyChanged
         set => SetField(ref _dunnageTypeName, value);
     }
 
+    public string? ImagePath
+    {
+        get => _imagePath;
+        set
+        {
+            if (SetField(ref _imagePath, value))
+            {
+                OnPropertyChanged(nameof(HasImagePath));
+                OnPropertyChanged(nameof(ImageSource));
+            }
+        }
+    }
+
+    public string? DunnageTypeImagePath
+    {
+        get => _dunnageTypeImagePath;
+        set
+        {
+            if (SetField(ref _dunnageTypeImagePath, value))
+            {
+                OnPropertyChanged(nameof(HasDunnageTypeImagePath));
+                OnPropertyChanged(nameof(DunnageTypeImageSource));
+            }
+        }
+    }
+
     public string CreatedBy
     {
         get => _createdBy;
@@ -92,6 +122,18 @@ public class Model_DunnagePart : INotifyPropertyChanged
         get => _modifiedDate;
         set => SetField(ref _modifiedDate, value);
     }
+
+    public bool HasImagePath => string.IsNullOrWhiteSpace(ImagePath) is false;
+
+    public bool HasDunnageTypeImagePath => string.IsNullOrWhiteSpace(DunnageTypeImagePath) is false;
+
+    public ImageSource? ImageSource => Helper_DunnageImagePaths.CreateImageSource(ImagePath);
+
+    public ImageSource? DunnageTypeImageSource =>
+        Helper_DunnageImagePaths.CreateImageSource(DunnageTypeImagePath);
+
+    public string DunnageSpecValuesJson =>
+        string.IsNullOrWhiteSpace(SpecValues) ? "{}" : SpecValues;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

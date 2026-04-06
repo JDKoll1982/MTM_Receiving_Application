@@ -2,31 +2,65 @@
     x:Class="MTM_Receiving_Application.Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls"
->
-    <Grid Padding="24">
-        <StackPanel Spacing="12">
-            <controls:View_SettingsPlaceholderControl
-                TitleText="Dunnage UI / UX"
-                DescriptionText="Placeholder UI for device- and UX-tuning settings."
-            />
+    xmlns:views="using:MTM_Receiving_Application.Module_Settings.Dunnage.Views"
+    x:DataType="views:View_Settings_Dunnage_UiUx">
+    <ScrollViewer>
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Dunnage UI / UX" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Control whether Dunnage images render at all, how large they appear, and which visual source wins when both a part and type image exist."
+                            TextWrapping="Wrap" />
 
-            <Expander Header="Notes (what belongs here)" IsExpanded="True">
-                <StackPanel Spacing="8" Padding="0,8,0,0">
-                    <TextBlock
-                        Text="Suggested controls:"
-                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                    />
-                    <TextBlock
-                        Text="• Manual entry grid selection delay (ms) → NumberBox"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                    />
-                    <TextBlock
-                        Text="• Any additional UI timing toggles → NumberBox / ToggleSwitch"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                    />
+                        <ToggleSwitch Header="Enable Dunnage type images" IsOn="{x:Bind ViewModel.EnableTypeImages, Mode=TwoWay}" />
+
+                        <ToggleSwitch Header="Enable Dunnage part images" IsOn="{x:Bind ViewModel.EnablePartImages, Mode=TwoWay}" />
+
+                        <NumberBox
+                            Header="Default thumbnail size"
+                            Maximum="192"
+                            Minimum="48"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.DefaultThumbnailSize, Mode=TwoWay}" />
+
+                        <NumberBox
+                            Header="Maximum PNG size (KB)"
+                            Maximum="2048"
+                            Minimum="64"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.MaximumImageFileSizeKb, Mode=TwoWay}" />
+
+                        <ComboBox Header="Default visual source priority" SelectedItem="{x:Bind ViewModel.DefaultVisualSource, Mode=TwoWay}">
+                            <x:String>PartThenTypeThenIcon</x:String>
+                            <x:String>TypeThenPartThenIcon</x:String>
+                            <x:String>IconOnly</x:String>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
                 </StackPanel>
-            </Expander>
-        </StackPanel>
-    </Grid>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

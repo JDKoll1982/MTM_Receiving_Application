@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
+using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
@@ -57,6 +59,16 @@ public partial class Model_DunnageLoad : ObservableObject
     [NotifyPropertyChangedFor(nameof(TypeIconKind))]
     private string _typeIcon = "Help";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTypeImagePath))]
+    [NotifyPropertyChangedFor(nameof(TypeImageSource))]
+    private string? _typeImagePath;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPartImagePath))]
+    [NotifyPropertyChangedFor(nameof(PartImageSource))]
+    private string? _partImagePath;
+
     /// <summary>
     /// Gets the MaterialIconKind for the dunnage type
     /// </summary>
@@ -74,6 +86,16 @@ public partial class Model_DunnageLoad : ObservableObject
             return MaterialIconKind.PackageVariantClosed;
         }
     }
+
+    public bool HasTypeImagePath => string.IsNullOrWhiteSpace(TypeImagePath) is false;
+
+    public bool HasPartImagePath => string.IsNullOrWhiteSpace(PartImagePath) is false;
+
+    public ImageSource? TypeImageSource =>
+        Helper_DunnageImagePaths.CreateImageSource(TypeImagePath);
+
+    public ImageSource? PartImageSource =>
+        Helper_DunnageImagePaths.CreateImageSource(PartImagePath);
 
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";

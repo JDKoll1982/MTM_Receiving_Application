@@ -6,10 +6,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -32,6 +34,11 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base, ID
 
     [ObservableProperty]
     private MaterialIconKind _selectedIcon = MaterialIconKind.PackageVariantClosed; // Default icon
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedImage))]
+    [NotifyPropertyChangedFor(nameof(SelectedImageSource))]
+    private string? _selectedImagePath;
 
     [ObservableProperty]
     private string _typeNameError = string.Empty;
@@ -82,6 +89,11 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base, ID
     private ObservableCollection<Model_IconDefinition> _recentlyUsedIcons = new();
     #endregion
 
+    public bool HasSelectedImage => string.IsNullOrWhiteSpace(SelectedImagePath) is false;
+
+    public ImageSource? SelectedImageSource =>
+        Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
+
     #region Constructor
     public ViewModel_Dunnage_AddTypeDialog(
         IService_MySQL_Dunnage dunnageService,
@@ -121,7 +133,8 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base, ID
             // Save type to database
             var typeResult = await _dunnageService.InsertTypeAsync(
                 TypeName,
-                SelectedIcon.ToString()
+                SelectedIcon.ToString(),
+                SelectedImagePath
             );
             if (!typeResult.IsSuccess)
             {

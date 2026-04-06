@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -63,6 +64,42 @@ public sealed partial class View_Settings_CoreWindow : Window
     /// Gets the current instance of the CoreWindow for use by child pages/NavigationHubs.
     /// </summary>
     public static View_Settings_CoreWindow? GetInstance() => _instance;
+
+    public bool NavigateToPage(Type pageType)
+    {
+        ArgumentNullException.ThrowIfNull(pageType);
+
+        var targetTag = GetSettingsTagForPageType(pageType);
+        if (string.IsNullOrWhiteSpace(targetTag))
+        {
+            _logger.LogWarning(
+                $"No settings module tag found for page type {pageType.Name}",
+                "Settings.Navigation"
+            );
+            return false;
+        }
+
+        SetSelectedSettingsTag(targetTag);
+
+        if (IsHubPageType(pageType))
+        {
+            return NavigateToSettingsTag(targetTag);
+        }
+
+        if (ActivatorUtilities.CreateInstance(_serviceProvider, pageType) is not Page page)
+        {
+            _logger.LogError(
+                $"Failed to create settings page instance for {pageType.Name}",
+                null,
+                "Settings.Navigation"
+            );
+            return false;
+        }
+
+        SettingsFrame.Content = page;
+        UpdateHeaderForPageType(pageType);
+        return true;
+    }
 
     private void OnSettingsFrameNavigated(
         object sender,
@@ -568,69 +605,153 @@ public sealed partial class View_Settings_CoreWindow : Window
                     "Settings.Navigation"
                 );
 
-                switch (item.Tag?.ToString())
-                {
-                    case "CoreSettingsHub":
-                        SettingsFrame.Content =
-                            _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
-                        _currentNestedSettingsPageType = typeof(View_Settings_CoreNavigationHub);
-                        SetHeader(
-                            "Configuration",
-                            "Manage core system defaults, users, and infrastructure settings."
-                        );
-                        UpdateHeaderActions();
-                        break;
-                    case "ReceivingSettingsHub":
-                        SettingsFrame.Content =
-                            _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
-                        _currentNestedSettingsPageType =
-                            typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
-                        SetHeader(
-                            "Receiving Navigation",
-                            "Manage Receiving module defaults and configuration pages."
-                        );
-                        UpdateHeaderActions();
-                        break;
-                    case "DunnageSettingsHub":
-                        SettingsFrame.Content =
-                            _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
-                        _currentNestedSettingsPageType =
-                            typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
-                        SetHeader(
-                            "Dunnage Navigation",
-                            "Manage Dunnage module defaults and configuration pages."
-                        );
-                        UpdateHeaderActions();
-                        break;
-                    case "ReportingSettingsHub":
-                        SettingsFrame.Content =
-                            _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
-                        _currentNestedSettingsPageType =
-                            typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
-                        SetHeader(
-                            "Reporting Navigation",
-                            "Manage Reporting module defaults and configuration pages."
-                        );
-                        UpdateHeaderActions();
-                        break;
-                    case "VolvoSettingsHub":
-                        SettingsFrame.Content =
-                            _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
-                        _currentNestedSettingsPageType =
-                            typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
-                        SetHeader(
-                            "Volvo Navigation",
-                            "Manage Volvo module defaults and configuration pages."
-                        );
-                        UpdateHeaderActions();
-                        break;
-                }
+                NavigateToSettingsTag(item.Tag?.ToString());
             }
         }
         finally
         {
             _isHandlingSelectionChanged = false;
         }
+    }
+
+    private bool NavigateToSettingsTag(string? selectedTag)
+    {
+        switch (selectedTag)
+        {
+            case "CoreSettingsHub":
+                SettingsFrame.Content =
+                    _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
+                _currentNestedSettingsPageType = typeof(View_Settings_CoreNavigationHub);
+                SetHeader(
+                    "Configuration",
+                    "Manage core system defaults, users, and infrastructure settings."
+                );
+                UpdateHeaderActions();
+                return true;
+            case "ReceivingSettingsHub":
+                SettingsFrame.Content =
+                    _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
+                _currentNestedSettingsPageType =
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
+                SetHeader(
+                    "Receiving Navigation",
+                    "Manage Receiving module defaults and configuration pages."
+                );
+                UpdateHeaderActions();
+                return true;
+            case "DunnageSettingsHub":
+                SettingsFrame.Content =
+                    _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
+                _currentNestedSettingsPageType =
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
+                SetHeader(
+                    "Dunnage Navigation",
+                    "Manage Dunnage module defaults and configuration pages."
+                );
+                UpdateHeaderActions();
+                return true;
+            case "ReportingSettingsHub":
+                SettingsFrame.Content =
+                    _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
+                _currentNestedSettingsPageType =
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
+                SetHeader(
+                    "Reporting Navigation",
+                    "Manage Reporting module defaults and configuration pages."
+                );
+                UpdateHeaderActions();
+                return true;
+            case "VolvoSettingsHub":
+                SettingsFrame.Content =
+                    _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+                _currentNestedSettingsPageType =
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
+                SetHeader(
+                    "Volvo Navigation",
+                    "Manage Volvo module defaults and configuration pages."
+                );
+                UpdateHeaderActions();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void SetSelectedSettingsTag(string selectedTag)
+    {
+        var targetItem = SettingsNavView
+            .MenuItems.OfType<NavigationViewItem>()
+            .FirstOrDefault(item =>
+                string.Equals(item.Tag?.ToString(), selectedTag, StringComparison.Ordinal)
+            );
+
+        if (targetItem is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _isHandlingSelectionChanged = true;
+            SettingsNavView.SelectedItem = targetItem;
+        }
+        finally
+        {
+            _isHandlingSelectionChanged = false;
+        }
+    }
+
+    private static bool IsHubPageType(Type pageType)
+    {
+        return pageType == typeof(View_Settings_CoreNavigationHub)
+            || pageType
+                == typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub)
+            || pageType == typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub)
+            || pageType
+                == typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub)
+            || pageType == typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
+    }
+
+    private static string? GetSettingsTagForPageType(Type pageType)
+    {
+        if (pageType.Namespace == typeof(View_Settings_CoreNavigationHub).Namespace)
+        {
+            return "CoreSettingsHub";
+        }
+
+        if (
+            pageType.Namespace
+            == typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub).Namespace
+        )
+        {
+            return "ReceivingSettingsHub";
+        }
+
+        if (
+            pageType.Namespace
+            == typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub).Namespace
+        )
+        {
+            return "DunnageSettingsHub";
+        }
+
+        if (
+            pageType.Namespace
+            == typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub).Namespace
+        )
+        {
+            return "ReportingSettingsHub";
+        }
+
+        if (
+            pageType.Namespace
+            == typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub).Namespace
+        )
+        {
+            return "VolvoSettingsHub";
+        }
+
+        return null;
     }
 
     private void SetHeader(string title, string description)

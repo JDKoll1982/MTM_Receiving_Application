@@ -162,6 +162,8 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
                     PartId = SelectedPartName,
                     TypeName = SelectedTypeName,
                     TypeIcon = SelectedTypeIcon,
+                    TypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath,
+                    PartImagePath = _workflowService.CurrentSession.SelectedPart?.ImagePath,
                 };
                 rebuiltLoads.Add(load);
             }

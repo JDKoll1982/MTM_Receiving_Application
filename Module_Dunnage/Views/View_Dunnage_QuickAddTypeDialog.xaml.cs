@@ -1,13 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -21,6 +25,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
     public string TypeName { get; private set; } = string.Empty;
     public MaterialIconKind SelectedIconKind { get; private set; } =
         MaterialIconKind.PackageVariantClosed;
+    public string? SelectedImagePath { get; private set; }
     public ObservableCollection<Model_SpecItem> Specs { get; } = new();
 
     public bool IsIconSelected
@@ -34,6 +39,11 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public bool HasSelectedImage => string.IsNullOrWhiteSpace(SelectedImagePath) is false;
+
+    public ImageSource? SelectedImageSource =>
+        Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
 
     public View_Dunnage_QuickAddTypeDialog()
     {
@@ -59,6 +69,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
     public void InitializeForEdit(
         string typeName,
         string iconName,
+        string? imagePath,
         Dictionary<string, SpecDefinition> specs
     )
     {
@@ -79,6 +90,9 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
 
         TypeName = typeName;
         SelectedIconKind = kind;
+        SelectedImagePath = imagePath;
+        OnPropertyChanged(nameof(HasSelectedImage));
+        OnPropertyChanged(nameof(SelectedImageSource));
 
         Specs.Clear();
         foreach (var kvp in specs)
@@ -228,6 +242,44 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
             SelectedIconNameText.Text = _selectedIconName;
             IsIconSelected = true;
         }
+    }
+
+    private async void OnChooseImageClick(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add(".png");
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+        var file = await picker.PickSingleFileAsync().AsTask();
+        if (file is null)
+        {
+            return;
+        }
+
+        if (
+            string.Equals(
+                Path.GetExtension(file.Path),
+                ".png",
+                System.StringComparison.OrdinalIgnoreCase
+            )
+            is false
+        )
+        {
+            return;
+        }
+
+        SelectedImagePath = file.Path;
+        OnPropertyChanged(nameof(HasSelectedImage));
+        OnPropertyChanged(nameof(SelectedImageSource));
+    }
+
+    private void OnClearImageClick(object sender, RoutedEventArgs e)
+    {
+        SelectedImagePath = null;
+        OnPropertyChanged(nameof(HasSelectedImage));
+        OnPropertyChanged(nameof(SelectedImageSource));
     }
 
     private void OnTypeNameChanged(object sender, TextChangedEventArgs e)

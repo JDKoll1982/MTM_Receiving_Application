@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
+using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
@@ -19,6 +21,11 @@ public partial class Model_DunnageType : ObservableObject
 
     [ObservableProperty]
     private string _icon = "\uDB81\uDF20"; // Default to box icon (Fluent System Icons)
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasImagePath))]
+    [NotifyPropertyChangedFor(nameof(ImageSource))]
+    private string? _imagePath;
 
     [ObservableProperty]
     private string _specsJson = string.Empty;
@@ -80,4 +87,8 @@ public partial class Model_DunnageType : ObservableObject
             return MaterialIconKind.PackageVariantClosed;
         }
     }
+
+    public bool HasImagePath => string.IsNullOrWhiteSpace(ImagePath) is false;
+
+    public ImageSource? ImageSource => Helper_DunnageImagePaths.CreateImageSource(ImagePath);
 }

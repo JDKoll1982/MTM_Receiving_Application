@@ -1,9 +1,11 @@
 using System;
+using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Views;
+using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -39,6 +41,40 @@ public sealed partial class View_Dunnage_Dialog_Dunnage_AddTypeDialog : ContentD
         {
             ViewModel.SelectedIcon = selectedIcon.Value;
         }
+    }
+
+    private async void OnChooseImageClick(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add(".png");
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+        var file = await picker.PickSingleFileAsync().AsTask();
+        if (file is null)
+        {
+            return;
+        }
+
+        if (
+            string.Equals(
+                Path.GetExtension(file.Path),
+                ".png",
+                System.StringComparison.OrdinalIgnoreCase
+            )
+            is false
+        )
+        {
+            return;
+        }
+
+        ViewModel.SelectedImagePath = file.Path;
+    }
+
+    private void OnClearImageClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SelectedImagePath = null;
     }
 
     private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)

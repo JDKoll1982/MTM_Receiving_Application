@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -25,6 +26,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly Dao_DunnageCustomField _daoCustomField;
         private readonly Dao_DunnageUserPreference _daoUserPreference;
         private readonly Dao_DunnageNonPOEntry _daoNonPOEntry;
+        private readonly IService_DunnageImageStorage _imageStorage;
 
         private string CurrentUser =>
             _sessionManager.CurrentSession?.User?.WindowsUsername ?? "System";
@@ -41,7 +43,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             Dao_InventoriedDunnage daoInventoriedDunnage,
             Dao_DunnageCustomField daoCustomField,
             Dao_DunnageUserPreference daoUserPreference,
-            Dao_DunnageNonPOEntry daoNonPOEntry
+            Dao_DunnageNonPOEntry daoNonPOEntry,
+            IService_DunnageImageStorage imageStorage
         )
         {
             _errorHandler = errorHandler;
@@ -56,6 +59,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _daoCustomField = daoCustomField;
             _daoUserPreference = daoUserPreference;
             _daoNonPOEntry = daoNonPOEntry;
+            _imageStorage = imageStorage;
         }
 
         // ==================== Type Operations ====================
@@ -100,11 +104,26 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
-        public async Task<Model_Dao_Result<int>> InsertTypeAsync(string typeName, string icon)
+        public async Task<Model_Dao_Result<int>> InsertTypeAsync(
+            string typeName,
+            string icon,
+            string? imagePath = null
+        )
         {
             try
             {
-                return await _daoDunnageType.InsertAsync(typeName, icon, CurrentUser);
+                var imagePathResult = await PrepareRelativeImagePathAsync(imagePath, "Types");
+                if (!imagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(imagePathResult.ErrorMessage);
+                }
+
+                return await _daoDunnageType.InsertAsync(
+                    typeName,
+                    icon,
+                    imagePathResult.Data,
+                    CurrentUser
+                );
             }
             catch (Exception ex)
             {
@@ -127,9 +146,17 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync(
                     $"Inserting new dunnage type: {type.TypeName} (Icon: {type.Icon}) by user: {CurrentUser}"
                 );
+                var imagePathResult = await PrepareRelativeImagePathAsync(type.ImagePath, "Types");
+                if (!imagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure(imagePathResult.ErrorMessage);
+                }
+
+                type.ImagePath = imagePathResult.Data;
                 var result = await _daoDunnageType.InsertAsync(
                     type.TypeName,
                     type.Icon,
+                    type.ImagePath,
                     CurrentUser
                 );
                 if (result.IsSuccess)
@@ -183,10 +210,24 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync(
                     $"Updating dunnage type ID {type.Id}: {type.TypeName} (Icon: {type.Icon}) by user: {CurrentUser}"
                 );
+                var existingTypeResult = await _daoDunnageType.GetByIdAsync(type.Id);
+                var previousImagePath =
+                    existingTypeResult.IsSuccess && existingTypeResult.Data is not null
+                        ? existingTypeResult.Data.ImagePath
+                        : null;
+
+                var imagePathResult = await PrepareRelativeImagePathAsync(type.ImagePath, "Types");
+                if (!imagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure(imagePathResult.ErrorMessage);
+                }
+
+                type.ImagePath = imagePathResult.Data;
                 var result = await _daoDunnageType.UpdateAsync(
                     type.Id,
                     type.TypeName,
                     type.Icon,
+                    type.ImagePath,
                     CurrentUser
                 );
 
@@ -208,6 +249,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
                 if (result.IsSuccess)
                 {
+                    await CleanupReplacedImageAsync(previousImagePath, type.ImagePath);
                     await _logger.LogInfoAsync(
                         $"Successfully updated dunnage type ID {type.Id}: {type.TypeName}"
                     );
@@ -270,9 +312,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
+                var existingTypeResult = await _daoDunnageType.GetByIdAsync(typeId);
                 var result = await _daoDunnageType.DeleteAsync(typeId);
                 if (result.IsSuccess)
                 {
+                    await _imageStorage.DeleteImageAsync(
+                        existingTypeResult.IsSuccess ? existingTypeResult.Data?.ImagePath : null
+                    );
                     await _logger.LogInfoAsync($"Successfully deleted dunnage type ID {typeId}");
                 }
                 else
@@ -561,6 +607,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     part.PartId,
                     part.TypeId,
                     part.SpecValues,
+                    await PersistPartImagePathAsync(part),
                     part.HomeLocation,
                     CurrentUser
                 );
@@ -617,6 +664,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     part.PartId,
                     part.TypeId,
                     part.SpecValues,
+                    await PersistPartImagePathAsync(part),
                     part.HomeLocation,
                     inventoryMethod,
                     inventoryNotes,
@@ -655,15 +703,22 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync(
                     $"Updating dunnage part ID {part.Id} (Part ID: {part.PartId}, Home Location: {part.HomeLocation}) by user: {CurrentUser}"
                 );
+                var existingPartResult = await _daoDunnagePart.GetByIdAsync(part.PartId);
+                var previousImagePath =
+                    existingPartResult.IsSuccess && existingPartResult.Data is not null
+                        ? existingPartResult.Data.ImagePath
+                        : null;
                 var result = await _daoDunnagePart.UpdateAsync(
                     part.Id,
                     part.PartId,
                     part.SpecValues,
+                    await PersistPartImagePathAsync(part),
                     part.HomeLocation,
                     CurrentUser
                 );
                 if (result.IsSuccess)
                 {
+                    await CleanupReplacedImageAsync(previousImagePath, part.ImagePath);
                     await _logger.LogInfoAsync($"Successfully updated dunnage part ID {part.Id}");
                 }
                 else
@@ -715,16 +770,30 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
-                return await _daoDunnagePart.UpdateWithInventoryAndReferencesAsync(
+                var existingPartResult = await _daoDunnagePart.GetByIdAsync(originalPartId);
+                var previousImagePath =
+                    existingPartResult.IsSuccess && existingPartResult.Data is not null
+                        ? existingPartResult.Data.ImagePath
+                        : null;
+
+                var updateResult = await _daoDunnagePart.UpdateWithInventoryAndReferencesAsync(
                     part.Id,
                     originalPartId,
                     part.PartId,
                     part.SpecValues,
+                    await PersistPartImagePathAsync(part),
                     part.HomeLocation,
                     inventoryMethod,
                     inventoryNotes,
                     CurrentUser
                 );
+
+                if (updateResult.IsSuccess)
+                {
+                    await CleanupReplacedImageAsync(previousImagePath, part.ImagePath);
+                }
+
+                return updateResult;
             }
             catch (Exception ex)
             {
@@ -745,8 +814,34 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public async Task<Model_Dao_Result> DeletePartAsync(string partId)
         {
-            // Dao_DunnagePart does not have DeleteAsync yet.
-            return Model_Dao_Result_Factory.Failure("Delete part not implemented in DAO yet.");
+            try
+            {
+                var existingPartResult = await _daoDunnagePart.GetByIdAsync(partId);
+                if (!existingPartResult.IsSuccess || existingPartResult.Data is null)
+                {
+                    return Model_Dao_Result_Factory.Failure(
+                        existingPartResult.ErrorMessage ?? $"Part '{partId}' was not found."
+                    );
+                }
+
+                var deleteResult = await _daoDunnagePart.DeleteAsync(existingPartResult.Data.Id);
+                if (deleteResult.IsSuccess)
+                {
+                    await _imageStorage.DeleteImageAsync(existingPartResult.Data.ImagePath);
+                }
+
+                return deleteResult;
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(DeletePartAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure($"Error deleting part: {ex.Message}");
+            }
         }
 
         public async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(
@@ -1651,6 +1746,69 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 severity,
                 ex
             );
+        }
+
+        private async Task<string?> PersistPartImagePathAsync(Model_DunnagePart part)
+        {
+            var imagePathResult = await PrepareRelativeImagePathAsync(part.ImagePath, "Parts");
+            if (!imagePathResult.IsSuccess)
+            {
+                throw new InvalidOperationException(imagePathResult.ErrorMessage);
+            }
+
+            part.ImagePath = imagePathResult.Data;
+            return part.ImagePath;
+        }
+
+        private async Task<Model_Dao_Result<string?>> PrepareRelativeImagePathAsync(
+            string? imagePath,
+            string folderName
+        )
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return Model_Dao_Result_Factory.Success<string?>(null);
+            }
+
+            if (!Path.IsPathRooted(imagePath))
+            {
+                return Model_Dao_Result_Factory.Success<string?>(imagePath.Replace('\\', '/'));
+            }
+
+            var importResult = await _imageStorage.ImportImageAsync(imagePath, folderName);
+            if (!importResult.IsSuccess)
+            {
+                return Model_Dao_Result_Factory.Failure<string?>(
+                    importResult.ErrorMessage,
+                    importResult.Exception
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success<string?>(importResult.Data);
+        }
+
+        private async Task CleanupReplacedImageAsync(
+            string? previousImagePath,
+            string? currentImagePath
+        )
+        {
+            if (string.IsNullOrWhiteSpace(previousImagePath))
+            {
+                return;
+            }
+
+            if (
+                string.Equals(
+                    previousImagePath,
+                    currentImagePath,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                return;
+            }
+
+            await _imageStorage.DeleteImageAsync(previousImagePath);
         }
     }
 }

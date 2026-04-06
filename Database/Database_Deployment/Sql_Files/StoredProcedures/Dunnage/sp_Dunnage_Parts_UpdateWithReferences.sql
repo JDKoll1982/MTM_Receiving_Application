@@ -7,6 +7,7 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
     IN p_original_part_id VARCHAR(50),
     IN p_new_part_id VARCHAR(50),
     IN p_spec_values JSON,
+    IN p_image_path VARCHAR(255),
     IN p_home_location VARCHAR(100),
     IN p_inventory_method VARCHAR(100),
     IN p_inventory_notes TEXT,
@@ -25,6 +26,7 @@ BEGIN
     SET
         part_id = p_new_part_id,
         spec_values = p_spec_values,
+        image_path = NULLIF(p_image_path, ''),
         home_location = p_home_location,
         modified_by = p_user,
         modified_date = NOW()

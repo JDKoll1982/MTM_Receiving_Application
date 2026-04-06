@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -87,6 +88,11 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _canGoNext = false;
 
+    public bool HasCurrentVisual => CurrentVisualSource is not null;
+
+    public ImageSource? CurrentVisualSource =>
+        CurrentLoad?.PartImageSource ?? CurrentLoad?.TypeImageSource;
+
     #endregion
 
     #region Initialization
@@ -129,6 +135,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     {
         CanGoBack = CurrentEntryIndex > 1;
         CanGoNext = CurrentEntryIndex < LoadCount;
+        OnPropertyChanged(nameof(CurrentVisualSource));
+        OnPropertyChanged(nameof(HasCurrentVisual));
     }
 
     #endregion

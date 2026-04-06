@@ -84,6 +84,18 @@
                                 Grid.Column="0"
                                 Margin="0,0,12,0"
                                 Spacing="12">
+                                <Border
+                                    Width="160"
+                                    Height="160"
+                                    Padding="4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Image Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" Stretch="UniformToFill" />
+                                </Border>
+
                                 <TextBlock
                                     Margin="0,0,0,8"
                                     Style="{StaticResource SubtitleTextBlockStyle}"

@@ -29,6 +29,17 @@
             Margin="0,0,0,24"
             Spacing="8">
             <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border
+                    Width="48"
+                    Height="48"
+                    Padding="3"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Visibility="{x:Bind ViewModel.HasSelectedTypeImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Image Source="{x:Bind ViewModel.SelectedTypeImageSource, Mode=OneWay}" Stretch="UniformToFill" />
+                </Border>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Select Part - " />
                 <mi:MaterialIcon
                     Width="24"
@@ -97,6 +108,7 @@
                             RowSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -105,27 +117,42 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
+                            <Border
+                                Grid.Row="0"
+                                Grid.RowSpan="3"
+                                Width="120"
+                                Height="120"
+                                Margin="0,0,12,0"
+                                Padding="4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Visibility="{x:Bind ViewModel.HasSelectedPartVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Image Source="{x:Bind ViewModel.SelectedPartVisualSource, Mode=OneWay}" Stretch="UniformToFill" />
+                            </Border>
+
                             <!--  Part ID  -->
                             <TextBlock
                                 Grid.Row="0"
-                                Grid.Column="0"
+                                Grid.Column="1"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Text="Part ID:" />
                             <TextBlock
                                 Grid.Row="0"
-                                Grid.Column="1"
+                                Grid.Column="2"
                                 FontWeight="SemiBold"
                                 Text="{x:Bind ViewModel.SelectedPart.PartId, Mode=OneWay}" />
 
                             <!--  Type  -->
                             <TextBlock
                                 Grid.Row="1"
-                                Grid.Column="0"
+                                Grid.Column="1"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Text="Type:" />
                             <StackPanel
                                 Grid.Row="1"
-                                Grid.Column="1"
+                                Grid.Column="2"
                                 Orientation="Horizontal"
                                 Spacing="6">
                                 <mi:MaterialIcon
@@ -138,13 +165,13 @@
 
                             <TextBlock
                                 Grid.Row="2"
-                                Grid.Column="0"
+                                Grid.Column="1"
                                 VerticalAlignment="Top"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Text="Specs:" />
                             <StackPanel
                                 Grid.Row="2"
-                                Grid.Column="1"
+                                Grid.Column="2"
                                 Spacing="4">
                                 <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedPartSpecSummaries, Mode=OneWay}">
                                     <ItemsControl.ItemTemplate>

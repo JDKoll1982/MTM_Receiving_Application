@@ -6,6 +6,8 @@ public class Model_DunnagePartDialogDraft
 {
     public string PartId { get; set; } = string.Empty;
 
+    public string ImagePath { get; set; } = string.Empty;
+
     public string HomeLocation { get; set; } = string.Empty;
 
     public string Notes { get; set; } = string.Empty;
@@ -19,6 +21,7 @@ public class Model_DunnagePartDialogDraft
         return new Model_DunnagePartDialogDraft
         {
             PartId = PartId,
+            ImagePath = ImagePath,
             HomeLocation = HomeLocation,
             Notes = Notes,
             SelectedInventoryMethod = SelectedInventoryMethod,

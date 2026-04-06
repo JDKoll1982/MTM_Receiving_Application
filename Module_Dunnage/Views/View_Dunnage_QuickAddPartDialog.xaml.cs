@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -18,6 +20,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     public string SpecValuesJson { get; private set; } = "{}";
     public string HomeLocation { get; private set; } = string.Empty;
     public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
+    public string SelectedImagePath { get; private set; } = string.Empty;
     public bool RequestChooseExistingSpecs { get; private set; }
 
     private readonly List<Model_DunnageSpec> _specs;
@@ -58,6 +61,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         var draft = new Model_DunnagePartDialogDraft
         {
             PartId = PartIdTextBox.Text.Trim(),
+            ImagePath = SelectedImagePath,
             HomeLocation = HomeLocationTextBox.Text.Trim(),
             Notes = NotesTextBox.Text.Trim(),
             SelectedInventoryMethod = GetSelectedInventoryMethod(),
@@ -71,9 +75,11 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private void ApplyDraft(Model_DunnagePartDialogDraft draft)
     {
         PartIdTextBox.Text = draft.PartId;
+        SelectedImagePath = draft.ImagePath;
         HomeLocationTextBox.Text = draft.HomeLocation;
         NotesTextBox.Text = draft.Notes;
         SelectInventoryMethod(draft.SelectedInventoryMethod);
+        UpdateImagePreview();
 
         foreach (var pair in _specInputs)
         {
@@ -361,6 +367,42 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         PartIdTextBox.Text = BuildSuggestedPartId();
     }
 
+    private async void ChooseImageButton_Click(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add(".png");
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+        var file = await picker.PickSingleFileAsync().AsTask();
+        if (file is null)
+        {
+            return;
+        }
+
+        if (
+            string.Equals(
+                Path.GetExtension(file.Path),
+                ".png",
+                System.StringComparison.OrdinalIgnoreCase
+            )
+            is false
+        )
+        {
+            return;
+        }
+
+        SelectedImagePath = file.Path;
+        UpdateImagePreview();
+    }
+
+    private void ClearImageButton_Click(object sender, RoutedEventArgs e)
+    {
+        SelectedImagePath = string.Empty;
+        UpdateImagePreview();
+    }
+
     private void AddCustomSpecButton_Click(object sender, RoutedEventArgs e)
     {
         var name = NewCustomSpecNameTextBox.Text.Trim();
@@ -578,5 +620,11 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     {
         CustomSpecsValidationTextBlock.Text = string.Empty;
         CustomSpecsValidationTextBlock.Visibility = Visibility.Collapsed;
+    }
+
+    private void UpdateImagePreview()
+    {
+        PartImagePreview.Source = Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
+        PartImagePathTextBlock.Text = SelectedImagePath;
     }
 }
