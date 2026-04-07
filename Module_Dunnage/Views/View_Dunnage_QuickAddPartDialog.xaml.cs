@@ -29,6 +29,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
     public string SelectedImagePath { get; private set; } = string.Empty;
     public bool RequestChooseExistingSpecs { get; private set; }
+    public bool RequestDelete { get; private set; }
 
     private readonly List<Model_DunnageSpec> _specs;
     private readonly List<FrameworkElement> _specPanels = new();
@@ -47,11 +48,14 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         int typeId,
         string typeName,
         List<Model_DunnageSpec> specs,
-        Model_DunnagePartDialogDraft? initialDraft = null
+        Model_DunnagePartDialogDraft? initialDraft = null,
+        bool canDelete = false
     )
     {
         InitializeComponent();
         WasAccepted = false;
+        RequestDelete = false;
+        FooterDeleteButton.Visibility = canDelete ? Visibility.Visible : Visibility.Collapsed;
 
         TypeId = typeId;
         TypeName = typeName;
@@ -611,6 +615,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private void ChooseExistingSpecsButton_Click(object sender, RoutedEventArgs e)
     {
         WasAccepted = false;
+        RequestDelete = false;
         RequestChooseExistingSpecs = true;
         Hide();
     }
@@ -760,6 +765,13 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private void OnFooterCancelButtonClick(object sender, RoutedEventArgs e)
     {
         WasAccepted = false;
+        Hide();
+    }
+
+    private void OnFooterDeleteButtonClick(object sender, RoutedEventArgs e)
+    {
+        WasAccepted = false;
+        RequestDelete = true;
         Hide();
     }
 

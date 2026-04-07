@@ -31,6 +31,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_InforVisual _inforVisualService;
+        private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -116,6 +117,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_InforVisual inforVisualService,
+            IService_QualityHoldWarning qualityHoldWarning,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
@@ -130,6 +132,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService = workflowService;
             _validationService = validationService;
             _inforVisualService = inforVisualService;
+            _qualityHoldWarning = qualityHoldWarning;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
@@ -905,7 +908,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (matchingParts.Count == 1)
                 {
-                    ApplySelectedPoPart(load, poResult.Data, matchingParts[0]);
+                    ApplySelectedPoPartCore(load, poResult.Data, matchingParts[0]);
                     continue;
                 }
 
@@ -1330,6 +1333,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 load.InitialLocation = resolvedPart.DefaultLocationId.Trim();
             }
 
+            if (await EnsureQualityHoldWarningAsync(load, resolvedPart) is false)
+            {
+                ClearPoSelectedPart(load);
+                return null;
+            }
+
             return resolvedPart;
         }
 
@@ -1411,7 +1420,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (matchingParts.Count == 1)
             {
-                ApplySelectedPoPart(load, poResult.Data, matchingParts[0]);
+                if (await ApplySelectedPoPartAsync(load, poResult.Data, matchingParts[0]) is false)
+                {
+                    return false;
+                }
                 StatusMessage = $"Confirmed part {resolvedPart.PartID} on {normalizedPo}.";
                 return true;
             }
@@ -1428,7 +1440,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return false;
                 }
 
-                ApplySelectedPoPart(load, poResult.Data, selectedPart);
+                if (await ApplySelectedPoPartAsync(load, poResult.Data, selectedPart) is false)
+                {
+                    return false;
+                }
                 StatusMessage = $"Confirmed part {selectedPart.PartID} on {normalizedPo}.";
                 return true;
             }
@@ -1453,7 +1468,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return false;
             }
 
-            ApplySelectedPoPart(load, purchaseOrder, selectedPart);
+            if (await ApplySelectedPoPartAsync(load, purchaseOrder, selectedPart) is false)
+            {
+                return false;
+            }
             StatusMessage =
                 $"Updated row to part {selectedPart.PartID} on {purchaseOrder.PONumber}.";
             return true;
@@ -1809,7 +1827,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return false;
             }
 
-            ApplySelectedPoPart(load, poResult.Data, selectedPart);
+            if (await ApplySelectedPoPartAsync(load, poResult.Data, selectedPart) is false)
+            {
+                return false;
+            }
             StatusMessage = $"Selected part {selectedPart.PartID} for {normalizedPo}.";
             return true;
         }
@@ -1823,7 +1844,24 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             return $"Ordered: {part.QtyOrdered:F0} {part.UnitOfMeasure} | Remaining: {part.RemainingQuantity} | {location}";
         }
 
-        private void ApplySelectedPoPart(
+        private async Task<bool> ApplySelectedPoPartAsync(
+            Model_ReceivingLoad load,
+            Model_InforVisualPO purchaseOrder,
+            Model_InforVisualPart selectedPart
+        )
+        {
+            ApplySelectedPoPartCore(load, purchaseOrder, selectedPart);
+
+            if (await EnsureQualityHoldWarningAsync(load, selectedPart))
+            {
+                return true;
+            }
+
+            ClearPoSelectedPart(load);
+            return false;
+        }
+
+        private void ApplySelectedPoPartCore(
             Model_ReceivingLoad load,
             Model_InforVisualPO purchaseOrder,
             Model_InforVisualPart selectedPart
@@ -1850,6 +1888,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
+        private async Task<bool> EnsureQualityHoldWarningAsync(
+            Model_ReceivingLoad load,
+            Model_InforVisualPart selectedPart
+        )
+        {
+            if (_qualityHoldWarning.IsRestrictedPart(selectedPart.PartID) is false)
+            {
+                load.IsQualityHoldRequired = false;
+                load.IsQualityHoldAcknowledged = false;
+                load.QualityHoldRestrictionType = string.Empty;
+                return true;
+            }
+
+            load.IsQualityHoldAcknowledged = false;
+            if (string.IsNullOrWhiteSpace(selectedPart.QualityHoldRestrictionType) is false)
+            {
+                load.IsQualityHoldRequired = true;
+                load.QualityHoldRestrictionType = selectedPart.QualityHoldRestrictionType.Trim();
+            }
+
+            return await _qualityHoldWarning.CheckAndWarnAsync(selectedPart.PartID, load);
+        }
+
         private static void ClearPoSelectedPart(Model_ReceivingLoad load)
         {
             load.PartID = string.Empty;
@@ -1859,6 +1920,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             load.UnitOfMeasure = "EA";
             load.QtyOrdered = 0;
             load.RemainingQuantity = 0;
+            load.IsQualityHoldRequired = false;
+            load.IsQualityHoldAcknowledged = false;
+            load.QualityHoldRestrictionType = string.Empty;
         }
 
         private async Task ShowPoHasNoUsablePartsDialogAsync(string poNumber)

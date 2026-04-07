@@ -11,8 +11,6 @@ using MTM_Receiving_Application.Module_Core.Services;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Help;
-using MTM_Receiving_Application.Module_Core.Services.UI;
-using MTM_Receiving_Application.Module_Core.Services.VisualAutomation;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
@@ -89,7 +87,6 @@ public static class CoreServiceExtensions
             IService_VisualCredentialValidator,
             Service_VisualCredentialValidator
         >();
-        services.AddSingleton<IService_UIAutomation, Service_UIAutomation>();
 
         return services;
     }

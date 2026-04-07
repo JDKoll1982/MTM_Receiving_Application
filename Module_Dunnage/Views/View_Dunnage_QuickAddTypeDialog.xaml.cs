@@ -30,16 +30,20 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
 
     public ObservableCollection<Model_SpecItem> Specs => ViewModel.Specs;
 
+    public bool RequestDelete { get; private set; }
+
     public View_Dunnage_QuickAddTypeDialog()
     {
         ViewModel = App.GetService<ViewModel_Dunnage_QuickAddTypeDialog>();
         _focusService = App.GetService<IService_Focus>();
         DataContext = ViewModel;
         WasAccepted = false;
+        RequestDelete = false;
 
         InitializeComponent();
 
         ViewModel.InitializeForCreate();
+        UpdateDeleteVisibility(false);
         _focusService.AttachFocusOnVisibility(this);
     }
 
@@ -66,11 +70,19 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
         string typeName,
         string iconName,
         string? imagePath,
-        Dictionary<string, SpecDefinition> specs
+        Dictionary<string, SpecDefinition> specs,
+        bool canDelete
     )
     {
         WasAccepted = false;
+        RequestDelete = false;
         ViewModel.InitializeForEdit(typeName, iconName, imagePath, specs);
+        UpdateDeleteVisibility(canDelete);
+    }
+
+    private void UpdateDeleteVisibility(bool canDelete)
+    {
+        FooterDeleteButton.Visibility = canDelete ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private async void OnSelectIconClick(object sender, RoutedEventArgs e)
@@ -145,6 +157,13 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
     private void OnFooterCancelButtonClick(object sender, RoutedEventArgs e)
     {
         WasAccepted = false;
+        Hide();
+    }
+
+    private void OnFooterDeleteButtonClick(object sender, RoutedEventArgs e)
+    {
+        WasAccepted = false;
+        RequestDelete = true;
         Hide();
     }
 }

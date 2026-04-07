@@ -6,14 +6,18 @@
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
->
+    mc:Ignorable="d">
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_DecimalToInt x:Key="DecimalToIntConverter" />
+        <converters:Converter_QualityHoldToTextColor x:Key="QualityHoldToTextColorConverter" />
     </UserControl.Resources>
 
-    <Grid Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowSpacing="20">
+    <Grid
+        Padding="24"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        RowSpacing="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -28,8 +32,7 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <!--  PO Number Input with Icon  -->
                         <StackPanel Spacing="8">
@@ -37,12 +40,8 @@
                                 <FontIcon
                                     FontSize="16"
                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                    Glyph="&#xE8A5;"
-                                />
-                                <TextBlock
-                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.PoNumberHeaderText, Mode=OneWay}"
-                                />
+                                    Glyph="&#xE8A5;" />
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.PoNumberHeaderText, Mode=OneWay}" />
                             </StackPanel>
 
                             <TextBox
@@ -53,16 +52,14 @@
                                 LostFocus="POTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                 TabIndex="0"
-                                Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            />
+                                Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                             <!--  Validation Message  -->
                             <TextBlock
                                 FontSize="12"
                                 Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                 Text="{x:Bind ViewModel.PoValidationMessage, Mode=OneWay}"
-                                Visibility="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"
-                            />
+                                Visibility="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
 
                             <!--  PO Status Display  -->
                             <Border
@@ -71,20 +68,17 @@
                                 Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4"
-                            >
+                                CornerRadius="4">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon FontSize="14" Glyph="&#xE8C9;" />
                                     <TextBlock
                                         FontSize="12"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind ViewModel.PoStatusLabelText, Mode=OneWay}"
-                                    />
+                                        Text="{x:Bind ViewModel.PoStatusLabelText, Mode=OneWay}" />
                                     <TextBlock
                                         FontSize="12"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind ViewModel.PoStatusDescription, Mode=OneWay}"
-                                    />
+                                        Text="{x:Bind ViewModel.PoStatusDescription, Mode=OneWay}" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -102,8 +96,7 @@
                                 Command="{x:Bind ViewModel.LoadPOCommand}"
                                 IsEnabled="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"
-                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadPO'), Mode=OneWay}"
-                            >
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadPO'), Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon FontSize="16" Glyph="&#xE896;" />
                                     <TextBlock Text="{x:Bind ViewModel.LoadPoButtonText, Mode=OneWay}" />
@@ -114,8 +107,7 @@
                                 Grid.Column="1"
                                 Command="{x:Bind ViewModel.ToggleNonPOCommand}"
                                 Content="{x:Bind ViewModel.SwitchToNonPoButtonText, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToNonPO'), Mode=OneWay}"
-                            />
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToNonPO'), Mode=OneWay}" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -128,8 +120,7 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <!--  Part ID Input with Icon  -->
                         <StackPanel Spacing="8">
@@ -137,12 +128,8 @@
                                 <FontIcon
                                     FontSize="16"
                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                    Glyph="&#xE8B7;"
-                                />
-                                <TextBlock
-                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.PartIdentifierHeaderText, Mode=OneWay}"
-                                />
+                                    Glyph="&#xE8B7;" />
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.PartIdentifierHeaderText, Mode=OneWay}" />
                             </StackPanel>
 
                             <TextBox
@@ -151,8 +138,7 @@
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.PartIdAccessibilityName, Mode=OneWay}"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartID'), Mode=OneWay}"
-                                Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            />
+                                Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
 
                         <!--  Package Type Display (Auto-detected)  -->
@@ -161,19 +147,14 @@
                                 <FontIcon
                                     FontSize="16"
                                     Foreground="{ThemeResource AccentTextFillColorSecondaryBrush}"
-                                    Glyph="&#xE7B8;"
-                                />
-                                <TextBlock
-                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.PackageTypeAutoHeaderText, Mode=OneWay}"
-                                />
+                                    Glyph="&#xE7B8;" />
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.PackageTypeAutoHeaderText, Mode=OneWay}" />
                             </StackPanel>
 
                             <TextBlock
                                 Foreground="{ThemeResource SystemAccentColor}"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
-                                Text="{x:Bind ViewModel.PackageType, Mode=OneWay}"
-                            />
+                                Text="{x:Bind ViewModel.PackageType, Mode=OneWay}" />
                         </StackPanel>
 
                         <!--  Action Buttons  -->
@@ -188,8 +169,7 @@
                                 AutomationProperties.Name="{x:Bind ViewModel.LookupPartAccessibilityName, Mode=OneWay}"
                                 Command="{x:Bind ViewModel.LookupPartCommand}"
                                 Style="{StaticResource AccentButtonStyle}"
-                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LookupPart'), Mode=OneWay}"
-                            >
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LookupPart'), Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon FontSize="16" Glyph="&#xE721;" />
                                     <TextBlock Text="{x:Bind ViewModel.LookupPartButtonText, Mode=OneWay}" />
@@ -200,8 +180,7 @@
                                 Grid.Column="1"
                                 Command="{x:Bind ViewModel.ToggleNonPOCommand}"
                                 Content="{x:Bind ViewModel.SwitchToPoButtonText, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToPO'), Mode=OneWay}"
-                            />
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToPO'), Mode=OneWay}" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -214,8 +193,7 @@
             Margin="0,0,0,-10"
             VerticalAlignment="Bottom"
             IsIndeterminate="True"
-            Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-        />
+            Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <!--  Parts Grid Section (Row 1)  -->
         <Border
@@ -225,24 +203,23 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8"
-            Visibility="{x:Bind ViewModel.IsPartsListVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-        >
+            Visibility="{x:Bind ViewModel.IsPartsListVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Margin="0,0,0,12" Orientation="Horizontal" Spacing="8">
+                <StackPanel
+                    Grid.Row="0"
+                    Margin="0,0,0,12"
+                    Orientation="Horizontal"
+                    Spacing="8">
                     <FontIcon
                         FontSize="16"
                         Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                        Glyph="&#xE8FD;"
-                    />
-                    <TextBlock
-                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="{x:Bind ViewModel.AvailablePartsHeaderText, Mode=OneWay}"
-                    />
+                        Glyph="&#xE8FD;" />
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.AvailablePartsHeaderText, Mode=OneWay}" />
                 </StackPanel>
 
                 <controls:DataGrid
@@ -254,34 +231,37 @@
                     IsReadOnly="True"
                     ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
-                    SelectionMode="Single"
-                >
+                    SelectionMode="Single">
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn
+                        <controls:DataGridTemplateColumn
                             Width="2*"
-                            Binding="{Binding PartID}"
                             Header="{x:Bind ViewModel.ColumnPartIdHeaderText, Mode=OneWay}"
-                        />
+                            IsReadOnly="True">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Foreground="{Binding RequiresQualityHold, Converter={StaticResource QualityHoldToTextColorConverter}}"
+                                        Text="{Binding PartID}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
                         <controls:DataGridTextColumn
                             Width="4*"
                             Binding="{Binding Description}"
-                            Header="{x:Bind ViewModel.ColumnDescriptionHeaderText, Mode=OneWay}"
-                        />
+                            Header="{x:Bind ViewModel.ColumnDescriptionHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
                             Binding="{Binding RemainingQuantity}"
-                            Header="{x:Bind ViewModel.ColumnRemainingQtyHeaderText, Mode=OneWay}"
-                        />
+                            Header="{x:Bind ViewModel.ColumnRemainingQtyHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
                             Binding="{Binding QtyOrdered, Converter={StaticResource DecimalToIntConverter}}"
-                            Header="{x:Bind ViewModel.ColumnQtyOrderedHeaderText, Mode=OneWay}"
-                        />
+                            Header="{x:Bind ViewModel.ColumnQtyOrderedHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
                             Binding="{Binding POLineNumber}"
-                            Header="{x:Bind ViewModel.ColumnLineNumberHeaderText, Mode=OneWay}"
-                        />
+                            Header="{x:Bind ViewModel.ColumnLineNumberHeaderText, Mode=OneWay}" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

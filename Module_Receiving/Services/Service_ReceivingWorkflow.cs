@@ -29,6 +29,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_ReceivingLabelData _labelDataService;
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
+        private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_AppSettings _appSettings;
         private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
@@ -90,6 +91,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_ReceivingLabelData labelDataService,
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
+            IService_QualityHoldWarning qualityHoldWarning,
             IService_ReceivingSettings receivingSettings,
             IService_AppSettings appSettings,
             IService_InforVisualMockDataCatalog mockDataCatalog,
@@ -105,6 +107,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _mysqlReceiving =
                 mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
+            _qualityHoldWarning =
+                qualityHoldWarning ?? throw new ArgumentNullException(nameof(qualityHoldWarning));
             _receivingSettings =
                 receivingSettings ?? throw new ArgumentNullException(nameof(receivingSettings));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -418,6 +422,31 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     PoVendor = CurrentPOVendor ?? string.Empty,
                     PoStatus = CurrentPOStatus ?? string.Empty,
                     PoDueDate = CurrentPODueDate,
+                    IsQualityHoldRequired = _appSettings.GetUseInforVisualMockData()
+                        ? CurrentPart?.RequiresQualityHold == true
+                        : CurrentPart?.RequiresQualityHold == true
+                            || (
+                                CurrentPart?.PartID?.Contains(
+                                    "MMFSR",
+                                    StringComparison.OrdinalIgnoreCase
+                                ) == true
+                            )
+                            || (
+                                CurrentPart?.PartID?.Contains(
+                                    "MMCSR",
+                                    StringComparison.OrdinalIgnoreCase
+                                ) == true
+                            ),
+                    QualityHoldRestrictionType =
+                        CurrentPart?.RequiresQualityHold == true
+                            ? CurrentPart.QualityHoldRestrictionType?.Trim() ?? string.Empty
+                        : CurrentPart?.PartID?.Contains("MMFSR", StringComparison.OrdinalIgnoreCase)
+                        == true
+                            ? "Sheet Material - Quality Hold Required"
+                        : CurrentPart?.PartID?.Contains("MMCSR", StringComparison.OrdinalIgnoreCase)
+                        == true
+                            ? "Coil Material - Quality Hold Required"
+                        : string.Empty,
                 };
                 CurrentSession.Loads.Add(load);
                 _currentBatchLoads.Add(load);
@@ -587,6 +616,40 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
+                var loadsNeedingFinalAcknowledgment = CurrentSession
+                    .Loads.Where(load =>
+                        load.IsQualityHoldRequired && !load.IsQualityHoldAcknowledged
+                    )
+                    .ToList();
+
+                if (loadsNeedingFinalAcknowledgment.Count > 0)
+                {
+                    _logger.LogInfo(
+                        $"Requesting final quality hold acknowledgment for {loadsNeedingFinalAcknowledgment.Count} load(s) before queue save."
+                    );
+
+                    var acknowledged = await _qualityHoldWarning.ConfirmBeforeSaveAsync(
+                        loadsNeedingFinalAcknowledgment
+                    );
+
+                    if (!acknowledged)
+                    {
+                        result.Success = false;
+                        result.Errors.Add(
+                            "Quality hold acknowledgment required before saving to receiving_label_data."
+                        );
+                        result.LabelDataErrorMessage =
+                            "Save cancelled because final quality hold acknowledgment was not confirmed.";
+                        result.DatabaseErrorMessage = result.LabelDataErrorMessage;
+                        return result;
+                    }
+
+                    foreach (var load in loadsNeedingFinalAcknowledgment)
+                    {
+                        load.IsQualityHoldAcknowledged = true;
+                    }
+                }
+
                 _logger.LogInfo("Reporting progress: Preparing label queue save...");
                 messageProgress?.Report("Preparing label queue save...");
                 percentProgress?.Report(30);
@@ -805,9 +868,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             for (var index = 0; index < loads.Count; index++)
             {
-                var destinationLocation = index < shuffledLocations.Count
-                    ? shuffledLocations[index]
-                    : $"V-C0-{index + 1:00}";
+                var destinationLocation =
+                    index < shuffledLocations.Count
+                        ? shuffledLocations[index]
+                        : $"V-C0-{index + 1:00}";
 
                 assignedLocations[loads[index].LoadID] = destinationLocation;
             }

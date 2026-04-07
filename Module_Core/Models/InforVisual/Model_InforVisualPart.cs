@@ -37,6 +37,16 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public DateTime? DueDate { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this part requires a quality hold acknowledgment.
+        /// </summary>
+        public bool RequiresQualityHold { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quality hold restriction description for this part.
+        /// </summary>
+        public string QualityHoldRestrictionType { get; set; } = string.Empty;
+
+        /// <summary>
         /// Display text for UI showing part ID, description, and line number.
         /// </summary>
         public string DisplayText => $"{PartID} - {Description} (Line {POLineNumber})";

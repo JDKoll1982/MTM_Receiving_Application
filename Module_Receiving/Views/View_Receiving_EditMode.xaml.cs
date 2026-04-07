@@ -95,9 +95,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 XamlRoot = this.XamlRoot,
             };
             dialog.PrepareDialogSize();
-
-            var result = await dialog.ShowAsync();
-            if (result != ContentDialogResult.Primary)
+            dialog.HorizontalAlignment = HorizontalAlignment.Center;
+            dialog.VerticalAlignment = VerticalAlignment.Center;
+            await dialog.ShowAsync();
+            if (!dialog.WasAccepted)
             {
                 return;
             }

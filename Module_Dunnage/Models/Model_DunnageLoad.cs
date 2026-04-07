@@ -201,6 +201,14 @@ public partial class Model_DunnageLoad : ObservableObject
             .Replace("AM", "A.M.", StringComparison.Ordinal)
             .Replace("PM", "P.M.", StringComparison.Ordinal);
 
+    public string ModifiedDateTimeDisplay =>
+        ModifiedDate.HasValue
+            ? ModifiedDate
+                .Value.ToString("M/d/yyyy h:mm tt", CultureInfo.InvariantCulture)
+                .Replace("AM", "A.M.", StringComparison.Ordinal)
+                .Replace("PM", "P.M.", StringComparison.Ordinal)
+            : string.Empty;
+
     public string ReceivedDateTimeDisplay =>
         ReceivedDate == default
             ? string.Empty

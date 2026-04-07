@@ -54,11 +54,14 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
         StringComparer.OrdinalIgnoreCase
     );
 
+    public bool WasAccepted { get; private set; }
+
     public Dialog_Receiving_EditModeColumnChooser(IEnumerable<Model_EditModeColumn> columns)
     {
         ArgumentNullException.ThrowIfNull(columns);
 
         InitializeComponent();
+        WasAccepted = false;
 
         _columns = columns.ToList();
         _initialSelection = _columns.ToDictionary(column => column.Key, column => column.IsVisible);
@@ -74,35 +77,15 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
             return;
         }
 
-        // Captures natural widths from non-star content: description text and action buttons.
         RootGrid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
-        // The option grids use star columns, which report zero width under an infinite
-        // constraint. Measure each checkbox individually to find the widest natural label width.
-        double maxCheckBoxWidth = _checkBoxesByKey.Values
-            .Select(checkBox =>
-            {
-                checkBox.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                return checkBox.DesiredSize.Width;
-            })
-            .DefaultIfEmpty(0)
-            .Max();
+        var desiredWidth = Math.Ceiling(Math.Max(RootGrid.DesiredSize.Width, 960) + 32);
+        var availableWidth = Math.Max(900, XamlRoot.Size.Width - 32);
+        var availableHeight = Math.Max(720, XamlRoot.Size.Height - 48);
 
-        // Walk padding back up the layout tree:
-        //   cell Border (8px × 2) → 4-column grid (16px column spacing × 3)
-        //   → group section Border (16px × 2) → RootGrid (8px × 2)
-        double cellWidth            = maxCheckBoxWidth + 16;
-        double gridWidth            = cellWidth * 4 + 3 * 16;
-        double checkBoxContentWidth = gridWidth + 32 + 16;
-
-        double desiredWidth = Math.Ceiling(
-            Math.Max(RootGrid.DesiredSize.Width, checkBoxContentWidth) + 56
-        );
-
-        double availableWidth  = Math.Max(320, XamlRoot.Size.Width  - 96);
-        double availableHeight = Math.Max(320, XamlRoot.Size.Height - 96);
-
-        Width     = Math.Min(desiredWidth, availableWidth);
+        Width = Math.Min(desiredWidth, availableWidth);
+        MinWidth = Math.Min(900, availableWidth);
+        MinHeight = Math.Min(720, availableHeight);
         MaxHeight = availableHeight;
     }
 
@@ -160,7 +143,8 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
     {
         var sectionPanel = new StackPanel { Spacing = 12 };
 
-        sectionPanel.Children.Add(
+        var headerPanel = new StackPanel { Spacing = 4 };
+        headerPanel.Children.Add(
             new TextBlock
             {
                 Text = title,
@@ -168,10 +152,19 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
                 Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"],
             }
         );
+        headerPanel.Children.Add(
+            new TextBlock
+            {
+                Text = $"{columns.Count} selectable columns",
+                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
+                Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+            }
+        );
+        sectionPanel.Children.Add(headerPanel);
 
         var grid = new Grid { ColumnSpacing = 16, RowSpacing = 12 };
 
-        for (int columnIndex = 0; columnIndex < 4; columnIndex++)
+        for (int columnIndex = 0; columnIndex < 3; columnIndex++)
         {
             grid.ColumnDefinitions.Add(
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
@@ -180,8 +173,8 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
 
         for (int itemIndex = 0; itemIndex < columns.Count; itemIndex++)
         {
-            int rowIndex = itemIndex / 4;
-            int columnIndex = itemIndex % 4;
+            int rowIndex = itemIndex / 3;
+            int columnIndex = itemIndex % 3;
 
             while (grid.RowDefinitions.Count <= rowIndex)
             {
@@ -198,8 +191,11 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
 
         return new Border
         {
-            Padding = new Thickness(16),
-            Background = new SolidColorBrush(Windows.UI.Color.FromArgb(32, 128, 128, 128)),
+            Padding = new Thickness(18),
+            Background = (Brush)
+                Application.Current.Resources["CardBackgroundFillColorDefaultBrush"],
+            BorderBrush = (Brush)Application.Current.Resources["CardStrokeColorDefaultBrush"],
+            BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(8),
             Child = sectionPanel,
         };
@@ -230,8 +226,12 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
 
         return new Border
         {
-            Padding = new Thickness(8),
-            MinHeight = 44,
+            Padding = new Thickness(12),
+            MinHeight = 56,
+            Background = (Brush)Application.Current.Resources["LayerFillColorDefaultBrush"],
+            BorderBrush = (Brush)Application.Current.Resources["CardStrokeColorDefaultBrush"],
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(6),
             Child = checkBox,
         };
     }
@@ -269,9 +269,9 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
 
     private void ApplySelection()
     {
-        foreach (var column in _columns.Where(column => !column.IsAlwaysVisible))
+        foreach (Model_EditModeColumn column in _columns.Where(column => !column.IsAlwaysVisible))
         {
-            if (_checkBoxesByKey.TryGetValue(column.Key, out var checkBox))
+            if (_checkBoxesByKey.TryGetValue(column.Key, out CheckBox? checkBox))
             {
                 column.IsVisible = checkBox.IsChecked == true;
             }
@@ -291,12 +291,17 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
         PrepareDialogSize();
     }
 
-    private void Dialog_PrimaryButtonClick(
-        ContentDialog sender,
-        ContentDialogButtonClickEventArgs args
-    )
+    private void OnFooterApplyButtonClick(object sender, RoutedEventArgs e)
     {
         ApplySelection();
+        WasAccepted = true;
+        Hide();
+    }
+
+    private void OnFooterCancelButtonClick(object sender, RoutedEventArgs e)
+    {
+        WasAccepted = false;
+        Hide();
     }
 
     private void SelectAllButton_Click(object sender, RoutedEventArgs e)

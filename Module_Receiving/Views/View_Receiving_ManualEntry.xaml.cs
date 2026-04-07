@@ -213,6 +213,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             // Skip if empty or if we already checked this exact value on this exact row
             if (
                 string.IsNullOrWhiteSpace(partID)
+                || currentLoad.IsQualityHoldRequired
                 || (partID == _lastCheckedPartID && currentLoad.LoadID == _lastCheckedLoadId)
             )
             {

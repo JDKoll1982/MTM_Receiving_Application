@@ -10,6 +10,7 @@ using Material.Icons;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
@@ -27,12 +28,16 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Help _helpService;
     private readonly IService_Dispatcher _dispatcher;
+    private readonly IService_UserPrivileges _userPrivileges;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_Dunnage_PartSelection(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Dispatcher dispatcher,
         IService_Help helpService,
+        IService_UserPrivileges userPrivileges,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -43,6 +48,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         _dunnageService = dunnageService;
         _dispatcher = dispatcher;
         _helpService = helpService;
+        _userPrivileges = userPrivileges;
+        _sessionManager = sessionManager;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -78,7 +85,13 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsPartSelected))]
+    [NotifyPropertyChangedFor(nameof(CanDeleteSelectedPart))]
     private Model_DunnagePart? _selectedPart;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DeletePartCommand))]
+    [NotifyPropertyChangedFor(nameof(CanDeleteSelectedPart))]
+    private bool _canManageDefinitions;
 
     [ObservableProperty]
     private bool _isInventoryNotificationVisible;
@@ -133,6 +146,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     /// </summary>
     public bool IsPartSelected => SelectedPart != null;
 
+    public bool CanDeleteSelectedPart => CanManageDefinitions && IsPartSelected;
+
     public bool HasSelectedTypeImage => SelectedTypeImageSource is not null;
 
     public ImageSource? SelectedTypeImageSource =>
@@ -168,6 +183,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         {
             IsBusy = true;
             StatusMessage = "Loading parts...";
+
+            await EnsurePrivilegeStateAsync();
 
             // Get selected type from workflow
             SelectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
@@ -307,6 +324,13 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         OnPropertyChanged(nameof(HasSelectedPartVisual));
         SelectPartCommand.NotifyCanExecuteChanged();
         EditPartCommand.NotifyCanExecuteChanged();
+        DeletePartCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnCanManageDefinitionsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanDeleteSelectedPart));
+        DeletePartCommand.NotifyCanExecuteChanged();
     }
 
     private async Task CheckInventoryStatusAsync(Model_DunnagePart part)
@@ -617,7 +641,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     specs,
                     SelectedTypeName,
                     currentInventoryMethod,
-                    dialogDraft
+                    dialogDraft,
+                    CanManageDefinitions
                 )
                 {
                     XamlRoot = App.MainWindow?.Content?.XamlRoot,
@@ -639,6 +664,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                         dialog.GetDraft()
                     );
                     continue;
+                }
+
+                if (dialog.RequestDelete)
+                {
+                    await DeletePartInternalAsync(SelectedPart);
+                    return;
                 }
 
                 if (!dialog.WasAccepted)
@@ -707,6 +738,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanDeleteSelectedPart))]
+    private async Task DeletePartAsync()
+    {
+        await DeletePartInternalAsync(SelectedPart);
+    }
+
     /// <summary>
     /// Shows contextual help for part selection.
     /// </summary>
@@ -714,6 +751,92 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     private async Task ShowHelpAsync()
     {
         await _helpService.ShowHelpAsync("Dunnage.PartSelection");
+    }
+
+    private async Task EnsurePrivilegeStateAsync()
+    {
+        Model_UserSession? currentSession = _sessionManager.CurrentSession;
+        int? employeeNumber = currentSession?.User?.EmployeeNumber;
+
+        if (
+            employeeNumber.HasValue
+            && employeeNumber.Value > 0
+            && (!_userPrivileges.IsInitialized || _userPrivileges.CurrentUserId != employeeNumber)
+        )
+        {
+            var initializeResult = await _userPrivileges.InitializeAsync(employeeNumber.Value);
+            if (!initializeResult.IsSuccess)
+            {
+                _logger.LogWarning(
+                    $"PartSelection: Failed to initialize privileges: {initializeResult.ErrorMessage}",
+                    "PartSelection"
+                );
+                CanManageDefinitions = false;
+                return;
+            }
+        }
+
+        CanManageDefinitions = _userPrivileges.HasAnyRole("Admin", "Developer");
+    }
+
+    private async Task DeletePartInternalAsync(Model_DunnagePart? part)
+    {
+        if (part is null || !CanManageDefinitions || IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot,
+                Title = "Delete Dunnage Part",
+                Content =
+                    $"Are you sure you want to permanently delete '{part.PartId}'? This action cannot be undone.",
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            IsBusy = true;
+
+            var deleteResult = await _dunnageService.DeletePartAsync(part.PartId);
+            if (deleteResult.IsSuccess)
+            {
+                _workflowService.CurrentSession.SelectedPart = null;
+                SelectedPart = null;
+                ReplaceSelectedPartSpecSummaries(Array.Empty<string>());
+                HasSelectedPartSpecs = false;
+                IsInventoryNotificationVisible = false;
+                InventoryMethod = string.Empty;
+                await LoadPartsAsync();
+                StatusMessage = $"Deleted part: {part.PartId}";
+                _logger.LogInfo($"Deleted part: {part.PartId}", "PartSelection");
+                return;
+            }
+
+            await _errorHandler.HandleDaoErrorAsync(deleteResult, nameof(DeletePartAsync), true);
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error deleting dunnage part",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     #endregion

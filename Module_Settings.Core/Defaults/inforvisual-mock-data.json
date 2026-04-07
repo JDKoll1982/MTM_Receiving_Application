@@ -127,6 +127,20 @@
           "RemainingQuantity": 171,
           "DueDate": "2025-11-14T00:00:00",
           "DisplayText": "MMF0005007 - Derived from receiving history for MMF0005007 (Line 1)"
+        },
+        {
+          "PartID": "MMFSR0001",
+          "POLineNumber": "2",
+          "PartType": "Sheet",
+          "QtyOrdered": 240.0,
+          "UnitOfMeasure": "EA",
+          "Description": "Mock quality hold sheet for receiving workflow validation",
+          "DefaultLocationId": "QUALITY",
+          "RemainingQuantity": 48,
+          "DueDate": "2025-11-14T00:00:00",
+          "RequiresQualityHold": true,
+          "QualityHoldRestrictionType": "Sheet Material - Quality Hold Required",
+          "DisplayText": "MMFSR0001 - Mock quality hold sheet for receiving workflow validation (Line 2)"
         }
       ],
       "HasParts": true,
@@ -33124,6 +33138,20 @@
       "RemainingQuantity": 1,
       "DueDate": "2025-10-09T00:00:00",
       "DisplayText": "MMF0000250 - Derived from receiving history for MMF0000250 (Line N/A)"
+    },
+    {
+      "PartID": "MMFQH0001",
+      "POLineNumber": "N/A",
+      "PartType": "Sheet",
+      "QtyOrdered": 240.0,
+      "UnitOfMeasure": "EA",
+      "Description": "Mock quality hold sheet for receiving workflow validation",
+      "DefaultLocationId": "QUALITY",
+      "RemainingQuantity": 48,
+      "DueDate": "2025-11-14T00:00:00",
+      "RequiresQualityHold": true,
+      "QualityHoldRestrictionType": "Sheet Material - Quality Hold Required",
+      "DisplayText": "MMFQH0001 - Mock quality hold sheet for receiving workflow validation (Line N/A)"
     },
     {
       "PartID": "MMF0005507",

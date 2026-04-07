@@ -60,7 +60,10 @@
                 </StackPanel>
                 <Button.Flyout>
                     <Flyout>
-                        <StackPanel MaxWidth="400" Padding="4" Spacing="16">
+                        <StackPanel
+                            MaxWidth="400"
+                            Padding="4"
+                            Spacing="16">
                             <StackPanel Spacing="8">
                                 <TextBlock
                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
@@ -81,8 +84,16 @@
                                 BorderThickness="1"
                                 CornerRadius="6">
                                 <StackPanel Spacing="8">
-                                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="Type Name" />
-                                    <TextBlock FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Choose a descriptive name like 'Pallet', 'Crate', or 'Foam Insert'. This will be displayed in selection lists.</TextBlock>
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Text="Type Name" />
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        TextWrapping="Wrap">
+                                        Choose a descriptive name like 'Pallet', 'Crate', or 'Foam Insert'. This will be displayed in selection lists.
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                             <Border
@@ -92,8 +103,16 @@
                                 BorderThickness="1"
                                 CornerRadius="6">
                                 <StackPanel Spacing="8">
-                                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="Specifications" />
-                                    <TextBlock FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Add custom fields to capture specific data for this type. For example, 'Material' (Text), 'Weight Capacity' (Number with unit 'lbs'), or 'Recyclable' (Boolean).</TextBlock>
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Text="Specifications" />
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        TextWrapping="Wrap">
+                                        Add custom fields to capture specific data for this type. For example, 'Material' (Text), 'Weight Capacity' (Number with unit 'lbs'), or 'Recyclable' (Boolean).
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                             <Border
@@ -104,8 +123,15 @@
                                 CornerRadius="6">
                                 <StackPanel Spacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontSize="12" Foreground="{ThemeResource SystemFillColorAttentionBrush}" Glyph="&#xE946;" />
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SystemFillColorAttentionBrush}" Text="Tip" />
+                                        <FontIcon
+                                            FontSize="12"
+                                            Foreground="{ThemeResource SystemFillColorAttentionBrush}"
+                                            Glyph="&#xE946;" />
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{ThemeResource SystemFillColorAttentionBrush}"
+                                            Text="Tip" />
                                     </StackPanel>
                                     <TextBlock FontSize="11" TextWrapping="Wrap">Required specs must be filled when creating new parts. Use Number type for measurements and validation.</TextBlock>
                                 </StackPanel>
@@ -235,7 +261,10 @@
                                         Stretch="UniformToFill"
                                         Visibility="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="8">
+                                <StackPanel
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Spacing="8">
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Text="{x:Bind ViewModel.SelectedImagePath, Mode=OneWay}"
@@ -260,7 +289,10 @@
                 </Grid.RowDefinitions>
 
                 <!--  Section header  -->
-                <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,8">
+                <StackPanel
+                    Grid.Row="0"
+                    Margin="0,0,0,8"
+                    Spacing="2">
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Specifications" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -283,7 +315,10 @@
                         </Grid.RowDefinitions>
 
                         <!--  Field name + type selector  -->
-                        <Grid Grid.Row="0" Padding="16,16,16,0" ColumnSpacing="12">
+                        <Grid
+                            Grid.Row="0"
+                            Padding="16,16,16,0"
+                            ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition Width="*" />
@@ -312,9 +347,7 @@
                             <StackPanel Spacing="12">
 
                                 <!--  Number validation  -->
-                                <StackPanel
-                                    Spacing="8"
-                                    Visibility="{x:Bind ViewModel.ShowNumberOptions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.ShowNumberOptions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <TextBlock
                                         FontSize="12"
                                         FontWeight="SemiBold"
@@ -413,7 +446,10 @@
                         </ScrollViewer>
 
                         <!--  Required field + Add button  -->
-                        <Grid Grid.Row="2" Padding="16,12,16,16" ColumnSpacing="12">
+                        <Grid
+                            Grid.Row="2"
+                            Padding="16,12,16,16"
+                            ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -452,8 +488,14 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="{x:Bind Name}" />
-                                    <TextBlock FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind Description}" />
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind Name}" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind Description}" />
                                 </StackPanel>
                                 <Border
                                     Grid.Column="1"
@@ -462,7 +504,10 @@
                                     Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
                                     CornerRadius="3"
                                     Visibility="{x:Bind IsRequiredVisibility}">
-                                    <TextBlock FontSize="10" FontWeight="SemiBold" Text="Required" />
+                                    <TextBlock
+                                        FontSize="10"
+                                        FontWeight="SemiBold"
+                                        Text="Required" />
                                 </Border>
                                 <Button
                                     Grid.Column="2"
@@ -489,6 +534,12 @@
                 HorizontalAlignment="Right"
                 Orientation="Horizontal"
                 Spacing="8">
+                <Button
+                    x:Name="FooterDeleteButton"
+                    MinWidth="100"
+                    Click="OnFooterDeleteButtonClick"
+                    Content="Delete"
+                    Visibility="Collapsed" />
                 <Button
                     x:Name="FooterCancelButton"
                     MinWidth="100"

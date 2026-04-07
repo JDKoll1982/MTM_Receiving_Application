@@ -79,12 +79,15 @@
                                         Command="{Binding ElementName=RootUserControl, Path=ViewModel.EditTypeCommand}"
                                         CommandParameter="{x:Bind}"
                                         Icon="Edit"
-                                        Text="Edit" />
+                                        Text="Edit"
+                                        Visibility="{Binding ElementName=RootUserControl, Path=ViewModel.CanManageDefinitions, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
                                     <MenuFlyoutItem
                                         Command="{Binding ElementName=RootUserControl, Path=ViewModel.DeleteTypeCommand}"
                                         CommandParameter="{x:Bind}"
                                         Icon="Delete"
-                                        Text="Delete" />
+                                        Text="Delete"
+                                        Visibility="{Binding ElementName=RootUserControl, Path=ViewModel.CanManageDefinitions, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </MenuFlyout>
                             </Border.ContextFlyout>
                             <Grid>
@@ -177,7 +180,8 @@
             <Button
                 Margin="20,0,0,0"
                 Command="{x:Bind ViewModel.QuickAddTypeCommand}"
-                Style="{StaticResource AccentButtonStyle}">
+                Style="{StaticResource AccentButtonStyle}"
+                Visibility="{Binding ElementName=RootUserControl, Path=ViewModel.CanManageDefinitions, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon FontSize="14" Glyph="&#xE710;" />
                     <TextBlock Text="Quick Add Type" />

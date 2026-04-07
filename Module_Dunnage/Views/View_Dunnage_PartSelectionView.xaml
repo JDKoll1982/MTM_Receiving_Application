@@ -208,7 +208,12 @@
 
                 <!--  Action Buttons  -->
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Button HorizontalAlignment="Left" Command="{x:Bind ViewModel.QuickAddPartCommand}">
+                    <Button
+                        HorizontalAlignment="Left"
+                        Command="{x:Bind ViewModel.QuickAddPartCommand}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE710;" />
                             <TextBlock Text="Add New Part" />
@@ -218,10 +223,23 @@
                     <Button
                         HorizontalAlignment="Left"
                         Command="{x:Bind ViewModel.EditPartCommand}"
-                        ToolTipService.ToolTip="Edit the selected part's specifications and home location">
+                        ToolTipService.ToolTip="Edit the selected part's specifications and home location"
+                        Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE70F;" />
                             <TextBlock Text="Edit Part" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button
+                        HorizontalAlignment="Left"
+                        Command="{x:Bind ViewModel.DeletePartCommand}"
+                        ToolTipService.ToolTip="Permanently delete the selected part"
+                        Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon FontSize="16" Glyph="&#xE74D;" />
+                            <TextBlock Text="Delete Part" />
                         </StackPanel>
                     </Button>
 

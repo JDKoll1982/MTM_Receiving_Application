@@ -297,6 +297,18 @@
                     Header="Received Date"
                     IsReadOnly="True"
                     Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding HomeLocation}"
+                    Header="Home Location"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding InventoryMethod}"
+                    Header="Inventory Method"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
                 <controls:DataGridTemplateColumn
                     Width="Auto"
                     Header="Location"
@@ -317,6 +329,12 @@
                     Width="Auto"
                     Binding="{Binding LabelNumber}"
                     Header="Label Number"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding PartSkidDisplay}"
+                    Header="Part Skid"
+                    IsReadOnly="True"
                     Visibility="Collapsed" />
                 <controls:DataGridTextColumn
                     Width="Auto"
@@ -345,6 +363,18 @@
                     Binding="{Binding CreatedBy}"
                     Header="User ID"
                     IsReadOnly="True" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding ModifiedBy}"
+                    Header="Modified By"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding ModifiedDateTimeDisplay}"
+                    Header="Modified Date"
+                    IsReadOnly="True"
+                    Visibility="Collapsed" />
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

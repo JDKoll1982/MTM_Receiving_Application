@@ -490,7 +490,39 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 return Task.FromResult((false, string.Empty));
             }
 
-            var match = _qualityHoldRegex.Match(partID);
+            var normalizedPartId = partID.Trim();
+
+            if (_appSettings.GetUseInforVisualMockData())
+            {
+                var catalog = _mockDataCatalog.GetCatalog();
+                var mockPart = catalog.Parts.FirstOrDefault(part =>
+                    string.Equals(part.PartID, normalizedPartId, StringComparison.OrdinalIgnoreCase)
+                );
+
+                mockPart ??= catalog
+                    .PurchaseOrders.SelectMany(purchaseOrder => purchaseOrder.Parts)
+                    .FirstOrDefault(part =>
+                        string.Equals(
+                            part.PartID,
+                            normalizedPartId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
+
+                if (mockPart is not null)
+                {
+                    return Task.FromResult(
+                        (
+                            mockPart.RequiresQualityHold,
+                            mockPart.RequiresQualityHold
+                                ? mockPart.QualityHoldRestrictionType?.Trim() ?? string.Empty
+                                : string.Empty
+                        )
+                    );
+                }
+            }
+
+            var match = _qualityHoldRegex.Match(normalizedPartId);
             if (match.Success)
             {
                 var restrictionType = match.Groups[1].Value.ToUpperInvariant();

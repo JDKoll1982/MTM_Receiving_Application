@@ -24,12 +24,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
+        private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IService_ReceivingSettings _receivingSettings;
         private DateTime? _currentPoHeaderPromiseDate;
         private NotifyCollectionChangedEventHandler? _partsCollectionChangedHandler;
+        private bool _isClearingRestrictedSelection;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -135,6 +137,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Help helpService,
+            IService_QualityHoldWarning qualityHoldWarning,
             IService_InforVisualMockDataCatalog mockDataCatalog,
             IService_ViewModelRegistry viewModelRegistry,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
@@ -146,6 +149,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
             _helpService = helpService;
+            _qualityHoldWarning = qualityHoldWarning;
             _mockDataCatalog = mockDataCatalog;
             _viewModelRegistry = viewModelRegistry;
             _configuration = configuration;
@@ -388,11 +392,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var result = await _inforVisualService.GetPartByIDAsync(PartID);
                 if (result.IsSuccess && result.Data != null)
                 {
-                    SelectedPart = result.Data;
                     _currentPoHeaderPromiseDate = null;
                     _workflowService.CurrentPODueDate = null;
-                    // For Non-PO items, we might want to show it in the list or just set SelectedPart directly.
-                    // Setting SelectedPart directly is enough for the workflow, but the UI might want to show it.
                     ReplaceParts([result.Data], result.Data);
                     var msg = await _receivingSettings.FormatAsync(
                         ReceivingSettingsKeys.Messages.InfoPartFound,
@@ -551,6 +552,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : value?.DueDate ?? _currentPoHeaderPromiseDate;
             _workflowService.CurrentLocation = value?.DefaultLocationId?.Trim() ?? string.Empty;
 
+            if (_isClearingRestrictedSelection)
+            {
+                return;
+            }
+
             // Auto-detect package type when a part is selected from PO
             if (value != null && !string.IsNullOrWhiteSpace(value.PartID))
             {
@@ -562,6 +568,42 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     PackageType = "Sheets";
                 else
                     PackageType = "Skids";
+
+                _ = CheckQualityHoldOnSelectedPartAsync(value);
+            }
+        }
+
+        private async Task CheckQualityHoldOnSelectedPartAsync(Model_InforVisualPart selectedPart)
+        {
+            if (_qualityHoldWarning.IsRestrictedPart(selectedPart.PartID) is false)
+            {
+                return;
+            }
+
+            bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(selectedPart.PartID);
+            if (acknowledged)
+            {
+                return;
+            }
+
+            _isClearingRestrictedSelection = true;
+            try
+            {
+                SelectedPart = null;
+                _workflowService.CurrentPart = null;
+                _workflowService.CurrentLocation = string.Empty;
+                _workflowService.CurrentPODueDate = IsNonPOItem
+                    ? null
+                    : _currentPoHeaderPromiseDate;
+
+                if (IsNonPOItem)
+                {
+                    PartID = string.Empty;
+                }
+            }
+            finally
+            {
+                _isClearingRestrictedSelection = false;
             }
         }
 

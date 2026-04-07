@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
@@ -26,12 +27,16 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
     private readonly IService_Pagination _paginationService;
     private readonly IService_Help _helpService;
     private readonly IService_ViewModelRegistry _viewModelRegistry;
+    private readonly IService_UserPrivileges _userPrivileges;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_dunnage_typeselection(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
         IService_Help helpService,
+        IService_UserPrivileges userPrivileges,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_ViewModelRegistry viewModelRegistry,
@@ -44,6 +49,8 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         _paginationService = paginationService;
         _helpService = helpService;
         _viewModelRegistry = viewModelRegistry;
+        _userPrivileges = userPrivileges;
+        _sessionManager = sessionManager;
 
         // Subscribe to pagination events
         _paginationService.PageChanged += OnPageChanged;
@@ -80,6 +87,10 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
     [ObservableProperty]
     private string _pageInfo = "Page 1 of 1";
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DeleteTypeCommand))]
+    private bool _canManageDefinitions;
+
     #endregion
 
     #region Initialization
@@ -104,6 +115,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         {
             IsBusy = true;
             StatusMessage = "Loading dunnage types...";
+            await EnsurePrivilegeStateAsync();
             _logger.LogInfo(
                 "TypeSelection: Starting to load types",
                 "ViewModel_dunnage_typeselection"
@@ -416,10 +428,22 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 }
             }
 
-            dialog.InitializeForEdit(type.TypeName, type.Icon, type.ImagePath, existingSpecsDict);
+            dialog.InitializeForEdit(
+                type.TypeName,
+                type.Icon,
+                type.ImagePath,
+                existingSpecsDict,
+                CanManageDefinitions
+            );
             dialog.PrepareDialogSize();
 
             await dialog.ShowAsync();
+
+            if (dialog.RequestDelete)
+            {
+                await DeleteTypeAsync(type);
+                return;
+            }
 
             if (dialog.WasAccepted)
             {
@@ -521,7 +545,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanManageDefinitions))]
     private async Task DeleteTypeAsync(Model_DunnageType type)
     {
         if (type == null)
@@ -623,6 +647,32 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             $"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}",
             "ViewModel_dunnage_typeselection"
         );
+    }
+
+    private async Task EnsurePrivilegeStateAsync()
+    {
+        int? employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        if (
+            employeeNumber.HasValue
+            && employeeNumber.Value > 0
+            && (!_userPrivileges.IsInitialized || _userPrivileges.CurrentUserId != employeeNumber)
+        )
+        {
+            Model_Dao_Result initializeResult = await _userPrivileges.InitializeAsync(
+                employeeNumber.Value
+            );
+            if (!initializeResult.IsSuccess)
+            {
+                _logger.LogWarning(
+                    $"TypeSelection: Failed to initialize privileges: {initializeResult.ErrorMessage}",
+                    "ViewModel_dunnage_typeselection"
+                );
+                CanManageDefinitions = false;
+                return;
+            }
+        }
+
+        CanManageDefinitions = _userPrivileges.HasAnyRole("Admin", "Developer");
     }
 
     #endregion

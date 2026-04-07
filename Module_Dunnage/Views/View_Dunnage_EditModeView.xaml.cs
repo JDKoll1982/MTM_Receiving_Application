@@ -51,72 +51,22 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
         // ------------------------------------------------------------------ column chooser
         private async void ColumnsButton_Click(object sender, RoutedEventArgs e)
         {
-            // Build checkboxes from DataGrid columns, skipping the checkbox column (index 0)
-            var panel = new StackPanel { Spacing = 6 };
-            var checkBoxes = new List<(CheckBox Box, int Index)>();
-
-            var quickRow = new StackPanel
+            var dialog = new View_Dunnage_EditModeColumnChooserDialog(EditModeDataGrid.Columns)
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = 8,
-                Margin = new Thickness(0, 0, 0, 8),
-            };
-            var selectAllBtn = new Button { Content = "Select All" };
-            var clearAllBtn = new Button { Content = "Clear All" };
-            quickRow.Children.Add(selectAllBtn);
-            quickRow.Children.Add(clearAllBtn);
-            panel.Children.Add(quickRow);
-
-            for (int i = 1; i < EditModeDataGrid.Columns.Count; i++)
-            {
-                var col = EditModeDataGrid.Columns[i];
-                var header = col.Header?.ToString() ?? $"Column {i}";
-                var cb = new CheckBox
-                {
-                    Content = header,
-                    IsChecked = col.Visibility == Visibility.Visible,
-                    Tag = i,
-                };
-                panel.Children.Add(cb);
-                checkBoxes.Add((cb, i));
-            }
-
-            selectAllBtn.Click += (_, _) =>
-            {
-                foreach (var (cb, _) in checkBoxes)
-                    cb.IsChecked = true;
-            };
-            clearAllBtn.Click += (_, _) =>
-            {
-                foreach (var (cb, _) in checkBoxes)
-                    cb.IsChecked = false;
-            };
-
-            var dialog = new ContentDialog
-            {
-                Title = "Choose visible columns",
-                Content = new ScrollViewer
-                {
-                    Content = panel,
-                    MaxHeight = 400,
-                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                },
-                PrimaryButtonText = "Apply",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.XamlRoot,
             };
 
-            if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            dialog.PrepareDialogSize();
+            dialog.HorizontalAlignment = HorizontalAlignment.Center;
+            dialog.VerticalAlignment = VerticalAlignment.Center;
+
+            await dialog.ShowAsync();
+            if (!dialog.WasAccepted)
             {
                 return;
             }
 
-            foreach (var (cb, index) in checkBoxes)
-            {
-                EditModeDataGrid.Columns[index].Visibility =
-                    cb.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            }
+            dialog.ApplySelection(EditModeDataGrid.Columns);
         }
 
         private void EditModeDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)

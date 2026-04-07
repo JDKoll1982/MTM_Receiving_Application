@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Receiving.Models;
 
@@ -23,4 +24,11 @@ public interface IService_QualityHoldWarning
     /// <param name="partID">The part ID to check</param>
     /// <returns>True if part requires quality hold (MMFSR or MMCSR)</returns>
     bool IsRestrictedPart(string? partID);
+
+    /// <summary>
+    /// Shows the final save-time acknowledgment for quality hold loads before queue persistence.
+    /// </summary>
+    /// <param name="loadsWithHolds">Loads that still require final quality-hold acknowledgment</param>
+    /// <returns>True when the user confirms the final acknowledgment; otherwise false</returns>
+    Task<bool> ConfirmBeforeSaveAsync(IReadOnlyList<Model_ReceivingLoad> loadsWithHolds);
 }

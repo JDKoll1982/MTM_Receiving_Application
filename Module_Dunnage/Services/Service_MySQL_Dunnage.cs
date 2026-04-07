@@ -300,19 +300,16 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
-                // Check if any specs are defined for this type
-                var specsResult = await _daoDunnageSpec.GetByTypeAsync(typeId);
-                if (specsResult.IsSuccess && specsResult.Data?.Count > 0)
+                var existingTypeResult = await _daoDunnageType.GetByIdAsync(typeId);
+                var deleteSpecsResult = await _daoDunnageSpec.DeleteByTypeAsync(typeId);
+                if (!deleteSpecsResult.IsSuccess)
                 {
-                    await _logger.LogWarningAsync(
-                        $"Cannot delete dunnage type ID {typeId}: Has {specsResult.Data.Count} specifications defined"
+                    await _logger.LogErrorAsync(
+                        $"Failed to delete specs for dunnage type ID {typeId}: {deleteSpecsResult.ErrorMessage}"
                     );
-                    return Model_Dao_Result_Factory.Failure(
-                        $"Cannot delete type. It has {specsResult.Data.Count} specifications defined. Please delete them first."
-                    );
+                    return deleteSpecsResult;
                 }
 
-                var existingTypeResult = await _daoDunnageType.GetByIdAsync(typeId);
                 var result = await _daoDunnageType.DeleteAsync(typeId);
                 if (result.IsSuccess)
                 {

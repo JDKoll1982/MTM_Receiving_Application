@@ -27,6 +27,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
     public string SelectedImagePath { get; private set; } = string.Empty;
     public bool RequestChooseExistingSpecs { get; private set; }
+    public bool RequestDelete { get; private set; }
 
     private readonly Model_DunnagePart _existingPart;
     private readonly List<Model_DunnageSpec> _specs;
@@ -48,11 +49,14 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         List<Model_DunnageSpec> specs,
         string typeName,
         string inventoryMethod,
-        Model_DunnagePartDialogDraft? initialDraft = null
+        Model_DunnagePartDialogDraft? initialDraft = null,
+        bool canDelete = false
     )
     {
         InitializeComponent();
         WasAccepted = false;
+        RequestDelete = false;
+        FooterDeleteButton.Visibility = canDelete ? Visibility.Visible : Visibility.Collapsed;
 
         _existingPart = existingPart;
         _specs = specs;
@@ -654,6 +658,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private void ChooseExistingSpecsButton_Click(object sender, RoutedEventArgs e)
     {
         WasAccepted = false;
+        RequestDelete = false;
         RequestChooseExistingSpecs = true;
         Hide();
     }
@@ -788,6 +793,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private void OnFooterCancelButtonClick(object sender, RoutedEventArgs e)
     {
         WasAccepted = false;
+        Hide();
+    }
+
+    private void OnFooterDeleteButtonClick(object sender, RoutedEventArgs e)
+    {
+        WasAccepted = false;
+        RequestDelete = true;
         Hide();
     }
 

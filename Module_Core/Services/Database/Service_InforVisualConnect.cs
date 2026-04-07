@@ -310,7 +310,8 @@ public class Service_InforVisualConnect : IService_InforVisual
             var normalizedLine = string.IsNullOrWhiteSpace(poLineNumber)
                 ? string.Empty
                 : poLineNumber.Trim();
-            var matchingTransactions = (_mockDataCatalog.GetReceivingTransactions() ?? []).Where(transaction =>
+            var matchingTransactions = (_mockDataCatalog.GetReceivingTransactions() ?? [])
+                .Where(transaction =>
                     string.Equals(
                         transaction.PONumber,
                         normalizedPo,
@@ -451,8 +452,16 @@ public class Service_InforVisualConnect : IService_InforVisual
 
             var transactions = (_mockDataCatalog.GetReceivingTransactions() ?? [])
                 .Where(transaction =>
-                    string.Equals(transaction.PONumber, normalizedPo, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(transaction.PartID, normalizedPart, StringComparison.OrdinalIgnoreCase)
+                    string.Equals(
+                        transaction.PONumber,
+                        normalizedPo,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && string.Equals(
+                        transaction.PartID,
+                        normalizedPart,
+                        StringComparison.OrdinalIgnoreCase
+                    )
                     && (
                         string.IsNullOrWhiteSpace(normalizedLine)
                         || string.Equals(
@@ -559,6 +568,8 @@ public class Service_InforVisualConnect : IService_InforVisual
             QtyOrdered = 0,
             RemainingQuantity = (int)daoPart.AvailableQty,
             UnitOfMeasure = daoPart.PrimaryUom,
+            RequiresQualityHold = false,
+            QualityHoldRestrictionType = string.Empty,
         };
     }
 
@@ -1007,6 +1018,8 @@ public class Service_InforVisualConnect : IService_InforVisual
             DefaultLocationId = source.DefaultLocationId,
             RemainingQuantity = source.RemainingQuantity,
             DueDate = source.DueDate,
+            RequiresQualityHold = source.RequiresQualityHold,
+            QualityHoldRestrictionType = source.QualityHoldRestrictionType,
         };
     }
 

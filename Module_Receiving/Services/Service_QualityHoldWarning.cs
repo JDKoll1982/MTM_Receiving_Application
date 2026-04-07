@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -14,16 +16,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Services;
 /// </summary>
 public class Service_QualityHoldWarning : IService_QualityHoldWarning
 {
+    private readonly IService_AppSettings _appSettings;
+    private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
     private readonly IService_Window _windowService;
     private readonly IService_LoggingUtility _logger;
     private readonly IService_ReceivingSettings _receivingSettings;
 
     public Service_QualityHoldWarning(
+        IService_AppSettings appSettings,
+        IService_InforVisualMockDataCatalog mockDataCatalog,
         IService_Window windowService,
         IService_LoggingUtility logger,
         IService_ReceivingSettings receivingSettings
     )
     {
+        _appSettings = appSettings;
+        _mockDataCatalog = mockDataCatalog;
         _windowService = windowService;
         _logger = logger;
         _receivingSettings = receivingSettings;
@@ -32,21 +40,22 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
     /// <inheritdoc/>
     public bool IsRestrictedPart(string? partID)
     {
-        if (string.IsNullOrWhiteSpace(partID))
-        {
-            return false;
-        }
-
-        // Check for restricted part patterns: MMFSR or MMCSR
-        return partID.Contains("MMFSR", StringComparison.OrdinalIgnoreCase)
-            || partID.Contains("MMCSR", StringComparison.OrdinalIgnoreCase);
+        return string.IsNullOrWhiteSpace(ResolveRestrictionType(partID)) is false;
     }
 
     /// <inheritdoc/>
     public async Task<bool> CheckAndWarnAsync(string? partID, Model_ReceivingLoad? load = null)
     {
-        if (!IsRestrictedPart(partID))
+        var restrictionType = ResolveRestrictionType(partID);
+        if (string.IsNullOrWhiteSpace(restrictionType))
         {
+            if (load is not null)
+            {
+                load.IsQualityHoldRequired = false;
+                load.IsQualityHoldAcknowledged = false;
+                load.QualityHoldRestrictionType = string.Empty;
+            }
+
             return true; // No warning needed, proceed
         }
 
@@ -57,15 +66,11 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
             return true; // Don't block if we can't show dialog
         }
 
-        // Determine restriction type
-        string restrictionType = partID!.Contains("MMFSR", StringComparison.OrdinalIgnoreCase)
-            ? "Sheet Material - Quality Hold Required"
-            : "Coil Material - Quality Hold Required";
-
         // Update load if provided
         if (load != null)
         {
             load.IsQualityHoldRequired = true;
+            load.IsQualityHoldAcknowledged = false;
             load.QualityHoldRestrictionType = restrictionType;
         }
 
@@ -110,5 +115,107 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
         );
 
         return acknowledged;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> ConfirmBeforeSaveAsync(
+        IReadOnlyList<Model_ReceivingLoad> loadsWithHolds
+    )
+    {
+        ArgumentNullException.ThrowIfNull(loadsWithHolds);
+
+        if (loadsWithHolds.Count == 0)
+        {
+            return true;
+        }
+
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            _logger.LogError("Cannot show quality hold save confirmation: XamlRoot is null");
+            return false;
+        }
+
+        var restrictedPartsList = string.Join(
+            "\n",
+            loadsWithHolds.Select(load => $"  • {load.PartID} ({load.QualityHoldRestrictionType})")
+        );
+
+        var content =
+            $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n"
+            + $"This is your SECOND and FINAL acknowledgment.\n\n"
+            + $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n"
+            + $"BEFORE YOU PROCEED:\n"
+            + $"✓ Have you contacted Quality?\n"
+            + $"✓ Has Quality physically inspected these loads?\n"
+            + $"✓ Has Quality accepted these loads?\n"
+            + $"This is a critical quality control checkpoint.\n"
+            + $"DO NOT proceed unless Quality has accepted.";
+
+        var dialog = new ContentDialog
+        {
+            Title = "⚠️ FINAL QUALITY HOLD CONFIRMATION - Action Required",
+            Content = new TextBlock
+            {
+                Text = content,
+                TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                FontSize = 14,
+                Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                    Microsoft.UI.Colors.DarkRed
+                ),
+            },
+            PrimaryButtonText = "✓ YES - Save Now",
+            CloseButtonText = "✗ NO - Cancel Save",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = xamlRoot,
+        };
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary;
+    }
+
+    private string ResolveRestrictionType(string? partID)
+    {
+        if (string.IsNullOrWhiteSpace(partID))
+        {
+            return string.Empty;
+        }
+
+        var normalizedPartId = partID.Trim();
+
+        if (_appSettings.GetUseInforVisualMockData())
+        {
+            var catalog = _mockDataCatalog.GetCatalog();
+            var mockPart = catalog.Parts.FirstOrDefault(part =>
+                string.Equals(part.PartID, normalizedPartId, StringComparison.OrdinalIgnoreCase)
+            );
+
+            mockPart ??= catalog
+                .PurchaseOrders.SelectMany(purchaseOrder => purchaseOrder.Parts)
+                .FirstOrDefault(part =>
+                    string.Equals(part.PartID, normalizedPartId, StringComparison.OrdinalIgnoreCase)
+                );
+
+            if (mockPart is not null)
+            {
+                return mockPart.RequiresQualityHold
+                    ? string.IsNullOrWhiteSpace(mockPart.QualityHoldRestrictionType)
+                        ? "Quality Hold Required"
+                        : mockPart.QualityHoldRestrictionType.Trim()
+                    : string.Empty;
+            }
+        }
+
+        if (normalizedPartId.Contains("MMFSR", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Sheet Material - Quality Hold Required";
+        }
+
+        if (normalizedPartId.Contains("MMCSR", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Coil Material - Quality Hold Required";
+        }
+
+        return string.Empty;
     }
 }
