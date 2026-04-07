@@ -181,7 +181,6 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_DunnageImageStorage, Service_DunnageImageStorage>();
         services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
-        services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
@@ -193,11 +192,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Dunnage_Review>();
         services.AddTransient<ViewModel_Dunnage_ManualEntry>();
         services.AddTransient<ViewModel_Dunnage_EditMode>();
-        services.AddTransient<ViewModel_Dunnage_AdminMain>();
-        services.AddTransient<ViewModel_Dunnage_AdminTypes>();
-        services.AddTransient<ViewModel_Dunnage_AdminParts>();
-        services.AddTransient<ViewModel_Dunnage_AdminInventory>();
-        services.AddTransient<ViewModel_Dunnage_AddTypeDialog>();
+        services.AddTransient<ViewModel_Dunnage_QuickAddTypeDialog>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_WorkflowView>();
@@ -209,15 +204,9 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_ReviewView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_ManualEntryView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_EditModeView>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminMainView>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminTypesView>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminPartsView>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminInventoryView>();
 
         // Dialogs (Transient - Created on demand)
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_Dunnage_AddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddMultipleRowsDialog>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_NonPOEntry>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog>();

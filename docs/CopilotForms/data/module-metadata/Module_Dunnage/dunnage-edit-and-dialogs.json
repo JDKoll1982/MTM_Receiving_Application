@@ -2,15 +2,12 @@
   "id": "dunnage-edit-and-dialogs",
   "module": "Module_Dunnage",
   "name": "Edit Mode And Dialogs",
-  "summary": "Edit-mode screens, admin shell wiring, non-PO entry, label-related dialogs, button-based Type/Part/Location selectors with shared fuzzy search, full active-label column toggling, source-aware save/update/delete flows, and per-part Dunnage skid counters preserved across the active queue and history archive.",
+  "summary": "Edit-mode screens, non-PO entry, label-related dialogs, button-based Type, Part, and Location selectors with shared fuzzy search, full active-label column toggling, source-aware save and delete flows, and per-part Dunnage skid counters preserved across the active queue and history archive.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
-    "Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
     "Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml.cs",
-    "Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml",
-    "Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml",
     "Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_EditModeView.xaml",
@@ -20,14 +17,9 @@
     "Module_Dunnage/Data/Dao_DunnageLoad.cs",
     "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
     "Module_Dunnage/Data/Dao_DunnageNonPOEntry.cs",
-    "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs",
-    "Module_Dunnage/Enums/Enum_DunnageAdminSection.cs"
+    "Module_Dunnage/Models/Model_DunnageNonPOEntry.cs"
   ],
-  "relatedServices": [
-    "IService_DunnageAdminWorkflow",
-    "IService_MySQL_Dunnage",
-    "IService_InforVisual"
-  ],
+  "relatedServices": ["IService_MySQL_Dunnage", "IService_InforVisual"],
   "promptDefaults": {
     "audience": "Receiving Clerk",
     "docAudience": "Receiving Clerk",
@@ -39,8 +31,7 @@
     "workflowAreas": [
       "Edit existing dunnage records",
       "Non-PO entry",
-      "Add-row and inventory dialogs",
-      "Admin shell support",
+      "Add-row dialogs",
       "Dialog-based type, part, and location selection",
       "Source-aware edit-mode save persistence",
       "Active label queue maintenance",
@@ -49,8 +40,7 @@
     "screens": [
       "View_Dunnage_EditModeView.xaml",
       "View_Dunnage_Dialog_NonPOEntry.xaml",
-      "View_Dunnage_Dialog_AddMultipleRowsDialog.xaml",
-      "View_Dunnage_Dialog_AddToInventoriedListDialog.xaml"
+      "View_Dunnage_Dialog_AddMultipleRowsDialog.xaml"
     ],
     "currentUiPatterns": ["DataGrid", "Dialog", "Form"],
     "desiredUiPatterns": ["Split layout", "Dialog", "Form", "Picker modal"],
@@ -64,8 +54,7 @@
       "Shared fuzzy-search picker",
       "Source-aware Save Changes pipeline",
       "Non-PO entry form",
-      "Add multiple rows dialog",
-      "Add to inventoried list dialog"
+      "Add multiple rows dialog"
     ],
     "userActions": [
       "Edit saved dunnage records",
@@ -77,7 +66,7 @@
       "Toggle any available active-label table column in the edit grid",
       "Preserve Dunnage per-part skid counters when rows move from the active queue into history",
       "Capture non-PO dunnage entries",
-      "Add rows or inventory items through dialogs"
+      "Add rows through dialogs"
     ],
     "validationHints": [
       "Confirm the Type column opens a Dunnage Type picker and excludes types with no parts",
@@ -90,8 +79,7 @@
       "Confirm the Columns modal includes the available dunnage_label_data fields, including hidden queue metadata columns",
       "Confirm Dunnage active-label and history rows retain part_skid_sequence and part_skid_total values after save, edit, and archive operations",
       "Confirm a successful save refreshes the same working set and a failed save surfaces a clear error",
-      "Confirm edit-mode and non-PO dialog flows still target the correct records",
-      "Confirm add-row and inventory dialogs still support the admin workflow correctly"
+      "Confirm edit-mode and non-PO dialog flows still target the correct records"
     ]
   }
 }

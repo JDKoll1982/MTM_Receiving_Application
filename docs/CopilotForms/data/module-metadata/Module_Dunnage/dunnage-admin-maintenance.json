@@ -1,58 +1,39 @@
 {
   "id": "dunnage-admin-maintenance",
   "module": "Module_Dunnage",
-  "name": "Admin Maintenance",
-  "summary": "Administration flows for dunnage types, parts, specs, inventory, icons, and maintenance dialogs used to keep master data current, including timer-backed add-type validation cleanup, persisted custom-field definitions with normalized database column names, Edit Type management for saved custom fields, PNG image selection and preview for dunnage types and parts, choice-based spec definitions for quick-add type and part dialogs, part-specific extra spec rows on Quick Add Part and Edit Part, and a reusable existing-spec-template picker that lets Quick Add Part and Edit Part reuse saved spec sets.",
+  "name": "Quick Add And Edit Dialogs",
+  "summary": "Quick-add type and part dialogs, the Edit Part dialog, and supporting spec, image, and picker flows used from the active Dunnage workflow.",
   "owner": "Operations Team",
   "relatedFiles": [
-    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs",
-    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminInventoryViewModel.cs",
-    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminPartsViewModel.cs",
-    "Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminTypesViewModel.cs",
-    "Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml",
-    "Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml.cs",
-    "Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml",
-    "Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml.cs",
-    "Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml",
-    "Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml",
     "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml.cs",
-    "Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml",
-    "Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml",
     "Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml",
     "Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml.cs",
-    "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml",
-    "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml",
     "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml",
+    "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml.cs",
     "Module_Dunnage/Helpers/Helper_DunnageImagePaths.cs",
     "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
-    "Module_Dunnage/Data/Dao_DunnageType.cs",
     "Module_Dunnage/Data/Dao_DunnagePart.cs",
     "Module_Dunnage/Data/Dao_DunnageSpec.cs",
-    "Module_Dunnage/Data/Dao_DunnageUserPreference.cs",
-    "Module_Dunnage/Data/Dao_InventoriedDunnage.cs",
+    "Module_Dunnage/Data/Dao_DunnageType.cs",
     "Module_Dunnage/Services/Service_DunnageImageStorage.cs",
     "Module_Dunnage/Models/Model_CustomFieldDefinition.cs",
     "Module_Dunnage/Models/Model_DunnagePart.cs",
     "Module_Dunnage/Models/Model_DunnagePartCustomSpecEntry.cs",
     "Module_Dunnage/Models/Model_DunnagePartDialogDraft.cs",
-    "Module_Dunnage/Models/Model_DunnageSpecTemplateOption.cs",
     "Module_Dunnage/Models/Model_DunnageSpec.cs",
+    "Module_Dunnage/Models/Model_DunnageSpecTemplateOption.cs",
     "Module_Dunnage/Models/Model_DunnageType.cs",
     "Module_Dunnage/Models/Model_IconDefinition.cs",
-    "Module_Dunnage/Models/Model_InventoriedDunnage.cs",
     "Module_Dunnage/Models/Model_SpecInput.cs",
     "Module_Dunnage/Models/Model_SpecItem.cs",
-    "Module_Dunnage/Models/SpecDefinition.cs",
-    "Module_Dunnage/SETTABLE_OBJECTS_REPORT.md"
+    "Module_Dunnage/Models/SpecDefinition.cs"
   ],
-  "relatedServices": [
-    "IService_DunnageAdminWorkflow",
-    "IService_MySQL_Dunnage"
-  ],
+  "relatedServices": ["IService_MySQL_Dunnage"],
   "promptDefaults": {
     "audience": "Supervisor",
     "docAudience": "Supervisor",
@@ -62,26 +43,21 @@
   },
   "uiHints": {
     "workflowAreas": [
-      "Admin type maintenance",
-      "Admin part and spec maintenance",
-      "Admin inventory maintenance",
-      "Quick-add and edit dialogs"
+      "Quick-add type setup",
+      "Quick-add and edit part setup",
+      "Spec template reuse",
+      "Icon and image selection"
     ],
     "screens": [
-      "View_Dunnage_AdminTypesView.xaml",
-      "View_Dunnage_AdminPartsView.xaml",
-      "View_Dunnage_AdminInventoryView.xaml",
-      "View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml",
-      "View_Dunnage_EditPartDialog.xaml",
+      "View_Dunnage_QuickAddTypeDialog.xaml",
       "View_Dunnage_QuickAddPartDialog.xaml",
-      "View_Dunnage_QuickAddTypeDialog.xaml"
+      "View_Dunnage_EditPartDialog.xaml",
+      "View_Dunnage_SelectExistingSpecsDialog.xaml"
     ],
-    "currentUiPatterns": ["Form", "Table", "Dialog"],
+    "currentUiPatterns": ["Form", "Dialog"],
     "desiredUiPatterns": ["Form", "Split layout", "Dialog"],
     "uiElements": [
-      "Admin tables",
       "Type and part edit forms",
-      "Inventory maintenance controls",
       "Icon picker",
       "PNG image picker and preview",
       "Quick-add dialogs",
@@ -90,32 +66,22 @@
       "Choice dropdown inputs"
     ],
     "userActions": [
-      "Maintain dunnage master data",
-      "Edit inventory and part definitions",
       "Add new types and parts quickly",
       "Upload and clear PNG images for dunnage types and parts",
-      "Persist Add Type custom-field definitions with a consistent insert and delete database contract",
-      "Manage saved custom fields for an existing type from Edit Type",
       "Reuse an existing part's saved spec values when adding or editing a part",
       "Add part-specific key/value specs when quick-adding or editing a part",
       "Define a spec field with a controlled list of allowed choices"
     ],
     "validationHints": [
-      "Confirm admin maintenance flows still edit the intended records",
-      "Confirm quick-add dialogs still feed the correct admin screens",
       "Confirm type and part dialogs retain a selected PNG when reopened from draft state",
       "Confirm clearing an image removes the stored relative path on save",
       "Confirm Quick Add Part and Edit Part can temporarily close, open the existing-spec picker, and reopen with the selected specs applied",
       "Confirm choosing existing specs reuses only the saved spec values and notes, without forcing the source part ID or inventory type",
       "Confirm Quick Add Part and Edit Part can save extra part-specific specs alongside the configured type specs",
       "Confirm part-specific specs reject duplicate names and reserved keys that collide with configured specs or Notes",
-      "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
-      "Confirm Add Type custom fields save with a normalized DatabaseColumnName and can be deleted through the Dunnage custom-field stored procedure path",
-      "Confirm Edit Type loads persisted custom fields, supports add/edit/delete, and saves the final state back to dunnage_custom_fields",
-      "Confirm admin list pages and selected-part spec summaries still refresh correctly after whole-collection replacement",
       "Confirm Quick Add Part and Edit Part render Choices specs as dropdowns using the configured array values",
-      "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions",
-      "Confirm the Add Type dialog tears down its validation timer when the dialog closes"
+      "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
+      "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions"
     ]
   }
 }

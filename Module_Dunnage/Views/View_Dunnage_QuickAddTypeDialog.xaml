@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentDialog
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,14 +7,12 @@
     xmlns:local="using:MTM_Receiving_Application.Module_Dunnage.Views"
     xmlns:materialIcons="using:Material.Icons.WinUI3"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
-    Title="Add New Dunnage Type"
-    Width="900"
-    CloseButtonText="Cancel"
-    DefaultButton="Primary"
-    PrimaryButtonClick="OnPrimaryButtonClick"
-    PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
-    PrimaryButtonText="Add Type">
+    x:Name="RootDialog"
+    Title="{x:Bind ViewModel.DialogTitle, Mode=OneWay}">
     <ContentDialog.Resources>
+        <x:Double x:Key="ContentDialogMaxWidth">1600</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">900</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">760</x:Double>
         <converters:Converter_IconCodeToGlyph x:Key="IconCodeToGlyphConverter" />
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <!--  Help Button Style  -->
@@ -25,215 +23,244 @@
         </Style>
     </ContentDialog.Resources>
 
-    <ScrollViewer MaxHeight="600" VerticalScrollBarVisibility="Auto">
-        <StackPanel Padding="12" Spacing="24">
-            <!--  Header with Help Button  -->
-            <Grid>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Style="{StaticResource BodyTextBlockStyle}"
-                    Text="Enter details for the new dunnage type"
-                    TextWrapping="Wrap" />
+    <Grid
+        x:Name="RootGrid"
+        MinWidth="900"
+        MaxWidth="1280">
+        <!--  Two-row root: header bar + main content  -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-                <Button
-                    x:Name="HelpButton"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Style="{StaticResource HelpButtonStyle}"
-                    ToolTipService.ToolTip="Click for help about dunnage types">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon
-                            FontSize="14"
-                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                            Glyph="&#xE946;" />
-                        <TextBlock
-                            FontSize="12"
-                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                            Text="Help" />
-                    </StackPanel>
-                    <Button.Flyout>
-                        <Flyout>
-                            <StackPanel
-                                MaxWidth="400"
-                                Padding="4"
-                                Spacing="16">
-                                <StackPanel Spacing="8">
-                                    <TextBlock
-                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                        Style="{StaticResource SubtitleTextBlockStyle}"
-                                        Text="Dunnage Types" />
-                                    <Border
-                                        Width="60"
-                                        Height="2"
-                                        HorizontalAlignment="Left"
-                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                        CornerRadius="1" />
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Define categories of dunnage materials for receiving classification.</TextBlock>
-                                </StackPanel>
-
+        <!--  Row 0: Description + Help Button  -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock
+                Margin="0,0,80,0"
+                VerticalAlignment="Center"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="{x:Bind ViewModel.DialogDescription, Mode=OneWay}"
+                TextWrapping="Wrap" />
+            <Button
+                x:Name="HelpButton"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Style="{StaticResource HelpButtonStyle}"
+                ToolTipService.ToolTip="Click for help about dunnage types">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon
+                        FontSize="14"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Glyph="&#xE946;" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Text="Help" />
+                </StackPanel>
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel MaxWidth="400" Padding="4" Spacing="16">
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="Dunnage Types" />
                                 <Border
-                                    Padding="12"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock
-                                            FontSize="13"
-                                            FontWeight="SemiBold"
-                                            Text="Type Name" />
-                                        <TextBlock
-                                            FontSize="12"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="Wrap">
-                                            Choose a descriptive name like 'Pallet', 'Crate', or 'Foam Insert'. This will be displayed in selection lists.
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border
-                                    Padding="12"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock
-                                            FontSize="13"
-                                            FontWeight="SemiBold"
-                                            Text="Specifications" />
-                                        <TextBlock
-                                            FontSize="12"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="Wrap">
-                                            Add custom fields to capture specific data for this type. For example, 'Material' (Text), 'Weight Capacity' (Number with unit 'lbs'), or 'Recyclable' (Boolean).
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border
-                                    Padding="12"
-                                    Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
-                                    BorderBrush="{ThemeResource SystemFillColorAttentionBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <FontIcon
-                                                FontSize="12"
-                                                Foreground="{ThemeResource SystemFillColorAttentionBrush}"
-                                                Glyph="&#xE946;" />
-                                            <TextBlock
-                                                FontSize="12"
-                                                FontWeight="SemiBold"
-                                                Foreground="{ThemeResource SystemFillColorAttentionBrush}"
-                                                Text="Tip" />
-                                        </StackPanel>
-                                        <TextBlock FontSize="11" TextWrapping="Wrap">Required specs must be filled when creating new parts. Use Number type for measurements and validation.</TextBlock>
-                                    </StackPanel>
-                                </Border>
+                                    Width="60"
+                                    Height="2"
+                                    HorizontalAlignment="Left"
+                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                    CornerRadius="1" />
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Define categories of dunnage materials for receiving classification.</TextBlock>
                             </StackPanel>
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
-            </Grid>
-
-            <!--  Type Name Field  -->
-            <StackPanel Spacing="12">
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Name" />
-                <TextBox
-                    x:Name="TypeNameTextBox"
-                    MaxLength="100"
-                    PlaceholderText="e.g., Pallet, Crate, Blocking"
-                    TextChanged="OnTypeNameChanged"
-                    ToolTipService.ToolTip="Enter a unique descriptive name for this dunnage type" />
-                <TextBlock
-                    x:Name="ValidationTextBlock"
-                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Type name is required"
-                    Visibility="Collapsed" />
-            </StackPanel>
-
-            <!--  Icon Selection  -->
-            <StackPanel Spacing="12">
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Select Icon" />
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Choose an icon to represent this type" />
-
-                <Button
-                    x:Name="SelectIconButton"
-                    Padding="16,12"
-                    HorizontalAlignment="Stretch"
-                    Click="OnSelectIconClick"
-                    ToolTipService.ToolTip="Click to browse and select an icon from the icon library">
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <materialIcons:MaterialIcon
-                            x:Name="SelectedIconDisplay"
-                            Width="24"
-                            Height="24"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                            Kind="{x:Bind SelectedIconKind, Mode=OneWay}" />
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock FontWeight="SemiBold" Text="Click to select icon" />
-                            <TextBlock
-                                x:Name="SelectedIconNameText"
-                                FontSize="12"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Box" />
+                            <Border
+                                Padding="12"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6">
+                                <StackPanel Spacing="8">
+                                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="Type Name" />
+                                    <TextBlock FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Choose a descriptive name like 'Pallet', 'Crate', or 'Foam Insert'. This will be displayed in selection lists.</TextBlock>
+                                </StackPanel>
+                            </Border>
+                            <Border
+                                Padding="12"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6">
+                                <StackPanel Spacing="8">
+                                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="Specifications" />
+                                    <TextBlock FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Add custom fields to capture specific data for this type. For example, 'Material' (Text), 'Weight Capacity' (Number with unit 'lbs'), or 'Recyclable' (Boolean).</TextBlock>
+                                </StackPanel>
+                            </Border>
+                            <Border
+                                Padding="12"
+                                Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
+                                BorderBrush="{ThemeResource SystemFillColorAttentionBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="12" Foreground="{ThemeResource SystemFillColorAttentionBrush}" Glyph="&#xE946;" />
+                                        <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource SystemFillColorAttentionBrush}" Text="Tip" />
+                                    </StackPanel>
+                                    <TextBlock FontSize="11" TextWrapping="Wrap">Required specs must be filled when creating new parts. Use Number type for measurements and validation.</TextBlock>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <!--  Row 1: Two-column main content  -->
+        <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="360" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Left column: Type Name + Visual Mode  -->
+            <StackPanel Grid.Column="0" Spacing="12">
+
+                <!--  Type Name  -->
+                <Border
+                    Padding="12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Name" />
+                        <TextBox
+                            MaxLength="100"
+                            PlaceholderText="e.g., Pallet, Crate, Blocking"
+                            Text="{x:Bind ViewModel.TypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTipService.ToolTip="Enter a unique descriptive name for this dunnage type" />
+                        <TextBlock
+                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.HasValidationMessage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
-                </Button>
-            </StackPanel>
+                </Border>
 
-            <StackPanel Spacing="12">
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Image (PNG)" />
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Optional: upload a PNG image to represent this dunnage type in selection, admin, and review views."
-                    TextWrapping="Wrap" />
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                <!--  Visual Mode Toggle  -->
+                <Border
+                    Padding="12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <ToggleSwitch
+                        Header="Visual Mode"
+                        IsOn="{x:Bind ViewModel.IsImageMode, Mode=TwoWay}"
+                        OffContent="Icon"
+                        OnContent="Image" />
+                </Border>
 
+                <!--  Hidden-tab panel: Icon or Image  -->
+                <Grid>
+                    <!--  Icon Selection  -->
                     <Border
-                        Width="96"
-                        Height="96"
-                        Padding="4"
+                        Padding="12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
-                        CornerRadius="8">
-                        <Image
-                            Source="{x:Bind SelectedImageSource, Mode=OneWay}"
-                            Stretch="UniformToFill"
-                            Visibility="{x:Bind HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        CornerRadius="6"
+                        Visibility="{x:Bind ViewModel.UseIconVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Select Icon" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Choose an icon to represent this type" />
+                            <Button
+                                x:Name="SelectIconButton"
+                                Padding="16,12"
+                                HorizontalAlignment="Stretch"
+                                Click="OnSelectIconClick"
+                                ToolTipService.ToolTip="Click to browse and select an icon from the icon library">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <materialIcons:MaterialIcon
+                                        Width="24"
+                                        Height="24"
+                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Kind="{x:Bind ViewModel.SelectedIconKind, Mode=OneWay}" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock FontWeight="SemiBold" Text="Click to select icon" />
+                                        <TextBlock
+                                            FontSize="12"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="{x:Bind ViewModel.SelectedIconKind, Mode=OneWay}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </Border>
 
-                    <StackPanel
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Spacing="8">
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="{x:Bind SelectedImagePath, Mode=OneWay}"
-                            TextWrapping="WrapWholeWords" />
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Button Click="OnChooseImageClick" Content="Choose PNG" />
-                            <Button Click="OnClearImageClick" Content="Clear Image" />
+                    <!--  Image Selection  -->
+                    <Border
+                        Padding="12"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Visibility="{x:Bind ViewModel.UseImageVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Image (PNG)" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Upload a PNG image to represent this dunnage type."
+                                TextWrapping="Wrap" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border
+                                    Width="80"
+                                    Height="80"
+                                    Padding="4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                    <Image
+                                        Source="{x:Bind ViewModel.SelectedImageSource, Mode=OneWay}"
+                                        Stretch="UniformToFill"
+                                        Visibility="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="8">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind ViewModel.SelectedImagePath, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Click="OnChooseImageClick" Content="Choose PNG" />
+                                        <Button Click="OnClearImageClick" Content="Clear" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
-                    </StackPanel>
+                    </Border>
                 </Grid>
             </StackPanel>
 
-            <!--  Specifications  -->
-            <StackPanel Spacing="12">
-                <StackPanel Spacing="4">
+            <!--  Right column: Specifications  -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="130" />
+                </Grid.RowDefinitions>
+
+                <!--  Section header  -->
+                <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,8">
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Specifications" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -241,167 +268,180 @@
                         Text="Define custom fields to capture specific data for this dunnage type" />
                 </StackPanel>
 
-                <!--  Add Spec Form  -->
+                <!--  Add Spec Form — interior scrolls when options expand  -->
                 <Border
-                    Padding="16"
+                    Grid.Row="1"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="6">
-                    <StackPanel Spacing="12">
-                        <Grid ColumnSpacing="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--  Field name + type selector  -->
+                        <Grid Grid.Row="0" Padding="16,16,16,0" ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <TextBox
-                                x:Name="NewSpecNameBox"
                                 PlaceholderText="Field Name (e.g. Material, Weight)"
+                                Text="{x:Bind ViewModel.NewSpecName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 ToolTipService.ToolTip="Enter a unique name for this specification field" />
                             <ComboBox
-                                x:Name="NewSpecTypeCombo"
                                 Grid.Column="1"
                                 HorizontalAlignment="Stretch"
-                                SelectedIndex="0"
+                                SelectedItem="{x:Bind ViewModel.NewSpecType, Mode=TwoWay}"
                                 ToolTipService.ToolTip="Select the data type for this field">
-                                <ComboBoxItem Content="Text" />
-                                <ComboBoxItem Content="Number" />
-                                <ComboBoxItem Content="Boolean" />
-                                <ComboBoxItem Content="Choices" />
+                                <x:String>Text</x:String>
+                                <x:String>Number</x:String>
+                                <x:String>Boolean</x:String>
+                                <x:String>Choices</x:String>
                             </ComboBox>
                         </Grid>
 
-                        <!--  Number Type Options  -->
-                        <StackPanel
-                            x:Name="NumberOptionsPanel"
-                            Spacing="8"
-                            Visibility="Collapsed">
-                            <TextBlock
-                                FontSize="12"
-                                FontWeight="SemiBold"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Number Validation" />
-                            <Grid ColumnSpacing="12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <NumberBox
-                                    x:Name="NewSpecMinValueBox"
-                                    Header="Min Value"
-                                    PlaceholderText="Optional"
-                                    SpinButtonPlacementMode="Compact"
-                                    ToolTipService.ToolTip="Minimum allowed value (optional)" />
-                                <NumberBox
-                                    x:Name="NewSpecMaxValueBox"
-                                    Grid.Column="1"
-                                    Header="Max Value"
-                                    PlaceholderText="Optional"
-                                    SpinButtonPlacementMode="Compact"
-                                    ToolTipService.ToolTip="Maximum allowed value (optional)" />
-                                <TextBox
-                                    x:Name="NewSpecUnitBox"
-                                    Grid.Column="2"
-                                    Header="Unit"
-                                    PlaceholderText="e.g. inches, lbs"
-                                    ToolTipService.ToolTip="Unit of measurement (optional)" />
-                            </Grid>
-                        </StackPanel>
+                        <!--  Collapsible options — scrollable so they never overflow  -->
+                        <ScrollViewer
+                            Grid.Row="1"
+                            Padding="16,12,16,0"
+                            VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="12">
 
-                        <Border
-                            x:Name="ChoicesOptionsPanel"
-                            Padding="12"
-                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="6"
-                            Visibility="Collapsed">
-                            <StackPanel Spacing="10">
-                                <TextBlock
-                                    FontSize="12"
-                                    FontWeight="SemiBold"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Choice Values" />
-                                <TextBlock
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="Add the allowed values for this field. Example: Tall, Short."
-                                    TextWrapping="Wrap" />
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox
-                                        x:Name="NewSpecChoiceBox"
-                                        HorizontalAlignment="Stretch"
-                                        PlaceholderText="Add a choice" />
-                                    <Button
-                                        Grid.Column="1"
-                                        Click="OnAddChoiceClick"
-                                        Content="Add Choice"
-                                        Style="{StaticResource AccentButtonStyle}" />
-                                </Grid>
-                                <ListView
-                                    x:Name="ChoicesListView"
-                                    Height="110"
-                                    Padding="4"
+                                <!--  Number validation  -->
+                                <StackPanel
+                                    Spacing="8"
+                                    Visibility="{x:Bind ViewModel.ShowNumberOptions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Number Validation" />
+                                    <Grid ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <NumberBox
+                                            Header="Min Value"
+                                            PlaceholderText="Optional"
+                                            SpinButtonPlacementMode="Compact"
+                                            ToolTipService.ToolTip="Minimum allowed value (optional)"
+                                            Value="{x:Bind ViewModel.NewSpecMinValue, Mode=TwoWay}" />
+                                        <NumberBox
+                                            Grid.Column="1"
+                                            Header="Max Value"
+                                            PlaceholderText="Optional"
+                                            SpinButtonPlacementMode="Compact"
+                                            ToolTipService.ToolTip="Maximum allowed value (optional)"
+                                            Value="{x:Bind ViewModel.NewSpecMaxValue, Mode=TwoWay}" />
+                                        <TextBox
+                                            Grid.Column="2"
+                                            Header="Unit"
+                                            PlaceholderText="e.g. inches, lbs"
+                                            Text="{x:Bind ViewModel.NewSpecUnit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            ToolTipService.ToolTip="Unit of measurement (optional)" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <!--  Choices  -->
+                                <Border
+                                    Padding="12"
+                                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                                     BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="6">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="x:String">
-                                            <Grid Padding="0,4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock VerticalAlignment="Center" Text="{x:Bind}" />
-                                                <Button
-                                                    Grid.Column="1"
-                                                    Click="OnRemoveChoiceClick"
-                                                    Content="&#xE74D;"
-                                                    FontFamily="Segoe MDL2 Assets"
-                                                    Style="{StaticResource SubtleButtonStyle}"
-                                                    ToolTipService.ToolTip="Remove this choice" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    CornerRadius="6"
+                                    Visibility="{x:Bind ViewModel.ShowChoicesOptions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="Choice Values" />
+                                        <TextBlock
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="Add the allowed values for this field. Example: Tall, Short."
+                                            TextWrapping="Wrap" />
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox
+                                                HorizontalAlignment="Stretch"
+                                                PlaceholderText="Add a choice"
+                                                Text="{x:Bind ViewModel.NewSpecChoice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <Button
+                                                Grid.Column="1"
+                                                Command="{x:Bind ViewModel.AddChoiceCommand}"
+                                                Content="Add Choice"
+                                                Style="{StaticResource AccentButtonStyle}" />
+                                        </Grid>
+                                        <ListView
+                                            Height="100"
+                                            Padding="4"
+                                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            ItemsSource="{x:Bind ViewModel.CurrentChoices, Mode=OneWay}">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <Grid Padding="0,4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock VerticalAlignment="Center" Text="{x:Bind}" />
+                                                        <Button
+                                                            Grid.Column="1"
+                                                            Click="OnRemoveChoiceClick"
+                                                            Content="&#xE74D;"
+                                                            FontFamily="Segoe MDL2 Assets"
+                                                            Style="{StaticResource SubtleButtonStyle}"
+                                                            ToolTipService.ToolTip="Remove this choice" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
-                        </Border>
+                        </ScrollViewer>
 
-                        <Grid ColumnSpacing="12">
+                        <!--  Required field + Add button  -->
+                        <Grid Grid.Row="2" Padding="16,12,16,16" ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <StackPanel
+                            <CheckBox
                                 VerticalAlignment="Center"
-                                Orientation="Horizontal"
-                                Spacing="16">
-                                <CheckBox
-                                    x:Name="NewSpecRequiredCheck"
-                                    Content="Required Field"
-                                    ToolTipService.ToolTip="Check if this field is required" />
-                            </StackPanel>
+                                Content="Required Field"
+                                IsChecked="{x:Bind ViewModel.NewSpecRequired, Mode=TwoWay}"
+                                ToolTipService.ToolTip="Check if this field is required" />
                             <Button
                                 Grid.Column="1"
-                                Click="OnAddSpecClick"
+                                Command="{x:Bind ViewModel.AddSpecCommand}"
                                 Content="Add Field"
                                 Style="{StaticResource AccentButtonStyle}"
                                 ToolTipService.ToolTip="Add this specification to the list below" />
                         </Grid>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
+                <!--  Added specs list  -->
                 <ListView
-                    x:Name="SpecsListView"
-                    Height="130"
+                    Grid.Row="2"
+                    Margin="0,8,0,0"
                     Padding="4"
                     BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="6"
+                    ItemsSource="{x:Bind ViewModel.Specs, Mode=OneWay}"
                     ToolTipService.ToolTip="List of specifications defined for this type">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_SpecItem">
@@ -412,14 +452,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock
-                                        FontSize="13"
-                                        FontWeight="SemiBold"
-                                        Text="{x:Bind Name}" />
-                                    <TextBlock
-                                        FontSize="11"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind Description}" />
+                                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="{x:Bind Name}" />
+                                    <TextBlock FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind Description}" />
                                 </StackPanel>
                                 <Border
                                     Grid.Column="1"
@@ -428,10 +462,7 @@
                                     Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
                                     CornerRadius="3"
                                     Visibility="{x:Bind IsRequiredVisibility}">
-                                    <TextBlock
-                                        FontSize="10"
-                                        FontWeight="SemiBold"
-                                        Text="Required" />
+                                    <TextBlock FontSize="10" FontWeight="SemiBold" Text="Required" />
                                 </Border>
                                 <Button
                                     Grid.Column="2"
@@ -444,7 +475,32 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+            </Grid>
+        </Grid>
+
+        <!--  Footer  -->
+        <Border
+            Grid.Row="2"
+            Margin="0,12,0,0"
+            Padding="0,12,0,0"
+            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    x:Name="FooterCancelButton"
+                    MinWidth="100"
+                    Click="OnFooterCancelButtonClick"
+                    Content="Cancel" />
+                <Button
+                    x:Name="FooterPrimaryButton"
+                    MinWidth="100"
+                    Click="OnFooterPrimaryButtonClick"
+                    Content="{x:Bind ViewModel.PrimaryButtonText, Mode=OneWay}"
+                    Style="{StaticResource AccentButtonStyle}" />
             </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        </Border>
+    </Grid>
 </ContentDialog>

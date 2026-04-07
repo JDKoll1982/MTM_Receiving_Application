@@ -492,7 +492,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     return;
                 }
 
-                var result = await dialog.ShowAsync();
+                dialog.PrepareDialogSize();
+                await dialog.ShowAsync();
 
                 if (dialog.RequestChooseExistingSpecs)
                 {
@@ -503,7 +504,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     continue;
                 }
 
-                if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                if (!dialog.WasAccepted)
                 {
                     return;
                 }
@@ -628,7 +629,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     return;
                 }
 
-                var result = await dialog.ShowAsync();
+                dialog.PrepareDialogSize();
+                await dialog.ShowAsync();
 
                 if (dialog.RequestChooseExistingSpecs)
                 {
@@ -639,7 +641,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
                     continue;
                 }
 
-                if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                if (!dialog.WasAccepted)
                 {
                     return;
                 }

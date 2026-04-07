@@ -230,8 +230,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 _locationReconciliationReviewDialog.XamlRoot = xamlRoot;
                 _locationReconciliationReviewDialog.Initialize(previewResult.Data);
-                _locationReconciliationReviewDialog.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center;
-                _locationReconciliationReviewDialog.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+                _locationReconciliationReviewDialog.HorizontalAlignment = Microsoft
+                    .UI
+                    .Xaml
+                    .HorizontalAlignment
+                    .Center;
+                _locationReconciliationReviewDialog.VerticalAlignment = Microsoft
+                    .UI
+                    .Xaml
+                    .VerticalAlignment
+                    .Center;
                 _locationReconciliationReviewDialog.PrepareDialogSize();
 
                 await _locationReconciliationReviewDialog.ShowAsync();

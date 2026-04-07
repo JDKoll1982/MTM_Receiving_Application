@@ -1,69 +1,65 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using MTM_Receiving_Application.Module_Dunnage.Helpers;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Views;
+using Windows.Foundation;
 using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
-public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INotifyPropertyChanged
+public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
 {
-    private bool _isIconSelected;
-    private MaterialIconKind _selectedIcon = MaterialIconKind.PackageVariantClosed; // Default box icon
-    private string _selectedIconName = "Box"; // Default icon name
-    private readonly ObservableCollection<string> _currentChoices = new();
+    private readonly IService_Focus _focusService;
 
-    public string TypeName { get; private set; } = string.Empty;
-    public MaterialIconKind SelectedIconKind { get; private set; } =
-        MaterialIconKind.PackageVariantClosed;
-    public string? SelectedImagePath { get; private set; }
-    public ObservableCollection<Model_SpecItem> Specs { get; } = new();
+    public ViewModel_Dunnage_QuickAddTypeDialog ViewModel { get; }
 
-    public bool IsIconSelected
-    {
-        get => _isIconSelected;
-        set
-        {
-            _isIconSelected = value;
-            OnPropertyChanged();
-        }
-    }
+    public bool WasAccepted { get; private set; }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public string TypeName => ViewModel.TypeName;
 
-    public bool HasSelectedImage => string.IsNullOrWhiteSpace(SelectedImagePath) is false;
+    public MaterialIconKind SelectedIconKind => ViewModel.SelectedIconKind;
 
-    public ImageSource? SelectedImageSource =>
-        Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
+    public string? SelectedImagePath => ViewModel.SelectedImagePathForSave;
+
+    public ObservableCollection<Model_SpecItem> Specs => ViewModel.Specs;
 
     public View_Dunnage_QuickAddTypeDialog()
     {
+        ViewModel = App.GetService<ViewModel_Dunnage_QuickAddTypeDialog>();
+        _focusService = App.GetService<IService_Focus>();
+        DataContext = ViewModel;
+        WasAccepted = false;
+
         InitializeComponent();
-        IsIconSelected = true;
-        SpecsListView.ItemsSource = Specs;
-        ChoicesListView.ItemsSource = _currentChoices;
-        NewSpecTypeCombo.SelectionChanged += OnSpecTypeChanged;
+
+        ViewModel.InitializeForCreate();
+        _focusService.AttachFocusOnVisibility(this);
     }
 
-    private void OnSpecTypeChanged(object sender, SelectionChangedEventArgs e)
+    public void PrepareDialogSize()
     {
-        if (NewSpecTypeCombo.SelectedItem is ComboBoxItem item)
+        if (XamlRoot is null)
         {
-            var type = item.Content.ToString();
-            NumberOptionsPanel.Visibility =
-                type == "Number" ? Visibility.Visible : Visibility.Collapsed;
-            ChoicesOptionsPanel.Visibility =
-                type == "Choices" ? Visibility.Visible : Visibility.Collapsed;
+            return;
         }
+
+        RootGrid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+        var desiredWidth = Math.Ceiling(Math.Max(RootGrid.DesiredSize.Width, 1180) + 32);
+        var availableWidth = Math.Max(1120, XamlRoot.Size.Width - 32);
+        var availableHeight = Math.Max(680, XamlRoot.Size.Height - 48);
+
+        Width = Math.Min(desiredWidth, availableWidth);
+        MinWidth = Math.Min(1180, availableWidth);
+        MinHeight = Math.Min(680, availableHeight);
+        MaxHeight = availableHeight;
     }
 
     public void InitializeForEdit(
@@ -73,174 +69,21 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
         Dictionary<string, SpecDefinition> specs
     )
     {
-        Title = "Edit Dunnage Type";
-        PrimaryButtonText = "Save Changes";
-
-        // Try parse icon name, fallback to default
-        if (!System.Enum.TryParse<MaterialIconKind>(iconName, out var kind))
-        {
-            kind = MaterialIconKind.PackageVariantClosed;
-        }
-
-        TypeNameTextBox.Text = typeName;
-        _selectedIcon = kind;
-        SelectedIconDisplay.Kind = kind;
-        SelectedIconNameText.Text = kind.ToString();
-        IsIconSelected = true;
-
-        TypeName = typeName;
-        SelectedIconKind = kind;
-        SelectedImagePath = imagePath;
-        OnPropertyChanged(nameof(HasSelectedImage));
-        OnPropertyChanged(nameof(SelectedImageSource));
-
-        Specs.Clear();
-        foreach (var kvp in specs)
-        {
-            Specs.Add(
-                new Model_SpecItem
-                {
-                    Name = kvp.Key,
-                    DataType = kvp.Value.DataType,
-                    IsRequired = kvp.Value.Required,
-                    Unit = kvp.Value.Unit,
-                    MinValue = kvp.Value.MinValue,
-                    MaxValue = kvp.Value.MaxValue,
-                    Choices = kvp.Value.Choices?.ToList() ?? new List<string>(),
-                }
-            );
-        }
-    }
-
-    private void OnAddChoiceClick(object sender, RoutedEventArgs e)
-    {
-        var choice = NewSpecChoiceBox.Text.Trim();
-        if (string.IsNullOrWhiteSpace(choice))
-        {
-            return;
-        }
-
-        if (
-            _currentChoices.Any(existing =>
-                existing.Equals(choice, System.StringComparison.OrdinalIgnoreCase)
-            )
-        )
-        {
-            return;
-        }
-
-        _currentChoices.Add(choice);
-        NewSpecChoiceBox.Text = string.Empty;
-    }
-
-    private void OnRemoveChoiceClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.DataContext is string choice)
-        {
-            _currentChoices.Remove(choice);
-        }
-    }
-
-    private void OnAddSpecClick(object sender, RoutedEventArgs e)
-    {
-        AddSpec();
-    }
-
-    private void AddSpec()
-    {
-        var name = NewSpecNameBox.Text.Trim();
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return;
-        }
-
-        if (Specs.Any(s => s.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase)))
-        {
-            return;
-        }
-
-        var typeItem = NewSpecTypeCombo.SelectedItem as ComboBoxItem;
-        var type = typeItem?.Content.ToString() ?? "Text";
-        var required = NewSpecRequiredCheck.IsChecked ?? false;
-        var unit = string.Empty;
-        double? minValue = null;
-        double? maxValue = null;
-
-        if (type == "Number")
-        {
-            unit = NewSpecUnitBox.Text.Trim();
-            if (!double.IsNaN(NewSpecMinValueBox.Value))
-            {
-                minValue = NewSpecMinValueBox.Value;
-            }
-
-            if (!double.IsNaN(NewSpecMaxValueBox.Value))
-            {
-                maxValue = NewSpecMaxValueBox.Value;
-            }
-        }
-        else if (type == "Choices" && _currentChoices.Count == 0)
-        {
-            return;
-        }
-
-        Specs.Add(
-            new Model_SpecItem
-            {
-                Name = name,
-                DataType = type,
-                IsRequired = required,
-                Unit = unit,
-                MinValue = minValue,
-                MaxValue = maxValue,
-                Choices = _currentChoices.ToList(),
-            }
-        );
-
-        // Clear form
-        NewSpecNameBox.Text = string.Empty;
-        NewSpecUnitBox.Text = string.Empty;
-        NewSpecMinValueBox.Value = double.NaN;
-        NewSpecMaxValueBox.Value = double.NaN;
-        NewSpecRequiredCheck.IsChecked = false;
-        NewSpecTypeCombo.SelectedIndex = 0;
-        _currentChoices.Clear();
-    }
-
-    private void OnRemoveSpecClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.DataContext is Model_SpecItem spec)
-        {
-            Specs.Remove(spec);
-        }
+        WasAccepted = false;
+        ViewModel.InitializeForEdit(typeName, iconName, imagePath, specs);
     }
 
     private async void OnSelectIconClick(object sender, RoutedEventArgs e)
     {
-        var iconWindow =
-            new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
-
-        // Show window and wait for it to close
-        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(iconWindow);
-        var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
-        var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
-
+        var iconWindow = new View_Shared_IconSelectorWindow();
+        iconWindow.SetInitialSelection(ViewModel.SelectedIconKind);
         iconWindow.Activate();
 
-        // Wait for window to close (polling approach)
-        var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
-        iconWindow.Closed += (s, args) => tcs.SetResult(true);
-        await tcs.Task;
-
-        // Check if icon was selected
-        if (iconWindow.IconWasSelected && iconWindow.SelectedIconKind.HasValue)
+        MaterialIconKind? selectedIcon = await iconWindow.WaitForSelectionAsync();
+        if (selectedIcon.HasValue)
         {
-            _selectedIcon = iconWindow.SelectedIconKind.Value;
-            _selectedIconName = iconWindow.SelectedIconName ?? "Icon";
-
-            SelectedIconDisplay.Kind = _selectedIcon;
-            SelectedIconNameText.Text = _selectedIconName;
-            IsIconSelected = true;
+            ViewModel.SelectedIconKind = selectedIcon.Value;
+            ViewModel.IsImageMode = false;
         }
     }
 
@@ -259,68 +102,49 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
         }
 
         if (
-            string.Equals(
-                Path.GetExtension(file.Path),
-                ".png",
-                System.StringComparison.OrdinalIgnoreCase
-            )
+            string.Equals(Path.GetExtension(file.Path), ".png", StringComparison.OrdinalIgnoreCase)
             is false
         )
         {
             return;
         }
 
-        SelectedImagePath = file.Path;
-        OnPropertyChanged(nameof(HasSelectedImage));
-        OnPropertyChanged(nameof(SelectedImageSource));
+        ViewModel.SelectedImagePath = file.Path;
     }
 
     private void OnClearImageClick(object sender, RoutedEventArgs e)
     {
-        SelectedImagePath = null;
-        OnPropertyChanged(nameof(HasSelectedImage));
-        OnPropertyChanged(nameof(SelectedImageSource));
+        ViewModel.SelectedImagePath = null;
     }
 
-    private void OnTypeNameChanged(object sender, TextChangedEventArgs e)
+    private void OnRemoveChoiceClick(object sender, RoutedEventArgs e)
     {
-        var textBox = (TextBox)sender;
-        ValidationTextBlock.Visibility = Visibility.Collapsed; // Hide error while typing
-    }
-
-    private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-    {
-        var input = TypeNameTextBox.Text.Trim();
-
-        // 1. Required check
-        if (string.IsNullOrWhiteSpace(input))
+        if (sender is FrameworkElement { DataContext: string choice })
         {
-            ShowError("Type name is required");
-            args.Cancel = true;
-            return;
+            ViewModel.RemoveChoiceCommand.Execute(choice);
         }
+    }
 
-        // 2. Start with Capital Letter check
-        if (!char.IsUpper(input[0]))
+    private void OnRemoveSpecClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: Model_SpecItem spec })
         {
-            ShowError("Name must start with a capital letter");
-            args.Cancel = true;
-            return;
+            ViewModel.RemoveSpecCommand.Execute(spec);
         }
-
-        // Set properties for caller to retrieve
-        TypeName = input;
-        SelectedIconKind = _selectedIcon;
     }
 
-    private void ShowError(string message)
+    private void OnFooterPrimaryButtonClick(object sender, RoutedEventArgs e)
     {
-        ValidationTextBlock.Text = message;
-        ValidationTextBlock.Visibility = Visibility.Visible;
+        if (ViewModel.TryCommit())
+        {
+            WasAccepted = true;
+            Hide();
+        }
     }
 
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnFooterCancelButtonClick(object sender, RoutedEventArgs e)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        WasAccepted = false;
+        Hide();
     }
 }

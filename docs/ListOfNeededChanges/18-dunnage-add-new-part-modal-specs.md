@@ -9,7 +9,8 @@ In the Dunnage Add New Part modal, Width, Height, and Depth should not be univer
 ## Likely Files
 
 - `Module_Dunnage/Views/View_Dunnage_Dialog_NonPOEntry.xaml`
-- `Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml`
+- `Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml`
+- `Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml`
 - `Module_Dunnage/Services/Service_MySQL_Dunnage.cs`
 
 ## Implementation Instructions

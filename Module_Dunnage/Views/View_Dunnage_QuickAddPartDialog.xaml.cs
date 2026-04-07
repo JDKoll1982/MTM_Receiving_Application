@@ -8,12 +8,19 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using Windows.Foundation;
 using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 {
+    private const int WizardStepCount = 3;
+    private const int ConfiguredSpecsPerPage = 6;
+    private const int CustomSpecsPerPage = 4;
+
+    public bool WasAccepted { get; private set; }
+
     public string PartId { get; private set; } = string.Empty;
     public int TypeId { get; }
     public string TypeName { get; }
@@ -24,8 +31,17 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     public bool RequestChooseExistingSpecs { get; private set; }
 
     private readonly List<Model_DunnageSpec> _specs;
+    private readonly List<FrameworkElement> _specPanels = new();
     private readonly Dictionary<string, Control> _specInputs = new();
     private readonly ObservableCollection<Model_DunnagePartCustomSpecEntry> _customSpecs = new();
+    private readonly ObservableCollection<Model_DunnagePartCustomSpecEntry> _visibleCustomSpecs =
+        new();
+    private int _currentWizardStep;
+    private int _currentSpecPage;
+    private int _currentCustomSpecsPage;
+
+    public ObservableCollection<Model_DunnagePartCustomSpecEntry> VisibleCustomSpecs =>
+        _visibleCustomSpecs;
 
     public View_Dunnage_QuickAddPartDialog(
         int typeId,
@@ -35,14 +51,19 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     )
     {
         InitializeComponent();
+        WasAccepted = false;
 
         TypeId = typeId;
         TypeName = typeName;
         TypeNameTextBlock.Text = typeName;
         _specs = specs;
-        CustomSpecsListView.ItemsSource = _customSpecs;
 
         GenerateSpecFields();
+        RenderCustomSpecsPage();
+        _currentWizardStep = 0;
+        UpdateWizardStepVisibility();
+        UpdateWizardNavigation();
+        UpdateImagePreview();
 
         if (initialDraft is not null)
         {
@@ -53,6 +74,25 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             SelectInventoryMethod("Not Inventoried");
             PartIdTextBox.Text = BuildSuggestedPartId();
         }
+    }
+
+    public void PrepareDialogSize()
+    {
+        if (XamlRoot is null)
+        {
+            return;
+        }
+
+        RootGrid.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+        var desiredWidth = Math.Ceiling(Math.Max(RootGrid.DesiredSize.Width, 900) + 32);
+        var availableWidth = Math.Max(900, XamlRoot.Size.Width - 32);
+        var availableHeight = Math.Max(760, XamlRoot.Size.Height - 48);
+
+        Width = Math.Min(desiredWidth, availableWidth);
+        MinWidth = Math.Min(900, availableWidth);
+        MinHeight = Math.Min(760, availableHeight);
+        MaxHeight = availableHeight;
     }
 
     public Model_DunnagePartDialogDraft GetDraft()
@@ -96,14 +136,20 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 
     private void GenerateSpecFields()
     {
+        _specPanels.Clear();
+        _specInputs.Clear();
+
         for (var index = 0; index < _specs.Count; index++)
         {
             var spec = _specs[index];
             var definition = ParseDefinition(spec.SpecValue);
             var panel = CreateSpecPanel(spec.SpecKey, definition, out var inputControl);
-            AddPanelToGrid(panel, index);
+            _specPanels.Add(panel);
             _specInputs[spec.SpecKey] = inputControl;
         }
+
+        _currentSpecPage = 0;
+        RenderSpecPage();
     }
 
     private static SpecDefinition ParseDefinition(string json)
@@ -211,6 +257,50 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         Grid.SetRow(panel, row);
         Grid.SetColumn(panel, index % 2);
         DynamicSpecsGrid.Children.Add(panel);
+    }
+
+    private int GetSpecPageCount()
+    {
+        return Math.Max(
+            1,
+            (_specPanels.Count + ConfiguredSpecsPerPage - 1) / ConfiguredSpecsPerPage
+        );
+    }
+
+    private void RenderSpecPage()
+    {
+        DynamicSpecsGrid.Children.Clear();
+        DynamicSpecsGrid.RowDefinitions.Clear();
+
+        if (_specPanels.Count == 0)
+        {
+            DynamicSpecsGrid.Visibility = Visibility.Collapsed;
+            NoConfiguredSpecsTextBlock.Visibility = Visibility.Visible;
+            SpecPageSummaryTextBlock.Text = "No configured specs";
+            PreviousSpecPageButton.IsEnabled = false;
+            NextSpecPageButton.IsEnabled = false;
+            return;
+        }
+
+        NoConfiguredSpecsTextBlock.Visibility = Visibility.Collapsed;
+        DynamicSpecsGrid.Visibility = Visibility.Visible;
+
+        var pageCount = GetSpecPageCount();
+        _currentSpecPage = Math.Clamp(_currentSpecPage, 0, pageCount - 1);
+
+        foreach (
+            var panel in _specPanels
+                .Skip(_currentSpecPage * ConfiguredSpecsPerPage)
+                .Take(ConfiguredSpecsPerPage)
+                .Select((panel, index) => new { panel, index })
+        )
+        {
+            AddPanelToGrid(panel.panel, panel.index);
+        }
+
+        SpecPageSummaryTextBlock.Text = $"Group {_currentSpecPage + 1} of {pageCount}";
+        PreviousSpecPageButton.IsEnabled = _currentSpecPage > 0;
+        NextSpecPageButton.IsEnabled = _currentSpecPage < pageCount - 1;
     }
 
     private Dictionary<string, object?> GetConfiguredSpecValues()
@@ -352,6 +442,51 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
                 }
             );
         }
+
+        _currentCustomSpecsPage = 0;
+        RenderCustomSpecsPage();
+    }
+
+    private int GetCustomSpecsPageCount()
+    {
+        return Math.Max(1, (_customSpecs.Count + CustomSpecsPerPage - 1) / CustomSpecsPerPage);
+    }
+
+    private void RenderCustomSpecsPage()
+    {
+        _visibleCustomSpecs.Clear();
+
+        if (_customSpecs.Count == 0)
+        {
+            NoCustomSpecsTextBlock.Visibility = Visibility.Visible;
+            CustomSpecsItemsRepeater.Visibility = Visibility.Collapsed;
+            CustomSpecsPageSummaryTextBlock.Text = "No part-specific specs";
+            PreviousCustomSpecsPageButton.IsEnabled = false;
+            NextCustomSpecsPageButton.IsEnabled = false;
+            return;
+        }
+
+        NoCustomSpecsTextBlock.Visibility = Visibility.Collapsed;
+        CustomSpecsItemsRepeater.Visibility = Visibility.Visible;
+
+        var pageCount = GetCustomSpecsPageCount();
+        _currentCustomSpecsPage = Math.Clamp(_currentCustomSpecsPage, 0, pageCount - 1);
+
+        foreach (
+            var spec in _customSpecs
+                .Skip(_currentCustomSpecsPage * CustomSpecsPerPage)
+                .Take(CustomSpecsPerPage)
+        )
+        {
+            _visibleCustomSpecs.Add(spec);
+        }
+
+        var firstItemNumber = _currentCustomSpecsPage * CustomSpecsPerPage + 1;
+        var lastItemNumber = firstItemNumber + _visibleCustomSpecs.Count - 1;
+        CustomSpecsPageSummaryTextBlock.Text =
+            $"Showing {firstItemNumber}-{lastItemNumber} of {_customSpecs.Count}";
+        PreviousCustomSpecsPageButton.IsEnabled = _currentCustomSpecsPage > 0;
+        NextCustomSpecsPageButton.IsEnabled = _currentCustomSpecsPage < pageCount - 1;
     }
 
     private string BuildSuggestedPartId()
@@ -455,6 +590,8 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         HideCustomSpecValidation();
         NewCustomSpecNameTextBox.Text = string.Empty;
         NewCustomSpecValueTextBox.Text = string.Empty;
+        _currentCustomSpecsPage = GetCustomSpecsPageCount() - 1;
+        RenderCustomSpecsPage();
         NewCustomSpecNameTextBox.Focus(FocusState.Programmatic);
     }
 
@@ -467,11 +604,13 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         {
             _customSpecs.Remove(customSpec);
             HideCustomSpecValidation();
+            RenderCustomSpecsPage();
         }
     }
 
     private void ChooseExistingSpecsButton_Click(object sender, RoutedEventArgs e)
     {
+        WasAccepted = false;
         RequestChooseExistingSpecs = true;
         Hide();
     }
@@ -578,15 +717,14 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         return rawValue is not null && Convert.ToBoolean(rawValue);
     }
 
-    private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private bool TryCommit()
     {
         RequestChooseExistingSpecs = false;
         PartId = PartIdTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(PartId))
         {
-            args.Cancel = true;
             PartIdTextBox.Focus(FocusState.Programmatic);
-            return;
+            return false;
         }
 
         var specValues = BuildMergedSpecValues(
@@ -595,9 +733,8 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         );
         if (!string.IsNullOrWhiteSpace(validationMessage))
         {
-            args.Cancel = true;
             ShowCustomSpecValidation(validationMessage);
-            return;
+            return false;
         }
 
         if (!string.IsNullOrWhiteSpace(NotesTextBox.Text))
@@ -608,6 +745,103 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         SpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
         HomeLocation = HomeLocationTextBox.Text.Trim();
         SelectedInventoryMethod = GetSelectedInventoryMethod();
+        return true;
+    }
+
+    private void OnFooterPrimaryButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (TryCommit())
+        {
+            WasAccepted = true;
+            Hide();
+        }
+    }
+
+    private void OnFooterCancelButtonClick(object sender, RoutedEventArgs e)
+    {
+        WasAccepted = false;
+        Hide();
+    }
+
+    private void OnBackStepClick(object sender, RoutedEventArgs e)
+    {
+        if (_currentWizardStep > 0)
+        {
+            _currentWizardStep--;
+            UpdateWizardStepVisibility();
+            UpdateWizardNavigation();
+        }
+    }
+
+    private void OnNextStepClick(object sender, RoutedEventArgs e)
+    {
+        if (_currentWizardStep < WizardStepCount - 1)
+        {
+            _currentWizardStep++;
+            UpdateWizardStepVisibility();
+            UpdateWizardNavigation();
+        }
+    }
+
+    private void UpdateWizardStepVisibility()
+    {
+        StepPartSetupPanel.Visibility =
+            _currentWizardStep == 0 ? Visibility.Visible : Visibility.Collapsed;
+        StepTypeSpecsPanel.Visibility =
+            _currentWizardStep == 1 ? Visibility.Visible : Visibility.Collapsed;
+        StepPartSpecificSpecsPanel.Visibility =
+            _currentWizardStep == 2 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void UpdateWizardNavigation()
+    {
+        var selectedIndex = Math.Max(_currentWizardStep, 0);
+
+        BackStepButton.IsEnabled = selectedIndex > 0;
+        NextStepButton.IsEnabled = selectedIndex < WizardStepCount - 1;
+        StepSummaryTextBlock.Text = selectedIndex switch
+        {
+            0 => "Step 1 of 3 • Part Setup",
+            1 => "Step 2 of 3 • Type Specs",
+            2 => "Step 3 of 3 • Part-Specific Specs",
+            _ => string.Empty,
+        };
+    }
+
+    private void OnPreviousSpecPageClick(object sender, RoutedEventArgs e)
+    {
+        if (_currentSpecPage > 0)
+        {
+            _currentSpecPage--;
+            RenderSpecPage();
+        }
+    }
+
+    private void OnNextSpecPageClick(object sender, RoutedEventArgs e)
+    {
+        if (_currentSpecPage < GetSpecPageCount() - 1)
+        {
+            _currentSpecPage++;
+            RenderSpecPage();
+        }
+    }
+
+    private void OnPreviousCustomSpecsPageClick(object sender, RoutedEventArgs e)
+    {
+        if (_currentCustomSpecsPage > 0)
+        {
+            _currentCustomSpecsPage--;
+            RenderCustomSpecsPage();
+        }
+    }
+
+    private void OnNextCustomSpecsPageClick(object sender, RoutedEventArgs e)
+    {
+        if (_currentCustomSpecsPage < GetCustomSpecsPageCount() - 1)
+        {
+            _currentCustomSpecsPage++;
+            RenderCustomSpecsPage();
+        }
     }
 
     private void ShowCustomSpecValidation(string message)

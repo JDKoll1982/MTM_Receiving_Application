@@ -291,9 +291,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 return;
             }
 
-            var result = await dialog.ShowAsync();
+            dialog.PrepareDialogSize();
 
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            await dialog.ShowAsync();
+
+            if (dialog.WasAccepted)
             {
                 var typeName = dialog.TypeName;
                 var iconName = dialog.SelectedIconKind.ToString();
@@ -415,10 +417,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             }
 
             dialog.InitializeForEdit(type.TypeName, type.Icon, type.ImagePath, existingSpecsDict);
+            dialog.PrepareDialogSize();
 
-            var result = await dialog.ShowAsync();
+            await dialog.ShowAsync();
 
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            if (dialog.WasAccepted)
             {
                 var newName = dialog.TypeName;
                 var newIcon = dialog.SelectedIconKind.ToString();
