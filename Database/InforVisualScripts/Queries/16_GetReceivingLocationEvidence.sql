@@ -10,10 +10,24 @@
 --   @ReceivedDate  datetime  Optional local receipt date anchor
 
 DECLARE @PoNumber     nvarchar(30) = 'PO-066868';
-DECLARE @PartId       nvarchar(50) = 'MMC-TEST';
+DECLARE @PartId       nvarchar(50) = 'MMC0000412';
 DECLARE @PoLineNumber nvarchar(10) = '1';
 DECLARE @ReceivedDate datetime     = '2026-04-05T00:00:00';
 
+DECLARE @NormalizedPoLineNumber nvarchar(10) = NULLIF(LTRIM(RTRIM(@PoLineNumber)), '');
+DECLARE @PoLineNumberValue smallint = NULL;
+
+IF @NormalizedPoLineNumber IS NOT NULL
+   AND @NormalizedPoLineNumber NOT LIKE N'%[^0-9]%'
+   AND (
+        LEN(@NormalizedPoLineNumber) < 5
+        OR (LEN(@NormalizedPoLineNumber) = 5 AND @NormalizedPoLineNumber <= N'32767')
+   )
+BEGIN
+    SET @PoLineNumberValue = CONVERT(smallint, @NormalizedPoLineNumber);
+END
+
+;
 WITH ReceiptMatches AS (
     SELECT
         r.RECEIVED_DATE AS ReceivedDate,
@@ -37,8 +51,8 @@ WITH ReceiptMatches AS (
     WHERE rl.PURC_ORDER_ID = @PoNumber
       AND pol.PART_ID = @PartId
       AND (
-            NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') IS NULL
-            OR rl.PURC_ORDER_LINE_NO = TRY_CONVERT(smallint, @PoLineNumber)
+                        @NormalizedPoLineNumber IS NULL
+                        OR (@PoLineNumberValue IS NOT NULL AND rl.PURC_ORDER_LINE_NO = @PoLineNumberValue)
           )
       AND (
             @ReceivedDate IS NULL
@@ -76,8 +90,8 @@ PoTransactions AS (
     WHERE it.PART_ID = @PartId
       AND it.PURC_ORDER_ID = @PoNumber
       AND (
-            NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') IS NULL
-            OR it.PURC_ORDER_LINE_NO = TRY_CONVERT(smallint, @PoLineNumber)
+                        @NormalizedPoLineNumber IS NULL
+                        OR (@PoLineNumberValue IS NOT NULL AND it.PURC_ORDER_LINE_NO = @PoLineNumberValue)
           )
       AND NULLIF(LTRIM(RTRIM(it.LOCATION_ID)), '') IS NOT NULL
       AND (

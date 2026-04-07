@@ -14,6 +14,19 @@ DECLARE @PartId       nvarchar(50) = 'MMC-TEST';
 DECLARE @PoLineNumber nvarchar(10) = '1';
 DECLARE @ReceivedDate datetime     = '2026-04-05T00:00:00';
 
+DECLARE @NormalizedPoLineNumber nvarchar(10) = NULLIF(LTRIM(RTRIM(@PoLineNumber)), '');
+DECLARE @PoLineNumberValue smallint = NULL;
+
+IF @NormalizedPoLineNumber IS NOT NULL
+   AND @NormalizedPoLineNumber NOT LIKE N'%[^0-9]%'
+   AND (
+        LEN(@NormalizedPoLineNumber) < 5
+        OR (LEN(@NormalizedPoLineNumber) = 5 AND @NormalizedPoLineNumber <= N'32767')
+   )
+BEGIN
+    SET @PoLineNumberValue = CONVERT(smallint, @NormalizedPoLineNumber);
+END
+
 SELECT
     it.WAREHOUSE_ID                                  AS WarehouseId,
     it.LOCATION_ID                                   AS LocationId,
@@ -30,8 +43,8 @@ LEFT JOIN dbo.RECEIVER_LINE rl
 WHERE it.PART_ID = @PartId
   AND it.PURC_ORDER_ID = @PoNumber
   AND (
-        NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') IS NULL
-        OR it.PURC_ORDER_LINE_NO = TRY_CONVERT(smallint, @PoLineNumber)
+                @NormalizedPoLineNumber IS NULL
+                OR (@PoLineNumberValue IS NOT NULL AND it.PURC_ORDER_LINE_NO = @PoLineNumberValue)
       )
   AND NULLIF(LTRIM(RTRIM(it.LOCATION_ID)), '') IS NOT NULL
   AND (

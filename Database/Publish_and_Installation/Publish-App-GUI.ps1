@@ -528,24 +528,25 @@ LogFile: $($script:PublishLogFile)
                     $errorText.Text = "Publish completed, but the log file could not be written to $($script:PublishLogFile). $($_.Exception.Message)"
                 }
 
+                $publishExitCode = $script:publishProcess.ExitCode
                 Stop-PublishSession
 
                 $outputScrollViewer.ScrollToEnd()
                 $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
                 $publishButton.IsEnabled = $true
 
-                if ($script:publishProcess.ExitCode -eq 0) {
+                if ($publishExitCode -eq 0) {
                     $successBorder.Visibility = [System.Windows.Visibility]::Visible
                     $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath`nLog file: $script:PublishLogFile"
                     Update-PublishStatus "Publish completed successfully!"
                 }
                 else {
                     $errorBorder.Visibility = [System.Windows.Visibility]::Visible
-                    $errorText.Text = "Publish failed (exit code $($script:publishProcess.ExitCode)). See the build output above for details.`nLog file: $script:PublishLogFile"
+                    $errorText.Text = "Publish failed (exit code $publishExitCode). See the build output above for details.`nLog file: $script:PublishLogFile"
                     Update-PublishStatus "Publish failed — check build output."
                 }
 
-                Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $($script:publishProcess.ExitCode)`r`n"
+                Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $publishExitCode`r`n"
             })
         $script:pollTimer.Start()
     })
