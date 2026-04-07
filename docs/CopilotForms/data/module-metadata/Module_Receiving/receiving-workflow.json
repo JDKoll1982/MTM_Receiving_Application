@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, package-type updates for Manual Mode rows, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence, a resized reconciliation review modal that presents proposed changes more cleanly before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, package-type updates for Manual Mode rows, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence while excluding same-location matches from review and falling back to WC when history proves work-center transfer plus full adjustment-out, a resized reconciliation review modal that presents proposed changes more cleanly before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -233,7 +233,9 @@
       "Confirm Manual Mode package type dialog changes only the in-memory UI rows unless the user later saves",
       "Confirm Edit Mode shows the Manual Mode baseline columns by default, including Non-PO and Location",
       "Confirm the Edit Mode Columns dialog includes Location together with the rest of the schema-backed snapshot fields",
-      "Confirm the mode-selection reconciliation action updates only rows with a clear location match from InforVisual receipt history and current inventory",
+      "Confirm the mode-selection reconciliation action updates only rows with a clear conflicting location change from InforVisual receipt history and current inventory",
+      "Confirm rows whose saved MTM location already matches the inferred InforVisual location stay out of the reconciliation review queue",
+      "Confirm rows with no current on-hand inventory fall back to WC only when InforVisual history shows receipt activity, transfer into WC, and later full removal from WC",
       "Confirm review and save behavior are unchanged"
     ],
     "mockupSections": [

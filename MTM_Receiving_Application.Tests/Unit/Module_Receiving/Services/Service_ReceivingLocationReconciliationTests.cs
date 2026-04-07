@@ -400,17 +400,20 @@ public sealed class Service_ReceivingLocationReconciliationTests
         result.Data.Should().NotBeNull();
         result.Data!.UpdatedItems.Should().HaveCount(3);
         result
-            .Data.UpdatedItems
-            .Should()
-            .ContainSingle(item => item.SavedRowQuantity == 25000 && item.ProposedLocation == "V-C0-01");
+            .Data.UpdatedItems.Should()
+            .ContainSingle(item =>
+                item.SavedRowQuantity == 25000 && item.ProposedLocation == "V-C0-01"
+            );
         result
-            .Data.UpdatedItems
-            .Should()
-            .ContainSingle(item => item.SavedRowQuantity == 10000 && item.ProposedLocation == "V-C0-02");
+            .Data.UpdatedItems.Should()
+            .ContainSingle(item =>
+                item.SavedRowQuantity == 10000 && item.ProposedLocation == "V-C0-02"
+            );
         result
-            .Data.UpdatedItems
-            .Should()
-            .ContainSingle(item => item.SavedRowQuantity == 15000 && item.ProposedLocation == "V-C0-03");
+            .Data.UpdatedItems.Should()
+            .ContainSingle(item =>
+                item.SavedRowQuantity == 15000 && item.ProposedLocation == "V-C0-03"
+            );
     }
 
     [Fact]
@@ -434,7 +437,9 @@ public sealed class Service_ReceivingLocationReconciliationTests
         };
 
         mySqlReceivingMock
-            .Setup(service => service.UpdateReceivingLoadsAsync(It.IsAny<List<Model_ReceivingLoad>>()))
+            .Setup(service =>
+                service.UpdateReceivingLoadsAsync(It.IsAny<List<Model_ReceivingLoad>>())
+            )
             .ReturnsAsync(1);
 
         var result = await service.ApplyLocationUpdateAsync(item);
@@ -444,7 +449,9 @@ public sealed class Service_ReceivingLocationReconciliationTests
         mySqlReceivingMock.Verify(
             service =>
                 service.UpdateReceivingLoadsAsync(
-                    It.Is<List<Model_ReceivingLoad>>(loads => loads.Count == 1 && loads[0] == historyRow)
+                    It.Is<List<Model_ReceivingLoad>>(loads =>
+                        loads.Count == 1 && loads[0] == historyRow
+                    )
                 ),
             Times.Once
         );
@@ -539,13 +546,22 @@ public sealed class Service_ReceivingLocationReconciliationTests
 
         mySqlReceivingMock
             .Setup(s => s.GetCurrentLabelDataAsync())
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow })
+            );
         mySqlReceivingMock
             .Setup(s => s.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
 
         inforVisualMock
-            .Setup(s => s.GetReceivingLocationEvidenceAsync("PO-066868", "MMC-550", "1", currentLabelRow.ReceivedDate))
+            .Setup(s =>
+                s.GetReceivingLocationEvidenceAsync(
+                    "PO-066868",
+                    "MMC-550",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new List<Model_InforVisualLocationEvidence>
@@ -562,7 +578,14 @@ public sealed class Service_ReceivingLocationReconciliationTests
                 )
             );
         inforVisualMock
-            .Setup(s => s.GetReceivingLocationTransactionHistoryAsync("PO-066868", "MMC-550", "1", currentLabelRow.ReceivedDate))
+            .Setup(s =>
+                s.GetReceivingLocationTransactionHistoryAsync(
+                    "PO-066868",
+                    "MMC-550",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new List<Model_InforVisualLocationTransaction>
@@ -586,6 +609,71 @@ public sealed class Service_ReceivingLocationReconciliationTests
     }
 
     [Fact]
+    public async Task PreviewLocationsAsync_ShouldMarkSameLocationAsUnchanged_WhenClosestFitMatchesCurrentLocation()
+    {
+        var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var service = CreateService(mySqlReceivingMock, inforVisualMock);
+
+        var currentLabelRow = CreateLoad("66868", "MMC-552", "1", "RECV");
+        currentLabelRow.WeightQuantity = 1500;
+        currentLabelRow.UnitOfMeasure = "EA";
+
+        mySqlReceivingMock
+            .Setup(s => s.GetCurrentLabelDataAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow })
+            );
+        mySqlReceivingMock
+            .Setup(s => s.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
+
+        inforVisualMock
+            .Setup(s =>
+                s.GetReceivingLocationEvidenceAsync(
+                    "PO-066868",
+                    "MMC-552",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationEvidence>
+                    {
+                        new()
+                        {
+                            CurrentWarehouseId = "002",
+                            CurrentLocationId = "RECV",
+                            CurrentQuantity = 2000,
+                            ReceiptCount = 1,
+                            LatestReceiptWarehouseId = "002",
+                            LatestReceiptLocationId = "RECV",
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(s =>
+                s.GetReceivingLocationTransactionHistoryAsync(
+                    "PO-066868",
+                    "MMC-552",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualLocationTransaction>())
+            );
+
+        var result = await service.PreviewLocationsAsync(includeAllHistory: false);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.UpdatedItems.Should().BeEmpty();
+        result.Data.UnchangedCount.Should().Be(1);
+    }
+
+    [Fact]
     public async Task PreviewLocationsAsync_ShouldFlagPendingVisualReceipt_WhenMysqlQuantityIsAheadOfVisual()
     {
         var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
@@ -598,13 +686,22 @@ public sealed class Service_ReceivingLocationReconciliationTests
 
         mySqlReceivingMock
             .Setup(s => s.GetCurrentLabelDataAsync())
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow }));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow })
+            );
         mySqlReceivingMock
             .Setup(s => s.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
 
         inforVisualMock
-            .Setup(s => s.GetReceivingLocationEvidenceAsync("PO-066868", "MMC-551", "1", currentLabelRow.ReceivedDate))
+            .Setup(s =>
+                s.GetReceivingLocationEvidenceAsync(
+                    "PO-066868",
+                    "MMC-551",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new List<Model_InforVisualLocationEvidence>
@@ -622,7 +719,14 @@ public sealed class Service_ReceivingLocationReconciliationTests
                 )
             );
         inforVisualMock
-            .Setup(s => s.GetReceivingLocationTransactionHistoryAsync("PO-066868", "MMC-551", "1", currentLabelRow.ReceivedDate))
+            .Setup(s =>
+                s.GetReceivingLocationTransactionHistoryAsync(
+                    "PO-066868",
+                    "MMC-551",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(new List<Model_InforVisualLocationTransaction>())
             );
@@ -632,6 +736,99 @@ public sealed class Service_ReceivingLocationReconciliationTests
         result.IsSuccess.Should().BeTrue();
         result.Data!.UnresolvedItems.Should().ContainSingle();
         result.Data.UnresolvedItems[0].Resolution.Should().Be("PendingVisualReceipt");
+    }
+
+    [Fact]
+    public async Task PreviewLocationsAsync_ShouldProposeWorkCenter_WhenVisualShowsWorkCenterAdjustmentHistoryWithoutOnHandInventory()
+    {
+        var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var service = CreateService(mySqlReceivingMock, inforVisualMock);
+
+        var currentLabelRow = CreateLoad("66868", "MMC-553", "1", "RECV");
+        currentLabelRow.WeightQuantity = 1500;
+        currentLabelRow.UnitOfMeasure = "EA";
+
+        mySqlReceivingMock
+            .Setup(s => s.GetCurrentLabelDataAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow })
+            );
+        mySqlReceivingMock
+            .Setup(s => s.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
+
+        inforVisualMock
+            .Setup(s =>
+                s.GetReceivingLocationEvidenceAsync(
+                    "PO-066868",
+                    "MMC-553",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationEvidence>
+                    {
+                        new()
+                        {
+                            ReceiptCount = 1,
+                            LatestReceiptWarehouseId = "002",
+                            LatestReceiptLocationId = "RECV",
+                            LatestReceiptEvidenceDate = new DateTime(2026, 4, 5, 8, 0, 0),
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(s =>
+                s.GetReceivingLocationTransactionHistoryAsync(
+                    "PO-066868",
+                    "MMC-553",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationTransaction>
+                    {
+                        new()
+                        {
+                            LocationId = "RECV",
+                            Quantity = 1500,
+                            TransactionDate = new DateTime(2026, 4, 5, 8, 0, 0),
+                            UserId = "receiver",
+                            ReceiptLocationId = "RECV",
+                        },
+                        new()
+                        {
+                            LocationId = "WC",
+                            Quantity = 1500,
+                            TransactionDate = new DateTime(2026, 4, 5, 10, 0, 0),
+                            UserId = "mover",
+                            ReceiptLocationId = "RECV",
+                        },
+                        new()
+                        {
+                            LocationId = "WC",
+                            Quantity = -1500,
+                            TransactionDate = new DateTime(2026, 4, 5, 11, 0, 0),
+                            UserId = "adjuster",
+                            ReceiptLocationId = "RECV",
+                        },
+                    }
+                )
+            );
+
+        var result = await service.PreviewLocationsAsync(includeAllHistory: false);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.UpdatedItems.Should().ContainSingle();
+        result.Data.UpdatedItems[0].ProposedLocation.Should().Be("WC");
+        result.Data.UpdatedItems[0].MovedByUserId.Should().Be("mover");
+        result.Data.UpdatedItems[0].MovedAt.Should().Be(new DateTime(2026, 4, 5, 10, 0, 0));
     }
 
     [Fact]
@@ -748,7 +945,9 @@ public sealed class Service_ReceivingLocationReconciliationTests
                     It.IsAny<DateTime?>()
                 )
             )
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_InforVisualLocationTransaction>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualLocationTransaction>())
+            );
 
         return new Service_ReceivingLocationReconciliation(
             mySqlReceivingMock.Object,
