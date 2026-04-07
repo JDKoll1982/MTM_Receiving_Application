@@ -14,21 +14,25 @@ DECLARE @PartId       nvarchar(50) = 'MMC0000412';
 DECLARE @PoLineNumber nvarchar(10) = '1';
 DECLARE @ReceivedDate datetime     = '2026-04-05T00:00:00';
 
-DECLARE @NormalizedPoLineNumber nvarchar(10) = NULLIF(LTRIM(RTRIM(@PoLineNumber)), '');
-DECLARE @PoLineNumberValue smallint = NULL;
-
-IF @NormalizedPoLineNumber IS NOT NULL
-   AND @NormalizedPoLineNumber NOT LIKE N'%[^0-9]%'
-   AND (
-        LEN(@NormalizedPoLineNumber) < 5
-        OR (LEN(@NormalizedPoLineNumber) = 5 AND @NormalizedPoLineNumber <= N'32767')
-   )
-BEGIN
-    SET @PoLineNumberValue = CONVERT(smallint, @NormalizedPoLineNumber);
-END
-
 ;
-WITH ReceiptMatches AS (
+WITH ParameterValues AS (
+    SELECT
+        NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') AS NormalizedPoLineNumber,
+        CASE
+            WHEN NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') IS NOT NULL
+                 AND NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') NOT LIKE N'%[^0-9]%'
+                 AND (
+                        LEN(NULLIF(LTRIM(RTRIM(@PoLineNumber)), '')) < 5
+                        OR (
+                            LEN(NULLIF(LTRIM(RTRIM(@PoLineNumber)), '')) = 5
+                            AND NULLIF(LTRIM(RTRIM(@PoLineNumber)), '') <= N'32767'
+                        )
+                    )
+                THEN CONVERT(smallint, NULLIF(LTRIM(RTRIM(@PoLineNumber)), ''))
+            ELSE NULL
+        END AS PoLineNumberValue
+),
+ReceiptMatches AS (
     SELECT
         r.RECEIVED_DATE AS ReceivedDate,
         rl.WAREHOUSE_ID AS WarehouseId,
@@ -45,14 +49,15 @@ WITH ReceiptMatches AS (
     INNER JOIN dbo.PURC_ORDER_LINE pol
         ON pol.PURC_ORDER_ID = rl.PURC_ORDER_ID
        AND pol.LINE_NO = rl.PURC_ORDER_LINE_NO
+    CROSS JOIN ParameterValues pv
     LEFT JOIN dbo.INVENTORY_TRANS it
         ON it.TRANSACTION_ID = rl.TRANSACTION_ID
        AND it.PART_ID = pol.PART_ID
     WHERE rl.PURC_ORDER_ID = @PoNumber
       AND pol.PART_ID = @PartId
       AND (
-                        @NormalizedPoLineNumber IS NULL
-                        OR (@PoLineNumberValue IS NOT NULL AND rl.PURC_ORDER_LINE_NO = @PoLineNumberValue)
+            pv.NormalizedPoLineNumber IS NULL
+            OR (pv.PoLineNumberValue IS NOT NULL AND rl.PURC_ORDER_LINE_NO = pv.PoLineNumberValue)
           )
       AND (
             @ReceivedDate IS NULL
@@ -87,11 +92,12 @@ PoTransactions AS (
             ORDER BY it.TRANSACTION_DATE DESC, it.TRANSACTION_ID DESC
         ) AS OverallRank
     FROM dbo.INVENTORY_TRANS it
+    CROSS JOIN ParameterValues pv
     WHERE it.PART_ID = @PartId
       AND it.PURC_ORDER_ID = @PoNumber
       AND (
-                        @NormalizedPoLineNumber IS NULL
-                        OR (@PoLineNumberValue IS NOT NULL AND it.PURC_ORDER_LINE_NO = @PoLineNumberValue)
+            pv.NormalizedPoLineNumber IS NULL
+            OR (pv.PoLineNumberValue IS NOT NULL AND it.PURC_ORDER_LINE_NO = pv.PoLineNumberValue)
           )
       AND NULLIF(LTRIM(RTRIM(it.LOCATION_ID)), '') IS NOT NULL
       AND (

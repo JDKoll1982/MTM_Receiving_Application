@@ -13,6 +13,7 @@ if ([System.Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') {
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
+Add-Type -AssemblyName System.Windows.Forms
 
 # ---------------------------------------------------------------------------
 # Notes strings (defined separately to avoid heredoc nesting issues)
@@ -32,6 +33,7 @@ $defaultProjectFile = Join-Path $repoRoot "MTM_Receiving_Application.csproj"
 # Publish option definitions — mirrors PublishAppScript.md
 # ---------------------------------------------------------------------------
 $script:BaseShare = "X:\Software Development\Live Applications"
+$script:OutputRootPath = $script:BaseShare
 $script:ProjectFile = $defaultProjectFile
 $script:PublishVerbosity = 'detailed'
 $script:SatelliteResourceLanguages = ''
@@ -41,6 +43,231 @@ $script:PublishLogBuffer = $null
 $script:PublishProcess = $null
 $script:PollTimer = $null
 $script:OutFile = $null
+$script:PublishStagingPath = $null
+
+function Get-SatelliteLanguageOptions {
+    $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
+
+    $allLanguagesItem = New-Object System.Windows.Controls.ComboBoxItem
+    $allLanguagesItem.Content = 'All available languages (default)'
+    $allLanguagesItem.Tag = ''
+    [void]$languageOptions.Add($allLanguagesItem)
+
+    $cultureTypes = [System.Globalization.CultureTypes]::NeutralCultures -bor [System.Globalization.CultureTypes]::SpecificCultures
+    $seenCultures = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($culture in ([System.Globalization.CultureInfo]::GetCultures($cultureTypes) | Where-Object { -not [string]::IsNullOrWhiteSpace($_.Name) } | Sort-Object EnglishName, Name)) {
+        if (-not $seenCultures.Add($culture.Name)) {
+            continue
+        }
+
+        $cultureItem = New-Object System.Windows.Controls.ComboBoxItem
+        $cultureItem.Content = '{0} [{1}]' -f $culture.EnglishName, $culture.Name
+        $cultureItem.Tag = $culture.Name
+        [void]$languageOptions.Add($cultureItem)
+    }
+
+    return $languageOptions
+}
+
+function Get-SelectedSatelliteLanguageCode {
+    if ($null -eq $satelliteLanguagesComboBox) {
+        return ''
+    }
+
+    if ($satelliteLanguagesComboBox.SelectedItem -isnot [System.Windows.Controls.ComboBoxItem]) {
+        return ''
+    }
+
+    return [string]$satelliteLanguagesComboBox.SelectedItem.Tag
+}
+
+function Set-SelectedSatelliteLanguage {
+    param(
+        [string]$LanguageCode
+    )
+
+    if ($null -eq $satelliteLanguagesComboBox) {
+        return
+    }
+
+    $normalizedLanguageCode = if ([string]::IsNullOrWhiteSpace($LanguageCode)) {
+        ''
+    }
+    else {
+        $LanguageCode.Trim()
+    }
+
+    foreach ($item in $satelliteLanguagesComboBox.Items) {
+        if ($item -is [System.Windows.Controls.ComboBoxItem] -and [string]::Equals([string]$item.Tag, $normalizedLanguageCode, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $satelliteLanguagesComboBox.SelectedItem = $item
+            return
+        }
+    }
+
+    $satelliteLanguagesComboBox.SelectedIndex = 0
+}
+
+function Test-PublishOutputDirectoryHasFiles {
+    param(
+        [string]$Path,
+        [string[]]$IgnoreNames = @()
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
+        return $false
+    }
+
+    foreach ($item in (Get-ChildItem -LiteralPath $Path -Force -ErrorAction SilentlyContinue)) {
+        if ($IgnoreNames -contains $item.Name) {
+            continue
+        }
+
+        return $true
+    }
+
+    return $false
+}
+
+function Confirm-SelfContainedOverwrite {
+    param(
+        [string]$Path,
+        [string]$OptionLabel
+    )
+
+    $message = @"
+The publish output folder already contains files:
+
+$Path
+
+The selected option is self-contained: $OptionLabel
+
+Select Yes to clear the folder first and republish every self-contained file.
+Select No to keep existing matching self-contained files and publish only new or changed output.
+"@
+
+    $result = [System.Windows.MessageBox]::Show(
+        $message,
+        'Existing Self-Contained Publish Detected',
+        [System.Windows.MessageBoxButton]::YesNo,
+        [System.Windows.MessageBoxImage]::Warning)
+
+    return $result -eq [System.Windows.MessageBoxResult]::Yes
+}
+
+function New-PublishStagingDirectory {
+    $stagingPath = Join-Path ([System.IO.Path]::GetTempPath()) ("MTM_Receiving_Application-Publish-" + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $stagingPath -Force | Out-Null
+    return $stagingPath
+}
+
+function Remove-PublishStagingDirectory {
+    if ([string]::IsNullOrWhiteSpace($script:PublishStagingPath)) {
+        return
+    }
+
+    if (Test-Path -LiteralPath $script:PublishStagingPath) {
+        Remove-Item -LiteralPath $script:PublishStagingPath -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    $script:PublishStagingPath = $null
+}
+
+function Test-FilesMatch {
+    param(
+        [string]$SourcePath,
+        [string]$DestinationPath
+    )
+
+    if (-not (Test-Path -LiteralPath $SourcePath) -or -not (Test-Path -LiteralPath $DestinationPath)) {
+        return $false
+    }
+
+    $sourceItem = Get-Item -LiteralPath $SourcePath -ErrorAction Stop
+    $destinationItem = Get-Item -LiteralPath $DestinationPath -ErrorAction Stop
+
+    if ($sourceItem.Length -ne $destinationItem.Length) {
+        return $false
+    }
+
+    $sourceHash = Get-FileHash -LiteralPath $SourcePath -Algorithm SHA256 -ErrorAction Stop
+    $destinationHash = Get-FileHash -LiteralPath $DestinationPath -Algorithm SHA256 -ErrorAction Stop
+    return $sourceHash.Hash -eq $destinationHash.Hash
+}
+
+function Sync-PublishOutputDirectory {
+    param(
+        [string]$SourcePath,
+        [string]$DestinationPath,
+        [string[]]$PreserveNames = @()
+    )
+
+    if ([string]::IsNullOrWhiteSpace($SourcePath) -or -not (Test-Path -LiteralPath $SourcePath)) {
+        throw "The staged publish output path does not exist: $SourcePath"
+    }
+
+    New-Item -ItemType Directory -Path $DestinationPath -Force | Out-Null
+
+    $sourceDirectories = @(Get-ChildItem -LiteralPath $SourcePath -Directory -Force -Recurse -ErrorAction SilentlyContinue)
+    $sourceFiles = @(Get-ChildItem -LiteralPath $SourcePath -File -Force -Recurse -ErrorAction SilentlyContinue)
+    $sourceRelativePaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($directory in $sourceDirectories) {
+        [void]$sourceRelativePaths.Add([System.IO.Path]::GetRelativePath($SourcePath, $directory.FullName))
+    }
+
+    foreach ($file in $sourceFiles) {
+        [void]$sourceRelativePaths.Add([System.IO.Path]::GetRelativePath($SourcePath, $file.FullName))
+    }
+
+    $removedItems = 0
+    $targetItems = @(Get-ChildItem -LiteralPath $DestinationPath -Force -Recurse -ErrorAction SilentlyContinue | Sort-Object FullName -Descending)
+    foreach ($targetItem in $targetItems) {
+        $relativePath = [System.IO.Path]::GetRelativePath($DestinationPath, $targetItem.FullName)
+        $topLevelName = ($relativePath -split '[\\/]', 2)[0]
+
+        if ($PreserveNames -contains $topLevelName) {
+            continue
+        }
+
+        if (-not $sourceRelativePaths.Contains($relativePath)) {
+            Remove-Item -LiteralPath $targetItem.FullName -Recurse -Force -ErrorAction Stop
+            $removedItems++
+        }
+    }
+
+    foreach ($directory in ($sourceDirectories | Sort-Object FullName)) {
+        $relativePath = [System.IO.Path]::GetRelativePath($SourcePath, $directory.FullName)
+        $destinationDirectory = Join-Path $DestinationPath $relativePath
+        New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
+    }
+
+    $copiedFiles = 0
+    $skippedFiles = 0
+    foreach ($file in $sourceFiles) {
+        $relativePath = [System.IO.Path]::GetRelativePath($SourcePath, $file.FullName)
+        $destinationFile = Join-Path $DestinationPath $relativePath
+        $destinationDirectory = Split-Path -Path $destinationFile -Parent
+
+        if (-not [string]::IsNullOrWhiteSpace($destinationDirectory)) {
+            New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
+        }
+
+        if (Test-FilesMatch -SourcePath $file.FullName -DestinationPath $destinationFile) {
+            $skippedFiles++
+            continue
+        }
+
+        Copy-Item -LiteralPath $file.FullName -Destination $destinationFile -Force
+        $copiedFiles++
+    }
+
+    return [pscustomobject]@{
+        CopiedFiles = $copiedFiles
+        SkippedFiles = $skippedFiles
+        RemovedItems = $removedItems
+    }
+}
 
 function Get-Utf8Encoding {
     return [System.Text.UTF8Encoding]::new($false)
@@ -69,6 +296,69 @@ function Save-PublishLog {
     }
 
     [System.IO.File]::WriteAllText($script:PublishLogFile, $script:PublishLogBuffer.ToString(), (Get-Utf8Encoding))
+}
+
+function Get-EffectiveOutputPath {
+    param(
+        [hashtable]$Option
+    )
+
+    if ($null -eq $Option) {
+        return $script:OutputRootPath
+    }
+
+    return Join-Path $script:OutputRootPath $Option.Folder
+}
+
+function Clear-PublishOutputDirectory {
+    param(
+        [string]$Path,
+        [string[]]$PreserveNames = @()
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return
+    }
+
+    New-Item -ItemType Directory -Path $Path -Force | Out-Null
+
+    $items = Get-ChildItem -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    foreach ($item in $items) {
+        if ($PreserveNames -contains $item.Name) {
+            continue
+        }
+
+        Remove-Item -LiteralPath $item.FullName -Recurse -Force -ErrorAction Stop
+    }
+}
+
+function Update-OutputPathDisplay {
+    if ($null -eq $outputPathText) {
+        return
+    }
+
+    $outputPathText.Text = Get-EffectiveOutputPath -Option $script:selectedOption
+}
+
+function Select-OutputRootFolder {
+    $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $dialog.Description = 'Choose the folder where the publish output should be created.'
+    $dialog.ShowNewFolderButton = $true
+
+    if (Test-Path -LiteralPath $script:OutputRootPath) {
+        $dialog.SelectedPath = $script:OutputRootPath
+    }
+
+    try {
+        if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK -and -not [string]::IsNullOrWhiteSpace($dialog.SelectedPath)) {
+            $script:OutputRootPath = $dialog.SelectedPath
+            Update-OutputPathDisplay
+            Update-PublishStatus "Publish output folder updated."
+        }
+    }
+    finally {
+        $dialog.Dispose()
+    }
 }
 
 function Stop-PublishSession {
@@ -124,6 +414,7 @@ $script:Options = @(
         Label    = "1  Self-Contained  (Recommended)"
         Folder   = "MTM_Receiving_Application"
         Args     = "-c Release -r win-x64 --self-contained true"
+        SelfContained = $true
         TagColor = "#388E3C"
         Notes    = $n1
     },
@@ -132,6 +423,7 @@ $script:Options = @(
         Label    = "2  Framework-Dependent  ⚠"
         Folder   = "MTM_Receiving_Application_FD"
         Args     = "-c Release -r win-x64 --self-contained false"
+        SelfContained = $false
         TagColor = "#E65100"
         Notes    = $n2
     },
@@ -140,6 +432,7 @@ $script:Options = @(
         Label    = "3  ReadyToRun — Faster Startup"
         Folder   = "MTM_Receiving_Application_R2R"
         Args     = "-c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true"
+        SelfContained = $true
         TagColor = "#388E3C"
         Notes    = $n4
     },
@@ -148,6 +441,7 @@ $script:Options = @(
         Label    = "4  Trimmed  ⚠  (High Risk)"
         Folder   = "MTM_Receiving_Application_Trimmed"
         Args     = "-c Release -r win-x64 --self-contained true -p:PublishTrimmed=true"
+        SelfContained = $true
         TagColor = "#C62828"
         Notes    = $n5
     }
@@ -211,9 +505,27 @@ $xaml = @"
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
                         <Separator Margin="0,0,0,10"/>
                         <TextBlock Text="Output Path" FontWeight="Bold" Foreground="#444" Margin="0,0,0,4"/>
-                        <TextBlock Name="OutputPathText"
-                                   TextWrapping="Wrap" FontFamily="Consolas" FontSize="11"
-                                   Foreground="#1565C0" Text="(select an option)"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Name="OutputPathText"
+                                     IsReadOnly="True"
+                                     FontFamily="Consolas"
+                                     FontSize="11"
+                                     Padding="5,4"
+                                     BorderBrush="#CCC"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     Text="(select an option)"/>
+                            <Button Grid.Column="1"
+                                    Name="BrowseOutputPathButton"
+                                    Content="Browse..."
+                                    Margin="8,0,0,0"
+                                    MinWidth="90"/>
+                        </Grid>
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <TextBlock Name="NotesText" TextWrapping="Wrap"
@@ -240,11 +552,17 @@ $xaml = @"
                 <TextBox Grid.Row="0" Grid.Column="1" Name="ProjectPathText"
                          FontFamily="Consolas" FontSize="11" Padding="5,4"
                          BorderBrush="#CCC" BorderThickness="1" VerticalContentAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Langs:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,0,0"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Name="SatelliteLanguagesText"
-                         FontFamily="Consolas" FontSize="11" Padding="5,4" Margin="0,10,0,0"
-                         BorderBrush="#CCC" BorderThickness="1" VerticalContentAlignment="Center"
-                         ToolTip="Optional. Example: en or en;en-US. Leave blank to publish all satellite resource languages."/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Lang:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="SatelliteLanguagesComboBox"
+                          Margin="0,10,0,0"
+                          FontSize="11"
+                          Padding="5,4"
+                          BorderBrush="#CCC"
+                          BorderThickness="1"
+                          IsEditable="False"
+                          IsTextSearchEnabled="True"
+                          MaxDropDownHeight="320"
+                          ToolTip="Optional. Pick one language to limit satellite resources, or leave the default option selected to publish all available languages."/>
             </Grid>
         </Border>
 
@@ -323,8 +641,9 @@ $window = [Windows.Markup.XamlReader]::Load($reader)
 $optionList = $window.FindName("OptionList")
 $notesText = $window.FindName("NotesText")
 $outputPathText = $window.FindName("OutputPathText")
+$browseOutputPathButton = $window.FindName("BrowseOutputPathButton")
 $projectPathText = $window.FindName("ProjectPathText")
-$satelliteLanguagesText = $window.FindName("SatelliteLanguagesText")
+$satelliteLanguagesComboBox = $window.FindName("SatelliteLanguagesComboBox")
 $statusText = $window.FindName("StatusText")
 $publishProgress = $window.FindName("PublishProgress")
 $outputBorder = $window.FindName("OutputBorder")
@@ -338,7 +657,12 @@ $publishButton = $window.FindName("PublishButton")
 $closeButton = $window.FindName("CloseButton")
 
 $projectPathText.Text = $script:ProjectFile
-$satelliteLanguagesText.Text = $script:SatelliteResourceLanguages
+$satelliteLanguagesComboBox.Items.Clear()
+foreach ($languageItem in (Get-SatelliteLanguageOptions)) {
+    [void]$satelliteLanguagesComboBox.Items.Add($languageItem)
+}
+Set-SelectedSatelliteLanguage -LanguageCode $script:SatelliteResourceLanguages
+Update-OutputPathDisplay
 
 if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
     Update-PublishStatus "Project file not found. Review the Project path before publishing."
@@ -388,7 +712,7 @@ $optionList.Add_SelectionChanged({
         $script:selectedOption = $script:Options[[int]$selectedItem.Tag]
 
         $notesText.Text = $script:selectedOption.Notes
-        $outputPathText.Text = "$($script:BaseShare)\$($script:selectedOption.Folder)"
+        Update-OutputPathDisplay
 
         $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
         $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
@@ -398,14 +722,20 @@ $optionList.Add_SelectionChanged({
         $publishButton.IsEnabled = $true
     })
 
+$browseOutputPathButton.Add_Click({
+        Select-OutputRootFolder
+    })
+
 # ---------------------------------------------------------------------------
 # Publish button — run dotnet publish, show live output, show result
 # ---------------------------------------------------------------------------
 $publishButton.Add_Click({
         if ($null -eq $script:selectedOption) { return }
 
+    Remove-PublishStagingDirectory
+
         $opt = $script:selectedOption
-        $script:currentOutputPath = "$($script:BaseShare)\$($opt.Folder)"
+        $script:currentOutputPath = Get-EffectiveOutputPath -Option $opt
         $projectPath = $projectPathText.Text
 
         if ([string]::IsNullOrWhiteSpace($projectPath) -or -not (Test-Path -LiteralPath $projectPath)) {
@@ -417,14 +747,46 @@ $publishButton.Add_Click({
             return
         }
 
-        $satelliteLanguages = $satelliteLanguagesText.Text.Trim()
+        $satelliteLanguages = if ([string]::IsNullOrWhiteSpace((Get-SelectedSatelliteLanguageCode))) {
+            ''
+        }
+        else {
+            (Get-SelectedSatelliteLanguageCode).Trim()
+        }
+        Set-SelectedSatelliteLanguage -LanguageCode $satelliteLanguages
         $satelliteLanguagesArg = if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) {
             ''
         }
         else {
-            " -p:SatelliteResourceLanguages=$satelliteLanguages"
+            " -p:SatelliteResourceLanguages=`"$satelliteLanguages`""
         }
-        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $($script:PublishVerbosity) -o `"$($script:currentOutputPath)`""
+
+        $useStagingPublish = $false
+
+        if ($opt.SelfContained -and (Test-PublishOutputDirectoryHasFiles -Path $script:currentOutputPath -IgnoreNames @('_PublishLogs'))) {
+            if (-not (Confirm-SelfContainedOverwrite -Path $script:currentOutputPath -OptionLabel $opt.Label)) {
+                $script:PublishStagingPath = New-PublishStagingDirectory
+                $useStagingPublish = $true
+            }
+        }
+
+        $publishOutputPath = if ($useStagingPublish) {
+            $script:PublishStagingPath
+        }
+        else {
+            $script:currentOutputPath
+        }
+
+        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $($script:PublishVerbosity) -o `"$publishOutputPath`""
+
+        if (-not $useStagingPublish) {
+            Update-PublishStatus "Preparing publish output folder..."
+            Clear-PublishOutputDirectory -Path $script:currentOutputPath -PreserveNames @('_PublishLogs')
+        }
+        else {
+            Update-PublishStatus "Preparing staged publish output..."
+        }
+
         $logDirectory = Join-Path $script:currentOutputPath "_PublishLogs"
         New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
         $script:PublishLogFile = Join-Path $logDirectory ("publish-{0}.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
@@ -441,6 +803,8 @@ Started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 Option: $($opt.Label)
 Project: $projectPath
 Output: $($script:currentOutputPath)
+PublishMode: $(if ($useStagingPublish) { 'Reuse existing matching files' } else { 'Full overwrite' })
+PublishCommandOutput: $publishOutputPath
 Verbosity: $($script:PublishVerbosity)
 SatelliteResourceLanguages: $(if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) { 'all' } else { $satelliteLanguages })
 Command: $publishCommand
@@ -532,12 +896,36 @@ LogFile: $($script:PublishLogFile)
                 Stop-PublishSession
 
                 $outputScrollViewer.ScrollToEnd()
+
+                $stagingPath = $script:PublishStagingPath
+                Stop-PublishSession
+
+                $mergeSummaryText = ''
+                if ($publishExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($stagingPath)) {
+                    try {
+                        Update-PublishStatus "Applying staged publish output..."
+                        $mergeResult = Sync-PublishOutputDirectory -SourcePath $stagingPath -DestinationPath $script:currentOutputPath -PreserveNames @('_PublishLogs')
+                        $mergeSummaryText = "`nReused unchanged files: $($mergeResult.SkippedFiles)`nCopied new or changed files: $($mergeResult.CopiedFiles)`nRemoved stale files/folders: $($mergeResult.RemovedItems)"
+                        Add-PublishLogText "`r`nMerge Summary`r`nReused unchanged files: $($mergeResult.SkippedFiles)`r`nCopied new or changed files: $($mergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($mergeResult.RemovedItems)`r`n"
+                        Remove-Item -LiteralPath $stagingPath -Recurse -Force -ErrorAction SilentlyContinue
+                    }
+                    catch {
+                        $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
+                        $publishButton.IsEnabled = $true
+                        $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+                        $errorText.Text = "Publish succeeded, but merging the staged output failed. Staged output: $stagingPath`nLog file: $script:PublishLogFile`n$($_.Exception.Message)"
+                        Update-PublishStatus "Publish merge failed — check build output."
+                        Add-PublishLogText "`r`nMerge Failed: $($_.Exception.Message)`r`n"
+                        return
+                    }
+                }
+
                 $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
                 $publishButton.IsEnabled = $true
 
                 if ($publishExitCode -eq 0) {
                     $successBorder.Visibility = [System.Windows.Visibility]::Visible
-                    $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath`nLog file: $script:PublishLogFile"
+                    $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath`nLog file: $script:PublishLogFile$mergeSummaryText"
                     Update-PublishStatus "Publish completed successfully!"
                 }
                 else {
@@ -556,11 +944,13 @@ LogFile: $($script:PublishLogFile)
 # ---------------------------------------------------------------------------
 $closeButton.Add_Click({
         Stop-PublishSession
+    Remove-PublishStagingDirectory
         $window.Close()
     })
 
 $window.Add_Closing({
         Stop-PublishSession
+    Remove-PublishStagingDirectory
     })
 
 # ---------------------------------------------------------------------------
