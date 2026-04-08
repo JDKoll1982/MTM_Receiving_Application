@@ -55,6 +55,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     [ObservableProperty]
     private ObservableCollection<Model_OutsideServiceHistory> _results = new();
 
+    private List<Model_OutsideServiceHistory> _sourceResults = new();
     private List<Model_OutsideServiceHistory> _allResults = new();
     private string _sortPropertyName = string.Empty;
     private bool _sortAscending = true;
@@ -78,7 +79,17 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     /// </summary>
     public Action? ResetSortIndicators { get; set; }
 
-    public bool CanAggregateVendorNames => IsSearchByVendor;
+    public bool CanAggregateVendorNames => true;
+
+    partial void OnAggregateVendorNamesChanged(bool value)
+    {
+        if (_sourceResults.Count == 0)
+        {
+            return;
+        }
+
+        RefreshDisplayedResults();
+    }
 
     // ─── Constructor ────────────────────────────────────────────────────────
 
@@ -101,6 +112,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     {
         IsSearchByPartMode = true;
         SearchTerm = string.Empty;
+        _sourceResults.Clear();
+        _allResults.Clear();
         ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus("Enter a part number and click Search.");
     }
@@ -110,6 +123,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     {
         IsSearchByPartMode = false;
         SearchTerm = string.Empty;
+        _sourceResults.Clear();
+        _allResults.Clear();
         ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus("Enter a vendor name and click Search.");
     }
@@ -225,11 +240,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             return;
         }
 
-        _allResults = new List<Model_OutsideServiceHistory>(historyResult.Data);
-        _sortPropertyName = string.Empty;
-        _sortAscending = true;
-        ResetSortIndicators?.Invoke();
-        ReplaceResults(_allResults);
+        SetHistoryResults(historyResult.Data);
 
         var summary =
             Results.Count > 0
@@ -328,11 +339,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             return;
         }
 
-        _allResults = new List<Model_OutsideServiceHistory>(historyResult.Data);
-        _sortPropertyName = string.Empty;
-        _sortAscending = true;
-        ResetSortIndicators?.Invoke();
-        ReplaceResults(_allResults);
+        SetHistoryResults(historyResult.Data);
 
         var summary =
             Results.Count > 0
@@ -349,12 +356,115 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     private void Clear()
     {
         SearchTerm = string.Empty;
+        _sourceResults.Clear();
         _allResults.Clear();
         _sortPropertyName = string.Empty;
         _sortAscending = true;
         ResetSortIndicators?.Invoke();
         ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus($"Enter a {(IsSearchByPartMode ? "part number" : "vendor name")} to search.");
+    }
+
+    private void SetHistoryResults(IEnumerable<Model_OutsideServiceHistory> results)
+    {
+        _sourceResults = results.Select(CloneHistoryRecord).ToList();
+        _sortPropertyName = string.Empty;
+        _sortAscending = true;
+        ResetSortIndicators?.Invoke();
+        RefreshDisplayedResults();
+    }
+
+    private void RefreshDisplayedResults()
+    {
+        _allResults = BuildDisplayResults(_sourceResults);
+
+        if (string.IsNullOrEmpty(_sortPropertyName))
+        {
+            ReplaceResults(_allResults);
+            return;
+        }
+
+        ApplySort();
+    }
+
+    private List<Model_OutsideServiceHistory> BuildDisplayResults(
+        IReadOnlyList<Model_OutsideServiceHistory> results
+    )
+    {
+        if (AggregateVendorNames is false)
+        {
+            return results.Select(CloneHistoryRecord).ToList();
+        }
+
+        return results
+            .GroupBy(static row => BuildCombinedResultKey(row), StringComparer.Ordinal)
+            .Select(group =>
+            {
+                if (group.Count() == 1)
+                {
+                    return CloneHistoryRecord(group.First());
+                }
+
+                var latestRecord = group
+                    .OrderByDescending(static row => row.DispatchDate)
+                    .ThenBy(static row => row.DispatchID, StringComparer.OrdinalIgnoreCase)
+                    .First();
+                var distinctVendorIds = group
+                    .Select(static row => row.VendorID?.Trim() ?? string.Empty)
+                    .Where(static vendorId => string.IsNullOrWhiteSpace(vendorId) is false)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                return new Model_OutsideServiceHistory
+                {
+                    PartNumber = latestRecord.PartNumber?.Trim(),
+                    VendorID = distinctVendorIds.Count == 1 ? distinctVendorIds[0] : "Multiple",
+                    VendorName = latestRecord.VendorName,
+                    VendorCity = latestRecord.VendorCity,
+                    VendorState = latestRecord.VendorState,
+                    DispatchID = "Multiple",
+                    DispatchDate = group.Max(static row => row.DispatchDate),
+                    QuantitySent = group.Sum(static row => row.QuantitySent ?? 0m),
+                    DispatchStatus = latestRecord.DispatchStatus,
+                    IsCombinedRecord = true,
+                };
+            })
+            .OrderBy(static row => row.PartNumber, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(static row => row.VendorName, StringComparer.OrdinalIgnoreCase)
+            .ThenByDescending(static row => row.DispatchDate)
+            .ToList();
+    }
+
+    private static Model_OutsideServiceHistory CloneHistoryRecord(Model_OutsideServiceHistory source)
+    {
+        return new Model_OutsideServiceHistory
+        {
+            PartNumber = source.PartNumber,
+            VendorID = source.VendorID,
+            VendorName = source.VendorName,
+            VendorCity = source.VendorCity,
+            VendorState = source.VendorState,
+            DispatchID = source.DispatchID,
+            DispatchDate = source.DispatchDate,
+            QuantitySent = source.QuantitySent,
+            DispatchStatus = source.DispatchStatus,
+            IsCombinedRecord = source.IsCombinedRecord,
+        };
+    }
+
+    private static string BuildCombinedResultKey(Model_OutsideServiceHistory result)
+    {
+        var normalizedPartNumber = NormalizeCombinedKeyPart(result.PartNumber);
+        var normalizedVendorName = NormalizeCombinedKeyPart(
+            string.IsNullOrWhiteSpace(result.VendorName) ? result.VendorID : result.VendorName
+        );
+
+        return $"{normalizedPartNumber}|{normalizedVendorName}";
+    }
+
+    private static string NormalizeCombinedKeyPart(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim().ToUpperInvariant();
     }
 
     private static List<Model_FuzzySearchResult> AggregateVendorCandidates(

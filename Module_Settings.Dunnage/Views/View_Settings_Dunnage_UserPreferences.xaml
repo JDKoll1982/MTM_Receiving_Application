@@ -73,20 +73,31 @@
                             IsOn="{x:Bind ViewModel.PreferPartImages, Mode=TwoWay}"
                             OffContent="Allow type images to lead"
                             OnContent="Use part images first" />
-                    </StackPanel>
-                </Border>
 
-                <Border
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                    <StackPanel Spacing="10">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Behavior" />
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                Grid.Column="0"
+                                HorizontalAlignment="Stretch"
+                                Header="Default Image Location"
+                                PlaceholderText="Select an existing image folder"
+                                Text="{x:Bind ViewModel.DefaultImageLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Button
+                                Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                Click="BrowseDefaultImageLocationButton_Click"
+                                Content="Browse" />
+                        </Grid>
+
                         <TextBlock
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="When a Dunnage user does not enter a location during the guided workflow, the workflow now uses this user preference instead of leaving the location unresolved."
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Choose the folder that stores your Dunnage images. The folder must already exist when you save these preferences."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>

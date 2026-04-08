@@ -5,6 +5,7 @@ public static class DunnageSettingsKeys
     public static class UserPreferences
     {
         public const string DefaultLocation = "Dunnage.UserPreferences.DefaultLocation";
+        public const string DefaultImageLocation = "Dunnage.UserPreferences.DefaultImageLocation";
         public const string PreferredThumbnailSize =
             "Dunnage.UserPreferences.PreferredThumbnailSize";
         public const string PreferPartImages = "Dunnage.UserPreferences.PreferPartImages";

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -34,6 +35,9 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
 
     [ObservableProperty]
     private int _preferredThumbnailSize = 96;
+
+    [ObservableProperty]
+    private string _defaultImageLocation = string.Empty;
 
     [ObservableProperty]
     private bool _preferPartImages = true;
@@ -79,6 +83,12 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 return;
             }
 
+            if (TryValidateDefaultImageLocation(out var imageLocationValidationMessage) is false)
+            {
+                ShowStatus(imageLocationValidationMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
             var result = await _settingsCore.SetSettingAsync(
                 SettingsCategory,
                 DunnageSettingsKeys.UserPreferences.DefaultLocation,
@@ -96,6 +106,11 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
             }
 
             await _dunnageSettings.SaveStringAsync(
+                DunnageSettingsKeys.UserPreferences.DefaultImageLocation,
+                DefaultImageLocation.Trim(),
+                CurrentUserId
+            );
+            await _dunnageSettings.SaveStringAsync(
                 DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize,
                 PreferredThumbnailSize.ToString(),
                 CurrentUserId
@@ -106,12 +121,12 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 CurrentUserId
             );
 
-            ShowStatus("Default Dunnage location saved.", InfoBarSeverity.Success);
+            ShowStatus("Dunnage user preferences saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save the default Dunnage location.",
+                "Failed to save Dunnage user preferences.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -266,12 +281,40 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 DunnageSettingsKeys.UserPreferences.PreferPartImages,
                 CurrentUserId
             );
+            DefaultImageLocation = (
+                await _dunnageSettings.GetStringAsync(
+                    DunnageSettingsKeys.UserPreferences.DefaultImageLocation,
+                    CurrentUserId
+                )
+            ).Trim();
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error loading Dunnage user preferences: {ex.Message}", ex);
             DefaultLocation = FallbackDefaultLocation;
+            DefaultImageLocation = string.Empty;
         }
+    }
+
+    private bool TryValidateDefaultImageLocation(out string message)
+    {
+        if (string.IsNullOrWhiteSpace(DefaultImageLocation))
+        {
+            DefaultImageLocation = string.Empty;
+            message = string.Empty;
+            return true;
+        }
+
+        var normalizedPath = DefaultImageLocation.Trim();
+        if (Directory.Exists(normalizedPath))
+        {
+            DefaultImageLocation = normalizedPath;
+            message = string.Empty;
+            return true;
+        }
+
+        message = "The default image location must point to an existing folder.";
+        return false;
     }
 
     private static string NormalizeLocationForMatch(string? location)

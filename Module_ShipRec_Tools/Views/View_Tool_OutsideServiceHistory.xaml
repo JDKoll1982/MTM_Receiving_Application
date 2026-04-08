@@ -11,7 +11,6 @@
     <Page.Resources>
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
         <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
-        <converters:Converter_DateTimeToString x:Key="DateTimeToStringConverter" />
     </Page.Resources>
 
     <Grid Padding="24">
@@ -170,13 +169,13 @@
                         Tag="DispatchID" />
                     <controls:DataGridTextColumn
                         Width="Auto"
-                        Binding="{Binding DispatchDate, Converter={StaticResource DateTimeToStringConverter}}"
+                        Binding="{Binding DispatchDateDisplay}"
                         Header="Dispatch Date"
                         IsReadOnly="True"
                         Tag="DispatchDate" />
                     <controls:DataGridTextColumn
                         Width="Auto"
-                        Binding="{Binding QuantitySent}"
+                        Binding="{Binding QuantitySentDisplay}"
                         Header="Qty Sent"
                         IsReadOnly="True"
                         Tag="QuantitySent" />

@@ -2,7 +2,7 @@
   "id": "shiprec-tool-outside-service-history",
   "module": "Module_ShipRec_Tools",
   "name": "Outside Service History Lookup",
-  "summary": "Read-only Infor Visual lookup tool for outside service provider dispatch history with part or vendor search, optional in-memory aggregation of duplicate vendor names, fuzzy selection, sortable results, and clear-action refocus back to the part search field.",
+  "summary": "Read-only Infor Visual lookup tool for outside service provider dispatch history with part or vendor search, optional in-memory aggregation that combines duplicate vendor-plus-part rows across multiple dispatch dates, fuzzy selection, sortable results, whole-number quantity display, and clear-action refocus back to the part search field.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_OutsideServiceHistory.cs",
@@ -49,6 +49,7 @@
       "Enable vendor-name aggregation only while vendor search mode is active",
       "Resolve fuzzy matches",
       "Aggregate duplicate vendor-name candidates into a smaller selection list",
+      "Combine duplicate vendor-plus-part history rows in either search mode",
       "Review outside service dispatch history"
     ],
     "preserveRules": [
@@ -61,6 +62,7 @@
       "Part and vendor search modes still return the correct history data",
       "The combine-same-vendor-names checkbox is enabled in vendor mode and disabled in part mode",
       "Vendor aggregation reduces duplicate vendor-name candidates without losing access to combined history",
+      "When combine mode is enabled, duplicate vendor-plus-part history rows collapse into one row with Combined Dates and Multiple dispatch markers",
       "The user can confirm fuzzy matches before loading the final result set",
       "The results grid remains sortable and read-only",
       "Clear returns the operator to an immediately ready part-search input"
@@ -69,6 +71,8 @@
       "Confirm vendor and part modes still hit the intended Infor Visual queries",
       "Confirm the combine-same-vendor-names checkbox re-enables immediately when switching into vendor mode and disables again in part mode",
       "Confirm aggregated vendor-name mode merges duplicate vendor-name candidates and still returns combined part and history results",
+      "Confirm both part and vendor search modes combine duplicate vendor-plus-part rows when the checkbox is enabled",
+      "Confirm combined rows show Combined Dates, Multiple dispatch IDs, and whole-number quantities",
       "Confirm fuzzy picker flow still occurs when multiple matches are returned",
       "Confirm the results grid still shows dispatch history without enabling edits",
       "Confirm Clear resets vendor-mode searches back to part mode and places keyboard focus in the search box",

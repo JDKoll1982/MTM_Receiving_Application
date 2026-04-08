@@ -11,6 +11,7 @@ public static class DunnageSettingsDefaults
         new Dictionary<string, string>
         {
             [DunnageSettingsKeys.UserPreferences.DefaultLocation] = "RECV",
+            [DunnageSettingsKeys.UserPreferences.DefaultImageLocation] = string.Empty,
             [DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize] = "96",
             [DunnageSettingsKeys.UserPreferences.PreferPartImages] = "true",
             [DunnageSettingsKeys.UiUx.EnableTypeImages] = "true",

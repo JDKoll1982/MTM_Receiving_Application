@@ -35,4 +35,23 @@ public class Model_OutsideServiceHistory
 
     /// <summary>Current dispatch status (e.g., Open, Closed).</summary>
     public string? DispatchStatus { get; set; }
+
+    /// <summary>
+    /// True when this row represents multiple raw dispatch records combined for display.
+    /// </summary>
+    public bool IsCombinedRecord { get; set; }
+
+    /// <summary>
+    /// Display-friendly dispatch date text for the history grid.
+    /// </summary>
+    public string DispatchDateDisplay =>
+        IsCombinedRecord ? "Combined Dates" : DispatchDate?.ToString("MM/dd/yyyy") ?? string.Empty;
+
+    /// <summary>
+    /// Display-friendly whole-number quantity text for the history grid.
+    /// </summary>
+    public string QuantitySentDisplay =>
+        QuantitySent.HasValue
+            ? decimal.Round(QuantitySent.Value, 0, MidpointRounding.AwayFromZero).ToString("0")
+            : string.Empty;
 }
