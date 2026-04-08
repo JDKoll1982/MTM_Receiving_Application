@@ -31,6 +31,7 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     [NotifyPropertyChangedFor(nameof(SearchPlaceholder))]
     [NotifyPropertyChangedFor(nameof(IsSearchByPart))]
     [NotifyPropertyChangedFor(nameof(IsSearchByVendor))]
+    [NotifyPropertyChangedFor(nameof(CanAggregateVendorNames))]
     private bool _isSearchByPartMode = true;
 
     /// <summary>True when searching by Part Number (default mode).</summary>

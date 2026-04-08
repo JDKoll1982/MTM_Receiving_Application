@@ -1,4 +1,4 @@
-# AI Implementation Prompt - Location-Based Material Availability Board
+# AI Implementation Prompt - Location And Part-Based Material Availability Board
 
 Last Updated: 2026-04-08
 
@@ -18,9 +18,9 @@ Before writing any new code:
 
 ## Goal
 
-Create a new read-only location-based material availability board that lets a user enter a warehouse location and see:
+Create a new read-only material availability board that lets a user search by warehouse location or by part number and see:
 
-1. One card per unique Part ID currently stored in that location.
+1. One card per unique Part ID currently stored in the selected location, or the directly requested part when the search starts by part number.
 2. All other locations where that part currently has quantity greater than zero.
 3. Material due to arrive within the next 30 days.
 4. Rolled-up PO progress for matching part numbers.
@@ -119,9 +119,13 @@ Important verified facts already known in the repo:
 
 ## Feature Objective
 
-Build a new read-only tool where the user enters a location and gets a card-based summary for all parts currently in that location.
+Build a new read-only tool where the user can enter a location or a part number and get a card-based summary of matching material.
 
-Each card should represent one unique part found in the entered location and should display:
+When the search starts from a location, each card should represent one unique part found in that location.
+
+When the search starts from a part number, the tool should return the card for that part even if the user does not start from a location.
+
+Each returned card should display:
 
 1. Part ID.
 2. Part description.
@@ -138,7 +142,7 @@ Each card should represent one unique part found in the entered location and sho
 ### Warehouse Manager
 
 - Goal: Track incoming material by location and part number.
-- Needs: A quick location-based view showing what parts are on hand, where they are stored, and what is arriving soon.
+- Needs: A quick view that can start from either location or part number, showing what parts are on hand, where they are stored, and what is arriving soon.
 - Pain Point: Hard to tell which parts are running low and when replenishment is actually expected.
 
 ### Planner
@@ -159,12 +163,16 @@ Each card should represent one unique part found in the entered location and sho
 
 ### Input
 
-- User enters a warehouse location.
+- User can enter a warehouse location.
+- User can also enter a part number directly.
+- The tool should support both entry paths in the same feature.
 - The tool validates the location using existing Infor Visual location validation/search patterns where possible.
+- The tool validates the part number using existing Infor Visual part lookup/search patterns where possible.
 
 ### Core Output
 
-- System generates one card per unique Part ID currently found in the entered location.
+- For a location search, the system generates one card per unique Part ID currently found in the entered location.
+- For a part-number search, the system generates the card for the requested part and includes all current positive-quantity locations for that part.
 - Each card should include all known locations for that part where quantity is greater than zero.
 - Quantities should display as whole numbers in the UI.
 
@@ -209,6 +217,7 @@ Use the following business guidance when deciding which date to surface as the m
 - Reuse `IService_InforVisual` and the existing query-loading pattern before creating any new service surface.
 - Reuse `Module_ShipRec_Tools` tool composition patterns for View, ViewModel, and tool-specific service abstractions.
 - Reuse existing `Model_Dao_Result` patterns and error handling.
+- Reuse existing part lookup and part-search capabilities so part-number entry does not create a separate disconnected workflow.
 
 ### New Code Likely Required
 
@@ -218,6 +227,7 @@ This feature appears to need new tool-specific code even after reuse:
 - A new tool service in `Module_ShipRec_Tools` that orchestrates the location board.
 - A new ViewModel and View under `Module_ShipRec_Tools`.
 - At least one new Infor Visual SQL query for "all parts currently at a specific location" and likely one additional aggregation query for incoming PO rollups by part.
+- The ViewModel and service design should account for two search entry modes: location-first and part-first.
 
 ### Query Authoring Rules
 
