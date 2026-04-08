@@ -12,160 +12,166 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Padding="24">
-        <StackPanel Spacing="16">
-            <Border
-                Padding="32"
-                HorizontalAlignment="Stretch"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
-                <StackPanel HorizontalAlignment="Stretch" Spacing="24">
-                    <StackPanel
-                        HorizontalAlignment="Center"
-                        FlowDirection="LeftToRight"
-                        Spacing="8">
-                        <FontIcon
+    <ScrollViewer
+        HorizontalScrollBarVisibility="Disabled"
+        HorizontalScrollMode="Disabled"
+        VerticalScrollBarVisibility="Auto"
+        VerticalScrollMode="Auto">
+        <Grid Padding="16">
+            <StackPanel Spacing="12">
+                <Border
+                    Padding="20"
+                    HorizontalAlignment="Stretch"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel HorizontalAlignment="Stretch" Spacing="16"  >
+                        <StackPanel
                             HorizontalAlignment="Center"
-                            FontSize="48"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                            Glyph="&#xE7B8;" />
-                        <StackPanel HorizontalAlignment="Center" Spacing="2">
-                            <TextBox
+                            FlowDirection="LeftToRight"
+                            Spacing="6">
+                            <FontIcon
                                 HorizontalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                FontSize="16"
-                                FontWeight="SemiBold"
-                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                IsReadOnly="True"
-                                IsTabStop="False"
-                                Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}"
-                                TextAlignment="Center" />
-                            <TextBox
-                                HorizontalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                FontSize="12"
-                                FontWeight="Normal"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                IsReadOnly="True"
-                                IsTabStop="False"
-                                Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
-                                TextAlignment="Center" />
+                                FontSize="48"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                Glyph="&#xE7B8;" />
+                            <StackPanel HorizontalAlignment="Center" Spacing="0">
+                                <TextBox
+                                    HorizontalAlignment="Center"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    IsReadOnly="True"
+                                    IsTabStop="False"
+                                    Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}"
+                                    TextAlignment="Center" />
+                                <TextBox
+                                    HorizontalAlignment="Center"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    FontSize="12"
+                                    FontWeight="Normal"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    IsReadOnly="True"
+                                    IsTabStop="False"
+                                    Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
+                                    TextAlignment="Center" />
+                            </StackPanel>
                         </StackPanel>
+
+                        <NumberBox
+                            x:Name="NumberOfLoadsNumberBox"
+                            MinWidth="240"
+                            MaxWidth="480"
+                            HorizontalAlignment="Stretch"
+                            AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"
+                            Header="{x:Bind ViewModel.LoadEntryHeaderText, Mode=OneWay}"
+                            LargeChange="10"
+                            Maximum="99"
+                            Minimum="1"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBox
+                            MinWidth="240"
+                            MaxWidth="480"
+                            HorizontalAlignment="Stretch"
+                            Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
+                            LostFocus="LocationTextBox_LostFocus"
+                            PlaceholderText="Enter receiving location"
+                            Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.LoadEntryLocationInstructionText, Mode=OneWay}"
+                            TextAlignment="Center" />
+
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}"
+                            TextAlignment="Center" />
                     </StackPanel>
+                </Border>
 
-                    <NumberBox
-                        x:Name="NumberOfLoadsNumberBox"
-                        MinWidth="240"
-                        MaxWidth="480"
-                        HorizontalAlignment="Stretch"
-                        AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"
-                        Header="{x:Bind ViewModel.LoadEntryHeaderText, Mode=OneWay}"
-                        LargeChange="10"
-                        Maximum="99"
-                        Minimum="1"
-                        SmallChange="1"
-                        SpinButtonPlacementMode="Inline"
-                        Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Border
+                    Padding="16"
+                    HorizontalAlignment="Stretch"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Recommended Locations" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Current stock inventory suggestions from Infor Visual. WC, NCM, FG, RECV, and your ignored locations are excluded automatically."
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
 
-                    <TextBox
-                        MinWidth="240"
-                        MaxWidth="480"
-                        HorizontalAlignment="Stretch"
-                        Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
-                        LostFocus="LocationTextBox_LostFocus"
-                        PlaceholderText="Enter receiving location"
-                        Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <ProgressRing
+                            Width="24"
+                            Height="24"
+                            HorizontalAlignment="Left"
+                            IsActive="{x:Bind ViewModel.IsRecommendedLocationsLoading, Mode=OneWay}" />
 
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="{x:Bind ViewModel.LoadEntryLocationInstructionText, Mode=OneWay}"
-                        TextAlignment="Center" />
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.RecommendedLocations, Mode=OneWay}" Visibility="{x:Bind ViewModel.HasRecommendedLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_ReceivingRecommendedLocation">
+                                    <Border
+                                        Margin="0,0,0,6"
+                                        Padding="10"
+                                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                        <Grid ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}"
-                        TextAlignment="Center" />
-                </StackPanel>
-            </Border>
+                                            <FontIcon
+                                                Grid.Column="0"
+                                                VerticalAlignment="Center"
+                                                FontSize="16"
+                                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                Glyph="&#xE8B7;" />
 
-            <Border
-                Padding="20"
-                HorizontalAlignment="Stretch"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <StackPanel Spacing="4">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Recommended Locations" />
+                                            <StackPanel Grid.Column="1" Spacing="1">
+                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind DisplayLocation}" />
+                                                <TextBlock
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Text="{x:Bind QuantityDisplay}" />
+                                                <TextBlock
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Text="{x:Bind ReasonText}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Current stock inventory suggestions from Infor Visual. WC, NCM, FG, RECV, and your ignored locations are excluded automatically."
+                            Text="{x:Bind ViewModel.RecommendedLocationsMessage, Mode=OneWay}"
                             TextWrapping="WrapWholeWords" />
                     </StackPanel>
-
-                    <ProgressRing
-                        Width="24"
-                        Height="24"
-                        HorizontalAlignment="Left"
-                        IsActive="{x:Bind ViewModel.IsRecommendedLocationsLoading, Mode=OneWay}" />
-
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.RecommendedLocations, Mode=OneWay}" Visibility="{x:Bind ViewModel.HasRecommendedLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:Model_ReceivingRecommendedLocation">
-                                <Border
-                                    Margin="0,0,0,8"
-                                    Padding="12"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6">
-                                    <Grid ColumnSpacing="12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <FontIcon
-                                            Grid.Column="0"
-                                            VerticalAlignment="Center"
-                                            FontSize="16"
-                                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                            Glyph="&#xE8B7;" />
-
-                                        <StackPanel Grid.Column="1" Spacing="2">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind DisplayLocation}" />
-                                            <TextBlock
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Text="{x:Bind QuantityDisplay}" />
-                                            <TextBlock
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Text="{x:Bind ReasonText}" />
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="{x:Bind ViewModel.RecommendedLocationsMessage, Mode=OneWay}"
-                        TextWrapping="WrapWholeWords" />
-                </StackPanel>
-            </Border>
-        </StackPanel>
-    </Grid>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
