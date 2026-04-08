@@ -113,6 +113,8 @@ public sealed class Service_ReceivingLocationReconciliationTests
         var service = CreateService(mySqlReceivingMock, inforVisualMock);
 
         var historyRow = CreateLoad("66868", "MMC-100", "1", "OLD-LOC");
+        historyRow.WeightQuantity = 12;
+        historyRow.UnitOfMeasure = "EA";
         mySqlReceivingMock
             .Setup(service => service.GetCurrentLabelDataAsync())
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
@@ -609,7 +611,7 @@ public sealed class Service_ReceivingLocationReconciliationTests
     }
 
     [Fact]
-    public async Task PreviewLocationsAsync_ShouldMarkSameLocationAsUnchanged_WhenClosestFitMatchesCurrentLocation()
+    public async Task PreviewLocationsAsync_ShouldMarkSameLocationAsUnchanged_WhenExactCurrentQuantityMatchesCurrentLocation()
     {
         var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
         var inforVisualMock = new Mock<IService_InforVisual>();
@@ -645,7 +647,7 @@ public sealed class Service_ReceivingLocationReconciliationTests
                         {
                             CurrentWarehouseId = "002",
                             CurrentLocationId = "RECV",
-                            CurrentQuantity = 2000,
+                            CurrentQuantity = 1500,
                             ReceiptCount = 1,
                             LatestReceiptWarehouseId = "002",
                             LatestReceiptLocationId = "RECV",
@@ -736,6 +738,73 @@ public sealed class Service_ReceivingLocationReconciliationTests
         result.IsSuccess.Should().BeTrue();
         result.Data!.UnresolvedItems.Should().ContainSingle();
         result.Data.UnresolvedItems[0].Resolution.Should().Be("PendingVisualReceipt");
+    }
+
+    [Fact]
+    public async Task PreviewLocationsAsync_ShouldNotProposeClosestFit_WhenVisualQuantityDoesNotExactlyMatch()
+    {
+        var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var service = CreateService(mySqlReceivingMock, inforVisualMock);
+
+        var currentLabelRow = CreateLoad("66868", "MMC-556", "1", "RECV");
+        currentLabelRow.WeightQuantity = 8;
+        currentLabelRow.UnitOfMeasure = "EA";
+
+        mySqlReceivingMock
+            .Setup(s => s.GetCurrentLabelDataAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad> { currentLabelRow })
+            );
+        mySqlReceivingMock
+            .Setup(s => s.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
+
+        inforVisualMock
+            .Setup(s =>
+                s.GetReceivingLocationEvidenceAsync(
+                    "PO-066868",
+                    "MMC-556",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationEvidence>
+                    {
+                        new()
+                        {
+                            CurrentWarehouseId = "002",
+                            CurrentLocationId = "B-22",
+                            CurrentQuantity = 10,
+                            ReceiptCount = 1,
+                            LatestReceiptWarehouseId = "002",
+                            LatestReceiptLocationId = "RECV",
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(s =>
+                s.GetReceivingLocationTransactionHistoryAsync(
+                    "PO-066868",
+                    "MMC-556",
+                    "1",
+                    currentLabelRow.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualLocationTransaction>())
+            );
+
+        var result = await service.PreviewLocationsAsync(includeAllHistory: false);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.UpdatedItems.Should().BeEmpty();
+        result.Data.UnresolvedItems.Should().ContainSingle();
+        result.Data.UnresolvedItems[0].Resolution.Should().Be("NotFound");
+        result.Data.UnresolvedItems[0].Details.Should().ContainEquivalentOf("exact quantity match");
     }
 
     [Fact]

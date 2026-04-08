@@ -354,12 +354,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         var earliestFutureDate = qualifyingLines
             .Where(line => line.IsBlanket is false)
-            .Select(line => (DateTime?)line.Date)
-            .Min();
+            .Min(line => (DateTime?)line.Date);
         var earliestBlanketDate = qualifyingLines
             .Where(line => line.IsBlanket)
-            .Select(line => (DateTime?)line.Date)
-            .Min();
+            .Min(line => (DateTime?)line.Date);
 
         var sortBucket =
             earliestFutureDate.HasValue ? 0

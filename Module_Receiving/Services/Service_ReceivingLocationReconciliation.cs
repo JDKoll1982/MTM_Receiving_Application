@@ -781,81 +781,11 @@ public sealed class Service_ReceivingLocationReconciliation
             );
         }
 
-        var sameLocationCapacityMatch = candidates.FirstOrDefault(bucket =>
-            LocationsEqual(bucket.LocationId, item.ExistingLocation)
-            && bucket.RemainingQuantity >= item.SavedRowQuantity
-            && candidates.Count(candidate => candidate.RemainingQuantity >= item.SavedRowQuantity)
-                == 1
-        );
-        if (sameLocationCapacityMatch is not null)
-        {
-            return new BucketSelectionResult(
-                sameLocationCapacityMatch,
-                "Unchanged",
-                "Only current location has enough remaining quantity",
-                $"The current location {sameLocationCapacityMatch.DisplayName} is the only remaining location that can still fit this load quantity.",
-                false
-            );
-        }
-
-        var bucketsWithCapacity = candidates
-            .Where(bucket => bucket.RemainingQuantity >= item.SavedRowQuantity)
-            .OrderBy(bucket => bucket.RemainingQuantity - item.SavedRowQuantity)
-            .ThenBy(bucket => bucket.DisplayName, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        if (bucketsWithCapacity.Count > 0)
-        {
-            var smallestDifference =
-                bucketsWithCapacity[0].RemainingQuantity - item.SavedRowQuantity;
-            var closestFits = bucketsWithCapacity
-                .Where(bucket =>
-                    bucket.RemainingQuantity - item.SavedRowQuantity == smallestDifference
-                )
-                .ToList();
-            if (closestFits.Count == 1)
-            {
-                var resolution = LocationsEqual(closestFits[0].LocationId, item.ExistingLocation)
-                    ? "Unchanged"
-                    : "Updated";
-
-                return new BucketSelectionResult(
-                    closestFits[0],
-                    resolution,
-                    "Closest fit without over-allocation",
-                    $"Closest fit without over-allocation selected {closestFits[0].DisplayName} using {closestFits[0].AllocationBasis.ToLowerInvariant()}.",
-                    false
-                );
-            }
-
-            var newestClosestBucket = SelectUniqueNewestBucket(closestFits);
-            if (newestClosestBucket is not null)
-            {
-                return new BucketSelectionResult(
-                    newestClosestBucket,
-                    LocationsEqual(newestClosestBucket.LocationId, item.ExistingLocation)
-                        ? "Unchanged"
-                        : "Updated",
-                    "Newest closest-fit evidence",
-                    $"Multiple closest-fit totals existed, so the newest evidence location {newestClosestBucket.DisplayName} was selected.",
-                    false
-                );
-            }
-
-            return new BucketSelectionResult(
-                null,
-                "Ambiguous",
-                string.Empty,
-                $"Multiple destination locations are equally close quantity fits for this row: {string.Join(", ", closestFits.Select(bucket => bucket.DisplayName))}.",
-                false
-            );
-        }
-
         return new BucketSelectionResult(
             null,
             "NotFound",
             string.Empty,
-            "No current destination location has enough remaining quantity to fit this load. This can happen when InforVisual totals are still behind MTM or when the load has no clear posted movement yet.",
+            "No current destination location has an exact quantity match for this load. Reconciliation now requires the InforVisual quantity to exactly match the saved MTM quantity before proposing a location change.",
             false
         );
     }
