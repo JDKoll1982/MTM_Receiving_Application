@@ -9,16 +9,16 @@ using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 /// <summary>
-/// UserControl for Dunnage Type Selection view with a responsive 3x4 paginated grid.
+/// UserControl for Dunnage Type Selection view with a responsive 3x3 paginated grid.
 /// </summary>
 public sealed partial class View_dunnage_typeselectionView : UserControl
 {
-    private const int GridColumnCount = 4;
+    private const int GridColumnCount = 3;
     private const int GridRowCount = 3;
-    private const double MaxCardSlotWidth = 228;
-    private const double MaxCardSlotHeight = 120;
+    private const double MaxCardSlotWidth = 260;
+    private const double MaxCardSlotHeight = 176;
     private const double MinCardSlotWidth = 168;
-    private const double MinCardSlotHeight = 84;
+    private const double MinCardSlotHeight = 132;
 
     public ViewModel_dunnage_typeselection ViewModel { get; }
 

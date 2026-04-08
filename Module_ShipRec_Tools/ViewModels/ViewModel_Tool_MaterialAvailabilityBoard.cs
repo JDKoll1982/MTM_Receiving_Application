@@ -36,11 +36,16 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     [NotifyPropertyChangedFor(nameof(HasCards))]
     private ObservableCollection<Model_Tool_MaterialAvailabilityCard> _cards = new();
 
+    [ObservableProperty]
+    private string _selectedLookAheadOption = "30";
+
     public Func<
         IReadOnlyList<Model_FuzzySearchResult>,
         string,
         Task<Model_FuzzySearchResult?>
     >? ShowFuzzyPickerAsync { get; set; }
+
+    public IReadOnlyList<string> LookAheadOptions { get; } = ["30", "60", "90", "All"];
 
     public bool IsSearchByLocation => IsSearchByLocationMode;
 
@@ -49,6 +54,8 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     public string SearchLabel => IsSearchByLocationMode ? "Warehouse Location:" : "Part Number:";
 
     public string SearchPlaceholder => IsSearchByLocationMode ? "e.g. RECV" : "e.g. MMC0000658";
+
+    public string LookAheadLabel => "Look Ahead:";
 
     public bool HasCards => Cards.Count > 0;
 
@@ -110,7 +117,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
                 }
 
                 SearchTerm = confirmedLocation.Label;
-                await LoadBoardByLocationAsync(confirmedLocation.Key);
+                await LoadBoardByLocationAsync(confirmedLocation.Key, GetSelectedLookAheadDays());
             }
             else
             {
@@ -121,7 +128,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
                 }
 
                 SearchTerm = confirmedPart.Label;
-                await LoadBoardByPartAsync(confirmedPart.Key);
+                await LoadBoardByPartAsync(confirmedPart.Key, GetSelectedLookAheadDays());
             }
         }
         catch (Exception ex)
@@ -254,9 +261,13 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         return picked;
     }
 
-    private async Task LoadBoardByLocationAsync(string locationId)
+    private async Task LoadBoardByLocationAsync(string locationId, int? incomingWindowDays)
     {
-        var boardResult = await _service.GetBoardByLocationAsync(locationId, DefaultWarehouseCode);
+        var boardResult = await _service.GetBoardByLocationAsync(
+            locationId,
+            DefaultWarehouseCode,
+            incomingWindowDays
+        );
         if (!boardResult.IsSuccess || boardResult.Data is null)
         {
             ShowStatus(boardResult.ErrorMessage, InfoBarSeverity.Warning);
@@ -272,9 +283,13 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         );
     }
 
-    private async Task LoadBoardByPartAsync(string partId)
+    private async Task LoadBoardByPartAsync(string partId, int? incomingWindowDays)
     {
-        var boardResult = await _service.GetBoardByPartAsync(partId, DefaultWarehouseCode);
+        var boardResult = await _service.GetBoardByPartAsync(
+            partId,
+            DefaultWarehouseCode,
+            incomingWindowDays
+        );
         if (!boardResult.IsSuccess || boardResult.Data is null)
         {
             ShowStatus(boardResult.ErrorMessage, InfoBarSeverity.Warning);
@@ -293,5 +308,13 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     private void ReplaceCards(IEnumerable<Model_Tool_MaterialAvailabilityCard> cards)
     {
         Cards = new ObservableCollection<Model_Tool_MaterialAvailabilityCard>(cards);
+    }
+
+    private int? GetSelectedLookAheadDays()
+    {
+        return string.Equals(SelectedLookAheadOption, "All", StringComparison.OrdinalIgnoreCase)
+                ? null
+            : int.TryParse(SelectedLookAheadOption, out var days) ? days
+            : 30;
     }
 }

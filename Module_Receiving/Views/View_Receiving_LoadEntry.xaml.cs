@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
@@ -77,6 +78,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             ViewModel.ShowStatus(statusMessage, Module_Core.Models.Enums.InfoBarSeverity.Warning);
+        }
+
+        private void RecommendedLocationButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                sender is not Button button
+                || button.Tag is not Model_ReceivingRecommendedLocation location
+            )
+            {
+                return;
+            }
+
+            ViewModel.ApplyRecommendedLocationCommand.Execute(location);
         }
     }
 }

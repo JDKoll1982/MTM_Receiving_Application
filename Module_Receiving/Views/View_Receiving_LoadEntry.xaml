@@ -26,7 +26,7 @@
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8">
-                    <StackPanel HorizontalAlignment="Stretch" Spacing="16"  >
+                    <StackPanel HorizontalAlignment="Stretch" Spacing="16">
                         <StackPanel
                             HorizontalAlignment="Center"
                             FlowDirection="LeftToRight"
@@ -127,13 +127,16 @@
                         <ItemsControl ItemsSource="{x:Bind ViewModel.RecommendedLocations, Mode=OneWay}" Visibility="{x:Bind ViewModel.HasRecommendedLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="models:Model_ReceivingRecommendedLocation">
-                                    <Border
+                                    <Button
                                         Margin="0,0,0,6"
                                         Padding="10"
+                                        HorizontalContentAlignment="Stretch"
                                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                                         BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                         BorderThickness="1"
-                                        CornerRadius="6">
+                                        Click="RecommendedLocationButton_Click"
+                                        CornerRadius="6"
+                                        Tag="{x:Bind}">
                                         <Grid ColumnSpacing="8">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
@@ -159,7 +162,7 @@
                                                     Text="{x:Bind ReasonText}" />
                                             </StackPanel>
                                         </Grid>
-                                    </Border>
+                                    </Button>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

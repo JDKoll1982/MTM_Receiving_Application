@@ -30,7 +30,7 @@
             <TextBlock
                 Opacity="0.7"
                 Style="{StaticResource BodyTextBlockStyle}"
-                Text="Search by warehouse location or part number to review current stock, incoming supply, and PO progress." />
+                Text="Search by warehouse location or part number to review current stock, incoming material, and which associated parent parts are due to run next." />
         </StackPanel>
 
         <StackPanel
@@ -83,6 +83,15 @@
                     Click="ClearButton_Click"
                     Content="Clear"
                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="{x:Bind ViewModel.LookAheadLabel, Mode=OneWay}" />
+                <ComboBox
+                    Width="110"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                    ItemsSource="{x:Bind ViewModel.LookAheadOptions, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedLookAheadOption, Mode=TwoWay}" />
                 <ProgressRing
                     Width="28"
                     Height="28"
@@ -117,7 +126,7 @@
             </Border>
 
             <ScrollViewer Visibility="{x:Bind ViewModel.HasCards, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}">
+                <ItemsRepeater HorizontalAlignment="Stretch" ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Spacing="12" />
                     </ItemsRepeater.Layout>
@@ -125,6 +134,7 @@
                         <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityCard">
                             <Border
                                 Padding="16"
+                                HorizontalAlignment="Stretch"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1"
@@ -217,11 +227,11 @@
                                         </StackPanel>
 
                                         <StackPanel Spacing="8">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Incoming PO progress" />
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Incoming Material" />
                                             <TextBlock
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                 Style="{StaticResource BodyTextBlockStyle}"
-                                                Text="No qualifying inbound PO lines were found for the next 30 days."
+                                                Text="No qualifying incoming material was found for the selected look-ahead window."
                                                 Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                                             <StackPanel Spacing="8" Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                 <Grid ColumnSpacing="16">
@@ -270,25 +280,37 @@
                                         </StackPanel>
 
                                         <StackPanel Spacing="8">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Upcoming shipment dates" />
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Associated Parts" />
                                             <TextBlock
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                 Style="{StaticResource BodyTextBlockStyle}"
-                                                Text="No shipment dates are available for this card."
-                                                Visibility="{x:Bind HasIncomingDates, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                                            <ItemsRepeater ItemsSource="{x:Bind UpcomingDates, Mode=OneWay}" Visibility="{x:Bind HasIncomingDates, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                Text="No associated part runs were found for the selected look-ahead window."
+                                                Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                            <ItemsRepeater ItemsSource="{x:Bind AssociatedPartRuns, Mode=OneWay}" Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                 <ItemsRepeater.Layout>
                                                     <StackLayout Spacing="8" />
                                                 </ItemsRepeater.Layout>
                                                 <ItemsRepeater.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityIncomingDate">
+                                                    <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityAssociatedPartRun">
                                                         <Border
                                                             Padding="10,8"
                                                             Background="{ThemeResource LayerFillColorDefaultBrush}"
                                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                             BorderThickness="1"
                                                             CornerRadius="6">
-                                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind DisplayText}" />
+                                                            <StackPanel Spacing="2">
+                                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind AssociatedPartNumber}" />
+                                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind AssociatedPartDescription}" />
+                                                                <TextBlock
+                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind WorkOrderDisplay}" />
+                                                                <TextBlock
+                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind RunTimingLabel}" />
+                                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind NextRunDateDisplay}" />
+                                                            </StackPanel>
                                                         </Border>
                                                     </DataTemplate>
                                                 </ItemsRepeater.ItemTemplate>

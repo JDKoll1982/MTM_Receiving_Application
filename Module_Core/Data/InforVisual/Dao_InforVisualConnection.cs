@@ -1177,6 +1177,94 @@ public class Dao_InforVisualConnection
     }
 
     /// <summary>
+    /// Retrieves the associated parent/work-order parts that consume the requested component part,
+    /// together with the best available next run date.
+    /// Uses: 20_GetMaterialAvailabilityAssociatedPartRuns.sql
+    /// </summary>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualAssociatedPartRunRow>>
+    > GetMaterialAvailabilityAssociatedPartRunsAsync(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        try
+        {
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "20_GetMaterialAvailabilityAssociatedPartRuns.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
+            command.Parameters.AddWithValue(
+                "@LocationId",
+                string.IsNullOrWhiteSpace(locationId) ? DBNull.Value : locationId
+            );
+            command.Parameters.AddWithValue(
+                "@PartId",
+                string.IsNullOrWhiteSpace(partId) ? DBNull.Value : partId
+            );
+            command.Parameters.AddWithValue("@MaxResults", 200);
+
+            var rows = new List<Model_InforVisualAssociatedPartRunRow>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualAssociatedPartRunRow
+                    {
+                        InputPartNumber = reader["InputPartNumber"].ToString() ?? string.Empty,
+                        InputPartDescription =
+                            reader["InputPartDescription"].ToString() ?? string.Empty,
+                        AssociatedPartNumber =
+                            reader["AssociatedPartNumber"].ToString() ?? string.Empty,
+                        AssociatedPartDescription =
+                            reader["AssociatedPartDescription"].ToString() ?? string.Empty,
+                        NextDueToRunDate = reader["NextDueToRunDate"] as DateTime?,
+                        IsFutureOrTodayRun =
+                            reader["IsFutureOrTodayRun"] != DBNull.Value
+                            && Convert.ToBoolean(reader["IsFutureOrTodayRun"]),
+                        NextDueDateSource = reader["NextDueDateSource"].ToString() ?? string.Empty,
+                        WorkOrderType = reader["WorkOrderType"].ToString() ?? string.Empty,
+                        WorkOrderBaseId = reader["WorkOrderBaseId"].ToString() ?? string.Empty,
+                        WorkOrderLotId = reader["WorkOrderLotId"].ToString() ?? string.Empty,
+                        WorkOrderSplitId = reader["WorkOrderSplitId"].ToString() ?? string.Empty,
+                        WorkOrderSubId = reader["WorkOrderSubId"].ToString() ?? string.Empty,
+                        OperationSeqNo =
+                            reader["OperationSeqNo"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["OperationSeqNo"]),
+                        RequirementPieceNo =
+                            reader["RequirementPieceNo"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["RequirementPieceNo"]),
+                        WorkOrderStatus = reader["WorkOrderStatus"].ToString() ?? string.Empty,
+                        RequirementStatus = reader["RequirementStatus"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving material availability associated part runs: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualAssociatedPartRunRow>>(
+                $"Error retrieving material availability associated part runs: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
     /// Returns <see langword="true"/> when a <c>PART</c> row with <c>ID = <paramref name="partId"/></c>
     /// exists in Infor Visual.
     /// Uses: 12_ValidatePartExists.sql

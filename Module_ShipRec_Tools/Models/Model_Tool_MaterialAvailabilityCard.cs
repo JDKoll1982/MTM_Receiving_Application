@@ -24,7 +24,10 @@ public class Model_Tool_MaterialAvailabilityCard
 
     public List<Model_Tool_MaterialAvailabilityIncomingDate> UpcomingDates { get; set; } = [];
 
-    public string NextDateSummary { get; set; } = "No inbound material due in next 30 days.";
+    public List<Model_Tool_MaterialAvailabilityAssociatedPartRun> AssociatedPartRuns { get; set; } =
+    [];
+
+    public string NextDateSummary { get; set; } = "No associated part runs were found.";
 
     public DateTime? EarliestRelevantDate { get; set; }
 
@@ -37,6 +40,8 @@ public class Model_Tool_MaterialAvailabilityCard
     public bool HasIncomingSupply => IncomingRollup.POLineCount > 0;
 
     public bool HasIncomingDates => UpcomingDates.Count > 0;
+
+    public bool HasAssociatedPartRuns => AssociatedPartRuns.Count > 0;
 
     public string QuantitySummaryLabel =>
         HasSearchLocation ? $"Qty in {SearchLocationId}" : "Total on hand";

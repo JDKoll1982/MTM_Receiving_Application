@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using Windows.Foundation;
@@ -37,6 +38,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private readonly ObservableCollection<Model_DunnagePartCustomSpecEntry> _customSpecs = new();
     private readonly ObservableCollection<Model_DunnagePartCustomSpecEntry> _visibleCustomSpecs =
         new();
+    private readonly IService_DunnageImageStorage _imageStorage;
     private int _currentWizardStep;
     private int _currentSpecPage;
     private int _currentCustomSpecsPage;
@@ -52,6 +54,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         bool canDelete = false
     )
     {
+        _imageStorage = App.GetService<IService_DunnageImageStorage>();
         InitializeComponent();
         WasAccepted = false;
         RequestDelete = false;
@@ -542,6 +545,23 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         UpdateImagePreview();
     }
 
+    private async void RotateImageButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(SelectedImagePath))
+        {
+            return;
+        }
+
+        var result = await _imageStorage.CreateRotatedWorkingCopyAsync(SelectedImagePath);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+
+        SelectedImagePath = result.Data ?? SelectedImagePath;
+        UpdateImagePreview();
+    }
+
     private void AddCustomSpecButton_Click(object sender, RoutedEventArgs e)
     {
         var name = NewCustomSpecNameTextBox.Text.Trim();
@@ -872,5 +892,6 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     {
         PartImagePreview.Source = Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
         PartImagePathTextBlock.Text = SelectedImagePath;
+        RotateImageButton.IsEnabled = string.IsNullOrWhiteSpace(SelectedImagePath) is false;
     }
 }

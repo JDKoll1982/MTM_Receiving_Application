@@ -1032,6 +1032,46 @@ public class Service_InforVisualConnect : IService_InforVisual
         );
     }
 
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualAssociatedPartRunRow>>
+    > GetMaterialAvailabilityAssociatedPartRunsAsync(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        if (string.IsNullOrWhiteSpace(warehouseCode))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualAssociatedPartRunRow>>(
+                "Warehouse code cannot be empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(locationId) && string.IsNullOrWhiteSpace(partId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualAssociatedPartRunRow>>(
+                "Either a location or part ID is required"
+            );
+        }
+
+        var normalizedWarehouseCode = warehouseCode.Trim().ToUpperInvariant();
+        var normalizedLocationId = NormalizeOptionalInput(locationId);
+        var normalizedPartId = NormalizeOptionalInput(partId);
+
+        if (UseMockData)
+        {
+            return Model_Dao_Result_Factory.Success(
+                new List<Model_InforVisualAssociatedPartRunRow>()
+            );
+        }
+
+        return await _dao.GetMaterialAvailabilityAssociatedPartRunsAsync(
+            normalizedLocationId,
+            normalizedPartId,
+            normalizedWarehouseCode
+        );
+    }
+
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyLocations(
         string term,
         string warehouseCode
@@ -1203,10 +1243,8 @@ public class Service_InforVisualConnect : IService_InforVisual
         var rows = catalog
             .PurchaseOrders.Where(po =>
                 string.IsNullOrWhiteSpace(po.Status) is false
-                && new[] { "O", "P", "R", "F" }.Contains(
-                    po.Status,
-                    StringComparer.OrdinalIgnoreCase
-                )
+                && string.Equals(po.Status, "C", StringComparison.OrdinalIgnoreCase) is false
+                && string.Equals(po.Status, "X", StringComparison.OrdinalIgnoreCase) is false
             )
             .SelectMany(po => po.Parts, (po, part) => new { PurchaseOrder = po, Part = part })
             .Where(item =>

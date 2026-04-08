@@ -2,7 +2,7 @@
   "id": "shiprec-tool-material-availability-board",
   "module": "Module_ShipRec_Tools",
   "name": "Material Availability Board",
-  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number and review per-part stock cards, current positive-quantity locations, rolled-up inbound PO progress, and the best available upcoming material dates including blanket-order last-received handling.",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number and review per-part stock cards, current positive-quantity locations, rolled-up incoming material, and the associated parent parts that are due to run next using Infor Visual work-order demand.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
@@ -11,7 +11,8 @@
     "Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml",
     "Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml.cs",
     "Database/InforVisualScripts/Queries/18_GetMaterialAvailabilityCurrentStock.sql",
-    "Database/InforVisualScripts/Queries/19_GetMaterialAvailabilityIncomingSupply.sql"
+    "Database/InforVisualScripts/Queries/19_GetMaterialAvailabilityIncomingSupply.sql",
+    "Database/InforVisualScripts/Queries/20_GetMaterialAvailabilityAssociatedPartRuns.sql"
   ],
   "relatedServices": [
     "IService_Tool_MaterialAvailabilityBoard",
@@ -32,7 +33,7 @@
       "Location-based inventory search",
       "Part-based inventory search",
       "Incoming material review",
-      "PO progress analysis"
+      "Associated part demand analysis"
     ],
     "screens": ["View_Tool_MaterialAvailabilityBoard.xaml"],
     "currentUiPatterns": [
@@ -56,15 +57,17 @@
       "Status InfoBar",
       "Collapsible material cards",
       "Current locations list",
-      "Incoming PO progress block",
-      "Upcoming shipment dates list"
+      "Incoming material rollup block",
+      "Associated part next-run list",
+      "Look-ahead window selector"
     ],
     "userActions": [
       "Search by warehouse location",
       "Search by part number",
       "Resolve fuzzy matches for locations or parts",
       "Expand a card to review detailed stock and inbound material",
-      "Review rolled-up PO progress for qualifying incoming material"
+      "Review rolled-up incoming material for the selected look-ahead window",
+      "Review which associated parent parts are due to run next"
     ],
     "preserveRules": [
       "Keep all Infor Visual access read-only",
@@ -76,15 +79,16 @@
       "Location searches create one card per unique part in the selected location",
       "Part-number searches still return a card when the part has no current positive-quantity locations",
       "Each card shows all positive-quantity locations for the part within the current warehouse scope",
-      "Incoming PO progress is rolled up across qualifying part-matched lines",
-      "Blanket-order rows surface last-received dates instead of normal inbound dates",
+      "Incoming material is rolled up across qualifying part-matched lines even when due dates are missing",
+      "Associated part rows show the best available next due-to-run date per parent part",
       "Cards start collapsed on initial load and after each search"
     ],
     "validationHints": [
       "Confirm location and part search modes each resolve fuzzy matches before loading results",
-      "Confirm cards are sorted by the earliest actionable inbound date before blanket-only cards",
+      "Confirm cards are sorted by the earliest associated part run date before cards with no run data",
       "Confirm quantity display is rounded for UI only while aggregation still uses decimal values",
-      "Confirm blanket-order cards show 'Last received on' instead of a promise or desired date",
+      "Confirm incoming material still appears when active PO lines have no qualifying due date fields",
+      "Confirm changing the look-ahead selector between 30, 60, 90, and All updates both incoming material and associated part results",
       "Confirm whole-collection card replacement resets expansion state after a new search"
     ],
     "databaseObjects": [
@@ -92,7 +96,8 @@
       "PURCHASE_ORDER",
       "PURC_ORDER_LINE",
       "GetMaterialAvailabilityCurrentStockAsync",
-      "GetMaterialAvailabilityIncomingSupplyAsync"
+      "GetMaterialAvailabilityIncomingSupplyAsync",
+      "GetMaterialAvailabilityAssociatedPartRunsAsync"
     ]
   }
 }

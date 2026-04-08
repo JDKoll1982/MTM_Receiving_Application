@@ -331,6 +331,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             return Model_Dao_Result_Factory.Success(suggestions);
         }
 
+        [RelayCommand]
+        private void ApplyRecommendedLocation(
+            Model_ReceivingRecommendedLocation? recommendedLocation
+        )
+        {
+            if (
+                recommendedLocation is null
+                || string.IsNullOrWhiteSpace(recommendedLocation.LocationId)
+            )
+            {
+                return;
+            }
+
+            Location = recommendedLocation.LocationId.Trim();
+            ShowStatus($"Location set to {Location} from recommended locations.");
+        }
+
         private static string NormalizeLocationForMatch(string? location)
         {
             return new string(

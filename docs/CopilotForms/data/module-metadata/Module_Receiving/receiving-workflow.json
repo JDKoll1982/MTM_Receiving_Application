@@ -232,6 +232,7 @@
       "Confirm workflow step and status updates still refresh the UI correctly after repeated navigation between receiving views",
       "Confirm guided Back and Next navigation restores focus to the intended first field on PO Entry, Load Entry, Weight & Quantity, Heat & Lot, and Package Type",
       "Confirm the Guided Mode Enter Load Information step shows current-stock recommended locations while excluding WC, NCM, FG, RECV, and user-ignored locations",
+      "Confirm clicking a recommended location card in Guided Mode Enter Load Information copies that location into the Location textbox",
       "Confirm guided and manual step lists still repopulate correctly after whole-collection replacement during navigation",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm Manual Mode location editing stays textbox-based in all cases",

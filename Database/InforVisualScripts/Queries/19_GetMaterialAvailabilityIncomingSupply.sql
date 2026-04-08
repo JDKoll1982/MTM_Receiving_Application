@@ -68,7 +68,8 @@ LEFT JOIN dbo.PART p
     ON p.ID = rp.PartId
 LEFT JOIN dbo.VENDOR v
     ON v.ID = po.VENDOR_ID
-WHERE po.STATUS IN ('O', 'P', 'R', 'F')
+WHERE ISNULL(po.STATUS, '') NOT IN ('C', 'X')
+    AND ISNULL(pol.LINE_STATUS, '') NOT IN ('C', 'X')
   AND (
         pol.WAREHOUSE_ID = np.WarehouseCode
         OR (

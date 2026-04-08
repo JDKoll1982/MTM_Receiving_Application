@@ -6,6 +6,7 @@ using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Views;
@@ -17,6 +18,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
 {
     private readonly IService_Focus _focusService;
+    private readonly IService_DunnageImageStorage _imageStorage;
 
     public ViewModel_Dunnage_QuickAddTypeDialog ViewModel { get; }
 
@@ -36,6 +38,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
     {
         ViewModel = App.GetService<ViewModel_Dunnage_QuickAddTypeDialog>();
         _focusService = App.GetService<IService_Focus>();
+        _imageStorage = App.GetService<IService_DunnageImageStorage>();
         DataContext = ViewModel;
         WasAccepted = false;
         RequestDelete = false;
@@ -127,6 +130,22 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
     private void OnClearImageClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SelectedImagePath = null;
+    }
+
+    private async void OnRotateImageClick(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.SelectedImagePath))
+        {
+            return;
+        }
+
+        var result = await _imageStorage.CreateRotatedWorkingCopyAsync(ViewModel.SelectedImagePath);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+
+        ViewModel.SelectedImagePath = result.Data;
     }
 
     private void OnRemoveChoiceClick(object sender, RoutedEventArgs e)

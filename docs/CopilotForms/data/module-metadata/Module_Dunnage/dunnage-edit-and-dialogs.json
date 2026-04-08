@@ -2,7 +2,7 @@
   "id": "dunnage-edit-and-dialogs",
   "module": "Module_Dunnage",
   "name": "Edit Mode And Dialogs",
-  "summary": "Edit-mode screens, non-PO entry, label-related dialogs, button-based Type, Part, and Location selectors with shared fuzzy search, a dedicated grouped column chooser driven by the live edit grid columns, source-aware save and delete flows, and per-part Dunnage skid counters preserved across the active queue and history archive.",
+  "summary": "Edit-mode screens, non-PO entry, label-related dialogs, button-based Type, Part, and Location selectors with shared fuzzy search, rotate-enabled part and type image cards in the add/edit dialogs, a dedicated grouped column chooser driven by the live edit grid columns, source-aware save and delete flows, and per-part Dunnage skid counters preserved across the active queue and history archive.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs",
@@ -69,7 +69,8 @@
       "Toggle any available active-label table column in the edit grid, including newer home-location, inventory, skid, and modification fields",
       "Preserve Dunnage per-part skid counters when rows move from the active queue into history",
       "Capture non-PO dunnage entries",
-      "Add rows through dialogs"
+      "Add rows through dialogs",
+      "Rotate a selected part or type PNG 90 degrees clockwise before saving"
     ],
     "validationHints": [
       "Confirm the Type column opens a Dunnage Type picker and excludes types with no parts",
@@ -83,7 +84,8 @@
       "Confirm the Columns modal includes the available dunnage_label_data fields, including hidden queue metadata columns plus newer home-location, inventory, skid, and modified-date fields",
       "Confirm Dunnage active-label and history rows retain part_skid_sequence and part_skid_total values after save, edit, and archive operations",
       "Confirm a successful save refreshes the same working set and a failed save surfaces a clear error",
-      "Confirm edit-mode and non-PO dialog flows still target the correct records"
+      "Confirm edit-mode and non-PO dialog flows still target the correct records",
+      "Confirm Rotate 90° stays disabled until a part or type image is selected and refreshes the preview after rotation"
     ]
   }
 }

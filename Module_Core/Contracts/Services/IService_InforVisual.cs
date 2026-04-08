@@ -201,6 +201,21 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             string warehouseCode
         );
 
+        /// <summary>
+        /// Returns the associated parent/work-order parts that consume the requested component part,
+        /// together with the best available next run date for that demand.
+        /// </summary>
+        /// <param name="locationId">Optional exact warehouse location.</param>
+        /// <param name="partId">Optional exact component/material part ID.</param>
+        /// <param name="warehouseCode">Warehouse code that scopes the query (for example, "002").</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualAssociatedPartRunRow>>
+        > GetMaterialAvailabilityAssociatedPartRunsAsync(
+            string? locationId,
+            string? partId,
+            string warehouseCode
+        );
+
         // ── Exact-match validation helpers ─────────────────────────────────────
 
         /// <summary>

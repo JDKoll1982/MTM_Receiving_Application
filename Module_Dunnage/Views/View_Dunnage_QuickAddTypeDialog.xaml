@@ -271,6 +271,10 @@
                                         TextWrapping="WrapWholeWords" />
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Button Click="OnChooseImageClick" Content="Choose PNG" />
+                                        <Button
+                                            Click="OnRotateImageClick"
+                                            Content="Rotate 90°"
+                                            IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
                                         <Button Click="OnClearImageClick" Content="Clear" />
                                     </StackPanel>
                                 </StackPanel>

@@ -10,6 +10,8 @@ public interface IService_DunnageImageStorage
 {
     Task<Model_Dao_Result<string>> ImportImageAsync(string sourceFilePath, string folderName);
 
+    Task<Model_Dao_Result<string>> CreateRotatedWorkingCopyAsync(string imagePath);
+
     Task<Model_Dao_Result> DeleteImageAsync(string? relativeImagePath);
 
     string? GetAbsolutePath(string? relativeImagePath);

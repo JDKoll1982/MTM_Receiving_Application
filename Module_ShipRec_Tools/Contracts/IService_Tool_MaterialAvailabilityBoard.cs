@@ -13,12 +13,14 @@ public interface IService_Tool_MaterialAvailabilityBoard
 {
     Task<Model_Dao_Result<List<Model_Tool_MaterialAvailabilityCard>>> GetBoardByLocationAsync(
         string locationId,
-        string warehouseCode
+        string warehouseCode,
+        int? incomingWindowDays
     );
 
     Task<Model_Dao_Result<List<Model_Tool_MaterialAvailabilityCard>>> GetBoardByPartAsync(
         string partId,
-        string warehouseCode
+        string warehouseCode,
+        int? incomingWindowDays
     );
 
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term);

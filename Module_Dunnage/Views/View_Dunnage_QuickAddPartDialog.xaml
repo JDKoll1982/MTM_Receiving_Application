@@ -146,6 +146,11 @@
                                         TextWrapping="WrapWholeWords" />
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Button Click="ChooseImageButton_Click" Content="Choose PNG" />
+                                        <Button
+                                            x:Name="RotateImageButton"
+                                            Click="RotateImageButton_Click"
+                                            Content="Rotate 90°"
+                                            IsEnabled="False" />
                                         <Button Click="ClearImageButton_Click" Content="Clear Image" />
                                     </StackPanel>
                                 </StackPanel>
