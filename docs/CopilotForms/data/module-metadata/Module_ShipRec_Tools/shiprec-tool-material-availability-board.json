@@ -2,7 +2,7 @@
   "id": "shiprec-tool-material-availability-board",
   "module": "Module_ShipRec_Tools",
   "name": "Material Availability Board",
-  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number and review per-part stock cards, current positive-quantity locations, rolled-up incoming material, and the associated parent parts that are due to run next using Infor Visual work-order demand.",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number and review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, and the associated parent parts that are due to run next using Infor Visual work-order demand.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
@@ -80,6 +80,7 @@
       "Part-number searches still return a card when the part has no current positive-quantity locations",
       "Each card shows all positive-quantity locations for the part within the current warehouse scope",
       "Incoming material is rolled up across qualifying part-matched lines even when due dates are missing",
+      "When no next incoming shipment is available, the card falls back to the latest received shipment date for the incoming summary",
       "Associated part rows show the best available next due-to-run date per parent part",
       "Cards start collapsed on initial load and after each search"
     ],
@@ -88,6 +89,7 @@
       "Confirm cards are sorted by the earliest associated part run date before cards with no run data",
       "Confirm quantity display is rounded for UI only while aggregation still uses decimal values",
       "Confirm incoming material still appears when active PO lines have no qualifying due date fields",
+      "Confirm the incoming summary falls back to the latest received shipment when no next receipt date qualifies",
       "Confirm changing the look-ahead selector between 30, 60, 90, and All updates both incoming material and associated part results",
       "Confirm whole-collection card replacement resets expansion state after a new search"
     ],

@@ -131,6 +131,7 @@ SelectedDates AS (
         row.OrderedQty,
         row.ReceivedQty,
         row.RemainingQty,
+        row.LineLastReceivedDate,
         row.IsBlanketOrder,
         selected.SelectedDate,
         selected.DateLabel,
@@ -178,6 +179,7 @@ SELECT
     RemainingQty,
     DateLabel,
     CAST(SelectedDate AS date) AS DisplayDate,
+    CAST(LineLastReceivedDate AS date) AS LineLastReceivedDate,
     IsBlanketOrder,
     IsBlanket
 INTO #SelectedDates
@@ -190,15 +192,37 @@ WITH DistinctDateRows AS (
         row.PartDescription,
         row.DateLabel,
         row.DisplayDate,
-        row.IsBlanket
+        CAST(0 AS int) AS SortBucket
     FROM #SelectedDates row
     WHERE row.DisplayDate IS NOT NULL
       AND (
             row.IsBlanketOrder = 1
-            OR @IncomingWindowDays IS NULL
             OR (
                 row.DisplayDate >= CAST(GETDATE() AS date)
-                AND row.DisplayDate <= DATEADD(day, @IncomingWindowDays, CAST(GETDATE() AS date))
+                AND (
+                    @IncomingWindowDays IS NULL
+                    OR row.DisplayDate <= DATEADD(day, @IncomingWindowDays, CAST(GETDATE() AS date))
+                )
+            )
+          )
+
+    UNION
+
+    SELECT DISTINCT
+        row.PartId,
+        row.PartDescription,
+        'Last received in shipment' AS DateLabel,
+        row.LineLastReceivedDate AS DisplayDate,
+        CAST(1 AS int) AS SortBucket
+    FROM #SelectedDates row
+    WHERE row.IsBlanketOrder = 0
+      AND row.LineLastReceivedDate IS NOT NULL
+      AND (
+            row.DisplayDate IS NULL
+            OR row.DisplayDate < CAST(GETDATE() AS date)
+            OR (
+                @IncomingWindowDays IS NOT NULL
+                AND row.DisplayDate > DATEADD(day, @IncomingWindowDays, CAST(GETDATE() AS date))
             )
           )
 )
@@ -207,7 +231,7 @@ SELECT
     PartDescription,
     DateLabel,
     DisplayDate,
-    IsBlanket
+    SortBucket
 INTO #DistinctDateRows
 FROM DistinctDateRows;
 
@@ -217,10 +241,14 @@ WITH FirstDisplayDate AS (
         PartId,
         DateLabel,
         DisplayDate,
-        IsBlanket,
+        SortBucket,
         ROW_NUMBER() OVER (
             PARTITION BY PartId
-            ORDER BY IsBlanket, DisplayDate, DateLabel
+            ORDER BY
+                SortBucket,
+                CASE WHEN SortBucket = 0 THEN DisplayDate END,
+                CASE WHEN SortBucket = 1 THEN DisplayDate END DESC,
+                DateLabel
         ) AS RowNumber
     FROM #DistinctDateRows
 )
@@ -228,7 +256,7 @@ SELECT
     PartId,
     DateLabel,
     DisplayDate,
-    IsBlanket
+    SortBucket
 INTO #FirstDisplayDate
 FROM FirstDisplayDate
 WHERE RowNumber = 1;
@@ -296,6 +324,7 @@ SELECT
         '% complete'
     ) AS PercentCompleteSummary,
     CASE
+        WHEN f.DisplayDate IS NOT NULL AND f.SortBucket = 1 THEN CONCAT(f.DateLabel, ': ', CONVERT(varchar(10), f.DisplayDate, 101))
         WHEN f.DisplayDate IS NOT NULL THEN CONCAT('Next material date: ', f.DateLabel, ' ', CONVERT(varchar(10), f.DisplayDate, 101))
         WHEN COALESCE(r.POLineCount, 0) > 0 THEN 'Incoming material found, but no qualifying due dates are available.'
         WHEN @IncomingWindowDays IS NOT NULL THEN CONCAT('No inbound material due in the next ', @IncomingWindowDays, ' days.')
@@ -315,7 +344,12 @@ SELECT
     CONVERT(varchar(10), d.DisplayDate, 101) AS DisplayDate,
     CONCAT(d.DateLabel, ' ', CONVERT(varchar(10), d.DisplayDate, 101)) AS DisplayText
 FROM #DistinctDateRows d
-ORDER BY d.PartId, d.IsBlanket, d.DisplayDate, d.DateLabel;
+ORDER BY
+    d.PartId,
+    d.SortBucket,
+    CASE WHEN d.SortBucket = 0 THEN d.DisplayDate END,
+    CASE WHEN d.SortBucket = 1 THEN d.DisplayDate END DESC,
+    d.DateLabel;
 
 DROP TABLE IF EXISTS #RollupByPart;
 DROP TABLE IF EXISTS #FirstDisplayDate;

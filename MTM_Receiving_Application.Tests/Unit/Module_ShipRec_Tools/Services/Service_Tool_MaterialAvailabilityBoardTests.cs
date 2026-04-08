@@ -304,6 +304,73 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
+    public async Task GetBoardByPartAsync_ShouldFallbackToLastReceivedShipment_WhenNoFutureIncomingDateExists()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var lastShipmentDate = DateTime.Today.AddDays(-14);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-LASTSHIP"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-LASTSHIP",
+                        Description = "Recent Shipment Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service => service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-LASTSHIP", "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service => service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-LASTSHIP", "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualIncomingSupplyRow>
+                    {
+                        new()
+                        {
+                            PartId = "PART-LASTSHIP",
+                            PartDescription = "Recent Shipment Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-3001",
+                            POLineNumber = "1",
+                            OrderedQty = 40,
+                            ReceivedQty = 15,
+                            RemainingQty = 25,
+                            LinePromiseDate = DateTime.Today.AddDays(45),
+                            LineLastReceivedDate = lastShipmentDate,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service => service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-LASTSHIP", "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-LASTSHIP", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].HasIncomingSupply.Should().BeTrue();
+        result.Data[0].IncomingRollup.POLineCount.Should().Be(1);
+        result.Data[0].UpcomingDates.Should().ContainSingle();
+        result.Data[0].UpcomingDates[0].Label.Should().Be("Last received in shipment");
+        result.Data[0].UpcomingDates[0].Date.Should().Be(lastShipmentDate.Date);
+        result.Data[0].NextDateSummary.Should().Contain("Last received in shipment");
+    }
+
+    [Fact]
     public async Task GetBoardByPartAsync_ShouldFilterAssociatedPartRunsBySelectedWindow()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();

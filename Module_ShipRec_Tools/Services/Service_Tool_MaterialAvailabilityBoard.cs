@@ -371,22 +371,37 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             }
 
             var selectedDate = SelectBestIncomingDate(row);
+            var hasQualifyingFutureShipment =
+                selectedDate is not null
+                && selectedDate.Date >= today
+                && (incomingWindowDays.HasValue is false || selectedDate.Date <= horizon);
+
+            if (hasQualifyingFutureShipment)
+            {
+                qualifyingRollupRows.Add(row);
+                qualifyingLines.Add(selectedDate!);
+                continue;
+            }
+
+            if (row.LineLastReceivedDate is DateTime lastShipmentDate)
+            {
+                qualifyingRollupRows.Add(row);
+                qualifyingLines.Add(
+                    new IncomingLinePresentation(
+                        row,
+                        lastShipmentDate.Date,
+                        "Last received in shipment",
+                        true
+                    )
+                );
+                continue;
+            }
+
             if (selectedDate is null)
             {
                 qualifyingRollupRows.Add(row);
                 continue;
             }
-
-            if (
-                incomingWindowDays.HasValue
-                && (selectedDate.Date < today || selectedDate.Date > horizon)
-            )
-            {
-                continue;
-            }
-
-            qualifyingRollupRows.Add(row);
-            qualifyingLines.Add(selectedDate);
         }
 
         if (qualifyingRollupRows.Count == 0)
@@ -394,15 +409,20 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             return IncomingPresentation.Empty;
         }
 
-        var distinctDates = qualifyingLines
-            .OrderBy(line => line.IsBlanket)
-            .ThenBy(line => line.Date)
-            .ThenBy(line => line.Label, StringComparer.OrdinalIgnoreCase)
+        var distinctDateLines = qualifyingLines
             .GroupBy(line => new { line.Label, line.Date })
-            .Select(group => new Model_Tool_MaterialAvailabilityIncomingDate
+            .Select(group => group.First())
+            .OrderBy(line => line.IsHistorical ? 1 : 0)
+            .ThenBy(line => line.IsHistorical ? DateTime.MaxValue : line.Date)
+            .ThenByDescending(line => line.IsHistorical ? line.Date : DateTime.MinValue)
+            .ThenBy(line => line.Label, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var distinctDates = distinctDateLines
+            .Select(line => new Model_Tool_MaterialAvailabilityIncomingDate
             {
-                Label = group.Key.Label,
-                Date = group.Key.Date,
+                Label = line.Label,
+                Date = line.Date,
             })
             .ToList();
 
@@ -427,17 +447,21 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             POLineCount = distinctPoLines.Count,
         };
 
-        var earliestFutureDate = qualifyingLines
-            .Where(line => line.IsBlanket is false)
+        var earliestFutureDate = distinctDateLines
+            .Where(line => line.IsHistorical is false)
             .Min(line => (DateTime?)line.Date);
-        var earliestBlanketDate = qualifyingLines
-            .Where(line => line.IsBlanket)
-            .Min(line => (DateTime?)line.Date);
+        var latestHistoricalDate = distinctDateLines
+            .Where(line => line.IsHistorical)
+            .Max(line => (DateTime?)line.Date);
 
-        var sortBucket = earliestFutureDate.HasValue ? 0 : 1;
-        var sortDate = earliestFutureDate ?? earliestBlanketDate ?? DateTime.MaxValue;
+        var sortBucket = earliestFutureDate.HasValue ? 0 : latestHistoricalDate.HasValue ? 1 : 2;
+        var sortDate = earliestFutureDate ?? latestHistoricalDate ?? DateTime.MaxValue;
+        var firstDisplayLine = distinctDateLines.FirstOrDefault();
         var nextDateSummary =
-            distinctDates.Count > 0 ? $"Next material date: {distinctDates[0].DisplayText}"
+            firstDisplayLine is not null
+                ? firstDisplayLine.IsHistorical
+                    ? $"{firstDisplayLine.Label}: {firstDisplayLine.Date:MM/dd/yyyy}"
+                    : $"Next material date: {firstDisplayLine.Label} {firstDisplayLine.Date:MM/dd/yyyy}"
             : distinctPoLines.Count > 0
                 ? "Incoming material found, but no qualifying due dates are available."
             : incomingWindowDays.HasValue
@@ -583,7 +607,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         Model_InforVisualIncomingSupplyRow Row,
         DateTime Date,
         string Label,
-        bool IsBlanket
+        bool IsHistorical
     );
 
     private sealed record IncomingPresentation(
