@@ -14,7 +14,8 @@ DECLARE @WarehouseCode nvarchar(15) = '002';
 DECLARE @LocationId    nvarchar(30) = 'RECV';
 DECLARE @PartId        nvarchar(30) = NULL;
 
-;WITH NormalizedParameters AS (
+;
+WITH NormalizedParameters AS (
     SELECT
         UPPER(LTRIM(RTRIM(@WarehouseCode))) AS WarehouseCode,
         NULLIF(UPPER(LTRIM(RTRIM(@LocationId))), '') AS LocationId,

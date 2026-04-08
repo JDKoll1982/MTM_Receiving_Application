@@ -241,6 +241,7 @@
       "Confirm the mode-selection reconciliation action updates only rows with a clear conflicting location change from InforVisual receipt history and an exact current-quantity match",
       "Confirm rows whose saved MTM location already matches the inferred InforVisual location stay out of the reconciliation review queue",
       "Confirm transaction-history reconciliation resolves the actual transferred destination location instead of the source-side transfer row when InforVisual links paired transfer transactions",
+      "Confirm reconciliation rows marked NotFound are omitted from the review dialog and Needs Attention counts",
       "Confirm rows with no current on-hand inventory fall back to WC only when InforVisual history shows receipt activity, transfer into WC, and later full removal from WC",
       "Confirm review and save behavior are unchanged"
     ],

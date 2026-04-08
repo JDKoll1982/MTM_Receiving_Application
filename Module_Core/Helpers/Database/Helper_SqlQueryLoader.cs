@@ -162,6 +162,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
                     !foundQueryStart
                     && (
                         trimmedLine.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase)
+                        || trimmedLine.StartsWith(";WITH", StringComparison.OrdinalIgnoreCase)
                         || trimmedLine.StartsWith("WITH", StringComparison.OrdinalIgnoreCase)
                         || trimmedLine.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase)
                         || trimmedLine.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase)

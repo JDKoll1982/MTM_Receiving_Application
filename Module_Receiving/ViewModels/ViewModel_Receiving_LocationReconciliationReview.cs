@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -59,7 +60,10 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     public int TotalCandidateCount => PreviewSummary?.UpdatedItems.Count ?? 0;
 
-    public int NeedsAttentionCount => PreviewSummary?.UnresolvedItems.Count ?? 0;
+    public IReadOnlyList<Model_ReceivingLocationReconciliationItem> VisibleUnresolvedItems =>
+        PreviewSummary?.UnresolvedItems.Where(ShouldDisplayUnresolvedItem).ToList() ?? [];
+
+    public int NeedsAttentionCount => VisibleUnresolvedItems.Count;
 
     public int ItemsRemainingCount => _pendingItems.Count + (CurrentItem == null ? 0 : 1);
 
@@ -243,6 +247,7 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     private void RaiseComputedPropertyChanges()
     {
         OnPropertyChanged(nameof(TotalCandidateCount));
+        OnPropertyChanged(nameof(VisibleUnresolvedItems));
         OnPropertyChanged(nameof(NeedsAttentionCount));
         OnPropertyChanged(nameof(ItemsRemainingCount));
         OnPropertyChanged(nameof(HasPendingItems));
@@ -277,6 +282,11 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     private static string ValueOrUnknown(string? value)
     {
         return string.IsNullOrWhiteSpace(value) ? "Unknown" : value.Trim();
+    }
+
+    private static bool ShouldDisplayUnresolvedItem(Model_ReceivingLocationReconciliationItem item)
+    {
+        return !string.Equals(item.Resolution, "NotFound", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FormatPONumber(string? input)

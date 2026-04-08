@@ -594,7 +594,7 @@
                                 FontSize="18"
                                 FontWeight="SemiBold"
                                 Text="{x:Bind ViewModel.UnresolvedSectionTitle, Mode=OneWay}" />
-                            <ItemsControl ItemsSource="{x:Bind ViewModel.PreviewSummary.UnresolvedItems, Mode=OneWay}">
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.VisibleUnresolvedItems, Mode=OneWay}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:Model_ReceivingLocationReconciliationItem">
                                         <Border
