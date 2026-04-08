@@ -387,4 +387,97 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data[0].AssociatedPartRuns[0].AssociatedPartNumber.Should().Be("ASSY-10");
         result.Data[0].NextDateSummary.Should().Contain("ASSY-10");
     }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldPreferLatestHistoricalRun_WhenNoFutureRunExists()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var olderRunDate = new DateTime(2013, 11, 12);
+        var latestRunDate = new DateTime(2025, 12, 08);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("MMC0001146"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "MMC0001146",
+                        Description = "Pre-Build, Coil, 20Ga X 35.000",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "MMC0001146", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "MMC0001146", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "MMC0001146", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "MMC0001146",
+                            AssociatedPartNumber = "926544",
+                            AssociatedPartDescription = "Panel, Back 36-39 NICS 3-3PT",
+                            NextDueToRunDate = olderRunDate,
+                            IsFutureOrTodayRun = false,
+                            NextDueDateSource = "REQUIREMENT.REQUIRED_DATE",
+                            WorkOrderType = "M",
+                            WorkOrderBaseId = "926544",
+                            WorkOrderLotId = "0",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 10,
+                            RequirementPieceNo = 1,
+                        },
+                        new()
+                        {
+                            InputPartNumber = "MMC0001146",
+                            AssociatedPartNumber = "926544",
+                            AssociatedPartDescription = "Panel, Back 36-39 NICS 3-3PT",
+                            NextDueToRunDate = latestRunDate,
+                            IsFutureOrTodayRun = false,
+                            NextDueDateSource = "REQUIREMENT.REQUIRED_DATE",
+                            WorkOrderType = "M",
+                            WorkOrderBaseId = "926544",
+                            WorkOrderLotId = "0",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 20,
+                            RequirementPieceNo = 1,
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("MMC0001146", "002", null);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].AssociatedPartRuns.Should().ContainSingle();
+        result.Data[0].AssociatedPartRuns[0].AssociatedPartNumber.Should().Be("926544");
+        result.Data[0].AssociatedPartRuns[0].NextDueToRunDate.Should().Be(latestRunDate.Date);
+        result.Data[0].AssociatedPartRuns[0].IsFutureOrTodayRun.Should().BeFalse();
+        result.Data[0].NextDateSummary.Should().Contain("Latest known run:");
+        result.Data[0].NextDateSummary.Should().Contain("12/08/2025");
+    }
 }

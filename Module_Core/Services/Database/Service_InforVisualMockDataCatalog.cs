@@ -16,7 +16,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database;
 public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCatalog
 {
     private const string CatalogPath = "Module_Settings.Core/Defaults/inforvisual-mock-data.json";
-    private const string RuntimeCatalogPath = "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json";
+    private const string RuntimeCatalogPath =
+        "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json";
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -118,12 +119,13 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
 
             foreach (var transaction in normalizedTransactions)
             {
-                var existing = runtimeCatalog.ReceivingTransactions.FirstOrDefault(existingTransaction =>
-                    string.Equals(
-                        existingTransaction.SourceLoadId,
-                        transaction.SourceLoadId,
-                        StringComparison.OrdinalIgnoreCase
-                    )
+                var existing = runtimeCatalog.ReceivingTransactions.FirstOrDefault(
+                    existingTransaction =>
+                        string.Equals(
+                            existingTransaction.SourceLoadId,
+                            transaction.SourceLoadId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
                 );
 
                 if (existing == null)
@@ -178,14 +180,14 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             _logger?.LogInfo(
                 $"Appended {normalizedTransactions.Count} mock receiving transaction(s) to InforVisual mock catalog."
             );
-            return Model_Dao_Result_Factory.Success(normalizedTransactions.Count, normalizedTransactions.Count);
+            return Model_Dao_Result_Factory.Success(
+                normalizedTransactions.Count,
+                normalizedTransactions.Count
+            );
         }
         catch (Exception ex)
         {
-            _logger?.LogError(
-                $"Failed to append mock receiving transactions: {ex.Message}",
-                ex
-            );
+            _logger?.LogError($"Failed to append mock receiving transactions: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<int>(
                 $"Failed to append mock receiving transactions: {ex.Message}",
                 ex
@@ -257,6 +259,14 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             .OrderByDescending(transaction => transaction.TransactionDate)
             .ThenBy(transaction => transaction.PartID, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+        catalog.AssociatedPartRuns = catalog
+            .AssociatedPartRuns.Select(NormalizeAssociatedPartRun)
+            .OrderBy(run => run.InputPartNumber, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(run => run.IsFutureOrTodayRun ? 0 : 1)
+            .ThenBy(run => run.NextDueToRunDate ?? DateTime.MaxValue)
+            .ThenBy(run => run.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     private static Model_InforVisualMockReceivingTransaction NormalizeTransaction(
@@ -274,21 +284,48 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
                 ? "EA"
                 : transaction.UnitOfMeasure.Trim().ToUpperInvariant(),
             ReceivedDate = transaction.ReceivedDate,
-            TransactionDate = transaction.TransactionDate == default
-                ? transaction.ReceivedDate
-                : transaction.TransactionDate,
+            TransactionDate =
+                transaction.TransactionDate == default
+                    ? transaction.ReceivedDate
+                    : transaction.TransactionDate,
             ReceiptWarehouseId = string.IsNullOrWhiteSpace(transaction.ReceiptWarehouseId)
                 ? "002"
                 : transaction.ReceiptWarehouseId.Trim().ToUpperInvariant(),
-            ReceiptLocationId = transaction.ReceiptLocationId?.Trim().ToUpperInvariant()
-                ?? string.Empty,
+            ReceiptLocationId =
+                transaction.ReceiptLocationId?.Trim().ToUpperInvariant() ?? string.Empty,
             CurrentWarehouseId = string.IsNullOrWhiteSpace(transaction.CurrentWarehouseId)
                 ? "002"
                 : transaction.CurrentWarehouseId.Trim().ToUpperInvariant(),
-            CurrentLocationId = transaction.CurrentLocationId?.Trim().ToUpperInvariant()
-                ?? string.Empty,
+            CurrentLocationId =
+                transaction.CurrentLocationId?.Trim().ToUpperInvariant() ?? string.Empty,
             EmployeeNumber = transaction.EmployeeNumber,
             UserId = transaction.UserId?.Trim() ?? string.Empty,
+        };
+    }
+
+    private static Model_InforVisualAssociatedPartRunRow NormalizeAssociatedPartRun(
+        Model_InforVisualAssociatedPartRunRow row
+    )
+    {
+        return new Model_InforVisualAssociatedPartRunRow
+        {
+            InputPartNumber = row.InputPartNumber?.Trim().ToUpperInvariant() ?? string.Empty,
+            InputPartDescription = row.InputPartDescription?.Trim() ?? string.Empty,
+            AssociatedPartNumber =
+                row.AssociatedPartNumber?.Trim().ToUpperInvariant() ?? string.Empty,
+            AssociatedPartDescription = row.AssociatedPartDescription?.Trim() ?? string.Empty,
+            NextDueToRunDate = row.NextDueToRunDate,
+            IsFutureOrTodayRun = row.IsFutureOrTodayRun,
+            NextDueDateSource = row.NextDueDateSource?.Trim() ?? string.Empty,
+            WorkOrderType = row.WorkOrderType?.Trim().ToUpperInvariant() ?? string.Empty,
+            WorkOrderBaseId = row.WorkOrderBaseId?.Trim() ?? string.Empty,
+            WorkOrderLotId = row.WorkOrderLotId?.Trim() ?? string.Empty,
+            WorkOrderSplitId = row.WorkOrderSplitId?.Trim() ?? string.Empty,
+            WorkOrderSubId = row.WorkOrderSubId?.Trim() ?? string.Empty,
+            OperationSeqNo = row.OperationSeqNo,
+            RequirementPieceNo = row.RequirementPieceNo,
+            WorkOrderStatus = row.WorkOrderStatus?.Trim().ToUpperInvariant() ?? string.Empty,
+            RequirementStatus = row.RequirementStatus?.Trim().ToUpperInvariant() ?? string.Empty,
         };
     }
 
@@ -316,7 +353,14 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
         if (candidates.Count == 1)
         {
             var workspaceCandidate = Path.GetFullPath(
-                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", normalizedRelativePath)
+                Path.Combine(
+                    AppContext.BaseDirectory,
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    normalizedRelativePath
+                )
             );
             candidates.Add(workspaceCandidate);
         }

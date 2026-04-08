@@ -77,6 +77,41 @@ public sealed class Service_InforVisualConnectTests
         result.Data[0].ReceiptCount.Should().Be(1);
     }
 
+    [Fact]
+    public async Task GetMaterialAvailabilityAssociatedPartRunsAsync_ShouldReturnMockRows_WhenSearchingByPart()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.GetMaterialAvailabilityAssociatedPartRunsAsync(
+            null,
+            "MMC-100",
+            "002"
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().ContainSingle();
+        result.Data![0].InputPartNumber.Should().Be("MMC-100");
+        result.Data[0].AssociatedPartNumber.Should().Be("ASSY-1000");
+    }
+
+    [Fact]
+    public async Task GetMaterialAvailabilityAssociatedPartRunsAsync_ShouldReturnMockRows_WhenSearchingByLocation()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.GetMaterialAvailabilityAssociatedPartRunsAsync(
+            "A-01",
+            null,
+            "002"
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().ContainSingle();
+        result.Data![0].InputPartNumber.Should().Be("MMC-100");
+    }
+
     private static Service_InforVisualConnect CreateService(bool useMockData)
     {
         var dao = new Dao_InforVisualConnection(
@@ -103,6 +138,28 @@ public sealed class Service_InforVisualConnectTests
                 new Model_InforVisualMockDataCatalog
                 {
                     Locations = new List<string>(locations),
+                    AssociatedPartRuns = new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "MMC-100",
+                            InputPartDescription = "Mock component part",
+                            AssociatedPartNumber = "ASSY-1000",
+                            AssociatedPartDescription = "Mock parent assembly",
+                            NextDueToRunDate = new System.DateTime(2026, 4, 15),
+                            IsFutureOrTodayRun = true,
+                            NextDueDateSource = "WORK_ORDER.SCHED_START_DATE",
+                            WorkOrderType = "M",
+                            WorkOrderBaseId = "5001",
+                            WorkOrderLotId = "0",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 10,
+                            RequirementPieceNo = 1,
+                            WorkOrderStatus = "R",
+                            RequirementStatus = "O",
+                        },
+                    },
                     ReceivingTransactions = new List<Model_InforVisualMockReceivingTransaction>
                     {
                         new()

@@ -1060,8 +1060,13 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         if (UseMockData)
         {
-            return Model_Dao_Result_Factory.Success(
-                new List<Model_InforVisualAssociatedPartRunRow>()
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning material availability associated part runs for warehouse '{normalizedWarehouseCode}', location '{normalizedLocationId}', part '{normalizedPartId}'"
+            );
+            return CreateMockMaterialAvailabilityAssociatedPartRuns(
+                normalizedLocationId,
+                normalizedPartId,
+                normalizedWarehouseCode
             );
         }
 
@@ -1273,6 +1278,60 @@ public class Service_InforVisualConnect : IService_InforVisual
             .OrderBy(row => row.PartId, StringComparer.OrdinalIgnoreCase)
             .ThenBy(row => row.PONumber, StringComparer.OrdinalIgnoreCase)
             .ThenBy(row => row.POLineNumber, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(rows);
+    }
+
+    private Model_Dao_Result<
+        List<Model_InforVisualAssociatedPartRunRow>
+    > CreateMockMaterialAvailabilityAssociatedPartRuns(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        var catalog = _mockDataCatalog.GetCatalog();
+        var transactions = _mockDataCatalog
+            .GetReceivingTransactions()
+            .Where(transaction =>
+                string.Equals(
+                    transaction.CurrentWarehouseId,
+                    warehouseCode,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            .ToList();
+
+        var requestedPartIds = partId is not null
+            ? new[] { partId }
+            : transactions
+                .Where(transaction =>
+                    string.Equals(
+                        transaction.CurrentLocationId,
+                        locationId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .Select(transaction => transaction.PartID)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+        if (requestedPartIds.Length == 0)
+        {
+            return Model_Dao_Result_Factory.Success(
+                new List<Model_InforVisualAssociatedPartRunRow>()
+            );
+        }
+
+        var rows = catalog
+            .AssociatedPartRuns.Where(row =>
+                requestedPartIds.Contains(row.InputPartNumber, StringComparer.OrdinalIgnoreCase)
+            )
+            .OrderBy(row => row.InputPartNumber, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.IsFutureOrTodayRun ? 0 : 1)
+            .ThenBy(row => row.NextDueToRunDate ?? DateTime.MaxValue)
+            .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         return Model_Dao_Result_Factory.Success(rows);

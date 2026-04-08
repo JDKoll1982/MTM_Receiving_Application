@@ -483,8 +483,33 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         var associatedRuns = filteredRows
             .GroupBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
-            .Select(group => group.OrderBy(GetAssociatedPartRunSortKey).First())
-            .OrderBy(GetAssociatedPartRunSortKey)
+            .Select(group =>
+                group
+                    .OrderBy(row => row.IsFutureOrTodayRun ? 0 : 1)
+                    .ThenBy(row =>
+                        row.IsFutureOrTodayRun
+                            ? row.NextDueToRunDate!.Value.Date
+                            : DateTime.MaxValue
+                    )
+                    .ThenByDescending(row =>
+                        row.IsFutureOrTodayRun
+                            ? DateTime.MinValue
+                            : row.NextDueToRunDate!.Value.Date
+                    )
+                    .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(row => row.WorkOrderBaseId, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(row => row.OperationSeqNo)
+                    .ThenBy(row => row.RequirementPieceNo)
+                    .First()
+            )
+            .OrderBy(row => row.IsFutureOrTodayRun ? 0 : 1)
+            .ThenBy(row =>
+                row.IsFutureOrTodayRun ? row.NextDueToRunDate!.Value.Date : DateTime.MaxValue
+            )
+            .ThenByDescending(row =>
+                row.IsFutureOrTodayRun ? DateTime.MinValue : row.NextDueToRunDate!.Value.Date
+            )
+            .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
             .Select(row => new Model_Tool_MaterialAvailabilityAssociatedPartRun
             {
                 AssociatedPartNumber = row.AssociatedPartNumber,
@@ -498,8 +523,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             .ToList();
 
         var firstRun = associatedRuns[0];
+        var summaryLabel = firstRun.IsFutureOrTodayRun ? "Next run" : "Latest known run";
         var summaryText =
-            $"Next run: {firstRun.AssociatedPartNumber} {firstRun.NextRunDateDisplay}";
+            $"{summaryLabel}: {firstRun.AssociatedPartNumber} {firstRun.NextRunDateDisplay}";
 
         return new AssociatedPartPresentation(
             associatedRuns,
@@ -507,16 +533,6 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             firstRun.IsFutureOrTodayRun ? 0 : 1,
             firstRun.NextDueToRunDate
         );
-    }
-
-    private static (int Bucket, DateTime Date) GetAssociatedPartRunSortKey(
-        Model_InforVisualAssociatedPartRunRow row
-    )
-    {
-        var date = row.NextDueToRunDate?.Date ?? DateTime.MaxValue;
-        return row.IsFutureOrTodayRun
-            ? (0, date)
-            : (1, date == DateTime.MaxValue ? date : date.AddYears(100));
     }
 
     private static IncomingLinePresentation? SelectBestIncomingDate(

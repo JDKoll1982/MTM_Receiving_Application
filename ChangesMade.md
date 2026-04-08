@@ -26,6 +26,8 @@ This file gives a quick, plain-English summary of the work currently waiting to 
 - The board now shows which larger associated parts are expected to use the selected material next.
 - Incoming material is shown more reliably, even when some date details are missing.
 - The board text and card layout were updated so the results are easier to read across the full width of the page.
+- Two new SQL Server Management Studio scripts were added in the main folder so the Incoming Material and Associated Parts values can be checked directly against the database.
+- Mock data was added for the Material Availability Board so this feature can now show sample associated-part demand when mock mode is turned on.
 
 ## Behind The Scenes
 
