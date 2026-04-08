@@ -46,6 +46,7 @@
     "userActions": [
       "Search by part number",
       "Search by vendor name",
+      "Enable vendor-name aggregation only while vendor search mode is active",
       "Resolve fuzzy matches",
       "Aggregate duplicate vendor-name candidates into a smaller selection list",
       "Review outside service dispatch history"
@@ -58,6 +59,7 @@
     ],
     "acceptanceCriteria": [
       "Part and vendor search modes still return the correct history data",
+      "The combine-same-vendor-names checkbox is enabled in vendor mode and disabled in part mode",
       "Vendor aggregation reduces duplicate vendor-name candidates without losing access to combined history",
       "The user can confirm fuzzy matches before loading the final result set",
       "The results grid remains sortable and read-only",
@@ -65,6 +67,7 @@
     ],
     "validationHints": [
       "Confirm vendor and part modes still hit the intended Infor Visual queries",
+      "Confirm the combine-same-vendor-names checkbox re-enables immediately when switching into vendor mode and disables again in part mode",
       "Confirm aggregated vendor-name mode merges duplicate vendor-name candidates and still returns combined part and history results",
       "Confirm fuzzy picker flow still occurs when multiple matches are returned",
       "Confirm the results grid still shows dispatch history without enabling edits",

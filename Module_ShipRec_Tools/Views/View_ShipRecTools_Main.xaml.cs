@@ -15,18 +15,21 @@ public sealed partial class View_ShipRecTools_Main : Page
     public View_ShipRecTools_Main(
         ViewModel_ShipRecTools_Main viewModel,
         View_ShipRecTools_ToolSelection toolSelectionView,
-        View_Tool_OutsideServiceHistory outsideServiceHistoryView
+        View_Tool_OutsideServiceHistory outsideServiceHistoryView,
+        View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(toolSelectionView);
         ArgumentNullException.ThrowIfNull(outsideServiceHistoryView);
+        ArgumentNullException.ThrowIfNull(materialAvailabilityBoardView);
 
         ViewModel = viewModel;
         InitializeComponent();
 
         ToolSelectionHost.Content = toolSelectionView;
         OutsideServiceHistoryHost.Content = outsideServiceHistoryView;
+        MaterialAvailabilityBoardHost.Content = materialAvailabilityBoardView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;

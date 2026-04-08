@@ -16,6 +16,12 @@ All notable changes to the MTM Receiving Application are documented here.
 
 ### Added
 
+#### Ship/Rec Material Availability Board
+
+- Added a new read-only Ship/Rec analysis tool that searches by warehouse location or part number and renders one collapsible material card per part.
+- Each card shows positive-quantity locations in warehouse `002`, rolled-up inbound PO progress, and upcoming shipment dates derived from the best available Infor Visual line/header date fields.
+- Added dedicated Infor Visual query surface and ShipRec aggregation logic for current stock, incoming PO rollups, and blanket-order `Last received on` handling.
+
 #### Receiving History Import (`Database/Scripts/Import-ReceivingHistory.ps1`)
 
 - New PowerShell script to import receiving history from the Google Sheets CSV export into the MySQL `receiving_history` table.

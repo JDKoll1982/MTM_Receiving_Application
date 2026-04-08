@@ -171,6 +171,36 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             string warehouseCode
         );
 
+        /// <summary>
+        /// Returns current positive-quantity warehouse locations for either one exact part or all
+        /// parts currently found in the requested warehouse location.
+        /// </summary>
+        /// <param name="locationId">Optional exact warehouse location.</param>
+        /// <param name="partId">Optional exact part ID.</param>
+        /// <param name="warehouseCode">Warehouse code that scopes the query (for example, "002").</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualMaterialLocationRow>>
+        > GetMaterialAvailabilityCurrentStockAsync(
+            string? locationId,
+            string? partId,
+            string warehouseCode
+        );
+
+        /// <summary>
+        /// Returns active inbound PO-line rows for either one exact part or all parts currently found
+        /// in the requested warehouse location.
+        /// </summary>
+        /// <param name="locationId">Optional exact warehouse location.</param>
+        /// <param name="partId">Optional exact part ID.</param>
+        /// <param name="warehouseCode">Warehouse code that scopes the query (for example, "002").</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualIncomingSupplyRow>>
+        > GetMaterialAvailabilityIncomingSupplyAsync(
+            string? locationId,
+            string? partId,
+            string warehouseCode
+        );
+
         // ── Exact-match validation helpers ─────────────────────────────────────
 
         /// <summary>

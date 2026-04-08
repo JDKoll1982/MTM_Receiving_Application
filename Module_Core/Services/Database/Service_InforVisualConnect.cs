@@ -942,6 +942,96 @@ public class Service_InforVisualConnect : IService_InforVisual
         return await _dao.LocationExistsAsync(locationId, warehouseCode);
     }
 
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualMaterialLocationRow>>
+    > GetMaterialAvailabilityCurrentStockAsync(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        if (string.IsNullOrWhiteSpace(warehouseCode))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualMaterialLocationRow>>(
+                "Warehouse code cannot be empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(locationId) && string.IsNullOrWhiteSpace(partId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualMaterialLocationRow>>(
+                "Either a location or part ID is required"
+            );
+        }
+
+        var normalizedWarehouseCode = warehouseCode.Trim().ToUpperInvariant();
+        var normalizedLocationId = NormalizeOptionalInput(locationId);
+        var normalizedPartId = NormalizeOptionalInput(partId);
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning material availability current stock for warehouse '{normalizedWarehouseCode}', location '{normalizedLocationId}', part '{normalizedPartId}'"
+            );
+            return CreateMockMaterialAvailabilityCurrentStock(
+                normalizedLocationId,
+                normalizedPartId,
+                normalizedWarehouseCode
+            );
+        }
+
+        return await _dao.GetMaterialAvailabilityCurrentStockAsync(
+            normalizedLocationId,
+            normalizedPartId,
+            normalizedWarehouseCode
+        );
+    }
+
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualIncomingSupplyRow>>
+    > GetMaterialAvailabilityIncomingSupplyAsync(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        if (string.IsNullOrWhiteSpace(warehouseCode))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualIncomingSupplyRow>>(
+                "Warehouse code cannot be empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(locationId) && string.IsNullOrWhiteSpace(partId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualIncomingSupplyRow>>(
+                "Either a location or part ID is required"
+            );
+        }
+
+        var normalizedWarehouseCode = warehouseCode.Trim().ToUpperInvariant();
+        var normalizedLocationId = NormalizeOptionalInput(locationId);
+        var normalizedPartId = NormalizeOptionalInput(partId);
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning material availability incoming supply for warehouse '{normalizedWarehouseCode}', location '{normalizedLocationId}', part '{normalizedPartId}'"
+            );
+            return CreateMockMaterialAvailabilityIncomingSupply(
+                normalizedLocationId,
+                normalizedPartId,
+                normalizedWarehouseCode
+            );
+        }
+
+        return await _dao.GetMaterialAvailabilityIncomingSupplyAsync(
+            normalizedLocationId,
+            normalizedPartId,
+            normalizedWarehouseCode
+        );
+    }
+
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyLocations(
         string term,
         string warehouseCode
@@ -989,6 +1079,170 @@ public class Service_InforVisualConnect : IService_InforVisual
             .ToList();
 
         return Model_Dao_Result_Factory.Success(results);
+    }
+
+    private Model_Dao_Result<
+        List<Model_InforVisualMaterialLocationRow>
+    > CreateMockMaterialAvailabilityCurrentStock(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        var catalog = _mockDataCatalog.GetCatalog();
+        var transactions = _mockDataCatalog
+            .GetReceivingTransactions()
+            .Where(transaction =>
+                string.Equals(
+                    transaction.CurrentWarehouseId,
+                    warehouseCode,
+                    StringComparison.OrdinalIgnoreCase
+                ) && string.IsNullOrWhiteSpace(transaction.CurrentLocationId) is false
+            )
+            .ToList();
+
+        var requestedPartIds = partId is not null
+            ? new[] { partId }
+            : transactions
+                .Where(transaction =>
+                    string.Equals(
+                        transaction.CurrentLocationId,
+                        locationId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .Select(transaction => transaction.PartID)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+        if (requestedPartIds.Length == 0)
+        {
+            return Model_Dao_Result_Factory.Success(
+                new List<Model_InforVisualMaterialLocationRow>()
+            );
+        }
+
+        var partDescriptions = catalog.Parts.ToDictionary(
+            part => part.PartID,
+            part => part.Description,
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        var rows = transactions
+            .Where(transaction =>
+                requestedPartIds.Contains(transaction.PartID, StringComparer.OrdinalIgnoreCase)
+            )
+            .GroupBy(transaction => new
+            {
+                PartID = (transaction.PartID ?? string.Empty).Trim().ToUpperInvariant(),
+                CurrentLocationId = (transaction.CurrentLocationId ?? string.Empty)
+                    .Trim()
+                    .ToUpperInvariant(),
+            })
+            .Select(group => new Model_InforVisualMaterialLocationRow
+            {
+                PartId = group.Key.PartID,
+                PartDescription = partDescriptions.TryGetValue(
+                    group.Key.PartID,
+                    out var description
+                )
+                    ? description
+                    : string.Empty,
+                WarehouseCode = warehouseCode,
+                LocationId = group.Key.CurrentLocationId,
+                Quantity = group.Sum(transaction => transaction.Quantity),
+                CommittedQuantity = 0,
+            })
+            .Where(row => row.Quantity > 0)
+            .OrderBy(row => row.PartId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(rows);
+    }
+
+    private Model_Dao_Result<
+        List<Model_InforVisualIncomingSupplyRow>
+    > CreateMockMaterialAvailabilityIncomingSupply(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        var catalog = _mockDataCatalog.GetCatalog();
+        var transactions = _mockDataCatalog
+            .GetReceivingTransactions()
+            .Where(transaction =>
+                string.Equals(
+                    transaction.CurrentWarehouseId,
+                    warehouseCode,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            .ToList();
+
+        var requestedPartIds = partId is not null
+            ? new[] { partId }
+            : transactions
+                .Where(transaction =>
+                    string.Equals(
+                        transaction.CurrentLocationId,
+                        locationId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .Select(transaction => transaction.PartID)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+        if (requestedPartIds.Length == 0)
+        {
+            return Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>());
+        }
+
+        var rows = catalog
+            .PurchaseOrders.Where(po =>
+                string.IsNullOrWhiteSpace(po.Status) is false
+                && new[] { "O", "P", "R", "F" }.Contains(
+                    po.Status,
+                    StringComparer.OrdinalIgnoreCase
+                )
+            )
+            .SelectMany(po => po.Parts, (po, part) => new { PurchaseOrder = po, Part = part })
+            .Where(item =>
+                requestedPartIds.Contains(item.Part.PartID, StringComparer.OrdinalIgnoreCase)
+            )
+            .Select(item => new Model_InforVisualIncomingSupplyRow
+            {
+                PartId = item.Part.PartID,
+                PartDescription = item.Part.Description,
+                WarehouseCode = warehouseCode,
+                PONumber = item.PurchaseOrder.PONumber,
+                POLineNumber = item.Part.POLineNumber,
+                VendorName = item.PurchaseOrder.Vendor,
+                PoStatus = item.PurchaseOrder.Status,
+                OrderedQty = item.Part.QtyOrdered,
+                ReceivedQty = item.Part.QtyOrdered - item.Part.RemainingQuantity,
+                RemainingQty = item.Part.RemainingQuantity,
+                LineDesiredReceiveDate = item.Part.DueDate,
+                LinePromiseDate = null,
+                LineLastReceivedDate = item.PurchaseOrder.IsBlanketOrder ? item.Part.DueDate : null,
+                HeaderPromiseDate = item.PurchaseOrder.HeaderPromiseDate,
+                HeaderDesiredReceiveDate = item.PurchaseOrder.HeaderDesiredReceiveDate,
+                FreeOnBoard = item.PurchaseOrder.FreeOnBoard,
+                IsBlanketOrder = item.PurchaseOrder.IsBlanketOrder,
+            })
+            .OrderBy(row => row.PartId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.PONumber, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.POLineNumber, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(rows);
+    }
+
+    private static string? NormalizeOptionalInput(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value.Trim().ToUpperInvariant();
     }
 
     private static Model_InforVisualPO ClonePurchaseOrder(Model_InforVisualPO source)

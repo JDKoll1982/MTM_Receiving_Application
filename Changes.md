@@ -135,6 +135,8 @@ Each returned card should display:
 6. A rolled-up PO progress summary for qualifying incoming POs.
 7. Upcoming shipment dates.
 
+Each card should be collapsible and should start in the collapsed state by default.
+
 ---
 
 ## User Personas
@@ -174,6 +176,8 @@ Each returned card should display:
 - For a location search, the system generates one card per unique Part ID currently found in the entered location.
 - For a part-number search, the system generates the card for the requested part and includes all current positive-quantity locations for that part.
 - Each card should include all known locations for that part where quantity is greater than zero.
+- Each card should be expandable/collapsible by the user.
+- Cards should render collapsed by default on initial load and after each new search.
 - Quantities should display as whole numbers in the UI.
 
 ### Incoming Material Window
@@ -239,6 +243,8 @@ This feature appears to need new tool-specific code even after reuse:
 ### UI Pattern Recommendation
 
 - Use card-based display rather than a purely tabular grid.
+- Make each card collapsible.
+- Start cards collapsed by default so users can scan the summary list before expanding details.
 - Add explicit loading, empty-state, and error-state messaging.
 - Favor a ShipRec tool layout similar to existing lookup tools, but adapted for multi-card output.
 

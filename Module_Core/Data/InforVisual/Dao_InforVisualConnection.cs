@@ -360,8 +360,7 @@ public class Dao_InforVisualConnection
                                 : Convert.ToInt32(reader["TransactionId"]),
                         ReceiptWarehouseId =
                             reader["ReceiptWarehouseId"].ToString() ?? string.Empty,
-                        ReceiptLocationId =
-                            reader["ReceiptLocationId"].ToString() ?? string.Empty,
+                        ReceiptLocationId = reader["ReceiptLocationId"].ToString() ?? string.Empty,
                     }
                 );
             }
@@ -1012,6 +1011,166 @@ public class Dao_InforVisualConnection
             _logger?.LogError($"Error fuzzy-searching locations: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
                 $"Error searching locations: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Retrieves current positive-quantity warehouse locations for either one exact part or all parts
+    /// currently found in the requested warehouse location.
+    /// Uses: 18_GetMaterialAvailabilityCurrentStock.sql
+    /// </summary>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualMaterialLocationRow>>
+    > GetMaterialAvailabilityCurrentStockAsync(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        try
+        {
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "18_GetMaterialAvailabilityCurrentStock.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
+            command.Parameters.AddWithValue(
+                "@LocationId",
+                string.IsNullOrWhiteSpace(locationId) ? DBNull.Value : locationId
+            );
+            command.Parameters.AddWithValue(
+                "@PartId",
+                string.IsNullOrWhiteSpace(partId) ? DBNull.Value : partId
+            );
+
+            var rows = new List<Model_InforVisualMaterialLocationRow>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualMaterialLocationRow
+                    {
+                        PartId = reader["PartId"].ToString() ?? string.Empty,
+                        PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                        WarehouseCode = reader["WarehouseCode"].ToString() ?? string.Empty,
+                        LocationId = reader["LocationId"].ToString() ?? string.Empty,
+                        Quantity =
+                            reader["Quantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["Quantity"]),
+                        CommittedQuantity =
+                            reader["CommittedQuantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["CommittedQuantity"]),
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving material availability current stock: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualMaterialLocationRow>>(
+                $"Error retrieving material availability current stock: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Retrieves active inbound PO-line rows for either one exact part or all parts currently found
+    /// in the requested warehouse location.
+    /// Uses: 19_GetMaterialAvailabilityIncomingSupply.sql
+    /// </summary>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualIncomingSupplyRow>>
+    > GetMaterialAvailabilityIncomingSupplyAsync(
+        string? locationId,
+        string? partId,
+        string warehouseCode
+    )
+    {
+        try
+        {
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "19_GetMaterialAvailabilityIncomingSupply.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
+            command.Parameters.AddWithValue(
+                "@LocationId",
+                string.IsNullOrWhiteSpace(locationId) ? DBNull.Value : locationId
+            );
+            command.Parameters.AddWithValue(
+                "@PartId",
+                string.IsNullOrWhiteSpace(partId) ? DBNull.Value : partId
+            );
+
+            var rows = new List<Model_InforVisualIncomingSupplyRow>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualIncomingSupplyRow
+                    {
+                        PartId = reader["PartId"].ToString() ?? string.Empty,
+                        PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                        WarehouseCode = reader["WarehouseCode"].ToString() ?? string.Empty,
+                        PONumber = reader["PONumber"].ToString() ?? string.Empty,
+                        POLineNumber = reader["POLineNumber"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        OrderedQty =
+                            reader["OrderedQty"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["OrderedQty"]),
+                        ReceivedQty =
+                            reader["ReceivedQty"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["ReceivedQty"]),
+                        RemainingQty =
+                            reader["RemainingQty"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["RemainingQty"]),
+                        LineDesiredReceiveDate = reader["LineDesiredReceiveDate"] as DateTime?,
+                        LinePromiseDate = reader["LinePromiseDate"] as DateTime?,
+                        LineLastReceivedDate = reader["LineLastReceivedDate"] as DateTime?,
+                        HeaderPromiseDate = reader["HeaderPromiseDate"] as DateTime?,
+                        HeaderDesiredReceiveDate = reader["HeaderDesiredReceiveDate"] as DateTime?,
+                        FreeOnBoard = reader["FreeOnBoard"].ToString() ?? string.Empty,
+                        IsBlanketOrder =
+                            reader["IsBlanketOrder"] != DBNull.Value
+                            && Convert.ToBoolean(reader["IsBlanketOrder"]),
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving material availability incoming supply: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualIncomingSupplyRow>>(
+                $"Error retrieving material availability incoming supply: {ex.Message}",
                 ex
             );
         }

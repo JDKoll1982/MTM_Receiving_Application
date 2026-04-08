@@ -33,6 +33,9 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isOutsideServiceHistoryVisible;
 
+    [ObservableProperty]
+    private bool _isMaterialAvailabilityBoardVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_ErrorHandler errorHandler,
@@ -65,6 +68,11 @@ public partial class ViewModel_ShipRecTools_Main
             {
                 case "OutsideServiceHistory":
                     IsOutsideServiceHistoryVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    break;
+
+                case "MaterialAvailabilityBoard":
+                    IsMaterialAvailabilityBoardVisible = true;
                     CurrentToolTitle = toolTitle;
                     break;
 
@@ -101,5 +109,6 @@ public partial class ViewModel_ShipRecTools_Main
     {
         IsToolSelectionVisible = false;
         IsOutsideServiceHistoryVisible = false;
+        IsMaterialAvailabilityBoardVisible = false;
     }
 }

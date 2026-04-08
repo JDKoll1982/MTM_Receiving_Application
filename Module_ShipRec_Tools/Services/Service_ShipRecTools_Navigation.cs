@@ -79,5 +79,18 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "MaterialAvailabilityBoard",
+                Title = "Material Availability Board",
+                Description =
+                    "Search by warehouse location or part number to review stock position and incoming material.",
+                IconGlyph = "\uE81C",
+                Category = Enum_ToolCategory.Analysis,
+                IsAvailable = true,
+            }
+        );
     }
 }

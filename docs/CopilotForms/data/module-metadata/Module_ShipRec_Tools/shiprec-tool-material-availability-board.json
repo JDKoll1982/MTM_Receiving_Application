@@ -1,0 +1,98 @@
+{
+  "id": "shiprec-tool-material-availability-board",
+  "module": "Module_ShipRec_Tools",
+  "name": "Material Availability Board",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number and review per-part stock cards, current positive-quantity locations, rolled-up inbound PO progress, and the best available upcoming material dates including blanket-order last-received handling.",
+  "owner": "Shipping / Receiving Team",
+  "relatedFiles": [
+    "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
+    "Module_ShipRec_Tools/Services/Service_Tool_MaterialAvailabilityBoard.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_MaterialAvailabilityBoard.cs",
+    "Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml",
+    "Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml.cs",
+    "Database/InforVisualScripts/Queries/18_GetMaterialAvailabilityCurrentStock.sql",
+    "Database/InforVisualScripts/Queries/19_GetMaterialAvailabilityIncomingSupply.sql"
+  ],
+  "relatedServices": [
+    "IService_Tool_MaterialAvailabilityBoard",
+    "Service_Tool_MaterialAvailabilityBoard",
+    "IService_InforVisual",
+    "Service_InforVisualConnect"
+  ],
+  "promptDefaults": {
+    "audience": "Shipping or Receiving Clerk",
+    "docAudience": "Shipping or Receiving Clerk",
+    "mockupAudience": "Shipping or Receiving Clerk",
+    "reviewScope": "Single feature",
+    "testKind": "Mixed",
+    "databaseSystem": "SQL Server"
+  },
+  "uiHints": {
+    "workflowAreas": [
+      "Location-based inventory search",
+      "Part-based inventory search",
+      "Incoming material review",
+      "PO progress analysis"
+    ],
+    "screens": ["View_Tool_MaterialAvailabilityBoard.xaml"],
+    "currentUiPatterns": [
+      "Search form",
+      "Toggle filter",
+      "Card list",
+      "Collapsible detail sections"
+    ],
+    "desiredUiPatterns": [
+      "Search form",
+      "Card list",
+      "Collapsible detail sections",
+      "Toolbar + results list"
+    ],
+    "uiElements": [
+      "Warehouse Location toggle",
+      "Part Number toggle",
+      "Search input",
+      "Search button",
+      "Clear button",
+      "Status InfoBar",
+      "Collapsible material cards",
+      "Current locations list",
+      "Incoming PO progress block",
+      "Upcoming shipment dates list"
+    ],
+    "userActions": [
+      "Search by warehouse location",
+      "Search by part number",
+      "Resolve fuzzy matches for locations or parts",
+      "Expand a card to review detailed stock and inbound material",
+      "Review rolled-up PO progress for qualifying incoming material"
+    ],
+    "preserveRules": [
+      "Keep all Infor Visual access read-only",
+      "Keep warehouse scope explicit for location validation and stock queries",
+      "Keep cards collapsed by default after every new search",
+      "Keep part-level aggregation logic in the ShipRec tool service rather than in code-behind"
+    ],
+    "acceptanceCriteria": [
+      "Location searches create one card per unique part in the selected location",
+      "Part-number searches still return a card when the part has no current positive-quantity locations",
+      "Each card shows all positive-quantity locations for the part within the current warehouse scope",
+      "Incoming PO progress is rolled up across qualifying part-matched lines",
+      "Blanket-order rows surface last-received dates instead of normal inbound dates",
+      "Cards start collapsed on initial load and after each search"
+    ],
+    "validationHints": [
+      "Confirm location and part search modes each resolve fuzzy matches before loading results",
+      "Confirm cards are sorted by the earliest actionable inbound date before blanket-only cards",
+      "Confirm quantity display is rounded for UI only while aggregation still uses decimal values",
+      "Confirm blanket-order cards show 'Last received on' instead of a promise or desired date",
+      "Confirm whole-collection card replacement resets expansion state after a new search"
+    ],
+    "databaseObjects": [
+      "CR_PART_LOCATION",
+      "PURCHASE_ORDER",
+      "PURC_ORDER_LINE",
+      "GetMaterialAvailabilityCurrentStockAsync",
+      "GetMaterialAvailabilityIncomingSupplyAsync"
+    ]
+  }
+}

@@ -2,7 +2,7 @@
   "id": "shiprec-tools-shell",
   "module": "Module_ShipRec_Tools",
   "name": "ShipRec Tools Shell",
-  "summary": "Container workflow that hosts the tool selection screen, routes into an active tool, and returns the user back to the tool hub.",
+  "summary": "Container workflow that hosts the tool selection screen, routes into an active tool such as Outside Service History or the Material Availability Board, and returns the user back to the tool hub.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_ShipRecTools_Navigation.cs",
@@ -30,18 +30,9 @@
       "Tool navigation",
       "Back-to-tools routing"
     ],
-    "screens": [
-      "View_ShipRecTools_Main.xaml"
-    ],
-    "currentUiPatterns": [
-      "Container host",
-      "Conditional content region"
-    ],
-    "desiredUiPatterns": [
-      "Container host",
-      "Card list",
-      "Split layout"
-    ],
+    "screens": ["View_ShipRecTools_Main.xaml"],
+    "currentUiPatterns": ["Container host", "Conditional content region"],
+    "desiredUiPatterns": ["Container host", "Card list", "Split layout"],
     "uiElements": [
       "Back to Tools button",
       "Current tool title",
@@ -58,10 +49,12 @@
     ],
     "acceptanceCriteria": [
       "The correct tool host becomes visible after selection",
+      "The Material Availability Board host becomes visible when its tool card is selected",
       "The Back to Tools action returns the user to the selection screen"
     ],
     "validationHints": [
       "Confirm tool navigation still toggles the correct host region",
+      "Confirm the shell toggles between Outside Service History and Material Availability Board without overlapping host regions",
       "Confirm the shell title updates for the active tool"
     ]
   }

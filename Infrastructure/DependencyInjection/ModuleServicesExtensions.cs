@@ -538,16 +538,24 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_OutsideServiceHistory(inforVisual, logger);
         });
+        services.AddSingleton<IService_Tool_MaterialAvailabilityBoard>(sp =>
+        {
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
+        });
 
         // ViewModels (Transient - Per-navigation instances)
         services.AddTransient<ViewModel_ShipRecTools_Main>();
         services.AddTransient<ViewModel_ShipRecTools_ToolSelection>();
         services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
+        services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
 
         return services;
     }
