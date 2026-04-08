@@ -112,6 +112,8 @@ Important verified facts already known in the repo:
 - `CR_PART_LOCATION` is a real SQL Server view and is the right source for bin-level stock.
 - `PART_SITE` is site-level only and should not be treated as the primary location breakdown source.
 - Infor Visual is read-only from this application.
+- Live SQL validation for work-order demand showed that `SITE_ID` and `WAREHOUSE_ID` are not interchangeable in MTM data. Example: live rows used `SITE_ID = MTM2` while `WAREHOUSE_ID = 002`.
+- Live SQL validation also confirmed that `REQUIREMENT.PART_ID` can be used to trace a consumed material/component part to the associated parent part on `WORK_ORDER.PART_ID`.
 
 ---
 
@@ -190,6 +192,13 @@ Use the following business guidance when deciding which date to surface as the m
 - Once confirmed, the vendor-confirmed date is typically entered at the PO header `Promise Delivery Date` field.
 - For blanket orders, the header desired receive date is the final expected completion date, not a release schedule.
 - Tracking numbers are out of scope because the business confirmed they are not maintained in a shared log and does not want a new tool or spreadsheet for them.
+- For non-blanket orders, start with line-specific dates when those dates come before PO-level dates.
+- At the PO/header level, Promise Date should be preferred before Want/Desired Receive Date.
+- For blanket orders, use the last received date for the relevant line number and label that value as `Last received on` instead of presenting it as a normal incoming shipment date.
+
+### Sorting Guidance
+
+- Sort cards by earliest incoming date first.
 
 ---
 
@@ -298,18 +307,13 @@ Please confirm or correct these before implementation starts:
    Assumption: Each card should show a list of upcoming distinct dates, not just one single “best” date.
 
 9. **Date precedence**
-   Assumption: For non-blanket orders, the business-preferred displayed date may need to prioritize the confirmed header promise date over line dates in some cases. I need you to confirm the exact precedence rule you want applied in the card.
+   Confirmed rule: Start with line-specific dates when those dates come before the PO-specific dates. At the PO/header level, Promise Date takes precedence before Want/Desired Receive Date.
 
 10. **Blanket orders**
-    Assumption: Blanket orders should still appear on the card, but they should be clearly marked because header desired receive date is not a true shipment schedule.
+    Confirmed rule: Blanket orders should still appear on the card, but instead of using a normal incoming date, use the last received date for the line number and label it `Last received on`.
 
 11. **Closest-to-run sorting**
-    Assumption: There is currently no implemented formula in the repo for “closest to run.” I need you to define the rule. Examples:
-
-- lowest available quantity first
-- earliest incoming date first
-- smallest coverage gap first
-- some separate planning signal that is not yet in the codebase
+    Confirmed rule: `Closest to run` means earliest incoming date first.
 
 12. **Navigation entry point**
     Assumption: This tool should appear on the Ship/Rec Tools selection screen alongside the other read-only tools, likely under an Analysis-style category rather than Lookup.
