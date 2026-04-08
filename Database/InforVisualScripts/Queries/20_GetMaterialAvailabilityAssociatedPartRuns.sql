@@ -78,6 +78,8 @@ MatchingRequirements AS (
                 wo.DESIRED_RLS_DATE,
                 wo.DESIRED_WANT_DATE
             ) >= CAST(GETDATE() AS date)
+             AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
+             AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
                 THEN CAST(1 AS bit)
             ELSE CAST(0 AS bit)
         END                                 AS IsFutureOrTodayRun
@@ -98,14 +100,8 @@ MatchingRequirements AS (
     WHERE (
             r.WAREHOUSE_ID = np.WarehouseCode
             OR wo.WAREHOUSE_ID = np.WarehouseCode
-          )
-      AND r.CLOSE_DATE IS NULL
-      AND wo.CLOSE_DATE IS NULL
-      AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
-      AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
-)
-SELECT TOP (@MaxResults)
-    InputPartNumber,
+        WHERE ISNULL(r.STATUS, '') <> 'X'
+            AND ISNULL(wo.STATUS, '') <> 'X'
     InputPartDescription,
     AssociatedPartNumber,
     AssociatedPartDescription,
@@ -115,6 +111,7 @@ SELECT TOP (@MaxResults)
     WorkOrderType,
     WorkOrderBaseId,
     WorkOrderLotId,
+                        OR m.IsFutureOrTodayRun = 0
     WorkOrderSplitId,
     WorkOrderSubId,
     OperationSeqNo,

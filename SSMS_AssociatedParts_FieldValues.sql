@@ -114,6 +114,8 @@ MatchingRequirements AS (
                 wo.DESIRED_RLS_DATE,
                 wo.DESIRED_WANT_DATE
             ) >= CAST(GETDATE() AS date)
+             AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
+             AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
                 THEN CAST(1 AS bit)
             ELSE CAST(0 AS bit)
         END AS IsFutureOrTodayRun
@@ -131,14 +133,8 @@ MatchingRequirements AS (
         ON r.PART_ID = component.ID
     LEFT JOIN dbo.PART parent
         ON wo.PART_ID = parent.ID
-    WHERE (
-            r.WAREHOUSE_ID = np.WarehouseCode
-            OR wo.WAREHOUSE_ID = np.WarehouseCode
-          )
-      AND r.CLOSE_DATE IS NULL
-      AND wo.CLOSE_DATE IS NULL
-      AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
-      AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
+        WHERE ISNULL(r.STATUS, '') <> 'X'
+            AND ISNULL(wo.STATUS, '') <> 'X'
 ),
 FilteredRuns AS (
     SELECT
@@ -148,6 +144,7 @@ FilteredRuns AS (
     WHERE m.NextDueToRunDate IS NOT NULL
       AND (
             np.IncomingWindowDays IS NULL
+                        OR m.IsFutureOrTodayRun = 0
             OR (
                 m.IsFutureOrTodayRun = 1
                 AND m.NextDueToRunDate <= DATEADD(day, np.IncomingWindowDays, CAST(GETDATE() AS date))
