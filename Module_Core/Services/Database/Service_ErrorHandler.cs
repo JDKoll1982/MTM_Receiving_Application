@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -14,6 +15,15 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database;
 /// </summary>
 public class Service_ErrorHandler : IService_ErrorHandler
 {
+    private static readonly Regex PascalCaseWordBoundaryRegex = new(
+        "(?<=[a-z0-9])([A-Z])",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant
+    );
+    private static readonly Regex MultiWhitespaceRegex = new(
+        "\\s+",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant
+    );
+
     private readonly IService_LoggingUtility _loggingService;
     private readonly IService_Window _windowService;
 
@@ -158,14 +168,16 @@ public class Service_ErrorHandler : IService_ErrorHandler
             return;
         }
 
-        string errorMessage = $"Database operation '{operationName}' failed: {result.ErrorMessage}";
+        var logMessage = BuildDaoLogMessage(operationName, result.ErrorMessage);
 
-        await HandleErrorAsync(
-            errorMessage,
-            result.Severity,
-            exception: null,
-            showDialog: showDialog
-        );
+        await LogErrorAsync(logMessage, result.Severity, result.Exception);
+
+        if (showDialog)
+        {
+            var title = BuildDaoDialogTitle(operationName, result.Severity);
+            var message = BuildDaoDialogMessage(result.ErrorMessage);
+            await ShowErrorDialogAsync(title, message, result.Severity);
+        }
     }
 
     public Task ShowUserErrorAsync(string message, string title, string method)
@@ -203,5 +215,62 @@ public class Service_ErrorHandler : IService_ErrorHandler
             Enum_ErrorSeverity.Fatal => "Fatal Error",
             _ => "Error",
         };
+    }
+
+    private static string BuildDaoLogMessage(string? operationName, string? resultErrorMessage)
+    {
+        var safeOperationName = string.IsNullOrWhiteSpace(operationName)
+            ? "Unknown operation"
+            : operationName.Trim();
+        var safeErrorMessage = string.IsNullOrWhiteSpace(resultErrorMessage)
+            ? "No additional details were provided."
+            : resultErrorMessage.Trim();
+
+        return $"Database operation '{safeOperationName}' failed: {safeErrorMessage}";
+    }
+
+    private static string BuildDaoDialogTitle(string? operationName, Enum_ErrorSeverity severity)
+    {
+        var friendlyOperationName = BuildFriendlyOperationName(operationName);
+        if (string.IsNullOrWhiteSpace(friendlyOperationName))
+        {
+            return GetDialogTitle(severity);
+        }
+
+        return severity switch
+        {
+            Enum_ErrorSeverity.Info => friendlyOperationName,
+            Enum_ErrorSeverity.Warning => friendlyOperationName,
+            _ => $"Unable to {friendlyOperationName.ToLowerInvariant()}",
+        };
+    }
+
+    private static string BuildDaoDialogMessage(string? resultErrorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(resultErrorMessage))
+        {
+            return "The database request could not be completed.";
+        }
+
+        return resultErrorMessage.Trim();
+    }
+
+    private static string BuildFriendlyOperationName(string? operationName)
+    {
+        if (string.IsNullOrWhiteSpace(operationName))
+        {
+            return string.Empty;
+        }
+
+        var trimmedOperationName = operationName.Trim();
+        if (trimmedOperationName.EndsWith("Async", StringComparison.Ordinal))
+        {
+            trimmedOperationName = trimmedOperationName[..^5];
+        }
+
+        trimmedOperationName = trimmedOperationName.Replace('_', ' ');
+        trimmedOperationName = PascalCaseWordBoundaryRegex.Replace(trimmedOperationName, " $1");
+
+        return MultiWhitespaceRegex.Replace(trimmedOperationName, " ").Trim();
     }
 }

@@ -50,12 +50,30 @@ public interface IService_Tool_OutsideServiceHistory
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorAsync(string vendorId);
 
     /// <summary>
+    /// Returns distinct part numbers serviced across multiple vendor IDs that share the same vendor name.
+    /// </summary>
+    /// <param name="vendorIds">Vendor IDs selected through aggregated vendor-name mode.</param>
+    Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetPartsByVendorsAsync(
+        IReadOnlyList<string> vendorIds
+    );
+
+    /// <summary>
     /// Retrieves outside service dispatch history filtered by both vendor ID and part number.
     /// </summary>
     /// <param name="vendorId">The vendor ID selected by the user.</param>
     /// <param name="partNumber">The part number selected from the vendor's parts list.</param>
     Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorAndPartAsync(
         string vendorId,
+        string partNumber
+    );
+
+    /// <summary>
+    /// Retrieves outside service dispatch history filtered by a set of vendor IDs and a part number.
+    /// </summary>
+    /// <param name="vendorIds">Vendor IDs selected through aggregated vendor-name mode.</param>
+    /// <param name="partNumber">The part number selected from the vendor's parts list.</param>
+    Task<Model_Dao_Result<List<Model_OutsideServiceHistory>>> GetHistoryByVendorsAndPartAsync(
+        IReadOnlyList<string> vendorIds,
         string partNumber
     );
 }

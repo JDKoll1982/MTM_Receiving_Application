@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, package-type updates for Manual Mode rows, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence while excluding same-location matches from review and falling back to WC when history proves work-center transfer plus full adjustment-out, a resized reconciliation review modal that presents proposed changes more cleanly before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, a Guided Mode recommended-locations card driven by current InforVisual stock evidence and the user ignore list, package-type updates for Manual Mode rows, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence while excluding same-location matches from review and falling back to WC when history proves work-center transfer plus full adjustment-out, a resized reconciliation review modal that presents proposed changes more cleanly before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review and recommendation display, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -126,6 +126,7 @@
       "Mode-specific startup routing",
       "Help text",
       "Manual Mode location textbox",
+      "Guided recommended locations card",
       "Manual Mode package type button",
       "Manual Mode package type dialog",
       "Review area",
@@ -177,6 +178,7 @@
       "Unsaved-state reset behavior",
       "Default mode startup behavior",
       "Navigation clarity",
+      "Guided-step focus restoration",
       "Save-path stability"
     ],
     "testScenarios": [
@@ -209,6 +211,7 @@
       "Manual Mode part and PO matching behavior",
       "Manual Mode package type dialog behavior",
       "Manual Mode location textbox behavior",
+      "Guided recommended-location suggestions",
       "Review and save expectations"
     ],
     "validationHints": [
@@ -227,6 +230,8 @@
       "Confirm the final reconciliation summary shows saved, ignored, unchanged, and needs-attention counts",
       "Confirm guided and manual PO-assisted part lists now order active dated lines by expected receive date, then active undated lines, then lines whose received quantity exceeds 75 percent of ordered quantity",
       "Confirm workflow step and status updates still refresh the UI correctly after repeated navigation between receiving views",
+      "Confirm guided Back and Next navigation restores focus to the intended first field on PO Entry, Load Entry, Weight & Quantity, Heat & Lot, and Package Type",
+      "Confirm the Guided Mode Enter Load Information step shows current-stock recommended locations while excluding WC, NCM, FG, RECV, and user-ignored locations",
       "Confirm guided and manual step lists still repopulate correctly after whole-collection replacement during navigation",
       "Confirm Manual Mode part-first matching only changes Manual Mode behavior",
       "Confirm Manual Mode location editing stays textbox-based in all cases",

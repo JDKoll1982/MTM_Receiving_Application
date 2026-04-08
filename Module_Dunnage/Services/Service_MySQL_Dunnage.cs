@@ -9,6 +9,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
@@ -292,11 +293,21 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 var partsResult = await _daoDunnagePart.GetByTypeAsync(typeId);
                 if (partsResult.IsSuccess && partsResult.Data?.Count > 0)
                 {
+                    var partCount = partsResult.Data.Count;
+                    var usageText =
+                        partCount == 1
+                            ? "1 part still uses it."
+                            : $"{partCount} parts still use it.";
+                    var followUpText =
+                        partCount == 1
+                            ? "Reassign or delete that part first."
+                            : "Reassign or delete those parts first.";
+
                     await _logger.LogWarningAsync(
-                        $"Cannot delete dunnage type ID {typeId}: Used by {partsResult.Data.Count} parts"
+                        $"Cannot delete dunnage type ID {typeId}: Used by {partCount} parts"
                     );
                     return Model_Dao_Result_Factory.Failure(
-                        $"Cannot delete type. It is used by {partsResult.Data.Count} parts."
+                        $"This type can't be deleted because {usageText} {followUpText}"
                     );
                 }
 
@@ -310,7 +321,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     return deleteSpecsResult;
                 }
 
-                var result = await _daoDunnageType.DeleteAsync(typeId);
+                var result = await _daoDunnageType.DeleteAsync(typeId, CurrentUser);
                 if (result.IsSuccess)
                 {
                     await _imageStorage.DeleteImageAsync(
@@ -821,6 +832,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
+                var transactionCountResult = await _daoDunnagePart.CountTransactionsAsync(partId);
+                if (transactionCountResult.IsSuccess && transactionCountResult.Data > 0)
+                {
+                    await _logger.LogWarningAsync(
+                        $"Cannot delete dunnage part '{partId}': used by {transactionCountResult.Data} history record(s)"
+                    );
+
+                    return Model_Dao_Result_Factory.Failure(
+                        BuildDeletePartBlockedMessage(partId, transactionCountResult.Data)
+                    );
+                }
+
                 var deleteResult = await _daoDunnagePart.DeleteAsync(existingPartResult.Data.Id);
                 if (deleteResult.IsSuccess)
                 {
@@ -828,6 +851,16 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 return deleteResult;
+            }
+            catch (MySqlException ex) when (IsPartDeleteConstraintFailure(ex))
+            {
+                await _logger.LogWarningAsync(
+                    $"DeletePartAsync blocked by foreign key constraint for part '{partId}': {ex.Message}"
+                );
+
+                return Model_Dao_Result_Factory.Failure(
+                    BuildDeletePartBlockedMessage(partId, null)
+                );
             }
             catch (Exception ex)
             {
@@ -839,6 +872,30 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure($"Error deleting part: {ex.Message}");
             }
+        }
+
+        private static bool IsPartDeleteConstraintFailure(MySqlException ex)
+        {
+            return ex.Message.Contains(
+                    "FK_dunnage_history_part_id",
+                    StringComparison.OrdinalIgnoreCase
+                )
+                || ex.Message.Contains(
+                    "Cannot delete or update a parent row",
+                    StringComparison.OrdinalIgnoreCase
+                );
+        }
+
+        private static string BuildDeletePartBlockedMessage(string partId, int? historyRecordCount)
+        {
+            var countText = historyRecordCount switch
+            {
+                1 => "1 Dunnage history record",
+                > 1 => $"{historyRecordCount.Value} Dunnage history records",
+                _ => "existing Dunnage history",
+            };
+
+            return $"Part '{partId}' can't be deleted because it is referenced by {countText}. Remove or reassign those history records first.";
         }
 
         public async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(

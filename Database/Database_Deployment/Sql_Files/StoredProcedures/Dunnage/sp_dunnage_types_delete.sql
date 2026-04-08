@@ -45,7 +45,7 @@ BEGIN
         -- Check if dunnage type is in use by any parts
         SELECT COUNT(*) INTO v_parts_count
         FROM dunnage_parts
-        WHERE dunnage_type_id = p_id;
+        WHERE type_id = p_id;
 
         IF v_parts_count > 0 THEN
             SET p_status = -1;

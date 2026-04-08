@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using System.Text.Json;
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
@@ -64,6 +65,40 @@ public sealed class Dao_DunnageLabelDataTests
         load.PartSkidSequence.Should().Be(2);
         load.PartSkidTotal.Should().Be(5);
         load.LabelNumber.Should().Be("LBL-9");
+        load.SpecValues.Should().NotBeNull();
+        load.SpecValues!.Should().ContainKey("Width");
+        load.SpecValues["Width"].ToString().Should().Be("10");
+    }
+
+    [Fact]
+    public void BuildSpecsJson_ShouldSerializeSpecValues_WhenPresent()
+    {
+        var load = new Model_DunnageLoad
+        {
+            SpecValues = new Dictionary<string, object> { ["Length"] = 48, ["Stackable"] = true },
+        };
+
+        var json = InvokeBuildSpecsJson(load);
+
+        json.Should().NotBeNullOrWhiteSpace();
+        using var document = JsonDocument.Parse(json!);
+        document.RootElement.GetProperty("Length").GetInt32().Should().Be(48);
+        document.RootElement.GetProperty("Stackable").GetBoolean().Should().BeTrue();
+    }
+
+    [Fact]
+    public void BuildSpecsJson_ShouldFallBackToSpecs_WhenSpecValuesMissing()
+    {
+        var load = new Model_DunnageLoad
+        {
+            Specs = new Dictionary<string, object> { ["Color"] = "Blue" },
+        };
+
+        var json = InvokeBuildSpecsJson(load);
+
+        json.Should().NotBeNullOrWhiteSpace();
+        using var document = JsonDocument.Parse(json!);
+        document.RootElement.GetProperty("Color").GetString().Should().Be("Blue");
     }
 
     private static List<Model_DunnageLoad> InvokeOrderLoadsAndAssignPartSkidCounters(
@@ -79,6 +114,19 @@ public sealed class Dao_DunnageLabelDataTests
 
         var result = methodInfo!.Invoke(null, new object[] { loads });
         return result.Should().BeOfType<List<Model_DunnageLoad>>().Subject;
+    }
+
+    private static string? InvokeBuildSpecsJson(Model_DunnageLoad load)
+    {
+        var methodInfo = typeof(Dao_DunnageLabelData).GetMethod(
+            "BuildSpecsJson",
+            BindingFlags.Static | BindingFlags.NonPublic
+        );
+
+        methodInfo.Should().NotBeNull();
+
+        var result = methodInfo!.Invoke(null, new object[] { load });
+        return result as string;
     }
 
     private static IDataReader CreateActiveLabelReader()

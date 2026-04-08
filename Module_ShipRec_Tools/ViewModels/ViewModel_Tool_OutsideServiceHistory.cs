@@ -48,6 +48,10 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     private string _searchTerm = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanAggregateVendorNames))]
+    private bool _aggregateVendorNames;
+
+    [ObservableProperty]
     private ObservableCollection<Model_OutsideServiceHistory> _results = new();
 
     private List<Model_OutsideServiceHistory> _allResults = new();
@@ -72,6 +76,8 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
     /// whenever new results are loaded or the search is cleared.
     /// </summary>
     public Action? ResetSortIndicators { get; set; }
+
+    public bool CanAggregateVendorNames => IsSearchByVendor;
 
     // ─── Constructor ────────────────────────────────────────────────────────
 
@@ -137,6 +143,10 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             }
 
             var candidates = fuzzyResult.Data;
+            if (IsSearchByVendor && AggregateVendorNames)
+            {
+                candidates = AggregateVendorCandidates(candidates);
+            }
 
             if (candidates.Count == 0)
             {
@@ -233,10 +243,23 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
 
     private async Task LoadHistoryByVendorAsync(Model_FuzzySearchResult confirmedVendor)
     {
+        var vendorIds = ParseVendorIds(confirmedVendor.Key);
+        if (vendorIds.Count == 0)
+        {
+            ShowStatus(
+                "No vendor ID was available for the selected vendor.",
+                InfoBarSeverity.Warning
+            );
+            return;
+        }
+
         // Step 3 (vendor mode): fetch all distinct parts that vendor has serviced
         ShowStatus($"Loading parts serviced by '{confirmedVendor.Label}'…");
 
-        var partsResult = await _service.GetPartsByVendorAsync(confirmedVendor.Key);
+        var partsResult =
+            vendorIds.Count == 1
+                ? await _service.GetPartsByVendorAsync(vendorIds[0])
+                : await _service.GetPartsByVendorsAsync(vendorIds);
 
         if (!partsResult.IsSuccess || partsResult.Data is null)
         {
@@ -290,10 +313,10 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             $"Loading dispatch history for {selectedPart.Label} at {confirmedVendor.Label}…"
         );
 
-        var historyResult = await _service.GetHistoryByVendorAndPartAsync(
-            confirmedVendor.Key,
-            selectedPart.Key
-        );
+        var historyResult =
+            vendorIds.Count == 1
+                ? await _service.GetHistoryByVendorAndPartAsync(vendorIds[0], selectedPart.Key)
+                : await _service.GetHistoryByVendorsAndPartAsync(vendorIds, selectedPart.Key);
 
         if (!historyResult.IsSuccess || historyResult.Data is null)
         {
@@ -331,6 +354,53 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         ResetSortIndicators?.Invoke();
         ReplaceResults(Array.Empty<Model_OutsideServiceHistory>());
         ShowStatus($"Enter a {(IsSearchByPartMode ? "part number" : "vendor name")} to search.");
+    }
+
+    private static List<Model_FuzzySearchResult> AggregateVendorCandidates(
+        IReadOnlyList<Model_FuzzySearchResult> candidates
+    )
+    {
+        return candidates
+            .Where(static candidate => string.IsNullOrWhiteSpace(candidate.Label) is false)
+            .GroupBy(static candidate => candidate.Label.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
+            {
+                var vendorIds = group
+                    .Select(static candidate => candidate.Key?.Trim() ?? string.Empty)
+                    .Where(static key => string.IsNullOrWhiteSpace(key) is false)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                var locationDetails = group
+                    .Select(static candidate => candidate.Detail?.Trim())
+                    .Where(static detail => string.IsNullOrWhiteSpace(detail) is false)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Take(2)
+                    .ToList();
+
+                var detailPrefix =
+                    vendorIds.Count == 1 ? "1 vendor ID" : $"{vendorIds.Count} vendor IDs";
+                var detailSuffix =
+                    locationDetails.Count == 0
+                        ? string.Empty
+                        : $" — {string.Join("; ", locationDetails)}";
+
+                return new Model_FuzzySearchResult
+                {
+                    Key = string.Join("|", vendorIds),
+                    Label = group.First().Label,
+                    Detail = detailPrefix + detailSuffix,
+                };
+            })
+            .OrderBy(static candidate => candidate.Label, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static List<string> ParseVendorIds(string? vendorKey)
+    {
+        return (vendorKey ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     // ─── Sorting ──────────────────────────────────────────────────────────────

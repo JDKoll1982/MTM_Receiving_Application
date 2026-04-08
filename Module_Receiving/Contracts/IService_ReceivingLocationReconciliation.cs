@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -9,6 +11,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts;
 /// </summary>
 public interface IService_ReceivingLocationReconciliation
 {
+    Task<Model_Dao_Result<List<Model_ReceivingRecommendedLocation>>> GetRecommendedLocationsAsync(
+        string poNumber,
+        string partId,
+        string? poLineNumber,
+        DateTime? receivedDate
+    );
+
     Task<Model_Dao_Result<Model_ReceivingLocationReconciliationSummary>> PreviewLocationsAsync(
         bool includeAllHistory
     );

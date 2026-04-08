@@ -535,9 +535,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public async Task<Model_SaveResult> SaveToDatabaseOnlyAsync()
         {
             var result = new Model_SaveResult();
+            var loadsToSave = CurrentSession.Loads.ToList();
 
             // Validate session
-            var validation = _validation.ValidateSession(CurrentSession.Loads);
+            var validation = _validation.ValidateSession(loadsToSave);
             if (!validation.IsValid)
             {
                 result.Success = false;
@@ -547,13 +548,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             try
             {
-                int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(
-                    CurrentSession.Loads
-                );
+                int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(loadsToSave);
 
                 if (_appSettings.GetUseInforVisualMockData())
                 {
-                    var mockTransactions = BuildMockReceivingTransactions(CurrentSession.Loads);
+                    var mockTransactions = BuildMockReceivingTransactions(loadsToSave);
                     var mockAppendResult = await _mockDataCatalog.AppendReceivingTransactionsAsync(
                         mockTransactions
                     );
@@ -571,10 +570,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                 result.DatabaseSuccess = true;
                 result.LoadsSaved = savedCount;
-                if (savedCount < CurrentSession.Loads.Count)
+                if (savedCount < loadsToSave.Count)
                 {
                     result.Warnings.Add(
-                        $"{CurrentSession.Loads.Count - savedCount} load(s) were already in the database and were skipped."
+                        $"{loadsToSave.Count - savedCount} load(s) were already in the database and were skipped."
                     );
                 }
                 result.Success = true;

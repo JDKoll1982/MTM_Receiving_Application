@@ -78,6 +78,7 @@
       "Confirm the fuzzy-search dialog filters results locally for Type, Part ID, and Location selection",
       "Confirm Save Changes persists the remaining edit-mode rows correctly whether the source is Current Labels or History",
       "Confirm removed rows are deleted from dunnage_label_data when Current Labels is the active source",
+      "Confirm removing every row from the current edit-mode working set still allows Save Changes to delete those rows instead of exiting silently",
       "Confirm Clear All Labels immediately clears the Current Labels edit grid when the active queue is archived",
       "Confirm the Columns modal includes the available dunnage_label_data fields, including hidden queue metadata columns plus newer home-location, inventory, skid, and modified-date fields",
       "Confirm Dunnage active-label and history rows retain part_skid_sequence and part_skid_total values after save, edit, and archive operations",

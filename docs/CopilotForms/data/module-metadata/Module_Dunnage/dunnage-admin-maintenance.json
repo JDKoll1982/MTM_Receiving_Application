@@ -81,7 +81,8 @@
       "Confirm part-specific specs reject duplicate names and reserved keys that collide with configured specs or Notes",
       "Confirm Quick Add Part and Edit Part render Choices specs as dropdowns using the configured array values",
       "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
-      "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions"
+      "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions",
+      "Confirm deleting a type or part that is still referenced shows a plain-language blocking message instead of a raw database or foreign-key error"
     ]
   }
 }

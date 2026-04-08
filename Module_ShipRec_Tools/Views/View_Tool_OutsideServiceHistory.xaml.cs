@@ -60,6 +60,23 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
         }
     }
 
+    private void ClearButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.IsSearchByVendor && ViewModel.SetSearchByPartCommand.CanExecute(null))
+        {
+            ViewModel.SetSearchByPartCommand.Execute(null);
+        }
+        else if (ViewModel.ClearCommand.CanExecute(null))
+        {
+            ViewModel.ClearCommand.Execute(null);
+        }
+
+        SearchBox.DispatcherQueue?.TryEnqueue(() =>
+        {
+            SearchBox.Focus(FocusState.Programmatic);
+        });
+    }
+
     // ─── Column Sorting ─────────────────────────────────────────────────
 
     private void ResultsGrid_Sorting(object sender, DataGridColumnEventArgs e)

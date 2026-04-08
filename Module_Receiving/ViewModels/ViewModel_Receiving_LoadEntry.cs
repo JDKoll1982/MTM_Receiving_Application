@@ -25,6 +25,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_ReceivingLocationReconciliation _locationReconciliationService;
 
         [ObservableProperty]
         private int _numberOfLoads = 1;
@@ -40,6 +41,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private bool _isMockLocationMode;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasRecommendedLocations))]
+        private ObservableCollection<Model_ReceivingRecommendedLocation> _recommendedLocations =
+            new();
+
+        [ObservableProperty]
+        private bool _isRecommendedLocationsLoading;
+
+        [ObservableProperty]
+        private string _recommendedLocationsMessage =
+            "Current stock recommendations appear after a guided part is selected.";
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
@@ -64,10 +77,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public bool IsLiveLocationMode => !IsMockLocationMode;
 
+        public bool HasRecommendedLocations => RecommendedLocations.Count > 0;
+
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_InforVisual inforVisualService,
+            IService_ReceivingLocationReconciliation locationReconciliationService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
@@ -80,6 +96,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService = workflowService;
             _validationService = validationService;
             _inforVisualService = inforVisualService;
+            _locationReconciliationService = locationReconciliationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
@@ -126,6 +143,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectedPartId = string.Empty;
             SelectedPartDescription = string.Empty;
             Location = string.Empty;
+            RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>();
+            RecommendedLocationsMessage =
+                "Current stock recommendations appear after a guided part is selected.";
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)
@@ -145,6 +165,67 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
 
                 Location = _workflowService.CurrentLocation;
+                _ = RefreshRecommendedLocationsAsync();
+            }
+        }
+
+        private async Task RefreshRecommendedLocationsAsync()
+        {
+            if (
+                _workflowService.CurrentPart is null
+                || string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber)
+            )
+            {
+                RecommendedLocations =
+                    new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                RecommendedLocationsMessage =
+                    "Current stock recommendations appear after a guided part is selected.";
+                return;
+            }
+
+            try
+            {
+                IsRecommendedLocationsLoading = true;
+                RecommendedLocationsMessage = "Looking up current stock locations...";
+
+                var recommendationResult =
+                    await _locationReconciliationService.GetRecommendedLocationsAsync(
+                        _workflowService.CurrentPONumber,
+                        _workflowService.CurrentPart.PartID,
+                        _workflowService.CurrentPart.POLineNumber,
+                        DateTime.Today
+                    );
+
+                if (!recommendationResult.IsSuccess || recommendationResult.Data is null)
+                {
+                    RecommendedLocations =
+                        new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                    RecommendedLocationsMessage = string.IsNullOrWhiteSpace(
+                        recommendationResult.ErrorMessage
+                    )
+                        ? "Recommended locations are unavailable right now."
+                        : recommendationResult.ErrorMessage;
+                    return;
+                }
+
+                RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>(
+                    recommendationResult.Data
+                );
+                RecommendedLocationsMessage =
+                    RecommendedLocations.Count == 0
+                        ? "No recommended locations were found after applying the default and user-configured ignore list."
+                        : $"{RecommendedLocations.Count} recommended location(s) found from current stock inventory.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading recommended locations: {ex.Message}", ex);
+                RecommendedLocations =
+                    new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                RecommendedLocationsMessage = "Recommended locations are unavailable right now.";
+            }
+            finally
+            {
+                IsRecommendedLocationsLoading = false;
             }
         }
 

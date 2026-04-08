@@ -2,7 +2,7 @@
   "id": "settings-receiving-configuration",
   "module": "Module_Settings.Receiving",
   "name": "Receiving Settings Configuration",
-  "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and user-scoped reconciliation preferences including the history-scope toggle, a validated ignored-location list, and a developer-only mock-data toggle backed by appsettings.",
+  "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and user-scoped reconciliation preferences including the history-scope toggle, a dedicated validated ignored-location card reused by Guided Mode recommendations and reconciliation, and a developer-only mock-data toggle backed by appsettings.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
@@ -64,7 +64,7 @@
       "Auto-padding preview",
       "Workflow option toggles",
       "Location reconciliation history-scope toggle",
-      "Ignored reconciliation locations list",
+      "Ignored recommended locations list",
       "Developer-only InforVisual mock-data toggle"
     ],
     "userActions": [
@@ -75,7 +75,7 @@
       "Add, edit, test, and remove auto-padding rules",
       "Change workflow startup and review-table behavior",
       "Choose whether location reconciliation checks only today’s history or all visible history",
-      "Add and remove validated reconciliation locations to ignore",
+      "Add and remove validated recommended and reconciliation locations to ignore",
       "Enable or disable InforVisual mock data when the signed-in user has Developer rights",
       "Save, reset, or cancel settings changes"
     ],
@@ -101,7 +101,7 @@
       "Confirm workflow option values still load, save, and reset through the shared settings facade",
       "Confirm the mock-data toggle is visible only for Developer users and persists to appsettings",
       "Confirm the location-reconciliation history-scope toggle still loads and saves correctly from User Preferences",
-      "Confirm ignored reconciliation locations validate like Receiving Load Entry locations and persist per user"
+      "Confirm ignored recommended locations validate like Receiving Load Entry locations and persist per user"
     ],
     "reviewFocusAreas": [
       "Correctness and regressions",

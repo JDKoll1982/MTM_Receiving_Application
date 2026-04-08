@@ -243,7 +243,9 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         return validation;
     }
 
-    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetIgnoredLocationSuggestionsAsync()
+    public async Task<
+        Model_Dao_Result<List<Model_FuzzySearchResult>>
+    > GetIgnoredLocationSuggestionsAsync()
     {
         if (string.IsNullOrWhiteSpace(PendingIgnoredLocation))
         {
@@ -303,7 +305,8 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         var trimmedLocation = location?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(trimmedLocation))
         {
-            message = "Enter a location to ignore before adding it to reconciliation preferences.";
+            message =
+                "Enter a location to ignore before adding it to recommended-location preferences.";
             return false;
         }
 
@@ -320,7 +323,8 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
 
         IgnoredReconciliationLocations.Add(trimmedLocation);
         PendingIgnoredLocation = string.Empty;
-        message = $"Location '{trimmedLocation}' will be ignored during reconciliation.";
+        message =
+            $"Location '{trimmedLocation}' will be ignored for recommended locations and reconciliation.";
         return true;
     }
 
@@ -335,7 +339,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         var locationToRemove = SelectedIgnoredLocation;
         IgnoredReconciliationLocations.Remove(locationToRemove);
         SelectedIgnoredLocation = null;
-        ShowStatus($"Removed '{locationToRemove}' from ignored reconciliation locations.");
+        ShowStatus($"Removed '{locationToRemove}' from ignored recommended locations.");
     }
 
     public void RefreshTestOutput()
@@ -528,8 +532,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         }
         catch
         {
-            return json
-                .Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+            return json.Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(location => location.Trim());
         }
     }

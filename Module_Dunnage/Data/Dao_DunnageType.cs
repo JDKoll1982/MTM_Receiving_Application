@@ -106,15 +106,52 @@ public class Dao_DunnageType
         );
     }
 
-    public virtual async Task<Model_Dao_Result> DeleteAsync(int id)
+    public virtual async Task<Model_Dao_Result> DeleteAsync(int id, string user)
     {
-        var parameters = new Dictionary<string, object> { { "id", id } };
+        var pStatus = new MySqlParameter("@p_status", MySqlDbType.Int32)
+        {
+            Direction = ParameterDirection.Output,
+        };
+        var pErrorMessage = new MySqlParameter("@p_error_msg", MySqlDbType.VarChar, 500)
+        {
+            Direction = ParameterDirection.Output,
+        };
 
-        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            _connectionString,
+        var parameters = new MySqlParameter[]
+        {
+            new MySqlParameter("@p_id", id),
+            new MySqlParameter("@p_modified_by", user),
+            pStatus,
+            pErrorMessage,
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteAsync(
             "sp_dunnage_types_delete",
-            parameters
+            parameters,
+            _connectionString
         );
+
+        if (!result.IsSuccess)
+        {
+            return result;
+        }
+
+        var status =
+            pStatus.Value is null || pStatus.Value == DBNull.Value
+                ? 0
+                : Convert.ToInt32(pStatus.Value);
+        var errorMessage =
+            pErrorMessage.Value == DBNull.Value
+                ? string.Empty
+                : pErrorMessage.Value?.ToString() ?? string.Empty;
+
+        return status > 0
+            ? Model_Dao_Result_Factory.Success(result.AffectedRows)
+            : Model_Dao_Result_Factory.Failure(
+                string.IsNullOrWhiteSpace(errorMessage)
+                    ? "Unable to delete dunnage type."
+                    : errorMessage
+            );
     }
 
     public virtual async Task<Model_Dao_Result<int>> CountPartsAsync(int typeId)

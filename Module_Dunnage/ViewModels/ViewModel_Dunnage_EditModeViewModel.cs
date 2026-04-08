@@ -790,8 +790,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SaveAllAsync()
     {
-        if (_allLoads.Count == 0)
+        if (!HasRowsOrPendingRemovals())
         {
+            StatusMessage = "No changes to save";
             return;
         }
 
@@ -1003,6 +1004,11 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             _allLoads.Count == 0 || _allLoads.All(HasValidRequiredSelections);
 
         CanSave = hasValidRemainingRows && (GetEditedLoads().Count > 0 || _removedLoads.Count > 0);
+    }
+
+    private bool HasRowsOrPendingRemovals()
+    {
+        return _allLoads.Count > 0 || _removedLoads.Count > 0;
     }
 
     private static bool HasValidRequiredSelections(Model_DunnageLoad load)

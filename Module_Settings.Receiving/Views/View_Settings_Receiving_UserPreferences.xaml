@@ -3,62 +3,53 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls"
-    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Receiving.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
->
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Receiving.ViewModels">
     <ScrollViewer>
         <Grid Padding="24">
-            <StackPanel HorizontalAlignment="Center" Width="960" Spacing="20">
-                <!-- Enable/Disable Card -->
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <!--  Enable/Disable Card  -->
                 <Border
                     Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Part Number Auto-Padding" />
                             <TextBlock
-                                Text="Part Number Auto-Padding"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                            />
-                            <TextBlock
-                                Text="Automatically format part numbers based on prefix patterns"
-                                Style="{StaticResource CaptionTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Automatically format part numbers based on prefix patterns" />
                         </StackPanel>
 
                         <ToggleSwitch
                             Header="Enable Auto-Padding"
                             IsOn="{x:Bind ViewModel.IsPaddingEnabled, Mode=TwoWay}"
                             OffContent="Disabled - Part numbers will not be auto-formatted"
-                            OnContent="Enabled - Part numbers will be formatted on entry"
-                        />
+                            OnContent="Enabled - Part numbers will be formatted on entry" />
                     </StackPanel>
                 </Border>
 
-                <!-- Padding Rules Card -->
+                <!--  Padding Rules Card  -->
                 <Border
                     Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Padding Rules" />
                             <TextBlock
-                                Text="Padding Rules"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                            />
-                            <TextBlock
-                                Text="Configure prefix patterns to auto-format part numbers"
-                                Style="{StaticResource CaptionTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                TextWrapping="Wrap"
-                            />
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Configure prefix patterns to auto-format part numbers"
+                                TextWrapping="Wrap" />
                         </StackPanel>
 
                         <Grid ColumnSpacing="20">
@@ -67,20 +58,18 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Rules List -->
+                            <!--  Rules List  -->
                             <StackPanel Grid.Column="0" Spacing="12">
                                 <Border
+                                    Height="280"
                                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="4"
-                                    Height="280"
-                                >
+                                    CornerRadius="4">
                                     <ListView
                                         ItemsSource="{x:Bind ViewModel.PrefixRules, Mode=OneWay}"
                                         SelectedItem="{x:Bind ViewModel.SelectedRule, Mode=TwoWay}"
-                                        SelectionMode="Single"
-                                    >
+                                        SelectionMode="Single">
                                         <ListView.ItemTemplate>
                                             <DataTemplate x:DataType="models:Model_PartNumberPrefixRule">
                                                 <Grid Padding="12,8" ColumnSpacing="8">
@@ -91,19 +80,14 @@
 
                                                     <StackPanel Grid.Column="0" Spacing="2">
                                                         <TextBlock
-                                                            Text="{x:Bind Name, Mode=OneWay}"
-                                                            FontWeight="SemiBold"
                                                             FontSize="14"
-                                                        />
+                                                            FontWeight="SemiBold"
+                                                            Text="{x:Bind Name, Mode=OneWay}" />
                                                         <TextBlock
-                                                            Text="{x:Bind Prefix, Mode=OneWay}"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
                                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                        />
-                                                        <TextBlock
                                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                        >
+                                                            Text="{x:Bind Prefix, Mode=OneWay}" />
+                                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}">
                                                             <Run Text="Length:" />
                                                             <Run Text="{x:Bind MaxLength, Mode=OneWay}" />
                                                             <Run Text=" • Pad:" />
@@ -111,15 +95,14 @@
                                                         </TextBlock>
                                                     </StackPanel>
 
-                                                    <!-- Status indicator - green when enabled, red when disabled -->
+                                                    <!--  Status indicator - green when enabled, red when disabled  -->
                                                     <Ellipse
                                                         Grid.Column="1"
                                                         Width="8"
                                                         Height="8"
                                                         VerticalAlignment="Center"
                                                         Fill="{x:Bind StatusColor, Mode=OneWay}"
-                                                        ToolTipService.ToolTip="{x:Bind StatusTooltip, Mode=OneWay}"
-                                                    />
+                                                        ToolTipService.ToolTip="{x:Bind StatusTooltip, Mode=OneWay}" />
                                                 </Grid>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
@@ -134,94 +117,81 @@
 
                                     <Button
                                         Grid.Column="0"
-                                        Command="{x:Bind ViewModel.AddRuleCommand}"
                                         HorizontalAlignment="Stretch"
-                                    >
+                                        Command="{x:Bind ViewModel.AddRuleCommand}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon Glyph="&#xE710;" FontSize="14" />
+                                            <FontIcon FontSize="14" Glyph="&#xE710;" />
                                             <TextBlock Text="Add" />
                                         </StackPanel>
                                     </Button>
 
                                     <Button
                                         Grid.Column="1"
-                                        Command="{x:Bind ViewModel.RemoveRuleCommand}"
                                         HorizontalAlignment="Stretch"
-                                    >
+                                        Command="{x:Bind ViewModel.RemoveRuleCommand}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon Glyph="&#xE74D;" FontSize="14" />
+                                            <FontIcon FontSize="14" Glyph="&#xE74D;" />
                                             <TextBlock Text="Remove" />
                                         </StackPanel>
                                     </Button>
                                 </Grid>
                             </StackPanel>
 
-                            <!-- Rule Editor -->
+                            <!--  Rule Editor  -->
                             <Border
                                 Grid.Column="1"
                                 Padding="20"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4"
-                            >
+                                CornerRadius="4">
                                 <StackPanel Spacing="16">
                                     <StackPanel Spacing="4">
                                         <TextBlock
-                                            Text="Rule Configuration"
-                                            Style="{StaticResource BodyStrongTextBlockStyle}"
                                             FontSize="16"
-                                        />
+                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                            Text="Rule Configuration" />
                                         <TextBlock
                                             x:Name="NoSelectionText"
-                                            Text="← Select a rule to edit"
-                                            Style="{StaticResource CaptionTextBlockStyle}"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        />
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="← Select a rule to edit" />
                                     </StackPanel>
 
                                     <StackPanel
                                         x:Name="RuleEditorFields"
                                         Spacing="16"
-                                        Visibility="Collapsed"
-                                    >
+                                        Visibility="Collapsed">
                                         <TextBox
                                             x:Name="NameTextBox"
+                                            Description="Friendly name shown in the auto-padding rule list"
                                             Header="Name"
                                             PlaceholderText="e.g., Coil, Flatstock"
-                                            Description="Friendly name shown in the auto-padding rule list"
-                                            TextChanged="NameTextBox_TextChanged"
-                                        />
+                                            TextChanged="NameTextBox_TextChanged" />
 
                                         <TextBox
                                             x:Name="PrefixTextBox"
+                                            Description="Part numbers starting with this text will be formatted"
                                             Header="Prefix"
                                             PlaceholderText="e.g., MMC, MMF, PART-"
-                                            Description="Part numbers starting with this text will be formatted"
-                                            TextChanged="PrefixTextBox_TextChanged"
-                                        />
+                                            TextChanged="PrefixTextBox_TextChanged" />
 
                                         <NumberBox
                                             x:Name="MaxLengthNumberBox"
-                                            Header="Maximum Length"
                                             Description="Total characters after padding (includes prefix)"
-                                            Minimum="1"
+                                            Header="Maximum Length"
                                             Maximum="50"
+                                            Minimum="1"
                                             SpinButtonPlacementMode="Inline"
-                                            ValueChanged="MaxLengthNumberBox_ValueChanged"
-                                        />
+                                            ValueChanged="MaxLengthNumberBox_ValueChanged" />
 
                                         <StackPanel Spacing="8">
-                                            <TextBlock
-                                                Text="Padding Character"
-                                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                            />
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Padding Character" />
                                             <ComboBox
                                                 x:Name="PadCharComboBox"
-                                                SelectedIndex="0"
                                                 HorizontalAlignment="Stretch"
-                                                SelectionChanged="PadCharComboBox_SelectionChanged"
-                                            >
+                                                SelectedIndex="0"
+                                                SelectionChanged="PadCharComboBox_SelectionChanged">
                                                 <ComboBoxItem Content="0 (Zero)" Tag="0" />
                                                 <ComboBoxItem Content="Space" Tag=" " />
                                                 <ComboBoxItem Content="_ (Underscore)" Tag="_" />
@@ -230,21 +200,19 @@
                                         </StackPanel>
 
                                         <Border
-                                            Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
                                             Padding="12"
-                                            CornerRadius="4"
-                                        >
+                                            Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
+                                            CornerRadius="4">
                                             <StackPanel Spacing="4">
                                                 <TextBlock
-                                                    Text="Example"
-                                                    FontWeight="SemiBold"
                                                     FontSize="12"
-                                                />
+                                                    FontWeight="SemiBold"
+                                                    Text="Example" />
                                                 <TextBlock Style="{StaticResource CaptionTextBlockStyle}">
                                                     <Run Text="Input:" />
-                                                    <Run Text="MMC1000" FontWeight="SemiBold" />
+                                                    <Run FontWeight="SemiBold" Text="MMC1000" />
                                                     <Run Text="→ Output:" />
-                                                    <Run Text="MMC0001000" FontWeight="SemiBold" />
+                                                    <Run FontWeight="SemiBold" Text="MMC0001000" />
                                                 </TextBlock>
                                             </StackPanel>
                                         </Border>
@@ -254,8 +222,7 @@
                                             Header="Enable This Rule"
                                             OffContent="Rule disabled"
                                             OnContent="Rule enabled"
-                                            Toggled="IsEnabledToggle_Toggled"
-                                        />
+                                            Toggled="IsEnabledToggle_Toggled" />
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -268,27 +235,45 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Location Reconciliation Preferences" />
                             <TextBlock
-                                Text="Location Reconciliation Preferences"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                            />
-                            <TextBlock
-                                Text="Keep reconciliation options together and manage any InforVisual locations you never want applied automatically. Added locations are validated the same way as Receiving Load Entry locations."
-                                Style="{StaticResource CaptionTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                TextWrapping="Wrap"
-                            />
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Keep reconciliation options together. Additional ignored locations for recommendations and reconciliation are managed in the next card."
+                                TextWrapping="Wrap" />
                         </StackPanel>
 
                         <ToggleSwitch
                             Header="Validate All History During Reconciliation"
-                            ToolTipService.ToolTip="When turned on, the InforVisual location reconciliation action checks all visible receiving history rows instead of only today and Current Labels."
                             IsOn="{x:Bind ViewModel.ValidateAllHistoryForLocationReconciliation, Mode=TwoWay}"
-                        />
+                            ToolTipService.ToolTip="When turned on, the InforVisual location reconciliation action checks all visible receiving history rows instead of only today and Current Labels." />
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Ignored locations affect both the Recommended Locations card in Guided Receiving and the reconciliation review flow."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Ignored Recommended Locations" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="WC, NCM, FG, and RECV are always excluded automatically. Add any extra InforVisual locations you never want suggested in Recommended Locations or auto-applied during reconciliation."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
@@ -299,82 +284,73 @@
                             <TextBox
                                 x:Name="IgnoredLocationTextBox"
                                 Grid.Column="0"
-                                Header="Ignored Reconciliation Locations"
-                                PlaceholderText="Enter a location to exclude from reconciliation"
-                                Text="{x:Bind ViewModel.PendingIgnoredLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Header="Additional Ignored Locations"
                                 LostFocus="IgnoredLocationTextBox_LostFocus"
-                            />
+                                PlaceholderText="Enter a location to exclude from recommendations"
+                                Text="{x:Bind ViewModel.PendingIgnoredLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                             <Button
                                 Grid.Column="1"
-                                VerticalAlignment="Bottom"
-                                Click="AddIgnoredLocationButton_Click"
                                 MinWidth="120"
-                            >
+                                VerticalAlignment="Bottom"
+                                Click="AddIgnoredLocationButton_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xE710;" FontSize="14" />
+                                    <FontIcon FontSize="14" Glyph="&#xE710;" />
                                     <TextBlock Text="Add Location" />
                                 </StackPanel>
                             </Button>
                         </Grid>
 
                         <TextBlock
-                            Text="If the location is not an exact match, you will be prompted to choose a fuzzy-match result just like the Receiving Load Entry location field."
-                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            TextWrapping="Wrap"
-                        />
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="If the location is not an exact match, you will be prompted to choose a fuzzy-match result just like the Receiving Load Entry location field."
+                            TextWrapping="Wrap" />
 
                         <Border
+                            MinHeight="140"
                             Background="{ThemeResource LayerFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            CornerRadius="4"
-                            MinHeight="140"
-                        >
+                            CornerRadius="4">
                             <ListView
                                 ItemsSource="{x:Bind ViewModel.IgnoredReconciliationLocations, Mode=OneWay}"
                                 SelectedItem="{x:Bind ViewModel.SelectedIgnoredLocation, Mode=TwoWay}"
-                                SelectionMode="Single"
-                            />
+                                SelectionMode="Single" />
                         </Border>
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
-                            <Button
-                                Content="Remove Selected"
-                                Command="{x:Bind ViewModel.RemoveIgnoredLocationCommand}"
-                            />
+                        <StackPanel
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <Button Command="{x:Bind ViewModel.RemoveIgnoredLocationCommand}" Content="Remove Selected" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Test Padding Card -->
+                <!--  Test Padding Card  -->
                 <Border
                     Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <FontIcon
-                                    Glyph="&#xE8CB;"
                                     FontSize="20"
                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                />
+                                    Glyph="&#xE8CB;" />
                                 <TextBlock
-                                    Text="Test Padding"
-                                    Style="{StaticResource SubtitleTextBlockStyle}"
                                     VerticalAlignment="Center"
-                                />
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="Test Padding" />
                             </StackPanel>
                             <TextBlock
-                                Text="Preview how part numbers will be formatted"
-                                Style="{StaticResource CaptionTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Preview how part numbers will be formatted" />
                         </StackPanel>
 
                         <Grid ColumnSpacing="16">
@@ -386,72 +362,64 @@
 
                             <Border
                                 Grid.Column="0"
+                                Padding="12"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4"
-                                Padding="12"
-                            >
+                                CornerRadius="4">
                                 <StackPanel Spacing="8">
                                     <TextBlock
-                                        Text="Input"
-                                        FontWeight="SemiBold"
                                         FontSize="12"
+                                        FontWeight="SemiBold"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    />
+                                        Text="Input" />
                                     <TextBox
-                                        Text="{x:Bind ViewModel.TestInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        PlaceholderText="e.g., MMC1000"
-                                        BorderThickness="0"
                                         Background="Transparent"
-                                    />
+                                        BorderThickness="0"
+                                        PlaceholderText="e.g., MMC1000"
+                                        Text="{x:Bind ViewModel.TestInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                             </Border>
 
                             <FontIcon
                                 Grid.Column="1"
-                                Glyph="&#xE72A;"
-                                FontSize="24"
                                 VerticalAlignment="Center"
+                                FontSize="24"
                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                            />
+                                Glyph="&#xE72A;" />
 
                             <Border
                                 Grid.Column="2"
+                                Padding="12"
                                 Background="{ThemeResource AccentFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4"
-                                Padding="12"
-                            >
+                                CornerRadius="4">
                                 <StackPanel Spacing="8">
                                     <TextBlock
-                                        Text="Output"
-                                        FontWeight="SemiBold"
                                         FontSize="12"
+                                        FontWeight="SemiBold"
                                         Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-                                    />
+                                        Text="Output" />
                                     <TextBlock
-                                        Text="{x:Bind ViewModel.TestOutput, Mode=OneWay}"
                                         FontSize="16"
                                         FontWeight="SemiBold"
                                         Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-                                        TextWrapping="NoWrap"
-                                    />
+                                        Text="{x:Bind ViewModel.TestOutput, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
                                 </StackPanel>
                             </Border>
                         </Grid>
                     </StackPanel>
                 </Border>
 
-                <!-- Save Button Card -->
+                <!--  Save Button Card  -->
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -460,34 +428,30 @@
 
                         <Button
                             Grid.Column="0"
-                            Command="{x:Bind ViewModel.SaveCommand}"
-                            Style="{StaticResource AccentButtonStyle}"
                             MinWidth="140"
-                        >
+                            Command="{x:Bind ViewModel.SaveCommand}"
+                            Style="{StaticResource AccentButtonStyle}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE74E;" FontSize="16" />
+                                <FontIcon FontSize="16" Glyph="&#xE74E;" />
                                 <TextBlock Text="Save Settings" />
                             </StackPanel>
                         </Button>
 
                         <StackPanel
                             Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="12"
-                            VerticalAlignment="Center"
                             Margin="16,0,0,0"
-                        >
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
                             <ProgressRing
-                                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                 Width="20"
                                 Height="20"
-                            />
+                                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
                             <TextBlock
-                                Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                                 VerticalAlignment="Center"
-                                Style="{StaticResource CaptionTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
                         </StackPanel>
                     </Grid>
                 </Border>

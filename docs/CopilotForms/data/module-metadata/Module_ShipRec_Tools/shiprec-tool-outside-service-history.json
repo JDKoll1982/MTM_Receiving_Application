@@ -2,7 +2,7 @@
   "id": "shiprec-tool-outside-service-history",
   "module": "Module_ShipRec_Tools",
   "name": "Outside Service History Lookup",
-  "summary": "Read-only Infor Visual lookup tool for outside service provider dispatch history with part or vendor search, fuzzy selection, and sortable results.",
+  "summary": "Read-only Infor Visual lookup tool for outside service provider dispatch history with part or vendor search, optional in-memory aggregation of duplicate vendor names, fuzzy selection, sortable results, and clear-action refocus back to the part search field.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_OutsideServiceHistory.cs",
@@ -30,22 +30,13 @@
       "Vendor search",
       "Dispatch history review"
     ],
-    "screens": [
-      "View_Tool_OutsideServiceHistory.xaml"
-    ],
-    "currentUiPatterns": [
-      "Search form",
-      "Toggle filter",
-      "Results grid"
-    ],
-    "desiredUiPatterns": [
-      "Search form",
-      "Results grid",
-      "Split layout"
-    ],
+    "screens": ["View_Tool_OutsideServiceHistory.xaml"],
+    "currentUiPatterns": ["Search form", "Toggle filter", "Results grid"],
+    "desiredUiPatterns": ["Search form", "Results grid", "Split layout"],
     "uiElements": [
       "Part Number toggle",
       "Vendor Name toggle",
+      "Combine same vendor names checkbox",
       "Search input",
       "Search button",
       "Clear button",
@@ -56,6 +47,7 @@
       "Search by part number",
       "Search by vendor name",
       "Resolve fuzzy matches",
+      "Aggregate duplicate vendor-name candidates into a smaller selection list",
       "Review outside service dispatch history"
     ],
     "preserveRules": [
@@ -66,13 +58,17 @@
     ],
     "acceptanceCriteria": [
       "Part and vendor search modes still return the correct history data",
+      "Vendor aggregation reduces duplicate vendor-name candidates without losing access to combined history",
       "The user can confirm fuzzy matches before loading the final result set",
-      "The results grid remains sortable and read-only"
+      "The results grid remains sortable and read-only",
+      "Clear returns the operator to an immediately ready part-search input"
     ],
     "validationHints": [
       "Confirm vendor and part modes still hit the intended Infor Visual queries",
+      "Confirm aggregated vendor-name mode merges duplicate vendor-name candidates and still returns combined part and history results",
       "Confirm fuzzy picker flow still occurs when multiple matches are returned",
       "Confirm the results grid still shows dispatch history without enabling edits",
+      "Confirm Clear resets vendor-mode searches back to part mode and places keyboard focus in the search box",
       "Confirm search and sort operations still repopulate the results grid correctly after whole-collection replacement"
     ],
     "databaseObjects": [

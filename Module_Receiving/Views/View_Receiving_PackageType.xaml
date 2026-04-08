@@ -8,8 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
     x:Name="Root"
-    mc:Ignorable="d"
->
+    mc:Ignorable="d">
     <UserControl.Resources>
         <converters:Converter_StringFormat x:Key="StringFormatConverter" />
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
@@ -31,19 +30,14 @@
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            CornerRadius="8"
-        >
+            CornerRadius="8">
             <StackPanel Spacing="16">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon
                         FontSize="16"
                         Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                        Glyph="&#xE7B8;"
-                    />
-                    <TextBlock
-                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                        Text="{x:Bind ViewModel.PackageTypeHeaderText, Mode=OneWay}"
-                    />
+                        Glyph="&#xE7B8;" />
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.PackageTypeHeaderText, Mode=OneWay}" />
                 </StackPanel>
 
                 <Grid ColumnSpacing="16">
@@ -60,8 +54,7 @@
                         AutomationProperties.Name="{x:Bind ViewModel.PackageTypeComboAccessibilityName, Mode=OneWay}"
                         Header="{x:Bind ViewModel.PackageTypeComboHeaderText, Mode=OneWay}"
                         ItemsSource="{x:Bind ViewModel.PackageTypes, Mode=OneWay}"
-                        SelectedItem="{x:Bind ViewModel.SelectedPackageType, Mode=TwoWay}"
-                    />
+                        SelectedItem="{x:Bind ViewModel.SelectedPackageType, Mode=TwoWay}" />
 
                     <TextBox
                         Grid.Column="1"
@@ -70,20 +63,16 @@
                         AutomationProperties.Name="{x:Bind ViewModel.PackageTypeCustomAccessibilityName, Mode=OneWay}"
                         Header="{x:Bind ViewModel.PackageTypeCustomHeaderText, Mode=OneWay}"
                         Text="{x:Bind ViewModel.CustomPackageTypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Visibility="{x:Bind ViewModel.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    />
+                        Visibility="{x:Bind ViewModel.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
 
-                <CheckBox
-                    Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}"
-                    IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}"
-                />
+                <CheckBox Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}" IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}" />
             </StackPanel>
         </Border>
 
         <!--  Loads List  -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}">
+            <ItemsControl x:Name="LoadsItemsControl" ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:Model_ReceivingLoad">
                         <Grid
@@ -92,8 +81,7 @@
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            CornerRadius="8"
-                        >
+                            CornerRadius="8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1.5*" />
                                 <ColumnDefinition Width="2*" />
@@ -105,12 +93,8 @@
                                     <FontIcon
                                         FontSize="14"
                                         Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                        Glyph="&#xE7B8;"
-                                    />
-                                    <TextBlock
-                                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        Text="{Binding LoadDisplayText}"
-                                    />
+                                        Glyph="&#xE7B8;" />
+                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{Binding LoadDisplayText}" />
                                 </StackPanel>
                             </StackPanel>
 
@@ -122,23 +106,17 @@
                                 Minimum="1"
                                 SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
-                                Value="{x:Bind PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            />
+                                Value="{x:Bind PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                             <StackPanel
                                 Grid.Column="2"
                                 Margin="16,0,0,0"
-                                VerticalAlignment="Center"
-                            >
+                                VerticalAlignment="Center">
                                 <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{Binding ElementName=Root, Path=ViewModel.PackageTypeWeightPerPackageText}"
-                                />
-                                <TextBlock
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{Binding WeightPerPackage, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} lbs'}"
-                                />
+                                    Text="{Binding ElementName=Root, Path=ViewModel.PackageTypeWeightPerPackageText}" />
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{Binding WeightPerPackage, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} lbs'}" />
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

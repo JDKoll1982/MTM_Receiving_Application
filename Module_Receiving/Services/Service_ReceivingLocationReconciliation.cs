@@ -21,6 +21,13 @@ public sealed class Service_ReceivingLocationReconciliation
 {
     private static readonly DateTime AllHistoryStartDate = new(2000, 1, 1);
     private const string WorkCenterLocationId = "WC";
+    private static readonly string[] DefaultRecommendedLocationExclusions =
+    [
+        "WC",
+        "NCM",
+        "FG",
+        "RECV",
+    ];
     private static readonly Regex CanonicalPoPattern = new(
         @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[A-Za-z]?)$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant
@@ -45,6 +52,83 @@ public sealed class Service_ReceivingLocationReconciliation
         _logger = logger;
         _receivingSettings = receivingSettings;
         _sessionManager = sessionManager;
+    }
+
+    public async Task<
+        Model_Dao_Result<List<Model_ReceivingRecommendedLocation>>
+    > GetRecommendedLocationsAsync(
+        string poNumber,
+        string partId,
+        string? poLineNumber,
+        DateTime? receivedDate
+    )
+    {
+        if (string.IsNullOrWhiteSpace(poNumber))
+        {
+            return Model_Dao_Result_Factory.Success(new List<Model_ReceivingRecommendedLocation>());
+        }
+
+        if (string.IsNullOrWhiteSpace(partId))
+        {
+            return Model_Dao_Result_Factory.Success(new List<Model_ReceivingRecommendedLocation>());
+        }
+
+        var evidenceResult = await _inforVisual.GetReceivingLocationEvidenceAsync(
+            poNumber,
+            partId,
+            poLineNumber,
+            receivedDate
+        );
+        if (!evidenceResult.IsSuccess || evidenceResult.Data is null)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingRecommendedLocation>>(
+                evidenceResult.ErrorMessage,
+                evidenceResult.Exception
+            );
+        }
+
+        var ignoredLocations = await GetIgnoredLocationsAsync();
+        foreach (var locationId in DefaultRecommendedLocationExclusions)
+        {
+            ignoredLocations.Add(Normalize(locationId));
+        }
+
+        var recommendations = evidenceResult
+            .Data.Where(row =>
+                string.IsNullOrWhiteSpace(row.CurrentLocationId) is false
+                && row.CurrentQuantity > 0
+                && !ignoredLocations.Contains(Normalize(row.CurrentLocationId))
+            )
+            .GroupBy(
+                row => $"{Normalize(row.CurrentWarehouseId)}|{Normalize(row.CurrentLocationId)}",
+                StringComparer.OrdinalIgnoreCase
+            )
+            .Select(group =>
+            {
+                var sample = group.First();
+                var latestActivityDate = group
+                    .Select(row => row.MatchedTransactionDate ?? row.LatestTransactionDate)
+                    .Where(date => date.HasValue)
+                    .OrderByDescending(date => date)
+                    .FirstOrDefault();
+
+                var reasonText = latestActivityDate.HasValue
+                    ? $"latest activity {latestActivityDate.Value:MM/dd/yyyy}"
+                    : "current stock evidence";
+
+                return new Model_ReceivingRecommendedLocation
+                {
+                    WarehouseId = sample.CurrentWarehouseId?.Trim() ?? string.Empty,
+                    LocationId = sample.CurrentLocationId?.Trim() ?? string.Empty,
+                    QuantityOnHand = group.Sum(row => row.CurrentQuantity),
+                    ReasonText = reasonText,
+                };
+            })
+            .OrderByDescending(location => location.QuantityOnHand)
+            .ThenBy(location => location.DisplayLocation, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(recommendations);
     }
 
     public async Task<
