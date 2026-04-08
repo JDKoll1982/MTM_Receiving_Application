@@ -135,6 +135,7 @@
       "Confirm guided-step collections and spec groups still repopulate correctly after whole-collection replacement",
       "Confirm Enter Loads uses a single combined quantity card and no longer shows the tip card",
       "Confirm each generated load reaches Review with the correct load number and quantity",
+      "Confirm Enter Details pushes PO, location, and dynamic spec values into each generated load before save so specs_json is written to dunnage_label_data and dunnage_history",
       "Confirm Enter Details proceeds directly to Review when validation passes, without an extra confirmation modal",
       "Confirm Review exposes a Back path to Enter Details and shows a completion dialog offering Start New Entry or Mode Selection after save",
       "Confirm the dunnage type selector shows 12 cards per page in a 3x4 layout and scales down cleanly to stay within the card area when the window is resized",

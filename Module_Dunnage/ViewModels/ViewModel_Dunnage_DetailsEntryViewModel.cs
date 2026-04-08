@@ -522,10 +522,14 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 
             _workflowService.CurrentSession.SpecValues = specValues;
 
-            _logger.LogInfo("Details saved, navigating to Review", "DetailsEntry");
+            var advanceResult = await _workflowService.AdvanceToNextStepAsync();
+            if (!advanceResult.IsSuccess)
+            {
+                StatusMessage = advanceResult.ErrorMessage;
+                return;
+            }
 
-            // Navigate to Review
-            _workflowService.GoToStep(Enum_DunnageWorkflowStep.Review);
+            _logger.LogInfo("Details saved, navigating to Review", "DetailsEntry");
         }
         catch (Exception ex)
         {
