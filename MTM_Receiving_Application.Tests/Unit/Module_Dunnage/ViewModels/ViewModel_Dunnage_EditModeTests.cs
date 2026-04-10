@@ -160,6 +160,7 @@ public sealed class ViewModel_Dunnage_EditModeTests
             new Mock<IService_MySQL_Dunnage>().Object,
             new Mock<IService_Pagination>().Object,
             new Mock<IService_DunnageWorkflow>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_Window>().Object,
             new Mock<IService_InforVisual>().Object,
             new Mock<IService_Help>().Object,

@@ -27,22 +27,25 @@
             <!--  Wizard Steps  -->
             <views:View_dunnage_typeselectionView Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <views:View_Dunnage_PartSelectionView Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:View_Dunnage_PartSelectionView x:Name="PartSelectionView" Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <views:View_Dunnage_QuantityEntryView Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:View_Dunnage_QuantityEntryView x:Name="QuantityEntryView" Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <views:View_Dunnage_DetailsEntryView x:Name="DetailsEntryView" Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <views:View_Dunnage_ReviewView Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:View_Dunnage_ReviewView x:Name="ReviewView" Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Bulk Operation Views  -->
-            <views:View_Dunnage_ManualEntryView Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:View_Dunnage_ManualEntryView x:Name="ManualEntryView" Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <views:View_Dunnage_EditModeView Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <views:View_Dunnage_EditModeView x:Name="EditModeView" Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
 
         <!--  Navigation Buttons  -->
-        <Grid Grid.Row="2" Margin="24">
+        <Grid
+            Grid.Row="2"
+            Margin="24"
+            IsHitTestVisible="{x:Bind ViewModel.CanNavigate, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -87,12 +90,12 @@
                     Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                 <Button
-                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Click="OnModeSelectionClick"
                     Content="Mode Selection"
                     ToolTipService.ToolTip="Return to mode selection (clears current work)"
                     Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button
-                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Click="OnModeSelectionClick"
                     Content="Mode Selection"
                     ToolTipService.ToolTip="Return to mode selection (clears current work)"
                     Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />

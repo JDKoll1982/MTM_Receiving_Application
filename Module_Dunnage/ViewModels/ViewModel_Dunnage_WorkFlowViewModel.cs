@@ -35,9 +35,11 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         _workflowService = workflowService;
         _windowService = windowService;
         _workflowService.StepChanged += OnWorkflowStepChanged;
+        _workflowService.NavigationLockChanged += OnNavigationLockChanged;
 
         DunnageLines = new ObservableCollection<Model_DunnageLine>();
         _currentLine = new Model_DunnageLine();
+        IsNavigationLocked = _workflowService.IsNavigationLocked;
 
         // Start the workflow - it will check for default mode and navigate accordingly
         _ = InitializeWorkflowAsync();
@@ -98,7 +100,12 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
     private string _currentStepTitle = "Dunnage - Mode Selection";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanNavigate))]
+    private bool _isNavigationLocked;
+
     public string CurrentHeaderTitle => CurrentStepTitle;
+    public bool CanNavigate => !IsNavigationLocked;
 
     #endregion
 
@@ -154,6 +161,11 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         }
     }
 
+    private void OnNavigationLockChanged(object? sender, EventArgs e)
+    {
+        IsNavigationLocked = _workflowService.IsNavigationLocked;
+    }
+
     [RelayCommand]
     private async Task ClearLabelDataAsync()
     {
@@ -201,8 +213,37 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     #region Commands
 
     [RelayCommand]
-    private void ReturnToModeSelection()
+    private async Task ReturnToModeSelectionAsync()
     {
+        if (_workflowService.IsNavigationLocked)
+        {
+            return;
+        }
+
+        if (_workflowService.HasUnsavedData())
+        {
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is not null)
+            {
+                var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+                {
+                    Title = "Change Mode?",
+                    Content =
+                        "Changing mode will clear the current Dunnage entry. This cannot be undone. Continue?",
+                    PrimaryButtonText = "Change Mode",
+                    CloseButtonText = "Stay Here",
+                    DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                    XamlRoot = xamlRoot,
+                };
+
+                var result = await dialog.ShowAsync();
+                if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                {
+                    return;
+                }
+            }
+        }
+
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
     }

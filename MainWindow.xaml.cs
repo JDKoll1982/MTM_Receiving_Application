@@ -271,7 +271,12 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            await ClearModuleDraftStateBeforeNavigationAsync(route.PageType);
+            if (!await ClearModuleDraftStateBeforeNavigationAsync(route.PageType, route.Title))
+            {
+                SetNavigationSelectionByTag(GetCurrentRouteTag());
+                return;
+            }
+
             NavigateWithDI(route.PageType, route.Title);
         }
 
@@ -872,9 +877,24 @@ namespace MTM_Receiving_Application
                 return false;
             }
 
-            await ClearModuleDraftStateBeforeNavigationAsync(route.PageType);
+            if (!await ClearModuleDraftStateBeforeNavigationAsync(route.PageType, route.Title))
+            {
+                return false;
+            }
+
             SetNavigationSelectionByTag(routeTag);
             return NavigateWithDI(route.PageType, route.Title);
+        }
+
+        private string? GetCurrentRouteTag()
+        {
+            var currentPageType = ContentFrame.Content?.GetType();
+            if (currentPageType is null)
+            {
+                return null;
+            }
+
+            return _navRoutes.FirstOrDefault(route => route.Value.PageType == currentPageType).Key;
         }
 
         private void SetNavigationSelectionByTag(string? routeTag)
@@ -911,7 +931,10 @@ namespace MTM_Receiving_Application
             }
         }
 
-        private async Task ClearModuleDraftStateBeforeNavigationAsync(Type destinationPageType)
+        private async Task<bool> ClearModuleDraftStateBeforeNavigationAsync(
+            Type destinationPageType,
+            string destinationTitle
+        )
         {
             if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow)
             {
@@ -922,18 +945,18 @@ namespace MTM_Receiving_Application
                     await receivingWorkflow.ResetWorkflowAsync();
                 }
 
-                return;
+                return true;
             }
 
-            if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView)
+            if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView)
             {
                 if (destinationPageType != typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView))
                 {
-                    var dunnageWorkflow =
-                        _serviceProvider.GetRequiredService<IService_DunnageWorkflow>();
-                    dunnageWorkflow.ClearSession();
+                    return await dunnageView.ConfirmLeaveModuleAsync(destinationTitle);
                 }
             }
+
+            return true;
         }
 
         private void ClearHeaderSubscription()

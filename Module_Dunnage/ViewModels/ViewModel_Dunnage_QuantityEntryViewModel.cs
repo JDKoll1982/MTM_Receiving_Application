@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
@@ -19,17 +20,19 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Quantity Entry.
 /// </summary>
-public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IResettableViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Dispatcher _dispatcher;
     private readonly IService_Help _helpService;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
     private bool _isSynchronizingLoads;
 
     public ViewModel_Dunnage_QuantityEntry(
         IService_DunnageWorkflow workflowService,
         IService_Dispatcher dispatcher,
         IService_Help helpService,
+        IService_ViewModelRegistry viewModelRegistry,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -39,8 +42,22 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         _workflowService = workflowService;
         _dispatcher = dispatcher;
         _helpService = helpService;
+        _viewModelRegistry = viewModelRegistry;
 
         _workflowService.StepChanged += OnWorkflowStepChanged;
+        _viewModelRegistry.Register(this);
+    }
+
+    public void ResetToDefaults()
+    {
+        NumberOfLoads = 1;
+        Quantity = 1;
+        SelectedTypeName = string.Empty;
+        SelectedTypeIcon = "Help";
+        SelectedPartName = string.Empty;
+        ValidationMessage = string.Empty;
+        ReplaceLoads(Array.Empty<Model_DunnageLoad>());
+        StatusMessage = string.Empty;
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -293,6 +310,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            _workflowService.SetNavigationLock(true);
             StatusMessage = "Saving load quantities...";
 
             _workflowService.CurrentSession.NumberOfLoads = NumberOfLoads;
@@ -315,6 +333,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base
         }
         finally
         {
+            _workflowService.SetNavigationLock(false);
             IsBusy = false;
         }
     }

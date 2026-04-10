@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
@@ -18,18 +19,20 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Review &amp; Save
 /// </summary>
-public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettableViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Help _helpService;
     private readonly IService_Window _windowService;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
 
     public ViewModel_Dunnage_Review(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Help helpService,
         IService_Window windowService,
+        IService_ViewModelRegistry viewModelRegistry,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -40,9 +43,27 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         _dunnageService = dunnageService;
         _helpService = helpService;
         _windowService = windowService;
+        _viewModelRegistry = viewModelRegistry;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
+        _viewModelRegistry.Register(this);
+    }
+
+    public void ResetToDefaults()
+    {
+        SessionLoads = new ObservableCollection<Model_DunnageLoad>();
+        CurrentLoad = null;
+        CurrentEntryIndex = 1;
+        LoadCount = 0;
+        CanSave = false;
+        IsSuccessMessageVisible = false;
+        SuccessMessage = string.Empty;
+        IsSingleView = true;
+        IsTableView = false;
+        CanGoBack = false;
+        CanGoNext = false;
+        StatusMessage = string.Empty;
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -319,6 +340,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            _workflowService.SetNavigationLock(true);
             CanSave = false;
             StatusMessage = "Saving loads...";
 
@@ -359,8 +381,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         }
         finally
         {
+            _workflowService.SetNavigationLock(false);
             IsBusy = false;
-            CanSave = true;
+            CanSave = LoadCount > 0;
         }
     }
 

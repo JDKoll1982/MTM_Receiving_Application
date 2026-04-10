@@ -96,7 +96,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             // Show error message
             var dialog = new ContentDialog
             {
-                Title = "Cannot Proceed",
+                Title = "Finish This Step First",
                 Content = result.ErrorMessage,
                 CloseButtonText = "OK",
                 XamlRoot = this.XamlRoot,
@@ -133,18 +133,39 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             DetailsEntryView.ViewModel.PoNumber = nonPoDialog.Result;
         }
 
-        var result = await _workflowService.AdvanceToNextStepAsync();
+        var result = await DetailsEntryView.ViewModel.SaveAndAdvanceAsync();
 
         if (!result.IsSuccess)
         {
             var errorDialog = new ContentDialog
             {
-                Title = "Cannot Proceed",
+                Title = "Finish This Step First",
                 Content = result.ErrorMessage,
                 CloseButtonText = "OK",
                 XamlRoot = this.XamlRoot,
             };
             await errorDialog.ShowAsync();
+        }
+    }
+
+    private void OnModeSelectionClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.IsManualEntryVisible)
+        {
+            if (ManualEntryView.ViewModel.ReturnToModeSelectionCommand.CanExecute(null))
+            {
+                ManualEntryView.ViewModel.ReturnToModeSelectionCommand.Execute(null);
+            }
+
+            return;
+        }
+
+        if (ViewModel.IsEditModeVisible)
+        {
+            if (EditModeView.ViewModel.ReturnToModeSelectionCommand.CanExecute(null))
+            {
+                EditModeView.ViewModel.ReturnToModeSelectionCommand.Execute(null);
+            }
         }
     }
 
@@ -191,13 +212,71 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
         var errorDialog = new ContentDialog
         {
-            Title = "Cannot Proceed",
+            Title = "Finish This Step First",
             Content = statusMessage,
             CloseButtonText = "OK",
             XamlRoot = this.XamlRoot,
         };
         await errorDialog.ShowAsync();
         return false;
+    }
+
+    public async Task<bool> ConfirmLeaveModuleAsync(string destinationName)
+    {
+        if (_workflowService.IsNavigationLocked)
+        {
+            var savingDialog = new ContentDialog
+            {
+                Title = "Save In Progress",
+                Content =
+                    "Please wait for the current Dunnage save to finish before leaving this module.",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot,
+            };
+            await savingDialog.ShowAsync();
+            return false;
+        }
+
+        if (!HasUnsavedData())
+        {
+            _workflowService.ClearSession();
+            return true;
+        }
+
+        var prompt = new ContentDialog
+        {
+            Title = "Leave Dunnage?",
+            Content =
+                $"Leaving Dunnage for {destinationName} will clear the current entry and reset the on-screen fields. Continue?",
+            PrimaryButtonText = "Leave Dunnage",
+            CloseButtonText = "Stay Here",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = XamlRoot,
+        };
+
+        var result = await prompt.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return false;
+        }
+
+        _workflowService.ClearSession();
+        return true;
+    }
+
+    private bool HasUnsavedData()
+    {
+        if (ViewModel.IsManualEntryVisible)
+        {
+            return ManualEntryView.ViewModel.HasUnsavedData;
+        }
+
+        if (ViewModel.IsEditModeVisible)
+        {
+            return EditModeView.ViewModel.HasUnsavedChanges;
+        }
+
+        return _workflowService.HasUnsavedData();
     }
 
     private void OnBackClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -17,16 +19,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Manual Entry mode
 /// </summary>
-public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base, IResettableViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
 
     public ViewModel_Dunnage_ManualEntry(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
+        IService_ViewModelRegistry viewModelRegistry,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -37,8 +41,29 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
+        _viewModelRegistry = viewModelRegistry;
         _windowService = windowService;
         _helpService = helpService;
+        _viewModelRegistry.Register(this);
+    }
+
+    public bool HasUnsavedData =>
+        Loads.Any(load =>
+            string.IsNullOrWhiteSpace(load.TypeName) is false
+            || string.IsNullOrWhiteSpace(load.PartId) is false
+            || string.IsNullOrWhiteSpace(load.PoNumber) is false
+            || string.IsNullOrWhiteSpace(load.Location) is false
+            || string.IsNullOrWhiteSpace(load.HomeLocation) is false
+            || load.SpecValues is { Count: > 0 }
+        );
+
+    public void ResetToDefaults()
+    {
+        ReplaceLoads(Array.Empty<Model_DunnageLoad>());
+        SelectedLoad = null;
+        CanSave = false;
+        StatusMessage = string.Empty;
+        AddRow();
     }
 
     #region Observable Properties
@@ -312,11 +337,14 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             }
 
             // Auto-fill Spec Values from part master data
-            if (part.SpecValuesDict?.Count > 0)
+            if (part.SpecValuesDict?.Count > 0 || part.PartSpecificSpecDefinitions.Count > 0)
             {
-                SelectedLoad.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
+                SelectedLoad.SpecValues = Helper_Dunnage_PartSpecs.BuildRuntimeValues(
+                    part.SpecValuesDict ?? new Dictionary<string, object>(),
+                    part.PartSpecificSpecDefinitions
+                );
                 _logger.LogInfo(
-                    $"Auto-filled {part.SpecValuesDict.Count} spec values for Part ID: {SelectedLoad.PartId}",
+                    $"Auto-filled {SelectedLoad.SpecValues.Count} runtime spec values for Part ID: {SelectedLoad.PartId}",
                     "ManualEntry"
                 );
             }
@@ -370,6 +398,7 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            _workflowService.SetNavigationLock(true);
             CanSave = false;
             StatusMessage = "Saving to history...";
 
@@ -397,8 +426,9 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         }
         finally
         {
+            _workflowService.SetNavigationLock(false);
             IsBusy = false;
-            CanSave = true;
+            UpdateCanSave();
         }
     }
 
@@ -413,6 +443,7 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            _workflowService.SetNavigationLock(true);
             CanSave = false;
             StatusMessage = "Saving loads...";
 
@@ -456,8 +487,9 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         }
         finally
         {
+            _workflowService.SetNavigationLock(false);
             IsBusy = false;
-            CanSave = true;
+            UpdateCanSave();
         }
     }
 
@@ -592,9 +624,12 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
                 }
 
                 // Auto-fill specs from part master
-                if (part.SpecValuesDict?.Count > 0)
+                if (part.SpecValuesDict?.Count > 0 || part.PartSpecificSpecDefinitions.Count > 0)
                 {
-                    load.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
+                    load.SpecValues = Helper_Dunnage_PartSpecs.BuildRuntimeValues(
+                        part.SpecValuesDict ?? new Dictionary<string, object>(),
+                        part.PartSpecificSpecDefinitions
+                    );
                 }
 
                 _logger.LogInfo($"Auto-populated data for Part ID: {load.PartId}", "ManualEntry");

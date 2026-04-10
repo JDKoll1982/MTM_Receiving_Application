@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
@@ -85,6 +87,7 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_InforVisual>().Object,
             settingsCore.Object,
             new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
@@ -129,5 +132,91 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
         workflowService
             .CurrentSession.Loads.Should()
             .OnlyContain(load => load.SpecValues!["Stackable"].ToString() == "True");
+    }
+
+    [Fact]
+    public async Task LoadSpecsForSelectedPartAsync_ShouldMergeConfiguredSpecsWithPartSpecificDefinitions()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetSpecsForTypeAsync(5))
+            .ReturnsAsync(
+                new Model_Dao_Result<List<Model_DunnageSpec>>
+                {
+                    Success = true,
+                    Data =
+                    [
+                        new Model_DunnageSpec
+                        {
+                            SpecKey = "Length",
+                            SpecValue = "{\"type\":\"Number\",\"required\":true,\"unit\":\"in\"}",
+                        },
+                    ],
+                }
+            );
+
+        var selectedPart = new Model_DunnagePart
+        {
+            PartId = "DUN-NEW-100",
+            TypeId = 5,
+            SpecValues = JsonSerializer.Serialize(
+                Helper_Dunnage_PartSpecs.BuildCombinedSpecPayload(
+                    new Dictionary<string, object?> { ["Length"] = 48 },
+                    [
+                        new Model_SpecItem
+                        {
+                            Name = "Edge Guard",
+                            DataType = "Choices",
+                            IsRequired = true,
+                            Choices = ["Yes", "No"],
+                        },
+                    ],
+                    string.Empty
+                )
+            ),
+        };
+
+        var workflowService = new Service_DunnageWorkflow(
+            dunnageService.Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_SettingsCoreFacade>().Object,
+            new Mock<IService_ReceivingValidation>().Object
+        );
+
+        workflowService.CurrentSession.SelectedTypeId = 5;
+        workflowService.CurrentSession.SelectedPart = selectedPart;
+
+        var viewModel = new ViewModel_Dunnage_DetailsEntry(
+            workflowService,
+            dunnageService.Object,
+            new Mock<IService_Dispatcher>().Object,
+            new Mock<IService_Help>().Object,
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_SettingsCoreFacade>().Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        );
+
+        await viewModel.LoadSpecsForSelectedPartAsync();
+
+        viewModel.SpecInputs.Should().HaveCount(2);
+        viewModel.NumberSpecs.Should().ContainSingle(spec => spec.SpecName == "Length");
+        viewModel
+            .NumberSpecs.Single(spec => spec.SpecName == "Length")
+            .Value!.ToString()
+            .Should()
+            .Be("48");
+        viewModel.ChoiceSpecs.Should().ContainSingle(spec => spec.SpecName == "Edge Guard");
+        viewModel
+            .ChoiceSpecs.Single(spec => spec.SpecName == "Edge Guard")
+            .Choices.Should()
+            .Equal("Yes", "No");
     }
 }

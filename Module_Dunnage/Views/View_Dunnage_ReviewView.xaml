@@ -166,6 +166,17 @@
                                         Text="Inventory Method" />
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.InventoryMethod, Mode=OneWay}" />
                                 </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Load Details" />
+                                    <TextBlock
+                                        Style="{StaticResource BodyTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentLoad.SpecSummaryDisplay, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -250,6 +261,10 @@
                                 Width="*"
                                 Binding="{Binding InventoryMethod}"
                                 Header="Inventory Method" />
+                            <controls:DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding SpecSummaryDisplay}"
+                                Header="Load Details" />
                         </controls:DataGrid.Columns>
                     </controls:DataGrid>
                 </Border>

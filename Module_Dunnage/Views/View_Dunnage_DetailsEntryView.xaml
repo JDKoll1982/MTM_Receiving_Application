@@ -90,7 +90,7 @@
                     </Grid>
                 </Border>
 
-                <!--  Specifications Card (Read-Only)  -->
+                <!--  Specifications Card  -->
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -98,10 +98,16 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Specifications (from selected part)" />
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Load Details" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Review the saved part details below and enter anything needed for this load."
+                            TextWrapping="Wrap" />
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
@@ -120,10 +126,7 @@
                                                     FontSize="12"
                                                     FontWeight="SemiBold"
                                                     Text="{Binding SpecName}" />
-                                                <TextBox
-                                                    Width="180"
-                                                    IsReadOnly="True"
-                                                    Text="{Binding Value, Mode=OneWay}" />
+                                                <TextBox Width="180" Text="{Binding Value, Mode=TwoWay}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsRepeater.ItemTemplate>
@@ -143,10 +146,7 @@
                                                     FontSize="12"
                                                     FontWeight="SemiBold"
                                                     Text="{Binding SpecName}" />
-                                                <TextBox
-                                                    Width="180"
-                                                    IsReadOnly="True"
-                                                    Text="{Binding Value, Mode=OneWay}" />
+                                                <TextBox Width="180" Text="{Binding Value, Mode=TwoWay}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsRepeater.ItemTemplate>
@@ -164,8 +164,30 @@
                                             <CheckBox
                                                 Margin="0,0,0,6"
                                                 Content="{Binding SpecName}"
-                                                IsChecked="{Binding Value, Mode=OneWay}"
-                                                IsEnabled="False" />
+                                                IsChecked="{Binding Value, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </StackPanel>
+
+                            <!--  Column 4: Choice Specs  -->
+                            <StackPanel
+                                Grid.Column="3"
+                                Spacing="4"
+                                Visibility="{x:Bind ViewModel.HasChoiceSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ChoiceSpecs, Mode=OneWay}">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,6" Spacing="2">
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding SpecName}" />
+                                                <ComboBox
+                                                    Width="180"
+                                                    ItemsSource="{Binding Choices}"
+                                                    SelectedItem="{Binding Value, Mode=TwoWay}" />
+                                            </StackPanel>
                                         </DataTemplate>
                                     </ItemsRepeater.ItemTemplate>
                                 </ItemsRepeater>
@@ -176,7 +198,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
-                            Text="No specifications configured for this type."
+                            Text="There are no extra details to enter for this part."
                             Visibility="{x:Bind ViewModel.SpecInputs.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter='Inverse'}" />
                     </StackPanel>
                 </Border>

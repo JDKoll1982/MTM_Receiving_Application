@@ -13,10 +13,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Enum_DunnageWorkflowStep CurrentStep { get; }
         public Model_DunnageSession CurrentSession { get; }
         public int NumberOfLoads { get; set; }
+        public bool IsNavigationLocked { get; }
 
         public event EventHandler StepChanged;
         public event EventHandler<string> StatusMessageRaised;
         public event EventHandler LabelDataCleared;
+        public event EventHandler NavigationLockChanged;
 
         public Task<bool> StartWorkflowAsync();
         public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync();
@@ -24,6 +26,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_SaveResult> SaveSessionAsync();
         public Task<Model_SaveResult> SaveToDatabaseOnlyAsync();
         public void ClearSession();
+        public bool HasUnsavedData();
+        public void SetNavigationLock(bool isLocked);
 
         public Task<Model_Dao_Result<int>> ClearLabelDataAsync();
         public void AddCurrentLoadToSession();

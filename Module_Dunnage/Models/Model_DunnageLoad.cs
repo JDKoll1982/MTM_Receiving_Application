@@ -42,6 +42,7 @@ public partial class Model_DunnageLoad : ObservableObject
     private int? _typeId;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SpecSummaryDisplay))]
     private Dictionary<string, object> _specs = new();
 
     [ObservableProperty]
@@ -101,6 +102,7 @@ public partial class Model_DunnageLoad : ObservableObject
     private string _inventoryMethod = "Adjust In";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SpecSummaryDisplay))]
     private Dictionary<string, object>? _specValues;
 
     [ObservableProperty]
@@ -232,6 +234,29 @@ public partial class Model_DunnageLoad : ObservableObject
             }
 
             return string.Empty;
+        }
+    }
+
+    public string SpecSummaryDisplay
+    {
+        get
+        {
+            var activeSpecs = SpecValues ?? Specs;
+            if (activeSpecs == null || activeSpecs.Count == 0)
+            {
+                return "No specs";
+            }
+
+            return string.Join(
+                " | ",
+                activeSpecs
+                    .Where(pair =>
+                        string.Equals(pair.Key, "Notes", StringComparison.OrdinalIgnoreCase)
+                            is false
+                    )
+                    .OrderBy(pair => pair.Key)
+                    .Select(pair => $"{pair.Key}: {pair.Value}")
+            );
         }
     }
 

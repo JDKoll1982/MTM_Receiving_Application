@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -24,7 +26,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Details Entry
 /// </summary>
-public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IResettableViewModel
 {
     private const string SettingsCategory = "Dunnage";
     private const string WarehouseCode = "002";
@@ -38,6 +40,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
     private readonly IService_InforVisual _inforVisualService;
     private readonly IService_SettingsCoreFacade _settingsCore;
     private readonly IService_UserSessionManager _sessionManager;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
 
     public ViewModel_Dunnage_DetailsEntry(
         IService_DunnageWorkflow workflowService,
@@ -48,6 +51,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         IService_InforVisual inforVisualService,
         IService_SettingsCoreFacade settingsCore,
         IService_UserSessionManager sessionManager,
+        IService_ViewModelRegistry viewModelRegistry,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -62,9 +66,30 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         _inforVisualService = inforVisualService;
         _settingsCore = settingsCore;
         _sessionManager = sessionManager;
+        _viewModelRegistry = viewModelRegistry;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
+        _viewModelRegistry.Register(this);
+    }
+
+    public void ResetToDefaults()
+    {
+        PoNumber = string.Empty;
+        Location = string.Empty;
+        SpecInputs = new ObservableCollection<Model_SpecInput>();
+        TextSpecs = new ObservableCollection<Model_SpecInput>();
+        NumberSpecs = new ObservableCollection<Model_SpecInput>();
+        BooleanSpecs = new ObservableCollection<Model_SpecInput>();
+        ChoiceSpecs = new ObservableCollection<Model_SpecInput>();
+        HasTextSpecs = false;
+        HasNumberSpecs = false;
+        HasBooleanSpecs = false;
+        HasChoiceSpecs = false;
+        IsInventoryNotificationVisible = false;
+        InventoryNotificationMessage = string.Empty;
+        InventoryMethod = "Adjust In";
+        StatusMessage = string.Empty;
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -99,6 +124,9 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
     private ObservableCollection<Model_SpecInput> _booleanSpecs = new();
 
     [ObservableProperty]
+    private ObservableCollection<Model_SpecInput> _choiceSpecs = new();
+
+    [ObservableProperty]
     private bool _hasTextSpecs = false;
 
     [ObservableProperty]
@@ -106,6 +134,9 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 
     [ObservableProperty]
     private bool _hasBooleanSpecs = false;
+
+    [ObservableProperty]
+    private bool _hasChoiceSpecs = false;
 
     [ObservableProperty]
     private bool _isInventoryNotificationVisible = false;
@@ -128,7 +159,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading spec inputs...";
+            StatusMessage = "Loading part details...";
 
             await InitializeStepStateAsync();
 
@@ -144,144 +175,85 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 
             // Fetch specs from dunnage_specs table (NOT from SpecsJson field which doesn't exist)
             var specsResult = await _dunnageService.GetSpecsForTypeAsync(selectedTypeId);
-            if (!specsResult.IsSuccess || specsResult.Data == null)
-            {
-                _logger.LogWarning(
-                    $"No specs found for type {selectedTypeId}: {specsResult.ErrorMessage}",
-                    "DetailsEntry"
-                );
-                SpecInputs.Clear();
-                return;
-            }
-
-            var specs = specsResult.Data;
-            _logger.LogInfo($"Loaded {specs.Count} specs from database", "DetailsEntry");
+            var specs =
+                specsResult.IsSuccess && specsResult.Data != null
+                    ? specsResult.Data
+                    : new List<Model_DunnageSpec>();
+            _logger.LogInfo(
+                $"Loaded {specs.Count} configured type specs from database",
+                "DetailsEntry"
+            );
 
             // Get the selected part's spec values for defaults
             var selectedPart = _workflowService.CurrentSession.SelectedPart;
-            Dictionary<string, object>? partSpecValues = null;
-            if (selectedPart != null && !string.IsNullOrWhiteSpace(selectedPart.SpecValues))
-            {
-                try
-                {
-                    partSpecValues = JsonSerializer.Deserialize<Dictionary<string, object>>(
-                        selectedPart.SpecValues
-                    );
-                    _logger.LogInfo(
-                        $"Loaded spec values from part: {selectedPart.SpecValues}",
-                        "DetailsEntry"
-                    );
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        $"Failed to parse part spec values: {ex.Message}",
-                        ex,
-                        "DetailsEntry"
-                    );
-                }
-            }
+            var partSpecValues = selectedPart?.SpecValuesDict;
+            var partSpecificDefinitions =
+                selectedPart?.PartSpecificSpecDefinitions
+                ?? new Dictionary<string, SpecDefinition>();
 
             // Create spec inputs from database specs
             var specInputs = new List<Model_SpecInput>();
             var textSpecs = new List<Model_SpecInput>();
             var numberSpecs = new List<Model_SpecInput>();
             var booleanSpecs = new List<Model_SpecInput>();
+            var choiceSpecs = new List<Model_SpecInput>();
+
+            var createdSpecNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var spec in specs)
             {
-                // Parse spec_value JSON to get type, unit, required
-                var specValueDict = ParseSpecValue(spec.SpecValue);
+                var definition = ParseSpecDefinition(spec.SpecValue);
+                object? defaultValue = null;
+                partSpecValues?.TryGetValue(spec.SpecKey, out defaultValue);
 
-                // Get default value from part if available
-                string? defaultValue = null;
-                if (partSpecValues?.ContainsKey(spec.SpecKey) == true)
-                {
-                    defaultValue = partSpecValues[spec.SpecKey]?.ToString();
-                }
-
-                var specType = specValueDict.ContainsKey("type")
-                    ? specValueDict["type"]?.ToString()?.ToLowerInvariant() ?? "text"
-                    : "text";
-
-                // Convert default value to appropriate type
-                object? typedValue = defaultValue;
-                if (!string.IsNullOrWhiteSpace(defaultValue))
-                {
-                    try
-                    {
-                        if (specType == "number")
-                        {
-                            typedValue = double.Parse(defaultValue);
-                        }
-                        else if (specType == "boolean")
-                        {
-                            typedValue = bool.Parse(defaultValue);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(
-                            $"Failed to convert value '{defaultValue}' to type '{specType}': {ex.Message}",
-                            "DetailsEntry"
-                        );
-                        typedValue = defaultValue; // Keep as string if conversion fails
-                    }
-                }
-
-                var input = new Model_SpecInput
-                {
-                    SpecName = spec.SpecKey,
-                    SpecType = specType,
-                    Unit = specValueDict.ContainsKey("unit")
-                        ? specValueDict["unit"]?.ToString()
-                        : null,
-                    IsRequired =
-                        specValueDict.ContainsKey("required")
-                        && bool.Parse(specValueDict["required"]?.ToString() ?? "false"),
-                    Value = typedValue,
-                };
+                var input = CreateSpecInput(spec.SpecKey, definition, defaultValue);
 
                 specInputs.Add(input);
+                createdSpecNames.Add(spec.SpecKey);
 
-                var typeFromDb = specValueDict.ContainsKey("type")
-                    ? specValueDict["type"]?.ToString() ?? "null"
-                    : "not found";
                 _logger.LogInfo(
-                    $"Processing spec: {spec.SpecKey}, Type from DB: {typeFromDb}, Normalized: {specType}",
+                    $"Processing configured spec: {spec.SpecKey}, Type: {input.SpecType}",
                     "DetailsEntry"
                 );
 
-                // Add to type-specific collection
-                if (specType == "boolean")
+                AddInputToCollection(input, textSpecs, numberSpecs, booleanSpecs, choiceSpecs);
+            }
+
+            foreach (var definition in partSpecificDefinitions.OrderBy(item => item.Key))
+            {
+                if (!createdSpecNames.Add(definition.Key))
                 {
-                    booleanSpecs.Add(input);
-                    _logger.LogInfo($"Added {spec.SpecKey} to BooleanSpecs", "DetailsEntry");
+                    continue;
                 }
-                else if (specType == "number")
-                {
-                    numberSpecs.Add(input);
-                    _logger.LogInfo($"Added {spec.SpecKey} to NumberSpecs", "DetailsEntry");
-                }
-                else
-                {
-                    textSpecs.Add(input);
-                    _logger.LogInfo($"Added {spec.SpecKey} to TextSpecs", "DetailsEntry");
-                }
+
+                var input = CreateSpecInput(
+                    definition.Key,
+                    definition.Value,
+                    Helper_Dunnage_PartSpecs.GetDefaultRuntimeValue(definition.Value)
+                );
+
+                specInputs.Add(input);
+                _logger.LogInfo(
+                    $"Processing part-specific runtime spec: {definition.Key}, Type: {input.SpecType}",
+                    "DetailsEntry"
+                );
+                AddInputToCollection(input, textSpecs, numberSpecs, booleanSpecs, choiceSpecs);
             }
 
             SpecInputs = new ObservableCollection<Model_SpecInput>(specInputs);
             TextSpecs = new ObservableCollection<Model_SpecInput>(textSpecs);
             NumberSpecs = new ObservableCollection<Model_SpecInput>(numberSpecs);
             BooleanSpecs = new ObservableCollection<Model_SpecInput>(booleanSpecs);
+            ChoiceSpecs = new ObservableCollection<Model_SpecInput>(choiceSpecs);
 
             // Update visibility flags
             HasTextSpecs = TextSpecs.Count > 0;
             HasNumberSpecs = NumberSpecs.Count > 0;
             HasBooleanSpecs = BooleanSpecs.Count > 0;
+            HasChoiceSpecs = ChoiceSpecs.Count > 0;
 
             _logger.LogInfo(
-                $"Created {SpecInputs.Count} spec input controls (Text: {TextSpecs.Count}, Number: {NumberSpecs.Count}, Boolean: {BooleanSpecs.Count})",
+                $"Created {SpecInputs.Count} spec input controls (Text: {TextSpecs.Count}, Number: {NumberSpecs.Count}, Boolean: {BooleanSpecs.Count}, Choices: {ChoiceSpecs.Count})",
                 "DetailsEntry"
             );
 
@@ -336,23 +308,71 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
 
     #region Spec Parsing Helpers
 
-    private Dictionary<string, object> ParseSpecValue(string specValue)
+    private static SpecDefinition ParseSpecDefinition(string specValue)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(specValue))
-            {
-                return new Dictionary<string, object>();
-            }
-
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(specValue)
-                ?? new Dictionary<string, object>();
+            return JsonSerializer.Deserialize<SpecDefinition>(specValue) ?? new SpecDefinition();
         }
-        catch (Exception ex)
+        catch (JsonException)
         {
-            _logger.LogError($"Failed to parse spec value JSON: {ex.Message}", ex, "DetailsEntry");
-            return new Dictionary<string, object>();
+            return new SpecDefinition();
         }
+    }
+
+    private static Model_SpecInput CreateSpecInput(
+        string specName,
+        SpecDefinition definition,
+        object? defaultValue
+    )
+    {
+        var normalizedType = NormalizeSpecType(definition.DataType);
+
+        return new Model_SpecInput
+        {
+            SpecName = specName,
+            SpecType = normalizedType,
+            Unit = string.IsNullOrWhiteSpace(definition.Unit) ? null : definition.Unit,
+            IsRequired = definition.Required,
+            Value = defaultValue,
+            Choices = definition.Choices?.ToList() ?? new List<string>(),
+        };
+    }
+
+    private static void AddInputToCollection(
+        Model_SpecInput input,
+        List<Model_SpecInput> textSpecs,
+        List<Model_SpecInput> numberSpecs,
+        List<Model_SpecInput> booleanSpecs,
+        List<Model_SpecInput> choiceSpecs
+    )
+    {
+        switch (input.SpecType)
+        {
+            case "boolean":
+                booleanSpecs.Add(input);
+                break;
+            case "number":
+                numberSpecs.Add(input);
+                break;
+            case "choices":
+                choiceSpecs.Add(input);
+                break;
+            default:
+                textSpecs.Add(input);
+                break;
+        }
+    }
+
+    private static string NormalizeSpecType(string? specType)
+    {
+        return specType?.Trim().ToLowerInvariant() switch
+        {
+            "number" => "number",
+            "boolean" => "boolean",
+            "choices" => "choices",
+            _ => "text",
+        };
     }
 
     #endregion
@@ -461,7 +481,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         if (IsInventoryNotificationVisible)
         {
             InventoryNotificationMessage =
-                $"This part requires inventory adjustment in Visual. Method: {InventoryMethod}";
+                $"This part updates Visual inventory using '{InventoryMethod}'.";
         }
     }
 
@@ -476,7 +496,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         {
             if (spec.Value == null || string.IsNullOrWhiteSpace(spec.Value.ToString()))
             {
-                StatusMessage = $"Required field missing: {spec.SpecName}";
+                StatusMessage = $"Enter a value for {spec.SpecName}.";
                 return false;
             }
         }
@@ -495,22 +515,30 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
     }
 
-    [RelayCommand]
-    private async Task GoNextAsync()
+    public async Task<Model_WorkflowStepResult> SaveAndAdvanceAsync()
     {
         if (IsBusy)
         {
-            return;
+            return new Model_WorkflowStepResult
+            {
+                IsSuccess = false,
+                ErrorMessage = "Please wait for the current step to finish.",
+            };
         }
 
         try
         {
             IsBusy = true;
-            StatusMessage = "Validating...";
+            _workflowService.SetNavigationLock(true);
+            StatusMessage = "Saving your entry...";
 
             if (!ValidateInputs())
             {
-                return;
+                return new Model_WorkflowStepResult
+                {
+                    IsSuccess = false,
+                    ErrorMessage = StatusMessage,
+                };
             }
 
             // Set details in workflow session
@@ -526,24 +554,38 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
             if (!advanceResult.IsSuccess)
             {
                 StatusMessage = advanceResult.ErrorMessage;
-                return;
+                return advanceResult;
             }
 
             _logger.LogInfo("Details saved, navigating to Review", "DetailsEntry");
+            return advanceResult;
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error saving details",
+                "There was a problem saving this entry.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
             );
+
+            return new Model_WorkflowStepResult
+            {
+                IsSuccess = false,
+                ErrorMessage = "There was a problem saving this entry.",
+            };
         }
         finally
         {
+            _workflowService.SetNavigationLock(false);
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task GoNextAsync()
+    {
+        await SaveAndAdvanceAsync();
     }
 
     /// <summary>

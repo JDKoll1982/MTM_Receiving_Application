@@ -100,8 +100,11 @@ MatchingRequirements AS (
     WHERE (
             r.WAREHOUSE_ID = np.WarehouseCode
             OR wo.WAREHOUSE_ID = np.WarehouseCode
-        WHERE ISNULL(r.STATUS, '') <> 'X'
-            AND ISNULL(wo.STATUS, '') <> 'X'
+        )
+      AND ISNULL(r.STATUS, '') <> 'X'
+      AND ISNULL(wo.STATUS, '') <> 'X'
+)
+SELECT TOP (@MaxResults)
     InputPartDescription,
     AssociatedPartNumber,
     AssociatedPartDescription,
@@ -111,7 +114,6 @@ MatchingRequirements AS (
     WorkOrderType,
     WorkOrderBaseId,
     WorkOrderLotId,
-                        OR m.IsFutureOrTodayRun = 0
     WorkOrderSplitId,
     WorkOrderSubId,
     OperationSeqNo,

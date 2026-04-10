@@ -6,6 +6,14 @@
 -- Site: 002
 -- ========================================
 
+-- READ-ONLY query against Infor Visual (MTMFG) - no writes.
+-- Parameters:
+--   @SearchTerm  nvarchar  Prefix search term, e.g. 'BOLT'
+--   @MaxResults  int       Maximum rows to return
+
+DECLARE @SearchTerm nvarchar(100) = 'BOLT';
+DECLARE @MaxResults int           = 50;
+
 -- NOTE: Using base tables (PART, PART_SITE) instead of views (part, inventory)
 SELECT TOP (@MaxResults)
     p.ID AS PartNumber,

@@ -2,7 +2,7 @@
   "id": "dunnage-guided-workflow",
   "module": "Module_Dunnage",
   "name": "Guided Workflow",
-  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with user-default location fallback plus editable Infor Visual location validation, final review with a save-complete decision dialog, configured part inventory-method propagation, add/edit part dialogs that can reuse saved spec templates and capture extra part-specific specs, PNG-backed type and part imagery shown in selection and review surfaces, Receiving-style per-part skid counters written to the Dunnage queue and history archive, a responsive 3x3 type card selector that shows either the uploaded image or the icon while always keeping the type name visible, weak-event workflow notifications, and module-scoped unsaved state.",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with user-default location fallback plus editable Infor Visual location validation, final review with a save-complete decision dialog, configured part inventory-method propagation, add/edit part dialogs that can reuse saved spec templates and capture definition-based part-specific runtime specs for newly created parts, PNG-backed type and part imagery shown in selection, manual entry, and review surfaces, Receiving-style per-part skid counters written to the Dunnage queue and history archive, a responsive 3x3 type card selector that shows either the uploaded image or the icon while always keeping the type name visible, weak-event workflow notifications, and module-scoped unsaved state.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
@@ -107,7 +107,7 @@
       "Recognize dunnage types and parts from uploaded PNG imagery when available",
       "Set the number of loads and quantity for each load",
       "Reuse saved spec templates when quick-adding or editing a part from Part Selection",
-      "Capture extra part-specific specs when the configured type specs are not enough",
+      "Capture extra definition-based part-specific runtime specs when the configured type specs are not enough",
       "Generate Dunnage queue rows that retain a per-part skid sequence and total for label printing",
       "Capture manual or detailed information",
       "Leave location blank and still receive a validated default location",
@@ -126,22 +126,24 @@
       "Confirm uploaded part images appear in part selection and review when present",
       "Confirm the type-selection step advances by card click without a separate Next button",
       "Confirm the mode-selection step exposes the same clear-label action available elsewhere in the guided flow",
-      "Confirm the part details card includes the selected part's saved specs",
+      "Confirm the part details card includes the selected part's saved configured values and any active runtime specs derived from part-specific definitions",
       "Confirm Quick Add Part and Edit Part can reopen with a selected existing spec template applied",
-      "Confirm Quick Add Part and Edit Part retain any added part-specific specs after reopening from the existing-spec picker",
+      "Confirm Quick Add Part and Edit Part retain any added part-specific spec definitions after reopening from the existing-spec picker",
       "Confirm inventoried parts carry their configured inventory method into Details Entry and Review instead of always showing Receive In",
       "Confirm Dunnage saves assign each row a part_skid_sequence and part_skid_total based on the number of loads saved for the same part in the batch",
       "Confirm changing the number of loads rebuilds the per-load quantity editors without losing values that still apply",
       "Confirm guided-step collections and spec groups still repopulate correctly after whole-collection replacement",
       "Confirm Enter Loads uses a single combined quantity card and no longer shows the tip card",
       "Confirm each generated load reaches Review with the correct load number and quantity",
-      "Confirm Enter Details pushes PO, location, and dynamic spec values into each generated load before save so specs_json is written to dunnage_label_data and dunnage_history",
+      "Confirm Enter Details merges configured part values with any part-specific runtime spec definitions and pushes the resulting dynamic spec values into each generated load before save so specs_json is written to dunnage_label_data and dunnage_history",
       "Confirm Enter Details proceeds directly to Review when validation passes, without an extra confirmation modal",
       "Confirm Review exposes a Back path to Enter Details and shows a completion dialog offering Start New Entry or Mode Selection after save",
       "Confirm the dunnage type selector shows 9 cards per page in a 3x3 layout, hides the icon when a type image is present, keeps the type name visible, and scales cleanly within the card area when the window is resized",
-      "Confirm manual and detail entry remain aligned with review behavior",
+      "Confirm manual entry, details entry, and review all show the active runtime spec set, including values seeded from part-specific definitions on newly created parts",
       "Confirm step-based UI refresh still works after revisiting dunnage views without retaining stale subscribers",
       "Confirm leaving Dunnage before save clears unsaved workflow data"
     ]
   }
 }
+
+      "summary": "Guided Dunnage workflow that walks the user through mode selection, type selection, part selection, quantity entry, details entry, and review. The flow now treats archived-part history as the source for saved spec groups and default values, keeps review and label state synchronized after edit/delete actions, blocks quick-add for archived-only parts, and enforces location selection before save in guided and manual entry. Guided and manual saves now archive active labels before a type change, preserve manual rows through Save to History, allow the user to archive and clear the active queue from the workflow shell, disable Dunnage navigation while saves are running, prompt before leaving the module or changing mode with unsaved work, and fully reset visible input state when starting over.",

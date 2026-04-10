@@ -101,11 +101,11 @@
                                 x:Name="SuggestPartIdButton"
                                 HorizontalAlignment="Left"
                                 Click="SuggestPartIdButton_Click"
-                                Content="Suggest from Specs" />
+                                Content="Suggest Part ID" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Edit the current Part ID directly or generate a replacement suggestion from the configured specs."
+                                Text="Update the part ID directly or start with a suggestion based on the details below."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -189,7 +189,7 @@
                                 Height="150"
                                 AcceptsReturn="True"
                                 MaxLength="500"
-                                PlaceholderText="Any additional specifications or notes"
+                                PlaceholderText="Add any extra notes for this part"
                                 TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
@@ -215,18 +215,18 @@
                     <TextBlock
                         Grid.Column="0"
                         Style="{StaticResource BodyStrongTextBlockStyle}"
-                        Text="Configured Type Specifications" />
+                        Text="Part Details" />
                     <Button
                         Grid.Column="1"
                         Click="ChooseExistingSpecsButton_Click"
-                        Content="Choose Existing Specs" />
+                        Content="Copy From Existing Part" />
                 </Grid>
 
                 <TextBlock
                     Grid.Row="1"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Reuse a saved spec set from another part, then adjust the values you need. Large type definitions are automatically split into smaller groups."
+                    Text="Copy saved details from another part, then update anything that should be different. If there are many fields, they will be shown a few at a time."
                     TextWrapping="Wrap" />
 
                 <Border
@@ -249,7 +249,7 @@
                                 VerticalAlignment="Center"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="This dunnage type does not define any configured specs." />
+                                Text="No saved detail fields are set up for this dunnage type." />
                             <Grid
                                 x:Name="DynamicSpecsGrid"
                                 ColumnSpacing="16"
@@ -270,7 +270,7 @@
                             <Button
                                 x:Name="PreviousSpecPageButton"
                                 Click="OnPreviousSpecPageClick"
-                                Content="Previous Group" />
+                                Content="Previous" />
                             <TextBlock
                                 x:Name="SpecPageSummaryTextBlock"
                                 Grid.Column="1"
@@ -282,7 +282,7 @@
                                 x:Name="NextSpecPageButton"
                                 Grid.Column="2"
                                 Click="OnNextSpecPageClick"
-                                Content="Next Group" />
+                                Content="Next" />
                         </Grid>
                     </Grid>
                 </Border>
@@ -299,58 +299,268 @@
                 </Grid.RowDefinitions>
 
                 <Border
+                    x:Name="DefinitionPartSpecificSpecsPanel"
                     Padding="16"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="6">
-                    <StackPanel Spacing="12">
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Add Part-Specific Spec" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Use this page for extra key/value specs that belong only to this part. Existing entries are paged below to keep the dialog compact."
-                            TextWrapping="Wrap" />
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="NewCustomSpecNameTextBox" PlaceholderText="Spec name" />
-                            <TextBox
-                                x:Name="NewCustomSpecValueTextBox"
-                                Grid.Column="1"
-                                PlaceholderText="Spec value" />
-                            <Button
-                                Grid.Column="2"
-                                Click="AddCustomSpecButton_Click"
-                                Content="Add Spec" />
-                        </Grid>
-                        <TextBlock
-                            x:Name="CustomSpecsValidationTextBlock"
-                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            TextWrapping="Wrap"
-                            Visibility="Collapsed" />
-                    </StackPanel>
-                </Border>
-
-                <Border
-                    Grid.Row="1"
-                    Padding="16"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="6">
-                    <Grid RowSpacing="12">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Current Part-Specific Specs" />
+                        <Grid
+                            Grid.Row="0"
+                            Padding="16,16,16,0"
+                            ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="PartSpecificSpecNameTextBox" PlaceholderText="Field label (for example: Edge Guard)" />
+                            <ComboBox
+                                x:Name="PartSpecificSpecTypeComboBox"
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                SelectionChanged="PartSpecificSpecTypeComboBox_SelectionChanged">
+                                <x:String>Text</x:String>
+                                <x:String>Number</x:String>
+                                <x:String>Boolean</x:String>
+                                <x:String>Choices</x:String>
+                            </ComboBox>
+                        </Grid>
+
+                        <ScrollViewer
+                            Grid.Row="1"
+                            Padding="16,12,16,0"
+                            VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="12">
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Extra Information To Capture" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Add any extra fields operators should fill in when this part is received. These prompts stay with the part for future use."
+                                    TextWrapping="Wrap" />
+
+                                <Border
+                                    x:Name="PartSpecificNumberOptionsBorder"
+                                    Padding="12"
+                                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Visibility="Collapsed">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="Number Rules" />
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <NumberBox
+                                                x:Name="PartSpecificMinValueNumberBox"
+                                                Header="Minimum"
+                                                PlaceholderText="Optional"
+                                                SpinButtonPlacementMode="Compact" />
+                                            <NumberBox
+                                                x:Name="PartSpecificMaxValueNumberBox"
+                                                Grid.Column="1"
+                                                Header="Maximum"
+                                                PlaceholderText="Optional"
+                                                SpinButtonPlacementMode="Compact" />
+                                            <TextBox
+                                                x:Name="PartSpecificUnitTextBox"
+                                                Grid.Column="2"
+                                                Header="Unit"
+                                                PlaceholderText="For example: inches or lbs" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border
+                                    x:Name="PartSpecificChoicesBorder"
+                                    Padding="12"
+                                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Visibility="Collapsed">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="Options" />
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox
+                                                x:Name="PartSpecificChoiceTextBox"
+                                                HorizontalAlignment="Stretch"
+                                                PlaceholderText="Add an option" />
+                                            <Button
+                                                Grid.Column="1"
+                                                Click="AddPartSpecificChoiceButton_Click"
+                                                Content="Add Option"
+                                                Style="{StaticResource AccentButtonStyle}" />
+                                        </Grid>
+                                        <ListView
+                                            x:Name="PartSpecificChoicesListView"
+                                            Height="100"
+                                            Padding="4"
+                                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="6">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <Grid Padding="0,4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock VerticalAlignment="Center" Text="{x:Bind}" />
+                                                        <Button
+                                                            Grid.Column="1"
+                                                            Click="RemovePartSpecificChoiceButton_Click"
+                                                            Content="&#xE74D;"
+                                                            FontFamily="Segoe MDL2 Assets"
+                                                            Style="{StaticResource SubtleButtonStyle}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackPanel>
+                                </Border>
+
+                                <TextBlock
+                                    x:Name="CustomSpecsValidationTextBlock"
+                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    TextWrapping="Wrap"
+                                    Visibility="Collapsed" />
+
+                                <ListView
+                                    x:Name="PartSpecificSpecsListView"
+                                    Padding="4"
+                                    BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    ItemsSource="{x:Bind PartSpecificSpecs, Mode=OneWay}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_SpecItem">
+                                            <Grid Padding="0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock
+                                                        FontSize="13"
+                                                        FontWeight="SemiBold"
+                                                        Text="{x:Bind Name}" />
+                                                    <TextBlock
+                                                        FontSize="11"
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Text="{x:Bind Description}" />
+                                                </StackPanel>
+                                                <Border
+                                                    Grid.Column="1"
+                                                    Margin="8,0"
+                                                    Padding="6,2"
+                                                    Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
+                                                    CornerRadius="3"
+                                                    Visibility="{x:Bind IsRequiredVisibility}">
+                                                    <TextBlock
+                                                        FontSize="10"
+                                                        FontWeight="SemiBold"
+                                                        Text="Required" />
+                                                </Border>
+                                                <Button
+                                                    Grid.Column="2"
+                                                    Click="RemovePartSpecificSpecButton_Click"
+                                                    Content="&#xE74D;"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    Style="{StaticResource SubtleButtonStyle}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <Grid
+                            Grid.Row="2"
+                            Padding="16,12,16,16"
+                            ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox
+                                x:Name="PartSpecificRequiredCheckBox"
+                                VerticalAlignment="Center"
+                                Content="Required" />
+                            <Button
+                                Grid.Column="1"
+                                Click="AddPartSpecificSpecButton_Click"
+                                Content="Add Prompt"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border
+                    x:Name="LegacyPartSpecificSpecsListPanel"
+                    Grid.Row="1"
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <Grid x:Name="LegacyPartSpecificSpecsPanel" RowSpacing="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Spacing="12">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Add Extra Part Detail" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Older parts still use the original name-and-value layout so existing records keep working the same way."
+                                TextWrapping="Wrap" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="NewCustomSpecNameTextBox" PlaceholderText="Detail name" />
+                                <TextBox
+                                    x:Name="NewCustomSpecValueTextBox"
+                                    Grid.Column="1"
+                                    PlaceholderText="Detail value" />
+                                <Button
+                                    Grid.Column="2"
+                                    Click="AddCustomSpecButton_Click"
+                                    Content="Add Detail" />
+                            </Grid>
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Saved Extra Part Details" />
 
                         <Grid Grid.Row="1">
                             <TextBlock
@@ -359,7 +569,7 @@
                                 VerticalAlignment="Center"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="No part-specific specs added yet." />
+                                Text="No extra part details have been added yet." />
                             <ItemsRepeater x:Name="CustomSpecsItemsRepeater" ItemsSource="{x:Bind VisibleCustomSpecs, Mode=OneWay}">
                                 <ItemsRepeater.Layout>
                                     <StackLayout Spacing="8" />
@@ -372,11 +582,11 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBox PlaceholderText="Spec name" Text="{x:Bind Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <TextBox PlaceholderText="Detail name" Text="{x:Bind Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             <TextBox
                                                 Grid.Column="1"
                                                 Margin="8,0,0,0"
-                                                PlaceholderText="Spec value"
+                                                PlaceholderText="Detail value"
                                                 Text="{x:Bind Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             <Button
                                                 Grid.Column="2"
@@ -385,7 +595,7 @@
                                                 Content="&#xE74D;"
                                                 FontFamily="Segoe MDL2 Assets"
                                                 Style="{StaticResource SubtleButtonStyle}"
-                                                ToolTipService.ToolTip="Remove this part-specific spec" />
+                                                ToolTipService.ToolTip="Remove this extra part detail" />
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsRepeater.ItemTemplate>

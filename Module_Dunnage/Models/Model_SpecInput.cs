@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
@@ -21,4 +22,7 @@ public partial class Model_SpecInput : ObservableObject
 
     [ObservableProperty]
     private bool _isRequired;
+
+    [ObservableProperty]
+    private List<string> _choices = new();
 }

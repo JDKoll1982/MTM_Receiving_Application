@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -22,7 +23,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Part Selection with inventory notification
 /// </summary>
-public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IResettableViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -30,12 +31,14 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     private readonly IService_Dispatcher _dispatcher;
     private readonly IService_UserPrivileges _userPrivileges;
     private readonly IService_UserSessionManager _sessionManager;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
 
     public ViewModel_Dunnage_PartSelection(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Dispatcher dispatcher,
         IService_Help helpService,
+        IService_ViewModelRegistry viewModelRegistry,
         IService_UserPrivileges userPrivileges,
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
@@ -48,15 +51,33 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         _dunnageService = dunnageService;
         _dispatcher = dispatcher;
         _helpService = helpService;
+        _viewModelRegistry = viewModelRegistry;
         _userPrivileges = userPrivileges;
         _sessionManager = sessionManager;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
+        _viewModelRegistry.Register(this);
         _logger.LogInfo(
             "PartSelection: ViewModel constructed and subscribed to StepChanged",
             "PartSelection"
         );
+    }
+
+    public void ResetToDefaults()
+    {
+        SelectedPart = null;
+        AvailableParts = new ObservableCollection<Model_DunnagePart>();
+        SelectedTypeName = string.Empty;
+        SelectedTypeIcon = "Help";
+        SelectedTypeImagePath = null;
+        SelectedTypeId = 0;
+        SelectedPartSpecSummaries = new ObservableCollection<string>();
+        HasSelectedPartSpecs = false;
+        IsInventoryNotificationVisible = false;
+        InventoryNotificationMessage = string.Empty;
+        InventoryMethod = "Adjust In";
+        StatusMessage = string.Empty;
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -928,6 +949,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
             pair => NormalizeSpecValue(pair.Value)
         );
 
+        foreach (var definition in part.PartSpecificSpecDefinitions)
+        {
+            specValues[definition.Key] = definition.Value;
+        }
+
         var notes = specValues.TryGetValue("Notes", out var notesValue)
             ? notesValue?.ToString() ?? string.Empty
             : string.Empty;
@@ -947,6 +973,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
     {
         if (rawValue is JsonElement element)
         {
+            if (Helper_Dunnage_PartSpecs.TryGetSpecDefinition(element, out var definition))
+            {
+                return definition;
+            }
+
             return element.ValueKind switch
             {
                 JsonValueKind.String => element.GetString(),
@@ -970,7 +1001,13 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
         return string.Join(
             " | ",
-            specValues.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}: {pair.Value}")
+            specValues
+                .OrderBy(pair => pair.Key)
+                .Select(pair =>
+                    Helper_Dunnage_PartSpecs.TryGetSpecDefinition(pair.Value, out var definition)
+                        ? $"{pair.Key}: {definition.DataType} field"
+                        : $"{pair.Key}: {pair.Value}"
+                )
         );
     }
 

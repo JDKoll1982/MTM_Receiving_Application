@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
@@ -20,7 +21,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Edit Mode (historical data editing)
 /// </summary>
-public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResettableViewModel
 {
     private const string PartSelectionPlaceholderText = "Select Part ID";
 
@@ -49,6 +50,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
     private readonly IService_Window _windowService;
     private readonly IService_Help _helpService;
     private readonly IService_InforVisual _inforVisualService;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
 
     private const int PAGE_SIZE = 50;
 
@@ -56,6 +58,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
         IService_DunnageWorkflow workflowService,
+        IService_ViewModelRegistry viewModelRegistry,
         IService_Window windowService,
         IService_InforVisual inforVisualService,
         IService_Help helpService,
@@ -68,6 +71,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         _dunnageService = dunnageService;
         _paginationService = paginationService;
         _workflowService = workflowService;
+        _viewModelRegistry = viewModelRegistry;
         _windowService = windowService;
         _inforVisualService = inforVisualService;
         _helpService = helpService;
@@ -80,9 +84,31 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         // T167: Subscribe to PageChanged event
         _paginationService.PageChanged += OnPageChanged;
 
+        _viewModelRegistry.Register(this);
+
         // Set default date range (last 7 days)
         ToDate = DateTimeOffset.Now;
         FromDate = DateTimeOffset.Now.AddDays(-7);
+    }
+
+    public bool HasUnsavedChanges => GetEditedLoads().Count > 0 || _removedLoads.Count > 0;
+
+    public void ResetToDefaults()
+    {
+        _allLoads.Clear();
+        _removedLoads.Clear();
+        _originalLoadSnapshots.Clear();
+        ReplaceFilteredLoads(Array.Empty<Model_DunnageLoad>());
+        SelectedLoads.Clear();
+        FocusedLoad = null;
+        SearchText = string.Empty;
+        CurrentPage = 1;
+        TotalPages = 1;
+        TotalRecords = 0;
+        CanSave = false;
+        CanNavigate = false;
+        StatusMessage = string.Empty;
+        _currentLoadSource = EditModeLoadSource.None;
     }
 
     #region Observable Properties
@@ -799,6 +825,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            _workflowService.SetNavigationLock(true);
             CanSave = false;
             StatusMessage = "Saving changes...";
 
@@ -883,8 +910,9 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         }
         finally
         {
+            _workflowService.SetNavigationLock(false);
             IsBusy = false;
-            CanSave = true;
+            UpdateCanSave();
         }
     }
 

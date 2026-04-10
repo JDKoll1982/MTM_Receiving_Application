@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
+using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Helpers;
 
@@ -26,6 +27,19 @@ internal static class Helper_Dunnage_PartIdSuggestion
         foreach (var pair in specValues)
         {
             if (string.Equals(pair.Key, "Notes", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (
+                pair.Value is JsonElement element
+                && Helper_Dunnage_PartSpecs.TryGetSpecDefinition(element, out _)
+            )
+            {
+                continue;
+            }
+
+            if (pair.Value is SpecDefinition)
             {
                 continue;
             }

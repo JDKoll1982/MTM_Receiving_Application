@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 
@@ -15,6 +14,7 @@ public class Model_DunnagePart : INotifyPropertyChanged
     private int _typeId;
     private string _specValues = string.Empty; // JSON string
     private Dictionary<string, object> _specValuesDict = new();
+    private Dictionary<string, SpecDefinition> _partSpecificSpecDefinitions = new();
     private string _dunnageTypeName = string.Empty;
     private string? _imagePath;
     private string? _dunnageTypeImagePath;
@@ -57,6 +57,12 @@ public class Model_DunnagePart : INotifyPropertyChanged
     {
         get => _specValuesDict;
         set => SetField(ref _specValuesDict, value);
+    }
+
+    public Dictionary<string, SpecDefinition> PartSpecificSpecDefinitions
+    {
+        get => _partSpecificSpecDefinitions;
+        set => SetField(ref _partSpecificSpecDefinitions, value);
     }
 
     private string _homeLocation = string.Empty;
@@ -135,6 +141,8 @@ public class Model_DunnagePart : INotifyPropertyChanged
     public string DunnageSpecValuesJson =>
         string.IsNullOrWhiteSpace(SpecValues) ? "{}" : SpecValues;
 
+    public bool UsesDefinitionBasedPartSpecificSpecs => PartSpecificSpecDefinitions.Count > 0;
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -156,20 +164,35 @@ public class Model_DunnagePart : INotifyPropertyChanged
 
     private void DeserializeSpecValues()
     {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(SpecValues))
-            {
-                SpecValuesDict = new Dictionary<string, object>();
-                return;
-            }
-
-            var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(SpecValues);
-            SpecValuesDict = dict ?? new Dictionary<string, object>();
-        }
-        catch
+        var rawElements = Helper_Dunnage_PartSpecs.DeserializeRawElements(SpecValues);
+        if (rawElements.Count == 0)
         {
             SpecValuesDict = new Dictionary<string, object>();
+            PartSpecificSpecDefinitions = new Dictionary<string, SpecDefinition>();
+            return;
         }
+
+        var scalarValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        var definitionValues = new Dictionary<string, SpecDefinition>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        foreach (var pair in rawElements)
+        {
+            if (Helper_Dunnage_PartSpecs.TryGetSpecDefinition(pair.Value, out var definition))
+            {
+                definitionValues[pair.Key] = definition;
+                continue;
+            }
+
+            var plainValue = Helper_Dunnage_PartSpecs.ConvertJsonElementToPlainObject(pair.Value);
+            if (plainValue is not null)
+            {
+                scalarValues[pair.Key] = plainValue;
+            }
+        }
+
+        SpecValuesDict = scalarValues;
+        PartSpecificSpecDefinitions = definitionValues;
     }
 }

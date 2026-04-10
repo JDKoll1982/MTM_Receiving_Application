@@ -33,9 +33,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
         private readonly WeakEventSource _labelDataCleared = new();
+        private readonly WeakEventSource _navigationLockChanged = new();
 
         public Enum_DunnageWorkflowStep CurrentStep { get; private set; }
         public Model_DunnageSession CurrentSession { get; private set; } = new();
+        public bool IsNavigationLocked { get; private set; }
 
         public int NumberOfLoads
         {
@@ -59,6 +61,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             add => _labelDataCleared.Subscribe(value);
             remove => _labelDataCleared.Unsubscribe(value);
+        }
+
+        public event EventHandler? NavigationLockChanged
+        {
+            add => _navigationLockChanged.Subscribe(value);
+            remove => _navigationLockChanged.Unsubscribe(value);
         }
 
         public Service_DunnageWorkflow(
@@ -309,8 +317,54 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _currentEntryLoads.Clear();
             CurrentSession = new Model_DunnageSession();
             NumberOfLoads = 1;
+            SetNavigationLock(false);
             _viewModelRegistry.ClearAllInputs();
             _statusMessageRaised.Raise(this, "Session cleared");
+        }
+
+        public bool HasUnsavedData()
+        {
+            if (CurrentSession.Loads.Count > 0 || _currentEntryLoads.Count > 0)
+            {
+                return true;
+            }
+
+            if (CurrentSession.SelectedTypeId > 0 || CurrentSession.SelectedPart is not null)
+            {
+                return true;
+            }
+
+            if (
+                string.IsNullOrWhiteSpace(CurrentSession.PONumber) is false
+                || string.IsNullOrWhiteSpace(CurrentSession.Location) is false
+                || string.IsNullOrWhiteSpace(CurrentSession.InventoryMethod) is false
+            )
+            {
+                return true;
+            }
+
+            if (CurrentSession.NumberOfLoads > 1 || CurrentSession.Quantity > 0)
+            {
+                return true;
+            }
+
+            if (CurrentSession.LoadQuantities.Any(quantity => quantity > 0))
+            {
+                return true;
+            }
+
+            return CurrentSession.SpecValues is { Count: > 0 };
+        }
+
+        public void SetNavigationLock(bool isLocked)
+        {
+            if (IsNavigationLocked == isLocked)
+            {
+                return;
+            }
+
+            IsNavigationLocked = isLocked;
+            _navigationLockChanged.Raise(this, EventArgs.Empty);
         }
 
         public async Task<Model_Dao_Result<int>> ClearLabelDataAsync()

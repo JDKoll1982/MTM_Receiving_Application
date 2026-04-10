@@ -418,13 +418,13 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             .ThenBy(line => line.Label, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var distinctDates = distinctDateLines
-            .Select(line => new Model_Tool_MaterialAvailabilityIncomingDate
+        var distinctDates = distinctDateLines.ConvertAll(
+            line => new Model_Tool_MaterialAvailabilityIncomingDate
             {
                 Label = line.Label,
                 Date = line.Date,
-            })
-            .ToList();
+            }
+        );
 
         var distinctPoLines = qualifyingRollupRows
             .GroupBy(row => new
@@ -454,19 +454,21 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             .Where(line => line.IsHistorical)
             .Max(line => (DateTime?)line.Date);
 
-        var sortBucket = earliestFutureDate.HasValue ? 0 : latestHistoricalDate.HasValue ? 1 : 2;
+        var sortBucket =
+            earliestFutureDate.HasValue ? 0
+            : latestHistoricalDate.HasValue ? 1
+            : 2;
         var sortDate = earliestFutureDate ?? latestHistoricalDate ?? DateTime.MaxValue;
         var firstDisplayLine = distinctDateLines.FirstOrDefault();
-        var nextDateSummary =
-            firstDisplayLine is not null
-                ? firstDisplayLine.IsHistorical
-                    ? $"{firstDisplayLine.Label}: {firstDisplayLine.Date:MM/dd/yyyy}"
-                    : $"Next material date: {firstDisplayLine.Label} {firstDisplayLine.Date:MM/dd/yyyy}"
+        var nextDateSummary = firstDisplayLine is not null
+            ? firstDisplayLine.IsHistorical
+                ? $"{firstDisplayLine.Label}: {firstDisplayLine.Date:MM/dd/yyyy}"
+                : $"Next material date: {firstDisplayLine.Label} {firstDisplayLine.Date:MM/dd/yyyy}"
             : distinctPoLines.Count > 0
                 ? "Incoming material found, but no qualifying due dates are available."
-            : incomingWindowDays.HasValue
-                ? $"No inbound material due in the next {incomingWindowDays.Value} days."
-            : "No inbound material found.";
+                : incomingWindowDays.HasValue
+                    ? $"No inbound material due in the next {incomingWindowDays.Value} days."
+                    : "No inbound material found.";
 
         return new IncomingPresentation(
             distinctDates,
