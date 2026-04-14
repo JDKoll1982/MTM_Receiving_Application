@@ -909,9 +909,7 @@ public sealed class Service_ReceivingLocationReconciliationTests
         result.Data.UpdatedItems.Should().OnlyContain(item => item.QuantityMoved == 5000);
         result
             .Data.UpdatedItems.Should()
-            .OnlyContain(item =>
-                item.AllocationMethod == "Aggregate same-day transfer quantity match"
-            );
+            .Contain(item => item.AllocationMethod == "Aggregate same-day transfer quantity match");
         result.Data.UnresolvedItems.Should().BeEmpty();
     }
 

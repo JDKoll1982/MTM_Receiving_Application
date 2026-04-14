@@ -513,12 +513,20 @@ public sealed class Service_ReceivingLocationReconciliation
             var selection = SelectBestBucket(item, availableBuckets, historyTracker);
             if (selection.Bucket is null)
             {
-                selection = SelectAggregateTransferBucket(
+                var aggregateSelection = SelectAggregateTransferBucket(
                     item,
                     availableBuckets,
                     totalSavedQuantity,
                     totalMatchedTransferQuantity
                 );
+
+                if (
+                    aggregateSelection.Bucket is not null
+                    || string.IsNullOrWhiteSpace(aggregateSelection.Resolution) is false
+                )
+                {
+                    selection = aggregateSelection;
+                }
             }
 
             if (selection.Bucket is null)
