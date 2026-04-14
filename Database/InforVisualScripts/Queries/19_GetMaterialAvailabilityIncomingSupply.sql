@@ -55,7 +55,7 @@ SELECT
     po.DESIRED_RECV_DATE AS HeaderDesiredReceiveDate,
     COALESCE(po.FREE_ON_BOARD, '') AS FreeOnBoard,
     CASE
-        WHEN po.FREE_ON_BOARD LIKE '%BLANKET%' THEN CAST(1 AS bit)
+        WHEN RIGHT(RTRIM(po.ID), 1) = 'B' OR po.FREE_ON_BOARD LIKE '%BLANKET%' THEN CAST(1 AS bit)
         ELSE CAST(0 AS bit)
     END AS IsBlanketOrder
 FROM RequestedParts rp
@@ -78,7 +78,7 @@ WHERE ISNULL(po.STATUS, '') NOT IN ('C', 'X')
         )
       )
   AND (
-        (po.FREE_ON_BOARD LIKE '%BLANKET%' AND pol.LAST_RECEIVED_DATE IS NOT NULL)
+                ((RIGHT(RTRIM(po.ID), 1) = 'B' OR po.FREE_ON_BOARD LIKE '%BLANKET%') AND pol.LAST_RECEIVED_DATE IS NOT NULL)
         OR (pol.ORDER_QTY - pol.TOTAL_RECEIVED_QTY) > 0
       )
 ORDER BY

@@ -97,11 +97,7 @@ MatchingRequirements AS (
         ON r.PART_ID = component.ID
     LEFT JOIN dbo.PART parent
         ON wo.PART_ID = parent.ID
-    WHERE (
-            r.WAREHOUSE_ID = np.WarehouseCode
-            OR wo.WAREHOUSE_ID = np.WarehouseCode
-        )
-      AND ISNULL(r.STATUS, '') <> 'X'
+    WHERE ISNULL(r.STATUS, '') <> 'X'
       AND ISNULL(wo.STATUS, '') <> 'X'
 )
 SELECT TOP (@MaxResults)

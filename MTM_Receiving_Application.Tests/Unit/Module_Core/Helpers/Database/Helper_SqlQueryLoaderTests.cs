@@ -51,4 +51,25 @@ public sealed class Helper_SqlQueryLoaderTests
         fromIndex.Should().BeGreaterThan(0);
         projection[..fromIndex].Should().Contain("InputPartNumber");
     }
+
+    [Fact]
+    public void LoadAndPrepareQuery_ShouldDetectBlanketOrdersByPurchaseOrderSuffix()
+    {
+        var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+            "19_GetMaterialAvailabilityIncomingSupply.sql"
+        );
+
+        query.Should().Contain("RIGHT(RTRIM(po.ID), 1) = 'B'");
+    }
+
+    [Fact]
+    public void LoadAndPrepareQuery_ShouldNotFilterAssociatedPartRunsByWarehouse()
+    {
+        var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+            "20_GetMaterialAvailabilityAssociatedPartRuns.sql"
+        );
+
+        query.Should().NotContain("r.WAREHOUSE_ID = np.WarehouseCode");
+        query.Should().NotContain("wo.WAREHOUSE_ID = np.WarehouseCode");
+    }
 }
