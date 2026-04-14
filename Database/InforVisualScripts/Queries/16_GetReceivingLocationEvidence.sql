@@ -118,6 +118,12 @@ LatestPoTransaction AS (
     FROM PoTransactions
     WHERE OverallRank = 1
 ),
+PoTransactionOverallSummary AS (
+    SELECT
+        SUM(TransactionQuantity) AS TotalMatchedTransactionQuantity,
+        COUNT(1) AS TotalMatchedTransactionCount
+    FROM PoTransactions
+),
 LocationTransactionSummary AS (
     SELECT
         WarehouseId,
@@ -149,6 +155,8 @@ SELECT
     lts.MatchedTransactionDate,
     ISNULL(lts.MatchedTransactionUserId, '') AS MatchedTransactionUserId,
     lts.MatchedTransactionId,
+    ISNULL(ptos.TotalMatchedTransactionQuantity, 0) AS TotalMatchedTransactionQuantity,
+    ISNULL(ptos.TotalMatchedTransactionCount, 0) AS TotalMatchedTransactionCount,
     ISNULL(rs.ReceiptCount, 0) AS ReceiptCount,
     rs.FirstReceivedDate,
     rs.LastReceivedDate,
@@ -167,5 +175,7 @@ LEFT JOIN CurrentInventory ci
 LEFT JOIN LocationTransactionSummary lts
     ON lts.WarehouseId = ci.WarehouseId
    AND lts.LocationId = ci.LocationId
+LEFT JOIN PoTransactionOverallSummary ptos
+    ON 1 = 1
 LEFT JOIN LatestPoTransaction lpt
     ON 1 = 1;

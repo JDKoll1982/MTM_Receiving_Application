@@ -23,6 +23,10 @@ public sealed class Model_InforVisualLocationEvidence
 
     public int? MatchedTransactionId { get; set; }
 
+    public decimal TotalMatchedTransactionQuantity { get; set; }
+
+    public int TotalMatchedTransactionCount { get; set; }
+
     public int ReceiptCount { get; set; }
 
     public DateTime? FirstReceivedDate { get; set; }

@@ -447,6 +447,8 @@ public sealed class Service_ReceivingLocationReconciliation
             .Where(bucket => !ignoredLocations.Contains(bucket.NormalizedLocation))
             .ToList();
         var receiptCount = evidenceRows.Select(row => row.ReceiptCount).DefaultIfEmpty(0).Max();
+        var totalSavedQuantity = loads.Sum(load => load.WeightQuantity);
+        var totalMatchedTransferQuantity = GetTotalMatchedTransferQuantity(evidenceRows, allBuckets);
 
         if (allBuckets.Count == 0)
         {
@@ -511,6 +513,16 @@ public sealed class Service_ReceivingLocationReconciliation
             var selection = SelectBestBucket(item, availableBuckets, historyTracker);
             if (selection.Bucket is null)
             {
+                selection = SelectAggregateTransferBucket(
+                    item,
+                    availableBuckets,
+                    totalSavedQuantity,
+                    totalMatchedTransferQuantity
+                );
+            }
+
+            if (selection.Bucket is null)
+            {
                 if (
                     TryResolvePendingVisualReceipt(
                         item,
@@ -537,7 +549,9 @@ public sealed class Service_ReceivingLocationReconciliation
 
             item.ProposedLocation = selectedBucket.LocationId;
             item.MatchedLocationQuantity = quantityBeforeAllocation;
-            item.QuantityMoved = quantityBeforeAllocation;
+            item.QuantityMoved = selection.UsesAllocatedRowQuantity
+                ? item.SavedRowQuantity
+                : quantityBeforeAllocation;
 
             if (
                 selection.UsesExactHistoryQuantity
@@ -558,7 +572,9 @@ public sealed class Service_ReceivingLocationReconciliation
             }
 
             item.AllocationMethod = selection.AllocationMethod;
-            item.QuantityDifference = Math.Abs(quantityBeforeAllocation - item.SavedRowQuantity);
+            item.QuantityDifference = selection.UsesAllocatedRowQuantity
+                ? 0
+                : Math.Abs(quantityBeforeAllocation - item.SavedRowQuantity);
             item.Resolution = selection.Resolution;
 
             item.Details = string.Create(
@@ -607,6 +623,7 @@ public sealed class Service_ReceivingLocationReconciliation
                     CurrentQuantity = currentQuantity,
                     EvidenceQuantity = availableQuantity,
                     RemainingQuantity = availableQuantity,
+                    HasMatchedTransferQuantity = matchedTransactionQuantity > 0,
                     AllocationBasis =
                         matchedTransactionQuantity > 0
                             ? "Matched PO transfer quantity"
@@ -640,6 +657,7 @@ public sealed class Service_ReceivingLocationReconciliation
                 "Skipped",
                 string.Empty,
                 "No remaining destination quantity was available after earlier rows in the same receipt group were allocated.",
+                false,
                 false
             );
         }
@@ -659,7 +677,8 @@ public sealed class Service_ReceivingLocationReconciliation
                 "Unchanged",
                 "Same location and quantity history match",
                 "The current location already has an exact matching movement for this load quantity.",
-                true
+                true,
+                false
             );
         }
 
@@ -684,7 +703,8 @@ public sealed class Service_ReceivingLocationReconciliation
                 resolution,
                 "Exact quantity transaction-history match",
                 $"Transaction history contains one exact movement match for this load quantity in {exactHistoryCandidates[0].DisplayName}.",
-                true
+                true,
+                false
             );
         }
 
@@ -707,7 +727,8 @@ public sealed class Service_ReceivingLocationReconciliation
                 resolution,
                 "Newest exact quantity transaction-history match",
                 $"Transaction history shows the newest exact movement for this load quantity at {newestExactHistoryCandidate.DisplayName}.",
-                true
+                true,
+                false
             );
         }
 
@@ -722,6 +743,7 @@ public sealed class Service_ReceivingLocationReconciliation
                 "Unchanged",
                 "Same location and exact total match",
                 "The current location total exactly matches this saved load quantity.",
+                false,
                 false
             );
         }
@@ -740,6 +762,7 @@ public sealed class Service_ReceivingLocationReconciliation
                 resolution,
                 "Exact quantity match",
                 $"Exact quantity match selected {exactMatches[0].DisplayName} using {exactMatches[0].AllocationBasis.ToLowerInvariant()}.",
+                false,
                 false
             );
         }
@@ -756,6 +779,7 @@ public sealed class Service_ReceivingLocationReconciliation
                     "Unchanged",
                     "Same location exact total match",
                     $"The current location {sameLocationExactMatch.DisplayName} is one of the exact quantity matches, so the load can stay where it is.",
+                    false,
                     false
                 );
             }
@@ -768,6 +792,7 @@ public sealed class Service_ReceivingLocationReconciliation
                     "Updated",
                     "Newest exact quantity evidence",
                     $"Multiple exact quantity totals existed, so the newest evidence location {newestExactBucket.DisplayName} was selected.",
+                    false,
                     false
                 );
             }
@@ -777,6 +802,7 @@ public sealed class Service_ReceivingLocationReconciliation
                 "Ambiguous",
                 string.Empty,
                 $"Multiple destination locations have the same exact remaining quantity for this row: {string.Join(", ", exactMatches.Select(bucket => bucket.DisplayName))}.",
+                false,
                 false
             );
         }
@@ -785,9 +811,87 @@ public sealed class Service_ReceivingLocationReconciliation
             null,
             "NotFound",
             string.Empty,
-            "No current destination location has an exact quantity match for this load. Reconciliation now requires the InforVisual quantity to exactly match the saved MTM quantity before proposing a location change.",
+            "No current destination location has an exact quantity match or a full aggregate receipt-group transfer match for this load.",
+            false,
             false
         );
+    }
+
+    private static BucketSelectionResult SelectAggregateTransferBucket(
+        Model_ReceivingLocationReconciliationItem item,
+        IReadOnlyList<ReconciliationLocationBucket> candidates,
+        decimal totalSavedQuantity,
+        decimal totalMatchedTransferQuantity
+    )
+    {
+        if (totalSavedQuantity <= 0 || totalMatchedTransferQuantity <= 0)
+        {
+            return new BucketSelectionResult(null, string.Empty, string.Empty, string.Empty, false, false);
+        }
+
+        if (totalMatchedTransferQuantity != totalSavedQuantity)
+        {
+            return new BucketSelectionResult(null, string.Empty, string.Empty, string.Empty, false, false);
+        }
+
+        var aggregateCandidates = candidates
+            .Where(bucket =>
+                bucket.HasMatchedTransferQuantity
+                && bucket.EvidenceQuantity == totalMatchedTransferQuantity
+                && bucket.RemainingQuantity >= item.SavedRowQuantity
+            )
+            .ToList();
+
+        if (aggregateCandidates.Count == 1)
+        {
+            var resolution = LocationsEqual(aggregateCandidates[0].LocationId, item.ExistingLocation)
+                ? "Unchanged"
+                : "Updated";
+
+            return new BucketSelectionResult(
+                aggregateCandidates[0],
+                resolution,
+                "Aggregate same-day transfer quantity match",
+                string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"A single destination location has matched PO transfer evidence for the full {totalMatchedTransferQuantity:0.##} {item.QuantityUnitOfMeasure} receipt-day total, so this row can be allocated to {aggregateCandidates[0].DisplayName}."
+                ),
+                false,
+                true
+            );
+        }
+
+        if (aggregateCandidates.Count > 1)
+        {
+            return new BucketSelectionResult(
+                null,
+                "Ambiguous",
+                string.Empty,
+                "Multiple destination locations appear to hold the full aggregate transfer quantity for this receipt-day group.",
+                false,
+                false
+            );
+        }
+
+        return new BucketSelectionResult(null, string.Empty, string.Empty, string.Empty, false, false);
+    }
+
+    private static decimal GetTotalMatchedTransferQuantity(
+        IReadOnlyList<Model_InforVisualLocationEvidence> evidenceRows,
+        IReadOnlyList<ReconciliationLocationBucket> allBuckets
+    )
+    {
+        var totalFromQuery = evidenceRows
+            .Select(row => row.TotalMatchedTransactionQuantity)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        if (totalFromQuery > 0)
+        {
+            return totalFromQuery;
+        }
+
+        return allBuckets.Where(bucket => bucket.HasMatchedTransferQuantity).Sum(bucket => bucket.EvidenceQuantity);
     }
 
     private static ReconciliationLocationBucket? SelectUniqueNewestHistoryCandidate(
@@ -1094,6 +1198,8 @@ public sealed class Service_ReceivingLocationReconciliation
 
         public decimal RemainingQuantity { get; set; }
 
+        public bool HasMatchedTransferQuantity { get; init; }
+
         public string AllocationBasis { get; init; } = string.Empty;
 
         public string MovedByUserId { get; init; } = string.Empty;
@@ -1111,7 +1217,8 @@ public sealed class Service_ReceivingLocationReconciliation
         string Resolution,
         string AllocationMethod,
         string Details,
-        bool UsesExactHistoryQuantity
+        bool UsesExactHistoryQuantity,
+        bool UsesAllocatedRowQuantity
     );
 
     private sealed class ReconciliationHistoryTracker

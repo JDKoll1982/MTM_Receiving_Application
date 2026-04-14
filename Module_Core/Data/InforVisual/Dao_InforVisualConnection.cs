@@ -254,6 +254,14 @@ public class Dao_InforVisualConnection
                             reader["MatchedTransactionId"] == DBNull.Value
                                 ? null
                                 : Convert.ToInt32(reader["MatchedTransactionId"]),
+                        TotalMatchedTransactionQuantity =
+                            reader["TotalMatchedTransactionQuantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["TotalMatchedTransactionQuantity"]),
+                        TotalMatchedTransactionCount =
+                            reader["TotalMatchedTransactionCount"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["TotalMatchedTransactionCount"]),
                         ReceiptCount =
                             reader["ReceiptCount"] == DBNull.Value
                                 ? 0

@@ -808,6 +808,114 @@ public sealed class Service_ReceivingLocationReconciliationTests
     }
 
     [Fact]
+    public async Task PreviewLocationsAsync_ShouldAllocateAllRows_WhenSingleTransferMatchesFullReceiptDayTotal()
+    {
+        var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var service = CreateService(mySqlReceivingMock, inforVisualMock);
+
+        var loadOne = CreateLoad("66868", "MMC0000650", "1", "RECV");
+        loadOne.WeightQuantity = 5000;
+        loadOne.UnitOfMeasure = "EA";
+        loadOne.LoadID = Guid.NewGuid();
+
+        var loadTwo = CreateLoad("66868", "MMC0000650", "1", "RECV");
+        loadTwo.WeightQuantity = 5000;
+        loadTwo.UnitOfMeasure = "EA";
+        loadTwo.LoadID = Guid.NewGuid();
+
+        var loadThree = CreateLoad("66868", "MMC0000650", "1", "RECV");
+        loadThree.WeightQuantity = 5000;
+        loadThree.UnitOfMeasure = "EA";
+        loadThree.LoadID = Guid.NewGuid();
+
+        var loadFour = CreateLoad("66868", "MMC0000650", "1", "RECV");
+        loadFour.WeightQuantity = 5000;
+        loadFour.UnitOfMeasure = "EA";
+        loadFour.LoadID = Guid.NewGuid();
+
+        mySqlReceivingMock
+            .Setup(service => service.GetCurrentLabelDataAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_ReceivingLoad> { loadOne, loadTwo, loadThree, loadFour }
+                )
+            );
+        mySqlReceivingMock
+            .Setup(service =>
+                service.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>())
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_ReceivingLoad>()));
+
+        inforVisualMock
+            .Setup(service =>
+                service.GetReceivingLocationEvidenceAsync(
+                    "PO-066868",
+                    "MMC0000650",
+                    "1",
+                    loadOne.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationEvidence>
+                    {
+                        new()
+                        {
+                            CurrentWarehouseId = "002",
+                            CurrentLocationId = "V-A0-01",
+                            CurrentQuantity = 20000,
+                            MatchedTransactionQuantity = 20000,
+                            MatchedTransactionCount = 1,
+                            TotalMatchedTransactionQuantity = 20000,
+                            TotalMatchedTransactionCount = 1,
+                            MatchedTransactionDate = new DateTime(2026, 4, 5, 9, 30, 0),
+                            MatchedTransactionUserId = "aggregate-user",
+                            ReceiptCount = 4,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetReceivingLocationTransactionHistoryAsync(
+                    "PO-066868",
+                    "MMC0000650",
+                    "1",
+                    loadOne.ReceivedDate
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualLocationTransaction>
+                    {
+                        new()
+                        {
+                            LocationId = "V-A0-01",
+                            Quantity = 20000,
+                            TransactionDate = new DateTime(2026, 4, 5, 9, 30, 0),
+                            UserId = "aggregate-user",
+                        },
+                    }
+                )
+            );
+
+        var result = await service.PreviewLocationsAsync(includeAllHistory: false);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.UpdatedItems.Should().HaveCount(4);
+        result.Data.UpdatedItems.Should().OnlyContain(item => item.ProposedLocation == "V-A0-01");
+        result.Data.UpdatedItems.Should().OnlyContain(item => item.QuantityMoved == 5000);
+        result
+            .Data.UpdatedItems.Should()
+            .OnlyContain(item =>
+                item.AllocationMethod == "Aggregate same-day transfer quantity match"
+            );
+        result.Data.UnresolvedItems.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task PreviewLocationsAsync_ShouldProposeWorkCenter_WhenVisualShowsWorkCenterAdjustmentHistoryWithoutOnHandInventory()
     {
         var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
