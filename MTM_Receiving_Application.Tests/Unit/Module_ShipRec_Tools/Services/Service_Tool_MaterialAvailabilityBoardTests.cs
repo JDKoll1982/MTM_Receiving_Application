@@ -5,6 +5,7 @@ using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 using Xunit;
 
@@ -623,5 +624,82 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data[0].AssociatedPartRuns[0].WorkOrderDisplay.Should().Be("WO-926544");
         result.Data[0].NextDateSummary.Should().Contain("Latest known run:");
         result.Data[0].NextDateSummary.Should().Contain("12/08/2025");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldCreateReportingStyleHtmlDocument()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new()
+            {
+                PartId = "23-11669-100",
+                PartDescription = "Stud, Weld 5/16-18 x 1.000",
+                SearchLocationId = "RECV",
+                QuantityInSearchLocation = 2000,
+                TotalPositiveQuantity = 31396,
+                NextDateSummary = "Next run: WO-070016 04/14/2026",
+                CurrentLocations =
+                [
+                    new Model_Tool_MaterialAvailabilityLocation
+                    {
+                        LocationId = "RECV",
+                        Quantity = 2000,
+                        IsSearchLocation = true,
+                    },
+                ],
+                IncomingRollup = new Model_Tool_MaterialAvailabilityRollup
+                {
+                    OrderedQty = 100,
+                    ReceivedQty = 40,
+                    RemainingQty = 60,
+                    PurchaseOrderCount = 1,
+                    POLineCount = 1,
+                },
+                UpcomingDates =
+                [
+                    new Model_Tool_MaterialAvailabilityIncomingDate
+                    {
+                        Label = "Line promise",
+                        Date = new DateTime(2026, 04, 14),
+                    },
+                ],
+                AssociatedPartRuns =
+                [
+                    new Model_Tool_MaterialAvailabilityAssociatedPartRun
+                    {
+                        AssociatedPartNumber = "A66-17608-000",
+                        AssociatedPartDescription = "Assembly",
+                        WorkOrderDisplay = "WO-070016",
+                        NextDueToRunDate = new DateTime(2026, 04, 14),
+                        IsFutureOrTodayRun = true,
+                    },
+                ],
+            },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30"
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.HtmlFragment.Should().Contain("Material Availability Board");
+        result
+            .Data.HtmlFragment.Should()
+            .Contain("Warehouse Location: RECV | Warehouse scope: 002 | Look Ahead: 30");
+        result.Data.HtmlFragment.Should().Contain("23-11669-100 - Stud, Weld 5/16-18 x 1.000");
+        result.Data.HtmlFragment.Should().Contain("WO-070016");
+        result.Data.HtmlFragment.Should().Contain("Associated Parts");
+        result.Data.PlainText.Should().Contain("Material Availability Board");
+        result.Data.PlainText.Should().Contain("A66-17608-000");
     }
 }

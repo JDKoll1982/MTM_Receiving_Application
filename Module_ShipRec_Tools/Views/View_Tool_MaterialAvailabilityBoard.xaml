@@ -83,6 +83,10 @@
                     Click="ClearButton_Click"
                     Content="Clear"
                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                <Button
+                    Command="{x:Bind ViewModel.PrintCommand}"
+                    Content="Print"
+                    IsEnabled="{x:Bind ViewModel.HasCards, Mode=OneWay}" />
                 <TextBlock
                     VerticalAlignment="Center"
                     Style="{StaticResource BodyStrongTextBlockStyle}"

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
@@ -44,6 +46,11 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         string,
         Task<Model_FuzzySearchResult?>
     >? ShowFuzzyPickerAsync { get; set; }
+
+    public Func<
+        Model_FormattedReportDocument,
+        Task<Model_Dao_Result<bool>>
+    >? RequestPrintAsync { get; set; }
 
     public IReadOnlyList<string> LookAheadOptions { get; } = ["30", "60", "90", "All"];
 
@@ -156,6 +163,67 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
                 ? "Enter a warehouse location and click Search."
                 : "Enter a part number and click Search."
         );
+    }
+
+    [RelayCommand]
+    private async Task PrintAsync()
+    {
+        if (!HasCards)
+        {
+            ShowStatus("Search and load material cards before printing.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (RequestPrintAsync is null)
+        {
+            ShowStatus("Print is not available from this view.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            ShowStatus("Preparing printable Material Availability Board…");
+
+            var documentResult = await _service.FormatBoardForPrintAsync(
+                Cards,
+                SearchLabel.TrimEnd(':'),
+                SearchTerm,
+                DefaultWarehouseCode,
+                SelectedLookAheadOption
+            );
+
+            if (!documentResult.IsSuccess || documentResult.Data is null)
+            {
+                ShowStatus(documentResult.ErrorMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            var printResult = await RequestPrintAsync(documentResult.Data);
+            if (!printResult.IsSuccess || !printResult.Data)
+            {
+                ShowStatus(printResult.ErrorMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            ShowStatus(
+                "Opened a print-ready Material Availability Board in your browser.",
+                InfoBarSeverity.Success
+            );
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(PrintAsync),
+                nameof(ViewModel_Tool_MaterialAvailabilityBoard)
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task<Model_FuzzySearchResult?> ResolveLocationAsync(string rawInput)

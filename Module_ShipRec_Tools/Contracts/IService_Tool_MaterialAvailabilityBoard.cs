@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
@@ -21,6 +22,14 @@ public interface IService_Tool_MaterialAvailabilityBoard
         string partId,
         string warehouseCode,
         int? incomingWindowDays
+    );
+
+    Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatBoardForPrintAsync(
+        IReadOnlyList<Model_Tool_MaterialAvailabilityCard> cards,
+        string searchLabel,
+        string searchTerm,
+        string warehouseCode,
+        string lookAheadOption
     );
 
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term);
