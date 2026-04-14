@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using Xunit;
@@ -26,5 +27,28 @@ public sealed class Helper_SqlQueryLoaderTests
         extracted.Should().StartWith(";WITH");
         extracted.Should().Contain("SELECT WarehouseCode");
         extracted.Should().NotContain("DECLARE @WarehouseCode");
+    }
+
+    [Fact]
+    public void LoadAndPrepareQuery_ShouldKeepInputPartNumberInAssociatedPartRunsProjection()
+    {
+        var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+            "20_GetMaterialAvailabilityAssociatedPartRuns.sql"
+        );
+
+        var projectionStart = query.IndexOf(
+            "SELECT TOP (@MaxResults)",
+            StringComparison.OrdinalIgnoreCase
+        );
+        projectionStart.Should().BeGreaterThanOrEqualTo(0);
+
+        var projection = query[projectionStart..];
+        var fromIndex = projection.IndexOf(
+            "FROM MatchingRequirements",
+            StringComparison.OrdinalIgnoreCase
+        );
+
+        fromIndex.Should().BeGreaterThan(0);
+        projection[..fromIndex].Should().Contain("InputPartNumber");
     }
 }

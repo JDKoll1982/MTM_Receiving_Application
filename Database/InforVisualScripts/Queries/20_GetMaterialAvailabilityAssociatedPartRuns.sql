@@ -105,6 +105,7 @@ MatchingRequirements AS (
       AND ISNULL(wo.STATUS, '') <> 'X'
 )
 SELECT TOP (@MaxResults)
+    InputPartNumber,
     InputPartDescription,
     AssociatedPartNumber,
     AssociatedPartDescription,
