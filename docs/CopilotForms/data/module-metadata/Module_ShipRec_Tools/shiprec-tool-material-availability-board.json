@@ -2,7 +2,7 @@
   "id": "shiprec-tool-material-availability-board",
   "module": "Module_ShipRec_Tools",
   "name": "Material Availability Board",
-  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number and review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, and the associated parent parts that are due to run next using Infor Visual work-order demand.",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, the associated parent parts that are due to run next using Infor Visual work-order demand, and open a print-ready HTML version of the current board results.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
@@ -33,7 +33,8 @@
       "Location-based inventory search",
       "Part-based inventory search",
       "Incoming material review",
-      "Associated part demand analysis"
+      "Associated part demand analysis",
+      "Print-ready board export"
     ],
     "screens": ["View_Tool_MaterialAvailabilityBoard.xaml"],
     "currentUiPatterns": [
@@ -59,7 +60,8 @@
       "Current locations list",
       "Incoming material rollup block",
       "Associated part next-run list",
-      "Look-ahead window selector"
+      "Look-ahead window selector",
+      "Print button"
     ],
     "userActions": [
       "Search by warehouse location",
@@ -67,7 +69,8 @@
       "Resolve fuzzy matches for locations or parts",
       "Expand a card to review detailed stock and inbound material",
       "Review rolled-up incoming material for the selected look-ahead window",
-      "Review which associated parent parts are due to run next"
+      "Review which associated parent parts are due to run next",
+      "Open a print-ready HTML version of the current results"
     ],
     "preserveRules": [
       "Keep all Infor Visual access read-only",
@@ -82,7 +85,8 @@
       "Incoming material is rolled up across qualifying part-matched lines even when due dates are missing",
       "When no next incoming shipment is available, the card falls back to the latest received shipment date for the incoming summary",
       "Associated part rows show the best available next due-to-run date per parent part",
-      "Cards start collapsed on initial load and after each search"
+      "Cards start collapsed on initial load and after each search",
+      "Print opens a browser-hosted HTML document that mirrors the reporting-style section and table layout for the current board results"
     ],
     "validationHints": [
       "Confirm location and part search modes each resolve fuzzy matches before loading results",
@@ -91,7 +95,8 @@
       "Confirm incoming material still appears when active PO lines have no qualifying due date fields",
       "Confirm the incoming summary falls back to the latest received shipment when no next receipt date qualifies",
       "Confirm changing the look-ahead selector between 30, 60, 90, and All updates both incoming material and associated part results",
-      "Confirm whole-collection card replacement resets expansion state after a new search"
+      "Confirm whole-collection card replacement resets expansion state after a new search",
+      "Confirm Print is only useful after results are loaded and the generated document includes the current search term, warehouse scope, look-ahead window, and card details"
     ],
     "databaseObjects": [
       "CR_PART_LOCATION",
