@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -543,8 +544,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 NextDueToRunDate = row.NextDueToRunDate!.Value.Date,
                 IsFutureOrTodayRun = row.IsFutureOrTodayRun,
                 NextDueDateSource = row.NextDueDateSource,
-                WorkOrderDisplay =
-                    $"WO {row.WorkOrderType.Trim()} {row.WorkOrderBaseId}-{row.WorkOrderLotId}-{row.WorkOrderSplitId}-{row.WorkOrderSubId}",
+                WorkOrderDisplay = FormatInforVisualWorkOrder(row.WorkOrderBaseId),
             })
             .ToList();
 
@@ -603,6 +603,34 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             selectedCandidate.Label,
             false
         );
+    }
+
+    private static string FormatInforVisualWorkOrder(string? workOrderBaseId)
+    {
+        var trimmedValue = workOrderBaseId?.Trim();
+
+        if (string.IsNullOrWhiteSpace(trimmedValue))
+        {
+            return string.Empty;
+        }
+
+        if (
+            trimmedValue.StartsWith("WO-", StringComparison.OrdinalIgnoreCase)
+            && trimmedValue.Length > 3
+        )
+        {
+            var existingSuffix = trimmedValue[3..].Trim();
+            return string.IsNullOrWhiteSpace(existingSuffix)
+                ? string.Empty
+                : $"WO-{existingSuffix}";
+        }
+
+        if (long.TryParse(trimmedValue, NumberStyles.None, CultureInfo.InvariantCulture, out _))
+        {
+            return $"WO-{trimmedValue.PadLeft(6, '0')}";
+        }
+
+        return $"WO-{trimmedValue}";
     }
 
     private sealed record IncomingLinePresentation(

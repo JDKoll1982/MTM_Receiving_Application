@@ -321,12 +321,16 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                 )
             );
         inforVisualMock
-            .Setup(service => service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-LASTSHIP", "002"))
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-LASTSHIP", "002")
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
             );
         inforVisualMock
-            .Setup(service => service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-LASTSHIP", "002"))
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-LASTSHIP", "002")
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new List<Model_InforVisualIncomingSupplyRow>
@@ -348,7 +352,9 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                 )
             );
         inforVisualMock
-            .Setup(service => service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-LASTSHIP", "002"))
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-LASTSHIP", "002")
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
             );
@@ -456,6 +462,76 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
+    public async Task GetBoardByPartAsync_ShouldFormatAssociatedWorkOrderUsingInforVisualEntryFormat()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var today = DateTime.Today;
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-WOFORMAT"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-WOFORMAT",
+                        Description = "Work Order Format Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-WOFORMAT", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-WOFORMAT", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-WOFORMAT", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "PART-WOFORMAT",
+                            AssociatedPartNumber = "ASSY-WO",
+                            AssociatedPartDescription = "Assembly Work Order",
+                            NextDueToRunDate = today.AddDays(1),
+                            IsFutureOrTodayRun = true,
+                            NextDueDateSource = "REQUIREMENT.REQUIRED_DATE",
+                            WorkOrderType = "W",
+                            WorkOrderBaseId = "70016",
+                            WorkOrderLotId = "1",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-WOFORMAT", "002", null);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].AssociatedPartRuns.Should().ContainSingle();
+        result.Data[0].AssociatedPartRuns[0].WorkOrderDisplay.Should().Be("WO-070016");
+    }
+
+    [Fact]
     public async Task GetBoardByPartAsync_ShouldPreferLatestHistoricalRun_WhenNoFutureRunExists()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();
@@ -544,6 +620,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data[0].AssociatedPartRuns[0].AssociatedPartNumber.Should().Be("926544");
         result.Data[0].AssociatedPartRuns[0].NextDueToRunDate.Should().Be(latestRunDate.Date);
         result.Data[0].AssociatedPartRuns[0].IsFutureOrTodayRun.Should().BeFalse();
+        result.Data[0].AssociatedPartRuns[0].WorkOrderDisplay.Should().Be("WO-926544");
         result.Data[0].NextDateSummary.Should().Contain("Latest known run:");
         result.Data[0].NextDateSummary.Should().Contain("12/08/2025");
     }

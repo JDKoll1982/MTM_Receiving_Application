@@ -125,204 +125,216 @@
                 </StackPanel>
             </Border>
 
-            <ScrollViewer Visibility="{x:Bind ViewModel.HasCards, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <ItemsRepeater HorizontalAlignment="Stretch" ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <StackLayout Spacing="12" />
-                    </ItemsRepeater.Layout>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityCard">
-                            <Border
-                                Padding="16"
+            <ListView
+                HorizontalAlignment="Stretch"
+                IsItemClickEnabled="False"
+                ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.HorizontalScrollMode="Disabled"
+                SelectionMode="None"
+                Visibility="{x:Bind ViewModel.HasCards, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0,0,0,12" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityCard">
+                        <Border
+                            Padding="16"
+                            HorizontalAlignment="Stretch"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <Expander
                                 HorizontalAlignment="Stretch"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="8">
-                                <Expander IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}">
-                                    <Expander.Header>
-                                        <Grid ColumnSpacing="16">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
+                                HorizontalContentAlignment="Stretch"
+                                IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}">
+                                <Expander.Header>
+                                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                            <StackPanel Grid.Column="0" Spacing="4">
-                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind PartId}" />
-                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind PartDescription}" />
-                                                <TextBlock
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind LocationCountSummary}" />
-                                                <TextBlock
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind NextDateSummary}" />
-                                            </StackPanel>
+                                        <StackPanel Grid.Column="0" Spacing="4">
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind PartId}" />
+                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind PartDescription}" />
+                                            <TextBlock
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="{x:Bind LocationCountSummary}" />
+                                            <TextBlock
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="{x:Bind NextDateSummary}" />
+                                        </StackPanel>
 
-                                            <StackPanel
-                                                Grid.Column="1"
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            Spacing="4">
+                                            <TextBlock
                                                 HorizontalAlignment="Right"
-                                                Spacing="4">
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind QuantitySummaryLabel}" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource SubtitleTextBlockStyle}"
-                                                    Text="{x:Bind QuantitySummaryDisplay}" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="Total on hand" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                                    Text="{x:Bind TotalPositiveQuantityDisplay}" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Expander.Header>
-
-                                    <StackPanel Margin="0,12,0,0" Spacing="14">
-                                        <StackPanel Spacing="8">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Current locations with qty &gt; 0" />
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="{x:Bind QuantitySummaryLabel}" />
                                             <TextBlock
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                                Text="{x:Bind QuantitySummaryDisplay}" />
+                                            <TextBlock
+                                                HorizontalAlignment="Right"
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                Style="{StaticResource BodyTextBlockStyle}"
-                                                Text="No positive-quantity locations were found for this part in warehouse 002."
-                                                Visibility="{x:Bind HasCurrentLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                                            <ItemsRepeater ItemsSource="{x:Bind CurrentLocations, Mode=OneWay}" Visibility="{x:Bind HasCurrentLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                <ItemsRepeater.Layout>
-                                                    <StackLayout Spacing="8" />
-                                                </ItemsRepeater.Layout>
-                                                <ItemsRepeater.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityLocation">
-                                                        <Border
-                                                            Padding="10,8"
-                                                            Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                            BorderThickness="1"
-                                                            CornerRadius="6">
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="Auto" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <TextBlock
-                                                                    Grid.Column="0"
-                                                                    Style="{StaticResource BodyTextBlockStyle}"
-                                                                    Text="{x:Bind LocationLabel}" />
-                                                                <TextBlock
-                                                                    Grid.Column="1"
-                                                                    HorizontalAlignment="Right"
-                                                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                                                    Text="{x:Bind QuantityDisplay}" />
-                                                            </Grid>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ItemsRepeater.ItemTemplate>
-                                            </ItemsRepeater>
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="Total on hand" />
+                                            <TextBlock
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                Text="{x:Bind TotalPositiveQuantityDisplay}" />
                                         </StackPanel>
+                                    </Grid>
+                                </Expander.Header>
 
-                                        <StackPanel Spacing="8">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Incoming Material" />
-                                            <TextBlock
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                Style="{StaticResource BodyTextBlockStyle}"
-                                                Text="No qualifying incoming material was found for the selected look-ahead window."
-                                                Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                                            <StackPanel Spacing="8" Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                <Grid ColumnSpacing="16">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <StackPanel Grid.Column="0" Spacing="2">
-                                                        <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Received" />
-                                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind IncomingRollup.ReceivedQtyDisplay}" />
-                                                    </StackPanel>
-                                                    <StackPanel Grid.Column="1" Spacing="2">
-                                                        <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Ordered" />
-                                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind IncomingRollup.OrderedQtyDisplay}" />
-                                                    </StackPanel>
-                                                    <StackPanel Grid.Column="2" Spacing="2">
-                                                        <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Remaining" />
-                                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind IncomingRollup.RemainingQtyDisplay}" />
-                                                    </StackPanel>
-                                                    <StackPanel
-                                                        Grid.Column="3"
+                                <StackPanel Margin="0,12,0,0" Spacing="14">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Current locations with qty &gt; 0" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="No positive-quantity locations were found for this part in warehouse 002."
+                                            Visibility="{x:Bind HasCurrentLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                        <ItemsRepeater ItemsSource="{x:Bind CurrentLocations, Mode=OneWay}" Visibility="{x:Bind HasCurrentLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ItemsRepeater.Layout>
+                                                <StackLayout Spacing="8" />
+                                            </ItemsRepeater.Layout>
+                                            <ItemsRepeater.ItemTemplate>
+                                                <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityLocation">
+                                                    <Border
+                                                        Padding="10,8"
+                                                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock
+                                                                Grid.Column="0"
+                                                                Style="{StaticResource BodyTextBlockStyle}"
+                                                                Text="{x:Bind LocationLabel}" />
+                                                            <TextBlock
+                                                                Grid.Column="1"
+                                                                HorizontalAlignment="Right"
+                                                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                                Text="{x:Bind QuantityDisplay}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsRepeater.ItemTemplate>
+                                        </ItemsRepeater>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Incoming Material" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="No qualifying incoming material was found for the selected look-ahead window."
+                                            Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                        <StackPanel Spacing="8" Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid ColumnSpacing="16">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Spacing="2">
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Received" />
+                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind IncomingRollup.ReceivedQtyDisplay}" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Spacing="2">
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Ordered" />
+                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind IncomingRollup.OrderedQtyDisplay}" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Spacing="2">
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Remaining" />
+                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind IncomingRollup.RemainingQtyDisplay}" />
+                                                </StackPanel>
+                                                <StackPanel
+                                                    Grid.Column="3"
+                                                    HorizontalAlignment="Right"
+                                                    Spacing="2">
+                                                    <TextBlock
                                                         HorizontalAlignment="Right"
-                                                        Spacing="2">
-                                                        <TextBlock
-                                                            HorizontalAlignment="Right"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Text="{x:Bind IncomingRollup.PurchaseOrderCountSummary}" />
-                                                        <TextBlock
-                                                            HorizontalAlignment="Right"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Text="{x:Bind IncomingRollup.POLineCountSummary}" />
-                                                    </StackPanel>
-                                                </Grid>
-                                                <ProgressBar
-                                                    Height="8"
-                                                    Maximum="100"
-                                                    Minimum="0"
-                                                    Value="{x:Bind IncomingRollup.PercentComplete, Mode=OneWay}" />
-                                                <TextBlock
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind IncomingRollup.PercentCompleteSummary}" />
-                                            </StackPanel>
-                                        </StackPanel>
-
-                                        <StackPanel Spacing="8">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Associated Parts" />
+                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                        Text="{x:Bind IncomingRollup.PurchaseOrderCountSummary}" />
+                                                    <TextBlock
+                                                        HorizontalAlignment="Right"
+                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                        Text="{x:Bind IncomingRollup.POLineCountSummary}" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <ProgressBar
+                                                Height="8"
+                                                Maximum="100"
+                                                Minimum="0"
+                                                Value="{x:Bind IncomingRollup.PercentComplete, Mode=OneWay}" />
                                             <TextBlock
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                Style="{StaticResource BodyTextBlockStyle}"
-                                                Text="No associated part runs were found for the selected look-ahead window."
-                                                Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                                            <ItemsRepeater ItemsSource="{x:Bind AssociatedPartRuns, Mode=OneWay}" Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                <ItemsRepeater.Layout>
-                                                    <StackLayout Spacing="8" />
-                                                </ItemsRepeater.Layout>
-                                                <ItemsRepeater.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityAssociatedPartRun">
-                                                        <Border
-                                                            Padding="10,8"
-                                                            Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                            BorderThickness="1"
-                                                            CornerRadius="6">
-                                                            <StackPanel Spacing="2">
-                                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind AssociatedPartNumber}" />
-                                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind AssociatedPartDescription}" />
-                                                                <TextBlock
-                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                                    Text="{x:Bind WorkOrderDisplay}" />
-                                                                <TextBlock
-                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                                    Text="{x:Bind RunTimingLabel}" />
-                                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind NextRunDateDisplay}" />
-                                                            </StackPanel>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ItemsRepeater.ItemTemplate>
-                                            </ItemsRepeater>
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="{x:Bind IncomingRollup.PercentCompleteSummary}" />
                                         </StackPanel>
                                     </StackPanel>
-                                </Expander>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </ScrollViewer>
+
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Associated Parts" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Text="No associated part runs were found for the selected look-ahead window."
+                                            Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                        <ItemsRepeater ItemsSource="{x:Bind AssociatedPartRuns, Mode=OneWay}" Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ItemsRepeater.Layout>
+                                                <StackLayout Spacing="8" />
+                                            </ItemsRepeater.Layout>
+                                            <ItemsRepeater.ItemTemplate>
+                                                <DataTemplate x:DataType="models:Model_Tool_MaterialAvailabilityAssociatedPartRun">
+                                                    <Border
+                                                        Padding="10,8"
+                                                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6">
+                                                        <StackPanel Spacing="2">
+                                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind AssociatedPartNumber}" />
+                                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind AssociatedPartDescription}" />
+                                                            <TextBlock
+                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                                Text="{x:Bind WorkOrderDisplay}" />
+                                                            <TextBlock
+                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                                Text="{x:Bind RunTimingLabel}" />
+                                                            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind NextRunDateDisplay}" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsRepeater.ItemTemplate>
+                                        </ItemsRepeater>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Expander>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
     </Grid>
 </Page>
