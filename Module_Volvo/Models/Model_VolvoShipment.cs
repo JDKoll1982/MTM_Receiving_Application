@@ -8,6 +8,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Models;
 /// </summary>
 public class Model_VolvoShipment
 {
+    private string _status = VolvoShipmentStatus.PendingPo;
+
     /// <summary>
     /// Auto-increment primary key
     /// </summary>
@@ -54,7 +56,13 @@ public class Model_VolvoShipment
     /// <summary>
     /// Status: 'pending_po' (awaiting PO from purchasing) or 'completed' (PO/Receiver entered)
     /// </summary>
-    public string Status { get; set; } = "pending_po";
+    public string Status
+    {
+        get => _status;
+        set => _status = VolvoShipmentStatus.NormalizeStorageValue(value);
+    }
+
+    public string StatusDisplay => VolvoShipmentStatus.ToDisplayName(Status);
 
     /// <summary>
     /// Timestamp when shipment was created

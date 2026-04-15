@@ -29,7 +29,8 @@ public interface IService_Tool_MaterialAvailabilityBoard
         string searchLabel,
         string searchTerm,
         string warehouseCode,
-        string lookAheadOption
+        string lookAheadOption,
+        bool useTransactionSheet
     );
 
     Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatIncomingMaterialForPrintAsync(

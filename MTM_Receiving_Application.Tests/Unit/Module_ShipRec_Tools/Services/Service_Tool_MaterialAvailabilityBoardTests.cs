@@ -379,7 +379,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
-    public async Task GetBoardByPartAsync_ShouldFilterAssociatedPartRunsBySelectedWindow()
+    public async Task GetBoardByPartAsync_ShouldKeepAssociatedPartRunsVisibleOutsideSelectedWindow()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();
         var today = DateTime.Today;
@@ -458,9 +458,81 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().ContainSingle();
-        result.Data![0].AssociatedPartRuns.Should().ContainSingle();
+        result.Data![0].AssociatedPartRuns.Should().HaveCount(2);
         result.Data[0].AssociatedPartRuns[0].AssociatedPartNumber.Should().Be("ASSY-10");
+        result.Data[0].AssociatedPartRuns[1].AssociatedPartNumber.Should().Be("ASSY-45");
+        result.Data[0].AssociatedPartRuns[1].RunTimingLabel.Should().Be("Scheduled later");
         result.Data[0].NextDateSummary.Should().Contain("ASSY-10");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldKeepAssociatedPartsVisibleWhenNoScheduledRunDateExists()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-NOSCHEDULE"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-NOSCHEDULE",
+                        Description = "No Schedule Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-NOSCHEDULE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-NOSCHEDULE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-NOSCHEDULE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "PART-NOSCHEDULE",
+                            AssociatedPartNumber = "ASSY-NOSCHEDULE",
+                            AssociatedPartDescription = "Assembly Without Scheduled Run",
+                            NextDueToRunDate = null,
+                            IsFutureOrTodayRun = false,
+                            WorkOrderBaseId = "WO-WO-70352",
+                            WorkOrderLotId = "0",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-NOSCHEDULE", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].AssociatedPartRuns.Should().ContainSingle();
+        result.Data[0].AssociatedPartRuns[0].RunTimingLabel.Should().Be("No scheduled job");
+        result.Data[0].AssociatedPartRuns[0].NextRunDateDisplay.Should().Be("No scheduled date");
+        result.Data[0].AssociatedPartRuns[0].WorkOrderDisplay.Should().Be("WO-070352");
+        result.Data[0].NextDateSummary.Should().Contain("No scheduled job");
     }
 
     [Fact]
@@ -511,7 +583,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                             IsFutureOrTodayRun = true,
                             NextDueDateSource = "REQUIREMENT.REQUIRED_DATE",
                             WorkOrderType = "W",
-                            WorkOrderBaseId = "70016",
+                            WorkOrderBaseId = "WO-WO-70016",
                             WorkOrderLotId = "1",
                             WorkOrderSplitId = "0",
                             WorkOrderSubId = "0",
@@ -688,11 +760,13 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
             "Warehouse Location",
             "RECV",
             "002",
-            "30"
+            "30",
+            false
         );
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
+        result.Data!.DocumentTitle.Should().Be("Material Availability Board");
         result.Data!.HtmlFragment.Should().Contain("Material Availability Board");
         result
             .Data.HtmlFragment.Should()
@@ -700,12 +774,52 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain("23-11669-100 - Stud, Weld 5/16-18 x 1.000");
         result.Data.HtmlFragment.Should().Contain("WO-070016");
         result.Data.HtmlFragment.Should().Contain("Associated Parts");
+        result.Data.HtmlFragment.Should().Contain("class='material-card'");
+        result.Data.PageCss.Should().Contain("page-break-after: always");
         result.Data.PlainText.Should().Contain("Material Availability Board");
         result.Data.PlainText.Should().Contain("A66-17608-000");
     }
 
     [Fact]
-    public async Task GetBoardByPartAsync_ShouldCalculateRequiredPartsAndEstimatedCoilUseFromRequirementFields()
+    public async Task FormatBoardForPrintAsync_ShouldCreateTransactionSheetDocumentForLocationSearch()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new()
+            {
+                PartId = "MMC0000850",
+                PartDescription = "Coil Part",
+                SearchLocationId = "RECV",
+            },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.DocumentTitle.Should().Be("Material Availability Transaction Sheet");
+        result.Data.HtmlFragment.Should().Contain("Material Availability Transaction Sheet");
+        result.Data.HtmlFragment.Should().Contain("Taken From");
+        result.Data.HtmlFragment.Should().Contain("Coil Transfer Entries");
+        result.Data.HtmlFragment.Should().Contain("Take To 1");
+        result.Data.HtmlFragment.Should().Contain("MMC0000850");
+        result.Data.PageCss.Should().Contain("thead { display: table-header-group; }");
+        result.Data.PageCss.Should().Contain("margin: 0.2in");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldSeparateRequiredPartCountFromEstimatedCoilUse()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();
         var runDate = new DateTime(2026, 04, 20);
@@ -770,7 +884,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                             IsFutureOrTodayRun = true,
                             NextDueDateSource = "Requirement required date",
                             RequiredDate = runDate,
-                            CalcQty = 100,
+                            QtyPer = 12.85M,
+                            CalcQty = 57825,
                             ScrapPercent = 10,
                             UsageUm = "LBS",
                             OperationType = "STAMP",
@@ -793,14 +908,14 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         var primaryRun = card.PrimaryAssociatedPartRun;
 
         primaryRun.Should().NotBeNull();
-        primaryRun!.RequiredPartsQuantity.Should().Be(100);
-        primaryRun.EstimatedCoilUse.Should().Be(110);
+        primaryRun!.RequiredPartsQuantity.Should().Be(4500);
+        primaryRun.EstimatedCoilUse.Should().Be(63607.5M);
         primaryRun.NormalizedUsageUnitOfMeasure.Should().Be("Pounds");
         card.HasEstimatedCoilUseRisk.Should().BeTrue();
         card.EstimatedCoilUseRiskText.Should().Contain("exceeds on hand");
         card.NextRunSummaryDisplay.Should().Contain("WO-070016");
-        card.NextRunSummaryDisplay.Should().Contain("Required Parts: 100 Pounds");
-        card.NextRunSummaryDisplay.Should().Contain("Estimated Coil Use: 110 Pounds");
+        card.NextRunSummaryDisplay.Should().Contain("Required Parts: 4500");
+        card.NextRunSummaryDisplay.Should().Contain("Estimated Coil Use: 63607.5 Pounds");
     }
 
     [Fact]
@@ -887,8 +1002,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
             AssociatedPartNumber = "A66-17608-000",
             AssociatedPartDescription = "Parent Assembly",
             WorkOrderDisplay = "WO-070016",
-            RequiredPartsQuantity = 100,
-            EstimatedCoilUse = 110,
+            RequiredPartsQuantity = 4500,
+            EstimatedCoilUse = 63607.5M,
             NormalizedUsageUnitOfMeasure = "Pounds",
         };
         var fieldSettings = new Model_Tool_MaterialAvailabilityFieldSettings
@@ -918,6 +1033,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data!.HtmlFragment.Should().Contain("Work Order Details - WO-070016");
         result.Data.HtmlFragment.Should().Contain("Job Summary");
         result.Data.HtmlFragment.Should().Contain("Operation Context");
-        result.Data.PlainText.Should().Contain("Required Parts: 100 Pounds");
+        result.Data.PlainText.Should().Contain("Required Parts: 4500");
+        result.Data.PlainText.Should().Contain("Estimated Coil Use: 63607.5 Pounds");
     }
 }

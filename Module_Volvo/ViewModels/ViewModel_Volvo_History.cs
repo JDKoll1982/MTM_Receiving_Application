@@ -48,9 +48,9 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     [ObservableProperty]
     private ObservableCollection<string> _statusOptions = new()
     {
-        "All",
-        "Pending PO",
-        "Completed",
+        VolvoShipmentStatus.AllDisplayName,
+        VolvoShipmentStatus.PendingPoDisplayName,
+        VolvoShipmentStatus.CompletedDisplayName,
     };
 
     #endregion
@@ -240,7 +240,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 details.AppendLine($"Date: {shipment.ShipmentDate:d}");
                 details.AppendLine($"PO Number: {shipment.PONumber ?? "N/A"}");
                 details.AppendLine($"Receiver: {shipment.ReceiverNumber ?? "N/A"}");
-                details.AppendLine($"Status: {shipment.Status}");
+                details.AppendLine($"Status: {shipment.StatusDisplay}");
                 details.AppendLine();
                 details.AppendLine($"Parts ({lines.Count}):");
                 foreach (var line in lines)
@@ -356,6 +356,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
             };
+            dialog.PrepareDialogSize();
 
             // Convert List to ObservableCollection for binding
             var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(

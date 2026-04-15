@@ -123,6 +123,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             if (_windowService != null)
             {
                 dialog.XamlRoot = _windowService.GetXamlRoot();
+                dialog.PrepareDialogSize();
             }
 
             var result = await dialog.ShowAsync();
@@ -192,6 +193,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             if (_windowService != null)
             {
                 dialog.XamlRoot = _windowService.GetXamlRoot();
+                dialog.PrepareDialogSize();
             }
 
             var result = await dialog.ShowAsync();

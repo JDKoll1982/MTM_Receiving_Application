@@ -2,7 +2,7 @@
   "id": "shiprec-tool-material-availability-board",
   "module": "Module_ShipRec_Tools",
   "name": "Material Availability Board",
-  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, surface a richer next-run summary with requirement-based coil-use estimates, open incoming-material and work-order detail dialogs, and print either the board or the detail views as reporting-style HTML.",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, surface next-run summaries with requirement-based coil-use estimates, keep associated parts visible even when no scheduled run date is available, normalize work-order display values, open incoming-material and work-order detail dialogs, and print either a full summary or a handwritten transaction sheet as HTML.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
@@ -50,7 +50,9 @@
       "Associated part demand analysis",
       "Work-order detail review",
       "Settings-driven field visibility",
-      "Print-ready board export"
+      "Print-ready board export",
+      "Location transaction-sheet printing",
+      "Work-order normalization"
     ],
     "screens": ["View_Tool_MaterialAvailabilityBoard.xaml"],
     "currentUiPatterns": [
@@ -82,7 +84,9 @@
       "Associated part next-run list",
       "Work-order detail dialog",
       "Look-ahead window selector",
-      "Print button"
+      "Print button",
+      "Location print mode chooser",
+      "Transaction sheet printable layout"
     ],
     "userActions": [
       "Search by warehouse location",
@@ -90,10 +94,11 @@
       "Resolve fuzzy matches for locations or parts",
       "Expand a card to review detailed stock and inbound material",
       "Review rolled-up incoming material for the selected look-ahead window",
-      "Review which associated parent parts are due to run next",
+      "Review which associated parent parts are due to run next or have no current scheduled job",
       "Open incoming-material details and print them",
       "Open work-order details, reveal logic-only fields, and print them",
-      "Open a print-ready HTML version of the current results"
+      "Open a print-ready HTML version of the current results",
+      "Choose between a full summary printout and a transaction sheet when printing location-based results"
     ],
     "preserveRules": [
       "Keep all Infor Visual access read-only",
@@ -108,12 +113,14 @@
       "Each card shows all positive-quantity locations for the part within the current warehouse scope",
       "Incoming material is rolled up across qualifying part-matched lines even when due dates are missing",
       "When no next incoming shipment is available, the card falls back to the latest received shipment date for the incoming summary",
-      "Associated part rows show the best available next due-to-run date per parent part",
+      "Associated part rows remain visible even when no scheduled run date is available for the selected look-ahead window",
       "The collapsed card surfaces work order, parent part, date, required parts quantity, and estimated coil use without forcing expansion",
       "Incoming material details open in a dedicated modal and print from a detail-specific HTML layout",
       "Work-order details open in a categorized modal and print from a settings-driven field list",
       "Cards start collapsed on initial load and after each search",
-      "Print opens a browser-hosted HTML document that mirrors the reporting-style section and table layout for the current board results"
+      "Print opens a browser-hosted HTML document that mirrors the reporting-style section and table layout for the current board results",
+      "Location-based print flow offers a second transaction-sheet layout with repeatable page headers and per-coil destination fields",
+      "Work-order displays are normalized to a single WO- prefix in the UI and print output"
     ],
     "validationHints": [
       "Confirm location and part search modes each resolve fuzzy matches before loading results",
@@ -121,12 +128,15 @@
       "Confirm quantity display is rounded for UI only while aggregation still uses decimal values",
       "Confirm incoming material still appears when active PO lines have no qualifying due date fields",
       "Confirm the incoming summary falls back to the latest received shipment when no next receipt date qualifies",
-      "Confirm changing the look-ahead selector between 30, 60, 90, and All updates both incoming material and associated part results",
+      "Confirm changing the look-ahead selector between 30, 60, 90, and All updates both incoming material and associated part results while still keeping associated parts visible when no scheduled run date qualifies",
       "Confirm whole-collection card replacement resets expansion state after a new search",
       "Confirm search results only surface the page-level InfoBar status and no duplicate header notification",
       "Confirm estimated coil use warns when the requirement-based estimate exceeds current on-hand quantity",
       "Confirm the work-order modal Show all chip reveals the logic-only fields unless disabled in settings",
-      "Confirm Print is only useful after results are loaded and the generated document includes the current search term, warehouse scope, look-ahead window, and card details"
+      "Confirm Print is only useful after results are loaded and the generated document includes the current search term, warehouse scope, look-ahead window, and card details",
+      "Confirm location-based printing offers Full Summary and Transaction Sheet choices",
+      "Confirm the transaction sheet uses repeated table headers and enough blank handwriting space for multiple coil moves",
+      "Confirm work-order values with duplicate WO- prefixes are normalized before display and any downstream matching"
     ],
     "databaseObjects": [
       "CR_PART_LOCATION",

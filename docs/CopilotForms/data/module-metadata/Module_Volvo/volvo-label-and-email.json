@@ -2,7 +2,7 @@
   "id": "volvo-label-and-email",
   "module": "Module_Volvo",
   "name": "Label And Email Output",
-  "summary": "Volvo label CSV generation, email formatting, recipient modeling, and label-data cleanup operations derived from shipment content.",
+  "summary": "Volvo label CSV generation, HTML email-preview formatting, recipient modeling, HTML clipboard output, and label-data cleanup operations derived from shipment content.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Services/Service_Volvo.cs",
@@ -16,10 +16,7 @@
     "Module_Volvo/Requests/Commands/ClearLabelDataCommand.cs",
     "Module_Volvo/Handlers/Commands/ClearLabelDataCommandHandler.cs"
   ],
-  "relatedServices": [
-    "IService_Volvo",
-    "Service_Volvo"
-  ],
+  "relatedServices": ["IService_Volvo", "Service_Volvo"],
   "promptDefaults": {
     "audience": "Supervisor",
     "docAudience": "Supervisor",
@@ -31,6 +28,8 @@
     "workflowAreas": [
       "Generate label output",
       "Format email data",
+      "Preview HTML email body",
+      "Copy rich HTML email output",
       "Clear generated label data"
     ],
     "currentUiPatterns": ["Form"],
@@ -38,15 +37,19 @@
     "uiElements": [
       "Label generation action",
       "Email output action",
+      "HTML email preview",
       "Clear label data action"
     ],
     "userActions": [
       "Generate shipment label output",
       "Prepare email-ready output",
+      "Copy Outlook-ready HTML email content",
       "Clear generated label data when needed"
     ],
     "validationHints": [
-      "Confirm label and email output still reflect the selected shipment data accurately"
+      "Confirm label and email output still reflect the selected shipment data accurately",
+      "Confirm the email preview renders requested lines and discrepancies as formatted HTML rather than raw tab-delimited text",
+      "Confirm Copy Email Body places rich HTML plus plain-text fallback onto the clipboard"
     ]
   }
 }

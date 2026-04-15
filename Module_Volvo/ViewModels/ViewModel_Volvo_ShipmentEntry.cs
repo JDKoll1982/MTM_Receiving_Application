@@ -14,7 +14,9 @@ using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests;
@@ -33,6 +35,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private readonly IService_InforVisual _inforVisualService;
     private readonly IService_ReceivingValidation _receivingValidation;
 
+    private readonly IService_ReportingClipboard _reportingClipboard;
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
@@ -46,6 +49,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IMediator mediator,
         IService_InforVisual inforVisualService,
         IService_ReceivingValidation receivingValidation,
+        IService_ReportingClipboard reportingClipboard,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -59,6 +63,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         _receivingValidation =
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
+        _reportingClipboard =
+            reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
         _windowService = windowService;
         _sessionManager = sessionManager;
 
@@ -779,6 +785,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             "\"Debra Alexander\" <dalexander@mantoolmfg.com>; \"Michelle Laurin\" <mlaurin@mantoolmfg.com>"
         );
 
+        var formattedEmailDocument = BuildFormattedEmailDocument(emailData);
+
         var dialog = new ContentDialog
         {
             Title = "PO Requisition Email Preview",
@@ -786,7 +794,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             CloseButtonText = "Close",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
-            MaxWidth = 800,
+            MinWidth = 900,
+            MaxWidth = 1200,
         };
 
         // Build structured preview UI
@@ -928,70 +937,30 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         subjectPanel.Children.Add(subjectCopyButton);
         mainStack.Children.Add(subjectPanel);
 
-        // Discrepancies (if any)
-        if (emailData.Discrepancies.Count > 0)
+        var emailBodyHeader = new TextBlock
         {
-            var discHeader = new TextBlock
-            {
-                Text = "**DISCREPANCIES NOTED**",
-                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4),
-            };
-            mainStack.Children.Add(discHeader);
-
-            var discBox = new TextBox
-            {
-                IsReadOnly = true,
-                TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
-                FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
-                AcceptsReturn = true,
-                MinHeight = 120,
-                MaxHeight = 250,
-            };
-            var discText = new StringBuilder();
-            discText.AppendLine(
-                "Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote"
-            );
-            discText.AppendLine(new string('-', 80));
-            foreach (var disc in emailData.Discrepancies)
-            {
-                string diffStr =
-                    disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
-                discText.AppendLine(
-                    $"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}"
-                );
-            }
-            discBox.Text = discText.ToString();
-            mainStack.Children.Add(discBox);
-        }
-
-        // Requested Lines
-        var reqHeader = new TextBlock
-        {
-            Text = "Requested Lines:",
+            Text = "Email Body Preview:",
             FontWeight = Microsoft.UI.Text.FontWeights.Bold,
             Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4),
         };
-        mainStack.Children.Add(reqHeader);
+        mainStack.Children.Add(emailBodyHeader);
 
-        var reqBox = new TextBox
+        var emailBodyBorder = new Border
         {
-            IsReadOnly = true,
-            TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
-            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
-            AcceptsReturn = true,
-            MinHeight = 150,
-            MaxHeight = 300,
+            BorderBrush = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["CardStrokeColorDefaultBrush"],
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(6),
+            Height = 420,
         };
-        var reqText = new StringBuilder();
-        reqText.AppendLine("Part Number\tQuantity (pcs)");
-        reqText.AppendLine(new string('-', 40));
-        foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+
+        var emailBodyPreview = new WebView2
         {
-            reqText.AppendLine($"{kvp.Key}\t{kvp.Value}");
-        }
-        reqBox.Text = reqText.ToString();
-        mainStack.Children.Add(reqBox);
+            DefaultBackgroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+        };
+        emailBodyBorder.Child = emailBodyPreview;
+        mainStack.Children.Add(emailBodyBorder);
 
         // Additional Notes
         if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
@@ -1010,24 +979,34 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         var scrollViewer = new ScrollViewer
         {
             Content = mainStack,
-            Height = 500,
+            Height = 720,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
         };
 
         dialog.Content = scrollViewer;
 
+        dialog.Opened += (_, _) =>
+        {
+            emailBodyPreview.NavigateToString(BuildPreviewHtmlDocument(formattedEmailDocument.HtmlFragment));
+        };
+
         var result = await dialog.ShowAsync();
 
         if (result == ContentDialogResult.Primary)
         {
-            // Copy HTML to clipboard for Outlook paste as table
-            var htmlContent = FormatEmailAsHtml(emailData);
-            var dataPackage = new DataPackage();
-            dataPackage.SetHtmlFormat(htmlContent);
-            // Also include plain text fallback
-            var plainText = BuildPlainTextEmail(emailData);
-            dataPackage.SetText(plainText);
-            Clipboard.SetContent(dataPackage);
+            var clipboardResult = _reportingClipboard.CreateClipboardPackage(formattedEmailDocument);
+            if (!clipboardResult.IsSuccess || clipboardResult.Data is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    clipboardResult.ErrorMessage ?? "Failed to create email clipboard content",
+                    Enum_ErrorSeverity.Medium,
+                    null,
+                    true
+                );
+                return;
+            }
+
+            Clipboard.SetContent(clipboardResult.Data);
 
             SuccessMessage = "Email copied to clipboard (paste into Outlook as formatted table)!";
             IsSuccessMessageVisible = true;
@@ -1082,87 +1061,184 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         return text.ToString();
     }
 
-    private static string FormatEmailAsHtml(Model_VolvoEmailData emailData)
+    private static Model_FormattedReportDocument BuildFormattedEmailDocument(
+        Model_VolvoEmailData emailData
+    )
     {
         var html = new StringBuilder();
+        var plainText = new StringBuilder();
 
-        html.AppendLine("<html>");
-        html.AppendLine("<body style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
+        html.AppendLine("<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
+        html.AppendLine(
+            $"<div style='font-size: 16pt; font-weight: 700; text-align: center; margin-bottom: 8px;'>{System.Net.WebUtility.HtmlEncode(emailData.Subject)}</div>"
+        );
 
-        html.AppendLine($"<p>{emailData.Greeting}</p>");
-        html.AppendLine($"<p>{emailData.Message}</p>");
+        plainText.AppendLine(emailData.Subject);
+        plainText.AppendLine();
+        plainText.AppendLine(emailData.Greeting);
+        plainText.AppendLine();
+        plainText.AppendLine(emailData.Message);
+        plainText.AppendLine();
+
+        AppendSectionStart(html, "Message", "#edf2f7", "#1f2937");
+        html.AppendLine(
+            $"<div style='margin: 0 0 8px 0;'>{System.Net.WebUtility.HtmlEncode(emailData.Greeting)}</div>"
+        );
+        html.AppendLine(
+            $"<div style='margin: 0;'>{System.Net.WebUtility.HtmlEncode(emailData.Message)}</div>"
+        );
+        AppendSectionEnd(html);
 
         if (emailData.Discrepancies.Count > 0)
         {
-            html.AppendLine("<p><strong>**DISCREPANCIES NOTED**</strong></p>");
+            AppendSectionStart(html, "Discrepancies Noted", "#fde68a", "#1f2937");
             html.AppendLine(
-                "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>"
+                "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 6px 0 10px 0;'>"
             );
             html.AppendLine("<thead>");
-            html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
-            html.AppendLine("<th>Part Number</th>");
-            html.AppendLine("<th>Packlist Qty</th>");
-            html.AppendLine("<th>Received Qty</th>");
-            html.AppendLine("<th>Difference</th>");
-            html.AppendLine("<th>Note</th>");
+            html.AppendLine(
+                "<tr style='background-color: #fde68a; color: #1f2937; font-weight: 700;'>"
+            );
+            AppendHeaderCell(html, "Part Number");
+            AppendHeaderCell(html, "Packlist Qty (pcs)");
+            AppendHeaderCell(html, "Received Qty (pcs)");
+            AppendHeaderCell(html, "Difference (pcs)");
+            AppendHeaderCell(html, "Note");
             html.AppendLine("</tr>");
             html.AppendLine("</thead>");
             html.AppendLine("<tbody>");
+
+            plainText.AppendLine("**DISCREPANCIES NOTED**");
+            plainText.AppendLine();
+            plainText.AppendLine(
+                "Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote"
+            );
+            plainText.AppendLine(new string('-', 80));
 
             foreach (var disc in emailData.Discrepancies)
             {
                 string diffStr =
                     disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
-                html.AppendLine("<tr>");
-                html.AppendLine($"<td>{disc.PartNumber}</td>");
-                html.AppendLine($"<td>{disc.PacklistQty}</td>");
-                html.AppendLine($"<td>{disc.ReceivedQty}</td>");
-                html.AppendLine($"<td>{diffStr}</td>");
-                html.AppendLine($"<td>{disc.Note}</td>");
+                html.AppendLine("<tr style='background-color: #ffffff;'>");
+                AppendBodyCell(html, disc.PartNumber);
+                AppendBodyCell(html, disc.PacklistQty.ToString(), "right");
+                AppendBodyCell(html, disc.ReceivedQty.ToString(), "right");
+                AppendBodyCell(html, diffStr, "right");
+                AppendBodyCell(html, disc.Note);
                 html.AppendLine("</tr>");
+                plainText.AppendLine(
+                    $"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}"
+                );
             }
 
             html.AppendLine("</tbody>");
             html.AppendLine("</table>");
-            html.AppendLine("<br/>");
+            AppendSectionEnd(html);
+            plainText.AppendLine();
         }
 
-        html.AppendLine("<p><strong>Requested Lines:</strong></p>");
+        AppendSectionStart(html, "Requested Lines", "#dbeafe", "#1d4ed8");
         html.AppendLine(
-            "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>"
+            "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 6px 0 10px 0;'>"
         );
         html.AppendLine("<thead>");
-        html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
-        html.AppendLine("<th>Part Number</th>");
-        html.AppendLine("<th>Quantity (pcs)</th>");
+        html.AppendLine(
+            "<tr style='background-color: #dbeafe; color: #1d4ed8; font-weight: 700;'>"
+        );
+        AppendHeaderCell(html, "Part Number");
+        AppendHeaderCell(html, "Quantity (pcs)");
         html.AppendLine("</tr>");
         html.AppendLine("</thead>");
         html.AppendLine("<tbody>");
 
+        plainText.AppendLine("Requested Lines:");
+        plainText.AppendLine();
+        plainText.AppendLine("Part Number\tQuantity (pcs)");
+        plainText.AppendLine(new string('-', 40));
+
         foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
         {
-            html.AppendLine("<tr>");
-            html.AppendLine($"<td>{kvp.Key}</td>");
-            html.AppendLine($"<td>{kvp.Value}</td>");
+            html.AppendLine("<tr style='background-color: #ffffff;'>");
+            AppendBodyCell(html, kvp.Key);
+            AppendBodyCell(html, kvp.Value.ToString(), "right");
             html.AppendLine("</tr>");
+            plainText.AppendLine($"{kvp.Key}\t{kvp.Value}");
         }
 
         html.AppendLine("</tbody>");
         html.AppendLine("</table>");
-        html.AppendLine("<br/>");
+        AppendSectionEnd(html);
+        plainText.AppendLine();
 
         if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
         {
-            html.AppendLine("<p><strong>Additional Notes:</strong></p>");
-            html.AppendLine($"<p>{emailData.AdditionalNotes}</p>");
+            AppendSectionStart(html, "Additional Notes", "#e2e8f0", "#475569");
+            html.AppendLine(
+                $"<div style='white-space: pre-wrap;'>{System.Net.WebUtility.HtmlEncode(emailData.AdditionalNotes)}</div>"
+            );
+            AppendSectionEnd(html);
+
+            plainText.AppendLine("Additional Notes:");
+            plainText.AppendLine(emailData.AdditionalNotes);
+            plainText.AppendLine();
         }
 
-        html.AppendLine($"<p>{emailData.Signature.Replace("\\n", "<br/>")}</p>");
+        AppendSectionStart(html, "Signature", "#edf2f7", "#334155");
+        html.AppendLine(
+            $"<div style='white-space: pre-wrap;'>{System.Net.WebUtility.HtmlEncode(emailData.Signature)}</div>"
+        );
+        AppendSectionEnd(html);
 
-        html.AppendLine("</body>");
-        html.AppendLine("</html>");
+        plainText.AppendLine(emailData.Signature);
 
-        return html.ToString();
+        html.AppendLine("</div>");
+
+        return new Model_FormattedReportDocument
+        {
+            HtmlFragment = html.ToString(),
+            PlainText = plainText.ToString(),
+        };
+    }
+
+    private static string BuildPreviewHtmlDocument(string htmlFragment)
+    {
+        return "<!DOCTYPE html>"
+            + "<html><head><meta charset=\"utf-8\" />"
+            + "<style>body { margin: 0; padding: 12px; background: #ffffff; }</style>"
+            + "</head><body>"
+            + htmlFragment
+            + "</body></html>";
+    }
+
+    private static void AppendSectionStart(StringBuilder html, string title, string accentBackground, string accentForeground)
+    {
+        html.AppendLine(
+            "<div style='margin: 0 0 16px 0; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; background-color: #ffffff;'>"
+        );
+        html.AppendLine(
+            $"<div style='background-color: {accentBackground}; color: {accentForeground}; padding: 10px 12px; font-weight: 700; display: block;'>{System.Net.WebUtility.HtmlEncode(title)}</div>"
+        );
+        html.AppendLine("<div style='padding: 10px 12px 12px 12px;'>");
+    }
+
+    private static void AppendSectionEnd(StringBuilder html)
+    {
+        html.AppendLine("</div>");
+        html.AppendLine("</div>");
+    }
+
+    private static void AppendHeaderCell(StringBuilder html, string value)
+    {
+        html.AppendLine(
+            $"<th style='border: 1px solid #c8d6e5; padding: 6px 10px; text-align: left; vertical-align: top; word-wrap: break-word;'>{System.Net.WebUtility.HtmlEncode(value)}</th>"
+        );
+    }
+
+    private static void AppendBodyCell(StringBuilder html, string? value, string alignment = "left")
+    {
+        html.AppendLine(
+            $"<td style='border: 1px solid #c8d6e5; padding: 6px 10px; text-align: {alignment}; vertical-align: top; word-wrap: break-word;'>{System.Net.WebUtility.HtmlEncode(value ?? string.Empty)}</td>"
+        );
     }
 
     [RelayCommand]
@@ -1629,7 +1705,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var recentResult = await _mediator.Send(recentQuery);
             var completedCount =
                 recentResult.IsSuccess && recentResult.Data != null
-                    ? recentResult.Data.Count(s => s.Status == "completed")
+                    ? recentResult.Data.Count(s => s.Status == VolvoShipmentStatus.Completed)
                     : 0;
 
             if (completedCount == 0)

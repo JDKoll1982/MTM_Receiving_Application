@@ -8,6 +8,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using Windows.Foundation;
 
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
@@ -38,6 +39,29 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
 
         // Set DataGrid ItemsSource
         PartsDataGrid.ItemsSource = Lines;
+    }
+
+    public void PrepareDialogSize()
+    {
+        if (XamlRoot is null)
+        {
+            return;
+        }
+
+        RootGrid.Measure(
+            new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity)
+        );
+
+        var desiredWidth = System.Math.Ceiling(
+            System.Math.Max(RootGrid.DesiredSize.Width, 1180) + 32
+        );
+        var availableWidth = System.Math.Max(1180, XamlRoot.Size.Width - 32);
+        var availableHeight = System.Math.Max(680, XamlRoot.Size.Height - 48);
+
+        Width = System.Math.Min(desiredWidth, availableWidth);
+        MinWidth = System.Math.Min(1180, availableWidth);
+        MinHeight = System.Math.Min(680, availableHeight);
+        MaxHeight = availableHeight;
     }
 
     public void LoadShipment(

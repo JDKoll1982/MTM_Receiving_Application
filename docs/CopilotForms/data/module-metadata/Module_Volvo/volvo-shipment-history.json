@@ -2,7 +2,7 @@
   "id": "volvo-shipment-history",
   "module": "Module_Volvo",
   "name": "Shipment History",
-  "summary": "Shipment history lookup, recent shipment browsing, detail retrieval, and label history access for previously recorded Volvo shipments.",
+  "summary": "Shipment history lookup, recent shipment browsing, detail retrieval, label history access, and user-friendly shipment status labeling for previously recorded Volvo shipments.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Views/View_Volvo_History.xaml",
@@ -31,7 +31,8 @@
     "workflowAreas": [
       "Shipment history",
       "Recent shipment lookup",
-      "Shipment detail review"
+      "Shipment detail review",
+      "Normalized status filtering and display"
     ],
     "screens": ["View_Volvo_History.xaml"],
     "currentUiPatterns": ["Table"],
@@ -39,15 +40,19 @@
     "uiElements": [
       "Shipment selection area",
       "History results",
+      "Status filter",
       "View detail action"
     ],
     "userActions": [
       "Find and review a shipment history record",
+      "Filter shipment history by user-friendly status labels",
       "Open shipment details from history"
     ],
     "validationHints": [
       "Confirm shipment history and recent shipment queries still return the expected records",
-      "Confirm repeated history reloads replace the bound shipment collection without leaving stale rows selected"
+      "Confirm repeated history reloads replace the bound shipment collection without leaving stale rows selected",
+      "Confirm raw stored values such as pending_po render as friendly labels in both the history grid and the shipment detail dialog",
+      "Confirm the history status filter accepts the new Pending PO Number label while still matching the existing stored status values"
     ]
   }
 }

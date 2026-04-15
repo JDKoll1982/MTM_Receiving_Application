@@ -22,7 +22,7 @@ public record GetShipmentHistoryQuery : IRequest<Model_Dao_Result<List<Model_Vol
     public DateTimeOffset? EndDate { get; init; }
 
     /// <summary>
-    /// Optional status filter (All, Pending PO, Completed, or raw status string).
+    /// Optional status filter (All, Pending PO Number, Completed, or raw status string).
     /// </summary>
-    public string StatusFilter { get; init; } = "All";
+    public string StatusFilter { get; init; } = VolvoShipmentStatus.AllDisplayName;
 }

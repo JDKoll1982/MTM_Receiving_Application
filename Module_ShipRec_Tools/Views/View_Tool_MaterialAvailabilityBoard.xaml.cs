@@ -33,8 +33,32 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
 
         ViewModel.ShowFuzzyPickerAsync = ShowFuzzyPickerDialogAsync;
         ViewModel.RequestPrintAsync = OpenPrintDocumentAsync;
+        ViewModel.SelectLocationPrintModeAsync = SelectLocationPrintModeAsync;
         ViewModel.ShowIncomingMaterialDetailsAsync = ShowIncomingDetailsDialogAsync;
         ViewModel.ShowWorkOrderDetailsDialogAsync = ShowWorkOrderDetailsDialogAsync;
+    }
+
+    private async Task<bool?> SelectLocationPrintModeAsync()
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = "Print Material Availability Board",
+            Content =
+                "Choose Full Summary to print the existing board, or Transaction Sheet to print a handwritten move sheet for the current warehouse location.",
+            PrimaryButtonText = "Full Summary",
+            SecondaryButtonText = "Transaction Sheet",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+        };
+
+        var result = await dialog.ShowAsync();
+        return result switch
+        {
+            ContentDialogResult.Primary => false,
+            ContentDialogResult.Secondary => true,
+            _ => null,
+        };
     }
 
     private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerDialogAsync(
@@ -135,7 +159,7 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
                 Path.GetTempPath(),
                 $"mtm-material-availability-board-{DateTime.Now:yyyyMMdd-HHmmss}.html"
             );
-            var printablePage = BuildPrintablePage(document.HtmlFragment);
+            var printablePage = BuildPrintablePage(document);
 
             await File.WriteAllTextAsync(filePath, printablePage, Encoding.UTF8);
 
@@ -152,16 +176,23 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
         }
     }
 
-    private static string BuildPrintablePage(string htmlFragment)
+    private static string BuildPrintablePage(Model_FormattedReportDocument document)
     {
+        var documentTitle = string.IsNullOrWhiteSpace(document.DocumentTitle)
+            ? "Material Availability Board"
+            : System.Net.WebUtility.HtmlEncode(document.DocumentTitle);
+        var pageCss = string.IsNullOrWhiteSpace(document.PageCss)
+            ? "@page { margin: 0.5in; }"
+            : document.PageCss;
+
         return $$"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Material Availability Board</title>
+    <title>{{documentTitle}}</title>
     <style>
-        @page { margin: 0.5in; }
+        {{pageCss}}
         body { margin: 0; background: #ffffff; }
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -174,7 +205,7 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
     </script>
 </head>
 <body>
-{{htmlFragment}}
+{{document.HtmlFragment}}
 </body>
 </html>
 """;

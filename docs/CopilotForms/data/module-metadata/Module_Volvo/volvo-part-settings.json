@@ -2,7 +2,7 @@
   "id": "volvo-part-settings",
   "module": "Module_Volvo",
   "name": "Part Settings",
-  "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part add/edit operations used by the settings screens.",
+  "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and responsive part add/edit dialog operations used by the settings screens.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_VolvoMasterData.cs",
@@ -53,6 +53,7 @@
       "Part settings",
       "Volvo master data",
       "Part add and edit dialogs",
+      "Responsive part dialog sizing",
       "CSV part import"
     ],
     "screens": ["View_Volvo_Settings.xaml", "VolvoPartAddEditDialog.xaml"],
@@ -70,7 +71,8 @@
     ],
     "validationHints": [
       "Confirm part search, add, update, deactivate, and import flows still affect the intended part records",
-      "Confirm repeated part-catalog refreshes replace the bound list cleanly without keeping stale rows"
+      "Confirm repeated part-catalog refreshes replace the bound list cleanly without keeping stale rows",
+      "Confirm add and edit part dialogs size correctly against the active XamlRoot on different window sizes"
     ]
   }
 }

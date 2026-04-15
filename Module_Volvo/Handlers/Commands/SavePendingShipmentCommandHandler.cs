@@ -45,7 +45,7 @@ public class SavePendingShipmentCommandHandler
                 ShipmentDate = request.ShipmentDate.DateTime,
                 ShipmentNumber = request.ShipmentNumber,
                 Notes = request.Notes,
-                Status = "Pending",
+                Status = VolvoShipmentStatus.PendingPo,
                 EmployeeNumber = Environment.UserName, // TODO: Get from session/auth
             };
 

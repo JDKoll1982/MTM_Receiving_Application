@@ -2,7 +2,7 @@
   "id": "volvo-shipment-entry",
   "module": "Module_Volvo",
   "name": "Shipment Entry",
-  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, DAO-owned shipment-line transaction handling, validators, and host dialogs.",
+  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, DAO-owned shipment-line transaction handling, validators, HTML email-preview launch points, and responsive host dialogs.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -43,10 +43,7 @@
     "Module_Volvo/Validators/CompleteShipmentCommandValidator.cs",
     "Module_Volvo/Validators/UpdateShipmentCommandValidator.cs"
   ],
-  "relatedServices": [
-    "IService_Volvo",
-    "Service_Volvo"
-  ],
+  "relatedServices": ["IService_Volvo", "Service_Volvo"],
   "promptDefaults": {
     "audience": "Supervisor",
     "docAudience": "Supervisor",
@@ -59,7 +56,8 @@
       "Shipment entry",
       "Pending shipment restore",
       "Shipment-line editing",
-      "Save and complete shipment flow"
+      "Save and complete shipment flow",
+      "Responsive shipment edit dialog sizing"
     ],
     "screens": [
       "View_Volvo_ShipmentEntry.xaml",
@@ -84,7 +82,8 @@
       "Confirm pending shipment restore still loads the correct shipment state",
       "Confirm pending shipment restore and part suggestions still repopulate bound collections correctly after whole-collection replacement",
       "Confirm shipment-line commands and completion still follow the intended guarded behavior",
-      "Confirm shipment-line persistence still behaves transactionally after transaction ownership moved out of the service layer"
+      "Confirm shipment-line persistence still behaves transactionally after transaction ownership moved out of the service layer",
+      "Confirm the shipment edit dialog applies responsive sizing cleanly when opened from history"
     ]
   }
 }

@@ -47,26 +47,6 @@ public class GetShipmentHistoryQueryHandler
 
     private static string NormalizeStatus(string? status)
     {
-        if (string.IsNullOrWhiteSpace(status))
-        {
-            return "all";
-        }
-
-        if (status.Equals("All", StringComparison.OrdinalIgnoreCase))
-        {
-            return "all";
-        }
-
-        if (status.Equals("Pending PO", StringComparison.OrdinalIgnoreCase))
-        {
-            return VolvoShipmentStatus.PendingPo;
-        }
-
-        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
-        {
-            return VolvoShipmentStatus.Completed;
-        }
-
-        return status;
+        return VolvoShipmentStatus.NormalizeStorageValue(status);
     }
 }

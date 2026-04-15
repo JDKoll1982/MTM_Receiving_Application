@@ -94,7 +94,7 @@ public class Model_Tool_MaterialAvailabilityCard
             )
                 ? string.Empty
                 : $" {PrimaryAssociatedPartRun.NormalizedUsageUnitOfMeasure}";
-            return $"Next Run: {PrimaryAssociatedPartRun.WorkOrderDisplay} / {PrimaryAssociatedPartRun.AssociatedPartNumber} on {PrimaryAssociatedPartRun.NextRunDateDisplay} | Required Parts: {PrimaryAssociatedPartRun.RequiredPartsQuantityDisplay}{usageUnit} | Estimated Coil Use: {PrimaryAssociatedPartRun.EstimatedCoilUseDisplay}{usageUnit}";
+            return $"Next Run: {PrimaryAssociatedPartRun.WorkOrderDisplay} / {PrimaryAssociatedPartRun.AssociatedPartNumber} on {PrimaryAssociatedPartRun.NextRunDateDisplay} | Required Parts: {PrimaryAssociatedPartRun.RequiredPartsQuantityDisplay} | Estimated Coil Use: {PrimaryAssociatedPartRun.EstimatedCoilUseDisplay}{usageUnit}";
         }
     }
 

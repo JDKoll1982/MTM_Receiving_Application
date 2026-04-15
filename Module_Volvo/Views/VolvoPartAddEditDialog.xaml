@@ -4,57 +4,62 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
     Title="Add/Edit Volvo Part"
-    PrimaryButtonText="Save"
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     PrimaryButtonClick="OnSaveClicked"
-    Width="500"
->
-    <StackPanel Spacing="16" Padding="8">
-        <!-- Part Number -->
-        <TextBox
-            x:Name="PartNumberTextBox"
-            Header="Part Number"
-            PlaceholderText="e.g., V-EMB-500"
-            MaxLength="50"
-        />
+    PrimaryButtonText="Save"
+    mc:Ignorable="d">
+    <ContentDialog.Resources>
+        <x:Double x:Key="ContentDialogMaxWidth">720</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">500</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">640</x:Double>
+    </ContentDialog.Resources>
 
-        <!-- Quantity Per Skid -->
-        <NumberBox
-            x:Name="QuantityPerSkidNumberBox"
-            Header="Quantity Per Skid"
-            PlaceholderText="e.g., 88"
-            Minimum="0"
-            Maximum="10000"
-            SpinButtonPlacementMode="Inline"
-            Value="0"
-        />
+    <Grid
+        x:Name="RootGrid"
+        MinWidth="500"
+        MaxWidth="720"
+        Padding="8">
+        <StackPanel Spacing="16">
+            <!--  Part Number  -->
+            <TextBox
+                x:Name="PartNumberTextBox"
+                Header="Part Number"
+                MaxLength="50"
+                PlaceholderText="e.g., V-EMB-500" />
 
-        <!-- Historical Integrity Warning (Edit Mode Only) -->
-        <InfoBar
-            x:Name="EditModeWarning"
-            Severity="Warning"
-            IsOpen="False"
-            IsClosable="False"
-            Message="Changes to quantity will NOT affect past shipments. Historical piece counts are preserved."
-        />
+            <!--  Quantity Per Skid  -->
+            <NumberBox
+                x:Name="QuantityPerSkidNumberBox"
+                Header="Quantity Per Skid"
+                Maximum="10000"
+                Minimum="0"
+                PlaceholderText="e.g., 88"
+                SpinButtonPlacementMode="Inline"
+                Value="0" />
 
-        <!-- Component Section (Simplified - Future Enhancement) -->
-        <Expander Header="Components (Advanced)" IsExpanded="False">
-            <StackPanel Spacing="8" Padding="8">
-                <TextBlock
-                    Text="Component management will be available in a future update."
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                />
-                <TextBlock
-                    Text="For now, use data import to define components."
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                />
-            </StackPanel>
-        </Expander>
-    </StackPanel>
+            <!--  Historical Integrity Warning (Edit Mode Only)  -->
+            <InfoBar
+                x:Name="EditModeWarning"
+                IsClosable="False"
+                IsOpen="False"
+                Message="Changes to quantity will NOT affect past shipments. Historical piece counts are preserved."
+                Severity="Warning" />
+
+            <!--  Component Section (Simplified - Future Enhancement)  -->
+            <Expander Header="Components (Advanced)" IsExpanded="False">
+                <StackPanel Padding="8" Spacing="8">
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Component management will be available in a future update." />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="For now, use data import to define components." />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
 </ContentDialog>

@@ -174,7 +174,7 @@ public class CompleteShipmentCommandHandler
                 ShipmentDate = request.ShipmentDate.DateTime,
                 ShipmentNumber = request.ShipmentNumber,
                 Notes = request.Notes,
-                Status = "Completed",
+                Status = VolvoShipmentStatus.Completed,
                 PONumber = request.PONumber,
                 ReceiverNumber = request.ReceiverNumber,
                 EmployeeNumber = Environment.UserName,

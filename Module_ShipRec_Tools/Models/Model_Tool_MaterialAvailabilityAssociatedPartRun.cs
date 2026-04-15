@@ -15,9 +15,11 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public string ComponentPartNumber { get; set; } = string.Empty;
 
-    public DateTime NextDueToRunDate { get; set; }
+    public DateTime? NextDueToRunDate { get; set; }
 
     public bool IsFutureOrTodayRun { get; set; }
+
+    public bool IsOutsideSelectedLookAheadWindow { get; set; }
 
     public string NextDueDateSource { get; set; } = string.Empty;
 
@@ -83,9 +85,14 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public string NormalizedUsageUnitOfMeasure { get; set; } = string.Empty;
 
-    public string NextRunDateDisplay => NextDueToRunDate.ToString("MM/dd/yyyy");
+    public string NextRunDateDisplay => FormatDate(NextDueToRunDate, "No scheduled date");
 
-    public string RunTimingLabel => IsFutureOrTodayRun ? "Next run" : "Latest known run";
+    public string RunTimingLabel =>
+        NextDueToRunDate.HasValue is false ? "No scheduled job"
+        : IsFutureOrTodayRun
+            ? IsOutsideSelectedLookAheadWindow ? "Scheduled later"
+            : "Next run"
+        : "Latest known run";
 
     public string RequiredDateDisplay => FormatDate(RequiredDate);
 
@@ -160,8 +167,13 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     private static string FormatDate(DateTime? value)
     {
+        return FormatDate(value, string.Empty);
+    }
+
+    private static string FormatDate(DateTime? value, string fallback)
+    {
         return value.HasValue
             ? value.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)
-            : string.Empty;
+            : fallback;
     }
 }

@@ -23,15 +23,19 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared_Base
 {
     private const string DefaultWarehouseCode = "002";
+    private const string MockModalLocationSearchTerm = "T-00";
+    private const string MockModalPartSearchTerm = "MMF0005007";
 
     private readonly IService_Tool_MaterialAvailabilityBoard _service;
     private readonly IService_ShipRecToolsSettings _shipRecToolsSettings;
+    private readonly bool _isMockDataEnabled;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SearchLabel))]
     [NotifyPropertyChangedFor(nameof(SearchPlaceholder))]
     [NotifyPropertyChangedFor(nameof(IsSearchByLocation))]
     [NotifyPropertyChangedFor(nameof(IsSearchByPart))]
+    [NotifyPropertyChangedFor(nameof(MockDataHintText))]
     private bool _isSearchByLocationMode = true;
 
     [ObservableProperty]
@@ -54,6 +58,8 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         Model_FormattedReportDocument,
         Task<Model_Dao_Result<bool>>
     >? RequestPrintAsync { get; set; }
+
+    public Func<Task<bool?>>? SelectLocationPrintModeAsync { get; set; }
 
     public Func<
         ViewModel_Dialog_MaterialAvailabilityIncomingDetails,
@@ -79,9 +85,18 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
 
     public bool HasCards => Cards.Count > 0;
 
+    public bool IsMockDataHintVisible => _isMockDataEnabled;
+
+    public string MockDataHintText =>
+        _isMockDataEnabled is false ? string.Empty
+        : IsSearchByLocationMode
+            ? $"Mock data is enabled. Search location {MockModalLocationSearchTerm} to load a card that supports both detail windows."
+        : $"Mock data is enabled. Search part {MockModalPartSearchTerm} to load a card that supports both detail windows.";
+
     public ViewModel_Tool_MaterialAvailabilityBoard(
         IService_Tool_MaterialAvailabilityBoard service,
         IService_ShipRecToolsSettings shipRecToolsSettings,
+        IService_AppSettings appSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -90,8 +105,10 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     {
         ArgumentNullException.ThrowIfNull(service);
         ArgumentNullException.ThrowIfNull(shipRecToolsSettings);
+        ArgumentNullException.ThrowIfNull(appSettings);
         _service = service;
         _shipRecToolsSettings = shipRecToolsSettings;
+        _isMockDataEnabled = appSettings.GetUseInforVisualMockData();
         SetLocalStatus("Enter a warehouse location or part number and click Search.");
     }
 
@@ -202,14 +219,32 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         try
         {
             IsBusy = true;
-            SetLocalStatus("Preparing printable Material Availability Board…");
+            var useTransactionSheet = false;
+            if (IsSearchByLocationMode && SelectLocationPrintModeAsync is not null)
+            {
+                var selection = await SelectLocationPrintModeAsync();
+                if (!selection.HasValue)
+                {
+                    SetLocalStatus("Print cancelled.", InfoBarSeverity.Informational);
+                    return;
+                }
+
+                useTransactionSheet = selection.Value;
+            }
+
+            SetLocalStatus(
+                useTransactionSheet
+                    ? "Preparing printable Material Availability transaction sheet…"
+                    : "Preparing printable Material Availability Board…"
+            );
 
             var documentResult = await _service.FormatBoardForPrintAsync(
                 Cards,
                 SearchLabel.TrimEnd(':'),
                 SearchTerm,
                 DefaultWarehouseCode,
-                SelectedLookAheadOption
+                SelectedLookAheadOption,
+                useTransactionSheet
             );
 
             if (!documentResult.IsSuccess || documentResult.Data is null)
@@ -226,7 +261,9 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
             }
 
             SetLocalStatus(
-                "Opened a print-ready Material Availability Board in your browser.",
+                useTransactionSheet
+                    ? "Opened a print-ready Material Availability transaction sheet in your browser."
+                    : "Opened a print-ready Material Availability Board in your browser.",
                 InfoBarSeverity.Success
             );
         }

@@ -1,5 +1,7 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using Windows.Foundation;
 
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
@@ -14,6 +16,29 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
     public VolvoPartAddEditDialog()
     {
         InitializeComponent();
+    }
+
+    public void PrepareDialogSize()
+    {
+        if (XamlRoot is null)
+        {
+            return;
+        }
+
+        RootGrid.Measure(
+            new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity)
+        );
+
+        var desiredWidth = System.Math.Ceiling(
+            System.Math.Max(RootGrid.DesiredSize.Width, 500) + 32
+        );
+        var availableWidth = System.Math.Max(500, XamlRoot.Size.Width - 32);
+        var availableHeight = System.Math.Max(360, XamlRoot.Size.Height - 48);
+
+        Width = System.Math.Min(desiredWidth, availableWidth);
+        MinWidth = System.Math.Min(500, availableWidth);
+        MinHeight = System.Math.Min(360, availableHeight);
+        MaxHeight = availableHeight;
     }
 
     /// <summary>

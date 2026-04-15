@@ -853,7 +853,10 @@ public class Service_Volvo : IService_Volvo
             }
 
             // Regenerate labels if completed
-            if (shipment.Status == "completed" && !string.IsNullOrEmpty(shipment.PONumber))
+            if (
+                shipment.Status == VolvoShipmentStatus.Completed
+                && !string.IsNullOrEmpty(shipment.PONumber)
+            )
             {
                 await GenerateLabelAsync(shipment.Id);
             }

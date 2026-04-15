@@ -40,7 +40,7 @@ public sealed partial class ViewModel_Dialog_MaterialAvailabilityWorkOrderDetail
         $"{_associatedRun.AssociatedPartNumber} - {_associatedRun.AssociatedPartDescription}";
 
     public string SummaryText =>
-        $"Required Parts {_associatedRun.RequiredPartsQuantityDisplay} {_associatedRun.NormalizedUsageUnitOfMeasure} | Estimated Coil Use {_associatedRun.EstimatedCoilUseDisplay} {_associatedRun.NormalizedUsageUnitOfMeasure}";
+        $"Required Parts {_associatedRun.RequiredPartsQuantityDisplay} | Estimated Coil Use {_associatedRun.EstimatedCoilUseDisplay} {_associatedRun.NormalizedUsageUnitOfMeasure}";
 
     public bool IsShowAllChipVisible => _fieldSettings.IsShowAllChipEnabled;
 

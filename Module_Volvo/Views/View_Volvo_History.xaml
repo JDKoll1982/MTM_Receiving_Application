@@ -52,7 +52,7 @@
                 Header="Status"
                 ItemsSource="{x:Bind ViewModel.StatusOptions}"
                 SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}"
-                Width="150"
+                Width="190"
             />
 
             <Button
@@ -109,7 +109,7 @@
                 <controls:DataGridTemplateColumn Header="Status" Width="120">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind Status, Mode=OneTime}" />
+                            <TextBlock Text="{x:Bind StatusDisplay, Mode=OneTime}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>

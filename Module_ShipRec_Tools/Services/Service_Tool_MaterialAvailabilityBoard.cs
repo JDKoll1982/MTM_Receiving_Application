@@ -115,7 +115,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         string searchLabel,
         string searchTerm,
         string warehouseCode,
-        string lookAheadOption
+        string lookAheadOption,
+        bool useTransactionSheet
     )
     {
         try
@@ -142,10 +143,26 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     Model_Dao_Result_Factory.Success(
                         new Model_FormattedReportDocument
                         {
+                            DocumentTitle = "Material Availability Board",
                             HtmlFragment = "<p>No material cards to print.</p>",
                             PlainText = "No material cards to print.",
+                            PageCss = GetSummaryPrintCss(),
                         }
                     )
+                );
+            }
+
+            if (useTransactionSheet)
+            {
+                var transactionSheetDocument = BuildTransactionSheetDocument(
+                    cards,
+                    safeSearchTerm,
+                    warehouseCode,
+                    safeLookAheadOption
+                );
+
+                return Task.FromResult(
+                    Model_Dao_Result_Factory.Success(transactionSheetDocument)
                 );
             }
 
@@ -169,6 +186,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             foreach (var card in cards)
             {
+                html.AppendLine("<div class='material-card'>");
                 AppendSectionStart(
                     html,
                     $"{card.PartId} - {card.PartDescription}",
@@ -215,6 +233,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 AppendAssociatedPartsSection(html, plainText, card);
 
                 AppendSectionEnd(html);
+                html.AppendLine("</div>");
             }
 
             html.AppendLine("</div>");
@@ -223,8 +242,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 Model_Dao_Result_Factory.Success(
                     new Model_FormattedReportDocument
                     {
+                        DocumentTitle = "Material Availability Board",
                         HtmlFragment = html.ToString(),
                         PlainText = plainText.ToString(),
+                        PageCss = GetSummaryPrintCss(),
                     }
                 )
             );
@@ -338,6 +359,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 Model_Dao_Result_Factory.Success(
                     new Model_FormattedReportDocument
                     {
+                        DocumentTitle = $"Incoming Material - {card.PartId}",
                         HtmlFragment = html.ToString(),
                         PlainText = plainText.ToString(),
                     }
@@ -385,13 +407,11 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 $"<div style='font-size: 11pt; font-weight: 700; margin: 0 0 6px 0;'>{HtmlEncode(associatedRun.WorkOrderDisplay)} / {HtmlEncode(associatedRun.AssociatedPartNumber)}</div>"
             );
             html.AppendLine(
-                $"<div style='font-size: 10pt; color: #445566; margin: 0 0 12px 0;'>Required Parts: {HtmlEncode(associatedRun.RequiredPartsQuantityDisplay)} {HtmlEncode(associatedRun.NormalizedUsageUnitOfMeasure)} | Estimated Coil Use: {HtmlEncode(associatedRun.EstimatedCoilUseDisplay)} {HtmlEncode(associatedRun.NormalizedUsageUnitOfMeasure)}</div>"
+                $"<div style='font-size: 10pt; color: #445566; margin: 0 0 12px 0;'>Required Parts: {HtmlEncode(associatedRun.RequiredPartsQuantityDisplay)} | Estimated Coil Use: {HtmlEncode(associatedRun.EstimatedCoilUseDisplay)} {HtmlEncode(associatedRun.NormalizedUsageUnitOfMeasure)}</div>"
             );
 
             plainText.AppendLine($"Work Order Details - {associatedRun.WorkOrderDisplay}");
-            plainText.AppendLine(
-                $"Required Parts: {associatedRun.RequiredPartsQuantityDisplay} {associatedRun.NormalizedUsageUnitOfMeasure}"
-            );
+            plainText.AppendLine($"Required Parts: {associatedRun.RequiredPartsQuantityDisplay}");
             plainText.AppendLine(
                 $"Estimated Coil Use: {associatedRun.EstimatedCoilUseDisplay} {associatedRun.NormalizedUsageUnitOfMeasure}"
             );
@@ -427,6 +447,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 Model_Dao_Result_Factory.Success(
                     new Model_FormattedReportDocument
                     {
+                        DocumentTitle = $"Work Order Details - {associatedRun.WorkOrderDisplay}",
                         HtmlFragment = html.ToString(),
                         PlainText = plainText.ToString(),
                     }
@@ -868,63 +889,42 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     {
         if (partAssociatedRuns.Count == 0)
         {
-            return AssociatedPartPresentation.Empty(incomingWindowDays);
+            return AssociatedPartPresentation.Empty();
         }
 
-        var today = DateTime.Today;
         var horizon = incomingWindowDays.HasValue
-            ? today.AddDays(incomingWindowDays.Value)
+            ? DateTime.Today.AddDays(incomingWindowDays.Value)
             : DateTime.MaxValue;
 
-        var filteredRows = partAssociatedRuns
-            .Where(row => row.NextDueToRunDate.HasValue)
-            .Where(row =>
-                incomingWindowDays.HasValue is false
-                || (row.IsFutureOrTodayRun && row.NextDueToRunDate!.Value.Date <= horizon)
-            )
-            .ToList();
-
-        if (filteredRows.Count == 0)
-        {
-            return AssociatedPartPresentation.Empty(incomingWindowDays);
-        }
-
-        var associatedRuns = filteredRows
+        var associatedRuns = partAssociatedRuns
             .GroupBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
             .Select(group =>
                 group
-                    .OrderBy(row => row.IsFutureOrTodayRun ? 0 : 1)
-                    .ThenBy(row =>
-                        row.IsFutureOrTodayRun
-                            ? row.NextDueToRunDate!.Value.Date
-                            : DateTime.MaxValue
-                    )
-                    .ThenByDescending(row =>
-                        row.IsFutureOrTodayRun
-                            ? DateTime.MinValue
-                            : row.NextDueToRunDate!.Value.Date
-                    )
+                    .OrderBy(row => GetAssociatedPartPriority(row, incomingWindowDays, horizon))
+                    .ThenBy(row => GetAssociatedPartFutureSortDate(row))
+                    .ThenByDescending(row => GetAssociatedPartHistoricalSortDate(row))
                     .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
                     .ThenBy(row => row.WorkOrderBaseId, StringComparer.OrdinalIgnoreCase)
                     .ThenBy(row => row.OperationSeqNo)
                     .ThenBy(row => row.RequirementPieceNo)
                     .First()
             )
-            .OrderBy(row => row.IsFutureOrTodayRun ? 0 : 1)
-            .ThenBy(row =>
-                row.IsFutureOrTodayRun ? row.NextDueToRunDate!.Value.Date : DateTime.MaxValue
-            )
-            .ThenByDescending(row =>
-                row.IsFutureOrTodayRun ? DateTime.MinValue : row.NextDueToRunDate!.Value.Date
-            )
+            .OrderBy(row => GetAssociatedPartPriority(row, incomingWindowDays, horizon))
+            .ThenBy(row => GetAssociatedPartFutureSortDate(row))
+            .ThenByDescending(row => GetAssociatedPartHistoricalSortDate(row))
             .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
             .Select(row => new Model_Tool_MaterialAvailabilityAssociatedPartRun
             {
                 AssociatedPartNumber = row.AssociatedPartNumber,
                 AssociatedPartDescription = row.AssociatedPartDescription,
                 ComponentPartNumber = row.ComponentPartNumber,
-                NextDueToRunDate = row.NextDueToRunDate!.Value.Date,
+                NextDueToRunDate = row.NextDueToRunDate?.Date,
                 IsFutureOrTodayRun = row.IsFutureOrTodayRun,
+                IsOutsideSelectedLookAheadWindow =
+                    row.NextDueToRunDate.HasValue
+                    && row.IsFutureOrTodayRun
+                    && incomingWindowDays.HasValue
+                    && row.NextDueToRunDate.Value.Date > horizon,
                 NextDueDateSource = row.NextDueDateSource,
                 WorkOrderDisplay = FormatInforVisualWorkOrder(row.WorkOrderBaseId),
                 WorkOrderStatus = row.WorkOrderStatus,
@@ -960,19 +960,29 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             })
             .ToList();
 
+        if (associatedRuns.Count == 0)
+        {
+            return AssociatedPartPresentation.Empty();
+        }
+
         var firstRun = associatedRuns[0];
-        var summaryLabel = firstRun.IsFutureOrTodayRun ? "Next run" : "Latest known run";
         var usageUnit = string.IsNullOrWhiteSpace(firstRun.NormalizedUsageUnitOfMeasure)
             ? string.Empty
             : $" {firstRun.NormalizedUsageUnitOfMeasure}";
+        var summarySubject = string.IsNullOrWhiteSpace(firstRun.WorkOrderDisplay)
+            ? firstRun.AssociatedPartNumber
+            : $"{firstRun.WorkOrderDisplay} / {firstRun.AssociatedPartNumber}";
+        var summaryDate = firstRun.NextDueToRunDate.HasValue
+            ? $" on {firstRun.NextRunDateDisplay}"
+            : string.Empty;
         var summaryText =
-            $"{summaryLabel}: {firstRun.WorkOrderDisplay} / {firstRun.AssociatedPartNumber} on {firstRun.NextRunDateDisplay} | Required Parts: {firstRun.RequiredPartsQuantityDisplay}{usageUnit} | Estimated Coil Use: {firstRun.EstimatedCoilUseDisplay}{usageUnit}";
+            $"{firstRun.RunTimingLabel}: {summarySubject}{summaryDate} | Required Parts: {firstRun.RequiredPartsQuantityDisplay} | Estimated Coil Use: {firstRun.EstimatedCoilUseDisplay}{usageUnit}";
 
         return new AssociatedPartPresentation(
             associatedRuns,
             summaryText,
-            firstRun.IsFutureOrTodayRun ? 0 : 1,
-            firstRun.NextDueToRunDate
+            GetAssociatedPartSortBucket(firstRun),
+            firstRun.NextDueToRunDate ?? DateTime.MaxValue
         );
     }
 
@@ -1022,6 +1032,52 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
     private static decimal CalculateRequiredPartsQuantity(Model_InforVisualAssociatedPartRunRow row)
     {
+        var componentRequirementQuantity = GetComponentRequirementQuantity(row);
+        if (componentRequirementQuantity <= 0)
+        {
+            return 0;
+        }
+
+        var qtyPer = row.QtyPer.GetValueOrDefault();
+        if (qtyPer <= 0)
+        {
+            return componentRequirementQuantity;
+        }
+
+        var fixedQty = row.FixedQty.GetValueOrDefault();
+        var variableRequirementQuantity = decimal.Max(componentRequirementQuantity - fixedQty, 0);
+        if (variableRequirementQuantity <= 0)
+        {
+            return 0;
+        }
+
+        return decimal.Round(
+            variableRequirementQuantity / qtyPer,
+            2,
+            MidpointRounding.AwayFromZero
+        );
+    }
+
+    private static decimal CalculateEstimatedCoilUse(Model_InforVisualAssociatedPartRunRow row)
+    {
+        var componentRequirementQuantity = GetComponentRequirementQuantity(row);
+        if (componentRequirementQuantity <= 0)
+        {
+            return 0;
+        }
+
+        var scrapMultiplier = 1 + (row.ScrapPercent.GetValueOrDefault() / 100M);
+        return decimal.Round(
+            componentRequirementQuantity * scrapMultiplier,
+            2,
+            MidpointRounding.AwayFromZero
+        );
+    }
+
+    private static decimal GetComponentRequirementQuantity(
+        Model_InforVisualAssociatedPartRunRow row
+    )
+    {
         if (row.CalcQty.HasValue && row.CalcQty.Value > 0)
         {
             return row.CalcQty.Value;
@@ -1052,18 +1108,6 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         return 0;
     }
 
-    private static decimal CalculateEstimatedCoilUse(Model_InforVisualAssociatedPartRunRow row)
-    {
-        var requiredQuantity = CalculateRequiredPartsQuantity(row);
-        if (requiredQuantity <= 0)
-        {
-            return 0;
-        }
-
-        var scrapMultiplier = 1 + (row.ScrapPercent.GetValueOrDefault() / 100M);
-        return decimal.Round(requiredQuantity * scrapMultiplier, 2, MidpointRounding.AwayFromZero);
-    }
-
     private static string NormalizeUsageUnit(string? usageUnit)
     {
         if (string.IsNullOrWhiteSpace(usageUnit))
@@ -1079,23 +1123,89 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
     private static string FormatInforVisualWorkOrder(string? workOrderBaseId)
     {
-        var trimmedValue = workOrderBaseId?.Trim();
-
-        if (string.IsNullOrWhiteSpace(trimmedValue))
+        var normalizedBaseId = NormalizeWorkOrderBaseId(workOrderBaseId);
+        if (string.IsNullOrWhiteSpace(normalizedBaseId))
         {
             return string.Empty;
         }
 
         var formattedBaseId = long.TryParse(
-            trimmedValue,
+            normalizedBaseId,
             NumberStyles.None,
             CultureInfo.InvariantCulture,
             out _
         )
-            ? trimmedValue.PadLeft(6, '0')
-            : trimmedValue;
+            ? normalizedBaseId.PadLeft(6, '0')
+            : normalizedBaseId;
 
         return $"WO-{formattedBaseId}";
+    }
+
+    private static string NormalizeWorkOrderBaseId(string? workOrderBaseId)
+    {
+        if (string.IsNullOrWhiteSpace(workOrderBaseId))
+        {
+            return string.Empty;
+        }
+
+        var normalizedValue = workOrderBaseId.Trim();
+        while (normalizedValue.StartsWith("WO", StringComparison.OrdinalIgnoreCase))
+        {
+            normalizedValue = normalizedValue[2..].TrimStart('-', ' ');
+        }
+
+        return normalizedValue.Trim();
+    }
+
+    private static int GetAssociatedPartPriority(
+        Model_InforVisualAssociatedPartRunRow row,
+        int? incomingWindowDays,
+        DateTime horizon
+    )
+    {
+        if (!row.NextDueToRunDate.HasValue)
+        {
+            return 3;
+        }
+
+        var runDate = row.NextDueToRunDate.Value.Date;
+        if (row.IsFutureOrTodayRun)
+        {
+            return incomingWindowDays.HasValue && runDate > horizon ? 1 : 0;
+        }
+
+        return 2;
+    }
+
+    private static DateTime GetAssociatedPartFutureSortDate(Model_InforVisualAssociatedPartRunRow row)
+    {
+        return row.NextDueToRunDate.HasValue && row.IsFutureOrTodayRun
+            ? row.NextDueToRunDate.Value.Date
+            : DateTime.MaxValue;
+    }
+
+    private static DateTime GetAssociatedPartHistoricalSortDate(Model_InforVisualAssociatedPartRunRow row)
+    {
+        return row.NextDueToRunDate.HasValue && !row.IsFutureOrTodayRun
+            ? row.NextDueToRunDate.Value.Date
+            : DateTime.MinValue;
+    }
+
+    private static int GetAssociatedPartSortBucket(
+        Model_Tool_MaterialAvailabilityAssociatedPartRun associatedRun
+    )
+    {
+        if (associatedRun.NextDueToRunDate.HasValue is false)
+        {
+            return 2;
+        }
+
+        if (associatedRun.IsFutureOrTodayRun && !associatedRun.IsOutsideSelectedLookAheadWindow)
+        {
+            return 0;
+        }
+
+        return 1;
     }
 
     private static void AppendLocationsSection(
@@ -1252,11 +1362,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         if (!card.HasAssociatedPartRuns)
         {
             html.AppendLine(
-                "<div style='padding: 0 16px 16px 16px; font-size: 10pt; color: #6b7280;'>No associated part runs were found for the selected look-ahead window.</div>"
+                "<div style='padding: 0 16px 16px 16px; font-size: 10pt; color: #6b7280;'>No associated parts were found for this material.</div>"
             );
-            plainText.AppendLine(
-                "No associated part runs were found for the selected look-ahead window."
-            );
+            plainText.AppendLine("No associated parts were found for this material.");
             return;
         }
 
@@ -1332,6 +1440,127 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         html.AppendLine("</div>");
     }
 
+    private static Model_FormattedReportDocument BuildTransactionSheetDocument(
+        IReadOnlyList<Model_Tool_MaterialAvailabilityCard> cards,
+        string locationId,
+        string warehouseCode,
+        string lookAheadOption
+    )
+    {
+        var html = new StringBuilder();
+        var plainText = new StringBuilder();
+
+        html.AppendLine("<div class='transaction-sheet-wrapper'>");
+        html.AppendLine("<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>");
+        html.AppendLine(
+            $"<div class='transaction-sheet-subtitle'>Warehouse Location: {HtmlEncode(locationId)} | Warehouse scope: {HtmlEncode(warehouseCode)} | Look Ahead: {HtmlEncode(lookAheadOption)}</div>"
+        );
+        html.AppendLine("<table class='transaction-sheet'>");
+        html.AppendLine("<thead><tr><th>Part Number</th><th>Taken From</th><th>Coil Transfer Entries</th></tr></thead>");
+        html.AppendLine("<tbody>");
+
+        plainText.AppendLine("Material Availability Transaction Sheet");
+        plainText.AppendLine(
+            $"Warehouse Location: {locationId} | Warehouse scope: {warehouseCode} | Look Ahead: {lookAheadOption}"
+        );
+        plainText.AppendLine();
+
+        foreach (var card in cards.OrderBy(card => card.PartId, StringComparer.OrdinalIgnoreCase))
+        {
+            var takenFrom = string.IsNullOrWhiteSpace(card.SearchLocationId)
+                ? locationId
+                : card.SearchLocationId;
+
+            html.AppendLine("<tr class='transaction-row'>");
+            html.AppendLine($"<td class='part-cell'>{HtmlEncode(card.PartId)}</td>");
+            html.AppendLine($"<td class='from-cell'>{HtmlEncode(takenFrom)}</td>");
+            html.AppendLine("<td class='entries-cell'>");
+            AppendTransactionEntryGrid(html);
+            html.AppendLine("</td>");
+            html.AppendLine("</tr>");
+
+            plainText.AppendLine($"Part Number: {card.PartId}");
+            plainText.AppendLine($"Taken From: {takenFrom}");
+            plainText.AppendLine("Coil Transfer Entries: 3 rows with 5 quantity/to pairs each.");
+            plainText.AppendLine();
+        }
+
+        html.AppendLine("</tbody>");
+        html.AppendLine("</table>");
+        html.AppendLine("</div>");
+
+        return new Model_FormattedReportDocument
+        {
+            DocumentTitle = "Material Availability Transaction Sheet",
+            HtmlFragment = html.ToString(),
+            PlainText = plainText.ToString(),
+            PageCss = GetTransactionSheetPrintCss(),
+        };
+    }
+
+    private static void AppendTransactionEntryGrid(StringBuilder html)
+    {
+        html.AppendLine("<table class='entry-grid'>");
+        html.AppendLine("<thead><tr>");
+        for (var columnIndex = 1; columnIndex <= 5; columnIndex++)
+        {
+            html.AppendLine($"<th>Qty {columnIndex}</th>");
+            html.AppendLine($"<th>Take To {columnIndex}</th>");
+        }
+        html.AppendLine("</tr></thead>");
+        html.AppendLine("<tbody>");
+
+        for (var rowIndex = 0; rowIndex < 3; rowIndex++)
+        {
+            html.AppendLine("<tr>");
+            for (var columnIndex = 0; columnIndex < 5; columnIndex++)
+            {
+                html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
+                html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
+            }
+            html.AppendLine("</tr>");
+        }
+
+        html.AppendLine("</tbody>");
+        html.AppendLine("</table>");
+    }
+
+    private static string GetSummaryPrintCss()
+    {
+        return """
+@page { margin: 0.35in; }
+body { margin: 0; background: #ffffff; }
+.material-card { break-after: page; page-break-after: always; }
+.material-card:last-child { break-after: auto; page-break-after: auto; }
+@media print {
+    .material-card { break-inside: avoid; page-break-inside: avoid; }
+}
+""";
+    }
+
+    private static string GetTransactionSheetPrintCss()
+    {
+        return """
+@page { size: Letter portrait; margin: 0.2in; }
+body { margin: 0; background: #ffffff; }
+.transaction-sheet-wrapper { font-family: Calibri, Arial, sans-serif; font-size: 10pt; color: #111827; }
+.transaction-sheet-title { font-size: 15pt; font-weight: 700; text-align: center; margin: 0 0 4px 0; }
+.transaction-sheet-subtitle { font-size: 9pt; text-align: center; margin: 0 0 8px 0; }
+.transaction-sheet { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.transaction-sheet thead { display: table-header-group; }
+.transaction-sheet th, .transaction-sheet td { border: 1px solid #111827; padding: 3px 4px; vertical-align: top; }
+.transaction-sheet th { background: #f3f4f6; font-weight: 700; text-align: left; }
+.transaction-row { break-inside: avoid; page-break-inside: avoid; }
+.part-cell { width: 14%; font-weight: 700; }
+.from-cell { width: 10%; }
+.entries-cell { width: 76%; padding: 2px; }
+.entry-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.entry-grid th, .entry-grid td { border: 1px solid #9ca3af; padding: 2px 3px; }
+.entry-grid th { background: #ffffff; font-size: 8pt; font-weight: 600; }
+.entry-cell { height: 28px; }
+""";
+    }
+
     private static string HtmlEncode(string? value)
     {
         return System.Net.WebUtility.HtmlEncode(value ?? string.Empty);
@@ -1371,11 +1600,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         DateTime SortDate
     )
     {
-        public static AssociatedPartPresentation Empty(int? incomingWindowDays)
+        public static AssociatedPartPresentation Empty()
         {
-            var summaryText = incomingWindowDays.HasValue
-                ? $"No associated part runs were found in the next {incomingWindowDays.Value} days."
-                : "No associated part runs were found.";
+            var summaryText = "No associated parts were found.";
 
             return new AssociatedPartPresentation([], summaryText, 2, DateTime.MaxValue);
         }
