@@ -1158,9 +1158,12 @@ public class Dao_InforVisualConnection
                                 : Convert.ToDecimal(reader["RemainingQty"]),
                         LineDesiredReceiveDate = reader["LineDesiredReceiveDate"] as DateTime?,
                         LinePromiseDate = reader["LinePromiseDate"] as DateTime?,
+                        LinePromiseShipDate = reader["LinePromiseShipDate"] as DateTime?,
                         LineLastReceivedDate = reader["LineLastReceivedDate"] as DateTime?,
                         HeaderPromiseDate = reader["HeaderPromiseDate"] as DateTime?,
+                        HeaderPromiseShipDate = reader["HeaderPromiseShipDate"] as DateTime?,
                         HeaderDesiredReceiveDate = reader["HeaderDesiredReceiveDate"] as DateTime?,
+                        OrderDate = reader["OrderDate"] as DateTime?,
                         FreeOnBoard = reader["FreeOnBoard"].ToString() ?? string.Empty,
                         IsBlanketOrder =
                             reader["IsBlanketOrder"] != DBNull.Value
@@ -1239,6 +1242,12 @@ public class Dao_InforVisualConnection
                         IsFutureOrTodayRun =
                             reader["IsFutureOrTodayRun"] != DBNull.Value
                             && Convert.ToBoolean(reader["IsFutureOrTodayRun"]),
+                        IsCurrentlyRunning =
+                            reader["IsCurrentlyRunning"] != DBNull.Value
+                            && Convert.ToBoolean(reader["IsCurrentlyRunning"]),
+                        IsPastJob =
+                            reader["IsPastJob"] != DBNull.Value
+                            && Convert.ToBoolean(reader["IsPastJob"]),
                         NextDueDateSource = reader["NextDueDateSource"].ToString() ?? string.Empty,
                         WorkOrderType = reader["WorkOrderType"].ToString() ?? string.Empty,
                         WorkOrderBaseId = reader["WorkOrderBaseId"].ToString() ?? string.Empty,
@@ -1258,6 +1267,8 @@ public class Dao_InforVisualConnection
                                 : Convert.ToInt32(reader["RequirementPieceNo"]),
                         WorkOrderStatus = reader["WorkOrderStatus"].ToString() ?? string.Empty,
                         RequirementStatus = reader["RequirementStatus"].ToString() ?? string.Empty,
+                        ScheduledStartDate = reader["ScheduledStartDate"] as DateTime?,
+                        ScheduledFinishDate = reader["ScheduledFinishDate"] as DateTime?,
                         RequiredDate = reader["RequiredDate"] as DateTime?,
                         QtyPer =
                             reader["QtyPer"] == DBNull.Value

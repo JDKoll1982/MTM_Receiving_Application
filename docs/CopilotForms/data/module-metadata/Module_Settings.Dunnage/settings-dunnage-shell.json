@@ -2,7 +2,7 @@
   "id": "settings-dunnage-shell",
   "module": "Module_Settings.Dunnage",
   "name": "Dunnage Settings Shell",
-  "summary": "Card-based dunnage settings shell with a real user-preference page for default location plus per-user image preferences and a persisted default image-folder setting, persisted UI/UX controls for type and part image rendering, persisted workflow toggles for where Dunnage images appear, and placeholder overview, permissions, and audit pages.",
+  "summary": "Card-based dunnage settings shell with a real user-preference page for default location plus per-user image preferences and a shared app-level default image-folder setting, persisted UI/UX controls for type and part image rendering, persisted workflow toggles for where Dunnage images appear, and placeholder overview, permissions, and audit pages.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_NavigationHub.cs",
@@ -39,7 +39,7 @@
       "Settings overview",
       "User preferences",
       "Default Dunnage location",
-      "Per-user image preferences",
+      "Per-user image preferences with a shared image folder",
       "UI and UX tuning",
       "Workflow defaults and guardrails",
       "Permissions",
@@ -73,7 +73,7 @@
     "userActions": [
       "Browse dunnage settings areas from the hub",
       "Change the default Dunnage location used when guided entry leaves location blank",
-      "Choose the default folder used for Dunnage images",
+      "Choose the shared default folder used for Dunnage images",
       "Control preferred Dunnage thumbnail size and part-image preference for the current user",
       "Configure whether Dunnage type and part images appear in admin and workflow screens",
       "Resolve mistyped default locations with fuzzy search against Infor Visual",
@@ -88,14 +88,14 @@
     ],
     "acceptanceCriteria": [
       "The hub still routes to overview, preferences, UI/UX, workflow, permissions, and audit pages",
-      "Metadata makes it clear the Dunnage User Preferences page now persists a default Dunnage location, a default image folder, and image preferences",
+      "Metadata makes it clear the Dunnage User Preferences page now persists a default Dunnage location, a shared default image folder, and image preferences",
       "Metadata makes it clear the Dunnage UI/UX and Workflow pages now persist image-related settings",
       "Metadata still calls out only Permissions and Audit as placeholder pages where persistence is not implemented",
       "Metadata does not claim data persistence or business logic that the module does not implement"
     ],
     "validationHints": [
       "Confirm the Dunnage User Preferences page saves and resets the default location for the active user",
-      "Confirm the Dunnage User Preferences page saves the default image folder only when the selected folder exists",
+      "Confirm the Dunnage User Preferences page saves the shared default image folder only when the selected folder exists",
       "Confirm the Dunnage User Preferences page saves preferred thumbnail size and preferred-image behavior for the active user",
       "Confirm the Dunnage User Preferences page validates the configured location against Infor Visual warehouse 002 and offers fuzzy suggestions",
       "Confirm the Dunnage UI/UX page saves image toggles, thumbnail size, file-size guidance, and visual source priority",

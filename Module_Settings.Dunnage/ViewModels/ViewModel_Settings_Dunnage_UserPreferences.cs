@@ -26,6 +26,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
 
     private readonly IService_SettingsCoreFacade _settingsCore;
     private readonly IService_DunnageSettings _dunnageSettings;
+    private readonly IService_DunnageImageStorage _imageStorage;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_ReceivingValidation _receivingValidation;
     private readonly IService_InforVisual _inforVisualService;
@@ -45,6 +46,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
     public ViewModel_Settings_Dunnage_UserPreferences(
         IService_SettingsCoreFacade settingsCore,
         IService_DunnageSettings dunnageSettings,
+        IService_DunnageImageStorage imageStorage,
         IService_UserSessionManager sessionManager,
         IService_ReceivingValidation receivingValidation,
         IService_InforVisual inforVisualService,
@@ -57,6 +59,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
         _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         _dunnageSettings =
             dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
+        _imageStorage = imageStorage ?? throw new ArgumentNullException(nameof(imageStorage));
         _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
         _receivingValidation =
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
@@ -105,11 +108,23 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 return;
             }
 
-            await _dunnageSettings.SaveStringAsync(
-                DunnageSettingsKeys.UserPreferences.DefaultImageLocation,
+            var imageLocationResult = await _settingsCore.SetSettingAsync(
+                SettingsCategory,
+                DunnageSettingsKeys.Application.DefaultImageLocation,
                 DefaultImageLocation.Trim(),
-                CurrentUserId
+                null
             );
+
+            if (!imageLocationResult.IsSuccess)
+            {
+                ShowStatus(
+                    imageLocationResult.ErrorMessage
+                        ?? "Failed to save the shared Dunnage image folder.",
+                    InfoBarSeverity.Error
+                );
+                return;
+            }
+
             await _dunnageSettings.SaveStringAsync(
                 DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize,
                 PreferredThumbnailSize.ToString(),
@@ -121,12 +136,14 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 CurrentUserId
             );
 
-            ShowStatus("Dunnage user preferences saved.", InfoBarSeverity.Success);
+            await _imageStorage.RefreshConfiguredRootFolderAsync();
+
+            ShowStatus("Dunnage settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage user preferences.",
+                "Failed to save Dunnage settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -281,18 +298,24 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
                 DunnageSettingsKeys.UserPreferences.PreferPartImages,
                 CurrentUserId
             );
-            DefaultImageLocation = (
-                await _dunnageSettings.GetStringAsync(
-                    DunnageSettingsKeys.UserPreferences.DefaultImageLocation,
-                    CurrentUserId
-                )
-            ).Trim();
+
+            var imageLocationResult = await _settingsCore.GetSettingAsync(
+                SettingsCategory,
+                DunnageSettingsKeys.Application.DefaultImageLocation
+            );
+            DefaultImageLocation =
+                imageLocationResult.IsSuccess && imageLocationResult.Data is not null
+                    ? imageLocationResult.Data.Value.Trim()
+                    : string.Empty;
+
+            await _imageStorage.RefreshConfiguredRootFolderAsync();
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error loading Dunnage user preferences: {ex.Message}", ex);
             DefaultLocation = FallbackDefaultLocation;
             DefaultImageLocation = string.Empty;
+            await _imageStorage.RefreshConfiguredRootFolderAsync();
         }
     }
 

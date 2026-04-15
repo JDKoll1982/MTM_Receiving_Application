@@ -50,9 +50,12 @@ SELECT
     (pol.ORDER_QTY - pol.TOTAL_RECEIVED_QTY) AS RemainingQty,
     pol.DESIRED_RECV_DATE AS LineDesiredReceiveDate,
     pol.PROMISE_DATE AS LinePromiseDate,
+    pol.PROMISE_SHIP_DATE AS LinePromiseShipDate,
     pol.LAST_RECEIVED_DATE AS LineLastReceivedDate,
     po.PROMISE_DATE AS HeaderPromiseDate,
+    po.PROMISE_SHIP_DATE AS HeaderPromiseShipDate,
     po.DESIRED_RECV_DATE AS HeaderDesiredReceiveDate,
+    po.ORDER_DATE AS OrderDate,
     COALESCE(po.FREE_ON_BOARD, '') AS FreeOnBoard,
     CASE
         WHEN RIGHT(RTRIM(po.ID), 1) = 'B' OR po.FREE_ON_BOARD LIKE '%BLANKET%' THEN CAST(1 AS bit)

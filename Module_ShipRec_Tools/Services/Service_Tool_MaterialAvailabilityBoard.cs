@@ -161,9 +161,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     safeLookAheadOption
                 );
 
-                return Task.FromResult(
-                    Model_Dao_Result_Factory.Success(transactionSheetDocument)
-                );
+                return Task.FromResult(Model_Dao_Result_Factory.Success(transactionSheetDocument));
             }
 
             var html = new StringBuilder();
@@ -748,29 +746,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             }
 
             var selectedDate = SelectBestIncomingDate(row);
-            var hasQualifyingFutureShipment =
-                selectedDate is not null
-                && selectedDate.Date >= today
-                && (incomingWindowDays.HasValue is false || selectedDate.Date <= horizon);
-
-            if (hasQualifyingFutureShipment)
+            if (selectedDate is not null)
             {
                 qualifyingRollupRows.Add(row);
-                qualifyingLines.Add(selectedDate!);
-                continue;
-            }
-
-            if (row.LineLastReceivedDate is DateTime lastShipmentDate)
-            {
-                qualifyingRollupRows.Add(row);
-                qualifyingLines.Add(
-                    new IncomingLinePresentation(
-                        row,
-                        lastShipmentDate.Date,
-                        "Last received in shipment",
-                        true
-                    )
-                );
+                qualifyingLines.Add(selectedDate);
                 continue;
             }
 
@@ -849,7 +828,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             POLineCount = distinctPoLines.Count,
         };
 
-        var earliestFutureDate = distinctDateLines
+        var earliestDisplayDate = distinctDateLines
             .Where(line => line.IsHistorical is false)
             .Min(line => (DateTime?)line.Date);
         var latestHistoricalDate = distinctDateLines
@@ -857,10 +836,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             .Max(line => (DateTime?)line.Date);
 
         var sortBucket =
-            earliestFutureDate.HasValue ? 0
+            earliestDisplayDate.HasValue ? 0
             : latestHistoricalDate.HasValue ? 1
             : 2;
-        var sortDate = earliestFutureDate ?? latestHistoricalDate ?? DateTime.MaxValue;
+        var sortDate = earliestDisplayDate ?? latestHistoricalDate ?? DateTime.MaxValue;
         var firstDisplayLine = distinctDateLines.FirstOrDefault();
         var nextDateSummary = firstDisplayLine is not null
             ? firstDisplayLine.IsHistorical
@@ -901,6 +880,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             .Select(group =>
                 group
                     .OrderBy(row => GetAssociatedPartPriority(row, incomingWindowDays, horizon))
+                    .ThenByDescending(row => GetAssociatedPartCurrentSortDate(row))
                     .ThenBy(row => GetAssociatedPartFutureSortDate(row))
                     .ThenByDescending(row => GetAssociatedPartHistoricalSortDate(row))
                     .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
@@ -910,6 +890,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     .First()
             )
             .OrderBy(row => GetAssociatedPartPriority(row, incomingWindowDays, horizon))
+            .ThenByDescending(row => GetAssociatedPartCurrentSortDate(row))
             .ThenBy(row => GetAssociatedPartFutureSortDate(row))
             .ThenByDescending(row => GetAssociatedPartHistoricalSortDate(row))
             .ThenBy(row => row.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
@@ -920,6 +901,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 ComponentPartNumber = row.ComponentPartNumber,
                 NextDueToRunDate = row.NextDueToRunDate?.Date,
                 IsFutureOrTodayRun = row.IsFutureOrTodayRun,
+                IsCurrentlyRunning = row.IsCurrentlyRunning,
+                IsPastJob = row.IsPastJob,
                 IsOutsideSelectedLookAheadWindow =
                     row.NextDueToRunDate.HasValue
                     && row.IsFutureOrTodayRun
@@ -930,6 +913,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 WorkOrderStatus = row.WorkOrderStatus,
                 WorkOrderStatusEffectiveDate = row.WorkOrderStatusEffectiveDate,
                 SiteId = row.SiteId,
+                ScheduledStartDate = row.ScheduledStartDate,
+                ScheduledFinishDate = row.ScheduledFinishDate,
                 RequiredDate = row.RequiredDate,
                 OperationSequence = row.OperationSeqNo,
                 QtyPer = row.QtyPer,
@@ -990,44 +975,72 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         Model_InforVisualIncomingSupplyRow row
     )
     {
-        var candidates = new List<(DateTime Date, int Priority, string Label)>(capacity: 4);
-
         if (row.LinePromiseDate is DateTime linePromiseDate)
         {
-            candidates.Add((linePromiseDate.Date, 0, "Line promise"));
+            return new IncomingLinePresentation(
+                row,
+                linePromiseDate.Date,
+                "Line promise delivery",
+                false
+            );
         }
 
-        if (row.LineDesiredReceiveDate is DateTime lineDesiredDate)
+        if (row.LinePromiseShipDate is DateTime linePromiseShipDate)
         {
-            candidates.Add((lineDesiredDate.Date, 1, "Line desired"));
+            return new IncomingLinePresentation(
+                row,
+                linePromiseShipDate.Date,
+                "Line promise ship",
+                false
+            );
         }
 
         if (row.HeaderPromiseDate is DateTime headerPromiseDate)
         {
-            candidates.Add((headerPromiseDate.Date, 2, "PO promise"));
+            return new IncomingLinePresentation(
+                row,
+                headerPromiseDate.Date,
+                "PO promise delivery",
+                false
+            );
+        }
+
+        if (row.HeaderPromiseShipDate is DateTime headerPromiseShipDate)
+        {
+            return new IncomingLinePresentation(
+                row,
+                headerPromiseShipDate.Date,
+                "PO promise ship",
+                false
+            );
+        }
+
+        if (row.LineDesiredReceiveDate is DateTime lineDesiredDate)
+        {
+            return new IncomingLinePresentation(
+                row,
+                lineDesiredDate.Date,
+                "Line desired receive",
+                false
+            );
         }
 
         if (row.HeaderDesiredReceiveDate is DateTime headerDesiredDate)
         {
-            candidates.Add((headerDesiredDate.Date, 3, "PO desired"));
+            return new IncomingLinePresentation(
+                row,
+                headerDesiredDate.Date,
+                "PO desired receive",
+                false
+            );
         }
 
-        if (candidates.Count == 0)
+        if (row.OrderDate is DateTime orderDate)
         {
-            return null;
+            return new IncomingLinePresentation(row, orderDate.Date, "PO order date", false);
         }
 
-        var selectedCandidate = candidates
-            .OrderBy(candidate => candidate.Date)
-            .ThenBy(candidate => candidate.Priority)
-            .First();
-
-        return new IncomingLinePresentation(
-            row,
-            selectedCandidate.Date,
-            selectedCandidate.Label,
-            false
-        );
+        return null;
     }
 
     private static decimal CalculateRequiredPartsQuantity(Model_InforVisualAssociatedPartRunRow row)
@@ -1149,12 +1162,29 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         }
 
         var normalizedValue = workOrderBaseId.Trim();
-        while (normalizedValue.StartsWith("WO", StringComparison.OrdinalIgnoreCase))
+        while (TryTrimKnownWorkOrderPrefix(normalizedValue, out var trimmedValue))
         {
-            normalizedValue = normalizedValue[2..].TrimStart('-', ' ');
+            normalizedValue = trimmedValue;
         }
 
         return normalizedValue.Trim();
+    }
+
+    private static bool TryTrimKnownWorkOrderPrefix(string value, out string trimmedValue)
+    {
+        trimmedValue = value;
+
+        if (
+            value.StartsWith("WO", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("CO", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("PO", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            trimmedValue = value[2..].TrimStart('-', ' ');
+            return true;
+        }
+
+        return false;
     }
 
     private static int GetAssociatedPartPriority(
@@ -1163,31 +1193,54 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         DateTime horizon
     )
     {
+        if (row.IsCurrentlyRunning)
+        {
+            return 0;
+        }
+
         if (!row.NextDueToRunDate.HasValue)
         {
-            return 3;
+            return 4;
         }
 
         var runDate = row.NextDueToRunDate.Value.Date;
         if (row.IsFutureOrTodayRun)
         {
-            return incomingWindowDays.HasValue && runDate > horizon ? 1 : 0;
+            return incomingWindowDays.HasValue && runDate > horizon ? 2 : 1;
         }
 
-        return 2;
+        if (row.IsPastJob)
+        {
+            return 3;
+        }
+
+        return 4;
     }
 
-    private static DateTime GetAssociatedPartFutureSortDate(Model_InforVisualAssociatedPartRunRow row)
+    private static DateTime GetAssociatedPartCurrentSortDate(
+        Model_InforVisualAssociatedPartRunRow row
+    )
+    {
+        return row.IsCurrentlyRunning
+            ? (row.ScheduledStartDate ?? row.NextDueToRunDate ?? DateTime.MinValue).Date
+            : DateTime.MinValue;
+    }
+
+    private static DateTime GetAssociatedPartFutureSortDate(
+        Model_InforVisualAssociatedPartRunRow row
+    )
     {
         return row.NextDueToRunDate.HasValue && row.IsFutureOrTodayRun
             ? row.NextDueToRunDate.Value.Date
             : DateTime.MaxValue;
     }
 
-    private static DateTime GetAssociatedPartHistoricalSortDate(Model_InforVisualAssociatedPartRunRow row)
+    private static DateTime GetAssociatedPartHistoricalSortDate(
+        Model_InforVisualAssociatedPartRunRow row
+    )
     {
-        return row.NextDueToRunDate.HasValue && !row.IsFutureOrTodayRun
-            ? row.NextDueToRunDate.Value.Date
+        return row.IsPastJob
+            ? (row.ScheduledFinishDate ?? row.NextDueToRunDate ?? DateTime.MinValue).Date
             : DateTime.MinValue;
     }
 
@@ -1197,15 +1250,30 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     {
         if (associatedRun.NextDueToRunDate.HasValue is false)
         {
-            return 2;
+            return 4;
         }
 
-        if (associatedRun.IsFutureOrTodayRun && !associatedRun.IsOutsideSelectedLookAheadWindow)
+        if (associatedRun.IsCurrentlyRunning)
         {
             return 0;
         }
 
-        return 1;
+        if (associatedRun.IsFutureOrTodayRun && !associatedRun.IsOutsideSelectedLookAheadWindow)
+        {
+            return 1;
+        }
+
+        if (associatedRun.IsFutureOrTodayRun)
+        {
+            return 2;
+        }
+
+        if (associatedRun.IsPastJob)
+        {
+            return 3;
+        }
+
+        return 4;
     }
 
     private static void AppendLocationsSection(
@@ -1451,12 +1519,16 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         var plainText = new StringBuilder();
 
         html.AppendLine("<div class='transaction-sheet-wrapper'>");
-        html.AppendLine("<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>");
+        html.AppendLine(
+            "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
+        );
         html.AppendLine(
             $"<div class='transaction-sheet-subtitle'>Warehouse Location: {HtmlEncode(locationId)} | Warehouse scope: {HtmlEncode(warehouseCode)} | Look Ahead: {HtmlEncode(lookAheadOption)}</div>"
         );
         html.AppendLine("<table class='transaction-sheet'>");
-        html.AppendLine("<thead><tr><th>Part Number</th><th>Taken From</th><th>Coil Transfer Entries</th></tr></thead>");
+        html.AppendLine(
+            "<thead><tr><th class='identity-header'>Part Number / Taken From</th><th class='entries-header'>Coil Transfer Entries</th></tr></thead>"
+        );
         html.AppendLine("<tbody>");
 
         plainText.AppendLine("Material Availability Transaction Sheet");
@@ -1472,8 +1544,15 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 : card.SearchLocationId;
 
             html.AppendLine("<tr class='transaction-row'>");
-            html.AppendLine($"<td class='part-cell'>{HtmlEncode(card.PartId)}</td>");
-            html.AppendLine($"<td class='from-cell'>{HtmlEncode(takenFrom)}</td>");
+            html.AppendLine("<td class='identity-cell'>");
+            html.AppendLine("<div class='identity-card'>");
+            html.AppendLine("<div class='identity-label'>Part Number</div>");
+            html.AppendLine($"<div class='identity-part-value'>{HtmlEncode(card.PartId)}</div>");
+            html.AppendLine("<div class='identity-divider'></div>");
+            html.AppendLine("<div class='identity-label'>Taken From</div>");
+            html.AppendLine($"<div class='identity-from-value'>{HtmlEncode(takenFrom)}</div>");
+            html.AppendLine("</div>");
+            html.AppendLine("</td>");
             html.AppendLine("<td class='entries-cell'>");
             AppendTransactionEntryGrid(html);
             html.AppendLine("</td>");
@@ -1506,6 +1585,11 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         {
             html.AppendLine($"<th>Qty {columnIndex}</th>");
             html.AppendLine($"<th>Take To {columnIndex}</th>");
+
+            if (columnIndex < 5)
+            {
+                html.AppendLine("<th class='entry-spacer-header'></th>");
+            }
         }
         html.AppendLine("</tr></thead>");
         html.AppendLine("<tbody>");
@@ -1513,10 +1597,15 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         for (var rowIndex = 0; rowIndex < 3; rowIndex++)
         {
             html.AppendLine("<tr>");
-            for (var columnIndex = 0; columnIndex < 5; columnIndex++)
+            for (var columnIndex = 1; columnIndex <= 5; columnIndex++)
             {
                 html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
                 html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
+
+                if (columnIndex < 5)
+                {
+                    html.AppendLine("<td class='entry-spacer-cell'></td>");
+                }
             }
             html.AppendLine("</tr>");
         }
@@ -1546,17 +1635,57 @@ body { margin: 0; background: #ffffff; }
 .transaction-sheet-wrapper { font-family: Calibri, Arial, sans-serif; font-size: 10pt; color: #111827; }
 .transaction-sheet-title { font-size: 15pt; font-weight: 700; text-align: center; margin: 0 0 4px 0; }
 .transaction-sheet-subtitle { font-size: 9pt; text-align: center; margin: 0 0 8px 0; }
-.transaction-sheet { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.transaction-sheet { width: 100%; border-collapse: collapse; table-layout: auto; }
 .transaction-sheet thead { display: table-header-group; }
 .transaction-sheet th, .transaction-sheet td { border: 1px solid #111827; padding: 3px 4px; vertical-align: top; }
 .transaction-sheet th { background: #f3f4f6; font-weight: 700; text-align: left; }
 .transaction-row { break-inside: avoid; page-break-inside: avoid; }
-.part-cell { width: 14%; font-weight: 700; }
-.from-cell { width: 10%; }
-.entries-cell { width: 76%; padding: 2px; }
+.identity-header { width: 1%; white-space: nowrap; }
+.entries-header { width: 99%; }
+.identity-cell { width: 1%; white-space: nowrap; background: #faf5ff; padding: 5px; }
+.identity-card {
+    min-width: 1.9in;
+    background: linear-gradient(180deg, #fcfaff 0%, #f3e8ff 100%);
+    border: 1px solid #c4b5fd;
+    border-radius: 8px;
+    padding: 8px 10px;
+    box-sizing: border-box;
+}
+.identity-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b21a8;
+    margin: 0 0 2px 0;
+}
+.identity-part-value {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+.identity-from-value {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+.identity-divider {
+    height: 1px;
+    margin: 8px 0 7px 0;
+    background: rgba(107, 33, 168, 0.22);
+}
+.entries-cell { width: auto; padding: 2px; }
 .entry-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .entry-grid th, .entry-grid td { border: 1px solid #9ca3af; padding: 2px 3px; }
 .entry-grid th { background: #ffffff; font-size: 8pt; font-weight: 600; }
+.entry-spacer-header, .entry-spacer-cell {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    width: 10px;
+}
 .entry-cell { height: 28px; }
 """;
     }

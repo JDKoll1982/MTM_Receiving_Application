@@ -31,11 +31,17 @@ public class Model_InforVisualIncomingSupplyRow
 
     public DateTime? LinePromiseDate { get; set; }
 
+    public DateTime? LinePromiseShipDate { get; set; }
+
     public DateTime? LineLastReceivedDate { get; set; }
 
     public DateTime? HeaderPromiseDate { get; set; }
 
+    public DateTime? HeaderPromiseShipDate { get; set; }
+
     public DateTime? HeaderDesiredReceiveDate { get; set; }
+
+    public DateTime? OrderDate { get; set; }
 
     public string FreeOnBoard { get; set; } = string.Empty;
 

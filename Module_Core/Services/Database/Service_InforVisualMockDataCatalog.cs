@@ -316,6 +316,8 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             AssociatedPartDescription = row.AssociatedPartDescription?.Trim() ?? string.Empty,
             NextDueToRunDate = row.NextDueToRunDate,
             IsFutureOrTodayRun = row.IsFutureOrTodayRun,
+            IsCurrentlyRunning = row.IsCurrentlyRunning,
+            IsPastJob = row.IsPastJob,
             NextDueDateSource = row.NextDueDateSource?.Trim() ?? string.Empty,
             WorkOrderType = row.WorkOrderType?.Trim().ToUpperInvariant() ?? string.Empty,
             WorkOrderBaseId = row.WorkOrderBaseId?.Trim() ?? string.Empty,
@@ -326,6 +328,8 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             RequirementPieceNo = row.RequirementPieceNo,
             WorkOrderStatus = row.WorkOrderStatus?.Trim().ToUpperInvariant() ?? string.Empty,
             RequirementStatus = row.RequirementStatus?.Trim().ToUpperInvariant() ?? string.Empty,
+            ScheduledStartDate = row.ScheduledStartDate,
+            ScheduledFinishDate = row.ScheduledFinishDate,
         };
     }
 

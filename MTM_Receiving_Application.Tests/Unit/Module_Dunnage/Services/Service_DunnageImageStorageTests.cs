@@ -3,7 +3,12 @@ using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Models;
 using Windows.Graphics.Imaging;
 using Xunit;
 
@@ -14,7 +19,9 @@ public sealed class Service_DunnageImageStorageTests
     [Fact]
     public async Task CreateRotatedWorkingCopyAsync_ShouldSwapImageDimensions()
     {
-        var service = new Service_DunnageImageStorage();
+        Helper_DunnageImagePaths.SetRootFolder(null);
+
+        var service = new Service_DunnageImageStorage(CreateSettingsCoreFacade().Object);
         var sourcePath = Path.Combine(
             Path.GetTempPath(),
             $"dunnage-rotate-source-{Guid.NewGuid():N}.png"
@@ -49,7 +56,9 @@ public sealed class Service_DunnageImageStorageTests
     [Fact]
     public async Task CreateRotatedWorkingCopyAsync_ShouldFailWhenImageDoesNotExist()
     {
-        var service = new Service_DunnageImageStorage();
+        Helper_DunnageImagePaths.SetRootFolder(null);
+
+        var service = new Service_DunnageImageStorage(CreateSettingsCoreFacade().Object);
 
         var result = await service.CreateRotatedWorkingCopyAsync(
             Path.Combine(Path.GetTempPath(), $"missing-{Guid.NewGuid():N}.png")
@@ -57,6 +66,20 @@ public sealed class Service_DunnageImageStorageTests
 
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessage.Should().Contain("was not found");
+    }
+
+    private static Mock<IService_SettingsCoreFacade> CreateSettingsCoreFacade()
+    {
+        var settingsCoreMock = new Mock<IService_SettingsCoreFacade>();
+        settingsCoreMock
+            .Setup(service =>
+                service.GetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<int?>())
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_SettingsValue { Value = string.Empty })
+            );
+
+        return settingsCoreMock;
     }
 
     private static async Task WritePngAsync(string filePath, uint width, uint height)

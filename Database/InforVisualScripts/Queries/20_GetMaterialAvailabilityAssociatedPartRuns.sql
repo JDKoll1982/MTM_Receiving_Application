@@ -1,7 +1,7 @@
 -- ========================================
 -- Query: Material Availability Associated Part Runs
 -- Description: Returns the parent or associated work-order parts that consume the requested component part,
---              together with the best available next due-to-run date for that demand.
+--              together with the scheduled run window and normalized run-state for that demand.
 -- Database: MTMFG (Infor Visual)
 -- Server: VISUAL
 -- ========================================
@@ -74,6 +74,8 @@ MatchingRequirements AS (
         op.RUN_QTY_PER_CYCLE                AS RunQtyPerCycle,
         op.SETUP_HRS                        AS SetupHours,
         op.RUN_HRS                          AS RunHours,
+        COALESCE(op.SCHED_START_DATE, wo.SCHED_START_DATE) AS ScheduledStartDate,
+        COALESCE(op.SCHED_FINISH_DATE, wo.SCHED_FINISH_DATE) AS ScheduledFinishDate,
         ISNULL(r.DIMENSIONS, '')            AS Dimensions,
         ISNULL(r.DIM_EXPRESSION, '')        AS DimensionExpression,
         r.LENGTH                            AS Length,
@@ -81,34 +83,37 @@ MatchingRequirements AS (
         r.HEIGHT                            AS Height,
         COALESCE(r.DRAWING_ID, op.DRAWING_ID, wo.DRAWING_ID, '') AS DrawingId,
         COALESCE(r.DRAWING_REV_NO, op.DRAWING_REV_NO, wo.DRAWING_REV_NO, '') AS DrawingRevision,
-        COALESCE(
-            r.REQUIRED_DATE,
-            r.DUE_DATE,
-            wo.SCHED_START_DATE,
-            wo.DESIRED_RLS_DATE,
-            wo.DESIRED_WANT_DATE
-        )                                   AS NextDueToRunDate,
+        COALESCE(op.SCHED_START_DATE, wo.SCHED_START_DATE) AS NextDueToRunDate,
         CASE
-            WHEN r.REQUIRED_DATE IS NOT NULL THEN 'REQUIREMENT.REQUIRED_DATE'
-            WHEN r.DUE_DATE IS NOT NULL THEN 'REQUIREMENT.DUE_DATE'
+            WHEN op.SCHED_START_DATE IS NOT NULL THEN 'OPERATION.SCHED_START_DATE'
             WHEN wo.SCHED_START_DATE IS NOT NULL THEN 'WORK_ORDER.SCHED_START_DATE'
-            WHEN wo.DESIRED_RLS_DATE IS NOT NULL THEN 'WORK_ORDER.DESIRED_RLS_DATE'
-            WHEN wo.DESIRED_WANT_DATE IS NOT NULL THEN 'WORK_ORDER.DESIRED_WANT_DATE'
-            ELSE 'NO DATE FOUND'
+            ELSE 'NO SCHEDULED START DATE'
         END                                 AS NextDueDateSource,
         CASE
             WHEN COALESCE(
-                r.REQUIRED_DATE,
-                r.DUE_DATE,
-                wo.SCHED_START_DATE,
-                wo.DESIRED_RLS_DATE,
-                wo.DESIRED_WANT_DATE
-            ) >= CAST(GETDATE() AS date)
+                op.SCHED_START_DATE,
+                wo.SCHED_START_DATE
+            ) > CAST(GETDATE() AS date)
              AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
              AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
                 THEN CAST(1 AS bit)
             ELSE CAST(0 AS bit)
-        END                                 AS IsFutureOrTodayRun
+        END                                 AS IsFutureOrTodayRun,
+        CASE
+            WHEN COALESCE(op.SCHED_START_DATE, wo.SCHED_START_DATE) <= CAST(GETDATE() AS date)
+             AND COALESCE(op.SCHED_FINISH_DATE, wo.SCHED_FINISH_DATE) >= CAST(GETDATE() AS date)
+             AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
+             AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
+                THEN CAST(1 AS bit)
+            ELSE CAST(0 AS bit)
+        END                                 AS IsCurrentlyRunning,
+        CASE
+            WHEN ISNULL(r.STATUS, '') IN ('C', 'X')
+             OR ISNULL(wo.STATUS, '') IN ('C', 'X')
+             OR COALESCE(op.SCHED_FINISH_DATE, wo.SCHED_FINISH_DATE, r.CLOSE_DATE, wo.CLOSE_DATE) < CAST(GETDATE() AS date)
+                THEN CAST(1 AS bit)
+            ELSE CAST(0 AS bit)
+        END                                 AS IsPastJob
     FROM RequestedParts rp
     CROSS JOIN NormalizedParameters np
     INNER JOIN dbo.REQUIREMENT r
@@ -153,6 +158,8 @@ SELECT TOP (@MaxResults)
     RequirementPieceNo,
     WorkOrderStatus,
     RequirementStatus,
+    ScheduledStartDate,
+    ScheduledFinishDate,
     RequiredDate,
     QtyPer,
     FixedQty,
@@ -175,12 +182,20 @@ SELECT TOP (@MaxResults)
     Width,
     Height,
     DrawingId,
-    DrawingRevision
+    DrawingRevision,
+    IsCurrentlyRunning,
+    IsPastJob
 FROM MatchingRequirements
 ORDER BY
-    CASE WHEN IsFutureOrTodayRun = 1 THEN 0 ELSE 1 END,
-    CASE WHEN IsFutureOrTodayRun = 1 THEN NextDueToRunDate END,
-    CASE WHEN IsFutureOrTodayRun = 0 THEN NextDueToRunDate END DESC,
+    CASE
+        WHEN IsCurrentlyRunning = 1 THEN 0
+        WHEN IsFutureOrTodayRun = 1 THEN 1
+        WHEN IsPastJob = 1 THEN 2
+        ELSE 3
+    END,
+    CASE WHEN IsCurrentlyRunning = 1 THEN ScheduledStartDate END DESC,
+    CASE WHEN IsFutureOrTodayRun = 1 THEN ScheduledStartDate END,
+    CASE WHEN IsPastJob = 1 THEN COALESCE(ScheduledFinishDate, ScheduledStartDate) END DESC,
     AssociatedPartNumber,
     WorkOrderBaseId,
     OperationSeqNo,

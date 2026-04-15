@@ -2468,6 +2468,17 @@
     },
     {
       "category": "Dunnage",
+      "key": "Dunnage.Application.DefaultImageLocation",
+      "displayName": "Application - Default Dunnage Image Folder",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path"
+    },
+    {
+      "category": "Dunnage",
       "key": "Dunnage.UserPreferences.DefaultLocation",
       "displayName": "User Preferences - Default Dunnage Location",
       "defaultValue": "RECV",

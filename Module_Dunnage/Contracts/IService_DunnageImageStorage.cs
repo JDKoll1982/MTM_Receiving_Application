@@ -8,6 +8,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts;
 /// </summary>
 public interface IService_DunnageImageStorage
 {
+    Task RefreshConfiguredRootFolderAsync();
+
     Task<Model_Dao_Result<string>> ImportImageAsync(string sourceFilePath, string folderName);
 
     Task<Model_Dao_Result<string>> CreateRotatedWorkingCopyAsync(string imagePath);

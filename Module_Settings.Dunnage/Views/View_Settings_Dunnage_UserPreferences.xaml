@@ -55,7 +55,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="These preferences only affect the current user when custom Dunnage images are available."
+                                Text="Preferred thumbnail sizing and image priority stay user-specific. The default image folder is shared across the application so every user sees the same Dunnage image source."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -97,7 +97,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Choose the folder that stores your Dunnage images. The folder must already exist when you save these preferences."
+                            Text="Choose the shared folder that stores Dunnage images for the whole application. The folder must already exist when you save these settings."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>

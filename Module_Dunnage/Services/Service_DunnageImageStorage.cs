@@ -5,15 +5,48 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using Windows.Graphics.Imaging;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Services;
 
 /// <summary>
-/// Stores Dunnage PNG files in local app data and exposes relative-path persistence.
+/// Stores Dunnage PNG files under the configured Dunnage image root and exposes relative-path persistence.
 /// </summary>
 public class Service_DunnageImageStorage : IService_DunnageImageStorage
 {
+    private const string SettingsCategory = "Dunnage";
+
+    private readonly IService_SettingsCoreFacade _settingsCore;
+
+    public Service_DunnageImageStorage(IService_SettingsCoreFacade settingsCore)
+    {
+        _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
+    }
+
+    public async Task RefreshConfiguredRootFolderAsync()
+    {
+        try
+        {
+            var result = await _settingsCore.GetSettingAsync(
+                SettingsCategory,
+                DunnageSettingsKeys.Application.DefaultImageLocation
+            );
+
+            var configuredRootFolder =
+                result.IsSuccess && result.Data is not null
+                    ? result.Data.Value?.Trim()
+                    : string.Empty;
+
+            Helper_DunnageImagePaths.SetRootFolder(configuredRootFolder);
+        }
+        catch
+        {
+            Helper_DunnageImagePaths.SetRootFolder(null);
+        }
+    }
+
     public async Task<Model_Dao_Result<string>> CreateRotatedWorkingCopyAsync(string imagePath)
     {
         string? targetFilePath = null;

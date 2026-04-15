@@ -21,6 +21,10 @@ public class Model_InforVisualAssociatedPartRunRow
 
     public bool IsFutureOrTodayRun { get; set; }
 
+    public bool IsCurrentlyRunning { get; set; }
+
+    public bool IsPastJob { get; set; }
+
     public string NextDueDateSource { get; set; } = string.Empty;
 
     public string WorkOrderType { get; set; } = string.Empty;
@@ -44,6 +48,10 @@ public class Model_InforVisualAssociatedPartRunRow
     public string WorkOrderStatus { get; set; } = string.Empty;
 
     public string RequirementStatus { get; set; } = string.Empty;
+
+    public DateTime? ScheduledStartDate { get; set; }
+
+    public DateTime? ScheduledFinishDate { get; set; }
 
     public DateTime? RequiredDate { get; set; }
 

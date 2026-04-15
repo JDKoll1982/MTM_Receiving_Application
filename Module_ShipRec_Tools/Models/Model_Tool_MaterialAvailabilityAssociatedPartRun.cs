@@ -19,6 +19,10 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public bool IsFutureOrTodayRun { get; set; }
 
+    public bool IsCurrentlyRunning { get; set; }
+
+    public bool IsPastJob { get; set; }
+
     public bool IsOutsideSelectedLookAheadWindow { get; set; }
 
     public string NextDueDateSource { get; set; } = string.Empty;
@@ -30,6 +34,10 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
     public DateTime? WorkOrderStatusEffectiveDate { get; set; }
 
     public string SiteId { get; set; } = string.Empty;
+
+    public DateTime? ScheduledStartDate { get; set; }
+
+    public DateTime? ScheduledFinishDate { get; set; }
 
     public DateTime? RequiredDate { get; set; }
 
@@ -85,14 +93,16 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public string NormalizedUsageUnitOfMeasure { get; set; } = string.Empty;
 
-    public string NextRunDateDisplay => FormatDate(NextDueToRunDate, "No scheduled date");
+    public string NextRunDateDisplay =>
+        FormatDate(ScheduledStartDate ?? NextDueToRunDate, "No scheduled date");
 
     public string RunTimingLabel =>
         NextDueToRunDate.HasValue is false ? "No scheduled job"
-        : IsFutureOrTodayRun
-            ? IsOutsideSelectedLookAheadWindow ? "Scheduled later"
-            : "Next run"
-        : "Latest known run";
+        : IsCurrentlyRunning ? "Currently Running"
+        : IsPastJob ? "Past Job"
+        : "Future Run";
+
+    public string ScheduledFinishDateDisplay => FormatDate(ScheduledFinishDate);
 
     public string RequiredDateDisplay => FormatDate(RequiredDate);
 
