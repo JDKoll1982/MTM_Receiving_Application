@@ -50,7 +50,7 @@
                     <ItemsRepeater.Layout>
                         <UniformGridLayout
                             MinItemWidth="240"
-                            MinItemHeight="160"
+                            MinItemHeight="180"
                             ItemsStretch="Uniform"
                             MinColumnSpacing="12"
                             MinRowSpacing="12"
@@ -119,7 +119,7 @@
                     <ItemsRepeater.Layout>
                         <UniformGridLayout
                             MinItemWidth="240"
-                            MinItemHeight="160"
+                            MinItemHeight="180"
                             ItemsStretch="Uniform"
                             MinColumnSpacing="12"
                             MinRowSpacing="12"

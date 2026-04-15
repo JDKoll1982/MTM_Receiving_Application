@@ -17,27 +17,14 @@
     <Grid Padding="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <StackPanel
             Grid.Row="0"
-            Margin="0,0,0,20"
-            Spacing="4">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Material Availability Board" />
-            <TextBlock
-                Opacity="0.7"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="Search by warehouse location or part number to review current stock, incoming material, and which associated parent parts are due to run next." />
-        </StackPanel>
-
-        <StackPanel
-            Grid.Row="1"
-            Margin="0,0,0,16"
-            Spacing="10">
-            <StackPanel Orientation="Horizontal" Spacing="16">
+            Margin="0,0,0,6"
+            Spacing="6">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="16">
                 <StackPanel Orientation="Horizontal" Spacing="0">
                     <ToggleButton
                         Command="{x:Bind ViewModel.SetSearchByLocationCommand}"
@@ -52,67 +39,68 @@
                         IsChecked="{x:Bind ViewModel.IsSearchByPart, Mode=OneWay}"
                         IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                 </StackPanel>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Warehouse scope: 002" />
             </StackPanel>
 
-            <StackPanel
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="10">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                    Text="{x:Bind ViewModel.SearchLabel, Mode=OneWay}" />
-                <TextBox
-                    x:Name="SearchBox"
-                    Width="260"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                    KeyDown="SearchBox_KeyDown"
-                    PlaceholderText="{x:Bind ViewModel.SearchPlaceholder, Mode=OneWay}"
-                    Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <Button
-                    Command="{x:Bind ViewModel.SearchCommand}"
-                    Content="Search"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                    Style="{StaticResource AccentButtonStyle}" />
-                <Button
-                    Click="ClearButton_Click"
-                    Content="Clear"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
-                <Button
-                    Command="{x:Bind ViewModel.PrintCommand}"
-                    Content="Print"
-                    IsEnabled="{x:Bind ViewModel.HasCards, Mode=OneWay}" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                    Text="{x:Bind ViewModel.LookAheadLabel, Mode=OneWay}" />
-                <ComboBox
-                    Width="110"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                    ItemsSource="{x:Bind ViewModel.LookAheadOptions, Mode=OneWay}"
-                    SelectedItem="{x:Bind ViewModel.SelectedLookAheadOption, Mode=TwoWay}" />
-                <ProgressRing
-                    Width="28"
-                    Height="28"
-                    VerticalAlignment="Center"
-                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
-            </StackPanel>
+                <Grid ColumnSpacing="6" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="{x:Bind ViewModel.SearchLabel, Mode=OneWay}" />
+                    <TextBox Grid.Column="1"
+                        x:Name="SearchBox"
+                        Width="260"
+                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                        KeyDown="SearchBox_KeyDown"
+                        PlaceholderText="{x:Bind ViewModel.SearchPlaceholder, Mode=OneWay}"
+                        Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Grid.Column="2"
+                            Command="{x:Bind ViewModel.SearchCommand}"
+                            Content="Search"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                            Style="{StaticResource AccentButtonStyle}" />
+                    <Button
+                        Grid.Column="3"
+                        Click="ClearButton_Click"
+                        Content="Clear"
+                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                    <Button
+                        Grid.Column="4"
+                        Command="{x:Bind ViewModel.PrintCommand}"
+                        Content="Print"
+                        IsEnabled="{x:Bind ViewModel.HasCards, Mode=OneWay}" />
+                    <TextBlock
+                        Grid.Column="6"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="{x:Bind ViewModel.LookAheadLabel, Mode=OneWay}" />
+                    <ComboBox
+                        Grid.Column="7"
+                        Width="110"
+                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                        ItemsSource="{x:Bind ViewModel.LookAheadOptions, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.SelectedLookAheadOption, Mode=TwoWay}" />
+                    <ProgressRing Grid.Column="5"
+                        Width="28"
+                        Height="28"
+                        VerticalAlignment="Center"
+                        IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                </Grid>
+               
         </StackPanel>
 
-        <InfoBar
-            Grid.Row="2"
-            Margin="0,0,0,12"
-            IsClosable="True"
-            IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
-            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-            Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}" />
 
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="1">
             <Border
                 Padding="20"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -141,7 +129,7 @@
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="0,0,0,12" />
+                        <Setter Property="Margin" Value="0,0,0,6" />
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
@@ -158,20 +146,21 @@
                                 HorizontalContentAlignment="Stretch"
                                 IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}">
                                 <Expander.Header>
-                                    <Grid ColumnSpacing="10" RowSpacing="10">
+                                    <Grid ColumnSpacing="10">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="200" />
                                         </Grid.ColumnDefinitions>
 
                                         <Border
                                             Grid.Row="0"
                                             Grid.Column="0"
-                                            Padding="12"
+                                            Padding="6"
+                                            Margin="0,6,0,6"
                                             Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1"
@@ -192,42 +181,117 @@
                                         <Border
                                             Grid.Row="0"
                                             Grid.Column="1"
-                                            Padding="12"
+                                            Grid.RowSpan="2"
+                                            Padding="6"
+                                            Margin="0,6,0,6"
                                             Background="{ThemeResource LayerFillColorDefaultBrush}"
                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8">
-                                            <StackPanel HorizontalAlignment="Right" Spacing="4">
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind QuantitySummaryLabel}" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource SubtitleTextBlockStyle}"
-                                                    Text="{x:Bind QuantitySummaryDisplay}" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="Total on hand" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                                    Text="{x:Bind TotalPositiveQuantityDisplay}" />
-                                            </StackPanel>
+
+                                                <Grid ColumnSpacing="6" RowSpacing="6" VerticalAlignment="Stretch" >
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width=".5*"/>
+                                                        <ColumnDefinition Width=".5*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                <Border
+                                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8"
+                                                    Padding="6"
+                                                    Grid.Column="0"
+                                                    Grid.Row="0"
+                                                    VerticalAlignment="Stretch">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="*"/>
+                                                        </Grid.RowDefinitions>
+
+                                                        <TextBlock
+                                                            Grid.Row="0"
+                                                            HorizontalAlignment="Center"
+                                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="{x:Bind QuantitySummaryLabel}"
+                                                            />
+                                                        
+                                                        <TextBlock
+                                                            Grid.Row="1"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                            Text="{x:Bind QuantitySummaryDisplay}"
+                                                            />
+                                                    </Grid>
+                                                </Border>
+
+
+                                                <Border
+                                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8"
+                                                    Padding="6"
+                                                    Grid.Column="1"
+                                                    Grid.Row="0"
+                                                    VerticalAlignment="Stretch">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="*"/>
+                                                        </Grid.RowDefinitions>
+                                                        
+                                                        <TextBlock
+                                                            Grid.Row="0"
+                                                            HorizontalAlignment="Center"
+                                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="Total on hand"
+                                                            />
+                                                        
+                                                        <TextBlock
+                                                            Grid.Row="1"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                            Text="{x:Bind TotalPositiveQuantityDisplay}"
+                                                            />
+                                                    </Grid>
+                                                </Border>
+                                                    
+                                                <Button
+                                                    Grid.Column="0"
+                                                    Grid.ColumnSpan="2"
+                                                    Grid.Row="1"
+                                                    VerticalAlignment="Bottom"
+                                                    HorizontalAlignment="Center"
+                                                    Click="WorkOrderDetailsButton_Click"
+                                                    Content="Run Summary Info"
+                                                    Tag="{x:Bind}"
+                                                    />
+                                            </Grid>
+                                                
+
+
+ 
+
+
                                         </Border>
 
                                         <Border
                                             Grid.Row="1"
-                                            Grid.ColumnSpan="2"
-                                            Padding="12"
+                                            Padding="6"
+                                            Margin="0,0,0,6"
                                             Background="{ThemeResource ControlFillColorDefaultBrush}"
                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8">
                                             <StackPanel Spacing="8">
-                                                <Grid ColumnSpacing="12">
+                                                <Grid ColumnSpacing="6">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
                                                         <ColumnDefinition Width="Auto" />
@@ -239,12 +303,7 @@
                                                             Text="{x:Bind NextRunSummaryDisplay}"
                                                             TextWrapping="WrapWholeWords" />
                                                     </StackPanel>
-                                                    <Button
-                                                        Grid.Column="1"
-                                                        VerticalAlignment="Top"
-                                                        Click="WorkOrderDetailsButton_Click"
-                                                        Content="Click here for more info"
-                                                        Tag="{x:Bind}" />
+
                                                 </Grid>
                                                 <Border
                                                     Padding="8,6"
@@ -264,7 +323,7 @@
                                     </Grid>
                                 </Expander.Header>
 
-                                <StackPanel Margin="0,12,0,0" Spacing="14">
+                                <StackPanel Margin="0,6,0,0" Spacing="6">
                                     <StackPanel Spacing="8">
                                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Current Locations" />
                                         <TextBlock
@@ -325,7 +384,7 @@
                                             Text="No qualifying incoming material was found for the selected look-ahead window."
                                             Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                                         <Border
-                                            Padding="12"
+                                            Padding="6"
                                             Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1"
@@ -397,7 +456,7 @@
                                                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                         BorderThickness="1"
                                                         CornerRadius="6">
-                                                        <Grid ColumnSpacing="12">
+                                                        <Grid ColumnSpacing="6">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
                                                                 <ColumnDefinition Width="Auto" />

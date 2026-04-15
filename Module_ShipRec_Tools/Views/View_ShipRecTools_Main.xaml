@@ -29,10 +29,6 @@
                     <TextBlock Text="Back to Tools" />
                 </StackPanel>
             </Button>
-            <TextBlock
-                VerticalAlignment="Center"
-                Style="{StaticResource SubtitleTextBlockStyle}"
-                Text="{x:Bind ViewModel.CurrentToolTitle, Mode=OneWay}" />
         </StackPanel>
 
         <!--  Content Area  -->
