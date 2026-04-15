@@ -1560,7 +1560,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             plainText.AppendLine($"Part Number: {card.PartId}");
             plainText.AppendLine($"Taken From: {takenFrom}");
-            plainText.AppendLine("Coil Transfer Entries: 3 rows with 5 quantity/to pairs each.");
+            plainText.AppendLine("Coil Transfer Entries: 3 rows with 4 quantity/to pairs each.");
             plainText.AppendLine();
         }
 
@@ -1581,12 +1581,12 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     {
         html.AppendLine("<table class='entry-grid'>");
         html.AppendLine("<thead><tr>");
-        for (var columnIndex = 1; columnIndex <= 5; columnIndex++)
+        for (var columnIndex = 1; columnIndex <= 4; columnIndex++)
         {
             html.AppendLine($"<th>Qty {columnIndex}</th>");
             html.AppendLine($"<th>Take To {columnIndex}</th>");
 
-            if (columnIndex < 5)
+            if (columnIndex < 4)
             {
                 html.AppendLine("<th class='entry-spacer-header'></th>");
             }
@@ -1597,12 +1597,12 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         for (var rowIndex = 0; rowIndex < 3; rowIndex++)
         {
             html.AppendLine("<tr>");
-            for (var columnIndex = 1; columnIndex <= 5; columnIndex++)
+            for (var columnIndex = 1; columnIndex <= 4; columnIndex++)
             {
                 html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
                 html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
 
-                if (columnIndex < 5)
+                if (columnIndex < 4)
                 {
                     html.AppendLine("<td class='entry-spacer-cell'></td>");
                 }

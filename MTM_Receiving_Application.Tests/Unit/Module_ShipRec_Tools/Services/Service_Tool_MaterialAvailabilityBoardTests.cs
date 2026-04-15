@@ -454,6 +454,120 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
+    public async Task GetBoardByPartAsync_ShouldKeepThreeOpenPosVisibleForMmc000744()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var firstPromiseDeliveryDate = new DateTime(2026, 04, 22);
+        var secondPromiseShipDate = new DateTime(2026, 04, 24);
+        var thirdOrderDate = new DateTime(2026, 04, 28);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("MMC000744"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "MMC000744",
+                        Description = "MMC000744 Regression Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "MMC000744", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "MMC000744", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualIncomingSupplyRow>
+                    {
+                        new()
+                        {
+                            PartId = "MMC000744",
+                            PartDescription = "MMC000744 Regression Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-74401",
+                            POLineNumber = "1",
+                            OrderedQty = 10,
+                            ReceivedQty = 0,
+                            RemainingQty = 10,
+                            LinePromiseDate = firstPromiseDeliveryDate,
+                        },
+                        new()
+                        {
+                            PartId = "MMC000744",
+                            PartDescription = "MMC000744 Regression Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-74402",
+                            POLineNumber = "2",
+                            OrderedQty = 20,
+                            ReceivedQty = 0,
+                            RemainingQty = 20,
+                            LinePromiseShipDate = secondPromiseShipDate,
+                        },
+                        new()
+                        {
+                            PartId = "MMC000744",
+                            PartDescription = "MMC000744 Regression Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-74403",
+                            POLineNumber = "3",
+                            OrderedQty = 30,
+                            ReceivedQty = 0,
+                            RemainingQty = 30,
+                            OrderDate = thirdOrderDate,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "MMC000744", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("MMC000744", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+
+        var card = result.Data![0];
+        card.HasIncomingSupply.Should().BeTrue();
+        card.IncomingRollup.PurchaseOrderCount.Should().Be(3);
+        card.IncomingRollup.POLineCount.Should().Be(3);
+        card.IncomingLines.Should().HaveCount(3);
+        card.UpcomingDates.Should().HaveCount(3);
+
+        card.IncomingLines[0].PurchaseOrderLineDisplay.Should().Be("PO-74401 / Line 1");
+        card.IncomingLines[0].DateLabel.Should().Be("Line promise delivery");
+        card.IncomingLines[0].Date.Should().Be(firstPromiseDeliveryDate.Date);
+
+        card.IncomingLines[1].PurchaseOrderLineDisplay.Should().Be("PO-74402 / Line 2");
+        card.IncomingLines[1].DateLabel.Should().Be("Line promise ship");
+        card.IncomingLines[1].Date.Should().Be(secondPromiseShipDate.Date);
+
+        card.IncomingLines[2].PurchaseOrderLineDisplay.Should().Be("PO-74403 / Line 3");
+        card.IncomingLines[2].DateLabel.Should().Be("PO order date");
+        card.IncomingLines[2].Date.Should().Be(thirdOrderDate.Date);
+
+        card.NextDateSummary.Should().Contain("Line promise delivery");
+        card.NextDateSummary.Should().Contain("04/22/2026");
+    }
+
+    [Fact]
     public async Task GetBoardByPartAsync_ShouldKeepAssociatedPartRunsVisibleOutsideSelectedWindow()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();
@@ -1078,6 +1192,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain("Taken From");
         result.Data.HtmlFragment.Should().Contain("Coil Transfer Entries");
         result.Data.HtmlFragment.Should().Contain("Take To 1");
+        result.Data.HtmlFragment.Should().Contain("Take To 4");
+        result.Data.HtmlFragment.Should().NotContain("Take To 5");
         result.Data.HtmlFragment.Should().Contain("MMC0000850");
         result.Data.PageCss.Should().Contain("thead { display: table-header-group; }");
         result.Data.PageCss.Should().Contain("margin: 0.2in");
