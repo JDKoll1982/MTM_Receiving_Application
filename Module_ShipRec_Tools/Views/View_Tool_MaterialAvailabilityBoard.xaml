@@ -248,13 +248,13 @@
                                                 </Grid>
                                                 <Border
                                                     Padding="8,6"
-                                                    Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                                    Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
                                                     BorderBrush="{ThemeResource SystemFillColorCautionBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="6"
                                                     Visibility="{x:Bind HasEstimatedCoilUseRisk, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                     <TextBlock
-                                                        Foreground="{ThemeResource SystemFillColorCautionForegroundBrush}"
+                                                        Foreground="{ThemeResource SystemFillColorCautionBrush}"
                                                         Style="{StaticResource CaptionTextBlockStyle}"
                                                         Text="{x:Bind EstimatedCoilUseRiskText}"
                                                         TextWrapping="WrapWholeWords" />

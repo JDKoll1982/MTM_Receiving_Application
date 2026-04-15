@@ -14,7 +14,7 @@
 # The first language is the default language and the respective language server will be used as a fallback.
 # Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
-- csharp
+  - csharp
 
 # the encoding used by text files in the project
 # For a list of possible encodings, see https://docs.python.org/3.11/library/codecs.html#standard-encodings
@@ -111,7 +111,7 @@ initial_prompt: |
   - Business logic in `.xaml.cs` code-behind
 
   **REQUIRED layer flow:**
-  View (XAML) → ViewModel → Service → DAO → Database
+  View (XAML) -> ViewModel -> Service -> DAO -> Database
 
   ## Build Verification
 
@@ -133,23 +133,11 @@ project_name: "MTM_Receiving_Application"
 
 # list of tools to include that would otherwise be disabled (particularly optional tools that are disabled by default)
 # Rationale for each included tool:
-#   execute_shell_command : Enables `dotnet build` and `dotnet test` for build verification after edits.
-#                           Required even in ide context where shell tools are normally suppressed.
-#   think_about_collected_information : Reduces token waste by prompting the agent to verify it has
-#                           enough context before generating code in large multi-file refactors.
-#   think_about_task_adherence : Keeps the agent on-track when working across many MVVM layers.
-#   think_about_whether_you_are_done : Prevents premature task completion — critical when
-#                           architecture validation searches must pass before closing a task.
-#   summarize_changes     : Produces a structured diff summary at end of session; helps with
-#                           memory-bank updates and PR descriptions.
-#   prepare_for_new_conversation : Enables clean session hand-off with context preserved in memories.
+#   restart_language_server : Allows manual recovery if Roslyn/LSP gets out of sync after external edits.
+#   open_dashboard          : Opens Serena's dashboard when deeper troubleshooting is needed.
 included_optional_tools:
-- execute_shell_command
-- think_about_collected_information
-- think_about_task_adherence
-- think_about_whether_you_are_done
-- summarize_changes
-- prepare_for_new_conversation
+  - restart_language_server
+  - open_dashboard
 
 # list of mode names to that are always to be included in the set of active modes
 # The full set of modes to be activated is base_modes + default_modes.
@@ -158,8 +146,8 @@ included_optional_tools:
 # Set this to [] to disable base modes for this project.
 # Set this to a list of mode names to always include the respective modes for this project.
 base_modes:
-- editing
-- interactive
+  - editing
+  - interactive
 
 # list of mode names that are to be activated by default.
 # The full set of modes to be activated is base_modes + default_modes.
@@ -190,8 +178,8 @@ language_backend: LSP
 # constitution_summary and forbidden_practices are protected from accidental AI edits;
 # they are the immutable architectural constraints for this project.
 read_only_memory_patterns:
-- "constitution_summary"
-- "forbidden_practices"
+  - "constitution_summary"
+  - "forbidden_practices"
 
 # line ending convention to use when writing source files.
 # Possible values: unset (use global setting), "lf", "crlf", or "native" (platform default)
