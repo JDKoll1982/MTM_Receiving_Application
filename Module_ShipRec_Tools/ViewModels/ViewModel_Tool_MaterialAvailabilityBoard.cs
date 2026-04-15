@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,6 +13,7 @@ using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Settings;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -23,6 +25,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     private const string DefaultWarehouseCode = "002";
 
     private readonly IService_Tool_MaterialAvailabilityBoard _service;
+    private readonly IService_ShipRecToolsSettings _shipRecToolsSettings;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SearchLabel))]
@@ -52,6 +55,16 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         Task<Model_Dao_Result<bool>>
     >? RequestPrintAsync { get; set; }
 
+    public Func<
+        ViewModel_Dialog_MaterialAvailabilityIncomingDetails,
+        Task
+    >? ShowIncomingMaterialDetailsAsync { get; set; }
+
+    public Func<
+        ViewModel_Dialog_MaterialAvailabilityWorkOrderDetails,
+        Task
+    >? ShowWorkOrderDetailsDialogAsync { get; set; }
+
     public IReadOnlyList<string> LookAheadOptions { get; } = ["30", "60", "90", "All"];
 
     public bool IsSearchByLocation => IsSearchByLocationMode;
@@ -68,6 +81,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
 
     public ViewModel_Tool_MaterialAvailabilityBoard(
         IService_Tool_MaterialAvailabilityBoard service,
+        IService_ShipRecToolsSettings shipRecToolsSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -75,8 +89,10 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         : base(errorHandler, logger, notificationService)
     {
         ArgumentNullException.ThrowIfNull(service);
+        ArgumentNullException.ThrowIfNull(shipRecToolsSettings);
         _service = service;
-        ShowStatus("Enter a warehouse location or part number and click Search.");
+        _shipRecToolsSettings = shipRecToolsSettings;
+        SetLocalStatus("Enter a warehouse location or part number and click Search.");
     }
 
     [RelayCommand]
@@ -85,7 +101,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         IsSearchByLocationMode = true;
         SearchTerm = string.Empty;
         ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
-        ShowStatus("Enter a warehouse location and click Search.");
+        SetLocalStatus("Enter a warehouse location and click Search.");
     }
 
     [RelayCommand]
@@ -94,7 +110,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         IsSearchByLocationMode = false;
         SearchTerm = string.Empty;
         ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
-        ShowStatus("Enter a part number and click Search.");
+        SetLocalStatus("Enter a part number and click Search.");
     }
 
     [RelayCommand]
@@ -113,7 +129,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         try
         {
             IsBusy = true;
-            ShowStatus($"Searching for '{SearchTerm.Trim()}'…");
+            SetLocalStatus($"Searching for '{SearchTerm.Trim()}'…");
 
             if (IsSearchByLocationMode)
             {
@@ -158,7 +174,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     {
         SearchTerm = string.Empty;
         ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
-        ShowStatus(
+        SetLocalStatus(
             IsSearchByLocationMode
                 ? "Enter a warehouse location and click Search."
                 : "Enter a part number and click Search."
@@ -170,20 +186,23 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     {
         if (!HasCards)
         {
-            ShowStatus("Search and load material cards before printing.", InfoBarSeverity.Warning);
+            SetLocalStatus(
+                "Search and load material cards before printing.",
+                InfoBarSeverity.Warning
+            );
             return;
         }
 
         if (RequestPrintAsync is null)
         {
-            ShowStatus("Print is not available from this view.", InfoBarSeverity.Warning);
+            SetLocalStatus("Print is not available from this view.", InfoBarSeverity.Warning);
             return;
         }
 
         try
         {
             IsBusy = true;
-            ShowStatus("Preparing printable Material Availability Board…");
+            SetLocalStatus("Preparing printable Material Availability Board…");
 
             var documentResult = await _service.FormatBoardForPrintAsync(
                 Cards,
@@ -195,18 +214,18 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
 
             if (!documentResult.IsSuccess || documentResult.Data is null)
             {
-                ShowStatus(documentResult.ErrorMessage, InfoBarSeverity.Warning);
+                SetLocalStatus(documentResult.ErrorMessage, InfoBarSeverity.Warning);
                 return;
             }
 
             var printResult = await RequestPrintAsync(documentResult.Data);
             if (!printResult.IsSuccess || !printResult.Data)
             {
-                ShowStatus(printResult.ErrorMessage, InfoBarSeverity.Warning);
+                SetLocalStatus(printResult.ErrorMessage, InfoBarSeverity.Warning);
                 return;
             }
 
-            ShowStatus(
+            SetLocalStatus(
                 "Opened a print-ready Material Availability Board in your browser.",
                 InfoBarSeverity.Success
             );
@@ -235,7 +254,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         );
         if (!exactMatchResult.IsSuccess)
         {
-            ShowStatus(exactMatchResult.ErrorMessage, InfoBarSeverity.Warning);
+            SetLocalStatus(exactMatchResult.ErrorMessage, InfoBarSeverity.Warning);
             return null;
         }
 
@@ -255,13 +274,13 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         );
         if (!fuzzySearchResult.IsSuccess || fuzzySearchResult.Data is null)
         {
-            ShowStatus(fuzzySearchResult.ErrorMessage, InfoBarSeverity.Warning);
+            SetLocalStatus(fuzzySearchResult.ErrorMessage, InfoBarSeverity.Warning);
             return null;
         }
 
         if (fuzzySearchResult.Data.Count == 0)
         {
-            ShowStatus(
+            SetLocalStatus(
                 $"No warehouse locations found matching '{normalizedInput}'.",
                 InfoBarSeverity.Warning
             );
@@ -277,7 +296,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         var exactMatchResult = await _service.PartExistsAsync(normalizedInput);
         if (!exactMatchResult.IsSuccess)
         {
-            ShowStatus(exactMatchResult.ErrorMessage, InfoBarSeverity.Warning);
+            SetLocalStatus(exactMatchResult.ErrorMessage, InfoBarSeverity.Warning);
             return null;
         }
 
@@ -289,13 +308,13 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         var fuzzySearchResult = await _service.FuzzySearchPartsAsync(normalizedInput);
         if (!fuzzySearchResult.IsSuccess || fuzzySearchResult.Data is null)
         {
-            ShowStatus(fuzzySearchResult.ErrorMessage, InfoBarSeverity.Warning);
+            SetLocalStatus(fuzzySearchResult.ErrorMessage, InfoBarSeverity.Warning);
             return null;
         }
 
         if (fuzzySearchResult.Data.Count == 0)
         {
-            ShowStatus(
+            SetLocalStatus(
                 $"No part numbers found matching '{normalizedInput}'.",
                 InfoBarSeverity.Warning
             );
@@ -323,7 +342,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         var picked = await ShowFuzzyPickerAsync(candidates, dialogTitle);
         if (picked is null)
         {
-            ShowStatus("Search cancelled.", InfoBarSeverity.Informational);
+            SetLocalStatus("Search cancelled.", InfoBarSeverity.Informational);
         }
 
         return picked;
@@ -338,13 +357,13 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         );
         if (!boardResult.IsSuccess || boardResult.Data is null)
         {
-            ShowStatus(boardResult.ErrorMessage, InfoBarSeverity.Warning);
+            SetLocalStatus(boardResult.ErrorMessage, InfoBarSeverity.Warning);
             ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
             return;
         }
 
         ReplaceCards(boardResult.Data);
-        ShowStatus(
+        SetLocalStatus(
             Cards.Count > 0
                 ? $"Found {Cards.Count} part card(s) for location {locationId}."
                 : $"No positive-quantity parts were found in location {locationId}."
@@ -360,17 +379,63 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         );
         if (!boardResult.IsSuccess || boardResult.Data is null)
         {
-            ShowStatus(boardResult.ErrorMessage, InfoBarSeverity.Warning);
+            SetLocalStatus(boardResult.ErrorMessage, InfoBarSeverity.Warning);
             ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
             return;
         }
 
         ReplaceCards(boardResult.Data);
-        ShowStatus(
+        SetLocalStatus(
             Cards.Count > 0
                 ? $"Built the material board for part {partId}."
                 : $"No material board data was available for part {partId}."
         );
+    }
+
+    [RelayCommand]
+    private async Task ShowIncomingDetailsAsync(Model_Tool_MaterialAvailabilityCard? card)
+    {
+        if (card is null || ShowIncomingMaterialDetailsAsync is null)
+        {
+            return;
+        }
+
+        var dialogViewModel = new ViewModel_Dialog_MaterialAvailabilityIncomingDetails(
+            card,
+            _service,
+            _errorHandler,
+            _logger,
+            new NullNotificationServiceShim()
+        )
+        {
+            RequestPrintAsync = RequestPrintAsync,
+        };
+
+        await ShowIncomingMaterialDetailsAsync(dialogViewModel);
+    }
+
+    [RelayCommand]
+    private async Task ShowWorkOrderDetailsAsync(Model_Tool_MaterialAvailabilityCard? card)
+    {
+        if (card?.PrimaryAssociatedPartRun is null || ShowWorkOrderDetailsDialogAsync is null)
+        {
+            return;
+        }
+
+        var fieldSettings = await _shipRecToolsSettings.GetMaterialAvailabilityFieldSettingsAsync();
+        var dialogViewModel = new ViewModel_Dialog_MaterialAvailabilityWorkOrderDetails(
+            card.PrimaryAssociatedPartRun,
+            fieldSettings,
+            _service,
+            _errorHandler,
+            _logger,
+            new NullNotificationServiceShim()
+        )
+        {
+            RequestPrintAsync = RequestPrintAsync,
+        };
+
+        await ShowWorkOrderDetailsDialogAsync(dialogViewModel);
     }
 
     private void ReplaceCards(IEnumerable<Model_Tool_MaterialAvailabilityCard> cards)
@@ -384,5 +449,35 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
                 ? null
             : int.TryParse(SelectedLookAheadOption, out var days) ? days
             : 30;
+    }
+
+    private void SetLocalStatus(
+        string? message,
+        InfoBarSeverity severity = InfoBarSeverity.Informational
+    )
+    {
+        StatusMessage = message ?? string.Empty;
+        StatusSeverity = severity;
+        IsStatusOpen = string.IsNullOrWhiteSpace(StatusMessage) is false;
+    }
+
+    private sealed class NullNotificationServiceShim : IService_Notification
+    {
+        public string StatusMessage => string.Empty;
+
+        public InfoBarSeverity StatusSeverity => InfoBarSeverity.Informational;
+
+        public bool IsStatusOpen { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged
+        {
+            add { }
+            remove { }
+        }
+
+        public void ShowStatus(
+            string message,
+            InfoBarSeverity severity = InfoBarSeverity.Informational
+        ) { }
     }
 }

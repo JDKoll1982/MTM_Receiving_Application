@@ -11,6 +11,8 @@ public class Model_InforVisualAssociatedPartRunRow
 
     public string InputPartDescription { get; set; } = string.Empty;
 
+    public string ComponentPartNumber { get; set; } = string.Empty;
+
     public string AssociatedPartNumber { get; set; } = string.Empty;
 
     public string AssociatedPartDescription { get; set; } = string.Empty;
@@ -31,6 +33,10 @@ public class Model_InforVisualAssociatedPartRunRow
 
     public string WorkOrderSubId { get; set; } = string.Empty;
 
+    public DateTime? WorkOrderStatusEffectiveDate { get; set; }
+
+    public string SiteId { get; set; } = string.Empty;
+
     public int? OperationSeqNo { get; set; }
 
     public int? RequirementPieceNo { get; set; }
@@ -38,4 +44,50 @@ public class Model_InforVisualAssociatedPartRunRow
     public string WorkOrderStatus { get; set; } = string.Empty;
 
     public string RequirementStatus { get; set; } = string.Empty;
+
+    public DateTime? RequiredDate { get; set; }
+
+    public decimal? QtyPer { get; set; }
+
+    public decimal? FixedQty { get; set; }
+
+    public decimal? CalcQty { get; set; }
+
+    public decimal? IssuedQty { get; set; }
+
+    public decimal? AllocatedQty { get; set; }
+
+    public decimal? FulfilledQty { get; set; }
+
+    public string UsageUm { get; set; } = string.Empty;
+
+    public decimal? ScrapPercent { get; set; }
+
+    public string OperationType { get; set; } = string.Empty;
+
+    public string ResourceId { get; set; } = string.Empty;
+
+    public string ServiceId { get; set; } = string.Empty;
+
+    public string OperationWarehouseId { get; set; } = string.Empty;
+
+    public decimal? RunQtyPerCycle { get; set; }
+
+    public decimal? SetupHours { get; set; }
+
+    public decimal? RunHours { get; set; }
+
+    public string Dimensions { get; set; } = string.Empty;
+
+    public string DimensionExpression { get; set; } = string.Empty;
+
+    public decimal? Length { get; set; }
+
+    public decimal? Width { get; set; }
+
+    public decimal? Height { get; set; }
+
+    public string DrawingId { get; set; } = string.Empty;
+
+    public string DrawingRevision { get; set; } = string.Empty;
 }

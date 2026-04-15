@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
@@ -22,12 +23,19 @@ public class Model_Tool_MaterialAvailabilityCard
 
     public Model_Tool_MaterialAvailabilityRollup IncomingRollup { get; set; } = new();
 
+    public List<Model_Tool_MaterialAvailabilityIncomingLine> IncomingLines { get; set; } = [];
+
     public List<Model_Tool_MaterialAvailabilityIncomingDate> UpcomingDates { get; set; } = [];
 
     public List<Model_Tool_MaterialAvailabilityAssociatedPartRun> AssociatedPartRuns { get; set; } =
     [];
 
     public string NextDateSummary { get; set; } = "No associated part runs were found.";
+
+    public string DescriptionDisplay =>
+        string.IsNullOrWhiteSpace(PartDescription)
+            ? "Description: Not available"
+            : $"Description: {PartDescription}";
 
     public DateTime? EarliestRelevantDate { get; set; }
 
@@ -39,9 +47,14 @@ public class Model_Tool_MaterialAvailabilityCard
 
     public bool HasIncomingSupply => IncomingRollup.POLineCount > 0;
 
+    public bool HasIncomingDetails => IncomingLines.Count > 0;
+
     public bool HasIncomingDates => UpcomingDates.Count > 0;
 
     public bool HasAssociatedPartRuns => AssociatedPartRuns.Count > 0;
+
+    public Model_Tool_MaterialAvailabilityAssociatedPartRun? PrimaryAssociatedPartRun =>
+        AssociatedPartRuns.Count > 0 ? AssociatedPartRuns[0] : null;
 
     public string QuantitySummaryLabel =>
         HasSearchLocation ? $"Qty in {SearchLocationId}" : "Total on hand";
@@ -53,8 +66,37 @@ public class Model_Tool_MaterialAvailabilityCard
 
     public string LocationCountSummary =>
         HasCurrentLocations
-            ? $"{CurrentLocations.Count} location(s) with qty > 0"
-            : "No locations with qty > 0";
+            ? CurrentLocations.Count == 1
+                ? "1 location found - Click to view it"
+                : $"{CurrentLocations.Count} locations found - Click to view them"
+            : "No locations found";
+
+    public bool HasEstimatedCoilUseRisk =>
+        PrimaryAssociatedPartRun is not null
+        && PrimaryAssociatedPartRun.EstimatedCoilUse > TotalPositiveQuantity;
+
+    public string EstimatedCoilUseRiskText =>
+        HasEstimatedCoilUseRisk && PrimaryAssociatedPartRun is not null
+            ? $"Estimated coil use ({PrimaryAssociatedPartRun.EstimatedCoilUseDisplay}) exceeds on hand ({TotalPositiveQuantityDisplay})."
+            : string.Empty;
+
+    public string NextRunSummaryDisplay
+    {
+        get
+        {
+            if (PrimaryAssociatedPartRun is null)
+            {
+                return NextDateSummary;
+            }
+
+            var usageUnit = string.IsNullOrWhiteSpace(
+                PrimaryAssociatedPartRun.NormalizedUsageUnitOfMeasure
+            )
+                ? string.Empty
+                : $" {PrimaryAssociatedPartRun.NormalizedUsageUnitOfMeasure}";
+            return $"Next Run: {PrimaryAssociatedPartRun.WorkOrderDisplay} / {PrimaryAssociatedPartRun.AssociatedPartNumber} on {PrimaryAssociatedPartRun.NextRunDateDisplay} | Required Parts: {PrimaryAssociatedPartRun.RequiredPartsQuantityDisplay}{usageUnit} | Estimated Coil Use: {PrimaryAssociatedPartRun.EstimatedCoilUseDisplay}{usageUnit}";
+        }
+    }
 
     internal int SortBucket { get; set; } = 2;
 

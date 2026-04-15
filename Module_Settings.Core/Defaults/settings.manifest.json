@@ -69,6 +69,39 @@
       "validationRules": "Sensitive"
     },
     {
+      "category": "ShipRecTools",
+      "key": "MaterialAvailability.WorkOrderFields.UiVisibleIds",
+      "displayName": "Material Availability - Work Order UI Visible Fields",
+      "defaultValue": "[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]",
+      "dataType": "Json",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON string array of field ids"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "MaterialAvailability.WorkOrderFields.PrintVisibleIds",
+      "displayName": "Material Availability - Work Order Print Visible Fields",
+      "defaultValue": "[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]",
+      "dataType": "Json",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON string array of field ids"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "MaterialAvailability.WorkOrderFields.AllowShowAllChip",
+      "displayName": "Material Availability - Allow Show All Chip",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Boolean"
+    },
+    {
       "category": "Receiving",
       "key": "Receiving.UiText.ModeSelection.GuidedTitle",
       "displayName": "Mode Selection - Guided Title",

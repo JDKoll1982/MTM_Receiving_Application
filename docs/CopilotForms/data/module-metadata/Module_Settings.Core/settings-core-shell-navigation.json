@@ -2,7 +2,7 @@
   "id": "settings-core-shell-navigation",
   "module": "Module_Settings.Core",
   "name": "Settings Shell And Navigation",
-  "summary": "Core settings window shell, NavigationView-driven back navigation, paged button layout, placeholder control, and window-host infrastructure for the settings experience.",
+  "summary": "Core settings window shell, NavigationView-driven back navigation, paged button layout, placeholder control, window-host infrastructure, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
@@ -18,6 +18,9 @@
     "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
     "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
     "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_MaterialAvailabilityBoardFields.xaml",
+    "Module_Settings.Core/Views/View_Settings_MaterialAvailabilityBoardFields.xaml.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_MaterialAvailabilityBoardFields.cs",
     "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
     "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs"
   ],
@@ -39,11 +42,13 @@
       "Settings window shell",
       "Navigation hub",
       "Paged settings navigation",
+      "Shared configuration routing",
       "Placeholder and empty-state UI"
     ],
     "screens": [
       "View_Settings_CoreWindow.xaml",
       "View_Settings_CoreNavigationHub.xaml",
+      "View_Settings_MaterialAvailabilityBoardFields.xaml",
       "View_SettingsPlaceholderControl.xaml"
     ],
     "currentUiPatterns": ["Form", "Card list", "Tabs"],
@@ -51,6 +56,7 @@
     "uiElements": [
       "Settings window title",
       "Navigation step buttons",
+      "Core navigation cards",
       "Built-in back navigation",
       "Cancel, save, and reset actions",
       "Placeholder content"
@@ -58,6 +64,7 @@
     "userActions": [
       "Open the settings window",
       "Move between settings areas",
+      "Open the Material Availability field settings page from the Core hub",
       "Use the built-in back button to return to the active module hub",
       "Understand which navigation actions are available",
       "See placeholders for unfinished settings pages"
@@ -65,11 +72,13 @@
     "preserveRules": [
       "Keep navigation paging behavior unchanged",
       "Keep window hosting behavior unchanged",
+      "Keep direct Core hub card navigation resolved through the service provider",
       "Keep step and visible-step replacement preserving the current pagination semantics"
     ],
     "validationHints": [
       "Confirm navigation buttons still page correctly",
       "Confirm visible steps still match the current button page after whole-collection replacement",
+      "Confirm the new Material Availability card opens the dedicated settings page and updates the window header",
       "Confirm the built-in back button returns to the selected module hub when a child page is active",
       "Confirm the shell still hosts the selected settings page correctly"
     ]

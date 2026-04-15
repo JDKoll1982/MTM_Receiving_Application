@@ -390,6 +390,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Settings_Database>();
         services.AddTransient<ViewModel_Settings_Logging>();
         services.AddTransient<ViewModel_Settings_SharedPaths>();
+        services.AddTransient<ViewModel_Settings_MaterialAvailabilityBoardFields>();
 
         // Navigation Hubs
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_NavigationHub>();
@@ -446,6 +447,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_System>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Database>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields>();
 
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
@@ -544,6 +546,7 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
         });
+        services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
 
         // ViewModels (Transient - Per-navigation instances)
         services.AddTransient<ViewModel_ShipRecTools_Main>();

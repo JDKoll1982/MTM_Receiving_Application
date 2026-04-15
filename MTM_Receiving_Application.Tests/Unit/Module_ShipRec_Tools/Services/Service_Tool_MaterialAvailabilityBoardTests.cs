@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Settings;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.Services;
@@ -701,5 +702,222 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain("Associated Parts");
         result.Data.PlainText.Should().Contain("Material Availability Board");
         result.Data.PlainText.Should().Contain("A66-17608-000");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldCalculateRequiredPartsAndEstimatedCoilUseFromRequirementFields()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var runDate = new DateTime(2026, 04, 20);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("MMC0001146"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart { PartID = "MMC0001146", Description = "Coil Stock" }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "MMC0001146", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualMaterialLocationRow>
+                    {
+                        new()
+                        {
+                            PartId = "MMC0001146",
+                            PartDescription = "Coil Stock",
+                            WarehouseCode = "002",
+                            LocationId = "RECV",
+                            Quantity = 90,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "MMC0001146", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "MMC0001146", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "MMC0001146",
+                            InputPartDescription = "Coil Stock",
+                            ComponentPartNumber = "MMC0001146",
+                            AssociatedPartNumber = "A66-17608-000",
+                            AssociatedPartDescription = "Parent Assembly",
+                            WorkOrderType = "WO",
+                            WorkOrderBaseId = "70016",
+                            WorkOrderLotId = "0",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            WorkOrderStatus = "R",
+                            WorkOrderStatusEffectiveDate = runDate.AddDays(-1),
+                            OperationSeqNo = 20,
+                            NextDueToRunDate = runDate,
+                            IsFutureOrTodayRun = true,
+                            NextDueDateSource = "Requirement required date",
+                            RequiredDate = runDate,
+                            CalcQty = 100,
+                            ScrapPercent = 10,
+                            UsageUm = "LBS",
+                            OperationType = "STAMP",
+                            ResourceId = "PRESS-01",
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("MMC0001146", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        var card = result.Data![0];
+        var primaryRun = card.PrimaryAssociatedPartRun;
+
+        primaryRun.Should().NotBeNull();
+        primaryRun!.RequiredPartsQuantity.Should().Be(100);
+        primaryRun.EstimatedCoilUse.Should().Be(110);
+        primaryRun.NormalizedUsageUnitOfMeasure.Should().Be("Pounds");
+        card.HasEstimatedCoilUseRisk.Should().BeTrue();
+        card.EstimatedCoilUseRiskText.Should().Contain("exceeds on hand");
+        card.NextRunSummaryDisplay.Should().Contain("WO-070016");
+        card.NextRunSummaryDisplay.Should().Contain("Required Parts: 100 Pounds");
+        card.NextRunSummaryDisplay.Should().Contain("Estimated Coil Use: 110 Pounds");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldBuildIncomingDetailLinesForModal()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var promiseDate = new DateTime(2026, 04, 18);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-DETAIL"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-DETAIL",
+                        Description = "Incoming Detail Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-DETAIL", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-DETAIL", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualIncomingSupplyRow>
+                    {
+                        new()
+                        {
+                            PartId = "PART-DETAIL",
+                            PartDescription = "Incoming Detail Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-777",
+                            POLineNumber = "2",
+                            VendorName = "Metro Steel",
+                            OrderedQty = 150,
+                            ReceivedQty = 60,
+                            RemainingQty = 90,
+                            LinePromiseDate = promiseDate,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-DETAIL", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-DETAIL", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].HasIncomingDetails.Should().BeTrue();
+        result.Data[0].IncomingLines.Should().ContainSingle();
+        result.Data[0].IncomingLines[0].VendorName.Should().Be("Metro Steel");
+        result.Data[0].IncomingLines[0].PurchaseOrderLineDisplay.Should().Be("PO-777 / Line 2");
+        result.Data[0].IncomingLines[0].DateDisplay.Should().Be("04/18/2026");
+    }
+
+    [Fact]
+    public async Task FormatWorkOrderDetailsForPrintAsync_ShouldRenderProvidedSections()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var associatedRun = new Model_Tool_MaterialAvailabilityAssociatedPartRun
+        {
+            AssociatedPartNumber = "A66-17608-000",
+            AssociatedPartDescription = "Parent Assembly",
+            WorkOrderDisplay = "WO-070016",
+            RequiredPartsQuantity = 100,
+            EstimatedCoilUse = 110,
+            NormalizedUsageUnitOfMeasure = "Pounds",
+        };
+        var fieldSettings = new Model_Tool_MaterialAvailabilityFieldSettings
+        {
+            UiVisibleFieldIds =
+                MaterialAvailabilityWorkOrderFieldCatalog.DefaultUiVisibleIds.ToHashSet(
+                    StringComparer.OrdinalIgnoreCase
+                ),
+            PrintVisibleFieldIds =
+                MaterialAvailabilityWorkOrderFieldCatalog.DefaultPrintVisibleIds.ToHashSet(
+                    StringComparer.OrdinalIgnoreCase
+                ),
+            IsShowAllChipEnabled = true,
+        };
+        associatedRun.WorkOrderStatus = "Released";
+        associatedRun.OperationType = "STAMP";
+
+        var sections = MaterialAvailabilityWorkOrderDetailBuilder.BuildPrintSections(
+            associatedRun,
+            fieldSettings
+        );
+
+        var result = await service.FormatWorkOrderDetailsForPrintAsync(associatedRun, sections);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.HtmlFragment.Should().Contain("Work Order Details - WO-070016");
+        result.Data.HtmlFragment.Should().Contain("Job Summary");
+        result.Data.HtmlFragment.Should().Contain("Operation Context");
+        result.Data.PlainText.Should().Contain("Required Parts: 100 Pounds");
     }
 }

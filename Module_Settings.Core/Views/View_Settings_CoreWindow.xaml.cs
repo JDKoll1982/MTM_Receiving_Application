@@ -333,6 +333,10 @@ public sealed partial class View_Settings_CoreWindow : Window
                 "Shared Paths",
                 "Configure shared file paths and locations."
             ),
+            "View_Settings_MaterialAvailabilityBoardFields" => (
+                "Material Availability Fields",
+                "Control which work-order details are shown in the Material Availability dialog and print output."
+            ),
 
             _ => (string.Empty, string.Empty),
         };

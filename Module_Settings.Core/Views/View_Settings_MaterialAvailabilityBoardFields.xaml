@@ -1,0 +1,128 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models">
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Spacing="4">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Material Availability Work Order Fields" />
+            <TextBlock
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="Control which work-order details appear in the Material Availability work-order modal and which of those fields are included in print output. Logic-only fields can stay hidden by default but still be revealed with the Show all chip."
+                TextWrapping="WrapWholeWords" />
+        </StackPanel>
+
+        <Border
+            Grid.Row="1"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Show all chip" />
+                    <TextBlock
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Enable a chip in the work-order dialog that temporarily reveals the logic-only fields without making them permanently visible."
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+                <ToggleSwitch
+                    Grid.Column="1"
+                    Header="Enabled"
+                    IsOn="{x:Bind ViewModel.IsShowAllChipEnabled, Mode=TwoWay}" />
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{x:Bind ViewModel.FieldGroups, Mode=OneWay}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_Settings_MaterialAvailabilityFieldGroup">
+                        <Border
+                            Margin="0,0,0,12"
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Spacing="12">
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind Title}" />
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Show in UI" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Include in print" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{x:Bind Fields}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_Settings_MaterialAvailabilityFieldOption">
+                                            <Grid Margin="0,0,0,6" ColumnSpacing="16">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Spacing="2">
+                                                    <TextBlock
+                                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                        Text="{x:Bind DisplayName}"
+                                                        TextWrapping="WrapWholeWords" />
+                                                    <TextBlock
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                        Text="Used in logic by default"
+                                                        Visibility="{x:Bind IsLogicOnly, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                </StackPanel>
+                                                <CheckBox
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Center"
+                                                    IsChecked="{x:Bind IsVisibleInUi, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Grid.Column="2"
+                                                    HorizontalAlignment="Center"
+                                                    IsChecked="{x:Bind IsVisibleInPrint, Mode=TwoWay}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Page>

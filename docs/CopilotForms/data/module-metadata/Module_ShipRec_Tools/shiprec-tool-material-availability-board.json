@@ -2,14 +2,26 @@
   "id": "shiprec-tool-material-availability-board",
   "module": "Module_ShipRec_Tools",
   "name": "Material Availability Board",
-  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, the associated parent parts that are due to run next using Infor Visual work-order demand, and open a print-ready HTML version of the current board results.",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, rolled-up incoming material with last-received shipment fallback when no next receipt exists, surface a richer next-run summary with requirement-based coil-use estimates, open incoming-material and work-order detail dialogs, and print either the board or the detail views as reporting-style HTML.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
+    "Module_ShipRec_Tools/Contracts/IService_ShipRecToolsSettings.cs",
     "Module_ShipRec_Tools/Services/Service_Tool_MaterialAvailabilityBoard.cs",
+    "Module_ShipRec_Tools/Services/Service_ShipRecToolsSettings.cs",
+    "Module_ShipRec_Tools/Settings/MaterialAvailabilityWorkOrderFieldCatalog.cs",
+    "Module_ShipRec_Tools/Settings/MaterialAvailabilityWorkOrderDetailBuilder.cs",
     "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_MaterialAvailabilityBoard.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_Dialog_MaterialAvailabilityIncomingDetails.cs",
+    "Module_ShipRec_Tools/ViewModels/ViewModel_Dialog_MaterialAvailabilityWorkOrderDetails.cs",
     "Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml",
     "Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml.cs",
+    "Module_ShipRec_Tools/Dialogs/Dialog_MaterialAvailabilityIncomingDetails.xaml",
+    "Module_ShipRec_Tools/Dialogs/Dialog_MaterialAvailabilityIncomingDetails.xaml.cs",
+    "Module_ShipRec_Tools/Dialogs/Dialog_MaterialAvailabilityWorkOrderDetails.xaml",
+    "Module_ShipRec_Tools/Dialogs/Dialog_MaterialAvailabilityWorkOrderDetails.xaml.cs",
+    "Module_Core/Models/InforVisual/Model_InforVisualAssociatedPartRunRow.cs",
+    "Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs",
     "Database/InforVisualScripts/Queries/18_GetMaterialAvailabilityCurrentStock.sql",
     "Database/InforVisualScripts/Queries/19_GetMaterialAvailabilityIncomingSupply.sql",
     "Database/InforVisualScripts/Queries/20_GetMaterialAvailabilityAssociatedPartRuns.sql"
@@ -17,6 +29,8 @@
   "relatedServices": [
     "IService_Tool_MaterialAvailabilityBoard",
     "Service_Tool_MaterialAvailabilityBoard",
+    "IService_ShipRecToolsSettings",
+    "Service_ShipRecToolsSettings",
     "IService_InforVisual",
     "Service_InforVisualConnect"
   ],
@@ -34,6 +48,8 @@
       "Part-based inventory search",
       "Incoming material review",
       "Associated part demand analysis",
+      "Work-order detail review",
+      "Settings-driven field visibility",
       "Print-ready board export"
     ],
     "screens": ["View_Tool_MaterialAvailabilityBoard.xaml"],
@@ -41,7 +57,8 @@
       "Search form",
       "Toggle filter",
       "Card list",
-      "Collapsible detail sections"
+      "Collapsible detail sections",
+      "Modal detail dialogs"
     ],
     "desiredUiPatterns": [
       "Search form",
@@ -57,9 +74,13 @@
       "Clear button",
       "Status InfoBar",
       "Collapsible material cards",
+      "Compact summary surfaces",
+      "Next-run warning banner",
       "Current locations list",
       "Incoming material rollup block",
+      "Incoming material detail dialog",
       "Associated part next-run list",
+      "Work-order detail dialog",
       "Look-ahead window selector",
       "Print button"
     ],
@@ -70,13 +91,16 @@
       "Expand a card to review detailed stock and inbound material",
       "Review rolled-up incoming material for the selected look-ahead window",
       "Review which associated parent parts are due to run next",
+      "Open incoming-material details and print them",
+      "Open work-order details, reveal logic-only fields, and print them",
       "Open a print-ready HTML version of the current results"
     ],
     "preserveRules": [
       "Keep all Infor Visual access read-only",
       "Keep warehouse scope explicit for location validation and stock queries",
       "Keep cards collapsed by default after every new search",
-      "Keep part-level aggregation logic in the ShipRec tool service rather than in code-behind"
+      "Keep part-level aggregation logic in the ShipRec tool service rather than in code-behind",
+      "Keep work-order field visibility and print selection driven by settings definitions rather than hardcoded UI switches"
     ],
     "acceptanceCriteria": [
       "Location searches create one card per unique part in the selected location",
@@ -85,6 +109,9 @@
       "Incoming material is rolled up across qualifying part-matched lines even when due dates are missing",
       "When no next incoming shipment is available, the card falls back to the latest received shipment date for the incoming summary",
       "Associated part rows show the best available next due-to-run date per parent part",
+      "The collapsed card surfaces work order, parent part, date, required parts quantity, and estimated coil use without forcing expansion",
+      "Incoming material details open in a dedicated modal and print from a detail-specific HTML layout",
+      "Work-order details open in a categorized modal and print from a settings-driven field list",
       "Cards start collapsed on initial load and after each search",
       "Print opens a browser-hosted HTML document that mirrors the reporting-style section and table layout for the current board results"
     ],
@@ -96,6 +123,9 @@
       "Confirm the incoming summary falls back to the latest received shipment when no next receipt date qualifies",
       "Confirm changing the look-ahead selector between 30, 60, 90, and All updates both incoming material and associated part results",
       "Confirm whole-collection card replacement resets expansion state after a new search",
+      "Confirm search results only surface the page-level InfoBar status and no duplicate header notification",
+      "Confirm estimated coil use warns when the requirement-based estimate exceeds current on-hand quantity",
+      "Confirm the work-order modal Show all chip reveals the logic-only fields unless disabled in settings",
       "Confirm Print is only useful after results are loaded and the generated document includes the current search term, warehouse scope, look-ahead window, and card details"
     ],
     "databaseObjects": [

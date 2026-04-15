@@ -44,6 +44,7 @@ MatchingRequirements AS (
     SELECT
         r.PART_ID                           AS InputPartNumber,
         COALESCE(component.DESCRIPTION, '') AS InputPartDescription,
+        r.PART_ID                           AS ComponentPartNumber,
         wo.PART_ID                          AS AssociatedPartNumber,
         COALESCE(parent.DESCRIPTION, '')    AS AssociatedPartDescription,
         r.WORKORDER_TYPE                    AS WorkOrderType,
@@ -51,10 +52,35 @@ MatchingRequirements AS (
         r.WORKORDER_LOT_ID                  AS WorkOrderLotId,
         r.WORKORDER_SPLIT_ID                AS WorkOrderSplitId,
         r.WORKORDER_SUB_ID                  AS WorkOrderSubId,
+        wo.STATUS_EFF_DATE                  AS WorkOrderStatusEffectiveDate,
+        wo.SITE_ID                          AS SiteId,
         r.OPERATION_SEQ_NO                  AS OperationSeqNo,
         r.PIECE_NO                          AS RequirementPieceNo,
         ISNULL(r.STATUS, '')                AS RequirementStatus,
         ISNULL(wo.STATUS, '')               AS WorkOrderStatus,
+        r.REQUIRED_DATE                     AS RequiredDate,
+        r.QTY_PER                           AS QtyPer,
+        r.FIXED_QTY                         AS FixedQty,
+        r.CALC_QTY                          AS CalcQty,
+        r.ISSUED_QTY                        AS IssuedQty,
+        r.ALLOCATED_QTY                     AS AllocatedQty,
+        r.FULFILLED_QTY                     AS FulfilledQty,
+        ISNULL(r.USAGE_UM, '')              AS UsageUm,
+        r.SCRAP_PERCENT                     AS ScrapPercent,
+        ISNULL(op.OPERATION_TYPE, '')       AS OperationType,
+        ISNULL(op.RESOURCE_ID, '')          AS ResourceId,
+        ISNULL(op.SERVICE_ID, '')           AS ServiceId,
+        ISNULL(op.WAREHOUSE_ID, '')         AS OperationWarehouseId,
+        op.RUN_QTY_PER_CYCLE                AS RunQtyPerCycle,
+        op.SETUP_HRS                        AS SetupHours,
+        op.RUN_HRS                          AS RunHours,
+        ISNULL(r.DIMENSIONS, '')            AS Dimensions,
+        ISNULL(r.DIM_EXPRESSION, '')        AS DimensionExpression,
+        r.LENGTH                            AS Length,
+        r.WIDTH                             AS Width,
+        r.HEIGHT                            AS Height,
+        COALESCE(r.DRAWING_ID, op.DRAWING_ID, wo.DRAWING_ID, '') AS DrawingId,
+        COALESCE(r.DRAWING_REV_NO, op.DRAWING_REV_NO, wo.DRAWING_REV_NO, '') AS DrawingRevision,
         COALESCE(
             r.REQUIRED_DATE,
             r.DUE_DATE,
@@ -93,6 +119,13 @@ MatchingRequirements AS (
        AND r.WORKORDER_LOT_ID   = wo.LOT_ID
        AND r.WORKORDER_SPLIT_ID = wo.SPLIT_ID
        AND r.WORKORDER_SUB_ID   = wo.SUB_ID
+    LEFT JOIN dbo.OPERATION op
+        ON r.WORKORDER_TYPE     = op.WORKORDER_TYPE
+       AND r.WORKORDER_BASE_ID  = op.WORKORDER_BASE_ID
+       AND r.WORKORDER_LOT_ID   = op.WORKORDER_LOT_ID
+       AND r.WORKORDER_SPLIT_ID = op.WORKORDER_SPLIT_ID
+       AND r.WORKORDER_SUB_ID   = op.WORKORDER_SUB_ID
+       AND r.OPERATION_SEQ_NO   = op.SEQUENCE_NO
     LEFT JOIN dbo.PART component
         ON r.PART_ID = component.ID
     LEFT JOIN dbo.PART parent
@@ -103,6 +136,7 @@ MatchingRequirements AS (
 SELECT TOP (@MaxResults)
     InputPartNumber,
     InputPartDescription,
+    ComponentPartNumber,
     AssociatedPartNumber,
     AssociatedPartDescription,
     NextDueToRunDate,
@@ -113,10 +147,35 @@ SELECT TOP (@MaxResults)
     WorkOrderLotId,
     WorkOrderSplitId,
     WorkOrderSubId,
+    WorkOrderStatusEffectiveDate,
+    SiteId,
     OperationSeqNo,
     RequirementPieceNo,
     WorkOrderStatus,
-    RequirementStatus
+    RequirementStatus,
+    RequiredDate,
+    QtyPer,
+    FixedQty,
+    CalcQty,
+    IssuedQty,
+    AllocatedQty,
+    FulfilledQty,
+    UsageUm,
+    ScrapPercent,
+    OperationType,
+    ResourceId,
+    ServiceId,
+    OperationWarehouseId,
+    RunQtyPerCycle,
+    SetupHours,
+    RunHours,
+    Dimensions,
+    DimensionExpression,
+    Length,
+    Width,
+    Height,
+    DrawingId,
+    DrawingRevision
 FROM MatchingRequirements
 ORDER BY
     CASE WHEN IsFutureOrTodayRun = 1 THEN 0 ELSE 1 END,

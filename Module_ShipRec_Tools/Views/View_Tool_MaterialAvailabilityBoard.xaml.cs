@@ -11,6 +11,8 @@ using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
@@ -31,6 +33,8 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
 
         ViewModel.ShowFuzzyPickerAsync = ShowFuzzyPickerDialogAsync;
         ViewModel.RequestPrintAsync = OpenPrintDocumentAsync;
+        ViewModel.ShowIncomingMaterialDetailsAsync = ShowIncomingDetailsDialogAsync;
+        ViewModel.ShowWorkOrderDetailsDialogAsync = ShowWorkOrderDetailsDialogAsync;
     }
 
     private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerDialogAsync(
@@ -67,6 +71,56 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
         }
 
         SearchBox.DispatcherQueue?.TryEnqueue(() => SearchBox.Focus(FocusState.Programmatic));
+    }
+
+    private async void IncomingDetailsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: Model_Tool_MaterialAvailabilityCard card })
+        {
+            return;
+        }
+
+        if (ViewModel.ShowIncomingDetailsCommand.CanExecute(card))
+        {
+            await ViewModel.ShowIncomingDetailsCommand.ExecuteAsync(card);
+        }
+    }
+
+    private async void WorkOrderDetailsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: Model_Tool_MaterialAvailabilityCard card })
+        {
+            return;
+        }
+
+        if (ViewModel.ShowWorkOrderDetailsCommand.CanExecute(card))
+        {
+            await ViewModel.ShowWorkOrderDetailsCommand.ExecuteAsync(card);
+        }
+    }
+
+    private async Task ShowIncomingDetailsDialogAsync(
+        ViewModel_Dialog_MaterialAvailabilityIncomingDetails dialogViewModel
+    )
+    {
+        var dialog = new Dialog_MaterialAvailabilityIncomingDetails(dialogViewModel)
+        {
+            XamlRoot = XamlRoot,
+        };
+
+        await dialog.ShowAsync();
+    }
+
+    private async Task ShowWorkOrderDetailsDialogAsync(
+        ViewModel_Dialog_MaterialAvailabilityWorkOrderDetails dialogViewModel
+    )
+    {
+        var dialog = new Dialog_MaterialAvailabilityWorkOrderDetails(dialogViewModel)
+        {
+            XamlRoot = XamlRoot,
+        };
+
+        await dialog.ShowAsync();
     }
 
     private static async Task<Model_Dao_Result<bool>> OpenPrintDocumentAsync(

@@ -32,6 +32,15 @@ public interface IService_Tool_MaterialAvailabilityBoard
         string lookAheadOption
     );
 
+    Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatIncomingMaterialForPrintAsync(
+        Model_Tool_MaterialAvailabilityCard card
+    );
+
+    Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatWorkOrderDetailsForPrintAsync(
+        Model_Tool_MaterialAvailabilityAssociatedPartRun associatedRun,
+        IReadOnlyList<Model_Tool_MaterialAvailabilityDetailSection> sections
+    );
+
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchPartsAsync(string term);
 
     Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(

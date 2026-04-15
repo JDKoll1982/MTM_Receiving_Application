@@ -1229,6 +1229,8 @@ public class Dao_InforVisualConnection
                         InputPartNumber = reader["InputPartNumber"].ToString() ?? string.Empty,
                         InputPartDescription =
                             reader["InputPartDescription"].ToString() ?? string.Empty,
+                        ComponentPartNumber =
+                            reader["ComponentPartNumber"].ToString() ?? string.Empty,
                         AssociatedPartNumber =
                             reader["AssociatedPartNumber"].ToString() ?? string.Empty,
                         AssociatedPartDescription =
@@ -1243,6 +1245,9 @@ public class Dao_InforVisualConnection
                         WorkOrderLotId = reader["WorkOrderLotId"].ToString() ?? string.Empty,
                         WorkOrderSplitId = reader["WorkOrderSplitId"].ToString() ?? string.Empty,
                         WorkOrderSubId = reader["WorkOrderSubId"].ToString() ?? string.Empty,
+                        WorkOrderStatusEffectiveDate =
+                            reader["WorkOrderStatusEffectiveDate"] as DateTime?,
+                        SiteId = reader["SiteId"].ToString() ?? string.Empty,
                         OperationSeqNo =
                             reader["OperationSeqNo"] == DBNull.Value
                                 ? null
@@ -1253,6 +1258,70 @@ public class Dao_InforVisualConnection
                                 : Convert.ToInt32(reader["RequirementPieceNo"]),
                         WorkOrderStatus = reader["WorkOrderStatus"].ToString() ?? string.Empty,
                         RequirementStatus = reader["RequirementStatus"].ToString() ?? string.Empty,
+                        RequiredDate = reader["RequiredDate"] as DateTime?,
+                        QtyPer =
+                            reader["QtyPer"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["QtyPer"]),
+                        FixedQty =
+                            reader["FixedQty"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["FixedQty"]),
+                        CalcQty =
+                            reader["CalcQty"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["CalcQty"]),
+                        IssuedQty =
+                            reader["IssuedQty"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["IssuedQty"]),
+                        AllocatedQty =
+                            reader["AllocatedQty"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["AllocatedQty"]),
+                        FulfilledQty =
+                            reader["FulfilledQty"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["FulfilledQty"]),
+                        UsageUm = reader["UsageUm"].ToString() ?? string.Empty,
+                        ScrapPercent =
+                            reader["ScrapPercent"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["ScrapPercent"]),
+                        OperationType = reader["OperationType"].ToString() ?? string.Empty,
+                        ResourceId = reader["ResourceId"].ToString() ?? string.Empty,
+                        ServiceId = reader["ServiceId"].ToString() ?? string.Empty,
+                        OperationWarehouseId =
+                            reader["OperationWarehouseId"].ToString() ?? string.Empty,
+                        RunQtyPerCycle =
+                            reader["RunQtyPerCycle"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["RunQtyPerCycle"]),
+                        SetupHours =
+                            reader["SetupHours"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["SetupHours"]),
+                        RunHours =
+                            reader["RunHours"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["RunHours"]),
+                        Dimensions = reader["Dimensions"].ToString() ?? string.Empty,
+                        DimensionExpression =
+                            reader["DimensionExpression"].ToString() ?? string.Empty,
+                        Length =
+                            reader["Length"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["Length"]),
+                        Width =
+                            reader["Width"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["Width"]),
+                        Height =
+                            reader["Height"] == DBNull.Value
+                                ? null
+                                : Convert.ToDecimal(reader["Height"]),
+                        DrawingId = reader["DrawingId"].ToString() ?? string.Empty,
+                        DrawingRevision = reader["DrawingRevision"].ToString() ?? string.Empty,
                     }
                 );
             }

@@ -23,6 +23,19 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     private const string AccentBackground = "#E9D5FF";
     private const string AccentForeground = "#1F1633";
 
+    private static readonly Dictionary<string, string> UsageUnitMap = new(
+        StringComparer.OrdinalIgnoreCase
+    )
+    {
+        ["EA"] = "Each",
+        ["EACH"] = "Each",
+        ["LB"] = "Pounds",
+        ["LBS"] = "Pounds",
+        ["FT"] = "Feet",
+        ["IN"] = "Inches",
+        ["KG"] = "Kilograms",
+    };
+
     private readonly IService_InforVisual _inforVisual;
     private readonly IService_LoggingUtility _logger;
 
@@ -184,7 +197,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 AppendBodyCell(html, card.QuantitySummaryDisplay, "right");
                 AppendBodyCell(html, card.TotalPositiveQuantityDisplay, "right");
                 AppendBodyCell(html, card.LocationCountSummary);
-                AppendBodyCell(html, card.NextDateSummary);
+                AppendBodyCell(html, card.NextRunSummaryDisplay);
                 html.AppendLine("</tr>");
                 html.AppendLine("</tbody>");
                 html.AppendLine("</table>");
@@ -195,7 +208,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 plainText.AppendLine($"{card.QuantitySummaryLabel}: {card.QuantitySummaryDisplay}");
                 plainText.AppendLine($"Total on hand: {card.TotalPositiveQuantityDisplay}");
                 plainText.AppendLine($"Locations: {card.LocationCountSummary}");
-                plainText.AppendLine($"Next summary: {card.NextDateSummary}");
+                plainText.AppendLine($"Next summary: {card.NextRunSummaryDisplay}");
 
                 AppendLocationsSection(html, plainText, card);
                 AppendIncomingSection(html, plainText, card);
@@ -225,6 +238,206 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             return Task.FromResult(
                 Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>(
                     $"Failed to prepare printable material availability output: {ex.Message}",
+                    ex
+                )
+            );
+        }
+    }
+
+    public Task<
+        Model_Dao_Result<Model_FormattedReportDocument>
+    > FormatIncomingMaterialForPrintAsync(Model_Tool_MaterialAvailabilityCard card)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(card);
+
+            var html = new StringBuilder();
+            var plainText = new StringBuilder();
+            html.AppendLine(
+                "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
+            );
+            AppendSectionStart(
+                html,
+                $"Incoming Material - {card.PartId}",
+                CardBackground,
+                CardBorder,
+                AccentBackground,
+                AccentForeground
+            );
+            html.AppendLine("<div style='padding: 12px 16px;'>");
+            html.AppendLine(
+                $"<div style='font-size: 11pt; font-weight: 700; margin: 0 0 6px 0;'>{HtmlEncode(card.PartId)} - {HtmlEncode(card.PartDescription)}</div>"
+            );
+            html.AppendLine(
+                $"<div style='font-size: 10pt; color: #445566; margin: 0 0 12px 0;'>Received {HtmlEncode(card.IncomingRollup.ReceivedQtyDisplay)} | Ordered {HtmlEncode(card.IncomingRollup.OrderedQtyDisplay)} | Remaining {HtmlEncode(card.IncomingRollup.RemainingQtyDisplay)}</div>"
+            );
+
+            plainText.AppendLine($"Incoming Material - {card.PartId}");
+            plainText.AppendLine(
+                $"Received {card.IncomingRollup.ReceivedQtyDisplay} | Ordered {card.IncomingRollup.OrderedQtyDisplay} | Remaining {card.IncomingRollup.RemainingQtyDisplay}"
+            );
+
+            if (!card.HasIncomingDetails)
+            {
+                html.AppendLine(
+                    "<div style='font-size: 10pt; color: #6b7280; margin: 0 0 16px 0;'>No qualifying incoming material was found for the selected look-ahead window.</div>"
+                );
+                plainText.AppendLine(
+                    "No qualifying incoming material was found for the selected look-ahead window."
+                );
+            }
+            else
+            {
+                html.AppendLine(
+                    "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 0 0 16px 0;'>"
+                );
+                html.AppendLine("<thead>");
+                html.AppendLine(
+                    $"<tr style='background-color: {AccentBackground}; color: {AccentForeground}; font-weight: 700;'>"
+                );
+                AppendHeaderCell(html, "PO / Line", null);
+                AppendHeaderCell(html, "Date", null);
+                AppendHeaderCell(html, "Vendor", null);
+                AppendHeaderCell(html, "Received", null);
+                AppendHeaderCell(html, "Ordered", null);
+                AppendHeaderCell(html, "Remaining", null);
+                html.AppendLine("</tr></thead><tbody>");
+
+                plainText.AppendLine("PO / Line\tDate\tVendor\tReceived\tOrdered\tRemaining");
+
+                foreach (var line in card.IncomingLines)
+                {
+                    html.AppendLine("<tr style='background-color: #ffffff;'>");
+                    AppendBodyCell(html, line.PurchaseOrderLineDisplay);
+                    AppendBodyCell(
+                        html,
+                        string.IsNullOrWhiteSpace(line.DateLabel)
+                            ? line.DateDisplay
+                            : $"{line.DateLabel} {line.DateDisplay}"
+                    );
+                    AppendBodyCell(html, line.VendorName);
+                    AppendBodyCell(html, line.ReceivedQtyDisplay, "right");
+                    AppendBodyCell(html, line.OrderedQtyDisplay, "right");
+                    AppendBodyCell(html, line.RemainingQtyDisplay, "right");
+                    html.AppendLine("</tr>");
+
+                    plainText.AppendLine(
+                        $"{line.PurchaseOrderLineDisplay}\t{line.DateDisplay}\t{line.VendorName}\t{line.ReceivedQtyDisplay}\t{line.OrderedQtyDisplay}\t{line.RemainingQtyDisplay}"
+                    );
+                }
+
+                html.AppendLine("</tbody></table>");
+            }
+
+            html.AppendLine("</div>");
+            AppendSectionEnd(html);
+            html.AppendLine("</div>");
+
+            return Task.FromResult(
+                Model_Dao_Result_Factory.Success(
+                    new Model_FormattedReportDocument
+                    {
+                        HtmlFragment = html.ToString(),
+                        PlainText = plainText.ToString(),
+                    }
+                )
+            );
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(
+                Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>(
+                    $"Failed to prepare incoming material print output: {ex.Message}",
+                    ex
+                )
+            );
+        }
+    }
+
+    public Task<
+        Model_Dao_Result<Model_FormattedReportDocument>
+    > FormatWorkOrderDetailsForPrintAsync(
+        Model_Tool_MaterialAvailabilityAssociatedPartRun associatedRun,
+        IReadOnlyList<Model_Tool_MaterialAvailabilityDetailSection> sections
+    )
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(associatedRun);
+            ArgumentNullException.ThrowIfNull(sections);
+
+            var html = new StringBuilder();
+            var plainText = new StringBuilder();
+            html.AppendLine(
+                "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
+            );
+            AppendSectionStart(
+                html,
+                $"Work Order Details - {associatedRun.WorkOrderDisplay}",
+                CardBackground,
+                CardBorder,
+                AccentBackground,
+                AccentForeground
+            );
+            html.AppendLine("<div style='padding: 12px 16px;'>");
+            html.AppendLine(
+                $"<div style='font-size: 11pt; font-weight: 700; margin: 0 0 6px 0;'>{HtmlEncode(associatedRun.WorkOrderDisplay)} / {HtmlEncode(associatedRun.AssociatedPartNumber)}</div>"
+            );
+            html.AppendLine(
+                $"<div style='font-size: 10pt; color: #445566; margin: 0 0 12px 0;'>Required Parts: {HtmlEncode(associatedRun.RequiredPartsQuantityDisplay)} {HtmlEncode(associatedRun.NormalizedUsageUnitOfMeasure)} | Estimated Coil Use: {HtmlEncode(associatedRun.EstimatedCoilUseDisplay)} {HtmlEncode(associatedRun.NormalizedUsageUnitOfMeasure)}</div>"
+            );
+
+            plainText.AppendLine($"Work Order Details - {associatedRun.WorkOrderDisplay}");
+            plainText.AppendLine(
+                $"Required Parts: {associatedRun.RequiredPartsQuantityDisplay} {associatedRun.NormalizedUsageUnitOfMeasure}"
+            );
+            plainText.AppendLine(
+                $"Estimated Coil Use: {associatedRun.EstimatedCoilUseDisplay} {associatedRun.NormalizedUsageUnitOfMeasure}"
+            );
+
+            foreach (var section in sections.Where(section => section.Fields.Count > 0))
+            {
+                html.AppendLine(
+                    $"<div style='font-size: 11pt; font-weight: 700; color: #1f2937; margin: 12px 0 8px 0;'>{HtmlEncode(section.Title)}</div>"
+                );
+                html.AppendLine(
+                    "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 0 0 8px 0;'><tbody>"
+                );
+                plainText.AppendLine();
+                plainText.AppendLine(section.Title);
+
+                foreach (var field in section.Fields)
+                {
+                    html.AppendLine("<tr style='background-color: #ffffff;'>");
+                    AppendBodyCell(html, field.Label);
+                    AppendBodyCell(html, field.Value);
+                    html.AppendLine("</tr>");
+                    plainText.AppendLine($"{field.Label}: {field.Value}");
+                }
+
+                html.AppendLine("</tbody></table>");
+            }
+
+            html.AppendLine("</div>");
+            AppendSectionEnd(html);
+            html.AppendLine("</div>");
+
+            return Task.FromResult(
+                Model_Dao_Result_Factory.Success(
+                    new Model_FormattedReportDocument
+                    {
+                        HtmlFragment = html.ToString(),
+                        PlainText = plainText.ToString(),
+                    }
+                )
+            );
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(
+                Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>(
+                    $"Failed to prepare work-order detail print output: {ex.Message}",
                     ex
                 )
             );
@@ -461,6 +674,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     TotalPositiveQuantity = totalPositiveQuantity,
                     CurrentLocations = currentLocations,
                     IncomingRollup = incomingPresentation.Rollup,
+                    IncomingLines = incomingPresentation.IncomingLines,
                     UpcomingDates = incomingPresentation.UpcomingDates,
                     AssociatedPartRuns = associatedPartPresentation.AssociatedPartRuns,
                     NextDateSummary = headerSummary,
@@ -568,6 +782,31 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             }
         );
 
+        var incomingLines = qualifyingLines
+            .GroupBy(line => new
+            {
+                PONumber = (line.Row.PONumber ?? string.Empty).Trim().ToUpperInvariant(),
+                POLineNumber = (line.Row.POLineNumber ?? string.Empty).Trim().ToUpperInvariant(),
+            })
+            .Select(group =>
+                group.OrderBy(line => line.IsHistorical ? 1 : 0).ThenBy(line => line.Date).First()
+            )
+            .OrderBy(line => line.IsHistorical ? 1 : 0)
+            .ThenBy(line => line.Date)
+            .ThenBy(line => line.Row.PONumber, StringComparer.OrdinalIgnoreCase)
+            .Select(line => new Model_Tool_MaterialAvailabilityIncomingLine
+            {
+                PONumber = line.Row.PONumber,
+                POLineNumber = line.Row.POLineNumber,
+                VendorName = line.Row.VendorName,
+                DateLabel = line.Label,
+                Date = line.Date,
+                OrderedQty = line.Row.OrderedQty,
+                ReceivedQty = line.Row.ReceivedQty,
+                RemainingQty = line.Row.RemainingQty,
+            })
+            .ToList();
+
         var distinctPoLines = qualifyingRollupRows
             .GroupBy(row => new
             {
@@ -614,6 +853,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         return new IncomingPresentation(
             distinctDates,
+            incomingLines,
             rollup,
             nextDateSummary,
             sortBucket,
@@ -682,17 +922,51 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             {
                 AssociatedPartNumber = row.AssociatedPartNumber,
                 AssociatedPartDescription = row.AssociatedPartDescription,
+                ComponentPartNumber = row.ComponentPartNumber,
                 NextDueToRunDate = row.NextDueToRunDate!.Value.Date,
                 IsFutureOrTodayRun = row.IsFutureOrTodayRun,
                 NextDueDateSource = row.NextDueDateSource,
                 WorkOrderDisplay = FormatInforVisualWorkOrder(row.WorkOrderBaseId),
+                WorkOrderStatus = row.WorkOrderStatus,
+                WorkOrderStatusEffectiveDate = row.WorkOrderStatusEffectiveDate,
+                SiteId = row.SiteId,
+                RequiredDate = row.RequiredDate,
+                OperationSequence = row.OperationSeqNo,
+                QtyPer = row.QtyPer,
+                FixedQty = row.FixedQty,
+                CalculatedQty = row.CalcQty,
+                IssuedQty = row.IssuedQty,
+                AllocatedQty = row.AllocatedQty,
+                FulfilledQty = row.FulfilledQty,
+                UsageUnitOfMeasure = row.UsageUm,
+                ScrapPercent = row.ScrapPercent,
+                OperationType = row.OperationType,
+                ResourceId = row.ResourceId,
+                ServiceId = row.ServiceId,
+                OperationWarehouseId = row.OperationWarehouseId,
+                RunQtyPerCycle = row.RunQtyPerCycle,
+                SetupHours = row.SetupHours,
+                RunHours = row.RunHours,
+                Dimensions = row.Dimensions,
+                DimensionExpression = row.DimensionExpression,
+                Length = row.Length,
+                Width = row.Width,
+                Height = row.Height,
+                DrawingId = row.DrawingId,
+                DrawingRevision = row.DrawingRevision,
+                RequiredPartsQuantity = CalculateRequiredPartsQuantity(row),
+                EstimatedCoilUse = CalculateEstimatedCoilUse(row),
+                NormalizedUsageUnitOfMeasure = NormalizeUsageUnit(row.UsageUm),
             })
             .ToList();
 
         var firstRun = associatedRuns[0];
         var summaryLabel = firstRun.IsFutureOrTodayRun ? "Next run" : "Latest known run";
+        var usageUnit = string.IsNullOrWhiteSpace(firstRun.NormalizedUsageUnitOfMeasure)
+            ? string.Empty
+            : $" {firstRun.NormalizedUsageUnitOfMeasure}";
         var summaryText =
-            $"{summaryLabel}: {firstRun.AssociatedPartNumber} {firstRun.NextRunDateDisplay}";
+            $"{summaryLabel}: {firstRun.WorkOrderDisplay} / {firstRun.AssociatedPartNumber} on {firstRun.NextRunDateDisplay} | Required Parts: {firstRun.RequiredPartsQuantityDisplay}{usageUnit} | Estimated Coil Use: {firstRun.EstimatedCoilUseDisplay}{usageUnit}";
 
         return new AssociatedPartPresentation(
             associatedRuns,
@@ -746,6 +1020,63 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         );
     }
 
+    private static decimal CalculateRequiredPartsQuantity(Model_InforVisualAssociatedPartRunRow row)
+    {
+        if (row.CalcQty.HasValue && row.CalcQty.Value > 0)
+        {
+            return row.CalcQty.Value;
+        }
+
+        var fixedQty = row.FixedQty.GetValueOrDefault();
+        var qtyPer = row.QtyPer.GetValueOrDefault();
+        if (fixedQty > 0 || qtyPer > 0)
+        {
+            return fixedQty + qtyPer;
+        }
+
+        if (row.AllocatedQty.HasValue && row.AllocatedQty.Value > 0)
+        {
+            return row.AllocatedQty.Value;
+        }
+
+        if (row.FulfilledQty.HasValue && row.FulfilledQty.Value > 0)
+        {
+            return row.FulfilledQty.Value;
+        }
+
+        if (row.IssuedQty.HasValue && row.IssuedQty.Value > 0)
+        {
+            return row.IssuedQty.Value;
+        }
+
+        return 0;
+    }
+
+    private static decimal CalculateEstimatedCoilUse(Model_InforVisualAssociatedPartRunRow row)
+    {
+        var requiredQuantity = CalculateRequiredPartsQuantity(row);
+        if (requiredQuantity <= 0)
+        {
+            return 0;
+        }
+
+        var scrapMultiplier = 1 + (row.ScrapPercent.GetValueOrDefault() / 100M);
+        return decimal.Round(requiredQuantity * scrapMultiplier, 2, MidpointRounding.AwayFromZero);
+    }
+
+    private static string NormalizeUsageUnit(string? usageUnit)
+    {
+        if (string.IsNullOrWhiteSpace(usageUnit))
+        {
+            return string.Empty;
+        }
+
+        var trimmedValue = usageUnit.Trim();
+        return UsageUnitMap.TryGetValue(trimmedValue, out var normalizedValue)
+            ? normalizedValue
+            : trimmedValue;
+    }
+
     private static string FormatInforVisualWorkOrder(string? workOrderBaseId)
     {
         var trimmedValue = workOrderBaseId?.Trim();
@@ -755,23 +1086,16 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             return string.Empty;
         }
 
-        if (
-            trimmedValue.StartsWith("WO-", StringComparison.OrdinalIgnoreCase)
-            && trimmedValue.Length > 3
+        var formattedBaseId = long.TryParse(
+            trimmedValue,
+            NumberStyles.None,
+            CultureInfo.InvariantCulture,
+            out _
         )
-        {
-            var existingSuffix = trimmedValue[3..].Trim();
-            return string.IsNullOrWhiteSpace(existingSuffix)
-                ? string.Empty
-                : $"WO-{existingSuffix}";
-        }
+            ? trimmedValue.PadLeft(6, '0')
+            : trimmedValue;
 
-        if (long.TryParse(trimmedValue, NumberStyles.None, CultureInfo.InvariantCulture, out _))
-        {
-            return $"WO-{trimmedValue.PadLeft(6, '0')}";
-        }
-
-        return $"WO-{trimmedValue}";
+        return $"WO-{formattedBaseId}";
     }
 
     private static void AppendLocationsSection(
@@ -1022,6 +1346,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
     private sealed record IncomingPresentation(
         List<Model_Tool_MaterialAvailabilityIncomingDate> UpcomingDates,
+        List<Model_Tool_MaterialAvailabilityIncomingLine> IncomingLines,
         Model_Tool_MaterialAvailabilityRollup Rollup,
         string NextDateSummary,
         int SortBucket,
@@ -1031,6 +1356,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         public static IncomingPresentation Empty { get; } =
             new(
                 UpcomingDates: [],
+                IncomingLines: [],
                 Rollup: new Model_Tool_MaterialAvailabilityRollup(),
                 NextDateSummary: "No inbound material found.",
                 SortBucket: 2,
