@@ -194,8 +194,17 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     {
         try
         {
-            return JsonSerializer.Deserialize<SpecDefinition>(json)
+            var definition =
+                JsonSerializer.Deserialize<SpecDefinition>(json)
                 ?? new SpecDefinition { DataType = "Text" };
+
+            definition.DataType = string.IsNullOrWhiteSpace(definition.DataType)
+                ? "Text"
+                : definition.DataType;
+            definition.Unit ??= string.Empty;
+            definition.Choices ??= new List<string>();
+
+            return definition;
         }
         catch
         {
@@ -269,7 +278,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
 
-            foreach (var choice in definition.Choices)
+            foreach (var choice in definition.Choices ?? new List<string>())
             {
                 comboBox.Items.Add(choice);
             }
