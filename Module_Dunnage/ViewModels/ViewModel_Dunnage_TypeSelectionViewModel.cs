@@ -414,6 +414,12 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                         var def = JsonSerializer.Deserialize<SpecDefinition>(s.SpecValue);
                         if (def != null)
                         {
+                            def.DataType = string.IsNullOrWhiteSpace(def.DataType)
+                                ? "Text"
+                                : def.DataType.Trim();
+                            def.Unit ??= string.Empty;
+                            def.DefaultValue ??= string.Empty;
+                            def.Choices ??= new List<string>();
                             existingSpecsDict[s.SpecKey] = def;
                         }
                         else

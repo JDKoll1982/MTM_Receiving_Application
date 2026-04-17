@@ -612,7 +612,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync(
                     $"Inserting new dunnage part: {part.PartId} (Type ID: {part.TypeId}, Home Location: {part.HomeLocation}) by user: {CurrentUser}"
                 );
-                var persistedImagePath = await PersistPartImagePathAsync(part);
+                var persistedImagePathResult = await PersistPartImagePathAsync(part);
+                if (!persistedImagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure(persistedImagePathResult.ErrorMessage);
+                }
+
+                var persistedImagePath = persistedImagePathResult.Data;
                 part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.InsertAsync(
                     part.PartId,
@@ -671,7 +677,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
-                var persistedImagePath = await PersistPartImagePathAsync(part);
+                var persistedImagePathResult = await PersistPartImagePathAsync(part);
+                if (!persistedImagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure(persistedImagePathResult.ErrorMessage);
+                }
+
+                var persistedImagePath = persistedImagePathResult.Data;
                 part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.InsertWithInventoryAsync(
                     part.PartId,
@@ -721,7 +733,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     existingPartResult.IsSuccess && existingPartResult.Data is not null
                         ? existingPartResult.Data.ImagePath
                         : null;
-                var persistedImagePath = await PersistPartImagePathAsync(part);
+                var persistedImagePathResult = await PersistPartImagePathAsync(part);
+                if (!persistedImagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure(persistedImagePathResult.ErrorMessage);
+                }
+
+                var persistedImagePath = persistedImagePathResult.Data;
                 part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.UpdateAsync(
                     part.Id,
@@ -791,7 +809,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         ? existingPartResult.Data.ImagePath
                         : null;
 
-                var persistedImagePath = await PersistPartImagePathAsync(part);
+                var persistedImagePathResult = await PersistPartImagePathAsync(part);
+                if (!persistedImagePathResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure(persistedImagePathResult.ErrorMessage);
+                }
+
+                var persistedImagePath = persistedImagePathResult.Data;
                 part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
 
                 var updateResult = await _daoDunnagePart.UpdateWithInventoryAndReferencesAsync(
@@ -1812,16 +1836,21 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             );
         }
 
-        private async Task<string?> PersistPartImagePathAsync(Model_DunnagePart part)
+        private async Task<Model_Dao_Result<string?>> PersistPartImagePathAsync(
+            Model_DunnagePart part
+        )
         {
             var imagePathResult = await PrepareRelativeImagePathAsync(part.ImagePath, "Parts");
             if (!imagePathResult.IsSuccess)
             {
-                throw new InvalidOperationException(imagePathResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<string?>(
+                    imagePathResult.ErrorMessage,
+                    imagePathResult.Exception
+                );
             }
 
             part.ImagePath = imagePathResult.Data;
-            return part.ImagePath;
+            return Model_Dao_Result_Factory.Success<string?>(part.ImagePath);
         }
 
         private async Task<Model_Dao_Result<string?>> PrepareRelativeImagePathAsync(

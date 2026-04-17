@@ -320,7 +320,15 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     {
         try
         {
-            return JsonSerializer.Deserialize<SpecDefinition>(specValue) ?? new SpecDefinition();
+            var definition =
+                JsonSerializer.Deserialize<SpecDefinition>(specValue) ?? new SpecDefinition();
+            definition.DataType = string.IsNullOrWhiteSpace(definition.DataType)
+                ? "Text"
+                : definition.DataType.Trim();
+            definition.Unit ??= string.Empty;
+            definition.DefaultValue ??= string.Empty;
+            definition.Choices ??= new List<string>();
+            return definition;
         }
         catch (JsonException)
         {

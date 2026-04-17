@@ -453,6 +453,11 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 
     private async void ChooseImageButton_Click(object sender, RoutedEventArgs e)
     {
+        if (App.MainWindow is null)
+        {
+            return;
+        }
+
         var picker = new FileOpenPicker();
         picker.FileTypeFilter.Add(".png");
         picker.FileTypeFilter.Add(".jpg");
