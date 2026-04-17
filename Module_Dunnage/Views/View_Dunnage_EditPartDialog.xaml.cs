@@ -1155,6 +1155,16 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private void UpdateWizardNavigation()
     {
+        if (
+            BackStepButton is null
+            || NextStepButton is null
+            || FooterPrimaryButton is null
+            || StepSummaryTextBlock is null
+        )
+        {
+            return;
+        }
+
         var selectedIndex = Math.Max(_currentWizardStep, 0);
         var isRequiredFieldsValid = ValidationViewModel.IsValid;
 
@@ -1181,6 +1191,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private void UpdateValidationState()
     {
+        if (PartIdTextBox is null || InventoryTypeComboBox is null)
+        {
+            return;
+        }
+
         ValidationViewModel.Update(
             PartIdTextBox.Text,
             _existingPart.TypeId,
