@@ -47,6 +47,17 @@
       "validationRules": "Boolean"
     },
     {
+      "category": "User",
+      "key": "ui_theme",
+      "displayName": "UI Theme",
+      "defaultValue": "Default",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Allowed: Light, Dark, Default, or empty"
+    },
+    {
       "category": "System",
       "key": "Core.SharedPaths.ExportRoot",
       "displayName": "Export Root Path",
@@ -72,7 +83,7 @@
       "category": "ShipRecTools",
       "key": "MaterialAvailability.WorkOrderFields.UiVisibleIds",
       "displayName": "Material Availability - Work Order UI Visible Fields",
-      "defaultValue": "[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]",
+      "defaultValue": "[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]",
       "dataType": "Json",
       "scope": "System",
       "permissionLevel": "User",
@@ -83,7 +94,7 @@
       "category": "ShipRecTools",
       "key": "MaterialAvailability.WorkOrderFields.PrintVisibleIds",
       "displayName": "Material Availability - Work Order Print Visible Fields",
-      "defaultValue": "[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]",
+      "defaultValue": "[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]",
       "dataType": "Json",
       "scope": "System",
       "permissionLevel": "User",

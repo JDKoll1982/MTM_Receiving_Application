@@ -78,7 +78,8 @@
                             <TextBox
                                 x:Name="PartIdTextBox"
                                 MaxLength="100"
-                                PlaceholderText="Enter part ID" />
+                                PlaceholderText="Enter part ID"
+                                TextChanged="RequiredPartFieldChanged" />
                             <Button
                                 x:Name="SuggestPartIdButton"
                                 HorizontalAlignment="Left"
@@ -93,13 +94,23 @@
 
                         <StackPanel Spacing="8">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Inventory Type" />
-                            <ComboBox x:Name="InventoryTypeComboBox" SelectedIndex="0">
+                            <ComboBox
+                                x:Name="InventoryTypeComboBox"
+                                SelectedIndex="0"
+                                SelectionChanged="RequiredPartFieldChanged">
                                 <ComboBoxItem Content="Not Inventoried" />
                                 <ComboBoxItem Content="Adjust In" />
                                 <ComboBoxItem Content="Receive In" />
                                 <ComboBoxItem Content="Both" />
                             </ComboBox>
                         </StackPanel>
+
+                        <TextBlock
+                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ValidationViewModel.ValidationMessage, Mode=OneWay}"
+                            TextWrapping="Wrap"
+                            Visibility="{x:Bind ValidationMessageVisibility, Mode=OneWay}" />
 
                         <StackPanel Spacing="8">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Home Location" />
@@ -119,7 +130,7 @@
                         BorderThickness="1"
                         CornerRadius="6">
                         <StackPanel Spacing="12">
-                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Part Image (PNG)" />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Part Image (PNG/JPG)" />
                             <Grid ColumnSpacing="12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -145,7 +156,7 @@
                                         Style="{StaticResource CaptionTextBlockStyle}"
                                         TextWrapping="WrapWholeWords" />
                                     <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <Button Click="ChooseImageButton_Click" Content="Choose PNG" />
+                                        <Button Click="ChooseImageButton_Click" Content="Choose Image (PNG/JPG)" />
                                         <Button
                                             x:Name="RotateImageButton"
                                             Click="RotateImageButton_Click"

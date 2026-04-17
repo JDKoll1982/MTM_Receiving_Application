@@ -16,7 +16,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -27,35 +26,6 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="0"
-                Width="280"
-                Height="180"
-                Padding="20"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                Click="OnNavigateSystem"
-                CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon
-                        FontSize="40"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE713;" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="System" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Manage system defaults and core policies."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </Button>
-
-            <Button
-                Grid.Row="0"
-                Grid.Column="1"
                 Width="280"
                 Height="180"
                 Padding="20"
@@ -84,7 +54,7 @@
 
             <Button
                 Grid.Row="0"
-                Grid.Column="2"
+                Grid.Column="1"
                 Width="280"
                 Height="180"
                 Padding="20"
@@ -120,64 +90,6 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnNavigateDatabase"
-                CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon
-                        FontSize="40"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE964;" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Database" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Review connections, procedures, and health."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </Button>
-
-            <Button
-                Grid.Row="1"
-                Grid.Column="1"
-                Width="280"
-                Height="180"
-                Padding="20"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                Click="OnNavigateLogging"
-                CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon
-                        FontSize="40"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE9F9;" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Logging" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Configure diagnostics and audit trails."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </Button>
-
-            <Button
-                Grid.Row="1"
-                Grid.Column="2"
-                Width="280"
-                Height="180"
-                Padding="20"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
                 Click="OnNavigateSharedPaths"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
@@ -199,8 +111,8 @@
             </Button>
 
             <Button
-                Grid.Row="2"
-                Grid.Column="0"
+                Grid.Row="1"
+                Grid.Column="1"
                 Width="280"
                 Height="180"
                 Padding="20"
@@ -221,8 +133,9 @@
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Choose which work-order details appear in the board dialog and print layout."
+                        Text="Choose which work-order details appear in the board and print views."
                         TextAlignment="Center"
+                        TextTrimming="CharacterEllipsis"
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Button>

@@ -125,11 +125,6 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         catch { }
     }
 
-    private void OnNavigateSystem(object sender, RoutedEventArgs e)
-    {
-        NavigateUsingServiceProvider(typeof(View_Settings_System));
-    }
-
     private void OnNavigateUsers(object sender, RoutedEventArgs e)
     {
         NavigateUsingServiceProvider(typeof(View_Settings_Users));
@@ -138,16 +133,6 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
     private void OnNavigateTheme(object sender, RoutedEventArgs e)
     {
         NavigateUsingServiceProvider(typeof(View_Settings_Theme));
-    }
-
-    private void OnNavigateDatabase(object sender, RoutedEventArgs e)
-    {
-        NavigateUsingServiceProvider(typeof(View_Settings_Database));
-    }
-
-    private void OnNavigateLogging(object sender, RoutedEventArgs e)
-    {
-        NavigateUsingServiceProvider(typeof(View_Settings_Logging));
     }
 
     private void OnNavigateSharedPaths(object sender, RoutedEventArgs e)

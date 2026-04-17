@@ -39,8 +39,12 @@ public sealed partial class ViewModel_Dialog_MaterialAvailabilityWorkOrderDetail
     public string Subheading =>
         $"{_associatedRun.AssociatedPartNumber} - {_associatedRun.AssociatedPartDescription}";
 
-    public string SummaryText =>
-        $"Required Parts {_associatedRun.RequiredPartsQuantityDisplay} | Estimated Coil Use {_associatedRun.EstimatedCoilUseDisplay} {_associatedRun.NormalizedUsageUnitOfMeasure}";
+    public string RequiredPartsSummary => _associatedRun.RequiredPartsQuantityDisplay;
+
+    public string EstimatedCoilUseSummary =>
+        string.IsNullOrWhiteSpace(_associatedRun.NormalizedUsageUnitOfMeasure)
+            ? _associatedRun.EstimatedCoilUseDisplay
+            : $"{_associatedRun.EstimatedCoilUseDisplay} {_associatedRun.NormalizedUsageUnitOfMeasure}";
 
     public bool IsShowAllChipVisible => _fieldSettings.IsShowAllChipEnabled;
 

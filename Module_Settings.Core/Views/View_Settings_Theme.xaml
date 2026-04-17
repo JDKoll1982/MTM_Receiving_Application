@@ -2,8 +2,7 @@
     x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_Theme"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels"
->
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels">
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -12,27 +11,46 @@
         </Grid.RowDefinitions>
 
         <StackPanel Spacing="4">
-            <TextBlock Text="UI Theme" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock
-                Text="Control the application appearance, density, and accent styling."
-                Style="{StaticResource BodyTextBlockStyle}"
-            />
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="UI Theme" />
+            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="Control the application appearance, density, and accent styling." />
         </StackPanel>
 
         <InfoBar
             Grid.Row="1"
-            IsOpen="True"
             IsClosable="False"
-            Severity="Informational"
+            IsOpen="True"
             Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-        />
+            Severity="Informational" />
 
-        <StackPanel Grid.Row="2" Spacing="8">
-            <TextBlock Text="Overview" Style="{StaticResource SubtitleTextBlockStyle}" />
-            <TextBlock
-                Text="Theme controls will align all modules with the core window styling and branding."
-                Style="{StaticResource BodyTextBlockStyle}"
-            />
-        </StackPanel>
+        <Border
+            Grid.Row="2"
+            Padding="20"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="6">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Application Theme" />
+                    <TextBlock
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Choose Light, Dark, or System Default and save the preference for the current user."
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <ComboBox
+                    Grid.Column="1"
+                    Width="180"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    ItemsSource="{x:Bind ViewModel.ThemeOptions, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+            </Grid>
+        </Border>
     </Grid>
 </Page>

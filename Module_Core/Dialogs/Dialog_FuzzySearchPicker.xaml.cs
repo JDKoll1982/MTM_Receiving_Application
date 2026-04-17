@@ -25,6 +25,8 @@ namespace MTM_Receiving_Application.Module_Core.Dialogs;
 /// </summary>
 public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
 {
+    private const int DefaultDisplayLimit = 50;
+
     private readonly IReadOnlyList<Model_FuzzySearchResult> _allItems;
     private readonly ObservableCollection<Model_FuzzySearchResult> _filtered = new();
 
@@ -66,12 +68,13 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
         _filtered.Clear();
 
         var lower = term.Trim();
-        IEnumerable<Model_FuzzySearchResult> matches = string.IsNullOrEmpty(lower)
-            ? _allItems
-            : _allItems.Where(i =>
+        var isFilterActive = string.IsNullOrEmpty(lower) is false;
+        IEnumerable<Model_FuzzySearchResult> matches = isFilterActive
+            ? _allItems.Where(i =>
                 i.Label.Contains(lower, StringComparison.OrdinalIgnoreCase)
                 || (i.Detail?.Contains(lower, StringComparison.OrdinalIgnoreCase) ?? false)
-            );
+            )
+            : _allItems.Take(DefaultDisplayLimit);
 
         foreach (var item in matches)
         {
@@ -79,14 +82,21 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
         }
 
         ResultsListView.ItemsSource = _filtered;
-        UpdateResultCount();
+        UpdateResultCount(isFilterActive);
 
         SelectedResult = null;
         IsPrimaryButtonEnabled = false;
     }
 
-    private void UpdateResultCount()
+    private void UpdateResultCount(bool isFilterActive)
     {
+        if (!isFilterActive && _allItems.Count > DefaultDisplayLimit)
+        {
+            ResultCountText.Text =
+                $"Showing first {DefaultDisplayLimit} of {_allItems.Count} matches — type to narrow results";
+            return;
+        }
+
         ResultCountText.Text = _filtered.Count switch
         {
             0 => "No matches — try a shorter term",

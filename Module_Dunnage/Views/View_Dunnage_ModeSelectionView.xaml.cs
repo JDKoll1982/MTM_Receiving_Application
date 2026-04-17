@@ -1,4 +1,5 @@
 using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -36,5 +37,17 @@ public sealed partial class View_Dunnage_ModeSelectionView : UserControl
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;
+    }
+
+    private async void OpenImageSearch_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = App.GetService<View_Dunnage_Dialog_ImagePartSearch>();
+        if (dialog is null)
+        {
+            return;
+        }
+
+        dialog.XamlRoot = XamlRoot;
+        await dialog.ShowAsync();
     }
 }

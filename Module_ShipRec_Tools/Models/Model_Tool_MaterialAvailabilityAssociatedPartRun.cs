@@ -108,6 +108,8 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public string WorkOrderStatusEffectiveDateDisplay => FormatDate(WorkOrderStatusEffectiveDate);
 
+    public string WorkOrderStatusDisplay => NormalizeWorkOrderStatus(WorkOrderStatus);
+
     public string QtyPerDisplay => FormatDecimal(QtyPer);
 
     public string FixedQtyDisplay => FormatDecimal(FixedQty);
@@ -120,9 +122,10 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public string FulfilledQtyDisplay => FormatDecimal(FulfilledQty);
 
-    public string RequiredPartsQuantityDisplay => FormatDecimal(RequiredPartsQuantity);
+    public string RequiredPartsQuantityDisplay => FormatGroupedDecimal(RequiredPartsQuantity);
 
-    public string EstimatedCoilUseDisplay => FormatDecimal(EstimatedCoilUse);
+    public string EstimatedCoilUseDisplay =>
+        FormatGroupedDecimal(decimal.Ceiling(EstimatedCoilUse), forceWholeNumber: true);
 
     public string ScrapPercentDisplay =>
         ScrapPercent.HasValue ? $"{ScrapPercent.Value:0.##}%" : string.Empty;
@@ -170,9 +173,28 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
             : string.Empty;
     }
 
-    private static string FormatDecimal(decimal value)
+
+    private static string FormatGroupedDecimal(decimal value, bool forceWholeNumber = false)
     {
-        return value.ToString("0.##", CultureInfo.InvariantCulture);
+        return value.ToString(forceWholeNumber ? "#,0" : "#,0.##", CultureInfo.InvariantCulture);
+    }
+
+    private static string NormalizeWorkOrderStatus(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status))
+        {
+            return string.Empty;
+        }
+
+        return status.Trim().ToUpperInvariant() switch
+        {
+            "U" => "Unreleased",
+            "F" => "Firmed",
+            "R" => "Released",
+            "H" => "Hold",
+            "C" => "Closed",
+            _ => status.Trim(),
+        };
     }
 
     private static string FormatDate(DateTime? value)

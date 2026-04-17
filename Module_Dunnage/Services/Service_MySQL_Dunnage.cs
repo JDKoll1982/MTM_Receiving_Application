@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -611,11 +612,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync(
                     $"Inserting new dunnage part: {part.PartId} (Type ID: {part.TypeId}, Home Location: {part.HomeLocation}) by user: {CurrentUser}"
                 );
+                var persistedImagePath = await PersistPartImagePathAsync(part);
+                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.InsertAsync(
                     part.PartId,
                     part.TypeId,
                     part.SpecValues,
-                    await PersistPartImagePathAsync(part),
+                    persistedImagePath,
                     part.HomeLocation,
                     CurrentUser
                 );
@@ -668,11 +671,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
+                var persistedImagePath = await PersistPartImagePathAsync(part);
+                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.InsertWithInventoryAsync(
                     part.PartId,
                     part.TypeId,
                     part.SpecValues,
-                    await PersistPartImagePathAsync(part),
+                    persistedImagePath,
                     part.HomeLocation,
                     inventoryMethod,
                     inventoryNotes,
@@ -716,11 +721,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     existingPartResult.IsSuccess && existingPartResult.Data is not null
                         ? existingPartResult.Data.ImagePath
                         : null;
+                var persistedImagePath = await PersistPartImagePathAsync(part);
+                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.UpdateAsync(
                     part.Id,
                     part.PartId,
                     part.SpecValues,
-                    await PersistPartImagePathAsync(part),
+                    persistedImagePath,
                     part.HomeLocation,
                     CurrentUser
                 );
@@ -784,12 +791,15 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         ? existingPartResult.Data.ImagePath
                         : null;
 
+                var persistedImagePath = await PersistPartImagePathAsync(part);
+                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
+
                 var updateResult = await _daoDunnagePart.UpdateWithInventoryAndReferencesAsync(
                     part.Id,
                     originalPartId,
                     part.PartId,
                     part.SpecValues,
-                    await PersistPartImagePathAsync(part),
+                    persistedImagePath,
                     part.HomeLocation,
                     inventoryMethod,
                     inventoryNotes,
@@ -1839,6 +1849,42 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
 
             return Model_Dao_Result_Factory.Success<string?>(importResult.Data);
+        }
+
+        private string BuildSpecValuesWithImagePath(string? specValuesJson, string? imagePath)
+        {
+            Dictionary<string, JsonElement> specValues;
+
+            try
+            {
+                specValues =
+                    JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
+                        string.IsNullOrWhiteSpace(specValuesJson) ? "{}" : specValuesJson
+                    ) ?? new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
+            }
+            catch (JsonException)
+            {
+                specValues = new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            var payload = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+            foreach (var pair in specValues)
+            {
+                if (string.Equals(pair.Key, "image_path", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                payload[pair.Key] = pair.Value.Clone();
+            }
+
+            var normalizedImagePath = _imageStorage.GetNormalizedFullPath(imagePath);
+            if (string.IsNullOrWhiteSpace(normalizedImagePath) is false)
+            {
+                payload["image_path"] = normalizedImagePath;
+            }
+
+            return payload.Count == 0 ? "{}" : JsonSerializer.Serialize(payload);
         }
 
         private async Task CleanupReplacedImageAsync(

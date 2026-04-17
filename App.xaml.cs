@@ -84,6 +84,9 @@ public partial class App : Application
         var startupService = _host.Services.GetRequiredService<IService_OnStartup_AppLifecycle>();
         await startupService.StartAsync();
 
+        var themeManager = _host.Services.GetRequiredService<IService_ThemeManager>();
+        await themeManager.ApplySavedThemeAsync();
+
         if (shutdownService.IsShutdownRequested)
         {
             await EnsureShutdownAsync(
@@ -92,6 +95,10 @@ public partial class App : Application
             );
             return;
         }
+
+        var softwareVersionMonitor =
+            _host.Services.GetRequiredService<IService_SoftwareVersionMonitor>();
+        softwareVersionMonitor.StartMonitoring();
 
         if (MainWindow != null)
         {
@@ -141,6 +148,8 @@ public partial class App : Application
 
         try
         {
+            _host.Services.GetService<IService_SoftwareVersionMonitor>()?.StopMonitoring();
+
             var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
             sessionManager.SessionTimedOut -= OnSessionTimedOut;
 

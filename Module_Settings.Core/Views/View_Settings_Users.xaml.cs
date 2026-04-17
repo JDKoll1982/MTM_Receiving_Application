@@ -1,7 +1,6 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.Views;
@@ -33,17 +32,25 @@ public sealed partial class View_Settings_Users : Page
 
     private void EditSelectedUser_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedUser is Model_User user)
+        if (ViewModel.SelectedUser is not null)
         {
-            ViewModel.EditUserCommand.Execute(user);
+            ViewModel.EditUserCommand.Execute(ViewModel.SelectedUser);
         }
     }
 
     private void DeactivateSelectedUser_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedUser is Model_User user)
+        if (ViewModel.SelectedUser is not null)
         {
-            ViewModel.DeactivateUserCommand.Execute(user);
+            ViewModel.DeactivateUserCommand.Execute(ViewModel.SelectedUser);
+        }
+    }
+
+    private async void SaveUserRole_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: ViewModel_SettingsUserRoleRow row })
+        {
+            await ViewModel.SaveUserRoleCommand.ExecuteAsync(row);
         }
     }
 }

@@ -2,27 +2,15 @@
   "id": "settings-reporting-shell",
   "module": "Module_Settings.Reporting",
   "name": "Reporting Settings Shell",
-  "summary": "Card-based reporting settings shell with placeholder overview, file I/O, email UX, business rules, and permissions pages derived from reporting settable-object guidance.",
+  "summary": "Single-card Reporting settings placeholder that explicitly communicates Reporting configuration is not implemented yet and no longer exposes the retired placeholder child pages from the old shell.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_NavigationHub.cs",
-    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_SettingsOverview.cs",
-    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_FileIO.cs",
-    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_EmailUx.cs",
-    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_BusinessRules.cs",
-    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_Permissions.cs",
     "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml",
     "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml.cs",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_SettingsOverview.xaml.cs",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_FileIO.xaml.cs",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailUx.xaml.cs",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_BusinessRules.xaml.cs",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml",
-    "Module_Settings.Reporting/Views/View_Settings_Reporting_Permissions.xaml.cs"
+    "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs",
+    "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
+    "MainWindow.xaml.cs"
   ],
   "promptDefaults": {
     "audience": "Supervisor",
@@ -33,51 +21,36 @@
   },
   "uiHints": {
     "workflowAreas": [
-      "Settings overview",
-      "Report file output settings",
-      "Email formatting and UX guidance",
-      "Reporting business rules",
-      "Permissions"
+      "Reporting settings placeholder shell",
+      "Future Reporting configuration entry point"
     ],
-    "screens": [
-      "View_Settings_Reporting_WorkflowHub.xaml",
-      "View_Settings_Reporting_SettingsOverview.xaml",
-      "View_Settings_Reporting_FileIO.xaml",
-      "View_Settings_Reporting_EmailUx.xaml",
-      "View_Settings_Reporting_BusinessRules.xaml",
-      "View_Settings_Reporting_Permissions.xaml"
-    ],
+    "screens": ["View_Settings_Reporting_WorkflowHub.xaml"],
     "currentUiPatterns": ["Card list", "Form"],
-    "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
+    "desiredUiPatterns": ["Card list", "Form"],
     "uiElements": [
-      "Navigation cards",
-      "Export folder path guidance",
-      "File name template guidance",
-      "Timestamp format guidance",
-      "Email HTML style guidance",
-      "Template validation warnings guidance",
-      "Permission matrix guidance"
+      "Centered placeholder card",
+      "Feature-not-yet-available message",
+      "Reporting iconography",
+      "Settings-shell entry point"
     ],
     "userActions": [
-      "Browse reporting settings areas from the hub",
-      "Review placeholder guidance for report output configuration",
-      "Review placeholder guidance for email formatting and permissions",
-      "Understand which reporting settings still need full implementation"
+      "Open Reporting settings from the settings shell",
+      "See immediately that Reporting settings are not implemented yet"
     ],
     "preserveRules": [
-      "Keep the placeholder status explicit in metadata",
-      "Do not describe reporting settings pages as persisted editors unless the code adds that behavior",
-      "Keep the existing step ordering and card-driven navigation unchanged"
+      "Keep Reporting settings clearly marked as a placeholder",
+      "Do not describe Reporting settings as persisted editors",
+      "Do not route users to the retired Reporting child pages"
     ],
     "acceptanceCriteria": [
-      "The hub still routes to overview, file I/O, email UX, business rules, and permissions",
-      "Metadata reflects the current placeholder nature of these reporting settings pages",
-      "Metadata captures the visible suggested controls without inventing persistence logic"
+      "Reporting settings open a single placeholder experience",
+      "Metadata reflects that only the shell placeholder is active",
+      "Metadata does not imply hidden or still-routable Reporting child pages"
     ],
     "validationHints": [
-      "Confirm the reporting cards still open the intended screens",
-      "Confirm placeholder descriptions still mention export, email, business rule, and permission guidance",
-      "Confirm metadata does not overstate how complete these settings pages are"
+      "Confirm the settings shell opens the Reporting placeholder card",
+      "Confirm search destinations no longer advertise retired Reporting child pages",
+      "Confirm metadata does not overstate Reporting feature completeness"
     ]
   }
 }

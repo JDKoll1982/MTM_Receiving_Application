@@ -2,17 +2,21 @@
   "id": "core-startup-system-config",
   "module": "Module_Core",
   "name": "Startup And System Config",
-  "summary": "Startup lifecycle orchestration, coordinated application shutdown, application and workstation defaults, and system-level configuration models shared across the app.",
+  "summary": "Startup lifecycle orchestration, coordinated application shutdown, application and workstation defaults, software-version enforcement against MySQL, and system-level configuration models shared across the app.",
   "owner": "Platform Team",
   "relatedFiles": [
     "App.xaml.cs",
     "MainWindow.xaml.cs",
     "Module_Core/Contracts/Services/IService_ApplicationShutdown.cs",
     "Module_Core/Contracts/Services/IService_OnStartup_AppLifecycle.cs",
+    "Module_Core/Contracts/Services/IService_SoftwareVersionMonitor.cs",
+    "Module_Core/Data/Application/Dao_SoftwareVersion.cs",
     "Module_Core/Defaults/WorkstationDefaults.cs",
     "Module_Core/Services/Service_ApplicationShutdown.cs",
     "Module_Core/Services/Startup/Service_OnStartup_AppLifecycle.cs",
+    "Module_Core/Services/Versioning/Service_SoftwareVersionMonitor.cs",
     "Module_Core/Models/Systems/Model_AppSettings.cs",
+    "Module_Core/Models/Systems/Model_SoftwareVersion.cs",
     "Module_Core/Models/Systems/Model_WorkstationConfig.cs",
     "Module_Core/Models/Enums/Enum_DataSourceType.cs",
     "Module_Core/Models/Enums/Enum_LabelType.cs",
@@ -22,8 +26,10 @@
   "relatedServices": [
     "IService_ApplicationShutdown",
     "IService_OnStartup_AppLifecycle",
+    "IService_SoftwareVersionMonitor",
     "Service_ApplicationShutdown",
-    "Service_OnStartup_AppLifecycle"
+    "Service_OnStartup_AppLifecycle",
+    "Service_SoftwareVersionMonitor"
   ],
   "promptDefaults": {
     "reviewScope": "Single feature",
@@ -33,12 +39,15 @@
     "workflowAreas": [
       "Application startup",
       "Coordinated app shutdown",
+      "Software version enforcement",
       "System configuration",
       "Workstation defaults"
     ],
     "validationHints": [
       "Confirm startup lifecycle and workstation defaults still initialize the app as expected",
-      "Confirm startup cancellation, lockout, and fatal-startup paths now shut the app down through the coordinated shutdown flow"
+      "Confirm startup cancellation, lockout, and fatal-startup paths now shut the app down through the coordinated shutdown flow",
+      "Confirm startup seeds software_version when the table is empty and closes the app on version mismatch",
+      "Confirm the recurring version monitor closes the app after acknowledgment or timeout when the required version changes"
     ]
   }
 }

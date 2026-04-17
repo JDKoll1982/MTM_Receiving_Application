@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -90,6 +92,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         InventoryNotificationMessage = string.Empty;
         InventoryMethod = "Adjust In";
         StatusMessage = string.Empty;
+        GoNextCommand.NotifyCanExecuteChanged();
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -147,6 +150,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";
 
+    public bool CanProceedToNextStep => IsBusy is false && RequiredSpecsAreSatisfied();
+
     #endregion
 
     #region Initialization
@@ -159,6 +164,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         try
         {
             IsBusy = true;
+            GoNextCommand.NotifyCanExecuteChanged();
             StatusMessage = "Loading part details...";
 
             await InitializeStepStateAsync();
@@ -281,6 +287,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
                     }
 
                     UpdateInventoryMessage();
+                    GoNextCommand.NotifyCanExecuteChanged();
                 }
                 else
                 {
@@ -301,6 +308,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         finally
         {
             IsBusy = false;
+            GoNextCommand.NotifyCanExecuteChanged();
         }
     }
 
@@ -399,11 +407,19 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         }
 
         UpdateInventoryMessage();
+        GoNextCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnLocationChanged(string value)
     {
         _workflowService.CurrentSession.Location = value;
+        GoNextCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnSpecInputsChanged(ObservableCollection<Model_SpecInput> value)
+    {
+        AttachSpecInputHandlers(value);
+        GoNextCommand.NotifyCanExecuteChanged();
     }
 
     public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
@@ -504,6 +520,64 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         return true;
     }
 
+    private bool RequiredSpecsAreSatisfied()
+    {
+        return SpecInputs
+            .Where(static spec => spec.IsRequired)
+            .All(static spec =>
+                spec.Value is bool booleanValue
+                    ? booleanValue
+                    : string.IsNullOrWhiteSpace(spec.Value?.ToString()) is false
+            );
+    }
+
+    private void AttachSpecInputHandlers(ObservableCollection<Model_SpecInput>? specInputs)
+    {
+        if (specInputs is null)
+        {
+            return;
+        }
+
+        specInputs.CollectionChanged -= OnSpecInputsCollectionChanged;
+        specInputs.CollectionChanged += OnSpecInputsCollectionChanged;
+
+        foreach (var specInput in specInputs)
+        {
+            specInput.PropertyChanged -= OnSpecInputPropertyChanged;
+            specInput.PropertyChanged += OnSpecInputPropertyChanged;
+        }
+    }
+
+    private void OnSpecInputsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems is not null)
+        {
+            foreach (Model_SpecInput specInput in e.OldItems)
+            {
+                specInput.PropertyChanged -= OnSpecInputPropertyChanged;
+            }
+        }
+
+        if (e.NewItems is not null)
+        {
+            foreach (Model_SpecInput specInput in e.NewItems)
+            {
+                specInput.PropertyChanged -= OnSpecInputPropertyChanged;
+                specInput.PropertyChanged += OnSpecInputPropertyChanged;
+            }
+        }
+
+        GoNextCommand.NotifyCanExecuteChanged();
+    }
+
+    private void OnSpecInputPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (string.Equals(e.PropertyName, nameof(Model_SpecInput.Value), StringComparison.Ordinal))
+        {
+            GoNextCommand.NotifyCanExecuteChanged();
+        }
+    }
+
     #endregion
 
     #region Navigation Commands
@@ -529,6 +603,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         try
         {
             IsBusy = true;
+            GoNextCommand.NotifyCanExecuteChanged();
             _workflowService.SetNavigationLock(true);
             StatusMessage = "Saving your entry...";
 
@@ -579,10 +654,11 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         {
             _workflowService.SetNavigationLock(false);
             IsBusy = false;
+            GoNextCommand.NotifyCanExecuteChanged();
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanProceedToNextStep))]
     private async Task GoNextAsync()
     {
         await SaveAndAdvanceAsync();

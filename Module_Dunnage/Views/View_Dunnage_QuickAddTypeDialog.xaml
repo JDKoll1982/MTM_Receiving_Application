@@ -237,21 +237,31 @@
                         CornerRadius="6"
                         Visibility="{x:Bind ViewModel.UseImageVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Spacing="12">
-                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Image (PNG)" />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Image (PNG/JPG)" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Upload a PNG image to represent this dunnage type."
+                                Text="Upload a PNG or JPG image to represent this dunnage type."
                                 TextWrapping="Wrap" />
-                            <Grid ColumnSpacing="12">
+                            <Grid ColumnSpacing="12" RowSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                                 <Border
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="0"
                                     Width="80"
                                     Height="80"
                                     Padding="4"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
                                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
@@ -261,23 +271,32 @@
                                         Stretch="UniformToFill"
                                         Visibility="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </Border>
-                                <StackPanel
+                                <TextBlock
+                                    Grid.Row="0"
                                     Grid.Column="1"
+                                    Grid.ColumnSpan="2"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind ViewModel.SelectedImagePath, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                                <Button
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Click="OnChooseImageClick"
+                                    Content="Choose Image (PNG/JPG)" />
+                                <Button
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Click="OnRotateImageClick"
+                                    Content="Rotate 90°"
+                                    IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="2"
+                                    HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Spacing="8">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind ViewModel.SelectedImagePath, Mode=OneWay}"
-                                        TextWrapping="WrapWholeWords" />
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <Button Click="OnChooseImageClick" Content="Choose PNG" />
-                                        <Button
-                                            Click="OnRotateImageClick"
-                                            Content="Rotate 90°"
-                                            IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
-                                        <Button Click="OnClearImageClick" Content="Clear" />
-                                    </StackPanel>
-                                </StackPanel>
+                                    Click="OnClearImageClick"
+                                    Content="Clear" />
                             </Grid>
                         </StackPanel>
                     </Border>

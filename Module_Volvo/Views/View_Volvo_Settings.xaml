@@ -2,13 +2,17 @@
     x:Class="MTM_Receiving_Application.Module_Volvo.Views.View_Volvo_Settings"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    mc:Ignorable="d"
     Loaded="OnPageLoaded"
->
+    mc:Ignorable="d">
+    <Page.Resources>
+        <converters:Converter_BoolToColor x:Key="BoolToColorConverter" />
+    </Page.Resources>
+
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -17,90 +21,78 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
+        <!--  Header  -->
         <TextBlock
             Grid.Row="0"
-            Text="Volvo Dunnage Parts Master Data"
             Style="{StaticResource TitleTextBlockStyle}"
-        />
+            Text="Volvo Dunnage Parts Master Data" />
 
-        <!-- Toolbar -->
+        <!--  Toolbar  -->
         <CommandBar Grid.Row="1" DefaultLabelPosition="Right">
             <AppBarButton
-                Icon="Add"
-                Label="Add Part"
                 Command="{x:Bind ViewModel.AddPartCommand, Mode=OneWay}"
-            />
+                Icon="Add"
+                Label="Add Part" />
             <AppBarButton
-                Icon="Edit"
-                Label="Edit Part"
                 Command="{x:Bind ViewModel.EditPartCommand, Mode=OneWay}"
-            />
+                Icon="Edit"
+                Label="Edit Part" />
             <AppBarButton
-                Icon="Delete"
-                Label="Deactivate"
                 Command="{x:Bind ViewModel.DeactivatePartCommand, Mode=OneWay}"
-            />
+                Icon="Delete"
+                Label="Deactivate" />
             <AppBarSeparator />
             <AppBarButton
-                Icon="PreviewLink"
-                Label="View Components"
                 Command="{x:Bind ViewModel.ViewComponentsCommand, Mode=OneWay}"
-            />
+                Icon="PreviewLink"
+                Label="View Components" />
             <AppBarSeparator />
             <AppBarButton
-                Icon="Import"
-                Label="Import Data"
                 Command="{x:Bind ViewModel.ImportDataCommand, Mode=OneWay}"
-            />
+                Icon="Import"
+                Label="Import Data" />
             <AppBarSeparator />
             <AppBarButton
-                Icon="Refresh"
-                Label="Refresh"
                 Command="{x:Bind ViewModel.RefreshCommand, Mode=OneWay}"
-            />
+                Icon="Refresh"
+                Label="Refresh" />
             <AppBarSeparator />
             <AppBarToggleButton
                 Icon="View"
-                Label="Show Inactive"
                 IsChecked="{x:Bind ViewModel.ShowInactive, Mode=TwoWay}"
-            />
+                Label="Show Inactive" />
         </CommandBar>
 
-        <!-- Data Grid -->
+        <!--  Data Grid  -->
         <Grid Grid.Row="2">
             <controls:DataGrid
-                ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
-                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                AlternatingRowBackground="{ThemeResource SystemListLowColor}"
                 AutoGenerateColumns="False"
-                IsReadOnly="True"
                 GridLinesVisibility="All"
                 HeadersVisibility="Column"
-                AlternatingRowBackground="{ThemeResource SystemListLowColor}"
-                SelectionMode="Single"
-            >
+                IsReadOnly="True"
+                ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                SelectionMode="Single">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTemplateColumn Header="Part Number" Width="*">
+                    <controls:DataGridTemplateColumn Width="*" Header="Part Number">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoPart">
                                 <TextBlock Text="{x:Bind PartNumber, Mode=OneTime}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Qty/Skid" Width="100">
+                    <controls:DataGridTemplateColumn Width="100" Header="Qty/Skid">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoPart">
                                 <TextBlock Text="{x:Bind QuantityPerSkid, Mode=OneTime}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Active" Width="80">
+                    <controls:DataGridTemplateColumn Width="80" Header="Active">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoPart">
-                                <TextBlock
-                                    Text="{x:Bind IsActive}"
-                                    Foreground="{x:Bind IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Gray'}"
-                                />
+                                <TextBlock Foreground="{x:Bind IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Gray'}" Text="{x:Bind IsActive}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
@@ -108,7 +100,7 @@
             </controls:DataGrid>
         </Grid>
 
-        <!-- Status Bar -->
+        <!--  Status Bar  -->
         <Grid Grid.Row="3" ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -117,17 +109,15 @@
 
             <ProgressRing
                 Grid.Column="0"
-                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                 Width="20"
                 Height="20"
-                Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-            />
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
 
             <TextBlock
                 Grid.Column="1"
-                Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                 VerticalAlignment="Center"
-            />
+                Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
         </Grid>
     </Grid>
 </Page>

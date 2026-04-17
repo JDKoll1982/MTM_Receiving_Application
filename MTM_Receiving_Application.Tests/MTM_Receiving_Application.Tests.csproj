@@ -59,6 +59,11 @@
     </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Unit\Module_OutsideService\**" />
+    <None Remove="Unit\Module_OutsideService\**" />
+  </ItemGroup>
+
   <Target
     Name="RestoreReferencedWinUIAssetsForTests"
     AfterTargets="ResolveProjectReferences"

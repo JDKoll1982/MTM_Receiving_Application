@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Data.Application;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
@@ -11,6 +12,8 @@ using MTM_Receiving_Application.Module_Core.Services;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Help;
+using MTM_Receiving_Application.Module_Core.Services.UI;
+using MTM_Receiving_Application.Module_Core.Services.Versioning;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
@@ -57,6 +60,18 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
         services.AddSingleton<IService_Help, Service_Help>();
+        services.AddSingleton<IService_ThemeManager, Service_ThemeManager>();
+        services.AddSingleton(_ =>
+        {
+            var mySqlConnectionString =
+                configuration.GetConnectionString("MySql")
+                ?? throw new InvalidOperationException(
+                    "MySql connection string not found in configuration"
+                );
+
+            return new Dao_SoftwareVersion(mySqlConnectionString);
+        });
+        services.AddSingleton<IService_SoftwareVersionMonitor, Service_SoftwareVersionMonitor>();
         services.AddSingleton<
             IService_AuthCredentialProtection,
             Service_AuthCredentialProtection

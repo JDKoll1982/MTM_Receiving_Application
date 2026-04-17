@@ -10,10 +10,6 @@ using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Views;
-using MTM_Receiving_Application.Module_OutsideService.Contracts;
-using MTM_Receiving_Application.Module_OutsideService.Data;
-using MTM_Receiving_Application.Module_OutsideService.Services;
-using MTM_Receiving_Application.Module_OutsideService.ViewModels;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Services;
@@ -55,7 +51,7 @@ public static class ModuleServicesExtensions
     {
         services.AddReceivingModule(configuration);
         services.AddDunnageModule(configuration);
-        services.AddOutsideServiceModule(configuration);
+        // MODULE_OUTSIDESERVICE_DISABLED: Outside Service is temporarily removed from startup registration.
         services.AddVolvoModule(configuration);
         services.AddReportingModule(configuration);
         services.AddSettingsModule(configuration);
@@ -193,6 +189,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Dunnage_ManualEntry>();
         services.AddTransient<ViewModel_Dunnage_EditMode>();
         services.AddTransient<ViewModel_Dunnage_QuickAddTypeDialog>();
+        services.AddTransient<ViewModel_Dunnage_ImagePartSearchDialog>();
+        services.AddTransient<ViewModel_Dunnage_PartInfoModal>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_WorkflowView>();
@@ -210,6 +208,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_NonPOEntry>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_ImagePartSearch>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_PartInfoModal>();
 
         return services;
     }
@@ -303,40 +303,6 @@ public static class ModuleServicesExtensions
     }
 
     /// <summary>
-    /// Registers Outside Service module services, DAOs, ViewModels, and Views.
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
-    private static IServiceCollection AddOutsideServiceModule(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
-    {
-        var mySqlConnectionString =
-            configuration.GetConnectionString("MySql")
-            ?? throw new InvalidOperationException("MySql connection string not found");
-
-        services.AddSingleton(_ => new Dao_OutsideServiceRequest(mySqlConnectionString));
-        services.AddSingleton<IService_OutsideService, Service_OutsideService>();
-
-        services.AddTransient<ViewModel_OutsideService_Main>();
-        services.AddTransient<ViewModel_OutsideService_RequestEntry>();
-        services.AddTransient<ViewModel_OutsideService_Waitlist>();
-        services.AddTransient<ViewModel_OutsideService_Setup>();
-        services.AddTransient<ViewModel_OutsideService_CompleteHistory>();
-
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_Main>();
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_RequestEntry>();
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_Waitlist>();
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_Setup>();
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_CompleteHistory>();
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_AddLineModal>();
-        services.AddTransient<Module_OutsideService.Views.View_OutsideService_PartMatchHelper>();
-
-        return services;
-    }
-
-    /// <summary>
     /// Registers Settings module services, DAOs, and ViewModels.
     /// Includes core settings infrastructure and all feature-specific settings pages.
     /// </summary>
@@ -384,49 +350,31 @@ public static class ModuleServicesExtensions
     {
         // Core Settings
         services.AddTransient<ViewModel_SettingsWindow>();
-        services.AddTransient<ViewModel_Settings_System>();
         services.AddTransient<ViewModel_Settings_Users>();
         services.AddTransient<ViewModel_Settings_Theme>();
-        services.AddTransient<ViewModel_Settings_Database>();
-        services.AddTransient<ViewModel_Settings_Logging>();
         services.AddTransient<ViewModel_Settings_SharedPaths>();
         services.AddTransient<ViewModel_Settings_MaterialAvailabilityBoardFields>();
 
         // Navigation Hubs
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_NavigationHub>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_NavigationHub>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_CategoryHub>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_CategoryHub>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_NavigationHub>();
 
         // Receiving Settings Pages
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Defaults>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Validation>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_UserPreferences>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_BusinessRules>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_EntryDefaults>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_ValidationRules>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_PartFormatting>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WorkflowDefaults>();
 
         // Dunnage Settings Pages
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_SettingsOverview>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_UserPreferences>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_UiUx>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_Workflow>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_Permissions>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_Audit>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_PersonalDefaults>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_ImageAssets>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_ImagePresentation>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_WorkflowVisuals>();
 
         // Reporting Settings Pages
-        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_SettingsOverview>();
-        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_FileIO>();
-        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_EmailUx>();
-        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_BusinessRules>();
-        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_Permissions>();
-
         // Volvo Settings Pages
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_SettingsOverview>();
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_DatabaseSettings>();
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_ConnectionStrings>();
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_FilePaths>();
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_UiConfiguration>();
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_ExternalizationBacklog>();
-
         // Settings Views (Transient - Per-view instances with constructor DI)
         RegisterSettingsViews(services);
     }
@@ -443,44 +391,28 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Core.Views.View_Settings_CoreNavigationHub>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_SharedPaths>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Users>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_Logging>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_System>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_Database>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields>();
 
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
-        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_SettingsOverview>();
-        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_FileIO>();
-        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_BusinessRules>();
-        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailUx>();
-        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Permissions>();
 
         // Dunnage Settings Views
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_SettingsOverview>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Permissions>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Workflow>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Audit>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_PersonalDefaults>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImageAssets>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImagePresentation>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals>();
 
         // Receiving Settings Views
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Validation>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_UserPreferences>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_EntryDefaults>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_ValidationRules>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_SettingsOverview>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_DatabaseSettings>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ConnectionStrings>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_FilePaths>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_UiConfiguration>();
     }
 
     /// <summary>

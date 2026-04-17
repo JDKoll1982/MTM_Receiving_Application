@@ -41,11 +41,16 @@ public class Service_SettingsWindowHost : IService_SettingsWindowHost
             _settingsWindow = _serviceProvider.GetRequiredService<View_Settings_CoreWindow>();
             _settingsWindow.Closed += (_, _) =>
             {
-                _settingsWindow?.SetAlwaysOnTop(false);
                 _settingsWindow = null;
                 if (_ownerRootElement != null)
                 {
                     _ownerRootElement.IsEnabled = true;
+                    _ownerRootElement.Focus(FocusState.Programmatic);
+                }
+
+                if (_ownerWindow != null)
+                {
+                    _ownerWindow.Activate();
                     _ownerWindow?.BringToFront();
                 }
 
@@ -72,7 +77,6 @@ public class Service_SettingsWindowHost : IService_SettingsWindowHost
         }
 
         _settingsWindow.Activate();
-        _settingsWindow.SetAlwaysOnTop(true);
         _settingsWindow.BringToFront();
     }
 }

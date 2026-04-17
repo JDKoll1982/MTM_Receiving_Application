@@ -17,35 +17,8 @@ public sealed partial class ViewModel_Settings_Volvo_NavigationHub
     )
         : base(pagination, errorHandler, logger, notificationService)
     {
-        NavigationTitle = "Volvo Navigation";
+        NavigationTitle = "Volvo Settings";
         CurrentStepTitle = NavigationTitle;
-
-        SetSteps(
-            new Model_SettingsNavigationStep(
-                "Overview",
-                typeof(Views.View_Settings_Volvo_SettingsOverview)
-            ),
-            new Model_SettingsNavigationStep(
-                "Database Settings",
-                typeof(Views.View_Settings_Volvo_DatabaseSettings)
-            ),
-            new Model_SettingsNavigationStep(
-                "Connection Strings",
-                typeof(Views.View_Settings_Volvo_ConnectionStrings)
-            ),
-            new Model_SettingsNavigationStep(
-                "File Paths",
-                typeof(Views.View_Settings_Volvo_FilePaths)
-            ),
-            new Model_SettingsNavigationStep(
-                "UI Configuration",
-                typeof(Views.View_Settings_Volvo_UiConfiguration)
-            ),
-            new Model_SettingsNavigationStep(
-                "Hardcoded to Externalize",
-                typeof(Views.View_Settings_Volvo_ExternalizationBacklog)
-            )
-        );
     }
 
     public void Save() { }

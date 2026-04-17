@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using Windows.Foundation;
 using Windows.Storage.Pickers;
 
@@ -46,6 +47,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private int _currentSpecPage;
     private int _currentCustomSpecsPage;
 
+    public ViewModel_Dunnage_PartDialogValidation ValidationViewModel { get; } = new();
+
+    public Visibility ValidationMessageVisibility =>
+        string.IsNullOrWhiteSpace(ValidationViewModel.ValidationMessage)
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+
     public ObservableCollection<Model_DunnagePartCustomSpecEntry> VisibleCustomSpecs =>
         _visibleCustomSpecs;
 
@@ -82,11 +90,14 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         UpdateWizardStepVisibility();
         UpdateWizardNavigation();
         PrePopulateFromExistingPart(inventoryMethod);
+        UpdateValidationState();
 
         if (initialDraft is not null)
         {
             ApplyDraft(initialDraft);
         }
+
+        UpdateValidationState();
     }
 
     public void PrepareDialogSize()
@@ -686,6 +697,8 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     {
         var picker = new FileOpenPicker();
         picker.FileTypeFilter.Add(".png");
+        picker.FileTypeFilter.Add(".jpg");
+        picker.FileTypeFilter.Add(".jpeg");
 
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
         WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
@@ -696,13 +709,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             return;
         }
 
+        var extension = Path.GetExtension(file.Path);
         if (
-            string.Equals(
-                Path.GetExtension(file.Path),
-                ".png",
-                System.StringComparison.OrdinalIgnoreCase
-            )
-            is false
+            string.Equals(extension, ".png", System.StringComparison.OrdinalIgnoreCase) is false
+            && string.Equals(extension, ".jpg", System.StringComparison.OrdinalIgnoreCase) is false
+            && string.Equals(extension, ".jpeg", System.StringComparison.OrdinalIgnoreCase) is false
         )
         {
             return;
@@ -1031,6 +1042,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private bool TryCommit()
     {
         RequestChooseExistingSpecs = false;
+        if (!ValidationViewModel.ValidateForSubmit())
+        {
+            PartIdTextBox.Focus(FocusState.Programmatic);
+            UpdateWizardNavigation();
+            return false;
+        }
+
         UpdatedPartId = PartIdTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(UpdatedPartId))
         {
@@ -1096,6 +1114,13 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private void OnNextStepClick(object sender, RoutedEventArgs e)
     {
+        if (_currentWizardStep == 0 && !ValidationViewModel.ValidateForSubmit())
+        {
+            PartIdTextBox.Focus(FocusState.Programmatic);
+            UpdateWizardNavigation();
+            return;
+        }
+
         if (_currentWizardStep < WizardStepCount - 1)
         {
             _currentWizardStep++;
@@ -1117,9 +1142,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     private void UpdateWizardNavigation()
     {
         var selectedIndex = Math.Max(_currentWizardStep, 0);
+        var isRequiredFieldsValid = ValidationViewModel.IsValid;
 
         BackStepButton.IsEnabled = selectedIndex > 0;
-        NextStepButton.IsEnabled = selectedIndex < WizardStepCount - 1;
+        NextStepButton.IsEnabled = selectedIndex < WizardStepCount - 1 && isRequiredFieldsValid;
+        FooterPrimaryButton.IsEnabled = isRequiredFieldsValid;
         StepSummaryTextBlock.Text = selectedIndex switch
         {
             0 => "Step 1 of 3 • Part Setup",
@@ -1129,6 +1156,23 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
                 : "Step 3 of 3 • Part-Specific Specs",
             _ => string.Empty,
         };
+
+        Bindings.Update();
+    }
+
+    private void RequiredPartFieldChanged(object sender, RoutedEventArgs e)
+    {
+        UpdateValidationState();
+    }
+
+    private void UpdateValidationState()
+    {
+        ValidationViewModel.Update(
+            PartIdTextBox.Text,
+            _existingPart.TypeId,
+            GetSelectedInventoryMethod()
+        );
+        UpdateWizardNavigation();
     }
 
     private void OnPreviousSpecPageClick(object sender, RoutedEventArgs e)

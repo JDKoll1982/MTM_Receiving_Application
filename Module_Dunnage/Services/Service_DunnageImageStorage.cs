@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -12,13 +14,21 @@ using Windows.Graphics.Imaging;
 namespace MTM_Receiving_Application.Module_Dunnage.Services;
 
 /// <summary>
-/// Stores Dunnage PNG files under the configured Dunnage image root and exposes relative-path persistence.
+/// Stores Dunnage image files under the configured Dunnage image root and exposes relative-path persistence.
 /// </summary>
 public class Service_DunnageImageStorage : IService_DunnageImageStorage
 {
     private const string SettingsCategory = "Dunnage";
+    private static readonly string[] SupportedExtensions = [".png", ".jpg", ".jpeg"];
 
     private readonly IService_SettingsCoreFacade _settingsCore;
+
+    [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
+    private static extern int WNetGetConnection(
+        string localName,
+        StringBuilder remoteName,
+        ref int length
+    );
 
     public Service_DunnageImageStorage(IService_SettingsCoreFacade settingsCore)
     {
@@ -66,22 +76,18 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
                 );
             }
 
-            if (
-                string.Equals(
-                    Path.GetExtension(absolutePath),
-                    ".png",
-                    StringComparison.OrdinalIgnoreCase
-                )
-                is false
-            )
+            var extension = Path.GetExtension(absolutePath);
+            if (IsSupportedExtension(extension) is false)
             {
-                return Model_Dao_Result_Factory.Failure<string>("Only PNG images are supported.");
+                return Model_Dao_Result_Factory.Failure<string>(
+                    "Only PNG and JPG images are supported."
+                );
             }
 
             var tempDirectory = Path.Combine(Helper_DunnageImagePaths.RootFolder, "Temp");
             Directory.CreateDirectory(tempDirectory);
 
-            targetFilePath = Path.Combine(tempDirectory, $"{Guid.NewGuid():N}.png");
+            targetFilePath = Path.Combine(tempDirectory, $"{Guid.NewGuid():N}{extension}");
 
             await using var sourceStream = File.Open(
                 absolutePath,
@@ -107,7 +113,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
             );
 
             var encoder = await BitmapEncoder.CreateAsync(
-                BitmapEncoder.PngEncoderId,
+                GetEncoderId(extension),
                 targetStream.AsRandomAccessStream()
             );
             encoder.SetPixelData(
@@ -157,9 +163,11 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
             }
 
             var extension = Path.GetExtension(sourceFilePath);
-            if (string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase) is false)
+            if (IsSupportedExtension(extension) is false)
             {
-                return Model_Dao_Result_Factory.Failure<string>("Only PNG images are supported.");
+                return Model_Dao_Result_Factory.Failure<string>(
+                    "Only PNG and JPG images are supported."
+                );
             }
 
             var safeFolderName = string.IsNullOrWhiteSpace(folderName)
@@ -218,6 +226,17 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         return Helper_DunnageImagePaths.GetAbsolutePath(relativeImagePath);
     }
 
+    public string? GetNormalizedFullPath(string? imagePath)
+    {
+        var absolutePath = ResolveAbsoluteImagePath(imagePath);
+        if (string.IsNullOrWhiteSpace(absolutePath))
+        {
+            return null;
+        }
+
+        return TryConvertMappedDriveToUnc(absolutePath, out var uncPath) ? uncPath : absolutePath;
+    }
+
     private string? ResolveAbsoluteImagePath(string? imagePath)
     {
         if (string.IsNullOrWhiteSpace(imagePath))
@@ -228,5 +247,49 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         return Path.IsPathRooted(imagePath)
             ? imagePath
             : Helper_DunnageImagePaths.GetAbsolutePath(imagePath);
+    }
+
+    private static bool IsSupportedExtension(string? extension)
+    {
+        return string.IsNullOrWhiteSpace(extension) is false
+            && SupportedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static Guid GetEncoderId(string extension)
+    {
+        return string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase)
+            ? BitmapEncoder.PngEncoderId
+            : BitmapEncoder.JpegEncoderId;
+    }
+
+    private static bool TryConvertMappedDriveToUnc(string absolutePath, out string uncPath)
+    {
+        uncPath = absolutePath;
+
+        if (absolutePath.StartsWith("\\\\", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var root = Path.GetPathRoot(absolutePath);
+        if (string.IsNullOrWhiteSpace(root) || root.Length < 2 || root[1] != ':')
+        {
+            return false;
+        }
+
+        var drive = root[..2];
+        var length = 512;
+        var remoteName = new StringBuilder(length);
+        var result = WNetGetConnection(drive, remoteName, ref length);
+        if (result != 0 || remoteName.Length == 0)
+        {
+            return false;
+        }
+
+        var remainder = absolutePath[root.Length..].TrimStart(Path.DirectorySeparatorChar);
+        uncPath = string.IsNullOrWhiteSpace(remainder)
+            ? remoteName.ToString()
+            : Path.Combine(remoteName.ToString(), remainder);
+        return true;
     }
 }

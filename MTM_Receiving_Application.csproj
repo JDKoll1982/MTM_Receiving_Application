@@ -72,6 +72,25 @@
   <!-- Exclude test project files from compilation -->
   <ItemGroup>
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
+    <Compile Remove="Module_OutsideService\**" />
+    <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_System.cs" />
+    <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
+    <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Logging.cs" />
+    <Compile Remove="Module_Settings.Core\Views\View_Settings_System.xaml.cs" />
+    <Compile Remove="Module_Settings.Core\Views\View_Settings_Database.xaml.cs" />
+    <Compile Remove="Module_Settings.Core\Views\View_Settings_Logging.xaml.cs" />
+    <Compile Remove="Module_Settings.Volvo\ViewModels\ViewModel_Settings_Volvo_SettingsOverview.cs" />
+    <Compile Remove="Module_Settings.Volvo\ViewModels\ViewModel_Settings_Volvo_DatabaseSettings.cs" />
+    <Compile Remove="Module_Settings.Volvo\ViewModels\ViewModel_Settings_Volvo_ConnectionStrings.cs" />
+    <Compile Remove="Module_Settings.Volvo\ViewModels\ViewModel_Settings_Volvo_FilePaths.cs" />
+    <Compile Remove="Module_Settings.Volvo\ViewModels\ViewModel_Settings_Volvo_UiConfiguration.cs" />
+    <Compile Remove="Module_Settings.Volvo\ViewModels\ViewModel_Settings_Volvo_ExternalizationBacklog.cs" />
+    <Compile Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_SettingsOverview.xaml.cs" />
+    <Compile Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_DatabaseSettings.xaml.cs" />
+    <Compile Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_ConnectionStrings.xaml.cs" />
+    <Compile Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_FilePaths.xaml.cs" />
+    <Compile Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_UiConfiguration.xaml.cs" />
+    <Compile Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_ExternalizationBacklog.xaml.cs" />
     <Compile Remove="Properties\**" />
     <Compile Remove="obj_verify\**" />
     <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
@@ -81,6 +100,16 @@
     <None Remove="Properties\**" />
     <None Remove="obj_verify\**" />
     <Page Remove="MTM_Receiving_Application.Tests\**" />
+    <Page Remove="Module_OutsideService\**" />
+    <Page Remove="Module_Settings.Core\Views\View_Settings_System.xaml" />
+    <Page Remove="Module_Settings.Core\Views\View_Settings_Database.xaml" />
+    <Page Remove="Module_Settings.Core\Views\View_Settings_Logging.xaml" />
+    <Page Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_SettingsOverview.xaml" />
+    <Page Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_DatabaseSettings.xaml" />
+    <Page Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_ConnectionStrings.xaml" />
+    <Page Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_FilePaths.xaml" />
+    <Page Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_UiConfiguration.xaml" />
+    <Page Remove="Module_Settings.Volvo\Views\View_Settings_Volvo_ExternalizationBacklog.xaml" />
     <Page Remove="Properties\**" />
     <Page Remove="obj_verify\**" />
     <ApplicationDefinition Remove="obj_verify\**" />

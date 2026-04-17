@@ -32,6 +32,8 @@ public sealed partial class ViewModel_Settings_MaterialAvailabilityBoardFields
     [ObservableProperty]
     private bool _isShowAllChipEnabled;
 
+    public string SelectAllButtonText => AreAllFieldsSelected ? "Deselect All" : "Select All";
+
     public ViewModel_Settings_MaterialAvailabilityBoardFields(
         IService_SettingsCoreFacade settingsCore,
         IService_ShipRecToolsSettings shipRecToolsSettings,
@@ -125,6 +127,19 @@ public sealed partial class ViewModel_Settings_MaterialAvailabilityBoardFields
     }
 
     [RelayCommand]
+    private void ToggleSelectAll()
+    {
+        var newValue = !AreAllFieldsSelected;
+        foreach (var field in FieldGroups.SelectMany(group => group.Fields))
+        {
+            field.IsVisibleInUi = newValue;
+            field.IsVisibleInPrint = newValue;
+        }
+
+        OnPropertyChanged(nameof(SelectAllButtonText));
+    }
+
+    [RelayCommand]
     private async Task ResetAsync()
     {
         try
@@ -175,8 +190,15 @@ public sealed partial class ViewModel_Settings_MaterialAvailabilityBoardFields
             field.IsVisibleInPrint = settings.PrintVisibleFieldIds.Contains(field.Id);
         }
 
+        OnPropertyChanged(nameof(SelectAllButtonText));
+
         return Task.CompletedTask;
     }
+
+    private bool AreAllFieldsSelected =>
+        FieldGroups
+            .SelectMany(group => group.Fields)
+            .All(option => option.IsVisibleInUi && option.IsVisibleInPrint);
 
     private async Task SaveSettingAsync(string key, string value)
     {

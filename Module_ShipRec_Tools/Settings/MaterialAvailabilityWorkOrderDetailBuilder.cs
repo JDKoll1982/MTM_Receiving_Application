@@ -80,15 +80,13 @@ public static class MaterialAvailabilityWorkOrderDetailBuilder
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.WorkOrderDisplay =>
                 associatedRun.WorkOrderDisplay,
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.WorkOrderStatus =>
-                associatedRun.WorkOrderStatus,
+                associatedRun.WorkOrderStatusDisplay,
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.ParentPartNumber =>
                 associatedRun.AssociatedPartNumber,
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.ParentPartDescription =>
                 associatedRun.AssociatedPartDescription,
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.NextDueToRunDate =>
                 associatedRun.NextRunDateDisplay,
-            var id when id == MaterialAvailabilityWorkOrderFieldCatalog.NextDueDateSource =>
-                associatedRun.NextDueDateSource,
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.RequiredDate =>
                 associatedRun.RequiredDateDisplay,
             var id when id == MaterialAvailabilityWorkOrderFieldCatalog.WorkOrderStatusEffDate =>

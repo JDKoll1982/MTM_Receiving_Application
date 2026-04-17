@@ -19,6 +19,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IService_Authentication _authService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserLoginCoordinator _userLoginCoordinator;
+        private readonly IService_SoftwareVersionMonitor _softwareVersionMonitor;
         private readonly IService_ApplicationShutdown _applicationShutdown;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ReceivingLabelData _labelDataService;
@@ -31,6 +32,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
             IService_UserLoginCoordinator userLoginCoordinator,
+            IService_SoftwareVersionMonitor softwareVersionMonitor,
             IService_ApplicationShutdown applicationShutdown,
             IService_ErrorHandler errorHandler,
             IService_ReceivingLabelData labelDataService,
@@ -42,6 +44,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             _authService = authService;
             _sessionManager = sessionManager;
             _userLoginCoordinator = userLoginCoordinator;
+            _softwareVersionMonitor = softwareVersionMonitor;
             _applicationShutdown = applicationShutdown;
             _errorHandler = errorHandler;
             _labelDataService = labelDataService;
@@ -328,6 +331,16 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     }
 
                     UpdateSplash(95, "Initializing core settings...");
+
+                    UpdateSplash(97, "Verifying application version...");
+                    await _softwareVersionMonitor.ValidateOnStartupAsync(
+                        (_splashScreen?.Content as Microsoft.UI.Xaml.UIElement)?.XamlRoot
+                    );
+                    if (ShouldAbortStartup())
+                    {
+                        RequestShutdown(_applicationShutdown.Reason ?? "software_version_mismatch", _applicationShutdown.ExitCode);
+                        return;
+                    }
                 }
                 else
                 {

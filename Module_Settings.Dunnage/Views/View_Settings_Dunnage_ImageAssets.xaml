@@ -1,0 +1,88 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImageAssets"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:MTM_Receiving_Application.Module_Settings.Dunnage.Views"
+    x:DataType="views:View_Settings_Dunnage_ImageAssets">
+    <ScrollViewer>
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Shared Image Folder" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Choose the shared folder that stores Dunnage images for the whole application. The folder must already exist when you save these settings."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                Grid.Column="0"
+                                Header="Default Image Location"
+                                PlaceholderText="Select an existing image folder"
+                                Text="{x:Bind ViewModel.DefaultImageLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Button
+                                Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                Click="BrowseDefaultImageLocationButton_Click"
+                                Content="Browse" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Import Limits" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Set the maximum image file size that Dunnage image imports should accept before the file is normalized into app-managed storage."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <NumberBox
+                            Header="Maximum Image File Size (KB)"
+                            Maximum="2048"
+                            Minimum="64"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.MaximumImageFileSizeKb, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -6,6 +6,30 @@ All notable changes to the MTM Receiving Application are documented here.
 
 ## [Unreleased] — spreadsheet-removal branch
 
+### Changed
+
+#### Dunnage image handling and dialog validation
+
+- Dunnage type and part image upload flows now accept `.png`, `.jpg`, and `.jpeg` files.
+- Dunnage part spec JSON now persists an `image_path` entry when an image path is available, and part deserialization restores `ImagePath` from that spec value when needed.
+- Dunnage add/edit part dialogs now gate step advancement and final save on the required fields for Part ID and Inventory Type, with inline validation messaging.
+- Dunnage type quick-add image card layout was reworked to prevent the clear button from clipping.
+
+#### Shared search and Material Availability output
+
+- Fuzzy-search narrowing now filters against the full in-memory result set instead of only the initially displayed subset.
+- Material Availability HTML output now removes the old warehouse-scope/look-ahead content, includes quantity alongside the part card content, centers the first-column card, and emits page-footers for multi-page output.
+- Material Availability work-order details now normalize released status text, remove the Next Due-Date Source field, and display Required Parts and Estimated Coil Use in a dedicated summary card with updated quantity formatting.
+- Material Availability Work Order Fields settings now support select-all/deselect-all and corrected checkbox alignment.
+
+#### Settings, Volvo, and retired modules
+
+- Added a persisted per-user UI theme toggle that applies light/dark mode immediately and restores it on startup.
+- Removed the unimplemented Settings.Core Logging, Database, and System pages from navigation and DI registration.
+- Replaced the Volvo settings hub with a future-placeholder page and removed the unimplemented Volvo settings navigation entries.
+- Hardened the Volvo email preview flow so failures are surfaced through the application error handling path instead of crashing the app.
+- Disabled `Module_OutsideService` in the application project, removed its navigation entry, excluded its tests, and added a reinstatement guide under `docs/modules/module_outsideservice/reinstatement.md`.
+
 ### Removed
 
 #### Bulk Inventory module removal

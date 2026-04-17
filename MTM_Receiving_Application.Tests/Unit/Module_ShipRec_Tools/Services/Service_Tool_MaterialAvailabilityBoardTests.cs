@@ -1147,9 +1147,9 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.Should().NotBeNull();
         result.Data!.DocumentTitle.Should().Be("Material Availability Board");
         result.Data!.HtmlFragment.Should().Contain("Material Availability Board");
-        result
-            .Data.HtmlFragment.Should()
-            .Contain("Warehouse Location: RECV | Warehouse scope: 002 | Look Ahead: 30");
+        result.Data.HtmlFragment.Should().Contain("<strong>Warehouse Location:</strong> RECV");
+        result.Data.HtmlFragment.Should().NotContain("Warehouse scope:");
+        result.Data.HtmlFragment.Should().NotContain("Look Ahead:");
         result.Data.HtmlFragment.Should().Contain("23-11669-100 - Stud, Weld 5/16-18 x 1.000");
         result.Data.HtmlFragment.Should().Contain("WO-070016");
         result.Data.HtmlFragment.Should().Contain("Associated Parts");
@@ -1189,7 +1189,12 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.Should().NotBeNull();
         result.Data!.DocumentTitle.Should().Be("Material Availability Transaction Sheet");
         result.Data.HtmlFragment.Should().Contain("Material Availability Transaction Sheet");
-        result.Data.HtmlFragment.Should().Contain("Taken From");
+        result.Data.HtmlFragment.Should().Contain("Part Number / Quantity");
+        result.Data.HtmlFragment.Should().Contain("<strong>Warehouse Location:</strong> RECV");
+        result.Data.HtmlFragment.Should().Contain("Page 1 of 1");
+        result.Data.HtmlFragment.Should().NotContain("Taken From");
+        result.Data.HtmlFragment.Should().NotContain("Warehouse scope:");
+        result.Data.HtmlFragment.Should().NotContain("Look Ahead:");
         result.Data.HtmlFragment.Should().Contain("Coil Transfer Entries");
         result.Data.HtmlFragment.Should().Contain("Take To 1");
         result.Data.HtmlFragment.Should().Contain("Take To 4");
@@ -1295,8 +1300,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         card.HasEstimatedCoilUseRisk.Should().BeTrue();
         card.EstimatedCoilUseRiskText.Should().Contain("exceeds on hand");
         card.NextRunSummaryDisplay.Should().Contain("WO-070016");
-        card.NextRunSummaryDisplay.Should().Contain("Required Parts: 4500");
-        card.NextRunSummaryDisplay.Should().Contain("Estimated Coil Use: 63607.5 Pounds");
+        card.NextRunSummaryDisplay.Should().Contain("Required Parts: 4,500");
+        card.NextRunSummaryDisplay.Should().Contain("Estimated Coil Use: 63,608 Pounds");
     }
 
     [Fact]
@@ -1414,7 +1419,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data!.HtmlFragment.Should().Contain("Work Order Details - WO-070016");
         result.Data.HtmlFragment.Should().Contain("Job Summary");
         result.Data.HtmlFragment.Should().Contain("Operation Context");
-        result.Data.PlainText.Should().Contain("Required Parts: 4500");
-        result.Data.PlainText.Should().Contain("Estimated Coil Use: 63607.5 Pounds");
+        result.Data.PlainText.Should().Contain("Required Parts: 4,500");
+        result.Data.PlainText.Should().Contain("Estimated Coil Use: 63,608 Pounds");
     }
 }

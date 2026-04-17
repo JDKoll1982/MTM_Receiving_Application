@@ -213,10 +213,7 @@ namespace MTM_Receiving_Application
                 typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),
                 string.Empty
             ),
-            ["OutsideServiceMainPage"] = (
-                typeof(Module_OutsideService.Views.View_OutsideService_Main),
-                string.Empty
-            ),
+            // MODULE_OUTSIDESERVICE_DISABLED: Route intentionally removed while the module is offline.
             ["VolvoShipmentEntry"] = (
                 typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry),
                 "Volvo Dunnage Requisition"
@@ -343,14 +340,7 @@ namespace MTM_Receiving_Application
                     "guided dunnage",
                     "manual dunnage"
                 ),
-                CreateFrameDestination(
-                    "OutsideServiceMainPage",
-                    "Outside Service",
-                    "Outside service main workflow and requests",
-                    "outside service",
-                    "outside service main",
-                    "service"
-                ),
+                // MODULE_OUTSIDESERVICE_DISABLED: Search destination intentionally removed while the module is offline.
                 CreateFrameDestination(
                     "VolvoShipmentEntry",
                     "Volvo Dunnage Requisition",
@@ -393,13 +383,6 @@ namespace MTM_Receiving_Application
                     "core settings"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Core.Views.View_Settings_System),
-                    "System Settings",
-                    "Core system defaults and application behavior",
-                    "system",
-                    "system settings"
-                ),
-                CreateSettingsDestination(
                     typeof(Module_Settings.Core.Views.View_Settings_Users),
                     "User Management",
                     "Application users and account setup",
@@ -416,21 +399,6 @@ namespace MTM_Receiving_Application
                     "appearance"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Core.Views.View_Settings_Database),
-                    "Database Settings",
-                    "Core database configuration and connection options",
-                    "database",
-                    "database settings"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Core.Views.View_Settings_Logging),
-                    "Logging Settings",
-                    "Diagnostics and logging configuration",
-                    "logging",
-                    "logging settings",
-                    "diagnostics"
-                ),
-                CreateSettingsDestination(
                     typeof(Module_Settings.Core.Views.View_Settings_SharedPaths),
                     "Shared Paths",
                     "Shared file paths and output locations",
@@ -439,132 +407,90 @@ namespace MTM_Receiving_Application
                     "file paths"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub),
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub),
                     "Receiving Settings",
-                    "Receiving settings hub",
+                    "Receiving settings categories",
                     "receiving settings",
+                    "receiving categories",
                     "receiving navigation"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults),
-                    "Receiving Defaults",
-                    "Default values used in the receiving workflow",
-                    "receiving defaults",
-                    "receiving default settings"
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_EntryDefaults),
+                    "Receiving Entry Defaults",
+                    "Default location and entry-start settings for Receiving",
+                    "receiving entry defaults",
+                    "receiving defaults"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_Validation),
-                    "Receiving Validation",
-                    "Receiving validation rules and required fields",
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_ValidationRules),
+                    "Receiving Validation Rules",
+                    "Required fields, warnings, and threshold rules for Receiving",
+                    "receiving validation rules",
                     "receiving validation",
                     "validation settings"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_UserPreferences),
-                    "Part Number Auto Padding",
-                    "Receiving part-number normalization and padding",
-                    "part number auto padding",
-                    "receiving user preferences",
-                    "part padding"
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting),
+                    "Part Formatting & Reconciliation",
+                    "Receiving part-number padding and reconciliation preferences",
+                    "part formatting",
+                    "part padding",
+                    "reconciliation settings",
+                    "receiving part formatting"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules),
-                    "Workflow Options",
-                    "Receiving workflow defaults and behavior rules",
-                    "workflow options",
-                    "receiving workflow options",
-                    "receiving business rules"
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults),
+                    "Receiving Workflow Defaults",
+                    "Receiving startup mode and workflow behavior defaults",
+                    "workflow defaults",
+                    "receiving workflow defaults",
+                    "receiving workflow options"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub),
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
                     "Dunnage Settings",
-                    "Dunnage settings hub",
+                    "Dunnage settings categories",
                     "dunnage settings",
+                    "dunnage categories",
                     "dunnage navigation"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_SettingsOverview),
-                    "Dunnage Settings Overview",
-                    "Dunnage configuration overview and shortcuts",
-                    "dunnage settings overview",
-                    "dunnage overview"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences),
-                    "Dunnage User Preferences",
-                    "User-specific dunnage workflow behavior",
-                    "dunnage user preferences",
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_PersonalDefaults),
+                    "Dunnage Personal Defaults",
+                    "User-specific default location and personal image preferences for Dunnage",
+                    "dunnage personal defaults",
                     "dunnage preferences"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx),
-                    "Dunnage UI/UX",
-                    "Dunnage user interface and experience settings",
-                    "dunnage ui",
-                    "dunnage ui ux",
-                    "dunnage interface"
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImageAssets),
+                    "Dunnage Image Assets",
+                    "Shared Dunnage image folder and file size limits",
+                    "dunnage image assets",
+                    "dunnage image folder",
+                    "dunnage image settings"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_Workflow),
-                    "Dunnage Workflow Settings",
-                    "Dunnage workflow behavior and automation",
-                    "dunnage workflow settings",
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImagePresentation),
+                    "Dunnage Image Presentation",
+                    "Application-wide Dunnage image display settings",
+                    "dunnage image presentation",
+                    "dunnage display settings",
+                    "dunnage ui"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals),
+                    "Dunnage Workflow Visuals",
+                    "Image behavior during the Dunnage workflow",
+                    "dunnage workflow visuals",
+                    "dunnage workflow image settings",
                     "dunnage workflow"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_Permissions),
-                    "Dunnage Permissions",
-                    "Access controls for dunnage features",
-                    "dunnage permissions"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_Audit),
-                    "Dunnage Audit Log",
-                    "Audit history for dunnage operations",
-                    "dunnage audit",
-                    "audit log"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
                     "Reporting Settings",
-                    "Reporting settings hub",
+                    "Reporting settings placeholder",
                     "reporting settings",
                     "reporting navigation"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_SettingsOverview),
-                    "Reporting Settings Overview",
-                    "Reporting configuration overview and shortcuts",
-                    "reporting overview",
-                    "report settings overview"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_FileIO),
-                    "File I/O Settings",
-                    "Reporting export file paths and output options",
-                    "file io",
-                    "reporting file io",
-                    "report file settings"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_EmailUx),
-                    "Email Settings",
-                    "Email delivery and formatting options for reports",
-                    "email settings",
-                    "report email"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_BusinessRules),
-                    "Reporting Business Rules",
-                    "Business rules that govern report generation",
-                    "reporting business rules",
-                    "report business rules"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_Permissions),
-                    "Reporting Permissions",
-                    "Permissions for reporting features",
-                    "reporting permissions"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub),
@@ -572,48 +498,6 @@ namespace MTM_Receiving_Application
                     "Volvo settings hub",
                     "volvo settings",
                     "volvo navigation"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_SettingsOverview),
-                    "Volvo Settings Overview",
-                    "Volvo configuration overview and shortcuts",
-                    "volvo overview",
-                    "volvo settings overview"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_DatabaseSettings),
-                    "Volvo Database Settings",
-                    "Volvo-specific database options",
-                    "volvo database",
-                    "volvo database settings"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_ConnectionStrings),
-                    "Connection Strings",
-                    "Volvo connection-string management",
-                    "connection strings",
-                    "volvo connection strings"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_FilePaths),
-                    "Volvo File Paths",
-                    "Volvo file locations and external paths",
-                    "volvo file paths",
-                    "volvo paths"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_UiConfiguration),
-                    "Volvo UI Configuration",
-                    "Volvo interface and visual configuration",
-                    "volvo ui",
-                    "volvo ui configuration"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog),
-                    "Backlog",
-                    "Pending Volvo externalization work",
-                    "volvo backlog",
-                    "externalization backlog"
                 ),
             ];
         }

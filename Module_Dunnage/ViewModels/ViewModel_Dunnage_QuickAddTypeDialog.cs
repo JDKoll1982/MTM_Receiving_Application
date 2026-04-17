@@ -192,7 +192,7 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
 
         if (UseImageVisual && string.IsNullOrWhiteSpace(SelectedImagePath))
         {
-            ValidationMessage = "Choose a PNG image or switch back to icon mode.";
+            ValidationMessage = "Choose a PNG or JPG image or switch back to icon mode.";
             return false;
         }
 

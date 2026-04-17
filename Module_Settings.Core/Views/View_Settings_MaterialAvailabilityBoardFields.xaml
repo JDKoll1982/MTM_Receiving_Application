@@ -47,6 +47,7 @@
                     VerticalAlignment="Center"
                     Orientation="Horizontal"
                     Spacing="8">
+                    <Button Command="{x:Bind ViewModel.ToggleSelectAllCommand}" Content="{x:Bind ViewModel.SelectAllButtonText, Mode=OneWay}" />
                     <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
                     <Button
                         Command="{x:Bind ViewModel.SaveCommand}"
@@ -72,9 +73,16 @@
                                 <Grid ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="100" />
                                     </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Field"
+                                        TextTrimming="CharacterEllipsis"
+                                        ToolTipService.ToolTip="Choose which work-order fields appear in the Material Availability board dialog and print layout." />
                                     <TextBlock
                                         Grid.Column="1"
                                         HorizontalAlignment="Center"
@@ -92,8 +100,8 @@
                                             <Grid Margin="0,0,0,6" ColumnSpacing="16">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="100" />
+                                                    <ColumnDefinition Width="100" />
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" Spacing="2">
                                                     <TextBlock

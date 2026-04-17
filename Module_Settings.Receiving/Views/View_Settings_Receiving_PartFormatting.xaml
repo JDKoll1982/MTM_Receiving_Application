@@ -1,0 +1,341 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models">
+    <ScrollViewer>
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Part Number Auto-Padding" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Automatically format part numbers based on prefix patterns." />
+                        </StackPanel>
+
+                        <ToggleSwitch
+                            Header="Enable Auto-Padding"
+                            IsOn="{x:Bind ViewModel.IsPaddingEnabled, Mode=TwoWay}"
+                            OffContent="Disabled - Part numbers will not be auto-formatted"
+                            OnContent="Enabled - Part numbers will be formatted on entry" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Padding Rules" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Configure prefix patterns to auto-format part numbers."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="280" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="12">
+                                <Border
+                                    Height="280"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <ListView
+                                        ItemsSource="{x:Bind ViewModel.PrefixRules, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SelectedRule, Mode=TwoWay}"
+                                        SelectionMode="Single">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="models:Model_PartNumberPrefixRule">
+                                                <Grid Padding="12,8" ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Grid.Column="0" Spacing="2">
+                                                        <TextBlock
+                                                            FontSize="14"
+                                                            FontWeight="SemiBold"
+                                                            Text="{x:Bind Name, Mode=OneWay}" />
+                                                        <TextBlock
+                                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="{x:Bind Prefix, Mode=OneWay}" />
+                                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}">
+                                                            <Run Text="Length:" />
+                                                            <Run Text="{x:Bind MaxLength, Mode=OneWay}" />
+                                                            <Run Text=" • Pad:" />
+                                                            <Run Text="{x:Bind PadChar, Mode=OneWay}" />
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <Ellipse
+                                                        Grid.Column="1"
+                                                        Width="8"
+                                                        Height="8"
+                                                        VerticalAlignment="Center"
+                                                        Fill="{x:Bind StatusColor, Mode=OneWay}"
+                                                        ToolTipService.ToolTip="{x:Bind StatusTooltip, Mode=OneWay}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Border>
+
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{x:Bind ViewModel.AddRuleCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon FontSize="14" Glyph="&#xE710;" />
+                                            <TextBlock Text="Add" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{x:Bind ViewModel.RemoveRuleCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon FontSize="14" Glyph="&#xE74D;" />
+                                            <TextBlock Text="Remove" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <Border
+                                Grid.Column="1"
+                                Padding="20"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel Spacing="16">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock
+                                            FontSize="16"
+                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                            Text="Rule Configuration" />
+                                        <TextBlock
+                                            x:Name="NoSelectionText"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="← Select a rule to edit" />
+                                    </StackPanel>
+
+                                    <StackPanel
+                                        x:Name="RuleEditorFields"
+                                        Spacing="16"
+                                        Visibility="Collapsed">
+                                        <TextBox
+                                            x:Name="NameTextBox"
+                                            Description="Friendly name shown in the auto-padding rule list"
+                                            Header="Name"
+                                            PlaceholderText="e.g., Coil, Flatstock"
+                                            TextChanged="NameTextBox_TextChanged" />
+                                        <TextBox
+                                            x:Name="PrefixTextBox"
+                                            Description="Part numbers starting with this text will be formatted"
+                                            Header="Prefix"
+                                            PlaceholderText="e.g., MMC, MMF, PART-"
+                                            TextChanged="PrefixTextBox_TextChanged" />
+                                        <NumberBox
+                                            x:Name="MaxLengthNumberBox"
+                                            Description="Total characters after padding (includes prefix)"
+                                            Header="Maximum Length"
+                                            Maximum="50"
+                                            Minimum="1"
+                                            SpinButtonPlacementMode="Inline"
+                                            ValueChanged="MaxLengthNumberBox_ValueChanged" />
+
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Padding Character" />
+                                            <ComboBox
+                                                x:Name="PadCharComboBox"
+                                                HorizontalAlignment="Stretch"
+                                                SelectedIndex="0"
+                                                SelectionChanged="PadCharComboBox_SelectionChanged">
+                                                <ComboBoxItem Content="0 (Zero)" Tag="0" />
+                                                <ComboBoxItem Content="Space" Tag=" " />
+                                                <ComboBoxItem Content="_ (Underscore)" Tag="_" />
+                                                <ComboBoxItem Content="- (Dash)" Tag="-" />
+                                            </ComboBox>
+                                        </StackPanel>
+
+                                        <ToggleSwitch
+                                            x:Name="IsEnabledToggle"
+                                            Header="Enable This Rule"
+                                            OffContent="Rule disabled"
+                                            OnContent="Rule enabled"
+                                            Toggled="IsEnabledToggle_Toggled" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Reconciliation Scope" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Keep reconciliation options together with the ignored-location list they affect."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <ToggleSwitch
+                            Header="Validate All History During Reconciliation"
+                            IsOn="{x:Bind ViewModel.ValidateAllHistoryForLocationReconciliation, Mode=TwoWay}"
+                            ToolTipService.ToolTip="When turned on, location reconciliation checks all visible receiving history rows instead of only today and Current Labels." />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Ignored Recommended Locations" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="WC, NCM, FG, and RECV are always excluded automatically. Add any extra InforVisual locations you never want suggested in Recommended Locations or auto-applied during reconciliation."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                x:Name="IgnoredLocationTextBox"
+                                Grid.Column="0"
+                                Header="Additional Ignored Locations"
+                                LostFocus="IgnoredLocationTextBox_LostFocus"
+                                PlaceholderText="Enter a location to exclude from recommendations"
+                                Text="{x:Bind ViewModel.PendingIgnoredLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Button
+                                Grid.Column="1"
+                                MinWidth="120"
+                                VerticalAlignment="Bottom"
+                                Click="AddIgnoredLocationButton_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                                    <TextBlock Text="Add Location" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <Border
+                            MinHeight="140"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <ListView
+                                ItemsSource="{x:Bind ViewModel.IgnoredReconciliationLocations, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedIgnoredLocation, Mode=TwoWay}"
+                                SelectionMode="Single" />
+                        </Border>
+
+                        <StackPanel
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <Button Command="{x:Bind ViewModel.RemoveIgnoredLocationCommand}" Content="Remove Selected" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Test Padding" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Preview how the current rules will normalize a part number."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                Grid.Column="0"
+                                Header="Input"
+                                PlaceholderText="Enter a part number to test"
+                                Text="{x:Bind ViewModel.TestInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox
+                                Grid.Column="1"
+                                Header="Output"
+                                IsReadOnly="True"
+                                Text="{x:Bind ViewModel.TestOutput, Mode=OneWay}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

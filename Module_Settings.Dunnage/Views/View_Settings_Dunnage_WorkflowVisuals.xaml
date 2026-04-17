@@ -1,0 +1,50 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:MTM_Receiving_Application.Module_Settings.Dunnage.Views"
+    x:DataType="views:View_Settings_Dunnage_WorkflowVisuals">
+    <ScrollViewer>
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Workflow Visuals" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Control where Dunnage visuals appear during the guided workflow and whether missing part images should fall back to the selected type image."
+                            TextWrapping="Wrap" />
+
+                        <ToggleSwitch Header="Show type images during type selection" IsOn="{x:Bind ViewModel.ShowTypeImagesOnTypeSelection, Mode=TwoWay}" />
+
+                        <ToggleSwitch Header="Show part images during part selection" IsOn="{x:Bind ViewModel.ShowPartImagesOnPartSelection, Mode=TwoWay}" />
+
+                        <ToggleSwitch Header="Show images on the review step" IsOn="{x:Bind ViewModel.ShowImagesOnReview, Mode=TwoWay}" />
+
+                        <ToggleSwitch Header="Fallback to the selected type image when the part image is missing" IsOn="{x:Bind ViewModel.FallbackToTypeImageWhenPartMissing, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

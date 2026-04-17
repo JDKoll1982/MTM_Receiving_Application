@@ -31,6 +31,15 @@ public sealed partial class View_Settings_CoreWindow : Window
     {
         InitializeComponent();
         _instance = this;
+
+        if (
+            Content is FrameworkElement settingsContent
+            && App.MainWindow?.Content is FrameworkElement mainContent
+        )
+        {
+            settingsContent.RequestedTheme = mainContent.RequestedTheme;
+        }
+
         ViewModel = viewModel;
         _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<IService_LoggingUtility>();
@@ -44,6 +53,7 @@ public sealed partial class View_Settings_CoreWindow : Window
 
         ConfigureTitleBar();
         Activated += OnWindowActivated;
+        UpdateTitleBarColors();
 
         // Subscribe to theme changes to update title bar colors
         if (Content is FrameworkElement contentElement)
@@ -196,55 +206,47 @@ public sealed partial class View_Settings_CoreWindow : Window
         return pageType.Name switch
         {
             // Receiving Settings Pages
-            "View_Settings_Receiving_Defaults" => (
-                "Receiving Defaults",
-                "Set common default values used when creating new loads and packages."
+            "View_Settings_Receiving_EntryDefaults" => (
+                "Entry Defaults",
+                "Set the baseline location and other entry-start defaults used by Receiving."
             ),
-            "View_Settings_Receiving_Validation" => (
-                "Receiving Validation",
-                "Control required fields and validation rules applied during Receiving."
+            "View_Settings_Receiving_ValidationRules" => (
+                "Validation Rules",
+                "Control required fields, warnings, and threshold rules applied during Receiving."
             ),
-            "View_Settings_Receiving_UserPreferences" => (
-                "Part Number Auto Padding",
-                "Configure how receiving part numbers are automatically padded and normalized."
+            "View_Settings_Receiving_PartFormatting" => (
+                "Part Formatting & Reconciliation",
+                "Configure receiving part-number padding and reconciliation preferences in one place."
             ),
-            "View_Settings_Receiving_BusinessRules" => (
-                "Workflow Options",
-                "Configure workflow defaults, auto-save, and receiving behavior options."
+            "View_Settings_Receiving_WorkflowDefaults" => (
+                "Workflow Defaults",
+                "Configure startup mode, review defaults, and developer-only workflow options."
             ),
-            "View_Settings_Receiving_NavigationHub" => (
-                "Receiving Navigation",
-                "Manage Receiving module defaults and configuration pages."
+            "View_Settings_Receiving_CategoryHub" => (
+                "Receiving Settings",
+                "Manage Receiving settings by category."
             ),
 
             // Dunnage Settings Pages
-            "View_Settings_Dunnage_SettingsOverview" => (
+            "View_Settings_Dunnage_PersonalDefaults" => (
+                "Personal Defaults",
+                "Manage your default Dunnage location, preferred thumbnail size, and image preference order."
+            ),
+            "View_Settings_Dunnage_ImageAssets" => (
+                "Image Assets",
+                "Configure the shared Dunnage image folder and the file size limit used for image imports."
+            ),
+            "View_Settings_Dunnage_ImagePresentation" => (
+                "Image Presentation",
+                "Control the global Dunnage image display options and visual source priority."
+            ),
+            "View_Settings_Dunnage_WorkflowVisuals" => (
+                "Workflow Visuals",
+                "Control when Dunnage images appear during the workflow and how missing images should fall back."
+            ),
+            "View_Settings_Dunnage_CategoryHub" => (
                 "Dunnage Settings",
-                "Review the current Dunnage configuration and jump to common sections."
-            ),
-            "View_Settings_Dunnage_UserPreferences" => (
-                "User Preferences",
-                "Configure how the Dunnage workflow behaves for your user account."
-            ),
-            "View_Settings_Dunnage_UiUx" => (
-                "UI/UX Settings",
-                "Customize the Dunnage user interface and experience."
-            ),
-            "View_Settings_Dunnage_Workflow" => (
-                "Workflow Settings",
-                "Configure Dunnage workflow behavior and automation."
-            ),
-            "View_Settings_Dunnage_Permissions" => (
-                "Permissions",
-                "Manage user permissions and access controls."
-            ),
-            "View_Settings_Dunnage_Audit" => (
-                "Audit Log",
-                "Review system audit logs and activity history."
-            ),
-            "View_Settings_Dunnage_NavigationHub" => (
-                "Dunnage Navigation",
-                "Manage Dunnage module defaults and configuration pages."
+                "Manage Dunnage settings by category."
             ),
 
             // Reporting Settings Pages
@@ -273,8 +275,8 @@ public sealed partial class View_Settings_CoreWindow : Window
                 "Manage user permissions for reporting features."
             ),
             "View_Settings_Reporting_NavigationHub" => (
-                "Reporting Navigation",
-                "Manage Reporting module defaults and configuration pages."
+                "Reporting Settings",
+                "Reporting settings are not currently implemented."
             ),
 
             // Volvo Settings Pages
@@ -303,8 +305,8 @@ public sealed partial class View_Settings_CoreWindow : Window
                 "Review pending items for externalization."
             ),
             "View_Settings_Volvo_NavigationHub" => (
-                "Volvo Navigation",
-                "Manage Volvo module defaults and configuration pages."
+                "Volvo Settings",
+                "Additional Volvo settings will appear here in a future release."
             ),
 
             // Core Settings Pages
@@ -418,12 +420,12 @@ public sealed partial class View_Settings_CoreWindow : Window
             case "ReceivingSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Receiving.Views";
                 hubViewType =
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub);
                 return true;
             case "DunnageSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Dunnage.Views";
                 hubViewType =
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub);
                 return true;
             case "ReportingSettingsHub":
                 moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Reporting.Views";
@@ -634,24 +636,18 @@ public sealed partial class View_Settings_CoreWindow : Window
                 return true;
             case "ReceivingSettingsHub":
                 SettingsFrame.Content =
-                    _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
+                    _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub>();
                 _currentNestedSettingsPageType =
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
-                SetHeader(
-                    "Receiving Navigation",
-                    "Manage Receiving module defaults and configuration pages."
-                );
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub);
+                SetHeader("Receiving Settings", "Manage Receiving settings by category.");
                 UpdateHeaderActions();
                 return true;
             case "DunnageSettingsHub":
                 SettingsFrame.Content =
-                    _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
+                    _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub>();
                 _currentNestedSettingsPageType =
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
-                SetHeader(
-                    "Dunnage Navigation",
-                    "Manage Dunnage module defaults and configuration pages."
-                );
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub);
+                SetHeader("Dunnage Settings", "Manage Dunnage settings by category.");
                 UpdateHeaderActions();
                 return true;
             case "ReportingSettingsHub":
@@ -660,8 +656,8 @@ public sealed partial class View_Settings_CoreWindow : Window
                 _currentNestedSettingsPageType =
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
                 SetHeader(
-                    "Reporting Navigation",
-                    "Manage Reporting module defaults and configuration pages."
+                    "Reporting Settings",
+                    "Reporting settings are not currently implemented."
                 );
                 UpdateHeaderActions();
                 return true;
@@ -671,8 +667,8 @@ public sealed partial class View_Settings_CoreWindow : Window
                 _currentNestedSettingsPageType =
                     typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
                 SetHeader(
-                    "Volvo Navigation",
-                    "Manage Volvo module defaults and configuration pages."
+                    "Volvo Settings",
+                    "Additional Volvo settings will appear here in a future release."
                 );
                 UpdateHeaderActions();
                 return true;
@@ -709,8 +705,8 @@ public sealed partial class View_Settings_CoreWindow : Window
     {
         return pageType == typeof(View_Settings_CoreNavigationHub)
             || pageType
-                == typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub)
-            || pageType == typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub)
+                == typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub)
+            || pageType == typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub)
             || pageType
                 == typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub)
             || pageType == typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);

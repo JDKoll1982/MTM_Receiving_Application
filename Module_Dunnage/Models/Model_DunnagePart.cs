@@ -186,6 +186,16 @@ public class Model_DunnagePart : INotifyPropertyChanged
             }
 
             var plainValue = Helper_Dunnage_PartSpecs.ConvertJsonElementToPlainObject(pair.Value);
+            if (
+                string.Equals(pair.Key, "image_path", StringComparison.OrdinalIgnoreCase)
+                && plainValue is string imagePath
+                && string.IsNullOrWhiteSpace(ImagePath)
+            )
+            {
+                ImagePath = imagePath;
+                continue;
+            }
+
             if (plainValue is not null)
             {
                 scalarValues[pair.Key] = plainValue;

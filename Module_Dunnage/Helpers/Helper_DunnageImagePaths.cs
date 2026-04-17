@@ -35,6 +35,12 @@ public static class Helper_DunnageImagePaths
         }
 
         var normalizedPath = relativeImagePath.Replace('/', Path.DirectorySeparatorChar);
+
+        if (Path.IsPathRooted(normalizedPath))
+        {
+            return normalizedPath;
+        }
+
         return Path.Combine(RootFolder, normalizedPath);
     }
 

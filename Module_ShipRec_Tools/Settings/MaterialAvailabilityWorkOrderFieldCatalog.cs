@@ -14,7 +14,6 @@ public static class MaterialAvailabilityWorkOrderFieldCatalog
     public const string ParentPartNumber = "parent-part-number";
     public const string ParentPartDescription = "parent-part-description";
     public const string NextDueToRunDate = "next-due-to-run-date";
-    public const string NextDueDateSource = "next-due-date-source";
     public const string RequiredDate = "required-date";
     public const string WorkOrderStatusEffDate = "work-order-status-effective-date";
     public const string ComponentPartNumber = "component-part-number";
@@ -60,7 +59,6 @@ public static class MaterialAvailabilityWorkOrderFieldCatalog
             40
         ),
         Create(NextDueToRunDate, "Next Due-To-Run Date", "Scheduling", true, true, false, 50),
-        Create(NextDueDateSource, "Next Due-Date Source", "Scheduling", true, true, false, 60),
         Create(RequiredDate, "Required Date", "Scheduling", true, true, false, 70),
         Create(
             WorkOrderStatusEffDate,

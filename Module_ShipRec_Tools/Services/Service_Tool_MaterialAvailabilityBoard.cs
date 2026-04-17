@@ -154,12 +154,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             if (useTransactionSheet)
             {
-                var transactionSheetDocument = BuildTransactionSheetDocument(
-                    cards,
-                    safeSearchTerm,
-                    warehouseCode,
-                    safeLookAheadOption
-                );
+                var transactionSheetDocument = BuildTransactionSheetDocument(cards, safeSearchTerm);
 
                 return Task.FromResult(Model_Dao_Result_Factory.Success(transactionSheetDocument));
             }
@@ -167,7 +162,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             var html = new StringBuilder();
             var plainText = new StringBuilder();
             var subtitle =
-                $"{safeSearchLabel}: {safeSearchTerm} | Warehouse scope: {warehouseCode} | Look Ahead: {safeLookAheadOption}";
+                $"<strong>{HtmlEncode(safeSearchLabel)}:</strong> {HtmlEncode(safeSearchTerm)}";
 
             html.AppendLine(
                 "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
@@ -176,11 +171,11 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 "<div style='font-size: 16pt; font-weight: 700; text-align: center; margin-bottom: 8px;'>Material Availability Board</div>"
             );
             html.AppendLine(
-                $"<div style='font-size: 10pt; color: #445566; text-align: center; margin: 0 0 16px 0;'>{HtmlEncode(subtitle)}</div>"
+                $"<div style='font-size: 10pt; color: #445566; text-align: center; margin: 0 0 16px 0;'>{subtitle}</div>"
             );
 
             plainText.AppendLine("Material Availability Board");
-            plainText.AppendLine(subtitle);
+            plainText.AppendLine($"{safeSearchLabel}: {safeSearchTerm}");
 
             foreach (var card in cards)
             {
@@ -1510,62 +1505,73 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
     private static Model_FormattedReportDocument BuildTransactionSheetDocument(
         IReadOnlyList<Model_Tool_MaterialAvailabilityCard> cards,
-        string locationId,
-        string warehouseCode,
-        string lookAheadOption
+        string locationId
     )
     {
         var html = new StringBuilder();
         var plainText = new StringBuilder();
+        var orderedCards = cards
+            .OrderBy(card => card.PartId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var pages = orderedCards.Chunk(7).ToList();
 
         html.AppendLine("<div class='transaction-sheet-wrapper'>");
-        html.AppendLine(
-            "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
-        );
-        html.AppendLine(
-            $"<div class='transaction-sheet-subtitle'>Warehouse Location: {HtmlEncode(locationId)} | Warehouse scope: {HtmlEncode(warehouseCode)} | Look Ahead: {HtmlEncode(lookAheadOption)}</div>"
-        );
-        html.AppendLine("<table class='transaction-sheet'>");
-        html.AppendLine(
-            "<thead><tr><th class='identity-header'>Part Number / Taken From</th><th class='entries-header'>Coil Transfer Entries</th></tr></thead>"
-        );
-        html.AppendLine("<tbody>");
 
         plainText.AppendLine("Material Availability Transaction Sheet");
-        plainText.AppendLine(
-            $"Warehouse Location: {locationId} | Warehouse scope: {warehouseCode} | Look Ahead: {lookAheadOption}"
-        );
+        plainText.AppendLine($"Warehouse Location: {locationId}");
         plainText.AppendLine();
 
-        foreach (var card in cards.OrderBy(card => card.PartId, StringComparer.OrdinalIgnoreCase))
+        for (var pageIndex = 0; pageIndex < pages.Count; pageIndex++)
         {
-            var takenFrom = string.IsNullOrWhiteSpace(card.SearchLocationId)
-                ? locationId
-                : card.SearchLocationId;
+            html.AppendLine("<div class='transaction-sheet-page'>");
+            html.AppendLine(
+                "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
+            );
+            html.AppendLine(
+                $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(locationId)}</div>"
+            );
+            html.AppendLine("<table class='transaction-sheet'>");
+            html.AppendLine(
+                "<thead><tr><th class='identity-header'>Part Number / Quantity</th><th class='entries-header'>Coil Transfer Entries</th></tr></thead>"
+            );
+            html.AppendLine("<tbody>");
 
-            html.AppendLine("<tr class='transaction-row'>");
-            html.AppendLine("<td class='identity-cell'>");
-            html.AppendLine("<div class='identity-card'>");
-            html.AppendLine("<div class='identity-label'>Part Number</div>");
-            html.AppendLine($"<div class='identity-part-value'>{HtmlEncode(card.PartId)}</div>");
-            html.AppendLine("<div class='identity-divider'></div>");
-            html.AppendLine("<div class='identity-label'>Taken From</div>");
-            html.AppendLine($"<div class='identity-from-value'>{HtmlEncode(takenFrom)}</div>");
+            foreach (var card in pages[pageIndex])
+            {
+                html.AppendLine("<tr class='transaction-row'>");
+                html.AppendLine("<td class='identity-cell'>");
+                html.AppendLine("<div class='identity-card'>");
+                html.AppendLine("<div class='identity-label'>Part Number</div>");
+                html.AppendLine(
+                    $"<div class='identity-part-value'>{HtmlEncode(card.PartId)}</div>"
+                );
+                html.AppendLine("<div class='identity-divider'></div>");
+                html.AppendLine("<div class='identity-label'>Quantity</div>");
+                html.AppendLine(
+                    $"<div class='identity-from-value'>{HtmlEncode(card.QuantitySummaryDisplay)}</div>"
+                );
+                html.AppendLine("</div>");
+                html.AppendLine("</td>");
+                html.AppendLine("<td class='entries-cell'>");
+                AppendTransactionEntryGrid(html);
+                html.AppendLine("</td>");
+                html.AppendLine("</tr>");
+
+                plainText.AppendLine($"Part Number: {card.PartId}");
+                plainText.AppendLine($"Quantity: {card.QuantitySummaryDisplay}");
+                plainText.AppendLine(
+                    "Coil Transfer Entries: 3 rows with 4 quantity/to pairs each."
+                );
+                plainText.AppendLine();
+            }
+
+            html.AppendLine("</tbody>");
+            html.AppendLine("</table>");
+            html.AppendLine(
+                $"<div class='transaction-sheet-footer'>Page {pageIndex + 1} of {pages.Count}</div>"
+            );
             html.AppendLine("</div>");
-            html.AppendLine("</td>");
-            html.AppendLine("<td class='entries-cell'>");
-            AppendTransactionEntryGrid(html);
-            html.AppendLine("</td>");
-            html.AppendLine("</tr>");
-
-            plainText.AppendLine($"Part Number: {card.PartId}");
-            plainText.AppendLine($"Taken From: {takenFrom}");
-            plainText.AppendLine("Coil Transfer Entries: 3 rows with 4 quantity/to pairs each.");
-            plainText.AppendLine();
         }
-
-        html.AppendLine("</tbody>");
-        html.AppendLine("</table>");
         html.AppendLine("</div>");
 
         return new Model_FormattedReportDocument
@@ -1633,8 +1639,11 @@ body { margin: 0; background: #ffffff; }
 @page { size: Letter portrait; margin: 0.2in; }
 body { margin: 0; background: #ffffff; }
 .transaction-sheet-wrapper { font-family: Calibri, Arial, sans-serif; font-size: 10pt; color: #111827; }
+.transaction-sheet-page { break-after: page; page-break-after: always; }
+.transaction-sheet-page:last-child { break-after: auto; page-break-after: auto; }
 .transaction-sheet-title { font-size: 15pt; font-weight: 700; text-align: center; margin: 0 0 4px 0; }
 .transaction-sheet-subtitle { font-size: 9pt; text-align: center; margin: 0 0 8px 0; }
+.transaction-sheet-footer { font-size: 9pt; text-align: right; margin-top: 8px; }
 .transaction-sheet { width: 100%; border-collapse: collapse; table-layout: auto; }
 .transaction-sheet thead { display: table-header-group; }
 .transaction-sheet th, .transaction-sheet td { border: 1px solid #111827; padding: 3px 4px; vertical-align: top; }
@@ -1642,7 +1651,7 @@ body { margin: 0; background: #ffffff; }
 .transaction-row { break-inside: avoid; page-break-inside: avoid; }
 .identity-header { width: 1%; white-space: nowrap; }
 .entries-header { width: 99%; }
-.identity-cell { width: 1%; white-space: nowrap; background: #faf5ff; padding: 5px; }
+.identity-cell { width: 1%; white-space: nowrap; background: #faf5ff; padding: 5px; display: flex; align-items: center; justify-content: center; }
 .identity-card {
     min-width: 1.9in;
     background: linear-gradient(180deg, #fcfaff 0%, #f3e8ff 100%);

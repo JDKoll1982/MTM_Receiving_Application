@@ -106,6 +106,8 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
     {
         var picker = new FileOpenPicker();
         picker.FileTypeFilter.Add(".png");
+        picker.FileTypeFilter.Add(".jpg");
+        picker.FileTypeFilter.Add(".jpeg");
 
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
         WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
@@ -116,9 +118,11 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
             return;
         }
 
+        var extension = Path.GetExtension(file.Path);
         if (
-            string.Equals(Path.GetExtension(file.Path), ".png", StringComparison.OrdinalIgnoreCase)
-            is false
+            string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase) is false
+            && string.Equals(extension, ".jpg", StringComparison.OrdinalIgnoreCase) is false
+            && string.Equals(extension, ".jpeg", StringComparison.OrdinalIgnoreCase) is false
         )
         {
             return;
