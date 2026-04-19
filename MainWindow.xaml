@@ -71,7 +71,8 @@
                 VerticalAlignment="Center"
                 FontSize="16"
                 Style="{StaticResource TitleTextBlockStyle}"
-                Text="MTM Receiving Application" />
+                Text="MTM Receiving Application"
+                Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
 
             <!--  Search Box  -->
             <AutoSuggestBox

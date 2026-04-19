@@ -1,11 +1,28 @@
 {
   "DefaultPurchaseOrderNumber": "",
   "Locations": [
-    "QUALITY"
+    "QUALITY",
+    "T-00"
   ],
   "PurchaseOrders": [],
   "Parts": [],
   "ReceivingTransactions": [
+    {
+      "SourceLoadId": "c8c99fa8-4c4d-48af-b04c-ef490c46491b",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 500,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-19T08:57:19.1751325-05:00",
+      "TransactionDate": "2026-04-19T08:57:19.1751325-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "T-00",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    },
     {
       "SourceLoadId": "046eaa9b-07c9-4bb3-8d75-04dda3105e06",
       "PONumber": "PO-033349",
