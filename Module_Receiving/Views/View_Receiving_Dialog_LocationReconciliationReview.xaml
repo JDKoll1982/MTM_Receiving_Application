@@ -535,10 +535,10 @@
                                             BorderThickness="1"
                                             CornerRadius="10">
                                             <StackPanel Spacing="4">
-                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneWay}" />
-                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneWay}" />
-                                                <TextBlock Text="{x:Bind ExistingLocation, Mode=OneWay}" />
-                                                <TextBlock Text="{x:Bind ProposedLocation, Mode=OneWay}" />
+                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneTime}" />
+                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneTime}" />
+                                                <TextBlock Text="{x:Bind ExistingLocation, Mode=OneTime}" />
+                                                <TextBlock Text="{x:Bind ProposedLocation, Mode=OneTime}" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -570,10 +570,10 @@
                                             BorderThickness="1"
                                             CornerRadius="10">
                                             <StackPanel Spacing="4">
-                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneWay}" />
-                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneWay}" />
-                                                <TextBlock Text="{x:Bind ExistingLocation, Mode=OneWay}" />
-                                                <TextBlock Text="{x:Bind ProposedLocation, Mode=OneWay}" />
+                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneTime}" />
+                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneTime}" />
+                                                <TextBlock Text="{x:Bind ExistingLocation, Mode=OneTime}" />
+                                                <TextBlock Text="{x:Bind ProposedLocation, Mode=OneTime}" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -605,9 +605,9 @@
                                             BorderThickness="1"
                                             CornerRadius="10">
                                             <StackPanel Spacing="4">
-                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneWay}" />
-                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind Resolution, Mode=OneWay}" />
-                                                <TextBlock Text="{x:Bind Details, Mode=OneWay}" TextWrapping="Wrap" />
+                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneTime}" />
+                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind Resolution, Mode=OneTime}" />
+                                                <TextBlock Text="{x:Bind Details, Mode=OneTime}" TextWrapping="Wrap" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>

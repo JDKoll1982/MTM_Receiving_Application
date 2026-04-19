@@ -194,12 +194,6 @@ public class Service_Volvo : IService_Volvo
 
         var emailText = new StringBuilder();
 
-        // Subject line (for user reference)
-        emailText.AppendLine(
-            $"Subject: PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}"
-        );
-        emailText.AppendLine();
-
         // Greeting
         emailText.AppendLine("Good morning,");
         emailText.AppendLine();
@@ -391,9 +385,6 @@ public class Service_Volvo : IService_Volvo
             html.AppendLine("<p><strong>Additional Notes:</strong></p>");
             html.AppendLine($"<p>{emailData.AdditionalNotes}</p>");
         }
-
-        // Signature
-        html.AppendLine($"<p>{emailData.Signature.Replace("\\n", "<br/>")}</p>");
 
         html.AppendLine("</body>");
         html.AppendLine("</html>");

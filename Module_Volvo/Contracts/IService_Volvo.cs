@@ -32,8 +32,8 @@ public interface IService_Volvo
     public Task<Model_Dao_Result<string>> GenerateLabelAsync(int shipmentId);
 
     /// <summary>
-    /// Formats email text for PO requisition (with discrepancy notice if applicable)
-    /// Includes: Greeting, discrepancy table (if any), requested lines, signature
+    /// Formats email text for PO requisition (with discrepancy notice if applicable).
+    /// Includes the email body content only: greeting, discrepancy table (if any), requested lines, and optional notes.
     /// </summary>
     /// <param name="shipment">Shipment header</param>
     /// <param name="lines">Shipment lines with discrepancy data</param>

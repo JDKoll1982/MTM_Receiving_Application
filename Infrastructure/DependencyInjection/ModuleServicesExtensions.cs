@@ -252,11 +252,15 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
+        services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_EmailPreviewDialog>();
+        services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentHistoryDetailDialog>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_History>();
+        services.AddTransient<Module_Volvo.Views.View_Volvo_EmailPreviewDialog>();
+        services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentHistoryDetailDialog>();
 
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Volvo.Views.VolvoPartAddEditDialog>();

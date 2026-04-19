@@ -787,270 +787,24 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             );
 
             var formattedEmailDocument = BuildFormattedEmailDocument(emailData);
-
-            var dialog = new ContentDialog
-            {
-                Title = "PO Requisition Email Preview",
-                PrimaryButtonText = "Copy Email Body",
-                CloseButtonText = "Close",
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = xamlRoot,
-                MinWidth = 900,
-                MaxWidth = 1200,
-            };
-
-            // Build structured preview UI
-            var mainStack = new StackPanel
-            {
-                Spacing = 12,
-                Margin = new Microsoft.UI.Xaml.Thickness(0),
-            };
-
-            // TO Recipients
-            var toPanel = new Grid { ColumnSpacing = 8 };
-            toPanel.ColumnDefinitions.Add(
-                new Microsoft.UI.Xaml.Controls.ColumnDefinition
-                {
-                    Width = new Microsoft.UI.Xaml.GridLength(
-                        1,
-                        Microsoft.UI.Xaml.GridUnitType.Star
-                    ),
-                }
+            var dialogModel = BuildEmailPreviewDialogModel(
+                emailData,
+                toRecipients,
+                ccRecipients,
+                formattedEmailDocument
             );
-            toPanel.ColumnDefinitions.Add(
-                new Microsoft.UI.Xaml.Controls.ColumnDefinition
-                {
-                    Width = Microsoft.UI.Xaml.GridLength.Auto,
-                }
-            );
-            var toBox = new TextBox
-            {
-                Header = "To:",
-                Text = toRecipients,
-                IsReadOnly = true,
-                TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-                MaxHeight = 80,
-            };
-            toBox.SetValue(Grid.ColumnProperty, 0);
-            var toCopyButton = new Button
-            {
-                Content = "📋",
-                Width = 40,
-                Height = 40,
-                FontSize = 16,
-                VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4),
-            };
-            toCopyButton.SetValue(Grid.ColumnProperty, 1);
-            Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(
-                toCopyButton,
-                "Copy To Recipients"
-            );
-            toCopyButton.Click += (_, _) =>
-            {
-                var dataPackage = new DataPackage();
-                dataPackage.SetText(toBox.Text);
-                Clipboard.SetContent(dataPackage);
-            };
-            toPanel.Children.Add(toBox);
-            toPanel.Children.Add(toCopyButton);
-            mainStack.Children.Add(toPanel);
-
-            // CC Recipients
-            var ccPanel = new Grid { ColumnSpacing = 8 };
-            ccPanel.ColumnDefinitions.Add(
-                new Microsoft.UI.Xaml.Controls.ColumnDefinition
-                {
-                    Width = new Microsoft.UI.Xaml.GridLength(
-                        1,
-                        Microsoft.UI.Xaml.GridUnitType.Star
-                    ),
-                }
-            );
-            ccPanel.ColumnDefinitions.Add(
-                new Microsoft.UI.Xaml.Controls.ColumnDefinition
-                {
-                    Width = Microsoft.UI.Xaml.GridLength.Auto,
-                }
-            );
-            var ccBox = new TextBox
-            {
-                Header = "Cc:",
-                Text = ccRecipients,
-                IsReadOnly = true,
-                TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-                MaxHeight = 80,
-            };
-            ccBox.SetValue(Grid.ColumnProperty, 0);
-            var ccCopyButton = new Button
-            {
-                Content = "📋",
-                Width = 40,
-                Height = 40,
-                FontSize = 16,
-                VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4),
-            };
-            ccCopyButton.SetValue(Grid.ColumnProperty, 1);
-            Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(
-                ccCopyButton,
-                "Copy CC Recipients"
-            );
-            ccCopyButton.Click += (_, _) =>
-            {
-                var dataPackage = new DataPackage();
-                dataPackage.SetText(ccBox.Text);
-                Clipboard.SetContent(dataPackage);
-            };
-            ccPanel.Children.Add(ccBox);
-            ccPanel.Children.Add(ccCopyButton);
-            mainStack.Children.Add(ccPanel);
-
-            // Subject
-            var subjectPanel = new Grid { ColumnSpacing = 8 };
-            subjectPanel.ColumnDefinitions.Add(
-                new Microsoft.UI.Xaml.Controls.ColumnDefinition
-                {
-                    Width = new Microsoft.UI.Xaml.GridLength(
-                        1,
-                        Microsoft.UI.Xaml.GridUnitType.Star
-                    ),
-                }
-            );
-            subjectPanel.ColumnDefinitions.Add(
-                new Microsoft.UI.Xaml.Controls.ColumnDefinition
-                {
-                    Width = Microsoft.UI.Xaml.GridLength.Auto,
-                }
-            );
-            var subjectBox = new TextBox
-            {
-                Header = "Subject:",
-                Text = emailData.Subject,
-                IsReadOnly = true,
-                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
-                TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-            };
-            subjectBox.SetValue(Grid.ColumnProperty, 0);
-            var subjectCopyButton = new Button
-            {
-                Content = "📋",
-                Width = 40,
-                Height = 40,
-                FontSize = 16,
-                VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4),
-            };
-            subjectCopyButton.SetValue(Grid.ColumnProperty, 1);
-            Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(subjectCopyButton, "Copy Subject");
-            subjectCopyButton.Click += (_, _) =>
-            {
-                var dataPackage = new DataPackage();
-                dataPackage.SetText(subjectBox.Text);
-                Clipboard.SetContent(dataPackage);
-            };
-            subjectPanel.Children.Add(subjectBox);
-            subjectPanel.Children.Add(subjectCopyButton);
-            mainStack.Children.Add(subjectPanel);
-
-            var emailBodyHeader = new TextBlock
-            {
-                Text = "Email Body Preview:",
-                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4),
-            };
-            mainStack.Children.Add(emailBodyHeader);
-
-            var emailBodyBorder = new Border
-            {
-                BorderBrush = (Microsoft.UI.Xaml.Media.Brush)
-                    Application.Current.Resources["CardStrokeColorDefaultBrush"],
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(6),
-                Height = 420,
-            };
-
-            var emailBodyPreview = new WebView2
-            {
-                DefaultBackgroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-            };
-            emailBodyBorder.Child = emailBodyPreview;
-            mainStack.Children.Add(emailBodyBorder);
-
-            // Additional Notes
-            if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
-            {
-                var notesBox = new TextBox
-                {
-                    Header = "Additional Notes:",
-                    Text = emailData.AdditionalNotes,
-                    IsReadOnly = true,
-                    TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-                    Height = 60,
-                };
-                mainStack.Children.Add(notesBox);
-            }
-
-            var scrollViewer = new ScrollViewer
-            {
-                Content = mainStack,
-                Height = 720,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            };
-
-            dialog.Content = scrollViewer;
-
-            dialog.Opened += async (_, _) =>
-            {
-                try
-                {
-                    await emailBodyPreview.EnsureCoreWebView2Async();
-                    emailBodyPreview.NavigateToString(
-                        BuildPreviewHtmlDocument(formattedEmailDocument.HtmlFragment)
-                    );
-                }
-                catch (Exception ex)
-                {
-                    await _logger.LogErrorAsync(
-                        $"Error loading email preview web view: {ex.Message}",
-                        ex
-                    );
-                    emailBodyBorder.Child = new TextBox
-                    {
-                        Text = BuildPlainTextEmail(emailData),
-                        IsReadOnly = true,
-                        TextWrapping = TextWrapping.Wrap,
-                        AcceptsReturn = true,
-                    };
-
-                    await _errorHandler.ShowUserErrorAsync(
-                        "The formatted email preview could not be rendered. A plain-text preview is shown instead.",
-                        "Email Preview",
-                        nameof(ShowEmailPreviewDialogAsync)
-                    );
-                }
-            };
+            var dialog = new Views.View_Volvo_EmailPreviewDialog { XamlRoot = xamlRoot };
+            dialog.Initialize(dialogModel);
 
             var result = await dialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
-                var clipboardResult = _reportingClipboard.CreateClipboardPackage(
-                    formattedEmailDocument
-                );
-                if (!clipboardResult.IsSuccess || clipboardResult.Data is null)
+                var copySucceeded = await dialog.CopyEmailBodyAsync();
+                if (!copySucceeded)
                 {
-                    await _errorHandler.ShowUserErrorAsync(
-                        clipboardResult.ErrorMessage ?? "Failed to create email clipboard content.",
-                        "Email Preview",
-                        nameof(ShowEmailPreviewDialogAsync)
-                    );
                     return;
                 }
-
-                Clipboard.SetContent(clipboardResult.Data);
 
                 SuccessMessage =
                     "Email copied to clipboard (paste into Outlook as formatted table)!";
@@ -1068,11 +822,28 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
     }
 
+    private Model_VolvoEmailPreviewDialog BuildEmailPreviewDialogModel(
+        Model_VolvoEmailData emailData,
+        string toRecipients,
+        string ccRecipients,
+        Model_FormattedReportDocument formattedEmailDocument
+    )
+    {
+        return new Model_VolvoEmailPreviewDialog
+        {
+            ToRecipients = toRecipients,
+            CcRecipients = ccRecipients,
+            Subject = emailData.Subject,
+            AdditionalNotes = emailData.AdditionalNotes,
+            PreviewHtmlDocument = BuildPreviewHtmlDocument(formattedEmailDocument.HtmlFragment),
+            PlainTextPreview = BuildPlainTextEmail(emailData),
+            FormattedEmailDocument = formattedEmailDocument,
+        };
+    }
+
     private string BuildPlainTextEmail(Model_VolvoEmailData emailData)
     {
         var text = new StringBuilder();
-        text.AppendLine($"Subject: {emailData.Subject}");
-        text.AppendLine();
         text.AppendLine(emailData.Greeting);
         text.AppendLine();
         text.AppendLine(emailData.Message);
@@ -1111,8 +882,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             text.AppendLine(emailData.AdditionalNotes);
             text.AppendLine();
         }
-
-        text.AppendLine(emailData.Signature);
         return text.ToString();
     }
 
@@ -1124,12 +893,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         var plainText = new StringBuilder();
 
         html.AppendLine("<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
-        html.AppendLine(
-            $"<div style='font-size: 16pt; font-weight: 700; text-align: center; margin-bottom: 8px;'>{System.Net.WebUtility.HtmlEncode(emailData.Subject)}</div>"
-        );
-
-        plainText.AppendLine(emailData.Subject);
-        plainText.AppendLine();
         plainText.AppendLine(emailData.Greeting);
         plainText.AppendLine();
         plainText.AppendLine(emailData.Message);
@@ -1237,14 +1000,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             plainText.AppendLine(emailData.AdditionalNotes);
             plainText.AppendLine();
         }
-
-        AppendSectionStart(html, "Signature", "#edf2f7", "#334155");
-        html.AppendLine(
-            $"<div style='white-space: pre-wrap;'>{System.Net.WebUtility.HtmlEncode(emailData.Signature)}</div>"
-        );
-        AppendSectionEnd(html);
-
-        plainText.AppendLine(emailData.Signature);
 
         html.AppendLine("</div>");
 

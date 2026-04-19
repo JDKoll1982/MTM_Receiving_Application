@@ -29,8 +29,7 @@ public static class Helper_UI_ContentDialogTheme
         }
 
         if (
-            View_Settings_CoreWindow.GetActiveHost()?.GetContentRoot()
-                is FrameworkElement settingsContent
+            View_Settings_CoreWindow.GetInstance()?.Content is FrameworkElement settingsContent
             && settingsContent.XamlRoot == xamlRoot
         )
         {
@@ -42,6 +41,6 @@ public static class Helper_UI_ContentDialogTheme
             return mainFallback;
         }
 
-        return View_Settings_CoreWindow.GetActiveHost()?.GetContentRoot();
+        return View_Settings_CoreWindow.GetInstance()?.Content as FrameworkElement;
     }
 }

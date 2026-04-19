@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using Windows.Foundation;
 
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
@@ -49,18 +48,13 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         {
             return;
         }
-
-        RootGrid.Measure(
-            new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity)
-        );
-
-        var desiredWidth = System.Math.Ceiling(
-            System.Math.Max(RootGrid.DesiredSize.Width, 1180) + 32
-        );
         var availableWidth = System.Math.Max(1180, XamlRoot.Size.Width - 32);
         var availableHeight = System.Math.Max(680, XamlRoot.Size.Height - 48);
 
-        Width = System.Math.Min(desiredWidth, availableWidth);
+        // Avoid pre-measuring the root grid here. This dialog hosts a CommunityToolkit DataGrid,
+        // and forcing a measure before the dialog is attached to the visual tree can trigger
+        // DataGrid column sizing code that relies on unsupported GetForCurrentView APIs.
+        Width = availableWidth;
         MinWidth = System.Math.Min(1180, availableWidth);
         MinHeight = System.Math.Min(680, availableHeight);
         MaxHeight = availableHeight;

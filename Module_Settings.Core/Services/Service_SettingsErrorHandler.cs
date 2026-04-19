@@ -30,12 +30,15 @@ public class Service_SettingsErrorHandler : IService_SettingsErrorHandler
     {
         _logger.LogError($"{title}: {message}");
 
-        await ShowDialogAsync(
-            View_Settings_CoreWindow.GetActiveHost()?.GetHostWindow() ?? App.MainWindow,
-            title,
-            message,
-            severity
-        );
+        var settingsWindow = View_Settings_CoreWindow.GetInstance();
+        if (settingsWindow == null)
+        {
+            // Fallback if Settings window not available
+            await ShowDialogAsync(null, title, message, severity);
+            return;
+        }
+
+        await ShowDialogAsync(settingsWindow, title, message, severity);
     }
 
     public async Task HandleErrorAsync(
@@ -47,24 +50,28 @@ public class Service_SettingsErrorHandler : IService_SettingsErrorHandler
     {
         _logger.LogError($"{title}: {message} - Exception: {ex?.Message}");
 
-        await ShowDialogAsync(
-            View_Settings_CoreWindow.GetActiveHost()?.GetHostWindow() ?? App.MainWindow,
-            title,
-            message,
-            severity
-        );
+        var settingsWindow = View_Settings_CoreWindow.GetInstance();
+        if (settingsWindow == null)
+        {
+            await ShowDialogAsync(null, title, message, severity);
+            return;
+        }
+
+        await ShowDialogAsync(settingsWindow, title, message, severity);
     }
 
     public async Task ShowSuccessAsync(string message, string title)
     {
         _logger.LogInfo($"{title}: {message}");
 
-        await ShowDialogAsync(
-            View_Settings_CoreWindow.GetActiveHost()?.GetHostWindow() ?? App.MainWindow,
-            title,
-            message,
-            Enum_ErrorSeverity.Info
-        );
+        var settingsWindow = View_Settings_CoreWindow.GetInstance();
+        if (settingsWindow == null)
+        {
+            await ShowDialogAsync(null, title, message, Enum_ErrorSeverity.Info);
+            return;
+        }
+
+        await ShowDialogAsync(settingsWindow, title, message, Enum_ErrorSeverity.Info);
     }
 
     private async Task ShowDialogAsync(

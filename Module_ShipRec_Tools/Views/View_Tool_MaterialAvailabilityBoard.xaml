@@ -324,7 +324,7 @@
                                                     BorderBrush="{ThemeResource SystemFillColorCautionBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="6"
-                                                    Visibility="{x:Bind HasEstimatedCoilUseRisk, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                    Visibility="{x:Bind HasEstimatedCoilUseRisk, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                     <TextBlock
                                                         Foreground="{ThemeResource SystemFillColorCautionBrush}"
                                                         Style="{StaticResource CaptionTextBlockStyle}"
@@ -343,8 +343,8 @@
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource BodyTextBlockStyle}"
                                             Text="No positive-quantity locations were found for this part in warehouse 002."
-                                            Visibility="{x:Bind HasCurrentLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                                        <ItemsRepeater ItemsSource="{x:Bind CurrentLocations, Mode=OneWay}" Visibility="{x:Bind HasCurrentLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{x:Bind HasCurrentLocations, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                        <ItemsRepeater ItemsSource="{x:Bind CurrentLocations, Mode=OneTime}" Visibility="{x:Bind HasCurrentLocations, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <ItemsRepeater.Layout>
                                                 <StackLayout Spacing="8" />
                                             </ItemsRepeater.Layout>
@@ -388,21 +388,21 @@
                                                 Grid.Column="1"
                                                 Click="IncomingDetailsButton_Click"
                                                 Content="View incoming details"
-                                                IsEnabled="{x:Bind HasIncomingDetails, Mode=OneWay}"
+                                                IsEnabled="{x:Bind HasIncomingDetails, Mode=OneTime}"
                                                 Tag="{x:Bind}" />
                                         </Grid>
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource BodyTextBlockStyle}"
                                             Text="No qualifying incoming material was found for the selected look-ahead window."
-                                            Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                            Visibility="{x:Bind HasIncomingSupply, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                                         <Border
                                             Padding="6"
                                             Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8"
-                                            Visibility="{x:Bind HasIncomingSupply, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{x:Bind HasIncomingSupply, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <StackPanel Spacing="8">
                                                 <Grid ColumnSpacing="16">
                                                     <Grid.ColumnDefinitions>
@@ -441,7 +441,7 @@
                                                     Height="8"
                                                     Maximum="100"
                                                     Minimum="0"
-                                                    Value="{x:Bind IncomingRollup.PercentComplete, Mode=OneWay}" />
+                                                    Value="{x:Bind IncomingRollup.PercentComplete, Mode=OneTime}" />
                                                 <TextBlock
                                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                     Style="{StaticResource CaptionTextBlockStyle}"
@@ -456,8 +456,8 @@
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource BodyTextBlockStyle}"
                                             Text="No associated parts were found for this material."
-                                            Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                                        <ItemsRepeater ItemsSource="{x:Bind AssociatedPartRuns, Mode=OneWay}" Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                        <ItemsRepeater ItemsSource="{x:Bind AssociatedPartRuns, Mode=OneTime}" Visibility="{x:Bind HasAssociatedPartRuns, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <ItemsRepeater.Layout>
                                                 <StackLayout Spacing="8" />
                                             </ItemsRepeater.Layout>

@@ -27,6 +27,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private readonly IMediator _mediator;
     private readonly IService_InforVisual _inforVisualService;
     private readonly IService_ReceivingValidation _receivingValidation;
+    private readonly IService_Window _windowService;
 
     #region Observable Properties
 
@@ -61,6 +62,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         IMediator mediator,
         IService_InforVisual inforVisualService,
         IService_ReceivingValidation receivingValidation,
+        IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -72,6 +74,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         _receivingValidation =
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
+        _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
     }
 
     #endregion
@@ -234,55 +237,17 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 var shipment = result.Data.Shipment;
                 var lines = result.Data.Lines;
 
-                // Build detail message
-                var details = new System.Text.StringBuilder();
-                details.AppendLine($"Shipment #{shipment.ShipmentNumber}");
-                details.AppendLine($"Date: {shipment.ShipmentDate:d}");
-                details.AppendLine($"PO Number: {shipment.PONumber ?? "N/A"}");
-                details.AppendLine($"Receiver: {shipment.ReceiverNumber ?? "N/A"}");
-                details.AppendLine($"Status: {shipment.StatusDisplay}");
-                details.AppendLine();
-                details.AppendLine($"Parts ({lines.Count}):");
-                foreach (var line in lines)
+                var dialogModel = BuildShipmentHistoryDetailDialogModel(shipment, lines);
+                var detailDialogShown = await ShowShipmentHistoryDetailDialogAsync(dialogModel);
+                if (!detailDialogShown)
                 {
-                    details.AppendLine(
-                        $"  • {line.PartNumber}: {line.ReceivedSkidCount} skids ({line.CalculatedPieceCount} pieces)"
+                    await _errorHandler.ShowUserErrorAsync(
+                        "Cannot show shipment details because the window host is unavailable.",
+                        "Shipment Details",
+                        nameof(ViewDetailAsync)
                     );
-                    if (line.HasDiscrepancy)
-                    {
-                        details.AppendLine(
-                            $"    ⚠ Discrepancy: Expected {line.ExpectedSkidCount} skids"
-                        );
-                    }
+                    return;
                 }
-                if (!string.IsNullOrWhiteSpace(shipment.Notes))
-                {
-                    details.AppendLine();
-                    details.AppendLine($"Notes: {shipment.Notes}");
-                }
-
-                // Show dialog
-                var dialog = new ContentDialog
-                {
-                    Title = $"Shipment #{SelectedShipment.ShipmentNumber} Details",
-                    Content = new ScrollViewer
-                    {
-                        Content = new TextBlock
-                        {
-                            Text = details.ToString(),
-                            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-                            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
-                        },
-                        MaxHeight = 500,
-                    },
-                    CloseButtonText = "Close",
-                    XamlRoot = App.MainWindow?.Content?.XamlRoot,
-                };
-                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                    dialog,
-                    dialog.XamlRoot
-                );
-                await dialog.ShowAsync();
 
                 StatusMessage = $"Viewed details for shipment #{shipment.ShipmentNumber}";
                 await _logger.LogInfoAsync($"Successfully loaded {lines.Count} lines");
@@ -355,28 +320,43 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                     ? new ObservableCollection<Model_VolvoPart>(partsResult.Data)
                     : new ObservableCollection<Model_VolvoPart>();
 
-            // Create and show edit dialog
-            var dialog = new Views.VolvoShipmentEditDialog(ResolvePartLocationAsync)
-            {
-                XamlRoot = App.MainWindow?.Content?.XamlRoot,
-            };
-            dialog.PrepareDialogSize();
-
             // Convert List to ObservableCollection for binding
             var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(
                 detailResult.Data.Lines
             );
-            dialog.LoadShipment(detailResult.Data.Shipment, linesCollection, availableParts);
+            var dialogOutcome = await ShowShipmentEditDialogAsync(
+                detailResult.Data.Shipment,
+                linesCollection,
+                availableParts
+            );
 
-            var result = await dialog.ShowAsync();
+            if (dialogOutcome is null)
+            {
+                await _errorHandler.ShowUserErrorAsync(
+                    "Cannot show the shipment edit dialog because the window host is unavailable.",
+                    "Edit Shipment",
+                    nameof(EditAsync)
+                );
+                return;
+            }
 
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            if (dialogOutcome.Result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 StatusMessage = "Saving changes...";
 
                 // Get updated data from dialog
-                var updatedShipment = dialog.GetUpdatedShipment();
-                var updatedLines = dialog.GetUpdatedLines();
+                var updatedShipment = dialogOutcome.UpdatedShipment;
+                var updatedLines = dialogOutcome.UpdatedLines;
+
+                if (updatedShipment is null || updatedLines is null)
+                {
+                    await _errorHandler.ShowUserErrorAsync(
+                        "Shipment changes could not be read from the edit dialog.",
+                        "Edit Shipment",
+                        nameof(EditAsync)
+                    );
+                    return;
+                }
 
                 // Call service to update shipment
                 var updateCommand = new UpdateShipmentCommand
@@ -444,6 +424,144 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
     private bool CanEdit() => SelectedShipment != null && !IsBusy;
 
+    private async Task<bool> ShowShipmentHistoryDetailDialogAsync(
+        Model_VolvoShipmentHistoryDetailDialog dialogModel
+    )
+    {
+        var dispatcherQueue = App.MainWindow?.DispatcherQueue;
+        if (dispatcherQueue is null)
+        {
+            return false;
+        }
+
+        var completionSource = new TaskCompletionSource<bool>();
+        if (
+            !dispatcherQueue.TryEnqueue(async () =>
+            {
+                try
+                {
+                    var xamlRoot = _windowService.GetXamlRoot();
+                    if (xamlRoot is null)
+                    {
+                        completionSource.SetResult(false);
+                        return;
+                    }
+
+                    var dialog = new Views.View_Volvo_ShipmentHistoryDetailDialog
+                    {
+                        XamlRoot = xamlRoot,
+                    };
+                    dialog.Initialize(dialogModel);
+                    await dialog.ShowAsync();
+                    completionSource.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    completionSource.SetException(ex);
+                }
+            })
+        )
+        {
+            return false;
+        }
+
+        return await completionSource.Task;
+    }
+
+    private async Task<ShipmentEditDialogOutcome?> ShowShipmentEditDialogAsync(
+        Model_VolvoShipment shipment,
+        ObservableCollection<Model_VolvoShipmentLine> lines,
+        ObservableCollection<Model_VolvoPart> availableParts
+    )
+    {
+        var dispatcherQueue = App.MainWindow?.DispatcherQueue;
+        if (dispatcherQueue is null)
+        {
+            return null;
+        }
+
+        var completionSource = new TaskCompletionSource<ShipmentEditDialogOutcome?>();
+        if (
+            !dispatcherQueue.TryEnqueue(async () =>
+            {
+                try
+                {
+                    var xamlRoot = _windowService.GetXamlRoot();
+                    if (xamlRoot is null)
+                    {
+                        completionSource.SetResult(null);
+                        return;
+                    }
+
+                    var dialog = new Views.VolvoShipmentEditDialog(ResolvePartLocationAsync)
+                    {
+                        XamlRoot = xamlRoot,
+                    };
+                    dialog.PrepareDialogSize();
+                    dialog.LoadShipment(shipment, lines, availableParts);
+
+                    var result = await dialog.ShowAsync();
+                    completionSource.SetResult(
+                        new ShipmentEditDialogOutcome(
+                            result,
+                            result == ContentDialogResult.Primary
+                                ? dialog.GetUpdatedShipment()
+                                : null,
+                            result == ContentDialogResult.Primary ? dialog.GetUpdatedLines() : null
+                        )
+                    );
+                }
+                catch (Exception ex)
+                {
+                    completionSource.SetException(ex);
+                }
+            })
+        )
+        {
+            return null;
+        }
+
+        return await completionSource.Task;
+    }
+
+    private static Model_VolvoShipmentHistoryDetailDialog BuildShipmentHistoryDetailDialogModel(
+        Model_VolvoShipment shipment,
+        IReadOnlyCollection<Model_VolvoShipmentLine> lines
+    )
+    {
+        var details = new System.Text.StringBuilder();
+        details.AppendLine($"Shipment #{shipment.ShipmentNumber}");
+        details.AppendLine($"Date: {shipment.ShipmentDate:d}");
+        details.AppendLine($"PO Number: {shipment.PONumber ?? "N/A"}");
+        details.AppendLine($"Receiver: {shipment.ReceiverNumber ?? "N/A"}");
+        details.AppendLine($"Status: {shipment.StatusDisplay}");
+        details.AppendLine();
+        details.AppendLine($"Parts ({lines.Count}):");
+
+        foreach (var line in lines)
+        {
+            details.AppendLine(
+                $"  • {line.PartNumber}: {line.ReceivedSkidCount} skids ({line.CalculatedPieceCount} pieces)"
+            );
+            if (line.HasDiscrepancy)
+            {
+                details.AppendLine($"    ⚠ Discrepancy: Expected {line.ExpectedSkidCount} skids");
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(shipment.Notes))
+        {
+            details.AppendLine();
+            details.AppendLine($"Notes: {shipment.Notes}");
+        }
+
+        return new Model_VolvoShipmentHistoryDetailDialog
+        {
+            DialogTitle = $"Shipment #{shipment.ShipmentNumber} Details",
+            DetailText = details.ToString(),
+        };
+    }
+
     private async Task<string> ResolvePartLocationAsync(string partNumber)
     {
         if (string.IsNullOrWhiteSpace(partNumber))
@@ -483,6 +601,12 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         ViewDetailCommand.NotifyCanExecuteChanged();
         EditCommand.NotifyCanExecuteChanged();
     }
+
+    private sealed record ShipmentEditDialogOutcome(
+        ContentDialogResult Result,
+        Model_VolvoShipment? UpdatedShipment,
+        ObservableCollection<Model_VolvoShipmentLine>? UpdatedLines
+    );
 
     #endregion
 }
