@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Data;
 public interface IDao_VolvoLabelHistory
 {
     /// <summary>
-    /// Atomically moves all completed Volvo shipments and their lines from the active tables
+    /// Atomically moves all active Volvo shipments and their lines from the active tables
     /// to the history archive tables.
     /// Returns a tuple of <c>(HeadersMoved, LinesMoved)</c> on success.
     /// </summary>

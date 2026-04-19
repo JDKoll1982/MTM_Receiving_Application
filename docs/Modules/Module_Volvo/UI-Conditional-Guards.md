@@ -24,22 +24,22 @@ Both commands require a row to be selected in the shipment grid and no active ba
 
 ---
 
-## Settings / Part Master View (`ViewModel_Volvo_Settings`) — Command Guards
+## Settings / Part Master View (`ViewModel_Settings_Volvo_PartCatalog`) — Command Guards
 
 | Command           | Guard Method    | Enabled When                      | Blocked When                           |
 | ----------------- | --------------- | --------------------------------- | -------------------------------------- |
 | `EditPartCommand` | `CanEditPart()` | `SelectedPart != null && !IsBusy` | No selection, or operation in progress |
 
-**Source:** `ViewModel_Volvo_Settings.cs`
+**Source:** `Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_PartCatalog.cs`
 
 ---
 
 ## Screen Context
 
-| View                       | Purpose                                           |
-| -------------------------- | ------------------------------------------------- |
-| `View_Volvo_History.xaml`  | Browse shipment history and open selected records |
-| `View_Volvo_Settings.xaml` | Maintain Volvo settings and edit selected parts   |
+| View                                   | Purpose                                           |
+| -------------------------------------- | ------------------------------------------------- |
+| `View_Volvo_History.xaml`              | Browse shipment history and open selected records |
+| `View_Settings_Volvo_PartCatalog.xaml` | Maintain Volvo settings and edit selected parts   |
 
 The confirmed guards show that both screens depend on row selection before edit/detail actions become available.
 

@@ -8,8 +8,8 @@ Make the Location textbox in the Volvo Add Part modal editable and consistent wi
 
 ## Likely Files
 
-- `Module_Volvo/Views/VolvoPartAddEditDialog.xaml`
-- `Module_Volvo/Views/VolvoPartAddEditDialog.xaml.cs`
+- `Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml`
+- `Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml.cs`
 - `Module_Volvo/Services/Service_Volvo.cs`
 
 ## Implementation Instructions

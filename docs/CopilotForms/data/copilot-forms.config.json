@@ -1683,7 +1683,7 @@
       "id": "volvo-shipment-entry",
       "module": "Module_Volvo",
       "name": "Shipment Entry",
-      "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, shipment-line commands, validators, and host dialogs.",
+      "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, active-queue-aware label-data cleanup, duplicate label-generation guards for unchanged shipments, shipment-line commands, validators, and host dialogs.",
       "owner": "Integration Team",
       "relatedFiles": [
         "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -1712,13 +1712,17 @@
         "Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs",
         "Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs",
         "Module_Volvo/Requests/Commands/DeletePendingShipmentCommand.cs",
+        "Module_Volvo/Requests/Commands/ClearLabelDataCommand.cs",
         "Module_Volvo/Requests/Commands/UpdateShipmentCommand.cs",
         "Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/DeletePendingShipmentCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/ClearLabelDataCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandler.cs",
+        "Module_Volvo/Data/IDao_VolvoLabelHistory.cs",
+        "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
         "Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs",
         "Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs",
         "Module_Volvo/Validators/CompleteShipmentCommandValidator.cs",
@@ -1737,7 +1741,9 @@
           "Shipment entry",
           "Pending shipment restore",
           "Shipment-line editing",
-          "Save and complete shipment flow"
+          "Save and complete shipment flow",
+          "Active-queue archive cleanup",
+          "Duplicate label-generation prevention"
         ],
         "screens": [
           "View_Volvo_ShipmentEntry.xaml",
@@ -1750,17 +1756,24 @@
           "Shipment number",
           "Parts grid",
           "Save action",
-          "Complete action"
+          "Complete action",
+          "Clear label data action",
+          "Generate labels action"
         ],
         "userActions": [
           "Create or continue a Volvo shipment",
           "Add or remove shipment parts",
           "Save progress",
-          "Complete the shipment"
+          "Complete the shipment",
+          "Archive and clear active Volvo shipment label data",
+          "Generate labels once per unchanged shipment snapshot"
         ],
         "validationHints": [
           "Confirm pending shipment restore still loads the correct shipment state",
-          "Confirm shipment-line commands and completion still follow the intended guarded behavior"
+          "Confirm shipment-line commands and completion still follow the intended guarded behavior",
+          "Confirm Clear Label Data is disabled when the Volvo active queue has no rows and enabled once active shipment rows exist",
+          "Confirm Clear Label Data archives and clears the active Volvo shipment queue regardless of row status",
+          "Confirm Generate Labels is disabled after a successful run for the current unchanged shipment and re-enables after shipment header or line data changes"
         ]
       },
       "subFeatures": []
@@ -1828,11 +1841,11 @@
         "Module_Volvo/Contracts/IService_VolvoMasterData.cs",
         "Module_Volvo/Interfaces/IDao_VolvoPart.cs",
         "Module_Volvo/Services/Service_VolvoMasterData.cs",
-        "Module_Volvo/ViewModels/ViewModel_Volvo_Settings.cs",
-        "Module_Volvo/Views/View_Volvo_Settings.xaml",
-        "Module_Volvo/Views/View_Volvo_Settings.xaml.cs",
-        "Module_Volvo/Views/VolvoPartAddEditDialog.xaml",
-        "Module_Volvo/Views/VolvoPartAddEditDialog.xaml.cs",
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_PartCatalog.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml.cs",
         "Module_Volvo/Data/Dao_VolvoPart.cs",
         "Module_Volvo/Data/Dao_VolvoPartComponent.cs",
         "Module_Volvo/Data/Dao_VolvoSettings.cs",
@@ -1878,7 +1891,10 @@
           "Part add and edit dialogs",
           "CSV part import"
         ],
-        "screens": ["View_Volvo_Settings.xaml", "VolvoPartAddEditDialog.xaml"],
+        "screens": [
+          "View_Settings_Volvo_PartCatalog.xaml",
+          "View_Settings_Volvo_PartAddEditDialog.xaml"
+        ],
         "currentUiPatterns": ["Form", "Table"],
         "desiredUiPatterns": ["Split layout", "Form", "Card list"],
         "uiElements": [
@@ -3118,30 +3134,17 @@
       "id": "settings-volvo-shell",
       "module": "Module_Settings.Volvo",
       "name": "Volvo Settings Shell",
-      "summary": "Card-based Volvo settings shell with placeholder overview, database settings, connection string, file path, UI configuration, and hardcoded-value externalization pages.",
+      "summary": "Volvo settings now route directly to the real part-catalog maintenance surface.",
       "owner": "Integration Team",
       "relatedFiles": [
         "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_SettingsOverview.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_DatabaseSettings.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ConnectionStrings.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_FilePaths.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_UiConfiguration.cs",
-        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_ExternalizationBacklog.cs",
         "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml",
         "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml.cs",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_SettingsOverview.xaml.cs",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_DatabaseSettings.xaml.cs",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_ConnectionStrings.xaml.cs",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_FilePaths.xaml.cs",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_UiConfiguration.xaml.cs",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml",
-        "Module_Settings.Volvo/Views/View_Settings_Volvo_ExternalizationBacklog.xaml.cs"
+        "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_PartCatalog.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml.cs",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml",
+        "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml.cs"
       ],
       "promptDefaults": {
         "audience": "IT Administrator",
@@ -3152,53 +3155,38 @@
       },
       "uiHints": {
         "workflowAreas": [
-          "Settings overview",
-          "Database-backed Volvo settings guidance",
-          "Connection string handling guidance",
-          "File path guidance",
-          "UI configuration guidance",
-          "Hardcoded value externalization backlog"
+          "Part catalog maintenance",
+          "Volvo settings entry routing"
         ],
-        "screens": [
-          "View_Settings_Volvo_WorkflowHub.xaml",
-          "View_Settings_Volvo_SettingsOverview.xaml",
-          "View_Settings_Volvo_DatabaseSettings.xaml",
-          "View_Settings_Volvo_ConnectionStrings.xaml",
-          "View_Settings_Volvo_FilePaths.xaml",
-          "View_Settings_Volvo_UiConfiguration.xaml",
-          "View_Settings_Volvo_ExternalizationBacklog.xaml"
-        ],
+        "screens": ["View_Settings_Volvo_PartCatalog.xaml"],
         "currentUiPatterns": ["Card list", "Form", "DataGrid"],
         "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
         "uiElements": [
-          "Navigation cards",
-          "Recipient list guidance",
-          "Masked connection string guidance",
-          "Folder and file picker guidance",
-          "UI defaults guidance",
-          "Externalization backlog grid guidance"
+          "Part catalog summary cards",
+          "Part catalog data grid",
+          "Part maintenance dialog",
+          "Bulk import prompt",
+          "Selected part action panel"
         ],
         "userActions": [
-          "Browse Volvo settings areas from the hub",
-          "Review which Volvo configuration belongs in database settings, file paths, and UI configuration",
-          "Inspect the connection string page guidance without exposing secrets in editable plain text",
-          "Review the backlog of hardcoded values that should become configuration"
+          "Review, add, edit, deactivate, and import Volvo part master-data rows",
+          "Open Volvo settings directly into the part catalog",
+          "Review selected part details and related component records"
         ],
         "preserveRules": [
-          "Keep the placeholder status explicit in metadata",
-          "Keep connection string guidance masked and read-only",
-          "Do not describe backlog tracking as a completed externalization workflow",
-          "Keep the existing step ordering and card-driven navigation unchanged"
+          "Keep the part catalog described as the only active Volvo settings surface",
+          "Do not describe removed placeholder pages as active navigation targets",
+          "Keep the settings entry path aligned with the direct Part Catalog navigation behavior"
         ],
         "acceptanceCriteria": [
-          "The hub still routes to overview, database settings, connection strings, file paths, UI configuration, and externalization backlog",
-          "Metadata reflects the visible placeholder guidance for each Volvo settings area",
-          "Metadata does not imply editable secrets or completed persistence logic that the module does not currently implement"
+          "Selecting Volvo settings opens the Part Catalog surface directly",
+          "Metadata reflects only the live Volvo settings files and user-visible workflow",
+          "Metadata does not imply hidden placeholder pages or unimplemented settings editors"
         ],
         "validationHints": [
-          "Confirm each Volvo card still opens the intended screen",
-          "Confirm connection string guidance remains masked and non-editable in concept",
-          "Confirm metadata continues to describe the hardcoded-values page as backlog tracking rather than finished automation"
+          "Confirm the part catalog page loads the Volvo part list and still launches add, edit, deactivate, and component-review actions",
+          "Confirm selecting the Volvo settings entry opens the Part Catalog without an intermediate placeholder page",
+          "Confirm metadata no longer references deleted placeholder files"
         ],
         "sensitiveDataRules": [
           "Do not expose raw connection strings in UI change requests or mockups",

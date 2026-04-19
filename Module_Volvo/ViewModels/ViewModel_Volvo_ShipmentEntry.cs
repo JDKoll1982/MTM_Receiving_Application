@@ -119,7 +119,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _hasPendingShipment = false;
 
+    [ObservableProperty]
+    private bool _hasActiveQueueRows;
+
     private int? _currentShipmentId;
+    private string _lastGeneratedShipmentFingerprint = string.Empty;
 
     #endregion
 
@@ -168,6 +172,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 _currentShipmentId = pendingResult.Data.Id;
                 await LoadPendingShipmentAsync(pendingResult.Data.Id);
             }
+
+            await RefreshActiveQueueAvailabilityAsync();
 
             StatusMessage = "Ready";
         }
@@ -537,6 +543,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 HasPendingShipment = false;
                 _currentShipmentId = null;
                 StatusMessage = "Pending shipment removed";
+                await RefreshActiveQueueAvailabilityAsync();
             }
 
             await _logger.LogInfoAsync($"User removed part {removedPartNumber} from shipment");
@@ -629,6 +636,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (labelResult.IsSuccess)
             {
+                _lastGeneratedShipmentFingerprint = BuildCurrentGenerationFingerprint(shipmentId);
                 SuccessMessage = $"Labels generated successfully!\n{labelResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
@@ -1123,6 +1131,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Shipment #{ShipmentNumber} saved as pending";
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = true;
+                HasActiveQueueRows = true;
                 StatusMessage = "Shipment saved";
                 await _logger.LogInfoAsync(
                     $"Shipment #{ShipmentNumber} saved as pending (ID: {result.Data})"
@@ -1203,6 +1212,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 _currentShipmentId = result.Data;
                 HasPendingShipment = true;
+                HasActiveQueueRows = true;
                 return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
                 {
                     Success = true,
@@ -1389,6 +1399,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = false;
                 _currentShipmentId = null;
+                await RefreshActiveQueueAvailabilityAsync();
                 await _logger.LogInfoAsync(
                     $"Shipment #{ShipmentNumber} completed with PO: {poTextBox.Text.Trim()}"
                 );
@@ -1505,30 +1516,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     }
 
     /// <summary>
-    /// Moves all completed Volvo shipments from the active queue tables to the
-    /// history archive tables. Shows a confirmation dialog before proceeding.
+    /// Moves all active Volvo shipment rows from the queue tables to the
+    /// history archive tables after an explicit user confirmation.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanClearLabelData))]
     private async Task ClearLabelDataAsync()
     {
         try
         {
-            IsBusy = true;
-            StatusMessage = "Checking for completed shipments...";
-
-            var recentQuery = new GetRecentShipmentsQuery { Days = 365 };
-            var recentResult = await _mediator.Send(recentQuery);
-            var completedCount =
-                recentResult.IsSuccess && recentResult.Data != null
-                    ? recentResult.Data.Count(s => s.Status == VolvoShipmentStatus.Completed)
-                    : 0;
-
-            if (completedCount == 0)
-            {
-                StatusMessage = "No completed shipments to clear";
-                return;
-            }
-
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
             {
@@ -1539,12 +1534,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 Title = "Clear Label Data",
                 Content =
-                    $"Move {completedCount} completed shipment(s) to history archive? This cannot be undone.",
-                PrimaryButtonText = "Clear",
+                    "Are you sure you want to archive and clear the active Volvo label queue? All queued shipment rows will be moved to history. This action cannot be undone.",
+                PrimaryButtonText = "Clear Label Data",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = xamlRoot,
             };
+
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                confirmDialog,
+                xamlRoot
+            );
 
             var dialogResult = await confirmDialog.ShowAsync();
             if (dialogResult != ContentDialogResult.Primary)
@@ -1553,6 +1553,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return;
             }
 
+            IsBusy = true;
             StatusMessage = "Clearing label data...";
 
             var command = new ClearLabelDataCommand { ArchivedBy = Environment.UserName };
@@ -1560,12 +1561,30 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
-                SuccessMessage = $"Label data cleared — {result.Data} record(s) moved to history";
-                IsSuccessMessageVisible = true;
-                StatusMessage = "Label data cleared";
-                await _logger.LogInfoAsync(
-                    $"Clear label data completed: {result.Data} records archived by {Environment.UserName}"
-                );
+                if (result.Data > 0)
+                {
+                    SuccessMessage =
+                        $"Label data cleared — {result.Data} record(s) moved to history";
+                    IsSuccessMessageVisible = true;
+                    StatusMessage = "Label data cleared";
+                    HasPendingShipment = false;
+                    _lastGeneratedShipmentFingerprint = string.Empty;
+                    ClearShipmentForm();
+                    await RefreshActiveQueueAvailabilityAsync();
+                    await _logger.LogInfoAsync(
+                        $"Clear label data completed: {result.Data} records archived by {Environment.UserName}"
+                    );
+                }
+                else
+                {
+                    IsSuccessMessageVisible = false;
+                    SuccessMessage = string.Empty;
+                    StatusMessage = "No active label data found to clear";
+                    HasActiveQueueRows = false;
+                    await _logger.LogInfoAsync(
+                        $"Clear label data requested by {Environment.UserName}, but no active queue rows were available to archive."
+                    );
+                }
             }
             else
             {
@@ -1701,7 +1720,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     private bool CanGenerateLabels()
     {
-        return HasShipmentData();
+        return HasShipmentData() && !HasLabelsGeneratedForCurrentShipment();
     }
 
     private bool CanPreviewEmail()
@@ -1714,11 +1733,86 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         return !IsBusy && Parts.Count > 0;
     }
 
+    private bool CanClearLabelData()
+    {
+        return !IsBusy && HasActiveQueueRows;
+    }
+
     private bool HasShipmentData()
     {
         return !IsBusy
             && Parts.Count > 0
             && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+    }
+
+    private bool HasLabelsGeneratedForCurrentShipment()
+    {
+        if (string.IsNullOrWhiteSpace(_lastGeneratedShipmentFingerprint))
+        {
+            return false;
+        }
+
+        return string.Equals(
+            _lastGeneratedShipmentFingerprint,
+            BuildCurrentGenerationFingerprint(_currentShipmentId),
+            StringComparison.Ordinal
+        );
+    }
+
+    private string BuildCurrentGenerationFingerprint(int? shipmentId)
+    {
+        var normalizedNotes = string.IsNullOrWhiteSpace(Notes) ? string.Empty : Notes.Trim();
+        var orderedLines = Parts
+            .OrderBy(part => part.PartNumber, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(part => part.Location, StringComparer.OrdinalIgnoreCase)
+            .Select(part =>
+                string.Join(
+                    "|",
+                    part.PartNumber?.Trim() ?? string.Empty,
+                    part.Location?.Trim() ?? string.Empty,
+                    part.QuantityPerSkid,
+                    part.ReceivedSkidCount,
+                    part.CalculatedPieceCount,
+                    part.HasDiscrepancy,
+                    part.ExpectedSkidCount?.ToString() ?? string.Empty,
+                    part.DiscrepancyNote?.Trim() ?? string.Empty
+                )
+            );
+
+        return string.Join(
+            "||",
+            shipmentId?.ToString() ?? string.Empty,
+            ShipmentDate?.Date.ToString("yyyy-MM-dd") ?? string.Empty,
+            ShipmentNumber,
+            normalizedNotes,
+            string.Join("||", orderedLines)
+        );
+    }
+
+    private async Task RefreshActiveQueueAvailabilityAsync()
+    {
+        try
+        {
+            var activeQueueResult = await _mediator.Send(
+                new GetShipmentHistoryQuery
+                {
+                    StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
+                    EndDate = new DateTimeOffset(new DateTime(2100, 12, 31)),
+                    StatusFilter = VolvoShipmentStatus.AllDisplayName,
+                }
+            );
+
+            HasActiveQueueRows =
+                activeQueueResult.IsSuccess && activeQueueResult.Data is { Count: > 0 };
+        }
+        catch (Exception ex)
+        {
+            HasActiveQueueRows = false;
+            await _logger.LogErrorAsync(
+                $"Error checking Volvo active queue availability: {ex.Message}",
+                ex
+            );
+        }
     }
 
     private void RefreshCommandStates()
@@ -1727,6 +1821,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         GenerateLabelsCommand.NotifyCanExecuteChanged();
         PreviewEmailCommand.NotifyCanExecuteChanged();
         SaveAsPendingCommand.NotifyCanExecuteChanged();
+        ClearLabelDataCommand.NotifyCanExecuteChanged();
     }
 
     public async Task<string> ResolvePartLocationAsync(string partNumber)
@@ -1770,7 +1865,26 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     partial void OnPartsChanged(ObservableCollection<Model_VolvoShipmentLine> value)
     {
         AttachPartsCollectionHandlers(value);
+        _lastGeneratedShipmentFingerprint = string.Empty;
         ValidateSaveEligibility();
+    }
+
+    partial void OnShipmentDateChanged(DateTimeOffset? value)
+    {
+        _lastGeneratedShipmentFingerprint = string.Empty;
+        RefreshCommandStates();
+    }
+
+    partial void OnShipmentNumberChanged(int value)
+    {
+        _lastGeneratedShipmentFingerprint = string.Empty;
+        RefreshCommandStates();
+    }
+
+    partial void OnNotesChanged(string value)
+    {
+        _lastGeneratedShipmentFingerprint = string.Empty;
+        RefreshCommandStates();
     }
 
     partial void OnPartsChanging(
@@ -1806,6 +1920,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// </summary>
     private void ClearShipmentForm()
     {
+        _lastGeneratedShipmentFingerprint = string.Empty;
         ReplaceParts(Array.Empty<Model_VolvoShipmentLine>());
         Notes = string.Empty;
         ShipmentNumber = 1;
@@ -1892,6 +2007,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
         }
 
+        _lastGeneratedShipmentFingerprint = string.Empty;
         ValidateSaveEligibility();
     }
 
@@ -1914,6 +2030,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     private void OnShipmentLinePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        _lastGeneratedShipmentFingerprint = string.Empty;
         ValidateSaveEligibility();
     }
 

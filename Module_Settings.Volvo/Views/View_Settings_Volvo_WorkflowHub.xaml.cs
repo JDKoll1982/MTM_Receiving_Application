@@ -150,6 +150,8 @@ public sealed partial class View_Settings_Volvo_NavigationHub : Page
 
     private void OnStep5Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(5);
 
+    private void OnStep6Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(6);
+
     private void OnStepClicked(object sender, RoutedEventArgs e)
     {
         if (sender is not Button button)

@@ -19,6 +19,13 @@ public sealed partial class ViewModel_Settings_Volvo_NavigationHub
     {
         NavigationTitle = "Volvo Settings";
         CurrentStepTitle = NavigationTitle;
+
+        SetSteps(
+            new Model_SettingsNavigationStep(
+                "Part Catalog",
+                typeof(Views.View_Settings_Volvo_PartCatalog)
+            )
+        );
     }
 
     public void Save() { }

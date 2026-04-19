@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Volvo.Services;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 
 /// <summary>
-/// Handler for ClearLabelDataCommand — moves all completed Volvo shipments from the
+/// Handler for ClearLabelDataCommand — moves all active Volvo shipments from the
 /// active queue tables (volvo_label_data, volvo_line_data) into the history archive
 /// tables (volvo_label_history, volvo_line_history) via Dao_VolvoLabelHistory.
 /// Returns the total number of records archived (headers + lines).

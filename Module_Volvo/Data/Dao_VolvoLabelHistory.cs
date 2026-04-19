@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Data;
 /// <summary>
 /// Data access for the Volvo label history archive tables.
 /// <c>Clear Label Data</c> calls <see cref="ClearToHistoryAsync"/> which atomically
-/// moves all <c>status='completed'</c> rows from <c>volvo_label_data</c> and
+/// moves all rows from <c>volvo_label_data</c> and
 /// <c>volvo_line_data</c> into <c>volvo_label_history</c> and <c>volvo_line_history</c>.
 /// </summary>
 public class Dao_VolvoLabelHistory : IDao_VolvoLabelHistory
@@ -23,7 +23,7 @@ public class Dao_VolvoLabelHistory : IDao_VolvoLabelHistory
     }
 
     /// <summary>
-    /// Atomically moves all completed Volvo shipments (and their lines) from the active tables
+    /// Atomically moves all active Volvo shipments (and their lines) from the active tables
     /// to the history archive tables via <c>sp_Volvo_LabelData_ClearToHistory</c>.
     /// Returns a tuple of <c>(HeadersMoved, LinesMoved)</c> on success.
     /// </summary>

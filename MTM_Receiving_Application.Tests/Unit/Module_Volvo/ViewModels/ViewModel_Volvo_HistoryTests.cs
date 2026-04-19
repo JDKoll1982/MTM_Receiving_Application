@@ -47,6 +47,7 @@ public sealed class ViewModel_Volvo_HistoryTests
             mediatorMock.Object,
             new Mock<IService_InforVisual>().Object,
             new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_Window>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

@@ -289,6 +289,11 @@
             />
             <AppBarSeparator />
             <AppBarButton
+                Icon="Delete"
+                Label="Clear Label Data"
+                Command="{x:Bind ViewModel.ClearLabelDataCommand}"
+            />
+            <AppBarButton
                 Icon="Calendar"
                 Label="View History"
                 Command="{x:Bind ViewModel.ViewHistoryCommand}"

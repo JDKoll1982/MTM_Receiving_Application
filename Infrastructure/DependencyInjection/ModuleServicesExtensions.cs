@@ -250,20 +250,17 @@ public static class ModuleServicesExtensions
 
         // ViewModels (Transient)
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
-        services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_EmailPreviewDialog>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentHistoryDetailDialog>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
-        services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_History>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_EmailPreviewDialog>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentHistoryDetailDialog>();
 
         // Dialogs (Transient - Created on demand)
-        services.AddTransient<Module_Volvo.Views.VolvoPartAddEditDialog>();
         services.AddTransient<Module_Volvo.Views.VolvoShipmentEditDialog>();
 
         return services;
@@ -378,6 +375,8 @@ public static class ModuleServicesExtensions
 
         // Reporting Settings Pages
         // Volvo Settings Pages
+        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_PartCatalog>();
+
         // Settings Views (Transient - Per-view instances with constructor DI)
         RegisterSettingsViews(services);
     }
@@ -416,6 +415,7 @@ public static class ModuleServicesExtensions
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog>();
     }
 
     /// <summary>

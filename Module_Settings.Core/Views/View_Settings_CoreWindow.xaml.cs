@@ -306,33 +306,13 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             ),
 
             // Volvo Settings Pages
-            "View_Settings_Volvo_SettingsOverview" => (
-                "Volvo Settings",
-                "Review the current Volvo configuration and jump to common sections."
-            ),
-            "View_Settings_Volvo_DatabaseSettings" => (
-                "Database Settings",
-                "Configure Volvo database connection and options."
-            ),
-            "View_Settings_Volvo_ConnectionStrings" => (
-                "Connection Strings",
-                "Manage database and service connection strings."
-            ),
-            "View_Settings_Volvo_FilePaths" => (
-                "File Paths",
-                "Configure file locations and paths for Volvo operations."
-            ),
-            "View_Settings_Volvo_UiConfiguration" => (
-                "UI Configuration",
-                "Customize the Volvo user interface."
-            ),
-            "View_Settings_Volvo_ExternalizationBacklog" => (
-                "Backlog",
-                "Review pending items for externalization."
+            "View_Settings_Volvo_PartCatalog" => (
+                "Part Catalog",
+                "Manage Volvo part master data, import catalog rows, and launch part maintenance actions."
             ),
             "View_Settings_Volvo_NavigationHub" => (
                 "Volvo Settings",
-                "Additional Volvo settings will appear here in a future release."
+                "Open the active Volvo settings surface."
             ),
 
             // Core Settings Pages
@@ -689,12 +669,12 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 return true;
             case "VolvoSettingsHub":
                 SettingsFrame.Content =
-                    _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+                    _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog>();
                 _currentNestedSettingsPageType =
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog);
                 SetHeader(
-                    "Volvo Settings",
-                    "Additional Volvo settings will appear here in a future release."
+                    "Part Catalog",
+                    "Manage Volvo part master data, import catalog rows, and launch part maintenance actions."
                 );
                 UpdateHeaderActions();
                 return true;

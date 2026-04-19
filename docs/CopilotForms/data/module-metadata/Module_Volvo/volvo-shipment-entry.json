@@ -2,7 +2,7 @@
   "id": "volvo-shipment-entry",
   "module": "Module_Volvo",
   "name": "Shipment Entry",
-  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, DAO-owned shipment-line transaction handling, validators, HTML email-preview launch points, and responsive host dialogs.",
+  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, active-queue-aware label-data cleanup, duplicate label-generation guards for unchanged shipments, DAO-owned shipment-line transaction handling, validators, HTML email-preview launch points, and responsive host dialogs.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -31,13 +31,17 @@
     "Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs",
     "Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs",
     "Module_Volvo/Requests/Commands/DeletePendingShipmentCommand.cs",
+    "Module_Volvo/Requests/Commands/ClearLabelDataCommand.cs",
     "Module_Volvo/Requests/Commands/UpdateShipmentCommand.cs",
     "Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/DeletePendingShipmentCommandHandler.cs",
+    "Module_Volvo/Handlers/Commands/ClearLabelDataCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandler.cs",
+    "Module_Volvo/Data/IDao_VolvoLabelHistory.cs",
+    "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
     "Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs",
     "Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs",
     "Module_Volvo/Validators/CompleteShipmentCommandValidator.cs",
@@ -57,6 +61,8 @@
       "Pending shipment restore",
       "Shipment-line editing",
       "Save and complete shipment flow",
+      "Active-queue archive cleanup",
+      "Duplicate label-generation prevention",
       "Responsive shipment edit dialog sizing"
     ],
     "screens": [
@@ -70,18 +76,25 @@
       "Shipment number",
       "Parts grid",
       "Save action",
-      "Complete action"
+      "Complete action",
+      "Clear label data action",
+      "Generate labels action"
     ],
     "userActions": [
       "Create or continue a Volvo shipment",
       "Add or remove shipment parts",
       "Save progress",
-      "Complete the shipment"
+      "Complete the shipment",
+      "Archive and clear active Volvo shipment label data",
+      "Generate labels once per unchanged shipment snapshot"
     ],
     "validationHints": [
       "Confirm pending shipment restore still loads the correct shipment state",
       "Confirm pending shipment restore and part suggestions still repopulate bound collections correctly after whole-collection replacement",
       "Confirm shipment-line commands and completion still follow the intended guarded behavior",
+      "Confirm Clear Label Data is disabled when the Volvo active queue has no rows and enabled once active shipment rows exist",
+      "Confirm Clear Label Data archives and clears the active Volvo shipment queue regardless of row status",
+      "Confirm Generate Labels is disabled after a successful run for the current unchanged shipment and re-enables after shipment header or line data changes",
       "Confirm shipment-line persistence still behaves transactionally after transaction ownership moved out of the service layer",
       "Confirm the shipment edit dialog applies responsive sizing cleanly when opened from history"
     ]
