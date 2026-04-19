@@ -45,7 +45,7 @@
                     Grid.Row="2"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    VerticalScrollBarVisibility="Auto">
+                    Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                     <ItemsControl
                         x:Name="LoadsItemsControl"
                         FlowDirection="LeftToRight"

@@ -1,19 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Application
     x:Class="MTM_Receiving_Application.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MTM_Receiving_Application"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
->
+    xmlns:local="using:MTM_Receiving_Application">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="ms-appx:///Module_Core/Themes/MaterialIcons.xaml" />
-                <!-- Other merged dictionaries here -->
+                <!--  Other merged dictionaries here  -->
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
+            <!--  Other app resources here  -->
+            <!--  Horizontal content can scroll freely while vertical scrolling stays locked.  -->
+            <Style x:Key="SharedScrollViewerHorizontalOnVerticalOffHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Enabled" />
+                <Setter Property="VerticalScrollMode" Value="Disabled" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
+            <!--  Horizontal content scrolls only when needed while vertical scrolling stays locked.  -->
+            <Style x:Key="SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Auto" />
+                <Setter Property="VerticalScrollMode" Value="Disabled" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
+            <!--  Vertical content can scroll freely while horizontal scrolling stays locked.  -->
+            <Style x:Key="SharedScrollViewerVerticalOnHorizontalOffHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Disabled" />
+                <Setter Property="VerticalScrollMode" Value="Enabled" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
+            <!--  Vertical content scrolls only when needed while horizontal scrolling stays locked.  -->
+            <Style x:Key="SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Disabled" />
+                <Setter Property="VerticalScrollMode" Value="Auto" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
+            <!--  Both axes remain available for layouts that need unrestricted panning.  -->
+            <Style x:Key="SharedScrollViewerBothOnHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Enabled" />
+                <Setter Property="VerticalScrollMode" Value="Enabled" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
+            <!--  Both axes scroll only when content exceeds the viewport.  -->
+            <Style x:Key="SharedScrollViewerBothAutoHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Auto" />
+                <Setter Property="VerticalScrollMode" Value="Auto" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
+            <!--  Both axes are intentionally locked for static layouts inside a ScrollViewer wrapper.  -->
+            <Style x:Key="SharedScrollViewerBothOffHiddenStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalScrollMode" Value="Disabled" />
+                <Setter Property="VerticalScrollMode" Value="Disabled" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+            </Style>
             <Style TargetType="controls:DataGrid">
                 <Setter Property="RowBackground" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
                 <Setter Property="AlternatingRowBackground" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />

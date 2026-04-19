@@ -193,10 +193,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Selected Line Summary" />
-                        <ScrollViewer
-                            Grid.Row="1"
-                            HorizontalScrollBarVisibility="Disabled"
-                            VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                             <StackPanel Spacing="8">
                                 <TextBlock
                                     FontFamily="Consolas"

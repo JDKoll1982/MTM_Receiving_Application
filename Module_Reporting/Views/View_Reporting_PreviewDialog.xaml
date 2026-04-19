@@ -1,70 +1,56 @@
 <ContentDialog
     x:Class="MTM_Receiving_Application.Module_Reporting.Views.View_Reporting_PreviewDialog"
-    x:Name="DialogRoot"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.Reporting"
     xmlns:previewModels="using:MTM_Receiving_Application.Module_Reporting.Models"
-    mc:Ignorable="d"
+    x:Name="DialogRoot"
     Title="Report preview"
-    CloseButtonText="Close"
-    DefaultButton="Close"
-    HorizontalContentAlignment="Stretch"
-    VerticalContentAlignment="Stretch"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch"
->
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    CloseButtonText="Close"
+    DefaultButton="Close"
+    mc:Ignorable="d">
     <ContentDialog.Resources>
         <x:Double x:Key="ContentDialogMinWidth">1320</x:Double>
         <x:Double x:Key="ContentDialogMaxWidth">2200</x:Double>
 
-        <DataTemplate
-            x:Key="PreviewModuleCardTemplate"
-            x:DataType="previewModels:Model_ReportingPreviewModuleCard"
-        >
+        <DataTemplate x:Key="PreviewModuleCardTemplate" x:DataType="previewModels:Model_ReportingPreviewModuleCard">
             <Border
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                CornerRadius="8"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            >
+                CornerRadius="8">
                 <StackPanel Spacing="0">
-                    <Border Background="{x:Bind AccentBackgroundBrush}" Padding="12,10">
+                    <Border Padding="12,10" Background="{x:Bind AccentBackgroundBrush}">
                         <TextBlock
-                            Text="{x:Bind CardTitle}"
-                            Foreground="{x:Bind AccentForegroundBrush}"
                             FontSize="18"
                             FontWeight="SemiBold"
-                            TextWrapping="WrapWholeWords"
-                        />
+                            Foreground="{x:Bind AccentForegroundBrush}"
+                            Text="{x:Bind CardTitle}"
+                            TextWrapping="WrapWholeWords" />
                     </Border>
 
-                    <StackPanel Padding="16" Spacing="16" HorizontalAlignment="Stretch">
+                    <StackPanel
+                        Padding="16"
+                        HorizontalAlignment="Stretch"
+                        Spacing="16">
                         <StackPanel Spacing="8">
-                            <TextBlock
-                                Text="Summary"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                            />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Summary" />
 
-                            <ScrollViewer
-                                HorizontalScrollBarVisibility="Auto"
-                                VerticalScrollBarVisibility="Disabled"
-                                HorizontalAlignment="Stretch"
-                            >
+                            <ScrollViewer HorizontalAlignment="Stretch" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">
                                 <Border
+                                    Width="{x:Bind SummaryTable.TableWidth}"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="4"
-                                    Width="{x:Bind SummaryTable.TableWidth}"
-                                >
+                                    CornerRadius="4">
                                     <StackPanel>
-                                        <Border
-                                            x:Name="SummaryHeaderRow"
-                                            Background="{x:Bind AccentBackgroundBrush}"
-                                        >
+                                        <Border x:Name="SummaryHeaderRow" Background="{x:Bind AccentBackgroundBrush}">
                                             <ItemsControl ItemsSource="{x:Bind SummaryTable.Columns}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
@@ -77,17 +63,15 @@
                                                             Width="{x:Bind Width}"
                                                             Background="{Binding Background, ElementName=SummaryHeaderRow}"
                                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                            BorderThickness="0,0,1,0"
-                                                        >
+                                                            BorderThickness="0,0,1,0">
                                                             <TextBlock
-                                                                Text="{x:Bind Header}"
-                                                                Foreground="White"
-                                                                FontWeight="SemiBold"
                                                                 Padding="12,10"
                                                                 HorizontalAlignment="Center"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="White"
+                                                                Text="{x:Bind Header}"
                                                                 TextAlignment="Center"
-                                                                TextWrapping="WrapWholeWords"
-                                                            />
+                                                                TextWrapping="WrapWholeWords" />
                                                         </Border>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -98,10 +82,9 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="models:Model_ReportSummaryTableRow">
                                                     <Border
-                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                        BorderThickness="0,0,0,1"
                                                         Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                                                    >
+                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="0,0,0,1">
                                                         <ItemsControl ItemsSource="{x:Bind Cells}">
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -113,15 +96,13 @@
                                                                     <Border
                                                                         Width="{x:Bind Width}"
                                                                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                                        BorderThickness="0,0,1,0"
-                                                                    >
+                                                                        BorderThickness="0,0,1,0">
                                                                         <TextBlock
-                                                                            Text="{x:Bind Value}"
                                                                             Padding="12,10"
                                                                             HorizontalAlignment="Center"
-                                                                            TextAlignment="Center"
                                                                             FontWeight="SemiBold"
-                                                                        />
+                                                                            Text="{x:Bind Value}"
+                                                                            TextAlignment="Center" />
                                                                     </Border>
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
@@ -136,39 +117,29 @@
                         </StackPanel>
 
                         <StackPanel Spacing="8">
-                            <TextBlock
-                                Text="{x:Bind DetailSectionTitle}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                            />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind DetailSectionTitle}" />
 
                             <TextBlock
                                 x:Name="DetailSectionNoteTextBlock"
                                 x:Load="{x:Bind HasDetailSectionNote, Mode=OneWay}"
-                                Text="{x:Bind DetailSectionNote}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                TextWrapping="WrapWholeWords"
-                            />
+                                Text="{x:Bind DetailSectionNote}"
+                                TextWrapping="WrapWholeWords" />
 
                             <TextBlock
                                 x:Name="DetailDescriptionTextBlock"
                                 x:Load="{x:Bind HasDescription, Mode=OneWay}"
-                                Text="{x:Bind Description}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                TextWrapping="WrapWholeWords"
-                            />
+                                Text="{x:Bind Description}"
+                                TextWrapping="WrapWholeWords" />
 
-                            <ScrollViewer
-                                HorizontalScrollBarVisibility="Auto"
-                                VerticalScrollBarVisibility="Disabled"
-                                HorizontalAlignment="Stretch"
-                            >
+                            <ScrollViewer HorizontalAlignment="Stretch" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">
                                 <Border
+                                    Width="{x:Bind DetailTableWidth}"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="4"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    Width="{x:Bind DetailTableWidth}"
-                                >
+                                    CornerRadius="4">
                                     <StackPanel>
                                         <Border Background="{x:Bind AccentBackgroundBrush}">
                                             <ItemsControl ItemsSource="{x:Bind IncludedColumns}">
@@ -179,16 +150,18 @@
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate x:DataType="previewModels:Model_ReportingPreviewColumnOption">
-                                                        <Border Width="{x:Bind Width}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
+                                                        <Border
+                                                            Width="{x:Bind Width}"
+                                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                            BorderThickness="0,0,1,0">
                                                             <TextBlock
-                                                                Text="{x:Bind Header}"
-                                                                Foreground="White"
-                                                                FontWeight="SemiBold"
                                                                 Padding="12,10"
                                                                 HorizontalAlignment="Center"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="White"
+                                                                Text="{x:Bind Header}"
                                                                 TextAlignment="Center"
-                                                                TextWrapping="WrapWholeWords"
-                                                            />
+                                                                TextWrapping="WrapWholeWords" />
                                                         </Border>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -199,10 +172,9 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="previewModels:Model_ReportingPreviewRow">
                                                     <Border
-                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                        BorderThickness="0,0,0,1"
                                                         Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                                                    >
+                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="0,0,0,1">
                                                         <ItemsControl ItemsSource="{x:Bind Cells}">
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -211,13 +183,15 @@
                                                             </ItemsControl.ItemsPanel>
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate x:DataType="previewModels:Model_ReportingPreviewCell">
-                                                                    <Border Width="{x:Bind Width}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
+                                                                    <Border
+                                                                        Width="{x:Bind Width}"
+                                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                                        BorderThickness="0,0,1,0">
                                                                         <TextBlock
-                                                                            Text="{x:Bind Value}"
                                                                             Padding="12,10"
+                                                                            Text="{x:Bind Value}"
                                                                             TextAlignment="{x:Bind TextAlignment}"
-                                                                            TextWrapping="WrapWholeWords"
-                                                                        />
+                                                                            TextWrapping="WrapWholeWords" />
                                                                     </Border>
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
@@ -235,77 +209,62 @@
             </Border>
         </DataTemplate>
 
-        <DataTemplate
-            x:Key="OptionsModuleTemplate"
-            x:DataType="previewModels:Model_ReportingPreviewModuleCard"
-        >
+        <DataTemplate x:Key="OptionsModuleTemplate" x:DataType="previewModels:Model_ReportingPreviewModuleCard">
             <StackPanel Spacing="12">
                 <CheckBox
                     Content="Include this module in the preview and copied output"
-                    IsChecked="{x:Bind IsIncluded, Mode=TwoWay}"
                     FontWeight="SemiBold"
-                />
+                    IsChecked="{x:Bind IsIncluded, Mode=TwoWay}" />
 
                 <TextBlock
                     x:Name="OptionsDetailSectionNoteTextBlock"
                     x:Load="{x:Bind HasDetailSectionNote, Mode=OneWay}"
-                    Text="{x:Bind DetailSectionNote}"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    TextWrapping="WrapWholeWords"
-                />
+                    Text="{x:Bind DetailSectionNote}"
+                    TextWrapping="WrapWholeWords" />
 
                 <TextBlock
-                    Text="Sort rows"
                     FontWeight="SemiBold"
                     Style="{StaticResource BodyStrongTextBlockStyle}"
-                />
+                    Text="Sort rows" />
 
                 <TextBlock
-                    Text="Choose how this module table is ordered in the preview and copied report."
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    TextWrapping="WrapWholeWords"
-                />
+                    Text="Choose how this module table is ordered in the preview and copied report."
+                    TextWrapping="WrapWholeWords" />
 
                 <ComboBox
+                    DisplayMemberPath="Label"
                     Header="Sort by"
                     ItemsSource="{x:Bind SortOptions}"
-                    DisplayMemberPath="Label"
-                    SelectedValuePath="Key"
                     SelectedValue="{x:Bind SelectedSortOptionKey, Mode=TwoWay}"
-                />
+                    SelectedValuePath="Key" />
 
                 <StackPanel Orientation="Horizontal" Spacing="16">
                     <RadioButton
                         Content="Ascending"
                         IsChecked="{x:Bind IsAscendingSortDirection, Mode=TwoWay}"
-                        IsEnabled="{x:Bind IsSortDirectionEnabled, Mode=OneWay}"
-                    />
+                        IsEnabled="{x:Bind IsSortDirectionEnabled, Mode=OneWay}" />
                     <RadioButton
                         Content="Descending"
                         IsChecked="{x:Bind IsDescendingSortDirection, Mode=TwoWay}"
-                        IsEnabled="{x:Bind IsSortDirectionEnabled, Mode=OneWay}"
-                    />
+                        IsEnabled="{x:Bind IsSortDirectionEnabled, Mode=OneWay}" />
                 </StackPanel>
 
                 <TextBlock
-                    Text="Detail columns"
                     FontWeight="SemiBold"
                     Style="{StaticResource BodyStrongTextBlockStyle}"
-                />
+                    Text="Detail columns" />
 
                 <TextBlock
-                    Text="Only columns that contain data for this module are listed below."
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    TextWrapping="WrapWholeWords"
-                />
+                    Text="Only columns that contain data for this module are listed below."
+                    TextWrapping="WrapWholeWords" />
 
                 <ItemsControl ItemsSource="{x:Bind AvailableColumns}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="previewModels:Model_ReportingPreviewColumnOption">
-                            <CheckBox
-                                IsChecked="{x:Bind IsIncluded, Mode=TwoWay}"
-                                IsEnabled="{x:Bind CanChangeInOptions, Mode=OneWay}"
-                            >
+                            <CheckBox IsChecked="{x:Bind IsIncluded, Mode=TwoWay}" IsEnabled="{x:Bind CanChangeInOptions, Mode=OneWay}">
                                 <CheckBox.Content>
                                     <TextBlock Text="{x:Bind Header}" TextWrapping="WrapWholeWords" />
                                 </CheckBox.Content>
@@ -318,145 +277,116 @@
     </ContentDialog.Resources>
 
     <Grid>
-        <ScrollViewer
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled"
-            MaxHeight="900"
-        >
-            <StackPanel Spacing="16" Padding="20,18,20,20">
-            <Grid ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+        <ScrollViewer MaxHeight="900" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+            <StackPanel Padding="20,18,20,20" Spacing="16">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Spacing="2">
-                    <TextBlock
-                        Text="{x:Bind ViewModel.PreviewSummaryTitle, Mode=OneWay}"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        FontWeight="SemiBold"
-                    />
-                    <TextBlock
-                        Text="Review the generated modules below, then use Customize Preview to choose which modules and detail columns stay in the final preview and copied report."
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        TextWrapping="WrapWholeWords"
-                    />
-                </StackPanel>
+                    <StackPanel Grid.Column="0" Spacing="2">
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind ViewModel.PreviewSummaryTitle, Mode=OneWay}" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Review the generated modules below, then use Customize Preview to choose which modules and detail columns stay in the final preview and copied report."
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
 
-                <Button
-                    Grid.Column="1"
-                    Content="Options"
-                    Command="{x:Bind ViewModel.OpenOptionsCommand}"
-                    VerticalAlignment="Center"
-                />
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Command="{x:Bind ViewModel.OpenOptionsCommand}"
+                        Content="Options" />
 
-                <Button
-                    Grid.Column="2"
-                    Content="Copy Report Summary"
-                    Command="{x:Bind ViewModel.CopyEmailFormatCommand}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    VerticalAlignment="Center"
-                />
-            </Grid>
+                    <Button
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Command="{x:Bind ViewModel.CopyEmailFormatCommand}"
+                        Content="Copy Report Summary"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </Grid>
 
-            <Border
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                Padding="14"
-            >
-                <StackPanel Spacing="10">
-                    <TextBlock
-                        Text="Included Modules"
-                        FontWeight="SemiBold"
-                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                    />
+                <Border
+                    Padding="14"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="Included Modules" />
 
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.IncludedPreviewModuleCards, Mode=OneWay}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="previewModels:Model_ReportingPreviewModuleCard">
-                                <Border
-                                    Background="{x:Bind AccentBackgroundBrush}"
-                                    CornerRadius="999"
-                                    Padding="12,6"
-                                    Margin="0,0,16,0"
-                                    VerticalAlignment="Center"
-                                >
-                                    <TextBlock
-                                        Text="{x:Bind ModuleName}"
-                                        Foreground="{x:Bind AccentForegroundBrush}"
-                                        FontWeight="SemiBold"
-                                    />
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.IncludedPreviewModuleCards, Mode=OneWay}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="previewModels:Model_ReportingPreviewModuleCard">
+                                    <Border
+                                        Margin="0,0,16,0"
+                                        Padding="12,6"
+                                        VerticalAlignment="Center"
+                                        Background="{x:Bind AccentBackgroundBrush}"
+                                        CornerRadius="999">
+                                        <TextBlock
+                                            FontWeight="SemiBold"
+                                            Foreground="{x:Bind AccentForegroundBrush}"
+                                            Text="{x:Bind ModuleName}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
 
-            <Pivot
-                x:Name="PreviewModulesPivot"
-                x:Load="{x:Bind ViewModel.HasIncludedPreviewModuleCards, Mode=OneWay}"
-            >
-                <PivotItem
-                    x:Name="ReceivingPreviewPivotItem"
-                    Header="Receiving"
-                    x:Load="{x:Bind ViewModel.HasReceivingIncludedPreviewModuleCard, Mode=OneWay}"
-                >
-                    <ContentControl
-                        Content="{x:Bind ViewModel.ReceivingPreviewModuleCard, Mode=OneWay}"
-                        ContentTemplate="{StaticResource PreviewModuleCardTemplate}"
-                    />
-                </PivotItem>
-                <PivotItem
-                    x:Name="DunnagePreviewPivotItem"
-                    Header="Dunnage"
-                    x:Load="{x:Bind ViewModel.HasDunnageIncludedPreviewModuleCard, Mode=OneWay}"
-                >
-                    <ContentControl
-                        Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}"
-                        ContentTemplate="{StaticResource PreviewModuleCardTemplate}"
-                    />
-                </PivotItem>
-                <PivotItem
-                    x:Name="VolvoPreviewPivotItem"
-                    Header="Volvo"
-                    x:Load="{x:Bind ViewModel.HasVolvoIncludedPreviewModuleCard, Mode=OneWay}"
-                >
-                    <ContentControl
-                        Content="{x:Bind ViewModel.VolvoPreviewModuleCard, Mode=OneWay}"
-                        ContentTemplate="{StaticResource PreviewModuleCardTemplate}"
-                    />
-                </PivotItem>
-            </Pivot>
+                <Pivot x:Name="PreviewModulesPivot" x:Load="{x:Bind ViewModel.HasIncludedPreviewModuleCards, Mode=OneWay}">
+                    <PivotItem
+                        x:Name="ReceivingPreviewPivotItem"
+                        x:Load="{x:Bind ViewModel.HasReceivingIncludedPreviewModuleCard, Mode=OneWay}"
+                        Header="Receiving">
+                        <ContentControl Content="{x:Bind ViewModel.ReceivingPreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
+                    </PivotItem>
+                    <PivotItem
+                        x:Name="DunnagePreviewPivotItem"
+                        x:Load="{x:Bind ViewModel.HasDunnageIncludedPreviewModuleCard, Mode=OneWay}"
+                        Header="Dunnage">
+                        <ContentControl Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
+                    </PivotItem>
+                    <PivotItem
+                        x:Name="VolvoPreviewPivotItem"
+                        x:Load="{x:Bind ViewModel.HasVolvoIncludedPreviewModuleCard, Mode=OneWay}"
+                        Header="Volvo">
+                        <ContentControl Content="{x:Bind ViewModel.VolvoPreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
+                    </PivotItem>
+                </Pivot>
             </StackPanel>
         </ScrollViewer>
 
         <Border
             x:Name="OptionsOverlayBorder"
             x:Load="{x:Bind ViewModel.IsOptionsOpen, Mode=OneWay}"
-            Background="#66000000"
-        >
+            Background="#66000000">
             <Border
                 Width="760"
                 MaxWidth="760"
                 MaxHeight="820"
+                Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="White"
-                CornerRadius="12"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Padding="20"
-            >
+                CornerRadius="12">
                 <Grid RowSpacing="16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -466,145 +396,106 @@
 
                     <StackPanel Grid.Row="0" Spacing="8">
                         <TextBlock
-                            Text="Options"
                             FontSize="18"
                             FontWeight="SemiBold"
-                        />
+                            Text="Options" />
                         <TextBlock
-                            Text="Choose how detail rows are combined, decide which modules stay included, and control which detail columns remain visible."
-                            TextWrapping="WrapWholeWords"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        />
+                            Text="Choose how detail rows are combined, decide which modules stay included, and control which detail columns remain visible."
+                            TextWrapping="WrapWholeWords" />
                     </StackPanel>
 
                     <ScrollViewer
                         Grid.Row="1"
-                        VerticalScrollBarVisibility="Auto"
-                        HorizontalScrollBarVisibility="Disabled"
                         MaxHeight="680"
-                    >
+                        Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                         <StackPanel Spacing="20">
                             <StackPanel Spacing="10">
                                 <TextBlock
-                                    Text="Row Display Mode"
                                     FontWeight="SemiBold"
                                     Style="{StaticResource BodyStrongTextBlockStyle}"
-                                />
+                                    Text="Row Display Mode" />
 
-                                <RadioButton
-                                    GroupName="PreviewRowDisplayMode"
-                                    IsChecked="{x:Bind ViewModel.IsRawRowsMode, Mode=TwoWay}"
-                                >
+                                <RadioButton GroupName="PreviewRowDisplayMode" IsChecked="{x:Bind ViewModel.IsRawRowsMode, Mode=TwoWay}">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Show Every Row" FontWeight="SemiBold" />
+                                        <TextBlock FontWeight="SemiBold" Text="Show Every Row" />
                                         <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Text="Keeps the current raw transaction-row view for each selected module."
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="WrapWholeWords"
-                                        />
+                                            TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </RadioButton>
 
-                                <RadioButton
-                                    GroupName="PreviewRowDisplayMode"
-                                    IsChecked="{x:Bind ViewModel.IsUniquePartNumbersEntireDateRangeMode, Mode=TwoWay}"
-                                >
+                                <RadioButton GroupName="PreviewRowDisplayMode" IsChecked="{x:Bind ViewModel.IsUniquePartNumbersEntireDateRangeMode, Mode=TwoWay}">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Unique Part Numbers - Entire Date Range" FontWeight="SemiBold" />
+                                        <TextBlock FontWeight="SemiBold" Text="Unique Part Numbers - Entire Date Range" />
                                         <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Text="Combines rows by part number across the full selected date range."
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="WrapWholeWords"
-                                        />
+                                            TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </RadioButton>
 
-                                <RadioButton
-                                    GroupName="PreviewRowDisplayMode"
-                                    IsChecked="{x:Bind ViewModel.IsUniquePartNumbersAndLotNumbersEntireDateRangeMode, Mode=TwoWay}"
-                                >
+                                <RadioButton GroupName="PreviewRowDisplayMode" IsChecked="{x:Bind ViewModel.IsUniquePartNumbersAndLotNumbersEntireDateRangeMode, Mode=TwoWay}">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Unique Part Numbers And Lot Numbers - Entire Date Range" FontWeight="SemiBold" />
+                                        <TextBlock FontWeight="SemiBold" Text="Unique Part Numbers And Lot Numbers - Entire Date Range" />
                                         <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Text="Combines rows by part number and lot across the full selected date range."
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="WrapWholeWords"
-                                        />
+                                            TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </RadioButton>
 
-                                <RadioButton
-                                    GroupName="PreviewRowDisplayMode"
-                                    IsChecked="{x:Bind ViewModel.IsUniquePartNumbersPerDayMode, Mode=TwoWay}"
-                                >
+                                <RadioButton GroupName="PreviewRowDisplayMode" IsChecked="{x:Bind ViewModel.IsUniquePartNumbersPerDayMode, Mode=TwoWay}">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Unique Part Numbers - Per Day" FontWeight="SemiBold" />
+                                        <TextBlock FontWeight="SemiBold" Text="Unique Part Numbers - Per Day" />
                                         <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Text="Combines rows by part number inside each created-date bucket."
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="WrapWholeWords"
-                                        />
+                                            TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </RadioButton>
 
-                                <RadioButton
-                                    GroupName="PreviewRowDisplayMode"
-                                    IsChecked="{x:Bind ViewModel.IsUniquePartNumbersAndLotNumbersPerDayMode, Mode=TwoWay}"
-                                >
+                                <RadioButton GroupName="PreviewRowDisplayMode" IsChecked="{x:Bind ViewModel.IsUniquePartNumbersAndLotNumbersPerDayMode, Mode=TwoWay}">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Unique Part Numbers And Lot Numbers - Per Day" FontWeight="SemiBold" />
+                                        <TextBlock FontWeight="SemiBold" Text="Unique Part Numbers And Lot Numbers - Per Day" />
                                         <TextBlock
-                                            Text="Combines rows by part number and lot inside each created-date bucket."
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            TextWrapping="WrapWholeWords"
-                                        />
+                                            Text="Combines rows by part number and lot inside each created-date bucket."
+                                            TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </RadioButton>
 
                                 <TextBlock
-                                    Text="Modules that do not expose part-number grouping data stay in raw-row mode for the part-based combine options."
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    TextWrapping="WrapWholeWords"
-                                />
+                                    Text="Modules that do not expose part-number grouping data stay in raw-row mode for the part-based combine options."
+                                    TextWrapping="WrapWholeWords" />
                             </StackPanel>
 
                             <StackPanel Spacing="10">
                                 <TextBlock
-                                    Text="Module Options"
                                     FontWeight="SemiBold"
                                     Style="{StaticResource BodyStrongTextBlockStyle}"
-                                />
+                                    Text="Module Options" />
 
                                 <Pivot>
                                     <PivotItem
                                         x:Name="ReceivingOptionsPivotItem"
-                                        Header="Receiving"
                                         x:Load="{x:Bind ViewModel.HasReceivingPreviewModuleCard, Mode=OneWay}"
-                                    >
-                                        <ContentControl
-                                            Content="{x:Bind ViewModel.ReceivingPreviewModuleCard, Mode=OneWay}"
-                                            ContentTemplate="{StaticResource OptionsModuleTemplate}"
-                                        />
+                                        Header="Receiving">
+                                        <ContentControl Content="{x:Bind ViewModel.ReceivingPreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource OptionsModuleTemplate}" />
                                     </PivotItem>
                                     <PivotItem
                                         x:Name="DunnageOptionsPivotItem"
-                                        Header="Dunnage"
                                         x:Load="{x:Bind ViewModel.HasDunnagePreviewModuleCard, Mode=OneWay}"
-                                    >
-                                        <ContentControl
-                                            Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}"
-                                            ContentTemplate="{StaticResource OptionsModuleTemplate}"
-                                        />
+                                        Header="Dunnage">
+                                        <ContentControl Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource OptionsModuleTemplate}" />
                                     </PivotItem>
                                     <PivotItem
                                         x:Name="VolvoOptionsPivotItem"
-                                        Header="Volvo"
                                         x:Load="{x:Bind ViewModel.HasVolvoPreviewModuleCard, Mode=OneWay}"
-                                    >
-                                        <ContentControl
-                                            Content="{x:Bind ViewModel.VolvoPreviewModuleCard, Mode=OneWay}"
-                                            ContentTemplate="{StaticResource OptionsModuleTemplate}"
-                                        />
+                                        Header="Volvo">
+                                        <ContentControl Content="{x:Bind ViewModel.VolvoPreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource OptionsModuleTemplate}" />
                                     </PivotItem>
                                 </Pivot>
                             </StackPanel>
@@ -613,11 +504,10 @@
 
                     <Button
                         Grid.Row="2"
-                        Content="Done"
-                        Command="{x:Bind ViewModel.CloseOptionsCommand}"
-                        HorizontalAlignment="Right"
                         MinWidth="96"
-                    />
+                        HorizontalAlignment="Right"
+                        Command="{x:Bind ViewModel.CloseOptionsCommand}"
+                        Content="Done" />
                 </Grid>
             </Border>
         </Border>

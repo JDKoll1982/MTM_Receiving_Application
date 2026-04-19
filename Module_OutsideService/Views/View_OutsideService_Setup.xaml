@@ -12,7 +12,7 @@
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
     </Page.Resources>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" HorizontalScrollMode="Disabled">
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
         <Grid
             Padding="20"
             HorizontalAlignment="Stretch"
@@ -106,8 +106,8 @@
                                 Value="{x:Bind ViewModel.PackageCountInputValue, Mode=TwoWay}" />
                             <ListView
                                 MaxHeight="240"
-                                TabFocusNavigation="Cycle"
-                                ItemsSource="{x:Bind ViewModel.EditablePackages, Mode=OneWay}">
+                                ItemsSource="{x:Bind ViewModel.EditablePackages, Mode=OneWay}"
+                                TabFocusNavigation="Cycle">
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property="IsTabStop" Value="False" />

@@ -2,7 +2,7 @@
   "id": "shared-shell-foundation",
   "module": "Module_Shared",
   "name": "Shared Shell Foundation",
-  "summary": "Base shared viewmodel infrastructure and shared shell windows used to support the main window, the top-right user menu, title-bar page search with direct navigation and settings deep-links, and reusable icon selection UI.",
+  "summary": "Base shared viewmodel infrastructure and the shared MainWindow shell used to support the top-right user menu, title-bar page search with direct navigation and settings deep-links, the embedded settings-mode NavigationView swap, and reusable icon selection UI.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Shared/ViewModels/ViewModel_Shared_Base.cs",
@@ -22,6 +22,7 @@
       "Shared shell support",
       "User menu logout flow",
       "Title-bar page search and navigation",
+      "Embedded settings-mode toggle",
       "Reusable icon selection"
     ],
     "screens": ["View_Shared_IconSelectorWindow.xaml"],
@@ -31,6 +32,7 @@
       "Confirm the top-right shell user menu opens and triggers logout correctly",
       "Confirm the main shell resets back to Receiving after a successful switch-user login",
       "Confirm title-bar search suggestions open the expected page or settings destination without leaving the shell in a mismatched navigation state",
+      "Confirm the shared shell swaps its NavigationView items in and out of settings mode without leaving the selection or header out of sync",
       "Confirm shared shell viewmodels and reusable icon selection behavior remain aligned"
     ]
   }

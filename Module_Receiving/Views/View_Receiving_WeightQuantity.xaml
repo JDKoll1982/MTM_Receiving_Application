@@ -101,7 +101,7 @@
                     Message="{x:Bind ViewModel.WarningMessage, Mode=OneWay}"
                     Severity="Warning" />
 
-                <ScrollViewer MaxHeight="470">
+                <ScrollViewer MaxHeight="470" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                     <ItemsControl
                         x:Name="LoadsItemsControl"
                         HorizontalAlignment="Stretch"

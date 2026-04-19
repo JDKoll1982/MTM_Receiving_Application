@@ -10,7 +10,7 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </ContentDialog.Resources>
     <Grid MinWidth="760" MaxWidth="860">
-        <ScrollViewer MaxHeight="760">
+        <ScrollViewer MaxHeight="760" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">
             <StackPanel Spacing="16">
                 <Border
                     Padding="16"

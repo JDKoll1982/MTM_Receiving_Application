@@ -2,16 +2,15 @@
   "id": "settings-core-shell-navigation",
   "module": "Module_Settings.Core",
   "name": "Settings Shell And Navigation",
-  "summary": "Core settings window shell, NavigationView-driven back navigation, paged button layout, placeholder control, window-host infrastructure, explicit focus handoff between the settings window and MainWindow, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page.",
+  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
-    "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
+    "Module_Settings.Core/Interfaces/ISettingsNavigationHost.cs",
     "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
     "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs",
     "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
     "Module_Settings.Core/Services/Service_SettingsPagination.cs",
-    "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
     "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
     "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
     "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
@@ -21,14 +20,14 @@
     "Module_Settings.Core/Views/View_Settings_MaterialAvailabilityBoardFields.xaml",
     "Module_Settings.Core/Views/View_Settings_MaterialAvailabilityBoardFields.xaml.cs",
     "Module_Settings.Core/ViewModels/ViewModel_Settings_MaterialAvailabilityBoardFields.cs",
+    "MainWindow.xaml",
+    "MainWindow.xaml.cs",
     "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
     "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs"
   ],
   "relatedServices": [
     "IService_SettingsPagination",
-    "IService_SettingsWindowHost",
-    "Service_SettingsPagination",
-    "Service_SettingsWindowHost"
+    "Service_SettingsPagination"
   ],
   "promptDefaults": {
     "audience": "IT Administrator",
@@ -39,10 +38,11 @@
   },
   "uiHints": {
     "workflowAreas": [
-      "Settings window shell",
+      "Shared MainWindow settings shell",
+      "NavigationView mode swap",
       "Navigation hub",
       "Paged settings navigation",
-      "Window focus handoff",
+      "Settings host compatibility bridge",
       "Shared configuration routing",
       "Placeholder and empty-state UI"
     ],
@@ -55,7 +55,8 @@
     "currentUiPatterns": ["Form", "Card list", "Tabs"],
     "desiredUiPatterns": ["Card list", "Split layout", "Tabs"],
     "uiElements": [
-      "Settings window title",
+      "Settings toggle item",
+      "Settings shell title",
       "Navigation step buttons",
       "Core navigation cards",
       "Built-in back navigation",
@@ -63,27 +64,30 @@
       "Placeholder content"
     ],
     "userActions": [
-      "Open the settings window",
-      "Bring the settings window to the foreground without always-on-top behavior",
+      "Enter settings mode from MainWindow",
+      "Use the built-in Settings item as a Return toggle while settings mode is active",
       "Move between settings areas",
       "Open the Material Availability field settings page from the Core hub",
-      "Return focus to MainWindow when the settings window closes",
+      "Return to the originating module's default route after leaving settings mode",
       "Use the built-in back button to return to the active module hub",
       "Understand which navigation actions are available",
       "See placeholders for unfinished settings pages"
     ],
     "preserveRules": [
       "Keep navigation paging behavior unchanged",
-      "Keep window hosting behavior unchanged except for the new focus restore behavior",
+      "Keep settings-page construction resolved through the service provider",
+      "Keep existing settings pages working through the shared host abstraction whether they are embedded or shown in a dedicated window",
       "Keep direct Core hub card navigation resolved through the service provider",
       "Keep step and visible-step replacement preserving the current pagination semantics"
     ],
     "validationHints": [
+      "Confirm the MainWindow navigation items swap between production routes and settings routes when the built-in Settings item is clicked",
+      "Confirm the built-in Settings item text changes to Return while settings mode is active",
+      "Confirm leaving Receiving or Dunnage for settings prompts before unsaved work is cleared",
+      "Confirm leaving settings returns to the originating module's default route",
       "Confirm navigation buttons still page correctly",
-      "Confirm the settings window opens focused without forcing always-on-top",
-      "Confirm MainWindow is reactivated when the settings window closes",
       "Confirm visible steps still match the current button page after whole-collection replacement",
-      "Confirm the new Material Availability card opens the dedicated settings page and updates the window header",
+      "Confirm the new Material Availability card opens the dedicated settings page and updates the shell header",
       "Confirm the built-in back button returns to the selected module hub when a child page is active",
       "Confirm the shell still hosts the selected settings page correctly"
     ]

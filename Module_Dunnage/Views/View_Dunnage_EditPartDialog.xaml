@@ -347,7 +347,7 @@
                         <ScrollViewer
                             Grid.Row="1"
                             Padding="16,12,16,0"
-                            VerticalScrollBarVisibility="Auto">
+                            Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                             <StackPanel Spacing="12">
                                 <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Extra Information To Capture" />
                                 <TextBlock

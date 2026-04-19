@@ -4,46 +4,35 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
     Background="Transparent"
->
+    mc:Ignorable="d">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer
-            Grid.Row="0"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled"
-        >
-            <StackPanel Spacing="24" Margin="24,20,24,0">
+        <ScrollViewer Grid.Row="0" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+            <StackPanel Margin="24,20,24,0" Spacing="24">
                 <TextBlock
-                    Text="Select a date range, review live module availability, and generate a combined preview for the selected modules."
-                    Style="{StaticResource BodyTextBlockStyle}"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    TextWrapping="WrapWholeWords"
-                />
+                    Style="{StaticResource BodyTextBlockStyle}"
+                    Text="Select a date range, review live module availability, and generate a combined preview for the selected modules."
+                    TextWrapping="WrapWholeWords" />
                 <Border
+                    Padding="20"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="20"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Date range" />
                             <TextBlock
-                                Text="Date range"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                            />
-                            <TextBlock
-                                Text="Choose a start and end date, then check which modules have data available."
-                                Style="{StaticResource BodyTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                TextWrapping="WrapWholeWords"
-                            />
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Choose a start and end date, then check which modules have data available."
+                                TextWrapping="WrapWholeWords" />
                         </StackPanel>
 
                         <Grid ColumnSpacing="12">
@@ -55,46 +44,38 @@
 
                             <CalendarDatePicker
                                 Grid.Column="0"
-                                Header="Start date"
-                                Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
                                 HorizontalAlignment="Stretch"
-                            />
+                                Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
+                                Header="Start date" />
 
                             <CalendarDatePicker
                                 Grid.Column="1"
-                                Header="End date"
-                                Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
                                 HorizontalAlignment="Stretch"
-                            />
+                                Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
+                                Header="End date" />
 
                             <Button
                                 Grid.Column="2"
-                                Content="Check availability"
-                                Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
-                                Style="{StaticResource AccentButtonStyle}"
                                 VerticalAlignment="Bottom"
-                            />
+                                Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
+                                Content="Check availability"
+                                Style="{StaticResource AccentButtonStyle}" />
                         </Grid>
                     </StackPanel>
                 </Border>
                 <Border
+                    Padding="20"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="20"
-                >
+                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Select modules" />
                             <TextBlock
-                                Text="Select modules"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                            />
-                            <TextBlock
-                                Text="Choose which modules to combine into the generated report."
-                                Style="{StaticResource BodyTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            />
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Choose which modules to combine into the generated report." />
                         </StackPanel>
 
                         <Grid ColumnSpacing="24">
@@ -108,42 +89,36 @@
                                 <CheckBox
                                     Content="Receiving"
                                     IsChecked="{x:Bind ViewModel.IsReceivingChecked, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}"
-                                />
+                                    IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}" />
                                 <TextBlock
-                                    Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Margin="32,0,0,0"
-                                />
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Spacing="4">
                                 <CheckBox
                                     Content="Dunnage"
                                     IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}"
-                                />
+                                    IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}" />
                                 <TextBlock
-                                    Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Margin="32,0,0,0"
-                                />
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Spacing="4">
                                 <CheckBox
                                     Content="Volvo"
                                     IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}"
-                                />
+                                    IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}" />
                                 <TextBlock
-                                    Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Margin="32,0,0,0"
-                                />
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}" />
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -154,17 +129,15 @@
 
         <Border
             Grid.Row="1"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0,1,0,0"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
             Padding="24,12,24,16"
-        >
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
             <Button
-                Content="Generate report"
-                Command="{x:Bind ViewModel.GenerateReportsCommand}"
-                Style="{StaticResource AccentButtonStyle}"
                 HorizontalAlignment="Right"
-            />
+                Command="{x:Bind ViewModel.GenerateReportsCommand}"
+                Content="Generate report"
+                Style="{StaticResource AccentButtonStyle}" />
         </Border>
     </Grid>
 </Page>

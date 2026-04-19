@@ -64,7 +64,7 @@
             Severity="Warning" />
 
         <!--  Part Selection Form  -->
-        <ScrollViewer Grid.Row="2">
+        <ScrollViewer Grid.Row="2" Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
             <StackPanel Spacing="24">
                 <!--  Part Dropdown  -->
                 <StackPanel Spacing="12">

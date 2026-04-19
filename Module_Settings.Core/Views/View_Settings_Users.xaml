@@ -144,7 +144,10 @@
                 RIGHT COLUMN — edit form
                 ============================================================
             -->
-            <ScrollViewer Grid.Column="1" Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ScrollViewer
+                Grid.Column="1"
+                Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}"
+                Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Border
                     Padding="20"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"

@@ -119,18 +119,7 @@ public sealed partial class View_Settings_Volvo_NavigationHub : Page
                     // Update the header in the parent CoreWindow with the specific page type
                     try
                     {
-                        var coreWindow = View_Settings_CoreWindow.GetInstance();
-                        if (coreWindow != null)
-                        {
-                            var method = coreWindow
-                                .GetType()
-                                .GetMethod(
-                                    "UpdateHeaderForPageType",
-                                    System.Reflection.BindingFlags.Public
-                                        | System.Reflection.BindingFlags.Instance
-                                );
-                            method?.Invoke(coreWindow, new object[] { pageType });
-                        }
+                        View_Settings_CoreWindow.GetActiveHost()?.UpdateHeaderForPageType(pageType);
                     }
                     catch { }
                 }

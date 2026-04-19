@@ -22,7 +22,7 @@
         x:Name="RootGrid"
         MinWidth="900"
         MaxWidth="980">
-        <ScrollViewer MaxHeight="760">
+        <ScrollViewer MaxHeight="760" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Spacing="16">
                 <Border
                     Padding="18"

@@ -109,18 +109,7 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
     {
         try
         {
-            var coreWindow = View_Settings_CoreWindow.GetInstance();
-            if (coreWindow != null)
-            {
-                var method = coreWindow
-                    .GetType()
-                    .GetMethod(
-                        "UpdateHeaderForPageType",
-                        System.Reflection.BindingFlags.Public
-                            | System.Reflection.BindingFlags.Instance
-                    );
-                method?.Invoke(coreWindow, new object[] { pageType });
-            }
+            View_Settings_CoreWindow.GetActiveHost()?.UpdateHeaderForPageType(pageType);
         }
         catch { }
     }

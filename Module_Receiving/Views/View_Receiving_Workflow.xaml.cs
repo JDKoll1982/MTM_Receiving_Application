@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
@@ -73,6 +74,53 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             {
                 await modeSelectionView.ViewModel.RefreshDefaultModeIndicatorsAsync();
             }
+        }
+
+        public async Task<bool> ConfirmLeaveModuleAsync(string destinationName)
+        {
+            if (!HasUnsavedData())
+            {
+                await _workflowService.ResetWorkflowAsync();
+                return true;
+            }
+
+            var dialog = new ContentDialog
+            {
+                Title = "Leave Receiving?",
+                Content =
+                    $"Leaving Receiving for {destinationName} will clear any unsaved workflow data. Continue?",
+                PrimaryButtonText = "Leave Receiving",
+                CloseButtonText = "Stay Here",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = XamlRoot,
+            };
+
+            Helper_UI_ContentDialogTheme.ApplyTheme(dialog, XamlRoot);
+
+            var result = await dialog.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+            {
+                return false;
+            }
+
+            await _workflowService.ResetWorkflowAsync();
+            return true;
+        }
+
+        private bool HasUnsavedData()
+        {
+            if (_workflowService.CurrentSession == null)
+            {
+                return false;
+            }
+
+            if (_workflowService.CurrentSession.Loads?.Count > 0)
+            {
+                return true;
+            }
+
+            return !string.IsNullOrEmpty(_workflowService.CurrentSession.PoNumber)
+                || _workflowService.CurrentPart != null;
         }
     }
 }

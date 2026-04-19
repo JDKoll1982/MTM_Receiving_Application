@@ -88,7 +88,7 @@ public class Service_ThemeManager : IService_ThemeManager
     private void ApplyTheme(ElementTheme theme)
     {
         ApplyThemeToWindow(App.MainWindow, theme);
-        ApplyThemeToWindow(View_Settings_CoreWindow.GetInstance(), theme);
+        ApplyThemeToWindow(View_Settings_CoreWindow.GetActiveHost()?.GetHostWindow(), theme);
     }
 
     private static void ApplyThemeToWindow(Window? window, ElementTheme theme)

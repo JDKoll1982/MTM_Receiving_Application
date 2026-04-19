@@ -70,9 +70,9 @@
                 Margin="4,0,0,0"
                 VerticalAlignment="Center"
                 FontSize="16"
+                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                 Style="{StaticResource TitleTextBlockStyle}"
-                Text="MTM Receiving Application"
-                Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                Text="MTM Receiving Application" />
 
             <!--  Search Box  -->
             <AutoSuggestBox
@@ -93,9 +93,11 @@
             Grid.Row="1"
             Margin="0,20,20,20"
             HorizontalAlignment="Stretch"
+            BackRequested="NavView_BackRequested"
             IsBackButtonVisible="Collapsed"
             IsPaneToggleButtonVisible="False"
             IsSettingsVisible="True"
+            Loaded="NavView_Loaded"
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
             <NavigationView.Header>

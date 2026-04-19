@@ -5,7 +5,7 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:views="using:MTM_Receiving_Application.Module_Settings.Dunnage.Views"
     x:DataType="views:View_Settings_Dunnage_UserPreferences">
-    <ScrollViewer>
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
         <Grid Padding="24">
             <StackPanel
                 Width="960"

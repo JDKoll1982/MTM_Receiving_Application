@@ -14,6 +14,7 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Windows.Graphics;
 
@@ -22,17 +23,22 @@ namespace MTM_Receiving_Application
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindow : Window
+    public sealed partial class MainWindow : Window, ISettingsNavigationHost
     {
         public ViewModel_Shared_MainWindow ViewModel { get; }
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
-        private readonly IService_SettingsWindowHost _settingsWindowHost;
         private readonly IServiceProvider _serviceProvider;
+        private readonly List<object> _applicationMenuItems = new();
+        private readonly List<object> _applicationFooterItems = new();
+        private readonly List<object> _settingsMenuItems = new();
         private bool _hasNavigatedOnStartup = false;
         private bool _isUpdatingNavSelection;
+        private bool _isSettingsMode;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
+        private string? _settingsReturnRouteTag;
+        private Type? _currentSettingsPageType;
 
         private enum SearchDestinationKind
         {
@@ -108,7 +114,6 @@ namespace MTM_Receiving_Application
             ViewModel_Shared_MainWindow viewModel,
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
-            IService_SettingsWindowHost settingsWindowHost,
             IServiceProvider serviceProvider
         )
         {
@@ -116,8 +121,11 @@ namespace MTM_Receiving_Application
             ViewModel = viewModel;
             _sessionManager = sessionManager;
             _logger = logger;
-            _settingsWindowHost = settingsWindowHost;
             _serviceProvider = serviceProvider;
+
+            _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
+            _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
+            _settingsMenuItems.AddRange(CreateSettingsNavigationItems());
 
             // Configure Frame to use DI for view activation
             ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
@@ -163,6 +171,8 @@ namespace MTM_Receiving_Application
             // Wire up title bar events
             AppTitleBar.Loaded += AppTitleBar_Loaded;
             AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+
+            ApplyNavigationMode(isSettingsMode: false);
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -232,6 +242,33 @@ namespace MTM_Receiving_Application
             ),
         };
 
+        private static readonly Dictionary<
+            string,
+            (Type PageType, string NamespacePrefix)
+        > _settingsRoutes = new()
+        {
+            ["CoreSettingsHub"] = (
+                typeof(View_Settings_CoreNavigationHub),
+                "MTM_Receiving_Application.Module_Settings.Core.Views"
+            ),
+            ["ReceivingSettingsHub"] = (
+                typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub),
+                "MTM_Receiving_Application.Module_Settings.Receiving.Views"
+            ),
+            ["DunnageSettingsHub"] = (
+                typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
+                "MTM_Receiving_Application.Module_Settings.Dunnage.Views"
+            ),
+            ["ReportingSettingsHub"] = (
+                typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
+                "MTM_Receiving_Application.Module_Settings.Reporting.Views"
+            ),
+            ["VolvoSettingsHub"] = (
+                typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub),
+                "MTM_Receiving_Application.Module_Settings.Volvo.Views"
+            ),
+        };
+
         private static readonly List<SearchDestination> _searchDestinations =
             CreateSearchDestinations();
 
@@ -253,7 +290,24 @@ namespace MTM_Receiving_Application
 
             if (args.IsSettingsSelected)
             {
-                _settingsWindowHost.ShowSettingsWindow();
+                var navigationSucceeded = _isSettingsMode
+                    ? await ExitSettingsModeAsync()
+                    : await EnterSettingsModeAsync();
+
+                if (!navigationSucceeded)
+                {
+                    if (_isSettingsMode)
+                    {
+                        SetNavigationSelectionByTag(GetCurrentSettingsTag());
+                    }
+                    else
+                    {
+                        SetNavigationSelectionByTag(
+                            GetCurrentRouteTag() ?? "ReceivingWorkflowView"
+                        );
+                    }
+                }
+
                 return;
             }
 
@@ -263,7 +317,18 @@ namespace MTM_Receiving_Application
             }
 
             var tag = item.Tag?.ToString();
-            if (tag is null || !_navRoutes.TryGetValue(tag, out var route))
+            if (tag is null)
+            {
+                return;
+            }
+
+            if (_isSettingsMode)
+            {
+                NavigateToSettingsTag(tag);
+                return;
+            }
+
+            if (!_navRoutes.TryGetValue(tag, out var route))
             {
                 return;
             }
@@ -275,6 +340,25 @@ namespace MTM_Receiving_Application
             }
 
             NavigateWithDI(route.PageType, route.Title);
+        }
+
+        private void NavView_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateSettingsToggleText();
+            UpdateSettingsBackButtonState();
+        }
+
+        private void NavView_BackRequested(
+            NavigationView sender,
+            NavigationViewBackRequestedEventArgs args
+        )
+        {
+            if (!_isSettingsMode)
+            {
+                return;
+            }
+
+            NavigateToSettingsTag(GetCurrentSettingsTag());
         }
 
         private static List<SearchDestination> CreateSearchDestinations()
@@ -737,8 +821,7 @@ namespace MTM_Receiving_Application
             }
             else
             {
-                _settingsWindowHost.ShowSettingsWindow(destination.SettingsPageType!);
-                navigationSucceeded = true;
+                navigationSucceeded = await EnterSettingsModeAsync(destination.SettingsPageType!);
             }
 
             if (!navigationSucceeded)
@@ -779,6 +862,22 @@ namespace MTM_Receiving_Application
             }
 
             return _navRoutes.FirstOrDefault(route => route.Value.PageType == currentPageType).Key;
+        }
+
+        private string GetCurrentSettingsTag()
+        {
+            if (NavView.SelectedItem is NavigationViewItem item && item.Tag is string selectedTag)
+            {
+                return selectedTag;
+            }
+
+            if (_currentSettingsPageType != null)
+            {
+                return View_Settings_CoreWindow.GetSettingsTagForPageType(_currentSettingsPageType)
+                    ?? "CoreSettingsHub";
+            }
+
+            return "CoreSettingsHub";
         }
 
         private void SetNavigationSelectionByTag(string? routeTag)
@@ -842,6 +941,234 @@ namespace MTM_Receiving_Application
 
             return true;
         }
+
+        private async Task<bool> ConfirmEnterSettingsModeAsync()
+        {
+            if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView)
+            {
+                return await dunnageView.ConfirmLeaveModuleAsync("Settings");
+            }
+
+            if (
+                ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView
+            )
+            {
+                return await receivingView.ConfirmLeaveModuleAsync("Settings");
+            }
+
+            return true;
+        }
+
+        private async Task<bool> EnterSettingsModeAsync(Type? targetPageType = null)
+        {
+            if (!_isSettingsMode)
+            {
+                if (!await ConfirmEnterSettingsModeAsync())
+                {
+                    return false;
+                }
+
+                _settingsReturnRouteTag = ResolveSettingsReturnRouteTag();
+                _isSettingsMode = true;
+                View_Settings_CoreWindow.SetActiveHost(this);
+                ApplyNavigationMode(isSettingsMode: true);
+            }
+
+            var pageType = targetPageType ?? typeof(View_Settings_CoreNavigationHub);
+            var selectedTag =
+                View_Settings_CoreWindow.GetSettingsTagForPageType(pageType) ?? "CoreSettingsHub";
+
+            SetNavigationSelectionByTag(selectedTag);
+
+            var navigationSucceeded = View_Settings_CoreWindow.IsHubPageType(pageType)
+                ? NavigateToSettingsTag(selectedTag)
+                : NavigateToPage(pageType);
+
+            if (navigationSucceeded)
+            {
+                UpdateSettingsToggleText();
+                UpdateSettingsBackButtonState();
+            }
+
+            return navigationSucceeded;
+        }
+
+        private async Task<bool> ExitSettingsModeAsync()
+        {
+            _isSettingsMode = false;
+            _currentSettingsPageType = null;
+            View_Settings_CoreWindow.SetActiveHost(null);
+            ApplyNavigationMode(isSettingsMode: false);
+            UpdateSettingsToggleText();
+
+            var routeTag = _settingsReturnRouteTag ?? "ReceivingWorkflowView";
+            _settingsReturnRouteTag = null;
+
+            SetNavigationSelectionByTag(routeTag);
+            var navigationSucceeded = await NavigateToRouteTagAsync(routeTag);
+            UpdateSettingsBackButtonState();
+            return navigationSucceeded;
+        }
+
+        private string ResolveSettingsReturnRouteTag()
+        {
+            var currentRouteTag = GetCurrentRouteTag();
+            return currentRouteTag switch
+            {
+                "VolvoHistory" => "VolvoShipmentEntry",
+                null or "" => "ReceivingWorkflowView",
+                _ => currentRouteTag,
+            };
+        }
+
+        private void ApplyNavigationMode(bool isSettingsMode)
+        {
+            ReplaceNavigationItems(
+                NavView.MenuItems,
+                isSettingsMode ? _settingsMenuItems : _applicationMenuItems
+            );
+            ReplaceNavigationItems(
+                NavView.FooterMenuItems,
+                isSettingsMode ? Array.Empty<object>() : _applicationFooterItems
+            );
+            NavView.IsBackButtonVisible = isSettingsMode
+                ? NavigationViewBackButtonVisible.Visible
+                : NavigationViewBackButtonVisible.Collapsed;
+            UpdateSettingsBackButtonState();
+        }
+
+        private static void ReplaceNavigationItems(
+            IList<object> targetCollection,
+            IEnumerable<object> items
+        )
+        {
+            targetCollection.Clear();
+            foreach (var item in items)
+            {
+                targetCollection.Add(item);
+            }
+        }
+
+        private List<object> CreateSettingsNavigationItems()
+        {
+            return
+            [
+                CreateNavigationItem("Core Settings", "CoreSettingsHub", "\uE713"),
+                new NavigationViewItemSeparator(),
+                CreateNavigationItem("Receiving Navigation", "ReceivingSettingsHub", "\uE74C"),
+                CreateNavigationItem("Dunnage Navigation", "DunnageSettingsHub", "\uE7B8"),
+                CreateNavigationItem("Reporting Navigation", "ReportingSettingsHub", "\uE9F9"),
+                CreateNavigationItem("Volvo Navigation", "VolvoSettingsHub", "\uE7C1"),
+            ];
+        }
+
+        private static NavigationViewItem CreateNavigationItem(
+            string content,
+            string tag,
+            string glyph
+        )
+        {
+            return new NavigationViewItem
+            {
+                Margin = new Thickness(0, 0, 0, 4),
+                Content = content,
+                Tag = tag,
+                Icon = new FontIcon { Glyph = glyph },
+            };
+        }
+
+        private void UpdateSettingsToggleText()
+        {
+            if (NavView.SettingsItem is NavigationViewItem settingsItem)
+            {
+                settingsItem.Content = _isSettingsMode ? "Return" : "Settings";
+            }
+        }
+
+        private void UpdateSettingsBackButtonState()
+        {
+            if (!_isSettingsMode)
+            {
+                NavView.IsBackEnabled = false;
+                return;
+            }
+
+            if (
+                !View_Settings_CoreWindow.TryGetModuleContext(
+                    GetCurrentSettingsTag(),
+                    out var namespacePrefix,
+                    out var hubViewType
+                ) || hubViewType is null
+            )
+            {
+                NavView.IsBackEnabled = false;
+                return;
+            }
+
+            var activePageType = _currentSettingsPageType ?? ContentFrame.Content?.GetType();
+            NavView.IsBackEnabled =
+                activePageType != null
+                && activePageType != hubViewType
+                && activePageType.Namespace?.StartsWith(namespacePrefix, StringComparison.Ordinal)
+                    == true;
+        }
+
+        private bool NavigateToSettingsTag(string? selectedTag)
+        {
+            if (selectedTag is null || !_settingsRoutes.TryGetValue(selectedTag, out var route))
+            {
+                return false;
+            }
+
+            var navigationSucceeded = NavigateWithDI(
+                route.PageType,
+                View_Settings_CoreWindow.GetPageHeader(route.PageType).Title
+            );
+
+            if (!navigationSucceeded)
+            {
+                return false;
+            }
+
+            UpdateHeaderForPageType(route.PageType);
+            return true;
+        }
+
+        public bool NavigateToPage(Type pageType)
+        {
+            ArgumentNullException.ThrowIfNull(pageType);
+
+            var navigationSucceeded = NavigateWithDI(
+                pageType,
+                View_Settings_CoreWindow.GetPageHeader(pageType).Title
+            );
+
+            if (!navigationSucceeded)
+            {
+                return false;
+            }
+
+            UpdateHeaderForPageType(pageType);
+            return true;
+        }
+
+        public void UpdateHeaderForPageType(Type pageType)
+        {
+            ArgumentNullException.ThrowIfNull(pageType);
+
+            _currentSettingsPageType = pageType;
+            var (title, _) = View_Settings_CoreWindow.GetPageHeader(pageType);
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                UpdateHeaderText(title);
+            }
+
+            UpdateSettingsBackButtonState();
+        }
+
+        public FrameworkElement? GetContentRoot() => Content as FrameworkElement;
+
+        public Window? GetHostWindow() => this;
 
         private void ClearHeaderSubscription()
         {
@@ -990,6 +1317,13 @@ namespace MTM_Receiving_Application
 
         public async Task ResetForAuthenticatedUserAsync()
         {
+            _isSettingsMode = false;
+            _currentSettingsPageType = null;
+            _settingsReturnRouteTag = null;
+            View_Settings_CoreWindow.SetActiveHost(null);
+            ApplyNavigationMode(isSettingsMode: false);
+            UpdateSettingsToggleText();
+
             await ClearCurrentModuleStateAsync();
             UpdateUserDisplay();
 

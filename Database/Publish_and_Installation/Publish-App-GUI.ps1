@@ -263,7 +263,7 @@ function Sync-PublishOutputDirectory {
     }
 
     return [pscustomobject]@{
-        CopiedFiles = $copiedFiles
+        CopiedFiles  = $copiedFiles
         SkippedFiles = $skippedFiles
         RemovedItems = $removedItems
     }
@@ -410,40 +410,40 @@ function Update-PublishStatus {
 
 $script:Options = @(
     @{
-        Index    = 0
-        Label    = "1  Self-Contained  (Recommended)"
-        Folder   = "MTM_Receiving_Application"
-        Args     = "-c Release -r win-x64 --self-contained true"
+        Index         = 0
+        Label         = "1  Self-Contained  (Recommended)"
+        Folder        = "MTM_Receiving_Application"
+        Args          = "-c Release -r win-x64 --self-contained true"
         SelfContained = $true
-        TagColor = "#388E3C"
-        Notes    = $n1
+        TagColor      = "#388E3C"
+        Notes         = $n1
     },
     @{
-        Index    = 1
-        Label    = "2  Framework-Dependent  ⚠"
-        Folder   = "MTM_Receiving_Application_FD"
-        Args     = "-c Release -r win-x64 --self-contained false"
+        Index         = 1
+        Label         = "2  Framework-Dependent  ⚠"
+        Folder        = "MTM_Receiving_Application_FD"
+        Args          = "-c Release -r win-x64 --self-contained false"
         SelfContained = $false
-        TagColor = "#E65100"
-        Notes    = $n2
+        TagColor      = "#E65100"
+        Notes         = $n2
     },
     @{
-        Index    = 2
-        Label    = "3  ReadyToRun — Faster Startup"
-        Folder   = "MTM_Receiving_Application_R2R"
-        Args     = "-c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true"
+        Index         = 2
+        Label         = "3  ReadyToRun — Faster Startup"
+        Folder        = "MTM_Receiving_Application_R2R"
+        Args          = "-c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true"
         SelfContained = $true
-        TagColor = "#388E3C"
-        Notes    = $n4
+        TagColor      = "#388E3C"
+        Notes         = $n4
     },
     @{
-        Index    = 3
-        Label    = "4  Trimmed  ⚠  (High Risk)"
-        Folder   = "MTM_Receiving_Application_Trimmed"
-        Args     = "-c Release -r win-x64 --self-contained true -p:PublishTrimmed=true"
+        Index         = 3
+        Label         = "4  Trimmed  ⚠  (High Risk)"
+        Folder        = "MTM_Receiving_Application_Trimmed"
+        Args          = "-c Release -r win-x64 --self-contained true -p:PublishTrimmed=true"
         SelfContained = $true
-        TagColor = "#C62828"
-        Notes    = $n5
+        TagColor      = "#C62828"
+        Notes         = $n5
     }
 )
 
@@ -588,8 +588,7 @@ $xaml = @"
                 <Border Name="OutputBorder" Background="#1E1E1E" CornerRadius="3"
                         Margin="0,4,0,0" Visibility="Collapsed">
                     <ScrollViewer Name="OutputScrollViewer" Height="130"
-                                  VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Auto">
+                                  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" >
                         <TextBlock Name="OutputText" FontFamily="Consolas" FontSize="10"
                                    Foreground="#D4D4D4" TextWrapping="Wrap" Margin="8"/>
                     </ScrollViewer>
@@ -732,7 +731,7 @@ $browseOutputPathButton.Add_Click({
 $publishButton.Add_Click({
         if ($null -eq $script:selectedOption) { return }
 
-    Remove-PublishStagingDirectory
+        Remove-PublishStagingDirectory
 
         $opt = $script:selectedOption
         $script:currentOutputPath = Get-EffectiveOutputPath -Option $opt
@@ -944,13 +943,13 @@ LogFile: $($script:PublishLogFile)
 # ---------------------------------------------------------------------------
 $closeButton.Add_Click({
         Stop-PublishSession
-    Remove-PublishStagingDirectory
+        Remove-PublishStagingDirectory
         $window.Close()
     })
 
 $window.Add_Closing({
         Stop-PublishSession
-    Remove-PublishStagingDirectory
+        Remove-PublishStagingDirectory
     })
 
 # ---------------------------------------------------------------------------

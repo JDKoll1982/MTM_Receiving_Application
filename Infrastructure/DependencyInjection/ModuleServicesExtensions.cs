@@ -330,7 +330,6 @@ public static class ModuleServicesExtensions
         services.AddSingleton<ISettingsCache, Service_SettingsCache>();
         services.AddSingleton<ISettingsEncryptionService, Service_SettingsEncryptionService>();
         services.AddSingleton<IService_SettingsCoreFacade, Service_SettingsCoreFacade>();
-        services.AddSingleton<IService_SettingsWindowHost, Service_SettingsWindowHost>();
         services.AddSingleton<IService_ViewModelRegistry, Service_ViewModelRegistry>();
         services.AddSingleton<IService_SettingsPagination, Service_SettingsPagination>();
         services.AddSingleton<IService_UserPreferences, Service_UserPreferences>();

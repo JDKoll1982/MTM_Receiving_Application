@@ -68,7 +68,7 @@ public sealed partial class View_Settings_Dunnage_CategoryHub : Page
         }
 
         NavigationFrameControl.Content = page;
-        View_Settings_CoreWindow.GetInstance()?.UpdateHeaderForPageType(step.ViewType);
+        View_Settings_CoreWindow.GetActiveHost()?.UpdateHeaderForPageType(step.ViewType);
     }
 
     private static IServiceProvider? GetServiceProvider()

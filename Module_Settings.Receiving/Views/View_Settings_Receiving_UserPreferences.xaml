@@ -5,7 +5,7 @@
     xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls"
     xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Receiving.ViewModels">
-    <ScrollViewer>
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
         <Grid Padding="24">
             <StackPanel
                 Width="960"

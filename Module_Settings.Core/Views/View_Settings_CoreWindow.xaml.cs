@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.Views;
@@ -12,10 +13,11 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Views;
 /// <summary>
 /// Core Settings window shell.
 /// </summary>
-public sealed partial class View_Settings_CoreWindow : Window
+public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigationHost
 {
     // Static reference to allow child pages to access this window
     private static View_Settings_CoreWindow? _instance;
+    private static ISettingsNavigationHost? _activeHost;
 
     public ViewModel_SettingsWindow? ViewModel { get; }
     private bool _hasSetTitleBarDragRegion;
@@ -31,6 +33,19 @@ public sealed partial class View_Settings_CoreWindow : Window
     {
         InitializeComponent();
         _instance = this;
+        SetActiveHost(this);
+        Closed += (_, _) =>
+        {
+            if (ReferenceEquals(_instance, this))
+            {
+                _instance = null;
+            }
+
+            if (ReferenceEquals(_activeHost, this))
+            {
+                _activeHost = null;
+            }
+        };
 
         if (
             Content is FrameworkElement settingsContent
@@ -74,6 +89,17 @@ public sealed partial class View_Settings_CoreWindow : Window
     /// Gets the current instance of the CoreWindow for use by child pages/NavigationHubs.
     /// </summary>
     public static View_Settings_CoreWindow? GetInstance() => _instance;
+
+    public static ISettingsNavigationHost? GetActiveHost() => _instance ?? _activeHost;
+
+    public static void SetActiveHost(ISettingsNavigationHost? host)
+    {
+        _activeHost = host;
+    }
+
+    public FrameworkElement? GetContentRoot() => Content as FrameworkElement;
+
+    public Window? GetHostWindow() => this;
 
     public bool NavigateToPage(Type pageType)
     {
@@ -201,7 +227,7 @@ public sealed partial class View_Settings_CoreWindow : Window
     /// Gets the header title and description for a specific page type.
     /// </summary>
     /// <param name="pageType"></param>
-    private static (string Title, string Description) GetPageHeader(Type pageType)
+    public static (string Title, string Description) GetPageHeader(Type pageType)
     {
         return pageType.Name switch
         {
@@ -401,7 +427,7 @@ public sealed partial class View_Settings_CoreWindow : Window
             == true;
     }
 
-    private static bool TryGetModuleContext(
+    public static bool TryGetModuleContext(
         string? selectedTag,
         out string moduleNamespacePrefix,
         out Type? hubViewType
@@ -701,7 +727,7 @@ public sealed partial class View_Settings_CoreWindow : Window
         }
     }
 
-    private static bool IsHubPageType(Type pageType)
+    public static bool IsHubPageType(Type pageType)
     {
         return pageType == typeof(View_Settings_CoreNavigationHub)
             || pageType
@@ -712,7 +738,7 @@ public sealed partial class View_Settings_CoreWindow : Window
             || pageType == typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
     }
 
-    private static string? GetSettingsTagForPageType(Type pageType)
+    public static string? GetSettingsTagForPageType(Type pageType)
     {
         if (pageType.Namespace == typeof(View_Settings_CoreNavigationHub).Namespace)
         {

@@ -2485,12 +2485,10 @@
       "owner": "Platform Team",
       "relatedFiles": [
         "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
-        "Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs",
         "Module_Settings.Core/Interfaces/ISettingsNavigationActions.cs",
         "Module_Settings.Core/Interfaces/ISettingsNavigationNavState.cs",
         "Module_Settings.Core/Models/Model_SettingsNavigationStep.cs",
         "Module_Settings.Core/Services/Service_SettingsPagination.cs",
-        "Module_Settings.Core/Services/Service_SettingsWindowHost.cs",
         "Module_Settings.Core/ViewModels/ViewModel_SettingsNavigationHubBase.cs",
         "Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs",
         "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml",
@@ -2502,9 +2500,7 @@
       ],
       "relatedServices": [
         "IService_SettingsPagination",
-        "IService_SettingsWindowHost",
-        "Service_SettingsPagination",
-        "Service_SettingsWindowHost"
+        "Service_SettingsPagination"
       ],
       "promptDefaults": {
         "audience": "IT Administrator",

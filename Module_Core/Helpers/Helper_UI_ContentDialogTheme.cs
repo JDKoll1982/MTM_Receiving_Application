@@ -20,13 +20,19 @@ public static class Helper_UI_ContentDialogTheme
 
     private static FrameworkElement? ResolveThemeSource(XamlRoot? xamlRoot)
     {
-        if (App.MainWindow?.Content is FrameworkElement mainContent && mainContent.XamlRoot == xamlRoot)
+        if (
+            App.MainWindow?.Content is FrameworkElement mainContent
+            && mainContent.XamlRoot == xamlRoot
+        )
         {
             return mainContent;
         }
 
-        if (View_Settings_CoreWindow.GetInstance()?.Content is FrameworkElement settingsContent
-            && settingsContent.XamlRoot == xamlRoot)
+        if (
+            View_Settings_CoreWindow.GetActiveHost()?.GetContentRoot()
+                is FrameworkElement settingsContent
+            && settingsContent.XamlRoot == xamlRoot
+        )
         {
             return settingsContent;
         }
@@ -36,6 +42,6 @@ public static class Helper_UI_ContentDialogTheme
             return mainFallback;
         }
 
-        return View_Settings_CoreWindow.GetInstance()?.Content as FrameworkElement;
+        return View_Settings_CoreWindow.GetActiveHost()?.GetContentRoot();
     }
 }
