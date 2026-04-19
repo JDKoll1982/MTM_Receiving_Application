@@ -275,6 +275,11 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 dialog.XamlRoot = _windowService.GetXamlRoot();
             }
 
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                dialog.XamlRoot
+            );
+
             var result = await dialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
@@ -358,6 +363,11 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     dialog.XamlRoot = _windowService.GetXamlRoot();
                 }
 
+                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                    dialog,
+                    dialog.XamlRoot
+                );
+
                 await dialog.ShowAsync();
                 StatusMessage = $"Showing {result.Data.Count} components";
             }
@@ -437,6 +447,11 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             XamlRoot = xamlRoot,
             MinWidth = 420,
         };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
 
         var dialogResult = await dialog.ShowAsync();
         if (dialogResult != ContentDialogResult.Primary)

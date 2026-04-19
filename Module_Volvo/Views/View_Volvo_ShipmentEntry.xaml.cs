@@ -47,6 +47,10 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
                 CloseButtonText = "OK",
                 XamlRoot = this.XamlRoot,
             };
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                noSelectionDialog,
+                this.XamlRoot
+            );
             await noSelectionDialog.ShowAsync();
             return;
         }
@@ -61,6 +65,11 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = this.XamlRoot,
         };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            confirmDialog,
+            this.XamlRoot
+        );
 
         var result = await confirmDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
@@ -107,6 +116,11 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
         };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            confirmDialog,
+            xamlRoot
+        );
 
         var confirmResult = await confirmDialog.ShowAsync();
         if (confirmResult == ContentDialogResult.Primary)
@@ -217,6 +231,11 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = xamlRoot,
         };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
 
         await dialog.ShowAsync();
     }

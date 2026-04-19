@@ -504,6 +504,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 XamlRoot = xamlRoot,
             };
 
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                xamlRoot
+            );
+
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
@@ -576,6 +581,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = xamlRoot,
             };
+
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                xamlRoot
+            );
 
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)

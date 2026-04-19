@@ -191,6 +191,11 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
             XamlRoot = xamlRoot,
         };
 
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
+
         var result = await dialog.ShowAsync();
         if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
         {
@@ -235,6 +240,11 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                     DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
                     XamlRoot = xamlRoot,
                 };
+
+                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                    dialog,
+                    xamlRoot
+                );
 
                 var result = await dialog.ShowAsync();
                 if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)

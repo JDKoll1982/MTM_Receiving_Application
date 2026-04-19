@@ -93,6 +93,11 @@ public class Service_SettingsErrorHandler : IService_SettingsErrorHandler
             XamlRoot = parentWindow?.Content?.XamlRoot,
         };
 
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            parentWindow?.Content?.XamlRoot
+        );
+
         // Style the dialog based on severity
         var backgroundColor = severity switch
         {

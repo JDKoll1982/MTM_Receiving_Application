@@ -102,6 +102,11 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
             XamlRoot = xamlRoot,
         };
 
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
+
         var result = await dialog.ShowAsync();
 
         bool acknowledged = result == ContentDialogResult.Primary;
@@ -169,6 +174,11 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = xamlRoot,
         };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
 
         var result = await dialog.ShowAsync();
         return result == ContentDialogResult.Primary;

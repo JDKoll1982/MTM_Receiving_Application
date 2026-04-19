@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
@@ -72,6 +73,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
     {
         _imageStorage = App.GetService<IService_DunnageImageStorage>();
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
         WasAccepted = false;
         RequestDelete = false;
         FooterDeleteButton.Visibility = canDelete ? Visibility.Visible : Visibility.Collapsed;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -16,6 +17,7 @@ public sealed partial class View_Dunnage_SelectExistingSpecsDialog : ContentDial
     public View_Dunnage_SelectExistingSpecsDialog(List<Model_DunnageSpecTemplateOption> options)
     {
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
 
         _allOptions = options;
         TemplatesListView.ItemsSource = new ObservableCollection<Model_DunnageSpecTemplateOption>(

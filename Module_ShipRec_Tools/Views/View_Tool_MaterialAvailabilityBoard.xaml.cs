@@ -52,6 +52,11 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
             DefaultButton = ContentDialogButton.Primary,
         };
 
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            XamlRoot
+        );
+
         var result = await dialog.ShowAsync();
         return result switch
         {

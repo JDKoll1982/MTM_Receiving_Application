@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views
 {
@@ -15,6 +16,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
         public View_Dunnage_Dialog_AddMultipleRowsDialog()
         {
             InitializeComponent();
+            Helper_UI_ContentDialogTheme.ApplyTheme(this);
             _focusService = App.GetService<IService_Focus>();
             _focusService.AttachFocusOnVisibility(this, RowCountNumberBox);
         }

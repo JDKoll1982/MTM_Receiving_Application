@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_OutsideService.Models;
 
 namespace MTM_Receiving_Application.Module_OutsideService.Views;
@@ -23,6 +24,7 @@ public sealed partial class View_OutsideService_AddLineModal : ContentDialog
     public View_OutsideService_AddLineModal(AddLineDraftState? draftState = null)
     {
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
         Loaded += View_OutsideService_AddLineModal_Loaded;
         RebuildPackageRows(1, null);
         ApplyDraftState(draftState);

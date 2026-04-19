@@ -7,6 +7,7 @@ using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using Windows.Foundation;
 
@@ -28,6 +29,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
             resolvePartLocationAsync
             ?? throw new ArgumentNullException(nameof(resolvePartLocationAsync));
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
         Lines = new ObservableCollection<Model_VolvoShipmentLine>();
         AvailableParts = new ObservableCollection<Model_VolvoPart>();
 

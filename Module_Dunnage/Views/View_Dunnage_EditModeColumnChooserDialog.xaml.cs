@@ -6,6 +6,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using Windows.Foundation;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -68,6 +69,7 @@ public sealed partial class View_Dunnage_EditModeColumnChooserDialog : ContentDi
         ArgumentNullException.ThrowIfNull(columns);
 
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
 
         _columnOptions = columns
             .Select(

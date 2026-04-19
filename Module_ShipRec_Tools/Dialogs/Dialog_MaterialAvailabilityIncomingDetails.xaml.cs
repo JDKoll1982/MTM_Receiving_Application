@@ -1,5 +1,6 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs;
@@ -17,6 +18,7 @@ public sealed partial class Dialog_MaterialAvailabilityIncomingDetails : Content
     {
         ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
         Title = ViewModel.Heading;
     }
 }

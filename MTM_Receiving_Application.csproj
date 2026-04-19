@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
     <Compile Remove="Module_OutsideService\**" />
+    <Compile Remove="Scripts\McpServers\**" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_System.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Logging.cs" />

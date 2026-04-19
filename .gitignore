@@ -16,7 +16,6 @@ bld/
 [Ll]ogs/
 
 
-
 # Visual Studio profiler
 *.psess
 *.vsp
@@ -56,6 +55,7 @@ $RECYCLE.BIN/
 **/Logs/
 *.log
 .env*
+Scripts/
 
 # IDEs and editors
 .vs/

@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -15,6 +16,7 @@ public sealed partial class View_Shared_HelpDialog : ContentDialog
     {
         ViewModel = App.GetService<ViewModel_Shared_HelpDialog>();
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
     }
 
     /// <summary>

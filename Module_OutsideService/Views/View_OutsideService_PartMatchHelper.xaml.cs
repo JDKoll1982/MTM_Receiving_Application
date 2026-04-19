@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_OutsideService.Models;
 
 namespace MTM_Receiving_Application.Module_OutsideService.Views;
@@ -19,6 +20,7 @@ public sealed partial class View_OutsideService_PartMatchHelper : ContentDialog
         TypedValue = typedValue;
         Suggestions = suggestions ?? throw new ArgumentNullException(nameof(suggestions));
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
 
         TypedValueTextBlock.Text = TypedValue;
         SuggestionsList.ItemsSource = Suggestions;

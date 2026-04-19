@@ -278,6 +278,10 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                     CloseButtonText = "Close",
                     XamlRoot = App.MainWindow?.Content?.XamlRoot,
                 };
+                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                    dialog,
+                    dialog.XamlRoot
+                );
                 await dialog.ShowAsync();
 
                 StatusMessage = $"Viewed details for shipment #{shipment.ShipmentNumber}";

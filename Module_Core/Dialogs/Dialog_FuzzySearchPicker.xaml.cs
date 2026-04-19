@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 
 namespace MTM_Receiving_Application.Module_Core.Dialogs;
@@ -49,6 +50,7 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
         _allItems = items;
 
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
 
         Title = pickerTitle;
 

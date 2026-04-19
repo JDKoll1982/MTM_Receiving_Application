@@ -448,6 +448,11 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
                 XamlRoot = XamlRoot,
             };
 
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                XamlRoot
+            );
+
             var dialogResult = await dialog.ShowAsync();
             if (dialogResult != ContentDialogResult.Primary)
             {

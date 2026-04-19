@@ -5,6 +5,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using Windows.Foundation;
 
@@ -61,6 +62,7 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
         ArgumentNullException.ThrowIfNull(columns);
 
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
         WasAccepted = false;
 
         _columns = columns.ToList();

@@ -101,6 +101,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 CloseButtonText = "OK",
                 XamlRoot = this.XamlRoot,
             };
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                this.XamlRoot
+            );
             var dialogResult = await dialog.ShowAsync();
         }
     }
@@ -144,6 +148,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 CloseButtonText = "OK",
                 XamlRoot = this.XamlRoot,
             };
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                errorDialog,
+                this.XamlRoot
+            );
             await errorDialog.ShowAsync();
         }
     }
@@ -217,6 +225,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             CloseButtonText = "OK",
             XamlRoot = this.XamlRoot,
         };
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            errorDialog,
+            this.XamlRoot
+        );
         await errorDialog.ShowAsync();
         return false;
     }
@@ -233,6 +245,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 CloseButtonText = "OK",
                 XamlRoot = XamlRoot,
             };
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                savingDialog,
+                XamlRoot
+            );
             await savingDialog.ShowAsync();
             return false;
         }
@@ -253,6 +269,11 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = XamlRoot,
         };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            prompt,
+            XamlRoot
+        );
 
         var result = await prompt.ShowAsync();
         if (result != ContentDialogResult.Primary)

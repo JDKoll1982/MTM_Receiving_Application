@@ -36,6 +36,11 @@ public sealed partial class View_OutsideService_Waitlist : Page
             DefaultButton = ContentDialogButton.Close,
         };
 
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            XamlRoot
+        );
+
         if (await dialog.ShowAsync() == ContentDialogResult.Primary)
         {
             await ViewModel.MarkSelectedLineCompleteCommand.ExecuteAsync(null);

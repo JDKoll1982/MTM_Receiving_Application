@@ -141,6 +141,10 @@ public class Service_ErrorHandler : IService_ErrorHandler
 
             // Set dialog style based on severity (could be enhanced with custom styles)
             // For now, just show the dialog
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                xamlRoot
+            );
             await dialog.ShowAsync();
         }
         catch (Exception ex)

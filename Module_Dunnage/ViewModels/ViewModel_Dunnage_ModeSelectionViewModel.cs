@@ -177,6 +177,11 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
                 XamlRoot = xamlRoot,
             };
 
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                xamlRoot
+            );
+
             var result = await dialog.ShowAsync();
             return result == ContentDialogResult.Primary;
         }

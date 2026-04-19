@@ -732,6 +732,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 XamlRoot = xamlRoot,
             };
 
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                dialog,
+                xamlRoot
+            );
+
             dialog.PrimaryButtonClick += (_, args) =>
             {
                 var validation = ViewModel.ApplyManualEntryPackageTypeChange(

@@ -269,6 +269,11 @@ public class Service_SoftwareVersionMonitor : IService_SoftwareVersionMonitor
             XamlRoot = xamlRoot,
         };
 
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
+
         dialog.PrimaryButtonClick += (_, _) => allowClose = true;
         dialog.Closing += (_, args) =>
         {

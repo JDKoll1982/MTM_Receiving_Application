@@ -1,5 +1,6 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Windows.Foundation;
@@ -19,6 +20,7 @@ public sealed partial class View_Receiving_Dialog_LocationReconciliationReview :
         ViewModel = viewModel;
         DataContext = ViewModel;
         InitializeComponent();
+        Helper_UI_ContentDialogTheme.ApplyTheme(this);
     }
 
     public void Initialize(Model_ReceivingLocationReconciliationSummary previewSummary)

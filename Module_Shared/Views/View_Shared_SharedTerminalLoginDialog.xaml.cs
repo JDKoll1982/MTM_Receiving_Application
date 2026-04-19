@@ -2,6 +2,7 @@ using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Shared.Views
@@ -24,6 +25,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         public View_Shared_SharedTerminalLoginDialog(ViewModel_Shared_SharedTerminalLogin viewModel)
         {
             InitializeComponent();
+            Helper_UI_ContentDialogTheme.ApplyTheme(this);
             ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             _focusService = App.GetService<IService_Focus>();
 
