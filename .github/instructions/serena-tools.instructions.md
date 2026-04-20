@@ -133,7 +133,7 @@ and configuration priority order.
 
 ### [09 — Dashboard, Logs & Security](serena-09-dashboard-logs-security.instructions.md)
 
-Accessing the web dashboard (`http://localhost:24282`), Tool Calls tab for monitoring,
+Accessing the web dashboard (`http://172.16.1.104:24282`), Tool Calls tab for monitoring,
 log levels and log file locations, and security safeguards:
 git checkpoints, read-only mode, `excluded_tools`, Docker isolation.
 
