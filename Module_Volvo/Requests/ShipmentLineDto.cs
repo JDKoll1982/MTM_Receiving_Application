@@ -26,6 +26,16 @@ public record ShipmentLineDto
     public string Location { get; init; } = string.Empty;
 
     /// <summary>
+    /// Quantity per skid persisted for this row.
+    /// </summary>
+    public int QuantityPerSkid { get; init; }
+
+    /// <summary>
+    /// Pending/Received status used by the Volvo queue cards.
+    /// </summary>
+    public string PoStatus { get; init; } = Models.VolvoLinePoStatus.Pending;
+
+    /// <summary>
     /// Expected number of skids (populated when HasDiscrepancy = true).
     /// </summary>
     public int? ExpectedSkidCount { get; init; }

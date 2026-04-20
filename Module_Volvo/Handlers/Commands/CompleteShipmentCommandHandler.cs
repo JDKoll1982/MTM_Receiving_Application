@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Models;
@@ -21,18 +22,21 @@ public class CompleteShipmentCommandHandler
     private readonly Dao_VolvoShipmentLine _lineDao;
     private readonly Dao_VolvoPart _partDao;
     private readonly IService_VolvoAuthorization _authService;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public CompleteShipmentCommandHandler(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
         Dao_VolvoPart partDao,
-        IService_VolvoAuthorization authService
+        IService_VolvoAuthorization authService,
+        IService_UserSessionManager sessionManager
     )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
     }
 
     public async Task<Model_Dao_Result<int>> Handle(
@@ -42,6 +46,14 @@ public class CompleteShipmentCommandHandler
     {
         try
         {
+            var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+            if (!employeeNumber.HasValue || employeeNumber.Value <= 0)
+            {
+                return Model_Dao_Result_Factory.Failure<int>(
+                    "No active employee number was found for the current user."
+                );
+            }
+
             // Authorization check
             var authResult = await _authService.CanCompleteShipmentsAsync();
             if (!authResult.IsSuccess)
@@ -129,7 +141,10 @@ public class CompleteShipmentCommandHandler
                         );
                     }
 
-                    var quantityPerSkid = partResult.Data.QuantityPerSkid;
+                    var quantityPerSkid =
+                        partDto.QuantityPerSkid > 0
+                            ? partDto.QuantityPerSkid
+                            : partResult.Data.QuantityPerSkid;
                     var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
 
                     var line = new Model_VolvoShipmentLine
@@ -140,6 +155,7 @@ public class CompleteShipmentCommandHandler
                         QuantityPerSkid = quantityPerSkid,
                         ReceivedSkidCount = partDto.ReceivedSkidCount,
                         CalculatedPieceCount = calculatedPieceCount,
+                        PoStatus = VolvoLinePoStatus.NormalizeStorageValue(partDto.PoStatus),
                         ExpectedSkidCount = partDto.ExpectedSkidCount,
                         HasDiscrepancy = partDto.HasDiscrepancy,
                         DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty,
@@ -157,7 +173,8 @@ public class CompleteShipmentCommandHandler
                 var completeResult = await _shipmentDao.CompleteAsync(
                     pendingShipment.Id,
                     request.PONumber,
-                    request.ReceiverNumber
+                    request.ReceiverNumber,
+                    employeeNumber.Value.ToString()
                 );
 
                 if (!completeResult.IsSuccess)
@@ -177,7 +194,7 @@ public class CompleteShipmentCommandHandler
                 Status = VolvoShipmentStatus.Completed,
                 PONumber = request.PONumber,
                 ReceiverNumber = request.ReceiverNumber,
-                EmployeeNumber = Environment.UserName,
+                EmployeeNumber = employeeNumber.Value.ToString(),
             };
 
             var insertResult = await _shipmentDao.InsertAsync(shipment);
@@ -199,7 +216,10 @@ public class CompleteShipmentCommandHandler
                     );
                 }
 
-                var quantityPerSkid = partResult.Data.QuantityPerSkid;
+                var quantityPerSkid =
+                    partDto.QuantityPerSkid > 0
+                        ? partDto.QuantityPerSkid
+                        : partResult.Data.QuantityPerSkid;
                 var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
 
                 var line = new Model_VolvoShipmentLine
@@ -210,6 +230,7 @@ public class CompleteShipmentCommandHandler
                     QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = partDto.ReceivedSkidCount,
                     CalculatedPieceCount = calculatedPieceCount,
+                    PoStatus = VolvoLinePoStatus.NormalizeStorageValue(partDto.PoStatus),
                     ExpectedSkidCount = partDto.ExpectedSkidCount,
                     HasDiscrepancy = partDto.HasDiscrepancy,
                     DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty,
@@ -227,7 +248,8 @@ public class CompleteShipmentCommandHandler
             var completeInsertResult = await _shipmentDao.CompleteAsync(
                 shipmentId,
                 request.PONumber,
-                request.ReceiverNumber
+                request.ReceiverNumber,
+                employeeNumber.Value.ToString()
             );
             if (!completeInsertResult.IsSuccess)
             {

@@ -229,7 +229,11 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             await _logger.LogInfoAsync($"Loading details for shipment ID: {SelectedShipment.Id}");
 
             var result = await _mediator.Send(
-                new GetShipmentDetailQuery { ShipmentId = SelectedShipment.Id }
+                new GetShipmentDetailQuery
+                {
+                    ShipmentId = SelectedShipment.Id,
+                    IsArchived = SelectedShipment.IsArchived,
+                }
             );
 
             if (result.IsSuccess && result.Data != null)
@@ -297,7 +301,11 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             StatusMessage = "Loading shipment data...";
 
             var detailResult = await _mediator.Send(
-                new GetShipmentDetailQuery { ShipmentId = SelectedShipment.Id }
+                new GetShipmentDetailQuery
+                {
+                    ShipmentId = SelectedShipment.Id,
+                    IsArchived = SelectedShipment.IsArchived,
+                }
             );
 
             if (!detailResult.IsSuccess || detailResult.Data == null)
@@ -371,7 +379,9 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                         {
                             PartNumber = line.PartNumber,
                             Location = line.Location,
+                            QuantityPerSkid = line.QuantityPerSkid,
                             ReceivedSkidCount = line.ReceivedSkidCount,
+                            PoStatus = VolvoLinePoStatus.NormalizeStorageValue(line.PoStatus),
                             ExpectedSkidCount = line.ExpectedSkidCount.HasValue
                                 ? Convert.ToInt32(line.ExpectedSkidCount.Value)
                                 : null,
@@ -422,7 +432,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         }
     }
 
-    private bool CanEdit() => SelectedShipment != null && !IsBusy;
+    private bool CanEdit() => SelectedShipment?.IsArchived == false && !IsBusy;
 
     private async Task<bool> ShowShipmentHistoryDetailDialogAsync(
         Model_VolvoShipmentHistoryDetailDialog dialogModel

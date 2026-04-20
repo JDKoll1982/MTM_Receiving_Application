@@ -97,7 +97,10 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                     );
                 }
 
-                var quantityPerSkid = partResult.Data.QuantityPerSkid;
+                var quantityPerSkid =
+                    part.QuantityPerSkid > 0
+                        ? part.QuantityPerSkid
+                        : partResult.Data.QuantityPerSkid;
 
                 var line = new Model_VolvoShipmentLine
                 {
@@ -107,6 +110,7 @@ public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentComman
                     QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = part.ReceivedSkidCount,
                     CalculatedPieceCount = quantityPerSkid * part.ReceivedSkidCount,
+                    PoStatus = VolvoLinePoStatus.NormalizeStorageValue(part.PoStatus),
                     ExpectedSkidCount = part.ExpectedSkidCount,
                     HasDiscrepancy = part.HasDiscrepancy,
                     DiscrepancyNote = part.DiscrepancyNote,

@@ -103,6 +103,7 @@ BEGIN
             shipment_history_id,
             original_shipment_id,
             part_number,
+            po_status,
             location,
             quantity_per_skid,
             received_skid_count,
@@ -119,6 +120,7 @@ BEGIN
             vlh.id             AS shipment_history_id,
             vld.shipment_id    AS original_shipment_id,
             vld.part_number,
+            COALESCE(NULLIF(TRIM(vld.po_status), ''), 'Pending'),
             vld.location,
             vld.quantity_per_skid,
             vld.received_skid_count,
@@ -132,7 +134,10 @@ BEGIN
         FROM volvo_line_data vld
         INNER JOIN volvo_label_history vlh
             ON vlh.original_id = vld.shipment_id
-           AND vlh.archive_batch_id = p_archive_batch_id;
+           AND vlh.archive_batch_id = p_archive_batch_id
+        CROSS JOIN (
+            SELECT 'Pending' AS po_status
+        ) VolvoLineStatus;
 
         -- ----------------------------------------------------------------
         -- Step 3: Delete moved line items from volvo_line_data.

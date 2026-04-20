@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Volvo.Models;
 using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
@@ -106,5 +109,126 @@ public class Dao_VolvoLabelHistory : IDao_VolvoLabelHistory
                 ex
             );
         }
+    }
+
+    public async Task<Model_Dao_Result<Model_VolvoShipment?>> GetArchivedShipmentByIdAsync(
+        int shipmentHistoryId
+    )
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object> { { "id", shipmentHistoryId } };
+            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+                _connectionString,
+                "sp_Volvo_ShipmentHistory_GetById",
+                MapShipmentFromReader,
+                parameters
+            );
+
+            if (result.Success)
+            {
+                return new Model_Dao_Result<Model_VolvoShipment?>
+                {
+                    Success = true,
+                    Data = result.Data,
+                    AffectedRows = result.AffectedRows,
+                };
+            }
+
+            return new Model_Dao_Result<Model_VolvoShipment?>
+            {
+                Success = false,
+                Data = null,
+                ErrorMessage = result.ErrorMessage ?? "Archived shipment not found",
+                Severity = result.Severity,
+                Exception = result.Exception,
+            };
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<Model_VolvoShipment?>(
+                $"Failed to retrieve archived shipment: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    public async Task<
+        Model_Dao_Result<List<Model_VolvoShipmentLine>>
+    > GetArchivedLinesByShipmentHistoryIdAsync(int shipmentHistoryId)
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "shipment_history_id", shipmentHistoryId },
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteListAsync(
+                _connectionString,
+                "sp_Volvo_ShipmentLineHistory_GetByShipmentHistoryId",
+                MapLineFromReader,
+                parameters
+            );
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_VolvoShipmentLine>>(
+                $"Failed to retrieve archived shipment lines: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static Model_VolvoShipment MapShipmentFromReader(IDataReader reader)
+    {
+        return new Model_VolvoShipment
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            ShipmentDate = reader.GetDateTime(reader.GetOrdinal("shipment_date")),
+            ShipmentNumber = reader.GetInt32(reader.GetOrdinal("shipment_number")),
+            PONumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("po_number")),
+            ReceiverNumber = reader.IsDBNull(reader.GetOrdinal("receiver_number"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("receiver_number")),
+            EmployeeNumber = reader.GetString(reader.GetOrdinal("employee_number")),
+            Notes = reader.IsDBNull(reader.GetOrdinal("notes"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("notes")),
+            Status = reader.GetString(reader.GetOrdinal("status")),
+            CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
+            ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
+            IsArchived = true,
+        };
+    }
+
+    private static Model_VolvoShipmentLine MapLineFromReader(IDataReader reader)
+    {
+        return new Model_VolvoShipmentLine
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            ShipmentId = reader.GetInt32(reader.GetOrdinal("shipment_id")),
+            PartNumber = reader.GetString(reader.GetOrdinal("part_number")),
+            PoStatus = reader.IsDBNull(reader.GetOrdinal("po_status"))
+                ? VolvoLinePoStatus.Received
+                : VolvoLinePoStatus.NormalizeStorageValue(
+                    reader.GetString(reader.GetOrdinal("po_status"))
+                ),
+            Location = reader.IsDBNull(reader.GetOrdinal("location"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("location")),
+            QuantityPerSkid = reader.GetInt32(reader.GetOrdinal("quantity_per_skid")),
+            ReceivedSkidCount = reader.GetInt32(reader.GetOrdinal("received_skid_count")),
+            CalculatedPieceCount = reader.GetInt32(reader.GetOrdinal("calculated_piece_count")),
+            HasDiscrepancy = reader.GetBoolean(reader.GetOrdinal("has_discrepancy")),
+            ExpectedSkidCount = reader.IsDBNull(reader.GetOrdinal("expected_skid_count"))
+                ? null
+                : reader.GetInt32(reader.GetOrdinal("expected_skid_count")),
+            DiscrepancyNote = reader.IsDBNull(reader.GetOrdinal("discrepancy_note"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("discrepancy_note")),
+        };
     }
 }

@@ -2,7 +2,7 @@
   "id": "volvo-shipment-entry",
   "module": "Module_Volvo",
   "name": "Shipment Entry",
-  "summary": "CQRS-backed Volvo shipment entry and completion flow, including pending-shipment restore, active-queue-aware label-data cleanup, duplicate label-generation guards for unchanged shipments, DAO-owned shipment-line transaction handling, validators, HTML email-preview launch points, and responsive host dialogs.",
+  "summary": "CQRS-backed Volvo shipment entry now uses auto-saving expandable cards instead of a DataGrid, with add/remove/edit-part actions, inline quantity edits, discrepancy reporting, employee-number-backed persistence, and completion that moves active rows directly to Volvo history.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -12,13 +12,18 @@
     "Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs",
     "Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml",
     "Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml.cs",
+    "Module_Volvo/Views/View_Volvo_PartNumberEditDialog.xaml",
+    "Module_Volvo/Views/View_Volvo_PartNumberEditDialog.xaml.cs",
     "Module_Volvo/Views/VolvoShipmentEditDialog.xaml",
     "Module_Volvo/Views/VolvoShipmentEditDialog.xaml.cs",
     "Module_Volvo/Data/Dao_VolvoShipment.cs",
     "Module_Volvo/Data/Dao_VolvoShipmentLine.cs",
     "Module_Volvo/Models/Model_VolvoShipment.cs",
+    "Module_Volvo/Models/Model_VolvoPartNumberEditDialog.cs",
     "Module_Volvo/Models/Model_VolvoShipmentLine.cs",
+    "Module_Volvo/Models/VolvoLinePoStatus.cs",
     "Module_Volvo/Models/VolvoShipmentStatus.cs",
+    "Module_Volvo/ViewModels/ViewModel_Volvo_PartNumberEditDialog.cs",
     "Module_Volvo/Requests/ShipmentLineDto.cs",
     "Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs",
     "Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs",
@@ -42,6 +47,9 @@
     "Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandler.cs",
     "Module_Volvo/Data/IDao_VolvoLabelHistory.cs",
     "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
+    "Module_Core/Converters/Converter_InverseBooleanToVisibility.cs",
+    "Module_Core/Converters/Converter_VolvoDiscrepancyBorderBrush.cs",
+    "Module_Core/Converters/Converter_VolvoPoStatusToBrush.cs",
     "Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs",
     "Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs",
     "Module_Volvo/Validators/CompleteShipmentCommandValidator.cs",
@@ -57,46 +65,44 @@
   },
   "uiHints": {
     "workflowAreas": [
-      "Shipment entry",
+      "Card-based shipment entry",
       "Pending shipment restore",
-      "Shipment-line editing",
-      "Save and complete shipment flow",
-      "Active-queue archive cleanup",
-      "Duplicate label-generation prevention",
-      "Responsive shipment edit dialog sizing"
+      "Auto-save line editing",
+      "Part-number modal edits",
+      "Discrepancy management",
+      "Complete-and-archive flow"
     ],
     "screens": [
       "View_Volvo_ShipmentEntry.xaml",
+      "View_Volvo_PartNumberEditDialog.xaml",
       "VolvoShipmentEditDialog.xaml"
     ],
-    "currentUiPatterns": ["Table", "Form"],
-    "desiredUiPatterns": ["Split layout", "Form", "Card list"],
+    "currentUiPatterns": ["Card list", "Dialog"],
+    "desiredUiPatterns": ["Card list", "Dialog", "Toolbar + results list"],
     "uiElements": [
-      "Shipment date",
-      "Shipment number",
-      "Parts grid",
-      "Save action",
+      "Expandable part cards",
+      "Part number button",
+      "Inline quantity inputs",
+      "Discrepancy actions",
       "Complete action",
-      "Clear label data action",
-      "Generate labels action"
+      "Add part dialog",
+      "Part-number edit dialog"
     ],
     "userActions": [
-      "Create or continue a Volvo shipment",
-      "Add or remove shipment parts",
-      "Save progress",
-      "Complete the shipment",
-      "Archive and clear active Volvo shipment label data",
-      "Generate labels once per unchanged shipment snapshot"
+      "Open the active Volvo queue",
+      "Add a part card",
+      "Edit part number or quantities inline",
+      "Report or remove discrepancies",
+      "Remove an existing card",
+      "Complete the shipment and archive the active rows"
     ],
     "validationHints": [
-      "Confirm pending shipment restore still loads the correct shipment state",
-      "Confirm pending shipment restore and part suggestions still repopulate bound collections correctly after whole-collection replacement",
-      "Confirm shipment-line commands and completion still follow the intended guarded behavior",
-      "Confirm Clear Label Data is disabled when the Volvo active queue has no rows and enabled once active shipment rows exist",
-      "Confirm Clear Label Data archives and clears the active Volvo shipment queue regardless of row status",
-      "Confirm Generate Labels is disabled after a successful run for the current unchanged shipment and re-enables after shipment header or line data changes",
-      "Confirm shipment-line persistence still behaves transactionally after transaction ownership moved out of the service layer",
-      "Confirm the shipment edit dialog applies responsive sizing cleanly when opened from history"
+      "Confirm pending shipment restore still rebuilds the same active cards",
+      "Confirm duplicate part numbers are blocked for both add and part-number change flows",
+      "Confirm quantity edits reject zero, negative, decimal, and non-integer values",
+      "Confirm discrepancy changes auto-save without blocking the user in a modal error flow",
+      "Confirm Complete Shipment removes active rows from volvo_label_data and volvo_line_data and moves them to history",
+      "Confirm archived history detail still loads after active rows are deleted"
     ]
   }
 }

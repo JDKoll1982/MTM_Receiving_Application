@@ -15,6 +15,11 @@ public class Model_VolvoPart
     public string PartNumber { get; set; } = string.Empty;
 
     /// <summary>
+    /// Optional part description shown in Volvo cards and dialogs.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Number of pieces per skid for this part
     /// Example: V-EMB-2 = 20 pieces/skid, V-EMB-500 = 88 pieces/skid
     /// </summary>

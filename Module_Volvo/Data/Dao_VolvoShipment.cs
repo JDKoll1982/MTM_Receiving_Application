@@ -130,7 +130,8 @@ public class Dao_VolvoShipment
     public async Task<Model_Dao_Result> CompleteAsync(
         int shipmentId,
         string poNumber,
-        string receiverNumber
+        string receiverNumber,
+        string archivedBy = "SYSTEM"
     )
     {
         var parameters = new Dictionary<string, object>
@@ -138,6 +139,7 @@ public class Dao_VolvoShipment
             { "shipment_id", shipmentId },
             { "po_number", poNumber },
             { "receiver_number", receiverNumber },
+            { "archived_by", archivedBy },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(

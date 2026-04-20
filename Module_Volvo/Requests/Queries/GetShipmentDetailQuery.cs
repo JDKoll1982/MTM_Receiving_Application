@@ -14,6 +14,11 @@ public record GetShipmentDetailQuery : IRequest<Model_Dao_Result<ShipmentDetail>
     /// Shipment ID to retrieve.
     /// </summary>
     public int ShipmentId { get; init; }
+
+    /// <summary>
+    /// Indicates whether the selected row comes from history rather than the active queue.
+    /// </summary>
+    public bool IsArchived { get; init; }
 }
 
 /// <summary>

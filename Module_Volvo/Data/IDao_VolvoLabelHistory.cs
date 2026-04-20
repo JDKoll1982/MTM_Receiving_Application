@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Volvo.Models;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -18,4 +19,18 @@ public interface IDao_VolvoLabelHistory
     Task<Model_Dao_Result<(int HeadersMoved, int LinesMoved)>> ClearToHistoryAsync(
         string archivedBy
     );
+
+    /// <summary>
+    /// Gets an archived shipment header by history-table ID.
+    /// </summary>
+    Task<Model_Dao_Result<Model_VolvoShipment?>> GetArchivedShipmentByIdAsync(
+        int shipmentHistoryId
+    );
+
+    /// <summary>
+    /// Gets archived shipment lines by archived shipment header ID.
+    /// </summary>
+    Task<
+        Model_Dao_Result<System.Collections.Generic.List<Model_VolvoShipmentLine>>
+    > GetArchivedLinesByShipmentHistoryIdAsync(int shipmentHistoryId);
 }

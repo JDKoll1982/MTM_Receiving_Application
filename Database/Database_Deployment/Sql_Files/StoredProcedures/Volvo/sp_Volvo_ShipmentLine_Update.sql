@@ -11,7 +11,10 @@ DROP PROCEDURE IF EXISTS `sp_Volvo_ShipmentLine_Update`$$
 
 CREATE PROCEDURE `sp_Volvo_ShipmentLine_Update`(
   IN p_id INT,
+  IN p_part_number VARCHAR(20),
+  IN p_po_status VARCHAR(20),
   IN p_location VARCHAR(50),
+  IN p_quantity_per_skid INT,
   IN p_received_skid_count INT,
   IN p_calculated_piece_count INT,
   IN p_has_discrepancy TINYINT(1),
@@ -21,7 +24,10 @@ CREATE PROCEDURE `sp_Volvo_ShipmentLine_Update`(
 BEGIN
   UPDATE volvo_line_data
   SET
+    part_number = p_part_number,
+    po_status = COALESCE(NULLIF(TRIM(p_po_status), ''), 'Pending'),
     location = NULLIF(TRIM(p_location), ''),
+    quantity_per_skid = p_quantity_per_skid,
     received_skid_count = p_received_skid_count,
     calculated_piece_count = p_calculated_piece_count,
     has_discrepancy = p_has_discrepancy,

@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -23,6 +24,7 @@ using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using Windows.ApplicationModel.DataTransfer;
+using AppInfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 
@@ -122,8 +124,15 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _hasActiveQueueRows;
 
+    [ObservableProperty]
+    private bool _isAutoSaveInProgress;
+
     private int? _currentShipmentId;
     private string _lastGeneratedShipmentFingerprint = string.Empty;
+    private readonly SemaphoreSlim _autoSaveLock = new(1, 1);
+    private Task _pendingAutoSaveTask = Task.CompletedTask;
+
+    public bool HasAnyParts => Parts.Count > 0;
 
     #endregion
 
@@ -256,6 +265,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         if (_allParts == null || _allParts.Count == 0)
         {
+            foreach (var line in Parts)
+            {
+                line.PartDescription = string.Empty;
+                line.PoStatus = VolvoLinePoStatus.NormalizeStorageValue(line.PoStatus);
+            }
+
             return;
         }
 
@@ -266,13 +281,23 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         foreach (var line in Parts)
         {
+            line.PoStatus = VolvoLinePoStatus.NormalizeStorageValue(line.PoStatus);
+
             if (
-                line.QuantityPerSkid <= 0
-                && !string.IsNullOrWhiteSpace(line.PartNumber)
+                !string.IsNullOrWhiteSpace(line.PartNumber)
                 && partsByNumber.TryGetValue(line.PartNumber, out var part)
             )
             {
-                line.QuantityPerSkid = part.QuantityPerSkid;
+                line.PartDescription = part.Description;
+
+                if (line.QuantityPerSkid <= 0)
+                {
+                    line.QuantityPerSkid = part.QuantityPerSkid;
+                }
+            }
+            else
+            {
+                line.PartDescription = string.Empty;
             }
 
             if (line.CalculatedPieceCount <= 0 && line.QuantityPerSkid > 0)
@@ -361,6 +386,121 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     partial void OnPartSearchTextChanged(string value)
     {
         UpdatePartSuggestions(value);
+    }
+
+    #endregion
+
+    #region Card Actions
+
+    public async Task WaitForPendingAutoSaveAsync()
+    {
+        await _pendingAutoSaveTask;
+    }
+
+    public async Task<Model_Dao_Result> AddPartFromDialogAsync(
+        Model_VolvoPart selectedPart,
+        int skidCount,
+        string? location
+    )
+    {
+        await WaitForPendingAutoSaveAsync();
+
+        if (
+            Parts.Any(p =>
+                p.PartNumber.Equals(selectedPart.PartNumber, StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            return Model_Dao_Result_Factory.Failure(
+                $"Part {selectedPart.PartNumber} is already in this shipment. Remove or edit the existing card instead."
+            );
+        }
+
+        var newLine = new Model_VolvoShipmentLine
+        {
+            PartNumber = selectedPart.PartNumber,
+            PartDescription = selectedPart.Description,
+            PoStatus = VolvoLinePoStatus.Pending,
+            Location = location?.Trim() ?? string.Empty,
+            QuantityPerSkid = selectedPart.QuantityPerSkid,
+            ReceivedSkidCount = skidCount,
+            CalculatedPieceCount = selectedPart.QuantityPerSkid * skidCount,
+            HasDiscrepancy = false,
+            ExpectedSkidCount = null,
+            DiscrepancyNote = string.Empty,
+            IsExpanded = true,
+        };
+
+        Parts.Add(newLine);
+        await _logger.LogInfoAsync(
+            $"User added part {selectedPart.PartNumber}, {skidCount} skids ({newLine.CalculatedPieceCount} pcs)"
+        );
+
+        return await PersistCurrentShipmentAsync();
+    }
+
+    public async Task<Model_Dao_Result> RemovePartCardAsync(Model_VolvoShipmentLine line)
+    {
+        await WaitForPendingAutoSaveAsync();
+
+        Parts.Remove(line);
+        await _logger.LogInfoAsync($"User removed part {line.PartNumber} from shipment");
+        return await PersistCurrentShipmentAsync();
+    }
+
+    public async Task<Model_Dao_Result> UpdatePartNumberAsync(
+        Model_VolvoShipmentLine line,
+        Model_VolvoPart replacementPart
+    )
+    {
+        await WaitForPendingAutoSaveAsync();
+
+        if (
+            Parts.Any(p =>
+                !ReferenceEquals(p, line)
+                && p.PartNumber.Equals(
+                    replacementPart.PartNumber,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+        )
+        {
+            return Model_Dao_Result_Factory.Failure(
+                $"Part {replacementPart.PartNumber} already exists in the current list. Remove or edit the existing card instead."
+            );
+        }
+
+        line.PartNumber = replacementPart.PartNumber;
+        line.PartDescription = replacementPart.Description;
+        line.QuantityPerSkid = replacementPart.QuantityPerSkid;
+
+        return await PersistCurrentShipmentAsync();
+    }
+
+    public async Task<Model_Dao_Result> UpdateReceivedSkidsAsync(
+        Model_VolvoShipmentLine line,
+        int receivedSkids
+    )
+    {
+        line.ReceivedSkidCount = receivedSkids;
+        return await PersistCurrentShipmentAsync();
+    }
+
+    public async Task<Model_Dao_Result> UpdateQuantityPerSkidAsync(
+        Model_VolvoShipmentLine line,
+        int quantityPerSkid
+    )
+    {
+        await WaitForPendingAutoSaveAsync();
+        line.QuantityPerSkid = quantityPerSkid;
+        return await PersistCurrentShipmentAsync();
+    }
+
+    public async Task<Model_Dao_Result> ClearDiscrepancyAsync(Model_VolvoShipmentLine line)
+    {
+        await WaitForPendingAutoSaveAsync();
+        line.HasDiscrepancy = false;
+        return await PersistCurrentShipmentAsync();
     }
 
     #endregion
@@ -1106,7 +1246,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 {
                     PartNumber = p.PartNumber,
                     Location = p.Location,
+                    QuantityPerSkid = p.QuantityPerSkid,
                     ReceivedSkidCount = p.ReceivedSkidCount,
+                    PoStatus = VolvoLinePoStatus.NormalizeStorageValue(p.PoStatus),
                     ExpectedSkidCount = p.ExpectedSkidCount.HasValue
                         ? (int?)p.ExpectedSkidCount.Value
                         : null,
@@ -1186,7 +1328,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 PartNumber = p.PartNumber,
                 Location = p.Location,
+                QuantityPerSkid = p.QuantityPerSkid,
                 ReceivedSkidCount = p.ReceivedSkidCount,
+                PoStatus = VolvoLinePoStatus.NormalizeStorageValue(p.PoStatus),
                 ExpectedSkidCount = p.ExpectedSkidCount.HasValue
                     ? (int?)p.ExpectedSkidCount.Value
                     : null,
@@ -1242,7 +1386,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// <summary>
     /// Completes pending shipment using CompleteShipmentCommand (CQRS)
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanCompleteShipment))]
     private async Task CompleteShipmentAsync()
     {
         // This will be used when completing a pending shipment with PO/Receiver numbers
@@ -1371,7 +1515,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 {
                     PartNumber = p.PartNumber,
                     Location = p.Location,
+                    QuantityPerSkid = p.QuantityPerSkid,
                     ReceivedSkidCount = p.ReceivedSkidCount,
+                    PoStatus = VolvoLinePoStatus.NormalizeStorageValue(p.PoStatus),
                     ExpectedSkidCount = p.ExpectedSkidCount.HasValue
                         ? (int?)p.ExpectedSkidCount.Value
                         : null,
@@ -1449,6 +1595,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             if (confirmResult == ContentDialogResult.Primary)
             {
                 line.HasDiscrepancy = false;
+                await PersistCurrentShipmentAsync();
             }
 
             return;
@@ -1503,6 +1650,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         line.HasDiscrepancy = true;
         line.ExpectedSkidCount = expectedSkidsBox.Value;
         line.DiscrepancyNote = string.IsNullOrWhiteSpace(noteBox.Text) ? null : noteBox.Text.Trim();
+        await PersistCurrentShipmentAsync();
     }
 
     [RelayCommand]
@@ -1733,6 +1881,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         return !IsBusy && Parts.Count > 0;
     }
 
+    private bool CanCompleteShipment()
+    {
+        return !IsBusy && !IsAutoSaveInProgress && Parts.Count > 0;
+    }
+
     private bool CanClearLabelData()
     {
         return !IsBusy && HasActiveQueueRows;
@@ -1741,8 +1894,106 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private bool HasShipmentData()
     {
         return !IsBusy
+            && !IsAutoSaveInProgress
             && Parts.Count > 0
             && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+    }
+
+    private async Task<Model_Dao_Result> PersistCurrentShipmentAsync()
+    {
+        var currentSaveTask = PersistCurrentShipmentInternalAsync();
+        _pendingAutoSaveTask = currentSaveTask;
+        return await currentSaveTask;
+    }
+
+    private async Task<Model_Dao_Result> PersistCurrentShipmentInternalAsync()
+    {
+        await _autoSaveLock.WaitAsync();
+
+        try
+        {
+            IsAutoSaveInProgress = true;
+
+            if (Parts.Count == 0)
+            {
+                if (HasPendingShipment && _currentShipmentId.HasValue)
+                {
+                    var deleteResult = await _mediator.Send(
+                        new DeletePendingShipmentCommand { ShipmentId = _currentShipmentId.Value }
+                    );
+
+                    if (!deleteResult.IsSuccess)
+                    {
+                        ShowStatus(
+                            deleteResult.ErrorMessage
+                                ?? "Auto-save failed while clearing the empty shipment.",
+                            AppInfoBarSeverity.Warning
+                        );
+                        return deleteResult;
+                    }
+                }
+
+                HasPendingShipment = false;
+                HasActiveQueueRows = false;
+                _currentShipmentId = null;
+                return Model_Dao_Result_Factory.Success();
+            }
+
+            var saveCommand = new SavePendingShipmentCommand
+            {
+                ShipmentId = _currentShipmentId,
+                ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+                ShipmentNumber = ShipmentNumber,
+                Notes = Notes ?? string.Empty,
+                Parts = Parts
+                    .Select(line => new ShipmentLineDto
+                    {
+                        PartNumber = line.PartNumber,
+                        Location = line.Location,
+                        QuantityPerSkid = line.QuantityPerSkid,
+                        ReceivedSkidCount = line.ReceivedSkidCount,
+                        PoStatus = VolvoLinePoStatus.NormalizeStorageValue(line.PoStatus),
+                        ExpectedSkidCount = line.ExpectedSkidCount.HasValue
+                            ? Convert.ToInt32(line.ExpectedSkidCount.Value)
+                            : null,
+                        HasDiscrepancy = line.HasDiscrepancy,
+                        DiscrepancyNote = line.DiscrepancyNote ?? string.Empty,
+                    })
+                    .ToList(),
+            };
+
+            var saveResult = await _mediator.Send(saveCommand);
+            if (!saveResult.IsSuccess)
+            {
+                ShowStatus(
+                    saveResult.ErrorMessage
+                        ?? "Auto-save failed. Your changes are still shown and will be retried on the next action.",
+                    AppInfoBarSeverity.Warning
+                );
+                return saveResult;
+            }
+
+            _currentShipmentId = saveResult.Data;
+            HasPendingShipment = true;
+            HasActiveQueueRows = true;
+            StatusMessage = "Changes saved";
+            return Model_Dao_Result_Factory.Success();
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error during Volvo auto-save: {ex.Message}", ex);
+            ShowStatus(
+                "Auto-save failed. Your changes are still shown and will be retried on the next action.",
+                AppInfoBarSeverity.Warning
+            );
+            return Model_Dao_Result_Factory.Failure("Volvo auto-save failed", ex);
+        }
+        finally
+        {
+            IsAutoSaveInProgress = false;
+            RefreshCommandStates();
+            _autoSaveLock.Release();
+        }
     }
 
     private bool HasLabelsGeneratedForCurrentShipment()
@@ -1821,6 +2072,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         GenerateLabelsCommand.NotifyCanExecuteChanged();
         PreviewEmailCommand.NotifyCanExecuteChanged();
         SaveAsPendingCommand.NotifyCanExecuteChanged();
+        CompleteShipmentCommand.NotifyCanExecuteChanged();
         ClearLabelDataCommand.NotifyCanExecuteChanged();
     }
 
@@ -1866,7 +2118,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         AttachPartsCollectionHandlers(value);
         _lastGeneratedShipmentFingerprint = string.Empty;
+        OnPropertyChanged(nameof(HasAnyParts));
         ValidateSaveEligibility();
+        RefreshCommandStates();
     }
 
     partial void OnShipmentDateChanged(DateTimeOffset? value)
@@ -1935,7 +2189,23 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private void ReplaceParts(IEnumerable<Model_VolvoShipmentLine> lines)
     {
         var selectedPartNumber = SelectedPart?.PartNumber;
-        Parts = new ObservableCollection<Model_VolvoShipmentLine>(lines);
+        var expandStatesByPartNumber = Parts.ToDictionary(
+            part => part.PartNumber,
+            part => part.IsExpanded,
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        var newLines = lines.ToList();
+        foreach (var line in newLines)
+        {
+            if (expandStatesByPartNumber.TryGetValue(line.PartNumber, out var isExpanded))
+            {
+                line.IsExpanded = isExpanded;
+            }
+        }
+
+        Parts = new ObservableCollection<Model_VolvoShipmentLine>(newLines);
+        ApplyCachedQuantitiesToLines();
         SelectedPart = string.IsNullOrWhiteSpace(selectedPartNumber)
             ? null
             : Parts.FirstOrDefault(part =>
@@ -2008,7 +2278,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
 
         _lastGeneratedShipmentFingerprint = string.Empty;
+        OnPropertyChanged(nameof(HasAnyParts));
         ValidateSaveEligibility();
+        RefreshCommandStates();
     }
 
     private void AttachShipmentLineHandlers(Model_VolvoShipmentLine line)
@@ -2032,6 +2304,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         _lastGeneratedShipmentFingerprint = string.Empty;
         ValidateSaveEligibility();
+        RefreshCommandStates();
     }
 
     #endregion

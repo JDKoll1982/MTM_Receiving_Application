@@ -44,6 +44,7 @@ public class Dao_VolvoShipmentLine
             { "quantity_per_skid", line.QuantityPerSkid },
             { "received_skid_count", line.ReceivedSkidCount },
             { "calculated_piece_count", line.CalculatedPieceCount },
+            { "po_status", line.PoStatus },
             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
             { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
             { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
@@ -83,14 +84,17 @@ public class Dao_VolvoShipmentLine
         var parameters = new Dictionary<string, object>
         {
             { "id", line.Id },
+            { "part_number", line.PartNumber },
             {
                 "location",
                 string.IsNullOrWhiteSpace(line.Location)
                     ? (object)DBNull.Value
                     : line.Location.Trim()
             },
+            { "quantity_per_skid", line.QuantityPerSkid },
             { "received_skid_count", line.ReceivedSkidCount },
             { "calculated_piece_count", line.CalculatedPieceCount },
+            { "po_status", line.PoStatus },
             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
             { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
             { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value },
@@ -148,6 +152,14 @@ public class Dao_VolvoShipmentLine
                 {
                     { "shipment_id", line.ShipmentId },
                     { "part_number", line.PartNumber },
+                    { "po_status", line.PoStatus },
+                    {
+                        "location",
+                        string.IsNullOrWhiteSpace(line.Location)
+                            ? (object)DBNull.Value
+                            : line.Location.Trim()
+                    },
+                    { "quantity_per_skid", line.QuantityPerSkid },
                     { "received_skid_count", line.ReceivedSkidCount },
                     { "calculated_piece_count", line.CalculatedPieceCount },
                     { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
@@ -197,6 +209,11 @@ public class Dao_VolvoShipmentLine
             QuantityPerSkid = reader.GetInt32(reader.GetOrdinal("quantity_per_skid")),
             ReceivedSkidCount = reader.GetInt32(reader.GetOrdinal("received_skid_count")),
             CalculatedPieceCount = reader.GetInt32(reader.GetOrdinal("calculated_piece_count")),
+            PoStatus = reader.IsDBNull(reader.GetOrdinal("po_status"))
+                ? VolvoLinePoStatus.Pending
+                : VolvoLinePoStatus.NormalizeStorageValue(
+                    reader.GetString(reader.GetOrdinal("po_status"))
+                ),
             HasDiscrepancy = reader.GetBoolean(reader.GetOrdinal("has_discrepancy")),
             ExpectedSkidCount = reader.IsDBNull(reader.GetOrdinal("expected_skid_count"))
                 ? null

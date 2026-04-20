@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS volvo_line_data (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for volvo_line_data',
     shipment_id INT NOT NULL COMMENT 'FK to volvo_label_data.id (shipment header)',
     part_number VARCHAR(20) NOT NULL COMMENT 'From volvo_masterdata',
+    po_status VARCHAR(20) NOT NULL DEFAULT 'Pending' COMMENT 'Card status: Pending or Received',
     location VARCHAR(50) NULL COMMENT 'Warehouse location for this shipment line',
     quantity_per_skid INT NOT NULL DEFAULT 0 COMMENT 'Cached quantity per skid from master data at time of shipment',
     received_skid_count INT NOT NULL COMMENT 'User-entered actual skid count',
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS volvo_line_data (
     PRIMARY KEY (id),
     INDEX idx_shipment_id (shipment_id) COMMENT 'Index for lookup by shipment_id',
     INDEX idx_part_number (part_number) COMMENT 'Index for lookup by part_number',
+    INDEX idx_po_status (po_status) COMMENT 'Index for lookup by Pending/Received state',
     FOREIGN KEY (shipment_id) REFERENCES volvo_label_data (id) ON DELETE CASCADE,
     FOREIGN KEY (part_number) REFERENCES volvo_masterdata (part_number) ON DELETE RESTRICT
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Volvo shipment line items';

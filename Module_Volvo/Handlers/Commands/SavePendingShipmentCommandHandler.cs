@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mapster;
 using MediatR;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Models;
@@ -20,16 +21,19 @@ public class SavePendingShipmentCommandHandler
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
     private readonly Dao_VolvoPart _partDao;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public SavePendingShipmentCommandHandler(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
-        Dao_VolvoPart partDao
+        Dao_VolvoPart partDao,
+        IService_UserSessionManager sessionManager
     )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+        _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
     }
 
     public async Task<Model_Dao_Result<int>> Handle(
@@ -39,6 +43,14 @@ public class SavePendingShipmentCommandHandler
     {
         try
         {
+            var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+            if (!employeeNumber.HasValue || employeeNumber.Value <= 0)
+            {
+                return Model_Dao_Result_Factory.Failure<int>(
+                    "No active employee number was found for the current user."
+                );
+            }
+
             // Create shipment model
             var shipment = new Model_VolvoShipment
             {
@@ -46,7 +58,7 @@ public class SavePendingShipmentCommandHandler
                 ShipmentNumber = request.ShipmentNumber,
                 Notes = request.Notes,
                 Status = VolvoShipmentStatus.PendingPo,
-                EmployeeNumber = Environment.UserName, // TODO: Get from session/auth
+                EmployeeNumber = employeeNumber.Value.ToString(),
             };
 
             Model_Dao_Result<(int ShipmentId, int ShipmentNumber)> saveResult;
@@ -140,7 +152,10 @@ public class SavePendingShipmentCommandHandler
                     );
                 }
 
-                var quantityPerSkid = partResult.Data.QuantityPerSkid;
+                var quantityPerSkid =
+                    partDto.QuantityPerSkid > 0
+                        ? partDto.QuantityPerSkid
+                        : partResult.Data.QuantityPerSkid;
                 var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
 
                 var line = new Model_VolvoShipmentLine
@@ -151,6 +166,7 @@ public class SavePendingShipmentCommandHandler
                     QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = partDto.ReceivedSkidCount,
                     CalculatedPieceCount = calculatedPieceCount,
+                    PoStatus = VolvoLinePoStatus.NormalizeStorageValue(partDto.PoStatus),
                     ExpectedSkidCount = partDto.ExpectedSkidCount,
                     HasDiscrepancy = partDto.HasDiscrepancy,
                     DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty,

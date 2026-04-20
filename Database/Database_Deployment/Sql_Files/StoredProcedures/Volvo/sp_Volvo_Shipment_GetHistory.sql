@@ -25,7 +25,21 @@ BEGIN
   WHERE s.shipment_date BETWEEN p_start_date AND p_end_date
     AND (p_status = 'all' OR s.status = p_status)
   GROUP BY s.id
-  ORDER BY s.shipment_date DESC, s.shipment_number DESC;
+
+  UNION ALL
+
+  SELECT
+    h.id, h.shipment_date, h.shipment_number, h.po_number, h.receiver_number,
+    h.employee_number, h.notes, h.status, h.created_date, h.modified_date,
+    1 AS is_archived,
+    COUNT(lh.id) AS part_count
+  FROM volvo_label_history h
+  LEFT JOIN volvo_line_history lh ON h.id = lh.shipment_history_id
+  WHERE h.shipment_date BETWEEN p_start_date AND p_end_date
+    AND (p_status = 'all' OR h.status = p_status)
+  GROUP BY h.id
+
+  ORDER BY shipment_date DESC, shipment_number DESC;
 END $$
 
 DELIMITER ;

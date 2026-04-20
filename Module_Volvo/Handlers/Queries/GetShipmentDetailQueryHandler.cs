@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Volvo.Data;
+using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
@@ -16,14 +18,17 @@ public class GetShipmentDetailQueryHandler
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
+    private readonly IDao_VolvoLabelHistory _historyDao;
 
     public GetShipmentDetailQueryHandler(
         Dao_VolvoShipment shipmentDao,
-        Dao_VolvoShipmentLine lineDao
+        Dao_VolvoShipmentLine lineDao,
+        IDao_VolvoLabelHistory historyDao
     )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+        _historyDao = historyDao ?? throw new ArgumentNullException(nameof(historyDao));
     }
 
     public async Task<Model_Dao_Result<ShipmentDetail>> Handle(
@@ -33,15 +38,36 @@ public class GetShipmentDetailQueryHandler
     {
         try
         {
-            var shipmentResult = await _shipmentDao.GetByIdAsync(request.ShipmentId);
-            if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+            Model_Dao_Result<Model_VolvoShipment?> shipmentResult;
+            Model_Dao_Result<List<Model_VolvoShipmentLine>> linesResult;
+
+            if (request.IsArchived)
             {
-                return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
-                    shipmentResult.ErrorMessage ?? "Shipment not found"
+                shipmentResult = await _historyDao.GetArchivedShipmentByIdAsync(request.ShipmentId);
+                if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+                {
+                    return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
+                        shipmentResult.ErrorMessage ?? "Archived shipment not found"
+                    );
+                }
+
+                linesResult = await _historyDao.GetArchivedLinesByShipmentHistoryIdAsync(
+                    request.ShipmentId
                 );
             }
+            else
+            {
+                shipmentResult = await _shipmentDao.GetByIdAsync(request.ShipmentId);
+                if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+                {
+                    return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
+                        shipmentResult.ErrorMessage ?? "Shipment not found"
+                    );
+                }
 
-            var linesResult = await _lineDao.GetByShipmentIdAsync(request.ShipmentId);
+                linesResult = await _lineDao.GetByShipmentIdAsync(request.ShipmentId);
+            }
+
             if (!linesResult.IsSuccess || linesResult.Data == null)
             {
                 return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
