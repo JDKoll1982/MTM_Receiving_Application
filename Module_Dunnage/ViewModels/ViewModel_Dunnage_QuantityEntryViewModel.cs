@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Material.Icons;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
@@ -52,9 +51,6 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
     {
         NumberOfLoads = 1;
         Quantity = 1;
-        SelectedTypeName = string.Empty;
-        SelectedTypeIcon = "Help";
-        SelectedPartName = string.Empty;
         ValidationMessage = string.Empty;
         ReplaceLoads(Array.Empty<Model_DunnageLoad>());
         StatusMessage = string.Empty;
@@ -80,32 +76,6 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
     private ObservableCollection<Model_DunnageLoad> _loads = new();
 
     [ObservableProperty]
-    private string _selectedTypeName = string.Empty;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SelectedTypeIconKind))]
-    private string _selectedTypeIcon = "Help";
-
-    public MaterialIconKind SelectedTypeIconKind
-    {
-        get
-        {
-            if (
-                !string.IsNullOrEmpty(SelectedTypeIcon)
-                && Enum.TryParse<MaterialIconKind>(SelectedTypeIcon, true, out var kind)
-            )
-            {
-                return kind;
-            }
-
-            return MaterialIconKind.PackageVariantClosed;
-        }
-    }
-
-    [ObservableProperty]
-    private string _selectedPartName = string.Empty;
-
-    [ObservableProperty]
     private string _validationMessage = string.Empty;
 
     public bool IsValid =>
@@ -115,15 +85,14 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
     {
         try
         {
-            SelectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
-            SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
-            SelectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
-
             NumberOfLoads = _workflowService.NumberOfLoads;
             RebuildLoadEditors();
 
+            var selectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
+            var selectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
+
             _logger.LogInfo(
-                $"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}, LoadCount={NumberOfLoads}",
+                $"Loaded context: Type={selectedTypeName}, Part={selectedPartName}, LoadCount={NumberOfLoads}",
                 "QuantityEntry"
             );
         }
@@ -169,6 +138,12 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
         {
             EnsureSessionLoadQuantities();
 
+            var selectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
+            var selectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
+            var selectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
+            var selectedTypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath;
+            var selectedPartImagePath = _workflowService.CurrentSession.SelectedPart?.ImagePath;
+
             var rebuiltLoads = new List<Model_DunnageLoad>(NumberOfLoads);
             for (var index = 0; index < NumberOfLoads; index++)
             {
@@ -176,11 +151,11 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
                 {
                     LoadNumber = index + 1,
                     Quantity = _workflowService.CurrentSession.LoadQuantities[index],
-                    PartId = SelectedPartName,
-                    TypeName = SelectedTypeName,
-                    TypeIcon = SelectedTypeIcon,
-                    TypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath,
-                    PartImagePath = _workflowService.CurrentSession.SelectedPart?.ImagePath,
+                    PartId = selectedPartName,
+                    TypeName = selectedTypeName,
+                    TypeIcon = selectedTypeIcon,
+                    TypeImagePath = selectedTypeImagePath,
+                    PartImagePath = selectedPartImagePath,
                 };
                 rebuiltLoads.Add(load);
             }

@@ -15,5 +15,6 @@ public interface IDao_VolvoPart
     Task<Model_Dao_Result<Model_VolvoPart>> GetByPartNumberAsync(string partNumber);
     Task<Model_Dao_Result<int>> InsertAsync(Model_VolvoPart part);
     Task<Model_Dao_Result> UpdateAsync(Model_VolvoPart part);
+    Task<Model_Dao_Result> ActivateAsync(string partNumber);
     Task<Model_Dao_Result> DeactivateAsync(string partNumber);
 }

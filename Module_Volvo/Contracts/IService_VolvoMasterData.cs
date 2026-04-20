@@ -49,6 +49,13 @@ public interface IService_VolvoMasterData
     );
 
     /// <summary>
+    /// Activates a previously deactivated part.
+    /// </summary>
+    /// <param name="partNumber">Part number to activate</param>
+    /// <returns>Success result</returns>
+    public Task<Model_Dao_Result> ActivatePartAsync(string partNumber);
+
+    /// <summary>
     /// Deactivates a part (soft delete - preserves historical integrity)
     /// </summary>
     /// <param name="partNumber">Part number to deactivate</param>

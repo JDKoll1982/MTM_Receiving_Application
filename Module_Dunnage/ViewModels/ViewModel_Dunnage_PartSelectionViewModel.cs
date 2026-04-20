@@ -75,7 +75,6 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         SelectedPartSpecSummaries = new ObservableCollection<string>();
         HasSelectedPartSpecs = false;
         IsInventoryNotificationVisible = false;
-        InventoryNotificationMessage = string.Empty;
         InventoryMethod = "Adjust In";
         StatusMessage = string.Empty;
     }
@@ -116,9 +115,6 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     [ObservableProperty]
     private bool _isInventoryNotificationVisible;
-
-    [ObservableProperty]
-    private string _inventoryNotificationMessage = string.Empty;
 
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";
@@ -367,7 +363,6 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     ? "Adjust In"
                     : inventoryDetails.Data.InventoryMethod;
                 _workflowService.CurrentSession.InventoryMethod = InventoryMethod;
-                UpdateInventoryMessage();
 
                 _logger.LogInfo(
                     $"Part {part.PartId} is inventoried with method {InventoryMethod}",
@@ -389,12 +384,6 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             InventoryMethod = string.Empty;
             _workflowService.CurrentSession.InventoryMethod = string.Empty;
         }
-    }
-
-    private void UpdateInventoryMessage()
-    {
-        InventoryNotificationMessage =
-            $"This part requires inventory in Visual. Method: {InventoryMethod}";
     }
 
     private void UpdateSelectedPartSpecs(Model_DunnagePart part)

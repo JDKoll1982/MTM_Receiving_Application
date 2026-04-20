@@ -65,6 +65,7 @@
                             <TextBox
                                 x:Name="PoNumberTextBox"
                                 HorizontalAlignment="Stretch"
+                                LostFocus="PoNumberTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                 Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}" />
                             <TextBlock

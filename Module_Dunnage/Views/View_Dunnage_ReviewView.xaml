@@ -159,6 +159,26 @@
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}" />
                                 </StackPanel>
 
+                                <StackPanel
+                                    Spacing="4"
+                                    Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Vendor" />
+                                    <TextBlock
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords"
+                                        Visibility="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                        Style="{StaticResource BodyTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords"
+                                        Visibility="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                                </StackPanel>
+
                                 <StackPanel Spacing="4">
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"

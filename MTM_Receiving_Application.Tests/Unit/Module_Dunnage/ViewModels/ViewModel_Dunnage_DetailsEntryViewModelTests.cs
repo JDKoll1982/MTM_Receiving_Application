@@ -93,7 +93,7 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_Notification>().Object
         )
         {
-            PoNumber = "PO-7788",
+            PoNumber = "7788",
             Location = "DOCK-4",
             SpecInputs = new ObservableCollection<Model_SpecInput>
             {
@@ -118,7 +118,7 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
         workflowService.CurrentSession.Loads.Should().HaveCount(2);
         workflowService
             .CurrentSession.Loads.Should()
-            .OnlyContain(load => load.PoNumber == "PO-7788");
+            .OnlyContain(load => load.PoNumber == "PO-007788");
         workflowService
             .CurrentSession.Loads.Should()
             .OnlyContain(load => load.Location == "DOCK-4");
@@ -132,6 +132,7 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
         workflowService
             .CurrentSession.Loads.Should()
             .OnlyContain(load => load.SpecValues!["Stackable"].ToString() == "True");
+        workflowService.CurrentSession.PONumber.Should().Be("PO-007788");
     }
 
     [Fact]

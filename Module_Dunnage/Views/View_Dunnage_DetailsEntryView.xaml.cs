@@ -25,6 +25,11 @@ public sealed partial class View_Dunnage_DetailsEntryView : UserControl
         await ViewModel.LoadSpecsForSelectedPartAsync();
     }
 
+    private void PoNumberTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PoTextBoxLostFocusCommand.Execute(null);
+    }
+
     private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
         if (sender is not TextBox textBox)

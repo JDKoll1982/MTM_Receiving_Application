@@ -8,6 +8,9 @@
     CloseButtonText="Close">
     <ContentDialog.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <x:Double x:Key="ContentDialogMaxWidth">1600</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">900</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">760</x:Double>
     </ContentDialog.Resources>
     <Grid MinWidth="760" MaxWidth="860">
         <ScrollViewer MaxHeight="760" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">

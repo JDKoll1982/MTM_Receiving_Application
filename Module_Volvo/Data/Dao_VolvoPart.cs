@@ -101,6 +101,38 @@ public class Dao_VolvoPart
     }
 
     /// <summary>
+    /// Activates a Volvo part.
+    /// </summary>
+    /// <param name="partNumber">Part number to activate.</param>
+    public async Task<Model_Dao_Result> ActivateAsync(string partNumber)
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "part_number", partNumber },
+                { "is_active", 1 },
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_Volvo_PartMaster_SetActive",
+                parameters
+            );
+        }
+        catch (Exception ex)
+        {
+            return new Model_Dao_Result
+            {
+                Success = false,
+                ErrorMessage = $"Error activating Volvo part: {ex.Message}",
+                Severity = Enum_ErrorSeverity.Error,
+                Exception = ex,
+            };
+        }
+    }
+
+    /// <summary>
     /// Deactivates a Volvo part after verifying it has no active shipment references.
     /// </summary>
     /// <param name="partNumber">Part number to deactivate.</param>

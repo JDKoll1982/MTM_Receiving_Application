@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -23,13 +25,18 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
+    private readonly IService_InforVisual _inforVisualService;
     private readonly IService_Help _helpService;
     private readonly IService_Window _windowService;
     private readonly IService_ViewModelRegistry _viewModelRegistry;
+    private readonly Dictionary<string, (string VendorName, string ErrorMessage)> _poVendorCache =
+        new(StringComparer.OrdinalIgnoreCase);
+    private int _vendorLookupVersion;
 
     public ViewModel_Dunnage_Review(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
+        IService_InforVisual inforVisualService,
         IService_Help helpService,
         IService_Window windowService,
         IService_ViewModelRegistry viewModelRegistry,
@@ -41,6 +48,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
+        _inforVisualService = inforVisualService;
         _helpService = helpService;
         _windowService = windowService;
         _viewModelRegistry = viewModelRegistry;
@@ -63,6 +71,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
         IsTableView = false;
         CanGoBack = false;
         CanGoNext = false;
+        CurrentVendorName = string.Empty;
+        CurrentVendorErrorMessage = string.Empty;
         StatusMessage = string.Empty;
     }
 
@@ -70,7 +80,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     {
         if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.Review)
         {
-            LoadSessionLoads();
+            _ = LoadSessionLoadsAsync();
         }
     }
 
@@ -109,7 +119,19 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     [ObservableProperty]
     private bool _canGoNext = false;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCurrentVendorState))]
+    private string _currentVendorName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCurrentVendorState))]
+    private string _currentVendorErrorMessage = string.Empty;
+
     public bool HasCurrentVisual => CurrentVisualSource is not null;
+
+    public bool HasCurrentVendorState =>
+        string.IsNullOrWhiteSpace(CurrentVendorName) is false
+        || string.IsNullOrWhiteSpace(CurrentVendorErrorMessage) is false;
 
     public ImageSource? CurrentVisualSource =>
         CurrentLoad?.PartImageSource ?? CurrentLoad?.TypeImageSource;
@@ -121,13 +143,22 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     /// <summary>
     /// Load session loads for review
     /// </summary>
-    public void LoadSessionLoads()
+    public async Task LoadSessionLoadsAsync()
     {
         try
         {
             IsBusy = true;
             var loads = _workflowService.CurrentSession.Loads;
             SessionLoads = new ObservableCollection<Model_DunnageLoad>(loads);
+
+            foreach (var load in SessionLoads)
+            {
+                var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(load.PoNumber);
+                if (string.Equals(load.PoNumber, normalizedPoNumber, StringComparison.Ordinal) is false)
+                {
+                    load.PoNumber = normalizedPoNumber;
+                }
+            }
 
             LoadCount = SessionLoads.Count;
             CanSave = LoadCount > 0;
@@ -138,6 +169,11 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
                 CurrentEntryIndex = 1;
                 CurrentLoad = SessionLoads[0];
                 UpdateNavigationButtons();
+                await RefreshCurrentVendorStateAsync(CurrentLoad);
+            }
+            else
+            {
+                ClearCurrentVendorState();
             }
 
             _logger.LogInfo($"Loaded {LoadCount} loads for review", "Review");
@@ -188,6 +224,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
             CurrentEntryIndex--;
             CurrentLoad = SessionLoads[CurrentEntryIndex - 1];
             UpdateNavigationButtons();
+            _ = RefreshCurrentVendorStateAsync(CurrentLoad);
         }
     }
 
@@ -199,10 +236,78 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
             CurrentEntryIndex++;
             CurrentLoad = SessionLoads[CurrentEntryIndex - 1];
             UpdateNavigationButtons();
+            _ = RefreshCurrentVendorStateAsync(CurrentLoad);
         }
     }
 
     #endregion
+
+    private async Task RefreshCurrentVendorStateAsync(Model_DunnageLoad? load)
+    {
+        var requestVersion = ++_vendorLookupVersion;
+        ClearCurrentVendorState();
+
+        if (load is null)
+        {
+            return;
+        }
+
+        var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(load.PoNumber);
+        if (string.Equals(load.PoNumber, normalizedPoNumber, StringComparison.Ordinal) is false)
+        {
+            load.PoNumber = normalizedPoNumber;
+        }
+
+        if (!Helper_DunnagePoNumber.IsValidLookupInput(normalizedPoNumber))
+        {
+            return;
+        }
+
+        if (_poVendorCache.TryGetValue(normalizedPoNumber, out var cachedVendorState))
+        {
+            ApplyVendorState(cachedVendorState.VendorName, cachedVendorState.ErrorMessage);
+            return;
+        }
+
+        var poResult = await _inforVisualService.GetPOWithPartsAsync(normalizedPoNumber);
+        if (requestVersion != _vendorLookupVersion)
+        {
+            return;
+        }
+
+        if (!poResult.IsSuccess)
+        {
+            _logger.LogWarning(
+                $"Unable to load vendor information for Dunnage review PO {normalizedPoNumber}: {poResult.ErrorMessage}",
+                "Review"
+            );
+            return;
+        }
+
+        if (poResult.Data is null)
+        {
+            var errorMessage = $"{normalizedPoNumber} was not found in Infor Visual.";
+            _poVendorCache[normalizedPoNumber] = (string.Empty, errorMessage);
+            ApplyVendorState(string.Empty, errorMessage);
+            return;
+        }
+
+        var vendorName = poResult.Data.Vendor?.Trim() ?? string.Empty;
+        _poVendorCache[normalizedPoNumber] = (vendorName, string.Empty);
+        ApplyVendorState(vendorName, string.Empty);
+    }
+
+    private void ApplyVendorState(string vendorName, string errorMessage)
+    {
+        CurrentVendorName = vendorName;
+        CurrentVendorErrorMessage = errorMessage;
+    }
+
+    private void ClearCurrentVendorState()
+    {
+        CurrentVendorName = string.Empty;
+        CurrentVendorErrorMessage = string.Empty;
+    }
 
     #region Commands
 

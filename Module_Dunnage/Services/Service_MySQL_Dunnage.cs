@@ -114,7 +114,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             try
             {
-                var imagePathResult = await PrepareRelativeImagePathAsync(imagePath, "Types");
+                var imagePathResult = await PrepareTypeImagePathAsync(imagePath, typeName);
                 if (!imagePathResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(imagePathResult.ErrorMessage);
@@ -148,7 +148,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 await _logger.LogInfoAsync(
                     $"Inserting new dunnage type: {type.TypeName} (Icon: {type.Icon}) by user: {CurrentUser}"
                 );
-                var imagePathResult = await PrepareRelativeImagePathAsync(type.ImagePath, "Types");
+                var imagePathResult = await PrepareTypeImagePathAsync(
+                    type.ImagePath,
+                    type.TypeName
+                );
                 if (!imagePathResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure(imagePathResult.ErrorMessage);
@@ -218,7 +221,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         ? existingTypeResult.Data.ImagePath
                         : null;
 
-                var imagePathResult = await PrepareRelativeImagePathAsync(type.ImagePath, "Types");
+                var imagePathResult = await PrepareTypeImagePathAsync(
+                    type.ImagePath,
+                    type.TypeName
+                );
                 if (!imagePathResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure(imagePathResult.ErrorMessage);
@@ -1851,6 +1857,33 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
             part.ImagePath = imagePathResult.Data;
             return Model_Dao_Result_Factory.Success<string?>(part.ImagePath);
+        }
+
+        private async Task<Model_Dao_Result<string?>> PrepareTypeImagePathAsync(
+            string? imagePath,
+            string typeName
+        )
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return Model_Dao_Result_Factory.Success<string?>(null);
+            }
+
+            if (!Path.IsPathRooted(imagePath))
+            {
+                return Model_Dao_Result_Factory.Success<string?>(imagePath.Replace('\\', '/'));
+            }
+
+            var importResult = await _imageStorage.ImportTypeImageAsync(imagePath, typeName);
+            if (!importResult.IsSuccess)
+            {
+                return Model_Dao_Result_Factory.Failure<string?>(
+                    importResult.ErrorMessage,
+                    importResult.Exception
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success<string?>(importResult.Data);
         }
 
         private async Task<Model_Dao_Result<string?>> PrepareRelativeImagePathAsync(

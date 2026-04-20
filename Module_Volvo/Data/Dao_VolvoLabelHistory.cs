@@ -180,6 +180,30 @@ public class Dao_VolvoLabelHistory : IDao_VolvoLabelHistory
         }
     }
 
+    public async Task<Model_Dao_Result> DeleteArchivedShipmentAsync(int shipmentHistoryId)
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "shipment_history_id", shipmentHistoryId },
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_Volvo_ShipmentHistory_Delete",
+                parameters
+            );
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure(
+                $"Failed to delete archived shipment: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     private static Model_VolvoShipment MapShipmentFromReader(IDataReader reader)
     {
         return new Model_VolvoShipment

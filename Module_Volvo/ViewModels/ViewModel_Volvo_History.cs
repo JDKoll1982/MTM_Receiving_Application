@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -27,6 +28,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private readonly IMediator _mediator;
     private readonly IService_InforVisual _inforVisualService;
     private readonly IService_ReceivingValidation _receivingValidation;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IService_Window _windowService;
 
     #region Observable Properties
@@ -62,6 +64,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         IMediator mediator,
         IService_InforVisual inforVisualService,
         IService_ReceivingValidation receivingValidation,
+        IServiceProvider serviceProvider,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -74,6 +77,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         _receivingValidation =
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
+        _serviceProvider =
+            serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
     }
 
@@ -225,6 +230,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
+            RefreshSelectionCommandStates();
             StatusMessage = $"Loading details for shipment #{SelectedShipment.ShipmentNumber}...";
             await _logger.LogInfoAsync($"Loading details for shipment ID: {SelectedShipment.Id}");
 
@@ -279,33 +285,46 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshSelectionCommandStates();
         }
     }
 
     private bool CanViewDetail() => SelectedShipment != null && !IsBusy;
 
+    private bool CanManageSelectedCompletedHistoryShipment() =>
+        SelectedShipment != null
+        && !IsBusy
+        && SelectedShipment.IsArchived
+        && VolvoShipmentStatus.NormalizeStorageValue(SelectedShipment.Status)
+            == VolvoShipmentStatus.Completed;
+
     /// <summary>
     /// Opens edit dialog for the selected shipment
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanEdit))]
+    [RelayCommand(CanExecute = nameof(CanManageSelectedCompletedHistoryShipment))]
     private async Task EditAsync()
     {
         if (SelectedShipment == null)
         {
+            StatusMessage = "Select a shipment first.";
+            return;
+        }
+
+        if (!CanManageSelectedCompletedHistoryShipment())
+        {
+            StatusMessage =
+                "Only completed archived shipments can be opened from Edit on this page.";
             return;
         }
 
         try
         {
             IsBusy = true;
+            RefreshSelectionCommandStates();
             StatusMessage = "Loading shipment data...";
 
             var detailResult = await _mediator.Send(
-                new GetShipmentDetailQuery
-                {
-                    ShipmentId = SelectedShipment.Id,
-                    IsArchived = SelectedShipment.IsArchived,
-                }
+                new GetShipmentDetailQuery { ShipmentId = SelectedShipment.Id, IsArchived = true }
             );
 
             if (!detailResult.IsSuccess || detailResult.Data == null)
@@ -318,16 +337,6 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 return;
             }
 
-            // Get available parts for the add part dialog
-            var partsResult = await _mediator.Send(
-                new GetAllVolvoPartsQuery { IncludeInactive = false }
-            );
-
-            var availableParts =
-                partsResult.IsSuccess && partsResult.Data != null
-                    ? new ObservableCollection<Model_VolvoPart>(partsResult.Data)
-                    : new ObservableCollection<Model_VolvoPart>();
-
             // Convert List to ObservableCollection for binding
             var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(
                 detailResult.Data.Lines
@@ -335,7 +344,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             var dialogOutcome = await ShowShipmentEditDialogAsync(
                 detailResult.Data.Shipment,
                 linesCollection,
-                availableParts
+                new ObservableCollection<Model_VolvoPart>(),
+                isReadOnly: true
             );
 
             if (dialogOutcome is null)
@@ -413,7 +423,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             }
             else
             {
-                StatusMessage = "Edit cancelled";
+                StatusMessage = "Archived shipment closed";
             }
         }
         catch (Exception ex)
@@ -429,10 +439,97 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+            RefreshSelectionCommandStates();
         }
     }
 
-    private bool CanEdit() => SelectedShipment?.IsArchived == false && !IsBusy;
+    /// <summary>
+    /// Deletes the selected completed archived shipment from history.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanManageSelectedCompletedHistoryShipment))]
+    private async Task DeleteAsync()
+    {
+        if (SelectedShipment == null)
+        {
+            StatusMessage = "Select a shipment first.";
+            return;
+        }
+
+        if (!CanManageSelectedCompletedHistoryShipment())
+        {
+            StatusMessage = "Only completed archived shipments can be deleted from history.";
+            return;
+        }
+
+        var selectedShipment = SelectedShipment;
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            StatusMessage = "Cannot show the delete confirmation right now.";
+            return;
+        }
+
+        var confirmDialog = new ContentDialog
+        {
+            Title = "Delete History Item",
+            Content =
+                $"Delete archived shipment #{selectedShipment.ShipmentNumber} from Volvo history? This action cannot be undone.",
+            PrimaryButtonText = "Delete",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = xamlRoot,
+        };
+
+        Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(confirmDialog, xamlRoot);
+
+        var dialogResult = await confirmDialog.ShowAsync();
+        if (dialogResult != ContentDialogResult.Primary)
+        {
+            StatusMessage = "Delete cancelled";
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            RefreshSelectionCommandStates();
+            StatusMessage = $"Deleting shipment #{selectedShipment.ShipmentNumber}...";
+
+            var deleteResult = await _mediator.Send(
+                new DeleteShipmentHistoryCommand { ShipmentId = selectedShipment.Id }
+            );
+
+            if (!deleteResult.IsSuccess)
+            {
+                await _errorHandler.ShowUserErrorAsync(
+                    deleteResult.ErrorMessage ?? "Failed to delete shipment history",
+                    "Delete History Item",
+                    nameof(DeleteAsync)
+                );
+                StatusMessage = "Delete failed";
+                return;
+            }
+
+            History.Remove(selectedShipment);
+            SelectedShipment = null;
+            StatusMessage = $"Shipment #{selectedShipment.ShipmentNumber} deleted from history";
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(DeleteAsync),
+                nameof(ViewModel_Volvo_History)
+            );
+            StatusMessage = "Error deleting shipment history";
+        }
+        finally
+        {
+            IsBusy = false;
+            RefreshSelectionCommandStates();
+        }
+    }
 
     private async Task<bool> ShowShipmentHistoryDetailDialogAsync(
         Model_VolvoShipmentHistoryDetailDialog dialogModel
@@ -450,19 +547,16 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             {
                 try
                 {
-                    var xamlRoot = _windowService.GetXamlRoot();
-                    if (xamlRoot is null)
+                    var window =
+                        _serviceProvider.GetRequiredService<Views.View_Volvo_ShipmentHistoryDetailWindow>();
+                    if (window == null)
                     {
                         completionSource.SetResult(false);
                         return;
                     }
 
-                    var dialog = new Views.View_Volvo_ShipmentHistoryDetailDialog
-                    {
-                        XamlRoot = xamlRoot,
-                    };
-                    dialog.Initialize(dialogModel);
-                    await dialog.ShowAsync();
+                    window.Initialize(dialogModel);
+                    await window.ShowModalAsync();
                     completionSource.SetResult(true);
                 }
                 catch (Exception ex)
@@ -481,7 +575,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private async Task<ShipmentEditDialogOutcome?> ShowShipmentEditDialogAsync(
         Model_VolvoShipment shipment,
         ObservableCollection<Model_VolvoShipmentLine> lines,
-        ObservableCollection<Model_VolvoPart> availableParts
+        ObservableCollection<Model_VolvoPart> availableParts,
+        bool isReadOnly
     )
     {
         var dispatcherQueue = App.MainWindow?.DispatcherQueue;
@@ -508,6 +603,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                         XamlRoot = xamlRoot,
                     };
                     dialog.PrepareDialogSize();
+                    dialog.ConfigureMode(isReadOnly);
                     dialog.LoadShipment(shipment, lines, availableParts);
 
                     var result = await dialog.ShowAsync();
@@ -539,36 +635,11 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         IReadOnlyCollection<Model_VolvoShipmentLine> lines
     )
     {
-        var details = new System.Text.StringBuilder();
-        details.AppendLine($"Shipment #{shipment.ShipmentNumber}");
-        details.AppendLine($"Date: {shipment.ShipmentDate:d}");
-        details.AppendLine($"PO Number: {shipment.PONumber ?? "N/A"}");
-        details.AppendLine($"Receiver: {shipment.ReceiverNumber ?? "N/A"}");
-        details.AppendLine($"Status: {shipment.StatusDisplay}");
-        details.AppendLine();
-        details.AppendLine($"Parts ({lines.Count}):");
-
-        foreach (var line in lines)
-        {
-            details.AppendLine(
-                $"  • {line.PartNumber}: {line.ReceivedSkidCount} skids ({line.CalculatedPieceCount} pieces)"
-            );
-            if (line.HasDiscrepancy)
-            {
-                details.AppendLine($"    ⚠ Discrepancy: Expected {line.ExpectedSkidCount} skids");
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(shipment.Notes))
-        {
-            details.AppendLine();
-            details.AppendLine($"Notes: {shipment.Notes}");
-        }
-
         return new Model_VolvoShipmentHistoryDetailDialog
         {
-            DialogTitle = $"Shipment #{shipment.ShipmentNumber} Details",
-            DetailText = details.ToString(),
+            WindowTitle = $"Shipment #{shipment.ShipmentNumber} Details",
+            Shipment = shipment,
+            Lines = lines.ToList(),
         };
     }
 
@@ -608,8 +679,14 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
     partial void OnSelectedShipmentChanged(Model_VolvoShipment? value)
     {
+        RefreshSelectionCommandStates();
+    }
+
+    private void RefreshSelectionCommandStates()
+    {
         ViewDetailCommand.NotifyCanExecuteChanged();
         EditCommand.NotifyCanExecuteChanged();
+        DeleteCommand.NotifyCanExecuteChanged();
     }
 
     private sealed record ShipmentEditDialogOutcome(

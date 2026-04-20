@@ -18,6 +18,13 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
     public ObservableCollection<Model_VolvoShipmentLine> Lines { get; private set; }
     public ObservableCollection<Model_VolvoPart> AvailableParts { get; set; }
 
+    public bool IsReadOnlyMode { get; private set; }
+
+    public bool IsEditableMode => !IsReadOnlyMode;
+
+    public Visibility ActionControlsVisibility =>
+        IsReadOnlyMode ? Visibility.Collapsed : Visibility.Visible;
+
     private List<Model_VolvoPart> _allParts = new();
     private bool _addPartPanelOpen = false;
     private readonly Func<string, Task<string>> _resolvePartLocationAsync;
@@ -58,6 +65,23 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         MinWidth = System.Math.Min(1180, availableWidth);
         MinHeight = System.Math.Min(680, availableHeight);
         MaxHeight = availableHeight;
+    }
+
+    public void ConfigureMode(bool isReadOnly)
+    {
+        IsReadOnlyMode = isReadOnly;
+        Title = isReadOnly ? "Archived Shipment" : "Edit Shipment";
+        PrimaryButtonText = isReadOnly ? string.Empty : "Save Changes";
+        CloseButtonText = isReadOnly ? "Close" : "Cancel";
+        DefaultButton = isReadOnly ? ContentDialogButton.Close : ContentDialogButton.Primary;
+
+        if (isReadOnly)
+        {
+            ValidationErrorBar.IsOpen = false;
+            AddPartPanel.Visibility = Visibility.Collapsed;
+        }
+
+        Bindings.Update();
     }
 
     public void LoadShipment(

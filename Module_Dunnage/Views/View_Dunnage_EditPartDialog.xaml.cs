@@ -71,17 +71,19 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         bool canDelete = false
     )
     {
+        ArgumentNullException.ThrowIfNull(existingPart);
+        ArgumentNullException.ThrowIfNull(specs);
+
+        _existingPart = existingPart;
+        _specs = specs;
+        _typeName = typeName;
+        _usesDefinitionBasedPartSpecificSpecs = existingPart.UsesDefinitionBasedPartSpecificSpecs;
         _imageStorage = App.GetService<IService_DunnageImageStorage>();
         InitializeComponent();
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
         WasAccepted = false;
         RequestDelete = false;
         FooterDeleteButton.Visibility = canDelete ? Visibility.Visible : Visibility.Collapsed;
-
-        _existingPart = existingPart;
-        _specs = specs;
-        _typeName = typeName;
-        _usesDefinitionBasedPartSpecificSpecs = existingPart.UsesDefinitionBasedPartSpecificSpecs;
 
         CurrentPartIdTextBlock.Text = existingPart.PartId;
         TypeNameTextBlock.Text = typeName;

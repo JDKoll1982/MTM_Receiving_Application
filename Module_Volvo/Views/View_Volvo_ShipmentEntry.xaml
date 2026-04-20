@@ -48,8 +48,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Spacing="4">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Volvo Parts Queue" />
-                <TextBlock Opacity="0.75" Text="Active Volvo lines are edited directly as cards and saved automatically." />
+                <TextBlock Opacity="0.75" Text="Active Volvo lines are saved automatically." />
             </StackPanel>
 
             <Button

@@ -8,6 +8,9 @@
     CloseButtonText="Close">
     <ContentDialog.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <x:Double x:Key="ContentDialogMaxWidth">1600</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">900</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">760</x:Double>
     </ContentDialog.Resources>
     <Grid MinWidth="920" MaxWidth="980">
         <Grid.RowDefinitions>

@@ -10,7 +10,11 @@ public interface IService_DunnageImageStorage
 {
     Task RefreshConfiguredRootFolderAsync();
 
+    Task<string?> GetConfiguredRootFolderAsync();
+
     Task<Model_Dao_Result<string>> ImportImageAsync(string sourceFilePath, string folderName);
+
+    Task<Model_Dao_Result<string>> ImportTypeImageAsync(string sourceFilePath, string typeName);
 
     Task<Model_Dao_Result<string>> CreateRotatedWorkingCopyAsync(string imagePath);
 

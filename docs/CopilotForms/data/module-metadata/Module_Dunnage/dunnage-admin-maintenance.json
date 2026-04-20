@@ -15,6 +15,7 @@
     "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml",
     "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml.cs",
+    "Module_Dunnage/Helpers/Helper_DunnageImageFileDialog.cs",
     "Module_Dunnage/Helpers/Helper_DunnageImagePaths.cs",
     "Module_Dunnage/Helpers/Helper_Dunnage_PartSpecs.cs",
     "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
@@ -22,6 +23,7 @@
     "Module_Dunnage/Data/Dao_DunnageSpec.cs",
     "Module_Dunnage/Data/Dao_DunnageType.cs",
     "Module_Dunnage/Services/Service_DunnageImageStorage.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_QuickAddTypeDialog.cs",
     "Module_Dunnage/Models/Model_CustomFieldDefinition.cs",
     "Module_Dunnage/Models/Model_DunnagePart.cs",
     "Module_Dunnage/Models/Model_DunnagePartCustomSpecEntry.cs",
@@ -69,6 +71,10 @@
     "userActions": [
       "Add new types and parts quickly",
       "Upload and clear PNG images for dunnage types and parts",
+      "See only the selected filename in the dunnage type image card instead of the full path",
+      "Click the selected dunnage type image preview to open its containing folder in File Explorer",
+      "See only the selected filename in the dunnage part image card instead of the full path",
+      "Click the selected dunnage part image preview to open its containing folder in File Explorer",
       "Reuse an existing part's saved configured values, notes, and part-specific spec definitions when adding or editing a part",
       "Define part-specific runtime spec fields for newly created parts when quick-adding or editing a part",
       "Define a spec field with a controlled list of allowed choices"
@@ -83,7 +89,13 @@
       "Confirm part-specific spec definitions reject duplicate names and reserved keys that collide with configured specs or Notes",
       "Confirm Quick Add Part and Edit Part render Choices specs as dropdowns using the configured array values",
       "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
+      "Confirm the Dunnage type image card shows only the selected filename and not the full source path",
+      "Confirm clicking the Dunnage type image preview opens File Explorer to the containing folder for the current image",
+      "Confirm the Dunnage part image card shows only the selected filename and not the full source path",
+      "Confirm clicking the Dunnage part image preview opens File Explorer to the containing folder for the current image",
+      "Confirm a type image chosen from the configured shared image root is persisted as Types/DunnageType-{TypeName}.{ext}",
       "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions",
+      "Confirm all Dunnage Choose Image actions open in the configured shared image folder when that folder exists",
       "Confirm deleting a type or part that is still referenced shows a plain-language blocking message instead of a raw database or foreign-key error"
     ]
   }

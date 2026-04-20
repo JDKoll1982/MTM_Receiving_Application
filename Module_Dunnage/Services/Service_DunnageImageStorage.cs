@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services;
 public class Service_DunnageImageStorage : IService_DunnageImageStorage
 {
     private const string SettingsCategory = "Dunnage";
+    private const string TypeImagePrefix = "DunnageType";
     private static readonly string[] SupportedExtensions = [".png", ".jpg", ".jpeg"];
 
     private readonly IService_SettingsCoreFacade _settingsCore;
@@ -55,6 +57,15 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         {
             Helper_DunnageImagePaths.SetRootFolder(null);
         }
+    }
+
+    public async Task<string?> GetConfiguredRootFolderAsync()
+    {
+        await RefreshConfiguredRootFolderAsync();
+
+        return Directory.Exists(Helper_DunnageImagePaths.RootFolder)
+            ? Helper_DunnageImagePaths.RootFolder
+            : null;
     }
 
     public async Task<Model_Dao_Result<string>> CreateRotatedWorkingCopyAsync(string imagePath)
@@ -150,51 +161,39 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(sourceFilePath))
-            {
-                return Model_Dao_Result_Factory.Failure<string>("Image file path is required.");
-            }
-
-            if (File.Exists(sourceFilePath) is false)
-            {
-                return Model_Dao_Result_Factory.Failure<string>(
-                    "Selected image file was not found."
-                );
-            }
-
-            var extension = Path.GetExtension(sourceFilePath);
-            if (IsSupportedExtension(extension) is false)
-            {
-                return Model_Dao_Result_Factory.Failure<string>(
-                    "Only PNG and JPG images are supported."
-                );
-            }
-
-            var safeFolderName = string.IsNullOrWhiteSpace(folderName)
-                ? "Shared"
-                : folderName.Trim();
-            var targetDirectory = Path.Combine(Helper_DunnageImagePaths.RootFolder, safeFolderName);
-            Directory.CreateDirectory(targetDirectory);
-
-            var targetFileName = $"{Guid.NewGuid():N}{extension}";
-            var targetFilePath = Path.Combine(targetDirectory, targetFileName);
-
-            await using var sourceStream = File.Open(
+            return await ImportImageInternalAsync(
                 sourceFilePath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read
+                folderName,
+                preferredFileName: null
             );
-            await using var targetStream = File.Create(targetFilePath);
-            await sourceStream.CopyToAsync(targetStream);
-
-            var relativePath = Path.Combine(safeFolderName, targetFileName).Replace('\\', '/');
-            return Model_Dao_Result_Factory.Success(relativePath);
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<string>(
                 $"Failed to import image: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    public async Task<Model_Dao_Result<string>> ImportTypeImageAsync(
+        string sourceFilePath,
+        string typeName
+    )
+    {
+        try
+        {
+            var sanitizedTypeName = SanitizeFileNameSegment(typeName);
+            var preferredFileName = string.IsNullOrWhiteSpace(sanitizedTypeName)
+                ? null
+                : $"{TypeImagePrefix}-{sanitizedTypeName}";
+
+            return await ImportImageInternalAsync(sourceFilePath, "Types", preferredFileName);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<string>(
+                $"Failed to import type image: {ex.Message}",
                 ex
             );
         }
@@ -247,6 +246,126 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         return Path.IsPathRooted(imagePath)
             ? imagePath
             : Helper_DunnageImagePaths.GetAbsolutePath(imagePath);
+    }
+
+    private async Task<Model_Dao_Result<string>> ImportImageInternalAsync(
+        string sourceFilePath,
+        string folderName,
+        string? preferredFileName
+    )
+    {
+        if (string.IsNullOrWhiteSpace(sourceFilePath))
+        {
+            return Model_Dao_Result_Factory.Failure<string>("Image file path is required.");
+        }
+
+        if (File.Exists(sourceFilePath) is false)
+        {
+            return Model_Dao_Result_Factory.Failure<string>("Selected image file was not found.");
+        }
+
+        var extension = Path.GetExtension(sourceFilePath);
+        if (IsSupportedExtension(extension) is false)
+        {
+            return Model_Dao_Result_Factory.Failure<string>(
+                "Only PNG and JPG images are supported."
+            );
+        }
+
+        await RefreshConfiguredRootFolderAsync();
+
+        var safeFolderName = string.IsNullOrWhiteSpace(folderName) ? "Shared" : folderName.Trim();
+        var targetDirectory = Path.Combine(Helper_DunnageImagePaths.RootFolder, safeFolderName);
+        Directory.CreateDirectory(targetDirectory);
+
+        var targetFileName = string.IsNullOrWhiteSpace(preferredFileName)
+            ? $"{Guid.NewGuid():N}{extension}"
+            : $"{preferredFileName}{extension}";
+        var targetFilePath = Path.Combine(targetDirectory, targetFileName);
+
+        if (ShouldRenameFromConfiguredRoot(sourceFilePath, preferredFileName))
+        {
+            var moveResult = MoveImageIntoManagedFolder(
+                sourceFilePath,
+                targetFilePath,
+                safeFolderName,
+                targetFileName
+            );
+            if (moveResult.IsSuccess)
+            {
+                return moveResult;
+            }
+        }
+
+        await using var sourceStream = File.Open(
+            sourceFilePath,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read
+        );
+        await using var targetStream = File.Create(targetFilePath);
+        await sourceStream.CopyToAsync(targetStream);
+
+        var relativePath = Path.Combine(safeFolderName, targetFileName).Replace('\\', '/');
+        return Model_Dao_Result_Factory.Success(relativePath);
+    }
+
+    private static Model_Dao_Result<string> MoveImageIntoManagedFolder(
+        string sourceFilePath,
+        string targetFilePath,
+        string safeFolderName,
+        string targetFileName
+    )
+    {
+        var sourceFullPath = Path.GetFullPath(sourceFilePath);
+        var targetFullPath = Path.GetFullPath(targetFilePath);
+
+        if (string.Equals(sourceFullPath, targetFullPath, StringComparison.OrdinalIgnoreCase))
+        {
+            var unchangedRelativePath = Path.Combine(safeFolderName, targetFileName)
+                .Replace('\\', '/');
+            return Model_Dao_Result_Factory.Success(unchangedRelativePath);
+        }
+
+        File.Move(sourceFullPath, targetFullPath, true);
+        var relativePath = Path.Combine(safeFolderName, targetFileName).Replace('\\', '/');
+        return Model_Dao_Result_Factory.Success(relativePath);
+    }
+
+    private static bool ShouldRenameFromConfiguredRoot(
+        string sourceFilePath,
+        string? preferredFileName
+    )
+    {
+        if (string.IsNullOrWhiteSpace(preferredFileName))
+        {
+            return false;
+        }
+
+        var sourceFullPath = Path.GetFullPath(sourceFilePath);
+        var configuredRoot = Path.GetFullPath(Helper_DunnageImagePaths.RootFolder);
+        var rootWithSeparator =
+            configuredRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            + Path.DirectorySeparatorChar;
+
+        return sourceFullPath.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(sourceFullPath, configuredRoot, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string SanitizeFileNameSegment(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var invalidCharacters = Path.GetInvalidFileNameChars();
+        var sanitizedCharacters = value
+            .Trim()
+            .Select(character => invalidCharacters.Contains(character) ? '-' : character)
+            .ToArray();
+
+        return new string(sanitizedCharacters).Trim().TrimEnd('.');
     }
 
     private static bool IsSupportedExtension(string? extension)

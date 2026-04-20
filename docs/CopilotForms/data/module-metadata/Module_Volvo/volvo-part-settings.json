@@ -2,7 +2,7 @@
   "id": "volvo-part-settings",
   "module": "Module_Volvo",
   "name": "Part Settings",
-  "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part-editor operations now surfaced through Module_Settings.Volvo.",
+  "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part-editor plus activate/deactivate operations now surfaced through Module_Settings.Volvo.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_VolvoMasterData.cs",
@@ -29,14 +29,17 @@
     "Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs",
     "Module_Volvo/Requests/Commands/AddVolvoPartCommand.cs",
     "Module_Volvo/Requests/Commands/UpdateVolvoPartCommand.cs",
+    "Module_Volvo/Requests/Commands/ActivateVolvoPartCommand.cs",
     "Module_Volvo/Requests/Commands/DeactivateVolvoPartCommand.cs",
     "Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs",
     "Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandler.cs",
+    "Module_Volvo/Handlers/Commands/ActivateVolvoPartCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandler.cs",
     "Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandler.cs",
     "Module_Volvo/Validators/AddVolvoPartCommandValidator.cs",
     "Module_Volvo/Validators/UpdateVolvoPartCommandValidator.cs",
+    "Module_Volvo/Validators/ActivateVolvoPartCommandValidator.cs",
     "Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs",
     "Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs"
   ],
@@ -54,7 +57,8 @@
       "Volvo master data",
       "Part add and edit dialogs",
       "Responsive part dialog sizing",
-      "CSV part import"
+      "CSV part import",
+      "Part activate and deactivate toggle"
     ],
     "screens": [
       "View_Settings_Volvo_PartCatalog.xaml",
@@ -65,15 +69,19 @@
     "uiElements": [
       "Part settings controls",
       "Part edit action",
-      "CSV import action"
+      "CSV import action",
+      "Activate and deactivate action"
     ],
     "userActions": [
       "Update or review a Volvo part setting",
       "Add or edit a Volvo part",
+      "Deactivate an active part",
+      "Reactivate an inactive part",
       "Import parts from CSV"
     ],
     "validationHints": [
-      "Confirm part search, add, update, deactivate, and import flows still affect the intended part records",
+      "Confirm part search, add, update, activate, deactivate, and import flows still affect the intended part records",
+      "Confirm the selected-part action button reads Deactivate for active rows and Activate for inactive rows",
       "Confirm repeated part-catalog refreshes replace the bound list cleanly without keeping stale rows",
       "Confirm add and edit part dialogs size correctly against the active XamlRoot on different window sizes"
     ]

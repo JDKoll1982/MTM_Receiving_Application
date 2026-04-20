@@ -8,6 +8,22 @@
   "Parts": [],
   "ReceivingTransactions": [
     {
+      "SourceLoadId": "84941d5f-0452-42e4-bc1a-4fd96fe69ea5",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 50,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-20T08:38:51.5773611-05:00",
+      "TransactionDate": "2026-04-20T08:38:51.5773611-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "T-00",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    },
+    {
       "SourceLoadId": "dc99a7ef-b72a-4c27-9c13-3cfb3514f1cc",
       "PONumber": "PO-033349",
       "PartID": "MMF0005007",

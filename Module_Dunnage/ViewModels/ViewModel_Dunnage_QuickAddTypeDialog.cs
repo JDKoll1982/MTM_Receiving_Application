@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -107,6 +108,11 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
     public ImageSource? SelectedImageSource =>
         Helpers.Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
 
+    public string SelectedImageFileName =>
+        string.IsNullOrWhiteSpace(SelectedImagePath)
+            ? string.Empty
+            : Path.GetFileName(SelectedImagePath);
+
     public string? SelectedImagePathForSave => UseImageVisual ? SelectedImagePath : null;
 
     partial void OnSelectedImagePathChanged(string? value)
@@ -115,6 +121,8 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
         {
             IsImageMode = true;
         }
+
+        OnPropertyChanged(nameof(SelectedImageFileName));
     }
 
     public void InitializeForCreate()

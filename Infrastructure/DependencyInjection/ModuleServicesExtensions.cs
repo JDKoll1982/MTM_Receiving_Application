@@ -259,6 +259,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Volvo.Views.View_Volvo_History>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_EmailPreviewDialog>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentHistoryDetailDialog>();
+        services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentHistoryDetailWindow>();
 
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Volvo.Views.VolvoShipmentEditDialog>();

@@ -1,237 +1,208 @@
-# Volvo Module — Expected Workflow
+# Dunnage Review PO Number Update
+
+## Scope
+
+This request is for the Dunnage guided workflow, not Volvo.
+
+The target UI surface is the Dunnage review screen:
+
+- `Module_Dunnage/Views/View_Dunnage_ReviewView.xaml`
+- `Module_Dunnage/Views/View_Dunnage_ReviewView.xaml.cs`
+- `Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs`
+
+The visible PO value on the review screen currently comes from:
+
+- Single-entry view: `ViewModel.CurrentLoad.PoNumber`
+- Table view: `Binding="{Binding PoNumber}"`
+
+The upstream editable PO textbox that currently feeds the session is here:
+
+- `Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml`
+- `Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs`
+
+The Dunnage workflow service that copies the session PO number onto generated loads is here:
+
+- `Module_Dunnage/Services/Service_DunnageWorkflow.cs`
+
+The Receiving implementation that should be mirrored for PO auto-formatting is here:
+
+- `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`
+- `Module_Receiving/Views/View_Receiving_POEntry.xaml.cs`
+
+## Personas
+
+- Receiving Clerk: Primary user for the Dunnage guided workflow. This is the current audience recorded in `docs/CopilotForms/data/module-metadata/Module_Dunnage/dunnage-guided-workflow.json`.
+- Operations Team: Current owning team for the Dunnage guided workflow.
+- Inventory / Receiving user: Needs the Dunnage review step to show a normalized PO and the matched vendor clearly before save.
+- Developer / QA using mock data: Needs mock purchase orders available for validation without live Infor Visual access.
+
+## Requested Behavior
+
+1. Use the same PO auto-formatting behavior that Receiving already uses.
+   - Accept raw numeric input such as `62450` and normalize it to `PO-062450`.
+   - Accept partially formatted input such as `PO-62450` and normalize it to `PO-062450`.
+   - Leave invalid formats unchanged so validation can show a proper message instead of silently inventing a bad value.
+
+2. Show vendor information in the Dunnage review screen.
+   - Add the vendor name under the existing PO Number and Location area in the same review card in `Module_Dunnage/Views/View_Dunnage_ReviewView.xaml`.
+   - Only show the vendor label/value when the PO format is valid and a vendor is returned.
+   - If the PO format is valid but the PO does not exist in Infor Visual, show an inline error message in the vendor area instead of a vendor name.
+
+3. Keep the review UI aligned with the current Dunnage layout.
+   - The single-entry review card already shows `PO Number`, `Location`, `Inventory Method`, and `Load Details` in the right column.
+   - The vendor name or not-found message should appear in that same right-column information group under the PO-related content.
+   - If table view also needs visibility, it should be treated as a secondary display concern after the single-entry review card.
+
+4. Use the existing Infor Visual service instead of creating a Dunnage-specific vendor lookup path.
+   - `Module_Core/Contracts/Services/IService_InforVisual.cs` already exposes `GetPOWithPartsAsync(string poNumber)`.
+   - That same service is already used in Dunnage details entry for other Infor Visual-driven validation paths.
+
+5. Add or confirm mock PO coverage for this Dunnage flow.
+   - Mock PO data is stored in `Module_Settings.Core/Defaults/inforvisual-mock-data.json`.
+   - Existing examples already in the repo include:
+     - `PO-066865` -> `Precision Plating Inc.`
+     - `PO-066867` -> `Allied Metal Services`
+     - `PO-066868` -> `Midwest Coating Group`
+   - At least two mock POs should be usable for Dunnage validation, including a successful vendor lookup path and a not-found path.
+
+## Acceptance Criteria
+
+- The Dunnage PO value shown in review uses the same canonical formatting pattern as Receiving.
+- The Dunnage review card shows vendor information when the PO is valid and found.
+- The Dunnage review card shows an inline not-found error when the PO format is valid but no matching PO exists.
+- Vendor information stays hidden when the PO field is blank or malformed.
+- Mock mode supports validating this flow without live Infor Visual access.
+
+## File Map For Implementation
+
+- `Module_Dunnage/Views/View_Dunnage_ReviewView.xaml`
+  - Review card display target for PO, location, and new vendor feedback.
+- `Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs`
+  - Review-state and save-flow ViewModel.
+- `Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml`
+  - Current Dunnage PO entry textbox source.
+- `Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs`
+  - Current Dunnage PO/session state owner.
+- `Module_Dunnage/Services/Service_DunnageWorkflow.cs`
+  - Copies current session PO data into generated review loads.
+- `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`
+  - Source of the PO lost-focus formatting behavior to mirror.
+- `Module_Settings.Core/Defaults/inforvisual-mock-data.json`
+  - Mock Infor Visual PO catalog used for offline validation.
 
 ---
 
-## Workflow Steps
+# Volvo Completion PO Textbox Update
 
-### Step 1 — User Enters Module_Volvo
+## Scope
 
-#### 1) Load Parts List
+This second prompt is for the Volvo shipment completion PO textbox, which is the field the user fills in when completing a shipment.
 
-- Query `volvo_line_data` and return all rows that have data in any of the 10 columns.
-- Display results in the Parts List.
-- See → [Mockup M-1a](#m-1a--parts-list-card)
+The current Volvo completion PO entry point is here:
 
-#### 2) User Click "+ Add Part"
+- `Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs`
+  - `ShowCompletionDialogAsync(...)` currently creates the PO textbox inline using a `ContentDialog`.
 
-- Open "Add Part to Shipment" Dialog
-- User Enters Required data (no refactoring of modal needed)
-- User hits "Add" or "Cancel"
-  - User hits "Add": same process as before, except instead of populating a datagrid it generates a new card of the new line
-  - User hits "Cancel": close dialog box, same as before
+Related Volvo files for this flow:
 
-#### 3) User Clicks the "Report" Discrepancy Button
-
-- Same logic as before except upon saving update the card of the row with the discrepancy
-
-#### 4) User Clicks the "Remove" Discrepancy Button
-
-- Same logic as before except upon saving update the card of the row with the discrepancy
-
-#### 5) User Clicks the "View History" Button
-
-- Same logic
-
----
-
-## Refactoring Tasks
-
-### R1 — Replace DataGrid with Collapsible Cards
-
-_Applies to: Step 1a_
-
-- Convert the existing DataGrid into a list of collapsible cards, one per row.
-- See → [Mockup M-1a](#m-1a--parts-list-card)
-
-#### Database Change
-
-- Add column `po_status` to the `volvo_line_data` table.
-- Allowed values: `Pending`, `Received`.
-
-### R2 - Remove the "View" discrepency button and modal as this is covered in the expanded card.
-
-### R3 - Change the Part Number cell to a button with the Part Number as it's text
-
-- Clicking this will bring up a new modal that will allow the user to change the Part Number only, as the qty can be changed in its cell.
-- The modal window must have its own xaml file, xaml.cs file, model and view model
-
-### R4 - Remove the "Generate Labels", "Clear Label Data" and "Save as Pending" buttons
-
-- change logic to save/update to volvo_line_data when the user:
-  - Adds new row
-  - Updates row's Part Number (see R3) or Quantity Columns
-  - Changes row's discrepency status
-
-- If there are any rows then the "Complete Shipment" button should be enabled
-
-### R5 - Change the output going to volvo_label_data and volvo_label_history to the user's employee number not the user's windows login name.
-
----
-
-## Mockups
-
-### M-1a — Parts List Card
-
-#### Collapsed
-
-```
-+--------------------------------------------------------------------+
-|                                                                    |
-|  {part_number} - {part_description}               [Expand Button]  |
-|                                                                    |
-|  File Discrepency:                                                 |
-|  [Report] [Remove]                                    {po_status}  |
-|                                                                    |
-+--------------------------------------------------------------------+
-```
-
-#### Expanded
-
-```
-+--------------------------------------------------------------------+
-|                                                                    |
-|  {part_number} - {part_description}               [Expand Button]  |
-|                                                                    |
-|  File Discrepency:                                                 |
-|  [Report] [Remove]                                    {po_status}  |
-|                                                                    |
-+--------------------------------------------------------------------+
-|                                                                    |
-|  Skids: {received_skid_count}    Qty per Skid: {quantity_per_skid} |
-|  Calculated Piece Count: {calculated_piece_count}                  |
-|                                                                    |
-!-{EVERYTHING BELOW SHOULD ONLY BE SHOWN IF has_discrepency = true} -!
-|                        Discrepency Details                         |
-| +-----------------+----------------+--------------+--------------+ |
-| | Expected Skids  | Skids Received | Expected Qty | Received Qty | |
-| +-----------------+----------------+--------------+--------------+ |
-| |    {expected}   |   {received}   |  {expected}  |  {received}  | |
-| +-----------------+----------------+--------------+--------------+ |
-|  Discrepancy Notes: {discrepancy_note}                             |
-|                                                                    |
-+--------------------------------------------------------------------+
-```
-
-#### Styling Rules
-
-**Discrepancy Border (`has_discrepancy`)**
-| Condition | Border Color |
-|--------------------------|----------------------------------------------------------|
-| `has_discrepancy = true` | Warning color visible in both light and dark mode |
-| `has_discrepancy = false` | Default border (same as all other cards) |
-
-- When `has_discrepancy = true`: show **Expected Skid Count** and **Discrepancy Notes** fields.
-- When `has_discrepancy = false`: hide both fields.
-
-**Card Background (`po_status`)**
-| `po_status` Value | Background Color |
-|-------------------|---------------------------------------------------------------------|
-| `Pending` | Muted yellow — readable text in both light and dark mode |
-| `Received` | Muted green — readable text in both light and dark mode |
-
-<!-- Add M-2 here -->
-
----
-
-## Edge Cases
-
-### EC-1 — No Rows in Parts List
-
-- If `volvo_line_data` returns no rows, the Parts List should display an empty state message (e.g., "Click Add Part to begin transaction.").
-- The "Complete Shipment" button must remain **disabled** (per R4).
-
-### EC-2 — Part Number Change Collision (R3)
-
-- If the user attempts to change a Part Number to one that already exists in the current shipment, the modal should display a validation error and prevent saving.
-
-### EC-3 — Quantity Set to Zero or Negative
-
-- If the user edits the Quantity column to `0` or a negative number, the cell should reject the value and revert to the previous value with a validation message.
-
-### EC-4 — Discrepancy Reported then Immediately Removed
-
-- If a user reports a discrepancy and then removes it before any save/sync cycle completes, ensure the card state reflects `has_discrepancy = false` and no stale discrepancy data is persisted to `volvo_line_data`.
-
-### EC-5 — `po_status` Null or Unexpected Value
-
-- If `po_status` is `NULL` or contains an unrecognized value, the card should fall back to the default border and background styling without throwing an error, and the value of po_status should be updated to the default value (false / 0 in mysql) quietly
-
-### EC-6 — Employee Number Not Found (R5)
-
-- If the logged-in user's employee number cannot be resolved when writing to `volvo_label_data` or `volvo_label_history`, the operation should fail gracefully with a user-facing error message and not write a blank or null employee number.
-
-### EC-7 — Add Part Dialog Submitted with Duplicate Part Number
-
-- If the user adds a part via "+ Add Part" whose Part Number already exists in the current list, display a warning. Decide whether to block the add or allow duplicates (document the chosen behavior here once decided).
-
-### EC-8 — Network/Database Failure During Auto-Save (R4)
-
-- If the database is unreachable when an auto-save is triggered (add row, update Part Number/Qty, change discrepancy status), display a non-blocking error notification and allow the user to retry. Search for exisisting shared code for this in Module_Core or Module_Shared
-
-### EC-9 — Rapid Expand/Collapse Toggle
-
-- Rapidly toggling the expand/collapse button should not cause duplicate data loads or visual glitches. Debounce or cancel in-flight requests as needed.
-
-### EC-10 — Complete Shipment with Unresolved Discrepancies - NOT REQUIRED
-
-- If the user clicks "Complete Shipment" while one or more cards have `has_discrepancy = true`, display a confirmation warning listing the affected part numbers. Decide whether to block completion or allow it with acknowledgment (document the chosen behavior here once decided).
-
-### EC-11 — Session Timeout / Loss of Focus During Edit - NOT REQUIRED
-
-- If the application loses focus or the session expires while the user is editing a Quantity cell or the Part Number modal is open, unsaved changes should either be auto-discarded with a notification or queued for retry on restore. Define and document the chosen behavior.
-
-### EC-12 — Part Description Missing or Null - YES
-
-- If `part_description` is `NULL` or empty for a row, the card header should display `{part_number} - (No Description)` or similar fallback text to avoid a broken or confusing layout.
-
-### EC-13 — Calculated Piece Count Overflow or Invalid - YES
-
-- If `received_skid_count` or `quantity_per_skid` contain non-numeric or null values, `calculated_piece_count` should display a fallback (e.g., `N/A`) rather than throwing an arithmetic exception.
-
-### EC-14 — Concurrent Edits from Multiple Sessions - NOT REQUIRED
-
-- If the same shipment is open in two sessions simultaneously (e.g., two workstations), and one session saves a change, the other session's auto-save may overwrite it silently. Consider optimistic concurrency (e.g., row timestamps) and surface a conflict warning to the user.
-
-### EC-15 — Remove Discrepancy When None Exists - DIABLE BUTTON WHEN has_discrepency = false
-
-- If the "Remove" discrepancy button is clicked on a card where `has_discrepancy = false`, the action should be a no-op with no error. Optionally disable the "Remove" button when `has_discrepancy = false` to prevent the action entirely.
-
-### EC-16 — Large Parts List Performance - NOT REQUIRED
-
-- If `volvo_line_data` returns a very large number of rows (e.g., 100+), rendering all cards at once may cause UI lag. Consider virtualizing the card list or loading cards in batches to maintain responsiveness.
-
-### EC-17 — Part Number Modal Closed Mid-Validation - YES
-
-- If the user opens the Part Number change modal, triggers validation (e.g., duplicate check), and then closes the modal before the async check completes, the result of the validation should be discarded and no changes applied.
-
-### EC-18 — `po_status` Updated Externally Between Loads - NOT REQUIRED
-
-- If `po_status` is changed in the database by an external process after the parts list is loaded, the card will display a stale status until refreshed. Consider adding a manual refresh option or a periodic lightweight poll to detect out-of-date status values.
-
-### EC-19 — Complete Shipment Button Enabled with All Rows Having Discrepancies - YES
-
-- If every row in the parts list has `has_discrepancy = true`, the "Complete Shipment" button should still follow the R4 rule (enabled when rows exist), but a visual indicator or tooltip should warn the user that all parts have unresolved discrepancies before they proceed.
-
-### EC-20 — Add Part Dialog Opened While Auto-Save Is In Progress - YES
-
-- If the user opens the "+ Add Part" dialog while an auto-save operation is still in progress (e.g., from a previous quantity edit), the dialog should either wait for the save to complete or queue the new insert to avoid race conditions and duplicate/lost records.
-
-### EC-22 — Quantity Per Skid or Received Skid Count Edited to Non-Integer Value - YES - cell rejects value
-
-- If the user enters a decimal or non-integer value into a quantity field that expects whole numbers, the cell should reject the value, revert to the previous value, and display a validation message indicating only whole numbers are accepted.
-
-### EC-23 — Card Expand State Lost on List Refresh - YES
-
-- If the parts list is refreshed (e.g., after an auto-save or manual reload), all cards may collapse to their default state, losing the user's current expand/collapse state. The UI should preserve or restore the expand state of each card by part number after a refresh.
-
-### EC-25 — `volvo_line_data` Row Deleted Externally While Card Is Expanded - NOT REQUIRED
-
-- If a row is deleted from `volvo_line_data` by an external process while the corresponding card is expanded and the user is viewing it, any subsequent action on that card (e.g., updating quantity, reporting discrepancy) should handle the missing row gracefully with a user-facing error rather than a silent failure or crash.
-
-### EC-26 — Employee Number Resolves to Multiple Records - NOT REQUIRED, system does not allow more than 1 uniuqe employee number already
-
-- If the employee number lookup returns more than one result for the logged-in Windows user, the system should not arbitrarily pick one. Surface an error or disambiguation prompt and prevent writing ambiguous data to `volvo_label_data` or `volvo_label_history`.
-
-### EC-27 — Part Number Modal Opened on a Card Mid-Auto-Save - YES - Wait
-
-- If the user opens the Part Number change modal on a card that is currently mid-auto-save (e.g., a quantity change is being persisted), the modal should either wait for the save to settle or lock the card to prevent conflicting concurrent writes to the same row.
+- `Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml`
+- `Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml.cs`
+- `Module_Volvo/Models/Model_VolvoShipment.cs`
+- `Module_Volvo/Models/Model_VolvoShipmentLine.cs`
+- `Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs`
+- `Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs`
+
+Infor Visual comparison data comes from:
+
+- `Module_Core/Contracts/Services/IService_InforVisual.cs`
+  - `GetPOWithPartsAsync(string poNumber)`
+- `Module_Core/Models/InforVisual/Model_InforVisualPO.cs`
+- `Module_Core/Models/InforVisual/Model_InforVisualPart.cs`
+
+## Personas
+
+- Supervisor: Primary Volvo shipment-entry user. This is the current audience recorded in `docs/CopilotForms/data/module-metadata/Module_Volvo/volvo-shipment-entry.json`.
+- Receiving / Shipping user: Completes the Volvo shipment and needs immediate feedback if the PO does not match what is on the current shipment.
+- Integration Team: Current owning team for this Volvo module.
+- Developer / QA: Needs discrepancy behavior to be deterministic and visible only when mismatches exist.
+
+## Requested Behavior
+
+1. Use proper PO formatting before validation, normalize the textbox when focus is lost if nessicary.
+   - Reuse the same canonical formatting pattern used by Receiving.
+   - Accept raw digits like `62450` and normalize to `PO-062450`.
+   - Accept partially formatted values like `PO-62450` and normalize to `PO-062450`.
+
+2. Look up the PO after formatting.
+   - After formatting, load the PO using `IService_InforVisual.GetPOWithPartsAsync(...)`.
+
+3. Enforce a Volvo-specific vendor sanity check.
+   - The vendor name returned from the PO lookup must contain the word `volvo`, case-insensitive.
+   - If the vendor name does not contain `volvo` but the PO contains at least one part number matching the pattern `V-EMB-{NUMBER}` (e.g. `V-EMB-1234`), treat the PO as valid for this workflow.
+   - If the PO is otherwise valid but the vendor name does not contain `volvo` and no part numbers match the `V-EMB-{NUMBER}` pattern, treat it as the wrong PO for this workflow.
+
+4. Treat a PO with no matching shipment parts as the wrong PO.
+   - If the entered PO does not contain any of the current shipment part numbers, assume the user entered the wrong PO number.
+   - In that case, show an inline wrong-PO validation message instead of treating it as a normal quantity discrepancy case.
+   - Turn the BG of the PO Number Textbox light red and the border Dark Red, restore to normal colors once corrected.
+
+5. Validate part numbers and quantities.
+   - Compare the Infor Visual PO lines against the current shipment lines.
+   - Use the calculated totals, not total skids to compare the quantities.
+   - The current Volvo shipment line already exposes `CalculatedPieceCount`, which is the value that should be compared against the PO quantity expectation.
+   - Match shipment lines to PO lines by part number only. Line numbers are not a reliable matching key because they may differ between the app and Infor Visual and must not be used.
+   - Each part number is expected to appear exactly once on the shipment and exactly once on the PO.
+   - For each part number on the shipment, compare its `CalculatedPieceCount` directly against the `QtyOrdered` value of the matching PO line.
+   - Every part number on the shipment must exist on the PO and the quantities must match exactly.
+   - If any part number on the shipment is not found on the PO, include it in the discrepancy card as a missing PO line.
+   - If any part number on the PO is not found on the shipment, include it in the discrepancy card as an unexpected PO line.
+   - If any part number quantities do not match, show a discrepancy card containing all mismatches.
+   - That discrepancy card should stay hidden when there are no mismatches.
+   - The discrepancy card should enumerate every mismatch rather than stopping at the first one.
+
+## Current Data Available In Code
+
+- `Module_Volvo/Models/Model_VolvoShipmentLine.cs`
+  - Already has `PartNumber`
+  - Already has `CalculatedPieceCount`
+  - Already has `ExpectedPieceCount`
+  - Does not currently expose a PO line number field
+
+- `Module_Core/Models/InforVisual/Model_InforVisualPart.cs`
+  - Already has `PartID`
+  - Already has `POLineNumber`
+  - Already has `QtyOrdered`
+
+## Important Implementation Note
+
+The requested Volvo comparison logic needs both part-number matching and PO line-number matching, but the current Volvo shipment-line model does not appear to store a PO line number yet.
+
+That means the implementation likely needs one of these approaches:
+
+- Add PO line-number data to the Volvo shipment comparison model, or
+- Derive a deterministic line-number mapping during PO validation before showing the discrepancy card.
+
+The markdown requirement should preserve that constraint explicitly so the eventual implementation does not silently skip the line-number requirement.
+
+## Acceptance Criteria
+
+- The Volvo completion PO textbox normalizes to the same canonical format used by Receiving.
+- The PO is looked up immediately after normalization when the user attempts to complete the shipment.
+- Comparison uses calculated piece totals, not skid counts.
+- If part numbers and line numbers match but quantities are different, a discrepancy card appears and lists all mismatches.
+- The discrepancy card remains hidden when there are no mismatches.
+- If none of the shipment part numbers exist on the PO, the PO is treated as incorrect for the shipment.
+- If the vendor name does not contain `volvo` in any casing, the PO is treated as incorrect for the shipment.
+
+## File Map For Implementation
+
+- `Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs`
+  - Current completion dialog and likely validation orchestration point.
+- `Module_Volvo/Models/Model_VolvoShipmentLine.cs`
+  - Current shipment comparison data source (`PartNumber`, `CalculatedPieceCount`).
+- `Module_Core/Contracts/Services/IService_InforVisual.cs`
+  - Existing PO lookup service.
+- `Module_Core/Models/InforVisual/Model_InforVisualPO.cs`
+  - PO header and vendor source.
+- `Module_Core/Models/InforVisual/Model_InforVisualPart.cs`
+  - PO line source for part IDs, line numbers, and ordered quantities.

@@ -1348,6 +1348,8 @@
           "Mode selector",
           "Type selector",
           "Part selector",
+          "Configured inventory method indicator on the part details card",
+          "Review PO vendor feedback",
           "Quantity field",
           "Manual entry fields",
           "Review summary"
@@ -1355,11 +1357,18 @@
         "userActions": [
           "Choose the correct dunnage mode",
           "Move through guided steps",
+          "See the review PO normalized to the canonical Receiving format with vendor feedback when available",
           "Capture manual or detailed information",
           "Review and finish the workflow"
         ],
         "validationHints": [
           "Confirm the guided workflow still advances correctly between steps",
+          "Confirm the part-selection step no longer shows a separate inventory warning banner above the part details card",
+          "Confirm Enter Loads no longer shows the Selection Summary card above the quantity editor",
+          "Confirm Dunnage review normalizes PO values such as 62450 or PO-62450 to PO-062450 before display",
+          "Confirm Dunnage review shows the vendor name when a valid PO exists in Infor Visual or mock mode",
+          "Confirm Dunnage review shows an inline vendor-area not-found message when the PO format is valid but the PO does not exist",
+          "Confirm the vendor area stays hidden when the Dunnage PO is blank, free-form non-PO text, or otherwise malformed",
           "Confirm manual and detail entry remain aligned with review behavior"
         ]
       },
@@ -1382,6 +1391,7 @@
         "Module_Dunnage/Views/View_Dunnage_SelectExistingSpecsDialog.xaml.cs",
         "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml",
         "Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml.cs",
+        "Module_Dunnage/Helpers/Helper_DunnageImageFileDialog.cs",
         "Module_Dunnage/Helpers/Helper_DunnageImagePaths.cs",
         "Module_Dunnage/Helpers/Helper_Dunnage_PartSpecs.cs",
         "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
@@ -1389,6 +1399,7 @@
         "Module_Dunnage/Data/Dao_DunnageSpec.cs",
         "Module_Dunnage/Data/Dao_DunnageType.cs",
         "Module_Dunnage/Services/Service_DunnageImageStorage.cs",
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_QuickAddTypeDialog.cs",
         "Module_Dunnage/Models/Model_CustomFieldDefinition.cs",
         "Module_Dunnage/Models/Model_DunnagePart.cs",
         "Module_Dunnage/Models/Model_DunnagePartCustomSpecEntry.cs",
@@ -1436,6 +1447,10 @@
         "userActions": [
           "Add new types and parts quickly",
           "Upload and clear PNG images for dunnage types and parts",
+          "See only the selected filename in the dunnage type image card instead of the full path",
+          "Click the selected dunnage type image preview to open its containing folder in File Explorer",
+          "See only the selected filename in the dunnage part image card instead of the full path",
+          "Click the selected dunnage part image preview to open its containing folder in File Explorer",
           "Reuse an existing part's saved configured values, notes, and part-specific spec definitions when adding or editing a part",
           "Define part-specific runtime spec fields for newly created parts when quick-adding or editing a part",
           "Define a spec field with a controlled list of allowed choices"
@@ -1450,7 +1465,13 @@
           "Confirm part-specific spec definitions reject duplicate names and reserved keys that collide with configured specs or Notes",
           "Confirm Quick Add Part and Edit Part render Choices specs as dropdowns using the configured array values",
           "Confirm Quick Add Type shows the hidden choice editor only when the Choices spec type is selected",
-          "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions"
+          "Confirm the Dunnage type image card shows only the selected filename and not the full source path",
+          "Confirm clicking the Dunnage type image preview opens File Explorer to the containing folder for the current image",
+          "Confirm the Dunnage part image card shows only the selected filename and not the full source path",
+          "Confirm clicking the Dunnage part image preview opens File Explorer to the containing folder for the current image",
+          "Confirm a type image chosen from the configured shared image root is persisted as Types/DunnageType-{TypeName}.{ext}",
+          "Confirm Edit Part no longer shows hardcoded width, height, or depth inputs and instead renders any dimension fields from the saved type spec definitions",
+          "Confirm all Dunnage Choose Image actions open in the configured shared image folder when that folder exists"
         ]
       },
       "subFeatures": []
@@ -1683,7 +1704,7 @@
       "id": "volvo-shipment-entry",
       "module": "Module_Volvo",
       "name": "Shipment Entry",
-      "summary": "CQRS-backed Volvo shipment entry now uses auto-saving expandable cards instead of a DataGrid, with add/remove/edit-part actions, inline quantity edits, discrepancy reporting, employee-number-backed persistence, and completion that moves active rows directly to Volvo history.",
+      "summary": "CQRS-backed Volvo shipment entry now uses auto-saving expandable cards instead of a DataGrid, with add/remove/edit-part actions, inline quantity edits, discrepancy reporting, employee-number-backed persistence, archived history detail window parity, and completion that moves active rows directly to Volvo history.",
       "owner": "Integration Team",
       "relatedFiles": [
         "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -1751,6 +1772,7 @@
           "Auto-save line editing",
           "Part-number modal edits",
           "Discrepancy management",
+          "Archived history handoff",
           "Complete-and-archive flow"
         ],
         "screens": [
@@ -1783,7 +1805,8 @@
           "Confirm quantity edits reject zero, negative, decimal, and non-integer values",
           "Confirm discrepancy changes auto-save without blocking the user in a modal error flow",
           "Confirm Complete Shipment removes active rows from volvo_label_data and volvo_line_data and moves them to history",
-          "Confirm archived history detail still loads after active rows are deleted"
+          "Confirm archived history detail still loads after active rows are deleted",
+          "Confirm the archived history edit dialog remains read-only even though it reuses the shipment-entry edit surface"
         ]
       },
       "subFeatures": []
@@ -1792,14 +1815,21 @@
       "id": "volvo-shipment-history",
       "module": "Module_Volvo",
       "name": "Shipment History",
-      "summary": "Shipment history lookup, recent shipment browsing, detail retrieval, and label history access for previously recorded Volvo shipments.",
+      "summary": "Shipment history lookup, recent shipment browsing, completed-only archived edit/delete actions, read-only modal-window detail review, archived-row drill-in, and label history access for previously recorded Volvo shipments.",
       "owner": "Integration Team",
       "relatedFiles": [
         "Module_Volvo/Views/View_Volvo_History.xaml",
         "Module_Volvo/Views/View_Volvo_History.xaml.cs",
         "Module_Volvo/ViewModels/ViewModel_Volvo_History.cs",
+        "Module_Volvo/Views/View_Volvo_ShipmentHistoryDetailDialog.xaml",
+        "Module_Volvo/Views/View_Volvo_ShipmentHistoryDetailDialog.xaml.cs",
+        "Module_Volvo/Views/View_Volvo_ShipmentHistoryDetailWindow.cs",
+        "Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentHistoryDetailDialog.cs",
+        "Module_Volvo/Models/Model_VolvoShipmentHistoryDetailDialog.cs",
         "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
         "Module_Volvo/Data/IDao_VolvoLabelHistory.cs",
+        "Module_Volvo/Requests/Commands/DeleteShipmentHistoryCommand.cs",
+        "Module_Volvo/Handlers/Commands/DeleteShipmentHistoryCommandHandler.cs",
         "Module_Volvo/Requests/Queries/GetRecentShipmentsQuery.cs",
         "Module_Volvo/Requests/Queries/GetShipmentHistoryQuery.cs",
         "Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs",
@@ -1821,22 +1851,39 @@
         "workflowAreas": [
           "Shipment history",
           "Recent shipment lookup",
-          "Shipment detail review"
+          "Modal shipment detail review",
+          "Archived edit drill-in",
+          "Completed history deletion"
         ],
         "screens": ["View_Volvo_History.xaml"],
-        "currentUiPatterns": ["Table"],
-        "desiredUiPatterns": ["Split layout", "Card list", "Table"],
+        "currentUiPatterns": ["Table", "Modal window", "Card list"],
+        "desiredUiPatterns": [
+          "Split layout",
+          "Card list",
+          "Table",
+          "Modal window"
+        ],
         "uiElements": [
           "Shipment selection area",
           "History results",
-          "View detail action"
+          "View detail action",
+          "Read-only detail window",
+          "Archived shipment edit action",
+          "Archived shipment delete action"
         ],
         "userActions": [
           "Find and review a shipment history record",
-          "Open shipment details from history"
+          "Open shipment details from history",
+          "Open archived shipment rows in the history edit dialog",
+          "Delete completed archived shipments from history"
         ],
         "validationHints": [
-          "Confirm shipment history and recent shipment queries still return the expected records"
+          "Confirm shipment history and recent shipment queries still return the expected records",
+          "Confirm repeated history reloads replace the bound shipment collection without leaving stale rows selected",
+          "Confirm raw stored values such as pending_po render as friendly labels in both the history grid and the shipment detail window",
+          "Confirm View Details opens the dedicated modal window and renders archived lines using the same card treatment as shipment entry",
+          "Confirm the History page Edit action is only enabled for completed archived rows and still opens history-table rows in read-only mode",
+          "Confirm the Delete button and Delete key are only enabled for completed archived rows and remove the selected history item from the results list after a successful delete"
         ]
       },
       "subFeatures": []
@@ -1845,7 +1892,7 @@
       "id": "volvo-part-settings",
       "module": "Module_Volvo",
       "name": "Part Settings",
-      "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part add/edit operations used by the settings screens.",
+      "summary": "Volvo part master-data maintenance, component lookup, settings retrieval, CSV import, and part add/edit plus activate/deactivate operations used by the settings screens.",
       "owner": "Integration Team",
       "relatedFiles": [
         "Module_Volvo/Contracts/IService_VolvoMasterData.cs",
@@ -1872,14 +1919,17 @@
         "Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs",
         "Module_Volvo/Requests/Commands/AddVolvoPartCommand.cs",
         "Module_Volvo/Requests/Commands/UpdateVolvoPartCommand.cs",
+        "Module_Volvo/Requests/Commands/ActivateVolvoPartCommand.cs",
         "Module_Volvo/Requests/Commands/DeactivateVolvoPartCommand.cs",
         "Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs",
         "Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandler.cs",
+        "Module_Volvo/Handlers/Commands/ActivateVolvoPartCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandler.cs",
         "Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandler.cs",
         "Module_Volvo/Validators/AddVolvoPartCommandValidator.cs",
         "Module_Volvo/Validators/UpdateVolvoPartCommandValidator.cs",
+        "Module_Volvo/Validators/ActivateVolvoPartCommandValidator.cs",
         "Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs",
         "Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs"
       ],
@@ -1899,7 +1949,8 @@
           "Part settings",
           "Volvo master data",
           "Part add and edit dialogs",
-          "CSV part import"
+          "CSV part import",
+          "Part activate and deactivate toggle"
         ],
         "screens": [
           "View_Settings_Volvo_PartCatalog.xaml",
@@ -1910,15 +1961,19 @@
         "uiElements": [
           "Part settings controls",
           "Part edit action",
-          "CSV import action"
+          "CSV import action",
+          "Activate and deactivate action"
         ],
         "userActions": [
           "Update or review a Volvo part setting",
           "Add or edit a Volvo part",
+          "Deactivate an active part",
+          "Reactivate an inactive part",
           "Import parts from CSV"
         ],
         "validationHints": [
-          "Confirm part search, add, update, deactivate, and import flows still affect the intended part records"
+          "Confirm part search, add, update, activate, deactivate, and import flows still affect the intended part records",
+          "Confirm the selected-part action button reads Deactivate for active rows and Activate for inactive rows"
         ]
       },
       "subFeatures": []

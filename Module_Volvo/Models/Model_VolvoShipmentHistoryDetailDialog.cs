@@ -1,17 +1,22 @@
 namespace MTM_Receiving_Application.Module_Volvo.Models;
 
 /// <summary>
-/// Prepared dialog state for the shipment history detail preview.
+/// Prepared window state for the shipment history detail preview.
 /// </summary>
 public class Model_VolvoShipmentHistoryDetailDialog
 {
     /// <summary>
-    /// Gets or sets the dialog title.
+    /// Gets or sets the window title.
     /// </summary>
-    public string DialogTitle { get; set; } = string.Empty;
+    public string WindowTitle { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the formatted detail text rendered in the dialog body.
+    /// Gets or sets the shipment header shown in the window.
     /// </summary>
-    public string DetailText { get; set; } = string.Empty;
+    public Model_VolvoShipment Shipment { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the read-only shipment lines shown as cards.
+    /// </summary>
+    public System.Collections.Generic.List<Model_VolvoShipmentLine> Lines { get; set; } = new();
 }

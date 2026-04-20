@@ -14,65 +14,43 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
-    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
-        <Grid Padding="24">
-            <StackPanel
-                Width="1160"
-                HorizontalAlignment="Center"
-                Spacing="20">
-                <Border
-                    Padding="24"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="12">
-                    <StackPanel Spacing="12">
-                        <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Volvo Part Catalog" />
-                        <TextBlock
+    <Grid Grid.Row="1" ColumnSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Border
+            Grid.Row="1"
+            Padding="20"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="12">
+                <StackPanel Spacing="16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Catalog Records" />
+                            <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Maintain the Volvo dunnage part master used by shipment entry and related workflows. This settings surface keeps catalog maintenance with the rest of the Volvo configuration experience."
+                            Text="Review the current Volvo part list and select a row to edit or inspect related components."
                             TextWrapping="Wrap" />
-                    </StackPanel>
-                </Border>
+                        </StackPanel>
 
-                <Grid ColumnSpacing="20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2.1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Column="0"
-                        Padding="20"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="12">
-                        <StackPanel Spacing="16">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Catalog Records" />
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource BodyTextBlockStyle}"
-                                        Text="Review the current Volvo part list and select a row to edit or inspect related components."
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-
-                                <Button
+                                    <Button
                                     Grid.Column="1"
                                     Command="{x:Bind ViewModel.RefreshCommand}"
                                     Content="Refresh"
                                     Style="{StaticResource AccentButtonStyle}" />
-                            </Grid>
+                                </Grid>
 
-                            <controls:DataGrid
+                                <controls:DataGrid
                                 AlternatingRowBackground="{ThemeResource SystemListLowColor}"
                                 AutoGenerateColumns="False"
                                 GridLinesVisibility="Horizontal"
@@ -82,163 +60,160 @@
                                 RowHeight="38"
                                 SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
                                 SelectionMode="Single">
-                                <controls:DataGrid.Columns>
-                                    <controls:DataGridTemplateColumn Width="*" Header="Part Number">
-                                        <controls:DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate x:DataType="models:Model_VolvoPart">
-                                                <TextBlock Text="{x:Bind PartNumber, Mode=OneTime}" />
-                                            </DataTemplate>
-                                        </controls:DataGridTemplateColumn.CellTemplate>
-                                    </controls:DataGridTemplateColumn>
-                                    <controls:DataGridTemplateColumn Width="120" Header="Qty / Skid">
-                                        <controls:DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate x:DataType="models:Model_VolvoPart">
-                                                <TextBlock Text="{x:Bind QuantityPerSkid, Mode=OneTime}" />
-                                            </DataTemplate>
-                                        </controls:DataGridTemplateColumn.CellTemplate>
-                                    </controls:DataGridTemplateColumn>
-                                    <controls:DataGridTemplateColumn Width="100" Header="Active">
-                                        <controls:DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate x:DataType="models:Model_VolvoPart">
-                                                <TextBlock Text="{x:Bind IsActive, Mode=OneTime}" />
-                                            </DataTemplate>
-                                        </controls:DataGridTemplateColumn.CellTemplate>
-                                    </controls:DataGridTemplateColumn>
-                                </controls:DataGrid.Columns>
-                            </controls:DataGrid>
-                        </StackPanel>
-                    </Border>
+                                    <controls:DataGrid.Columns>
+                                        <controls:DataGridTemplateColumn Width="*" Header="Part Number">
+                                            <controls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate x:DataType="models:Model_VolvoPart">
+                                                    <TextBlock Text="{x:Bind PartNumber, Mode=OneTime}" />
+                                                </DataTemplate>
+                                            </controls:DataGridTemplateColumn.CellTemplate>
+                                        </controls:DataGridTemplateColumn>
+                                        <controls:DataGridTemplateColumn Width="120" Header="Qty / Skid">
+                                            <controls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate x:DataType="models:Model_VolvoPart">
+                                                    <TextBlock Text="{x:Bind QuantityPerSkid, Mode=OneTime}" />
+                                                </DataTemplate>
+                                            </controls:DataGridTemplateColumn.CellTemplate>
+                                        </controls:DataGridTemplateColumn>
+                                        <controls:DataGridTemplateColumn Width="100" Header="Active">
+                                            <controls:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate x:DataType="models:Model_VolvoPart">
+                                                    <TextBlock Text="{x:Bind IsActive, Mode=OneTime}" />
+                                                </DataTemplate>
+                                            </controls:DataGridTemplateColumn.CellTemplate>
+                                        </controls:DataGridTemplateColumn>
+                                    </controls:DataGrid.Columns>
+                                </controls:DataGrid>
+                            </StackPanel>
+                        </Border>
 
-                    <StackPanel Grid.Column="1" Spacing="16">
-                        <Border
+                        <StackPanel Grid.Column="1" Spacing="16">
+                            <Border
                             Padding="20"
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="12">
-                            <StackPanel Spacing="16">
-                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Catalog Summary" />
+                                <StackPanel Spacing="16">
+                                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Catalog Summary" />
 
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
+                                    <Grid ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <Border
+                                        <Border
                                         Grid.Column="0"
                                         Padding="12"
                                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                                         CornerRadius="8">
-                                        <StackPanel Spacing="4">
-                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Total" />
-                                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.TotalPartsCount, Mode=OneWay}" />
-                                        </StackPanel>
-                                    </Border>
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Total" />
+                                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.TotalPartsCount, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Border>
 
-                                    <Border
+                                        <Border
                                         Grid.Column="1"
                                         Padding="12"
                                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                                         CornerRadius="8">
-                                        <StackPanel Spacing="4">
-                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Active" />
-                                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.ActivePartsCount, Mode=OneWay}" />
-                                        </StackPanel>
-                                    </Border>
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Active" />
+                                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.ActivePartsCount, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Border>
 
-                                    <Border
+                                        <Border
                                         Grid.Column="2"
                                         Padding="12"
                                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                                         CornerRadius="8">
-                                        <StackPanel Spacing="4">
-                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Inactive" />
-                                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.InactivePartsCount, Mode=OneWay}" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
+                                            <StackPanel Spacing="4">
+                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Inactive" />
+                                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.InactivePartsCount, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
 
-                                <TextBlock
+                                    <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource BodyTextBlockStyle}"
                                     Text="{x:Bind ViewModel.PartsLoadedSummary, Mode=OneWay}"
                                     TextWrapping="Wrap" />
 
-                                <ToggleSwitch
+                                    <ToggleSwitch
                                     Header="Show inactive parts"
                                     IsOn="{x:Bind ViewModel.ShowInactive, Mode=TwoWay}"
                                     OffContent="Only active rows"
                                     OnContent="Include inactive rows" />
 
-                                <TextBlock
+                                    <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
                                     Text="{x:Bind ViewModel.CatalogFilterSummary, Mode=OneWay}"
                                     TextWrapping="Wrap" />
 
-                                <Button Command="{x:Bind ViewModel.AddPartCommand}" Content="Add Part" />
-                                <Button Command="{x:Bind ViewModel.ImportDataCommand}" Content="Bulk Import" />
-                            </StackPanel>
-                        </Border>
+                                    <Button Command="{x:Bind ViewModel.AddPartCommand}" Content="Add Part" />
+                                    <Button Command="{x:Bind ViewModel.ImportDataCommand}" Content="Bulk Import" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border
+                            <Border
                             Padding="20"
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="12">
-                            <StackPanel Spacing="16">
-                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Selected Part" />
-                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.SelectedPartNumberText, Mode=OneWay}" />
-                                <TextBlock
+                                <StackPanel Spacing="16">
+                                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Selected Part" />
+                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.SelectedPartNumberText, Mode=OneWay}" />
+                                    <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource BodyTextBlockStyle}"
                                     Text="{x:Bind ViewModel.SelectedPartQuantityText, Mode=OneWay}"
                                     TextWrapping="Wrap" />
-                                <TextBlock
+                                    <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
                                     Text="{x:Bind ViewModel.SelectedPartStatusText, Mode=OneWay}" />
-                                <TextBlock
+                                    <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
                                     Text="{x:Bind ViewModel.SelectedPartHintText, Mode=OneWay}"
                                     TextWrapping="Wrap" />
 
-                                <Button Command="{x:Bind ViewModel.EditPartCommand}" Content="Edit Selected Part" />
-                                <Button Command="{x:Bind ViewModel.ViewComponentsCommand}" Content="View Components" />
-                                <Button Command="{x:Bind ViewModel.DeactivatePartCommand}" Content="Deactivate Part" />
-                            </StackPanel>
-                        </Border>
+                                    <Button Command="{x:Bind ViewModel.EditPartCommand}" Content="Edit Selected Part" />
+                                    <Button Command="{x:Bind ViewModel.ViewComponentsCommand}" Content="View Components" />
+                                    <Button Command="{x:Bind ViewModel.TogglePartActiveCommand}" Content="{x:Bind ViewModel.SelectedPartToggleActionText, Mode=OneWay}" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border
+                            <Border
                             Padding="20"
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="12">
-                            <StackPanel Spacing="12">
-                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Status" />
-                                <StackPanel Orientation="Horizontal" Spacing="12">
-                                    <ProgressRing
+                                <StackPanel Spacing="12">
+                                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Status" />
+                                    <StackPanel Orientation="Horizontal" Spacing="12">
+                                        <ProgressRing
                                         Width="20"
                                         Height="20"
                                         IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                         Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    <TextBlock
+                                        <TextBlock
                                         VerticalAlignment="Center"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource BodyTextBlockStyle}"
                                         Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                                         TextWrapping="Wrap" />
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
-        </Grid>
-    </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
 </Page>

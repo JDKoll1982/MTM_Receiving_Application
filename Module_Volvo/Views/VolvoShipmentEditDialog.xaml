@@ -6,6 +6,7 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+    x:Name="RootDialog"
     Title="Edit Shipment"
     CloseButtonText="Cancel"
     DefaultButton="Primary"
@@ -60,7 +61,8 @@
                 x:Name="ShipmentDatePicker"
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
-                Header="Shipment Date" />
+                Header="Shipment Date"
+                IsEnabled="{x:Bind IsEditableMode, Mode=OneWay}" />
 
             <TextBox
                 x:Name="ShipmentNumberBox"
@@ -74,6 +76,7 @@
                 Grid.Column="2"
                 HorizontalAlignment="Stretch"
                 Header="PO Number"
+                IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneWay}"
                 PlaceholderText="Optional" />
 
             <TextBox
@@ -81,6 +84,7 @@
                 Grid.Column="3"
                 HorizontalAlignment="Stretch"
                 Header="Receiver #"
+                IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneWay}"
                 PlaceholderText="Optional" />
         </Grid>
 
@@ -92,6 +96,7 @@
             HorizontalAlignment="Stretch"
             AcceptsReturn="True"
             Header="Notes (applies to entire shipment)"
+            IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneWay}"
             PlaceholderText="Optional notes..."
             TextWrapping="Wrap" />
 
@@ -123,7 +128,8 @@
                     Grid.Column="2"
                     Height="32"
                     Margin="0,0,8,0"
-                    Style="{StaticResource AccentButtonStyle}">
+                    Style="{StaticResource AccentButtonStyle}"
+                    Visibility="{x:Bind ActionControlsVisibility, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <SymbolIcon x:Name="AddPartIcon" Symbol="Add" />
                         <TextBlock x:Name="AddPartButtonText" Text="Add Part" />
@@ -134,7 +140,8 @@
                     x:Name="RemovePartButton"
                     Grid.Column="3"
                     Height="32"
-                    Content="Remove Selected" />
+                    Content="Remove Selected"
+                    Visibility="{x:Bind ActionControlsVisibility, Mode=OneWay}" />
             </Grid>
 
             <!--  Add Part Panel (Collapsible)  -->
@@ -227,9 +234,7 @@
                             x:Name="ConfirmAddPartButton"
                             Content="Add to List"
                             Style="{StaticResource AccentButtonStyle}" />
-                        <Button
-                            x:Name="CancelAddPartButton"
-                            Content="Cancel" />
+                        <Button x:Name="CancelAddPartButton" Content="Cancel" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -257,7 +262,10 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn MinWidth="50" Width="Auto" Header="Received Skids">
+                    <controls:DataGridTemplateColumn
+                        Width="Auto"
+                        MinWidth="50"
+                        Header="Received Skids">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                 <TextBox
@@ -271,7 +279,10 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn MinWidth="50" Width="Auto" Header="Calculated Pieces">
+                    <controls:DataGridTemplateColumn
+                        Width="Auto"
+                        MinWidth="50"
+                        Header="Calculated Pieces">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                 <TextBlock
@@ -282,7 +293,10 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn MinWidth="50" Width="Auto" Header="Location">
+                    <controls:DataGridTemplateColumn
+                        Width="Auto"
+                        MinWidth="50"
+                        Header="Location">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                 <TextBlock

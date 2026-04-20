@@ -8,6 +8,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -485,16 +486,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 GenerateCurrentEntryLoads();
             }
 
+            var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(CurrentSession.PONumber);
+            CurrentSession.PONumber = normalizedPoNumber;
             var location = string.IsNullOrWhiteSpace(CurrentSession.Location)
                 ? FallbackDefaultLocation
                 : CurrentSession.Location.Trim();
-            var poNumber = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
+            var poNumber = string.IsNullOrWhiteSpace(normalizedPoNumber)
                 ? "Nothing Entered"
-                : CurrentSession.PONumber;
+                : normalizedPoNumber;
             var specs = CurrentSession.SpecValues ?? new Dictionary<string, object>();
             var createdBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
             var inventoryMethod = string.IsNullOrWhiteSpace(CurrentSession.InventoryMethod)
-                ? string.IsNullOrWhiteSpace(CurrentSession.PONumber)
+                ? string.IsNullOrWhiteSpace(normalizedPoNumber)
                     ? "Adjust In"
                     : "Receive In"
                 : CurrentSession.InventoryMethod.Trim();
@@ -520,12 +523,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         private Model_DunnageLoad CreateLoadFromCurrentSession(int loadNumber, decimal quantity)
         {
+            var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(CurrentSession.PONumber);
+
             return new Model_DunnageLoad
             {
                 LoadUuid = Guid.NewGuid(),
                 PartId = CurrentSession.SelectedPart?.PartId ?? "Unknown",
                 Quantity = quantity,
-                PoNumber = CurrentSession.PONumber,
+                PoNumber = normalizedPoNumber,
                 Location = CurrentSession.Location,
                 HomeLocation = CurrentSession.SelectedPart?.HomeLocation,
                 DunnageType = CurrentSession.SelectedTypeName,

@@ -68,7 +68,69 @@ public sealed class Service_DunnageImageStorageTests
         result.ErrorMessage.Should().Contain("was not found");
     }
 
-    private static Mock<IService_SettingsCoreFacade> CreateSettingsCoreFacade()
+    [Fact]
+    public async Task GetConfiguredRootFolderAsync_ShouldReturnConfiguredFolder_WhenSettingExists()
+    {
+        var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(configuredFolder);
+
+        try
+        {
+            var service = new Service_DunnageImageStorage(
+                CreateSettingsCoreFacade(configuredFolder).Object
+            );
+
+            var result = await service.GetConfiguredRootFolderAsync();
+
+            result.Should().Be(configuredFolder);
+        }
+        finally
+        {
+            if (Directory.Exists(configuredFolder))
+            {
+                Directory.Delete(configuredFolder, true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task ImportTypeImageAsync_ShouldRenameFile_WhenSourceIsAlreadyUnderConfiguredRoot()
+    {
+        var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var sourceFolder = Path.Combine(configuredFolder, "Incoming");
+        Directory.CreateDirectory(sourceFolder);
+
+        var sourcePath = Path.Combine(sourceFolder, "old-name.png");
+
+        try
+        {
+            await WritePngAsync(sourcePath, width: 1, height: 1);
+
+            var service = new Service_DunnageImageStorage(
+                CreateSettingsCoreFacade(configuredFolder).Object
+            );
+
+            var result = await service.ImportTypeImageAsync(sourcePath, "Pallet Bin");
+
+            result.IsSuccess.Should().BeTrue();
+            result.Data.Should().Be("Types/DunnageType-Pallet Bin.png");
+
+            var targetPath = Path.Combine(configuredFolder, "Types", "DunnageType-Pallet Bin.png");
+            File.Exists(targetPath).Should().BeTrue();
+            File.Exists(sourcePath).Should().BeFalse();
+        }
+        finally
+        {
+            if (Directory.Exists(configuredFolder))
+            {
+                Directory.Delete(configuredFolder, true);
+            }
+        }
+    }
+
+    private static Mock<IService_SettingsCoreFacade> CreateSettingsCoreFacade(
+        string? rootFolder = null
+    )
     {
         var settingsCoreMock = new Mock<IService_SettingsCoreFacade>();
         settingsCoreMock
@@ -76,7 +138,9 @@ public sealed class Service_DunnageImageStorageTests
                 service.GetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<int?>())
             )
             .ReturnsAsync(
-                Model_Dao_Result_Factory.Success(new Model_SettingsValue { Value = string.Empty })
+                Model_Dao_Result_Factory.Success(
+                    new Model_SettingsValue { Value = rootFolder ?? string.Empty }
+                )
             );
 
         return settingsCoreMock;

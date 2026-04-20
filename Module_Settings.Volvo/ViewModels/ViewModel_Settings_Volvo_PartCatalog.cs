@@ -82,12 +82,17 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
         : SelectedPart.IsActive ? "Active part"
         : "Inactive part";
 
+    public string SelectedPartToggleActionText =>
+        SelectedPart is null ? "Update Selection"
+        : SelectedPart.IsActive ? "Deactivate Part"
+        : "Activate Part";
+
     public string SelectedPartHintText =>
         SelectedPart is null
             ? "Edit, deactivate, and component-review actions become available after you choose a part."
         : SelectedPart.IsActive
             ? "This part can be edited, reviewed, or deactivated from this page."
-        : "Inactive parts remain reviewable; they stay visible only when inactive rows are included.";
+        : "Inactive parts remain reviewable and can be reactivated from this page when inactive rows are included.";
 
     [RelayCommand(CanExecute = nameof(CanRunCatalogAction))]
     private async Task RefreshAsync()
@@ -260,29 +265,45 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanDeactivatePart))]
-    private async Task DeactivatePartAsync()
+    [RelayCommand(CanExecute = nameof(CanTogglePartActive))]
+    private async Task TogglePartActiveAsync()
     {
         if (SelectedPart is null || IsBusy)
         {
             return;
         }
 
+        var selectedPart = SelectedPart;
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot is null)
+        {
+            await _errorHandler.ShowUserErrorAsync(
+                "Cannot show the part-status confirmation because the window host is unavailable.",
+                "Part Status Error",
+                nameof(TogglePartActiveAsync)
+            );
+            return;
+        }
+
         try
         {
+            var isActivating = selectedPart.IsActive is false;
+            var actionVerb = isActivating ? "Activate" : "Deactivate";
+            var actionVerbLower = isActivating ? "activate" : "deactivate";
+
             var dialog = new ContentDialog
             {
-                Title = "Deactivate Part",
-                Content =
-                    $"Are you sure you want to deactivate part {SelectedPart.PartNumber}?\n\n"
-                    + "The part will remain available in shipment history, but it will no longer appear in active part selections.",
-                PrimaryButtonText = "Deactivate",
+                Title = $"{actionVerb} Part",
+                Content = isActivating
+                    ? $"Are you sure you want to activate part {selectedPart.PartNumber}?\n\nThe part will appear again in active part selections."
+                    : $"Are you sure you want to deactivate part {selectedPart.PartNumber}?\n\nThe part will remain available in shipment history, but it will no longer appear in active part selections.",
+                PrimaryButtonText = actionVerb,
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = _windowService.GetXamlRoot(),
+                XamlRoot = xamlRoot,
             };
 
-            Helper_UI_ContentDialogTheme.ApplyTheme(dialog, dialog.XamlRoot);
+            Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
 
             var result = await dialog.ShowAsync();
             if (result != ContentDialogResult.Primary)
@@ -291,25 +312,29 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
             }
 
             SetBusyState(true);
-            StatusMessage = $"Deactivating part {SelectedPart.PartNumber}...";
+            StatusMessage = $"{actionVerb}ing part {selectedPart.PartNumber}...";
 
-            var deactivateResult = await _mediator.Send(
-                new DeactivateVolvoPartCommand { PartNumber = SelectedPart.PartNumber }
-            );
+            var toggleResult = isActivating
+                ? await _mediator.Send(
+                    new ActivateVolvoPartCommand { PartNumber = selectedPart.PartNumber }
+                )
+                : await _mediator.Send(
+                    new DeactivateVolvoPartCommand { PartNumber = selectedPart.PartNumber }
+                );
 
-            if (deactivateResult.IsSuccess)
+            if (toggleResult.IsSuccess)
             {
                 await ReloadCatalogAsync();
-                StatusMessage = $"Part {SelectedPart.PartNumber} deactivated.";
+                StatusMessage = $"Part {selectedPart.PartNumber} {actionVerbLower}d.";
             }
             else
             {
                 await _errorHandler.ShowUserErrorAsync(
-                    deactivateResult.ErrorMessage ?? "Failed to deactivate part",
-                    "Deactivate Error",
-                    nameof(DeactivatePartAsync)
+                    toggleResult.ErrorMessage ?? $"Failed to {actionVerbLower} part",
+                    $"{actionVerb} Error",
+                    nameof(TogglePartActiveAsync)
                 );
-                StatusMessage = "Failed to deactivate part.";
+                StatusMessage = $"Failed to {actionVerbLower} part.";
             }
         }
         catch (Exception ex)
@@ -317,10 +342,10 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Medium,
-                nameof(DeactivatePartAsync),
+                nameof(TogglePartActiveAsync),
                 nameof(ViewModel_Settings_Volvo_PartCatalog)
             );
-            StatusMessage = "Error deactivating the selected part.";
+            StatusMessage = "Error updating the selected part status.";
         }
         finally
         {
@@ -541,6 +566,7 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
         OnPropertyChanged(nameof(SelectedPartNumberText));
         OnPropertyChanged(nameof(SelectedPartQuantityText));
         OnPropertyChanged(nameof(SelectedPartStatusText));
+        OnPropertyChanged(nameof(SelectedPartToggleActionText));
         OnPropertyChanged(nameof(SelectedPartHintText));
     }
 
@@ -560,7 +586,7 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
 
     private bool CanEditPart() => SelectedPart is not null && IsBusy is false;
 
-    private bool CanDeactivatePart() => SelectedPart?.IsActive == true && IsBusy is false;
+    private bool CanTogglePartActive() => SelectedPart is not null && IsBusy is false;
 
     private bool CanViewComponents() => SelectedPart is not null && IsBusy is false;
 
@@ -616,7 +642,7 @@ public partial class ViewModel_Settings_Volvo_PartCatalog : ViewModel_Shared_Bas
         RefreshCommand.NotifyCanExecuteChanged();
         AddPartCommand.NotifyCanExecuteChanged();
         EditPartCommand.NotifyCanExecuteChanged();
-        DeactivatePartCommand.NotifyCanExecuteChanged();
+        TogglePartActiveCommand.NotifyCanExecuteChanged();
         ViewComponentsCommand.NotifyCanExecuteChanged();
         ImportDataCommand.NotifyCanExecuteChanged();
     }

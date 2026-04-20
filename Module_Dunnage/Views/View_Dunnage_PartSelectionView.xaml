@@ -19,7 +19,6 @@
     <Grid Padding="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -55,16 +54,8 @@
                 Text="{x:Bind ViewModel.GetTip('Dunnage.PartSelection'), Mode=OneWay}" />
         </StackPanel>
 
-        <!--  Inventory Notification  -->
-        <InfoBar
-            Grid.Row="1"
-            Margin="0,0,0,16"
-            IsOpen="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}"
-            Message="{x:Bind ViewModel.InventoryNotificationMessage, Mode=OneWay}"
-            Severity="Warning" />
-
         <!--  Part Selection Form  -->
-        <ScrollViewer Grid.Row="2" Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
             <StackPanel Spacing="24">
                 <!--  Part Dropdown  -->
                 <StackPanel Spacing="12">

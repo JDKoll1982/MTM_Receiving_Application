@@ -236,26 +236,32 @@
                         BorderThickness="1"
                         CornerRadius="6"
                         Visibility="{x:Bind ViewModel.UseImageVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <StackPanel Spacing="12">
-                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Type Image (PNG/JPG)" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
                             <TextBlock
+                                Grid.Row="0"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="Type Image (PNG/JPG)" />
+                            <TextBlock
+                                Grid.Row="1"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
                                 Text="Upload a PNG or JPG image to represent this dunnage type."
                                 TextWrapping="Wrap" />
-                            <Grid ColumnSpacing="12" RowSpacing="8">
+                            <Grid
+                                Grid.Row="2"
+                                ColumnSpacing="12"
+                                RowSpacing="8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
                                 <Border
-                                    Grid.Row="0"
-                                    Grid.RowSpan="2"
                                     Grid.Column="0"
                                     Width="80"
                                     Height="80"
@@ -265,40 +271,66 @@
                                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="8">
+                                    CornerRadius="8"
+                                    Tapped="OnOpenImageFolderTapped"
+                                    ToolTipService.ToolTip="Open containing folder in File Explorer">
                                     <Image
                                         Source="{x:Bind ViewModel.SelectedImageSource, Mode=OneWay}"
                                         Stretch="UniformToFill"
                                         Visibility="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </Border>
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    Grid.ColumnSpan="2"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="{x:Bind ViewModel.SelectedImagePath, Mode=OneWay}"
-                                    TextWrapping="WrapWholeWords" />
-                                <Button
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    Click="OnChooseImageClick"
-                                    Content="Choose Image (PNG/JPG)" />
-                                <Button
-                                    Grid.Row="0"
-                                    Grid.Column="2"
-                                    Click="OnRotateImageClick"
-                                    Content="Rotate 90°"
-                                    IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
-                                <Button
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    Grid.ColumnSpan="2"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Click="OnClearImageClick"
-                                    Content="Clear" />
+
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind ViewModel.SelectedImageFileName, Mode=OneWay}"
+                                        TextWrapping="NoWrap" />
+                                    <Grid
+                                        Grid.Row="2"
+                                        ColumnSpacing="6"
+                                        RowSpacing="6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+
+                                        <Button
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            HorizontalAlignment="Stretch"
+                                            Click="OnChooseImageClick"
+                                            Content="Choose Image (PNG/JPG)" />
+
+                                        <Button
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            HorizontalAlignment="Stretch"
+                                            Click="OnRotateImageClick"
+                                            Content="Rotate 90°"
+                                            IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
+
+                                        <Button
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch"
+                                            Click="OnClearImageClick"
+                                            Content="Clear" />
+                                    </Grid>
+                                </Grid>
+
+
                             </Grid>
-                        </StackPanel>
+                        </Grid>
                     </Border>
                 </Grid>
             </StackPanel>

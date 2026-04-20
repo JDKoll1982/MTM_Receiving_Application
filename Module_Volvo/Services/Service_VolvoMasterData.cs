@@ -274,6 +274,34 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         }
     }
 
+    public async Task<Model_Dao_Result> ActivatePartAsync(string partNumber)
+    {
+        try
+        {
+            await _logger.LogInfoAsync($"Activating part: {partNumber}");
+
+            var result = await _daoPart.ActivateAsync(partNumber);
+
+            if (!result.IsSuccess)
+            {
+                await _logger.LogErrorAsync(
+                    $"Failed to activate part {partNumber}: {result.ErrorMessage}"
+                );
+            }
+            else
+            {
+                await _logger.LogInfoAsync($"Successfully activated part {partNumber}");
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error activating part {partNumber}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure($"Error activating part: {ex.Message}");
+        }
+    }
+
     public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(
         string partNumber
     )

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -141,6 +143,42 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
     private void OnClearImageClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SelectedImagePath = null;
+    }
+
+    private void OnOpenImageFolderTapped(object sender, TappedRoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.SelectedImagePath))
+        {
+            return;
+        }
+
+        var absoluteImagePath = Path.IsPathRooted(ViewModel.SelectedImagePath)
+            ? ViewModel.SelectedImagePath
+            : _imageStorage.GetAbsolutePath(ViewModel.SelectedImagePath);
+
+        if (string.IsNullOrWhiteSpace(absoluteImagePath))
+        {
+            return;
+        }
+
+        var directoryPath = File.Exists(absoluteImagePath)
+            ? Path.GetDirectoryName(absoluteImagePath)
+            : Directory.Exists(absoluteImagePath)
+                ? absoluteImagePath
+                : Path.GetDirectoryName(absoluteImagePath);
+
+        if (string.IsNullOrWhiteSpace(directoryPath) || Directory.Exists(directoryPath) is false)
+        {
+            return;
+        }
+
+        var explorerArguments = File.Exists(absoluteImagePath)
+            ? $"/select,\"{absoluteImagePath}\""
+            : $"\"{directoryPath}\"";
+
+        Process.Start(
+            new ProcessStartInfo("explorer.exe", explorerArguments) { UseShellExecute = true }
+        );
     }
 
     private async void OnRotateImageClick(object sender, RoutedEventArgs e)

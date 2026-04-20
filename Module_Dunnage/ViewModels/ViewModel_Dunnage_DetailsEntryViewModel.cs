@@ -395,6 +395,12 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
     #region Property Change Handlers
 
+    [RelayCommand]
+    private void PoTextBoxLostFocus()
+    {
+        NormalizePoNumberForWorkflow();
+    }
+
     partial void OnPoNumberChanged(string value)
     {
         // Keep the workflow session in sync so AdvanceToNextStepAsync always
@@ -615,6 +621,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
             _workflowService.SetNavigationLock(true);
             StatusMessage = "Saving your entry...";
 
+            NormalizePoNumberForWorkflow();
+
             if (!ValidateInputs())
             {
                 return new Model_WorkflowStepResult
@@ -707,7 +715,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
     private async Task InitializeStepStateAsync()
     {
-        PoNumber = _workflowService.CurrentSession.PONumber?.Trim() ?? string.Empty;
+        PoNumber = Helper_DunnagePoNumber.FormatForEntry(_workflowService.CurrentSession.PONumber);
 
         var currentLocation = _workflowService.CurrentSession.Location?.Trim();
         Location = string.IsNullOrWhiteSpace(currentLocation)
@@ -758,5 +766,16 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
                 .Select(char.ToUpperInvariant)
                 .ToArray()
         );
+    }
+
+    private void NormalizePoNumberForWorkflow()
+    {
+        var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(PoNumber);
+        if (string.Equals(PoNumber, normalizedPoNumber, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        PoNumber = normalizedPoNumber;
     }
 }

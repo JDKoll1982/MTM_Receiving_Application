@@ -48,8 +48,8 @@
                 ItemsSource="{x:Bind ViewModel.DisplayedTypes, Mode=OneWay}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.HorizontalScrollMode="Disabled"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                ScrollViewer.VerticalScrollMode="Auto"
+                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollMode="Disabled"
                 SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
                 SelectionMode="None">
                 <GridView.ItemsPanel>

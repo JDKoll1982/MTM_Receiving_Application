@@ -2,7 +2,7 @@
   "id": "volvo-shipment-entry",
   "module": "Module_Volvo",
   "name": "Shipment Entry",
-  "summary": "CQRS-backed Volvo shipment entry now uses auto-saving expandable cards instead of a DataGrid, with add/remove/edit-part actions, inline quantity edits, discrepancy reporting, employee-number-backed persistence, and completion that moves active rows directly to Volvo history.",
+  "summary": "CQRS-backed Volvo shipment entry now uses auto-saving expandable cards instead of a DataGrid, with add/remove/edit-part actions, inline quantity edits, discrepancy reporting, employee-number-backed persistence, archived history detail window parity, and completion that moves active rows directly to Volvo history.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Contracts/IService_Volvo.cs",
@@ -70,6 +70,7 @@
       "Auto-save line editing",
       "Part-number modal edits",
       "Discrepancy management",
+      "Archived history handoff",
       "Complete-and-archive flow"
     ],
     "screens": [
@@ -102,7 +103,8 @@
       "Confirm quantity edits reject zero, negative, decimal, and non-integer values",
       "Confirm discrepancy changes auto-save without blocking the user in a modal error flow",
       "Confirm Complete Shipment removes active rows from volvo_label_data and volvo_line_data and moves them to history",
-      "Confirm archived history detail still loads after active rows are deleted"
+      "Confirm archived history detail still loads after active rows are deleted",
+      "Confirm the archived history edit dialog remains read-only even though it reuses the shipment-entry edit surface"
     ]
   }
 }

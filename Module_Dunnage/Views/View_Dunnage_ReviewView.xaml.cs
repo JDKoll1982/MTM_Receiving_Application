@@ -38,8 +38,8 @@ public sealed partial class View_Dunnage_ReviewView : UserControl
         _focusService.AttachFocusOnVisibility(this);
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.LoadSessionLoads();
+        await ViewModel.LoadSessionLoadsAsync();
     }
 }

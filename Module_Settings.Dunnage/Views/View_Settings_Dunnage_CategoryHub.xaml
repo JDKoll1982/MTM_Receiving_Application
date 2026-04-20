@@ -10,24 +10,29 @@
 
         <Grid
             Grid.Row="0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
             ColumnSpacing="16"
             RowSpacing="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Button
                 Grid.Row="0"
                 Grid.Column="0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Width="320"
-                Height="190"
+                Height="200"
                 Padding="20"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -55,8 +60,11 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="1"
+                
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Width="320"
-                Height="190"
+                Height="200"
                 Padding="20"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -82,10 +90,13 @@
             </Button>
 
             <Button
-                Grid.Row="1"
-                Grid.Column="0"
+                Grid.Row="0"
+                Grid.Column="2"
+                
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Width="320"
-                Height="190"
+                Height="200"
                 Padding="20"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -112,9 +123,12 @@
 
             <Button
                 Grid.Row="1"
-                Grid.Column="1"
+                Grid.Column="0"
+                
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Width="320"
-                Height="190"
+                Height="200"
                 Padding="20"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
