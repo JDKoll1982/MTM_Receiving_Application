@@ -276,7 +276,7 @@
                                     ToolTipService.ToolTip="Open containing folder in File Explorer">
                                     <Image
                                         Source="{x:Bind ViewModel.SelectedImageSource, Mode=OneWay}"
-                                        Stretch="UniformToFill"
+                                        Stretch="Uniform"
                                         Visibility="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </Border>
 

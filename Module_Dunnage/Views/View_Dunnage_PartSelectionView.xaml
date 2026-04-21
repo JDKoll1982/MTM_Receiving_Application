@@ -37,7 +37,7 @@
                     BorderThickness="1"
                     CornerRadius="8"
                     Visibility="{x:Bind ViewModel.HasSelectedTypeImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Image Source="{x:Bind ViewModel.SelectedTypeImageSource, Mode=OneWay}" Stretch="UniformToFill" />
+                    <Image Source="{x:Bind ViewModel.SelectedTypeImageSource, Mode=OneWay}" Stretch="Uniform" />
                 </Border>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Select Part - " />
                 <mi:MaterialIcon
@@ -120,7 +120,7 @@
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Visibility="{x:Bind ViewModel.HasSelectedPartVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <Image Source="{x:Bind ViewModel.SelectedPartVisualSource, Mode=OneWay}" Stretch="UniformToFill" />
+                                <Image Source="{x:Bind ViewModel.SelectedPartVisualSource, Mode=OneWay}" Stretch="Uniform" />
                             </Border>
 
                             <!--  Part ID  -->

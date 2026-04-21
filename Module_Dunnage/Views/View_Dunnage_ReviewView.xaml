@@ -93,7 +93,7 @@
                                     BorderThickness="1"
                                     CornerRadius="8"
                                     Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Image Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" Stretch="UniformToFill" />
+                                    <Image Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" Stretch="Uniform" />
                                 </Border>
 
                                 <TextBlock
@@ -159,9 +159,7 @@
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}" />
                                 </StackPanel>
 
-                                <StackPanel
-                                    Spacing="4"
-                                    Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel Spacing="4" Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource CaptionTextBlockStyle}"

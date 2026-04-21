@@ -163,11 +163,10 @@
                                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="8">
-                                    <Image
-                                        x:Name="PartImagePreview"
-                                        Stretch="UniformToFill"
-                                        ToolTipService.ToolTip="Open containing folder in File Explorer" />
+                                    CornerRadius="8"
+                                    Tapped="OnOpenImageFolderTapped"
+                                    ToolTipService.ToolTip="Open containing folder in File Explorer">
+                                    <Image x:Name="PartImagePreview" Stretch="Uniform" />
                                 </Border>
                                 <StackPanel
                                     Grid.Column="1"

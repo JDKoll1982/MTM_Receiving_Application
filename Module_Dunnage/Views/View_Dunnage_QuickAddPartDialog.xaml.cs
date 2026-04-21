@@ -1,18 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using Windows.Foundation;
-using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -460,21 +462,18 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             return;
         }
 
-        var picker = new FileOpenPicker();
-        picker.FileTypeFilter.Add(".png");
-        picker.FileTypeFilter.Add(".jpg");
-        picker.FileTypeFilter.Add(".jpeg");
-
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
-
-        var file = await picker.PickSingleFileAsync().AsTask();
-        if (file is null)
+        var initialDirectory = await ResolvePreferredImageFolderAsync();
+        var selectedFilePath = Helper_DunnageImageFileDialog.ChooseImageFile(
+            hwnd,
+            initialDirectory
+        );
+        if (string.IsNullOrWhiteSpace(selectedFilePath))
         {
             return;
         }
 
-        var extension = Path.GetExtension(file.Path);
+        var extension = Path.GetExtension(selectedFilePath);
         if (
             string.Equals(extension, ".png", System.StringComparison.OrdinalIgnoreCase) is false
             && string.Equals(extension, ".jpg", System.StringComparison.OrdinalIgnoreCase) is false
@@ -484,7 +483,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             return;
         }
 
-        SelectedImagePath = file.Path;
+        SelectedImagePath = selectedFilePath;
         UpdateImagePreview();
     }
 
@@ -509,6 +508,41 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 
         SelectedImagePath = result.Data ?? SelectedImagePath;
         UpdateImagePreview();
+    }
+
+    private void OnOpenImageFolderTapped(object sender, TappedRoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(SelectedImagePath))
+        {
+            return;
+        }
+
+        var absoluteImagePath = Path.IsPathRooted(SelectedImagePath)
+            ? SelectedImagePath
+            : _imageStorage.GetAbsolutePath(SelectedImagePath);
+
+        if (string.IsNullOrWhiteSpace(absoluteImagePath))
+        {
+            return;
+        }
+
+        var directoryPath =
+            File.Exists(absoluteImagePath) ? Path.GetDirectoryName(absoluteImagePath)
+            : Directory.Exists(absoluteImagePath) ? absoluteImagePath
+            : Path.GetDirectoryName(absoluteImagePath);
+
+        if (string.IsNullOrWhiteSpace(directoryPath) || Directory.Exists(directoryPath) is false)
+        {
+            return;
+        }
+
+        var explorerArguments = File.Exists(absoluteImagePath)
+            ? $"/select,\"{absoluteImagePath}\""
+            : $"\"{directoryPath}\"";
+
+        Process.Start(
+            new ProcessStartInfo("explorer.exe", explorerArguments) { UseShellExecute = true }
+        );
     }
 
     private void PartSpecificSpecTypeComboBox_SelectionChanged(
@@ -910,7 +944,33 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private void UpdateImagePreview()
     {
         PartImagePreview.Source = Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
-        PartImagePathTextBlock.Text = SelectedImagePath;
+        PartImagePathTextBlock.Text = string.IsNullOrWhiteSpace(SelectedImagePath)
+            ? string.Empty
+            : Path.GetFileName(SelectedImagePath);
         RotateImageButton.IsEnabled = string.IsNullOrWhiteSpace(SelectedImagePath) is false;
+    }
+
+    private async Task<string?> ResolvePreferredImageFolderAsync()
+    {
+        var absoluteImagePath = Path.IsPathRooted(SelectedImagePath)
+            ? SelectedImagePath
+            : _imageStorage.GetAbsolutePath(SelectedImagePath);
+
+        var currentImageDirectory = File.Exists(absoluteImagePath)
+            ? Path.GetDirectoryName(absoluteImagePath)
+            : null;
+        if (string.IsNullOrWhiteSpace(currentImageDirectory) is false)
+        {
+            return currentImageDirectory;
+        }
+
+        var configuredRootFolder = await _imageStorage.GetConfiguredRootFolderAsync();
+        if (string.IsNullOrWhiteSpace(configuredRootFolder))
+        {
+            return null;
+        }
+
+        var partsFolder = Path.Combine(configuredRootFolder, "Parts");
+        return Directory.Exists(partsFolder) ? partsFolder : configuredRootFolder;
     }
 }

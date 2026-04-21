@@ -102,7 +102,7 @@
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="8">
-                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="UniformToFill" />
+                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="Uniform" />
                                 </Border>
 
                                 <TextBlock

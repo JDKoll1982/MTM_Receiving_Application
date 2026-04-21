@@ -59,7 +59,7 @@ public sealed class Service_DunnageWorkflowTests
 
         detailsStepResult.IsSuccess.Should().BeTrue();
         service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.Review);
-        service.CurrentSession.Loads.Should().OnlyContain(load => load.PoNumber == "PO-7788");
+        service.CurrentSession.Loads.Should().OnlyContain(load => load.PoNumber == "PO-007788");
         service.CurrentSession.Loads.Should().OnlyContain(load => load.Location == "DOCK-4");
         service.CurrentSession.Loads.Should().OnlyContain(load => load.TypeName == "Pallet");
         service.CurrentSession.Loads.Should().OnlyContain(load => load.TypeId == 5);

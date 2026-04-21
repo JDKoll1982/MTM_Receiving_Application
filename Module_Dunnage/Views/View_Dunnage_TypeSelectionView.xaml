@@ -107,7 +107,7 @@
                                     BorderThickness="1"
                                     CornerRadius="8"
                                     Visibility="{x:Bind HasImagePath, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="UniformToFill" />
+                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="Uniform" />
                                 </Border>
 
                                 <materialIcons:MaterialIcon

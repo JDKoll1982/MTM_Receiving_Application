@@ -199,6 +199,32 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         }
     }
 
+    public async Task<Model_Dao_Result<string>> ImportPartImageAsync(
+        string sourceFilePath,
+        string typeName,
+        string partId
+    )
+    {
+        try
+        {
+            var sanitizedTypeName = SanitizeFileNameSegment(typeName);
+            var sanitizedPartId = SanitizeFileNameSegment(partId);
+            var preferredFileName =
+                string.IsNullOrWhiteSpace(sanitizedTypeName) ? sanitizedPartId
+                : string.IsNullOrWhiteSpace(sanitizedPartId) ? sanitizedTypeName
+                : $"{sanitizedTypeName}-{sanitizedPartId}";
+
+            return await ImportImageInternalAsync(sourceFilePath, "Parts", preferredFileName);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<string>(
+                $"Failed to import part image: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     public Task<Model_Dao_Result> DeleteImageAsync(string? relativeImagePath)
     {
         try

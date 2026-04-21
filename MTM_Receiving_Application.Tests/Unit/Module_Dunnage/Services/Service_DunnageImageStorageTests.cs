@@ -128,6 +128,41 @@ public sealed class Service_DunnageImageStorageTests
         }
     }
 
+    [Fact]
+    public async Task ImportPartImageAsync_ShouldRenameFile_WhenSourceIsAlreadyUnderConfiguredRoot()
+    {
+        var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var sourceFolder = Path.Combine(configuredFolder, "Incoming");
+        Directory.CreateDirectory(sourceFolder);
+
+        var sourcePath = Path.Combine(sourceFolder, "old-name.jpg");
+
+        try
+        {
+            await WritePngAsync(sourcePath, width: 1, height: 1);
+
+            var service = new Service_DunnageImageStorage(
+                CreateSettingsCoreFacade(configuredFolder).Object
+            );
+
+            var result = await service.ImportPartImageAsync(sourcePath, "Pallet Bin", "PART-300");
+
+            result.IsSuccess.Should().BeTrue();
+            result.Data.Should().Be("Parts/Pallet Bin-PART-300.jpg");
+
+            var targetPath = Path.Combine(configuredFolder, "Parts", "Pallet Bin-PART-300.jpg");
+            File.Exists(targetPath).Should().BeTrue();
+            File.Exists(sourcePath).Should().BeFalse();
+        }
+        finally
+        {
+            if (Directory.Exists(configuredFolder))
+            {
+                Directory.Delete(configuredFolder, true);
+            }
+        }
+    }
+
     private static Mock<IService_SettingsCoreFacade> CreateSettingsCoreFacade(
         string? rootFolder = null
     )

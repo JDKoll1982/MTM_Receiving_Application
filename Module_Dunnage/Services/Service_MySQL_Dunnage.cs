@@ -1846,7 +1846,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             Model_DunnagePart part
         )
         {
-            var imagePathResult = await PrepareRelativeImagePathAsync(part.ImagePath, "Parts");
+            var imagePathResult = await PreparePartImagePathAsync(part.ImagePath, part);
             if (!imagePathResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure<string?>(
@@ -1857,6 +1857,37 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
             part.ImagePath = imagePathResult.Data;
             return Model_Dao_Result_Factory.Success<string?>(part.ImagePath);
+        }
+
+        private async Task<Model_Dao_Result<string?>> PreparePartImagePathAsync(
+            string? imagePath,
+            Model_DunnagePart part
+        )
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                return Model_Dao_Result_Factory.Success<string?>(null);
+            }
+
+            if (!Path.IsPathRooted(imagePath))
+            {
+                return Model_Dao_Result_Factory.Success<string?>(imagePath.Replace('\\', '/'));
+            }
+
+            var importResult = await _imageStorage.ImportPartImageAsync(
+                imagePath,
+                part.DunnageTypeName,
+                part.PartId
+            );
+            if (!importResult.IsSuccess)
+            {
+                return Model_Dao_Result_Factory.Failure<string?>(
+                    importResult.ErrorMessage,
+                    importResult.Exception
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success<string?>(importResult.Data);
         }
 
         private async Task<Model_Dao_Result<string?>> PrepareTypeImagePathAsync(
@@ -1875,33 +1906,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
 
             var importResult = await _imageStorage.ImportTypeImageAsync(imagePath, typeName);
-            if (!importResult.IsSuccess)
-            {
-                return Model_Dao_Result_Factory.Failure<string?>(
-                    importResult.ErrorMessage,
-                    importResult.Exception
-                );
-            }
-
-            return Model_Dao_Result_Factory.Success<string?>(importResult.Data);
-        }
-
-        private async Task<Model_Dao_Result<string?>> PrepareRelativeImagePathAsync(
-            string? imagePath,
-            string folderName
-        )
-        {
-            if (string.IsNullOrWhiteSpace(imagePath))
-            {
-                return Model_Dao_Result_Factory.Success<string?>(null);
-            }
-
-            if (!Path.IsPathRooted(imagePath))
-            {
-                return Model_Dao_Result_Factory.Success<string?>(imagePath.Replace('\\', '/'));
-            }
-
-            var importResult = await _imageStorage.ImportImageAsync(imagePath, folderName);
             if (!importResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure<string?>(
