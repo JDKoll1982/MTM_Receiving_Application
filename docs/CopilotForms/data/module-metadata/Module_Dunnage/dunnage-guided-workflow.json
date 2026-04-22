@@ -2,10 +2,11 @@
   "id": "dunnage-guided-workflow",
   "module": "Module_Dunnage",
   "name": "Guided Workflow",
-  "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with user-default location fallback plus editable Infor Visual location validation, final review with a save-complete decision dialog, configured part inventory-method propagation, add/edit part dialogs that can reuse saved spec templates and capture definition-based part-specific runtime specs for newly created parts, PNG-backed type and part imagery shown in selection, manual entry, and review surfaces, Receiving-style per-part skid counters written to the Dunnage queue and history archive, a responsive 3x3 type card selector that shows either the uploaded image or the icon while always keeping the type name visible, weak-event workflow notifications, and module-scoped unsaved state.",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, a hosted image-backed part search step that hands off into standard part selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with user-default location fallback plus editable Infor Visual location validation, final review with a save-complete decision dialog, configured part inventory-method propagation, add/edit part dialogs that can reuse saved spec templates and capture definition-based part-specific runtime specs for newly created parts, PNG-backed type and part imagery shown in selection, manual entry, and review surfaces, Receiving-style per-part skid counters written to the Dunnage queue and history archive, a responsive 3x3 type card selector that shows either the uploaded image or the icon while always keeping the type name visible, weak-event workflow notifications, and module-scoped unsaved state.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
+    "Module_Dunnage/ViewModels/ViewModel_Dunnage_ImagePartSearchDialog.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_TypeSelectionViewModel.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_PartSelectionViewModel.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_QuantityEntryViewModel.cs",
@@ -19,6 +20,8 @@
     "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml",
     "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_ImagePartSearch.xaml",
+    "Module_Dunnage/Views/View_Dunnage_Dialog_ImagePartSearch.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml",
     "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml",
@@ -65,6 +68,7 @@
   "uiHints": {
     "workflowAreas": [
       "Mode selection",
+      "Image-backed part search",
       "Guided dunnage entry",
       "Manual and detail entry",
       "Review before save",
@@ -74,6 +78,7 @@
     ],
     "screens": [
       "View_Dunnage_ModeSelectionView.xaml",
+      "View_Dunnage_Dialog_ImagePartSearch.xaml",
       "View_Dunnage_TypeSelectionView.xaml",
       "View_Dunnage_PartSelectionView.xaml",
       "View_Dunnage_QuantityEntryView.xaml",
@@ -85,6 +90,7 @@
     "desiredUiPatterns": ["Wizard step", "Form", "Card list"],
     "uiElements": [
       "Mode selector",
+      "Image-backed part browser",
       "Type selector",
       "Part selector",
       "Type and part image previews",
@@ -104,6 +110,7 @@
     ],
     "userActions": [
       "Choose the correct dunnage mode",
+      "Identify a part from its configured image and continue into guided entry with that part selected",
       "Move through guided steps",
       "Recognize dunnage types and parts from uploaded PNG imagery when available",
       "Set the number of loads and quantity for each load",
@@ -124,6 +131,7 @@
       "Confirm invalid Dunnage locations are validated against Infor Visual warehouse 002 and offer fuzzy suggestions before Review",
       "Confirm typing a Dunnage location updates the viewmodel immediately and does not revert to RECV when the user tabs away",
       "Confirm the guided workflow still advances correctly between steps",
+      "Confirm the hosted image-search step opens inside the workflow content area and clicking a part card carries the selected type and part into the standard Part Selection step",
       "Confirm uploaded type images appear on type cards and selected-type headers when present",
       "Confirm uploaded part images appear in part selection and review when present",
       "Confirm the type-selection step advances by card click without a separate Next button",

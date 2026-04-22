@@ -30,7 +30,8 @@ public class Model_VolvoPartComponent
 
     /// <summary>
     /// Quantity per skid for the component part (from volvo_masterdata)
-    /// Used for calculating total piece count during component explosion
+    /// Loaded for reference and validation, but not used when the email preview rolls up the
+    /// requested quantity of included components per parent skid.
     /// </summary>
     public int ComponentQuantityPerSkid { get; set; }
 }

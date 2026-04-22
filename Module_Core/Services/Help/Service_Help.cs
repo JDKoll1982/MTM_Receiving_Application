@@ -106,6 +106,7 @@ public class Service_Help : IService_Help
         var key = step switch
         {
             Enum_DunnageWorkflowStep.ModeSelection => "Dunnage.ModeSelection",
+            Enum_DunnageWorkflowStep.ImagePartSearch => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.TypeSelection => "Dunnage.TypeSelection",
             Enum_DunnageWorkflowStep.PartSelection => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.QuantityEntry => "Dunnage.QuantityEntry",
@@ -202,6 +203,7 @@ public class Service_Help : IService_Help
         var key = step switch
         {
             Enum_DunnageWorkflowStep.ModeSelection => "Dunnage.ModeSelection",
+            Enum_DunnageWorkflowStep.ImagePartSearch => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.TypeSelection => "Dunnage.TypeSelection",
             Enum_DunnageWorkflowStep.PartSelection => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.QuantityEntry => "Dunnage.QuantityEntry",

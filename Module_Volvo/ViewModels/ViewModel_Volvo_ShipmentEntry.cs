@@ -19,6 +19,7 @@ using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
@@ -38,6 +39,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private readonly IService_ReceivingValidation _receivingValidation;
 
     private readonly IService_ReportingClipboard _reportingClipboard;
+    private readonly IService_VolvoRecipientSettings _recipientSettings;
+    private readonly Views.View_Volvo_GeneratedLabelDataDialog? _generatedLabelDataDialog;
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
@@ -52,11 +55,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IService_InforVisual inforVisualService,
         IService_ReceivingValidation receivingValidation,
         IService_ReportingClipboard reportingClipboard,
+        IService_VolvoRecipientSettings recipientSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
         IService_UserSessionManager sessionManager,
-        IService_Notification notificationService
+        IService_Notification notificationService,
+        Views.View_Volvo_GeneratedLabelDataDialog? generatedLabelDataDialog = null
     )
         : base(errorHandler, logger, notificationService)
     {
@@ -67,6 +72,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
         _reportingClipboard =
             reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
+        _recipientSettings =
+            recipientSettings ?? throw new ArgumentNullException(nameof(recipientSettings));
+        _generatedLabelDataDialog = generatedLabelDataDialog;
         _windowService = windowService;
         _sessionManager = sessionManager;
 
@@ -230,6 +238,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 ReplaceParts(detailResult.Data.Lines);
 
                 ApplyCachedQuantitiesToLines();
+                await EnrichPartDescriptionsFromInforVisualAsync(Parts);
+                await SyncGeneratedLabelDataAsync(_currentShipmentId);
 
                 await _logger.LogInfoAsync(
                     $"Loaded pending shipment #{shipment.ShipmentNumber} with {Parts.Count} parts"
@@ -267,7 +277,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             foreach (var line in Parts)
             {
-                line.PartDescription = string.Empty;
                 line.PoStatus = VolvoLinePoStatus.NormalizeStorageValue(line.PoStatus);
             }
 
@@ -288,16 +297,15 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 && partsByNumber.TryGetValue(line.PartNumber, out var part)
             )
             {
-                line.PartDescription = part.Description;
+                if (string.IsNullOrWhiteSpace(line.PartDescription))
+                {
+                    line.PartDescription = part.Description;
+                }
 
                 if (line.QuantityPerSkid <= 0)
                 {
                     line.QuantityPerSkid = part.QuantityPerSkid;
                 }
-            }
-            else
-            {
-                line.PartDescription = string.Empty;
             }
 
             if (line.CalculatedPieceCount <= 0 && line.QuantityPerSkid > 0)
@@ -419,7 +427,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         var newLine = new Model_VolvoShipmentLine
         {
             PartNumber = selectedPart.PartNumber,
-            PartDescription = selectedPart.Description,
+            PartDescription = await ResolvePartDescriptionAsync(
+                selectedPart.PartNumber,
+                selectedPart.Description
+            ),
             PoStatus = VolvoLinePoStatus.Pending,
             Location = location?.Trim() ?? string.Empty,
             QuantityPerSkid = selectedPart.QuantityPerSkid,
@@ -471,7 +482,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
 
         line.PartNumber = replacementPart.PartNumber;
-        line.PartDescription = replacementPart.Description;
+        line.PartDescription = await ResolvePartDescriptionAsync(
+            replacementPart.PartNumber,
+            replacementPart.Description
+        );
         line.QuantityPerSkid = replacementPart.QuantityPerSkid;
 
         return await PersistCurrentShipmentAsync();
@@ -712,6 +726,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanGenerateLabels))]
     private async Task GenerateLabelsAsync()
     {
+        var shouldResetStatusToReady = false;
+
         try
         {
             IsBusy = true;
@@ -780,6 +796,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 SuccessMessage = $"Labels generated successfully!\n{labelResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
+                shouldResetStatusToReady = true;
                 await _logger.LogInfoAsync(
                     $"Labels generated for shipment ID: {shipmentId}: {labelResult.Data}"
                 );
@@ -807,6 +824,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+
+            if (shouldResetStatusToReady)
+            {
+                SetReadyStatus();
+            }
+
             RefreshCommandStates();
         }
     }
@@ -814,6 +837,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanPreviewEmail))]
     private async Task PreviewEmailAsync()
     {
+        var shouldResetStatusToReady = false;
+
         try
         {
             IsBusy = true;
@@ -887,6 +912,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
 
             await ShowEmailPreviewDialogAsync(emailResult.Data);
+            shouldResetStatusToReady = true;
         }
         catch (Exception ex)
         {
@@ -901,6 +927,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+
+            if (shouldResetStatusToReady)
+            {
+                SetReadyStatus();
+            }
+
             RefreshCommandStates();
         }
     }
@@ -920,19 +952,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return;
             }
 
-            // Load email recipients from settings via Mediator
-            var toResult = await _mediator.Send(new GetVolvoSettingQuery("email_to_recipients"));
-            var ccResult = await _mediator.Send(new GetVolvoSettingQuery("email_cc_recipients"));
+            var toResult = await _recipientSettings.GetFormattedRecipientsAsync("To");
+            var ccResult = await _recipientSettings.GetFormattedRecipientsAsync("CC");
 
-            string toRecipients = FormatRecipientsFromJson(
-                toResult.IsSuccess && toResult.Data != null ? toResult.Data : null,
-                "\"Jose Rosas\" <jrosas@mantoolmfg.com>; \"Sandy Miller\" <smiller@mantoolmfg.com>; \"Steph Wittmus\" <swittmus@mantoolmfg.com>"
-            );
-
-            string ccRecipients = FormatRecipientsFromJson(
-                ccResult.IsSuccess && ccResult.Data != null ? ccResult.Data : null,
-                "\"Debra Alexander\" <dalexander@mantoolmfg.com>; \"Michelle Laurin\" <mlaurin@mantoolmfg.com>"
-            );
+            string toRecipients =
+                toResult.IsSuccess && toResult.Data != null ? toResult.Data : string.Empty;
+            string ccRecipients =
+                ccResult.IsSuccess && ccResult.Data != null ? ccResult.Data : string.Empty;
 
             var formattedEmailDocument = BuildFormattedEmailDocument(emailData);
             var dialogModel = BuildEmailPreviewDialogModel(
@@ -966,6 +992,66 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 "The email preview could not be opened.",
                 "Email Preview",
                 nameof(ShowEmailPreviewDialogAsync)
+            );
+        }
+    }
+
+    [RelayCommand]
+    private async Task ViewLabelDataAsync()
+    {
+        try
+        {
+            await WaitForPendingAutoSaveAsync();
+
+            if (_currentShipmentId.HasValue && _currentShipmentId.Value > 0)
+            {
+                var syncResult = await SyncGeneratedLabelDataAsync(_currentShipmentId);
+                if (!syncResult.IsSuccess)
+                {
+                    await _errorHandler.ShowUserErrorAsync(
+                        syncResult.ErrorMessage ?? "Failed to refresh generated label data.",
+                        "Generated Label Data",
+                        nameof(ViewLabelDataAsync)
+                    );
+                    return;
+                }
+            }
+
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
+            {
+                await _errorHandler.ShowUserErrorAsync(
+                    "Cannot show the label data dialog because the window host is unavailable.",
+                    "Generated Label Data",
+                    nameof(ViewLabelDataAsync)
+                );
+                return;
+            }
+
+            if (_generatedLabelDataDialog is null)
+            {
+                await _errorHandler.ShowUserErrorAsync(
+                    "The generated label data dialog is unavailable.",
+                    "Generated Label Data",
+                    nameof(ViewLabelDataAsync)
+                );
+                return;
+            }
+
+            _generatedLabelDataDialog.XamlRoot = xamlRoot;
+            await _generatedLabelDataDialog.InitializeAsync();
+            await _generatedLabelDataDialog.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync(
+                $"Error showing generated label data dialog: {ex.Message}",
+                ex
+            );
+            await _errorHandler.ShowUserErrorAsync(
+                "The generated label data dialog could not be opened.",
+                "Generated Label Data",
+                nameof(ViewLabelDataAsync)
             );
         }
     }
@@ -1223,6 +1309,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanSaveAsPending))]
     private async Task SaveAsPendingAsync()
     {
+        var shouldResetStatusToReady = false;
+
         try
         {
             IsBusy = true;
@@ -1275,6 +1363,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 HasPendingShipment = true;
                 HasActiveQueueRows = true;
                 StatusMessage = "Shipment saved";
+                shouldResetStatusToReady = true;
                 await _logger.LogInfoAsync(
                     $"Shipment #{ShipmentNumber} saved as pending (ID: {result.Data})"
                 );
@@ -1302,6 +1391,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+
+            if (shouldResetStatusToReady)
+            {
+                SetReadyStatus();
+            }
+
             RefreshCommandStates();
         }
     }
@@ -1493,6 +1588,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         var result = await dialog.ShowAsync();
 
+        if (result != ContentDialogResult.Primary)
+        {
+            SetReadyStatus();
+            return;
+        }
+
         if (result == ContentDialogResult.Primary)
         {
             if (
@@ -1552,6 +1653,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
                 // Clear the form
                 ClearShipmentForm();
+                SetReadyStatus();
             }
             else
             {
@@ -1698,6 +1800,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             if (dialogResult != ContentDialogResult.Primary)
             {
                 StatusMessage = "Clear label data cancelled";
+                SetReadyStatus();
                 return;
             }
 
@@ -1722,6 +1825,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     await _logger.LogInfoAsync(
                         $"Clear label data completed: {result.Data} records archived by {Environment.UserName}"
                     );
+                    SetReadyStatus();
                 }
                 else
                 {
@@ -1732,6 +1836,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     await _logger.LogInfoAsync(
                         $"Clear label data requested by {Environment.UserName}, but no active queue rows were available to archive."
                     );
+                    SetReadyStatus();
                 }
             }
             else
@@ -1976,6 +2081,21 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             _currentShipmentId = saveResult.Data;
             HasPendingShipment = true;
             HasActiveQueueRows = true;
+
+            var syncResult = await SyncGeneratedLabelDataAsync(_currentShipmentId);
+            if (!syncResult.IsSuccess)
+            {
+                ShowStatus(
+                    syncResult.ErrorMessage
+                        ?? "Auto-save succeeded but generated label data could not be refreshed.",
+                    AppInfoBarSeverity.Warning
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    syncResult.ErrorMessage
+                        ?? "Generated label data refresh failed after auto-save."
+                );
+            }
+
             StatusMessage = "Changes saved";
             return Model_Dao_Result_Factory.Success();
         }
@@ -2071,9 +2191,110 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         AddPartCommand.NotifyCanExecuteChanged();
         GenerateLabelsCommand.NotifyCanExecuteChanged();
         PreviewEmailCommand.NotifyCanExecuteChanged();
+        ViewLabelDataCommand.NotifyCanExecuteChanged();
         SaveAsPendingCommand.NotifyCanExecuteChanged();
         CompleteShipmentCommand.NotifyCanExecuteChanged();
         ClearLabelDataCommand.NotifyCanExecuteChanged();
+    }
+
+    private void SetReadyStatus()
+    {
+        StatusMessage = "Ready";
+
+        if (StatusSeverity == AppInfoBarSeverity.Informational)
+        {
+            IsStatusOpen = false;
+        }
+    }
+
+    private async Task EnrichPartDescriptionsFromInforVisualAsync(
+        IEnumerable<Model_VolvoShipmentLine> lines
+    )
+    {
+        var partNumbers = lines
+            .Select(line => line.PartNumber?.Trim())
+            .Where(partNumber => string.IsNullOrWhiteSpace(partNumber) is false)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Cast<string>()
+            .ToList();
+
+        if (partNumbers.Count == 0)
+        {
+            return;
+        }
+
+        var descriptionsByPartNumber = new Dictionary<string, string>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        foreach (var partNumber in partNumbers)
+        {
+            var description = await ResolvePartDescriptionAsync(partNumber, string.Empty);
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                continue;
+            }
+
+            descriptionsByPartNumber[partNumber] = description;
+        }
+
+        foreach (var line in lines)
+        {
+            if (
+                string.IsNullOrWhiteSpace(line.PartNumber)
+                || !descriptionsByPartNumber.TryGetValue(line.PartNumber, out var description)
+            )
+            {
+                continue;
+            }
+
+            line.PartDescription = description;
+        }
+    }
+
+    private async Task<string> ResolvePartDescriptionAsync(
+        string? partNumber,
+        string? fallbackDescription
+    )
+    {
+        if (string.IsNullOrWhiteSpace(partNumber))
+        {
+            return fallbackDescription?.Trim() ?? string.Empty;
+        }
+
+        try
+        {
+            var partResult = await _inforVisualService.GetPartByIDAsync(partNumber.Trim());
+            if (
+                partResult.IsSuccess
+                && partResult.Data is not null
+                && string.IsNullOrWhiteSpace(partResult.Data.Description) is false
+            )
+            {
+                return partResult.Data.Description.Trim();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync(
+                $"Error resolving Infor Visual description for part {partNumber}: {ex.Message}",
+                ex
+            );
+        }
+
+        return fallbackDescription?.Trim() ?? string.Empty;
+    }
+
+    private async Task<Model_Dao_Result<int>> SyncGeneratedLabelDataAsync(int? shipmentId)
+    {
+        if (!shipmentId.HasValue || shipmentId.Value <= 0)
+        {
+            return Model_Dao_Result_Factory.Success<int>(0);
+        }
+
+        return await _mediator.Send(
+            new SyncVolvoGeneratedLabelDataCommand { ShipmentId = shipmentId.Value }
+        );
     }
 
     public async Task<string> ResolvePartLocationAsync(string partNumber)

@@ -97,6 +97,9 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private bool _isEditModeVisible;
 
     [ObservableProperty]
+    private bool _isImagePartSearchVisible;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
     private string _currentStepTitle = "Dunnage - Mode Selection";
 
@@ -122,6 +125,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         IsReviewVisible = false;
         IsManualEntryVisible = false;
         IsEditModeVisible = false;
+        IsImagePartSearchVisible = false;
 
         // Show current step
         switch (_workflowService.CurrentStep)
@@ -157,6 +161,10 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
             case Enum_DunnageWorkflowStep.EditMode:
                 IsEditModeVisible = true;
                 CurrentStepTitle = "Dunnage - Edit Mode";
+                break;
+            case Enum_DunnageWorkflowStep.ImagePartSearch:
+                IsImagePartSearchVisible = true;
+                CurrentStepTitle = "Dunnage - Search Parts by Image";
                 break;
         }
     }

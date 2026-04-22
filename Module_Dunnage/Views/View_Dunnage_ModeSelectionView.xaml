@@ -151,7 +151,7 @@
                 Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OpenImageSearch_Click"
+                Command="{x:Bind ViewModel.OpenImageSearchCommand}"
                 CornerRadius="8">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <FontIcon

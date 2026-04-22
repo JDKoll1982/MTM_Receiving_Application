@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-14T15:05:41.0992940-05:00",
+  "generatedAt": "2026-04-22T05:33:49.6691176-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -333,6 +333,96 @@
           "object": "__system__:columns"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/05_Migration_volvo_po_status_and_complete_history.sql",
+      "category": "migration_file",
+      "objectType": "sql_script",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "__system__:columns",
+        "__system__:statistics"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "volvo_line_data",
+          "columns": [
+            "po_status"
+          ]
+        },
+        {
+          "table": "volvo_line_history",
+          "columns": [
+            "po_status"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "__system__:columns",
+          "object": "__system__:columns"
+        },
+        {
+          "alias": "__system__:statistics",
+          "object": "__system__:statistics"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/06_Migration_volvo_generated_label_queue.sql",
+      "category": "migration_file",
+      "objectType": "sql_script",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_Insert",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_Insert",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_DeleteByShipment",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_DeleteByShipment",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_GetAll",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_GetAll",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_ClearToHistory",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_ClearToHistory",
+          "column": "sql"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/01_Table_auth_departments.sql",
@@ -1049,6 +1139,111 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/35_Table_software_version.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "software_version",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/36_Table_volvo_generated_label_data.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "volvo_generated_label_data",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/37_Table_volvo_generated_label_history.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "volvo_generated_label_history",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/38_Table_settings_volvo_recipents.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "settings_volvo_recipents",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/39_Table_settings_reporting_recipients.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "settings_reporting_recipients",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/01_seed_volvo_data.sql",
       "category": "seed_file",
       "objectType": "seed",
@@ -1283,6 +1478,78 @@
           "object": "settings_user_roles"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/05_seed_software_version.sql",
+      "category": "seed_file",
+      "objectType": "seed",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "software_version",
+          "columns": [
+            "id",
+            "required_version",
+            "updated_by"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/06_seed_module_email_recipients.sql",
+      "category": "seed_file",
+      "objectType": "seed",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "settings_volvo_recipents",
+          "columns": [
+            "first_name",
+            "last_name",
+            "recipient_type",
+            "email"
+          ]
+        },
+        {
+          "table": "settings_reporting_recipients",
+          "columns": [
+            "first_name",
+            "last_name",
+            "recipient_type",
+            "email"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Auth/sp_Auth_User_Deactivate.sql",
@@ -10017,6 +10284,227 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ReportingRecipients_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_ReportingRecipients_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Reporting/Data/Dao_ReportingRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "settings_reporting_recipients"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "settings_reporting_recipients"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "settings_reporting_recipients",
+          "object": "settings_reporting_recipients"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ReportingRecipients_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_ReportingRecipients_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Reporting/Data/Dao_ReportingRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "settings_reporting_recipients"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "settings_reporting_recipients",
+          "object": "settings_reporting_recipients"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ReportingRecipients_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_ReportingRecipients_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Reporting/Data/Dao_ReportingRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_first_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_recipient_type",
+          "sqlType": "VARCHAR(10)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_email",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "settings_reporting_recipients",
+          "columns": [
+            "first_name",
+            "last_name",
+            "recipient_type",
+            "email"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_first_name",
+        "p_last_name",
+        "p_recipient_type",
+        "p_email"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ReportingRecipients_Update.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_ReportingRecipients_Update",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Reporting/Data/Dao_ReportingRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_first_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_recipient_type",
+          "sqlType": "VARCHAR(10)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_email",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "settings_reporting_recipients",
+          "columns": [
+            "first_name"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id",
+        "p_first_name",
+        "p_last_name",
+        "p_recipient_type",
+        "p_email"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_ScheduledReport_Delete.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -10403,6 +10891,227 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_VolvoRecipients_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_VolvoRecipients_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "settings_volvo_recipents"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "settings_volvo_recipents"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "settings_volvo_recipents",
+          "object": "settings_volvo_recipents"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_VolvoRecipients_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_VolvoRecipients_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "settings_volvo_recipents"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "settings_volvo_recipents",
+          "object": "settings_volvo_recipents"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_VolvoRecipients_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_VolvoRecipients_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_first_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_recipient_type",
+          "sqlType": "VARCHAR(10)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_email",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "settings_volvo_recipents",
+          "columns": [
+            "first_name",
+            "last_name",
+            "recipient_type",
+            "email"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_first_name",
+        "p_last_name",
+        "p_recipient_type",
+        "p_email"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Settings_VolvoRecipients_Update.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Settings_VolvoRecipients_Update",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoRecipientSettings.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_first_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_recipient_type",
+          "sqlType": "VARCHAR(10)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_email",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "settings_volvo_recipents",
+          "columns": [
+            "first_name"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id",
+        "p_first_name",
+        "p_last_name",
+        "p_recipient_type",
+        "p_email"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_SettingsCore.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -10565,6 +11274,96 @@
           "object": "__system__:routines"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_SoftwareVersion_GetCurrent.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_SoftwareVersion_GetCurrent",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Core/Data/Application/Dao_SoftwareVersion.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "software_version"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "software_version",
+          "object": "software_version"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_SoftwareVersion_Upsert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_SoftwareVersion_Upsert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Core/Data/Application/Dao_SoftwareVersion.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_required_version",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_updated_by",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "software_version",
+          "columns": [
+            "id",
+            "required_version",
+            "updated_by"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_required_version",
+        "p_updated_by"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_Volvo_Settings_Get.sql",
@@ -10778,6 +11577,350 @@
       ]
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelData_ClearToHistory.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_GeneratedLabelData_ClearToHistory",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoGeneratedLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_archived_by",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_rows_moved",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_archive_batch_id",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_status",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_error_message",
+          "sqlType": "VARCHAR(1000)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_rows_count",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "EXIT",
+          "sqlType": "HANDLER FOR SQLEXCEPTION"
+        }
+      ],
+      "referencedObjects": [
+        "volvo_generated_label_data"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "shipment_id"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "shipment_number"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "shipment_date"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "part_number"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "quantity"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "skid_number"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "total_skids"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "part_description"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "created_at"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "updated_at"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "volvo_generated_label_history",
+          "columns": [
+            "original_id",
+            "shipment_id",
+            "shipment_number",
+            "shipment_date",
+            "part_number",
+            "quantity",
+            "skid_number",
+            "total_skids",
+            "part_description",
+            "source_created_at",
+            "source_updated_at",
+            "archived_at",
+            "archived_by",
+            "archive_batch_id"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "volvo_generated_label_data"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_archived_by",
+        "p_rows_moved",
+        "p_archive_batch_id",
+        "p_status",
+        "p_error_message"
+      ],
+      "variableTokensUsed": [
+        "v_rows_count"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_generated_label_data",
+          "object": "volvo_generated_label_data"
+        },
+        {
+          "alias": "vgl",
+          "object": "volvo_generated_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelData_DeleteByShipment.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_GeneratedLabelData_DeleteByShipment",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 2,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoGeneratedLabelData.cs",
+          "count": 2,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_shipment_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_generated_label_data"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "volvo_generated_label_data"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_shipment_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_generated_label_data",
+          "object": "volvo_generated_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelData_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_GeneratedLabelData_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoGeneratedLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_generated_label_data"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_generated_label_data",
+          "object": "volvo_generated_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelData_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_GeneratedLabelData_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoGeneratedLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_shipment_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_shipment_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_shipment_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_number",
+          "sqlType": "VARCHAR(20)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_skid_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_total_skids",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_description",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "volvo_generated_label_data",
+          "columns": [
+            "shipment_id",
+            "shipment_number",
+            "shipment_date",
+            "part_number",
+            "quantity",
+            "skid_number",
+            "total_skids",
+            "part_description"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_shipment_id",
+        "p_shipment_number",
+        "p_shipment_date",
+        "p_part_number",
+        "p_quantity",
+        "p_skid_number",
+        "p_total_skids",
+        "p_part_description"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_LabelData_ClearToHistory.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -10828,7 +11971,7 @@
       ],
       "declaredVariables": [
         {
-          "name": "v_completed_count",
+          "name": "v_headers_count",
           "sqlType": "INT DEFAULT 0"
         },
         {
@@ -10850,51 +11993,6 @@
           "qualifier": "vld",
           "resolvedObject": "volvo_line_data",
           "column": "shipment_id"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "id"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "part_number"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "location"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "quantity_per_skid"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "received_skid_count"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "calculated_piece_count"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "has_discrepancy"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "expected_skid_count"
-        },
-        {
-          "qualifier": "vld",
-          "resolvedObject": "volvo_line_data",
-          "column": "discrepancy_note"
         },
         {
           "qualifier": "vl",
@@ -10947,56 +12045,72 @@
           "column": "modified_date"
         },
         {
-          "qualifier": "vlhdr",
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "vlh",
+          "resolvedObject": "volvo_label_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "part_number"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "po_status"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "location"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "quantity_per_skid"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "received_skid_count"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "calculated_piece_count"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "has_discrepancy"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "expected_skid_count"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_line_data",
+          "column": "discrepancy_note"
+        },
+        {
+          "qualifier": "vlh",
           "resolvedObject": "volvo_label_history",
           "column": "original_id"
         },
         {
           "qualifier": "vlh",
-          "resolvedObject": "volvo_line_history",
-          "column": "original_shipment_id"
-        },
-        {
-          "qualifier": "vlhdr",
           "resolvedObject": "volvo_label_history",
-          "column": "archive_batch_id"
-        },
-        {
-          "qualifier": "vlh",
-          "resolvedObject": "volvo_line_history",
-          "column": "shipment_history_id"
-        },
-        {
-          "qualifier": "vlhdr",
-          "resolvedObject": "volvo_label_history",
-          "column": "id"
-        },
-        {
-          "qualifier": "vlh",
-          "resolvedObject": "volvo_line_history",
           "column": "archive_batch_id"
         }
       ],
       "insertTargets": [
-        {
-          "table": "volvo_line_history",
-          "columns": [
-            "original_id",
-            "shipment_history_id",
-            "original_shipment_id",
-            "part_number",
-            "location",
-            "quantity_per_skid",
-            "received_skid_count",
-            "calculated_piece_count",
-            "has_discrepancy",
-            "expected_skid_count",
-            "discrepancy_note",
-            "archived_at",
-            "archived_by",
-            "archive_batch_id"
-          ]
-        },
         {
           "table": "volvo_label_history",
           "columns": [
@@ -11010,6 +12124,26 @@
             "status",
             "created_date",
             "modified_date",
+            "archived_at",
+            "archived_by",
+            "archive_batch_id"
+          ]
+        },
+        {
+          "table": "volvo_line_history",
+          "columns": [
+            "original_id",
+            "shipment_history_id",
+            "original_shipment_id",
+            "part_number",
+            "po_status",
+            "location",
+            "quantity_per_skid",
+            "received_skid_count",
+            "calculated_piece_count",
+            "has_discrepancy",
+            "expected_skid_count",
+            "discrepancy_note",
             "archived_at",
             "archived_by",
             "archive_batch_id"
@@ -11035,7 +12169,7 @@
         "p_error_message"
       ],
       "variableTokensUsed": [
-        "v_completed_count",
+        "v_headers_count",
         "v_lines_count"
       ],
       "temporaryTables": [],
@@ -11061,12 +12195,12 @@
           "object": "volvo_label_history"
         },
         {
-          "alias": "vlhdr",
+          "alias": "vlh",
           "object": "volvo_label_history"
         },
         {
-          "alias": "vlh",
-          "object": "volvo_line_history"
+          "alias": "VolvoLineStatus",
+          "object": "__derived__:VolvoLineStatus"
         }
       ]
     },
@@ -11507,12 +12641,12 @@
       "objectType": "stored_procedure",
       "objectName": "sp_Volvo_PartMaster_SetActive",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
+      "codebaseReferenceCount": 2,
       "codebaseReferenceFileCount": 1,
       "codebaseReferences": [
         {
           "relativePath": "Module_Volvo/Data/Dao_VolvoPart.cs",
-          "count": 1,
+          "count": 2,
           "patterns": [
             "Helper_Database_StoredProcedure"
           ]
@@ -11635,30 +12769,192 @@
           "direction": "IN",
           "name": "p_receiver_number",
           "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_archived_by",
+          "sqlType": "VARCHAR(100)"
         }
       ],
-      "declaredVariables": [],
-      "referencedObjects": [],
-      "qualifiedColumns": [],
-      "insertTargets": [],
-      "updateTargets": [
+      "declaredVariables": [
         {
-          "table": "volvo_label_data",
+          "name": "v_history_id",
+          "sqlType": "INT"
+        },
+        {
+          "name": "v_archive_batch_id",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "name": "EXIT",
+          "sqlType": "HANDLER FOR SQLEXCEPTION"
+        }
+      ],
+      "referencedObjects": [
+        "volvo_label_data",
+        "volvo_line_data"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_label_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_label_data",
+          "column": "shipment_date"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_label_data",
+          "column": "shipment_number"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_label_data",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_label_data",
+          "column": "notes"
+        },
+        {
+          "qualifier": "vld",
+          "resolvedObject": "volvo_label_data",
+          "column": "created_date"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "shipment_id"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "part_number"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "location"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "quantity_per_skid"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "received_skid_count"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "calculated_piece_count"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "has_discrepancy"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "expected_skid_count"
+        },
+        {
+          "qualifier": "vln",
+          "resolvedObject": "volvo_line_data",
+          "column": "discrepancy_note"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "volvo_label_history",
           "columns": [
-            "po_number"
+            "original_id",
+            "shipment_date",
+            "shipment_number",
+            "po_number",
+            "receiver_number",
+            "employee_number",
+            "notes",
+            "status",
+            "created_date",
+            "modified_date",
+            "archived_at",
+            "archived_by",
+            "archive_batch_id"
+          ]
+        },
+        {
+          "table": "volvo_line_history",
+          "columns": [
+            "original_id",
+            "shipment_history_id",
+            "original_shipment_id",
+            "part_number",
+            "po_status",
+            "location",
+            "quantity_per_skid",
+            "received_skid_count",
+            "calculated_piece_count",
+            "has_discrepancy",
+            "expected_skid_count",
+            "discrepancy_note",
+            "archived_at",
+            "archived_by",
+            "archive_batch_id"
           ]
         }
       ],
-      "deleteTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "volvo_line_data"
+        },
+        {
+          "table": "volvo_label_data"
+        }
+      ],
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_shipment_id",
         "p_po_number",
-        "p_receiver_number"
+        "p_receiver_number",
+        "p_archived_by"
       ],
-      "variableTokensUsed": [],
+      "variableTokensUsed": [
+        "v_history_id",
+        "v_archive_batch_id"
+      ],
       "temporaryTables": [],
-      "aliasMap": []
+      "aliasMap": [
+        {
+          "alias": "volvo_label_data",
+          "object": "volvo_label_data"
+        },
+        {
+          "alias": "vld",
+          "object": "volvo_label_data"
+        },
+        {
+          "alias": "volvo_line_data",
+          "object": "volvo_line_data"
+        },
+        {
+          "alias": "vln",
+          "object": "volvo_line_data"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_volvo_shipment_delete.sql",
@@ -11796,7 +13092,9 @@
       "declaredVariables": [],
       "referencedObjects": [
         "volvo_label_data",
-        "volvo_line_data"
+        "volvo_line_data",
+        "volvo_label_history",
+        "volvo_line_history"
       ],
       "qualifiedColumns": [
         {
@@ -11863,6 +13161,66 @@
           "qualifier": "l",
           "resolvedObject": "volvo_line_data",
           "column": "shipment_id"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "shipment_date"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "shipment_number"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "po_number"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "receiver_number"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "notes"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "status"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "created_date"
+        },
+        {
+          "qualifier": "h",
+          "resolvedObject": "volvo_label_history",
+          "column": "modified_date"
+        },
+        {
+          "qualifier": "lh",
+          "resolvedObject": "volvo_line_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "lh",
+          "resolvedObject": "volvo_line_history",
+          "column": "shipment_history_id"
         }
       ],
       "insertTargets": [],
@@ -11892,6 +13250,22 @@
         {
           "alias": "l",
           "object": "volvo_line_data"
+        },
+        {
+          "alias": "volvo_label_history",
+          "object": "volvo_label_history"
+        },
+        {
+          "alias": "h",
+          "object": "volvo_label_history"
+        },
+        {
+          "alias": "volvo_line_history",
+          "object": "volvo_line_history"
+        },
+        {
+          "alias": "lh",
+          "object": "volvo_line_history"
         }
       ]
     },
@@ -12108,6 +13482,100 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentHistory_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_ShipmentHistory_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_shipment_history_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_label_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "volvo_label_history"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_shipment_history_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_label_history",
+          "object": "volvo_label_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentHistory_GetById.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_ShipmentHistory_GetById",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_label_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_label_history",
+          "object": "volvo_label_history"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Delete.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -12231,6 +13699,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_po_status",
+          "sqlType": "VARCHAR(20)"
+        },
+        {
+          "direction": "IN",
           "name": "p_location",
           "sqlType": "VARCHAR(50)"
         },
@@ -12274,6 +13747,7 @@
           "columns": [
             "shipment_id",
             "part_number",
+            "po_status",
             "location",
             "quantity_per_skid",
             "received_skid_count",
@@ -12290,6 +13764,7 @@
       "parameterTokensUsed": [
         "p_shipment_id",
         "p_part_number",
+        "p_po_status",
         "p_location",
         "p_quantity_per_skid",
         "p_received_skid_count",
@@ -12327,8 +13802,23 @@
         },
         {
           "direction": "IN",
+          "name": "p_part_number",
+          "sqlType": "VARCHAR(20)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_po_status",
+          "sqlType": "VARCHAR(20)"
+        },
+        {
+          "direction": "IN",
           "name": "p_location",
           "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity_per_skid",
+          "sqlType": "INT"
         },
         {
           "direction": "IN",
@@ -12364,7 +13854,7 @@
         {
           "table": "volvo_line_data",
           "columns": [
-            "location"
+            "part_number"
           ]
         }
       ],
@@ -12372,7 +13862,10 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_id",
+        "p_part_number",
+        "p_po_status",
         "p_location",
+        "p_quantity_per_skid",
         "p_received_skid_count",
         "p_calculated_piece_count",
         "p_has_discrepancy",
@@ -12382,6 +13875,51 @@
       "variableTokensUsed": [],
       "temporaryTables": [],
       "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_ShipmentLineHistory_GetByShipmentHistoryId.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_ShipmentLineHistory_GetByShipmentHistoryId",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoLabelHistory.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_shipment_history_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_line_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_shipment_history_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "volvo_line_history",
+          "object": "volvo_line_history"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/Triggers/01_Triggers_Module_Volvo.sql",

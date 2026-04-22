@@ -18,7 +18,23 @@ namespace MTM_Receiving_Application.Module_Volvo.Helpers;
 public static class Helper_VolvoShipmentCalculations
 {
     /// <summary>
-    /// Calculates component explosion and aggregates piece counts for shipment lines.
+    /// Calculates the requested quantity for a component included with a parent shipment line.
+    /// The component table's <c>Quantity</c> already represents how many of that component are
+    /// needed per skid of the parent part, so the request quantity is based only on parent skid
+    /// count and that inclusion quantity.
+    /// </summary>
+    public static int CalculateRequestedComponentQuantity(
+        int receivedSkidCount,
+        Model_VolvoPartComponent component
+    )
+    {
+        return receivedSkidCount * component.Quantity;
+    }
+
+    /// <summary>
+    /// Calculates the requested-line explosion for shipment lines.
+    /// Parent rows are aggregated as piece counts, while included component rows are aggregated
+    /// as required component counts per parent skid.
     /// </summary>
     /// <param name="partDao"></param>
     /// <param name="componentDao"></param>
@@ -78,22 +94,22 @@ public static class Helper_VolvoShipmentCalculations
                 {
                     foreach (var component in componentsResult.Data)
                     {
-                        if (component.Quantity <= 0 || component.ComponentQuantityPerSkid <= 0)
+                        if (component.Quantity <= 0)
                         {
                             if (logger != null)
                             {
                                 await logger.LogWarningAsync(
                                     $"Skipping component {component.ComponentPartNumber} with invalid quantity: "
-                                        + $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}"
+                                        + $"ComponentQty={component.Quantity}"
                                 );
                             }
                             continue;
                         }
 
-                        var componentPieces =
-                            line.ReceivedSkidCount
-                            * component.Quantity
-                            * component.ComponentQuantityPerSkid;
+                        var componentPieces = CalculateRequestedComponentQuantity(
+                            line.ReceivedSkidCount,
+                            component
+                        );
 
                         if (aggregatedPieces.ContainsKey(component.ComponentPartNumber))
                         {

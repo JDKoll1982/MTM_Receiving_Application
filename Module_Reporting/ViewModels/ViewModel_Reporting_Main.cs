@@ -23,6 +23,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 {
     private readonly IService_Reporting _reportingService;
     private readonly IService_ReportingClipboard _reportingClipboard;
+    private readonly IService_ReportingRecipientSettings _recipientSettings;
     private bool _isSynchronizingModuleSelections;
 
     public event EventHandler? PreviewRequested;
@@ -187,6 +188,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     public ViewModel_Reporting_Main(
         IService_Reporting reportingService,
         IService_ReportingClipboard reportingClipboard,
+        IService_ReportingRecipientSettings recipientSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -197,6 +199,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             reportingService ?? throw new ArgumentNullException(nameof(reportingService));
         _reportingClipboard =
             reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
+        _recipientSettings =
+            recipientSettings ?? throw new ArgumentNullException(nameof(recipientSettings));
         Title = "End of Day Reports";
         ResetAvailabilityState();
     }
@@ -423,10 +427,74 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanCopyEmail() => IncludedPreviewModuleCards.Count > 0 && !IsBusy;
 
+    [RelayCommand(CanExecute = nameof(CanCopyEmail))]
+    private async Task CopyToRecipientsAsync()
+    {
+        await CopyRecipientsAsync("To", "To recipients copied to clipboard");
+    }
+
+    [RelayCommand(CanExecute = nameof(CanCopyEmail))]
+    private async Task CopyCcRecipientsAsync()
+    {
+        await CopyRecipientsAsync("CC", "CC recipients copied to clipboard");
+    }
+
     [RelayCommand]
     private void OpenOptions()
     {
         IsOptionsOpen = true;
+    }
+
+    private async Task CopyRecipientsAsync(string recipientType, string successMessage)
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            NotifyActionCommands();
+
+            var recipientsResult = await _recipientSettings.GetFormattedRecipientsAsync(
+                recipientType
+            );
+            if (!recipientsResult.IsSuccess)
+            {
+                ShowStatus(
+                    recipientsResult.ErrorMessage ?? "Failed to load recipients",
+                    InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            var recipients = recipientsResult.Data?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(recipients))
+            {
+                ShowStatus(
+                    $"No {recipientType} recipients are configured.",
+                    InfoBarSeverity.Warning
+                );
+                return;
+            }
+
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(recipients);
+            Clipboard.SetContent(dataPackage);
+            ShowStatus(successMessage, InfoBarSeverity.Success);
+            _logger.LogInfo(successMessage);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error copying {recipientType} recipients: {ex.Message}", ex);
+            ShowStatus($"Error copying {recipientType} recipients", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyActionCommands();
+        }
     }
 
     [RelayCommand]

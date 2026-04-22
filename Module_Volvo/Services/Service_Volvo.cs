@@ -45,12 +45,12 @@ public class Service_Volvo : IService_Volvo
     }
 
     /// <summary>
-    /// Calculates component explosion and aggregates piece counts for all parts in shipment
+    /// Calculates component explosion and aggregates requested quantities for all parts in shipment.
     /// Algorithm:
     /// 1. For each line, get parent part quantity per skid
     /// 2. Calculate parent pieces: skidCount × qtyPerSkid
     /// 3. Get components for parent part
-    /// 4. For each component, calculate pieces: skidCount × componentQty × componentQtyPerSkid
+    /// 4. For each component, calculate requested quantity: skidCount × componentQty
     /// 5. Aggregate duplicates across all lines
     /// </summary>
     /// <param name="lines"></param>
@@ -110,20 +110,21 @@ public class Service_Volvo : IService_Volvo
                     foreach (var component in componentsResult.Data)
                     {
                         // Validate component quantities
-                        if (component.Quantity <= 0 || component.ComponentQuantityPerSkid <= 0)
+                        if (component.Quantity <= 0)
                         {
                             await _logger.LogWarningAsync(
                                 $"Skipping component {component.ComponentPartNumber} with invalid quantity: "
-                                    + $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}"
+                                    + $"ComponentQty={component.Quantity}"
                             );
                             continue;
                         }
 
-                        // Component pieces = skidCount × componentQty × componentQtyPerSkid
+                        // Requested component quantity = skidCount × componentQty per parent skid.
                         int componentPieces =
-                            line.ReceivedSkidCount
-                            * component.Quantity
-                            * component.ComponentQuantityPerSkid;
+                            Helper_VolvoShipmentCalculations.CalculateRequestedComponentQuantity(
+                                line.ReceivedSkidCount,
+                                component
+                            );
 
                         if (aggregatedPieces.ContainsKey(component.ComponentPartNumber))
                         {

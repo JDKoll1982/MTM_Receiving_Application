@@ -3,37 +3,77 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Volvo.ViewModels">
-    <Grid Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        
+    <Grid
+        Padding="24"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <Grid ColumnSpacing="16" RowSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-                <Button
-                    Width="320"
-                    Height="200"
-                    Padding="20"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    Click="OnStep0Clicked"
-                    CornerRadius="8"
-                    Visibility="{x:Bind ViewModel.GetStepVisibility(0), Mode=OneWay}">
-                    <StackPanel Spacing="12">
-                        <FontIcon
-                            FontSize="40"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                            Glyph="&#xE8D1;" />
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            Style="{StaticResource SubtitleTextBlockStyle}"
-                            Text="{x:Bind ViewModel.GetStepTitle(0), Mode=OneWay}" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Open the active Volvo settings surface to review, add, edit, import, and deactivate part master records."
-                            TextAlignment="Center"
-                            TextWrapping="Wrap" />
-                    </StackPanel>
-                </Button>
+            <Button
+                Grid.Column="0"
+                Width="320"
+                Height="200"
+                Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep0Clicked"
+                CornerRadius="8"
+                Visibility="{x:Bind ViewModel.GetStepVisibility(0), Mode=OneWay}">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE8D1;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="{x:Bind ViewModel.GetStepTitle(0), Mode=OneWay}" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Review, add, edit, import, and deactivate Volvo part master-data rows."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Column="1"
+                Width="320"
+                Height="200"
+                Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep1Clicked"
+                CornerRadius="8"
+                Visibility="{x:Bind ViewModel.GetStepVisibility(1), Mode=OneWay}">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE715;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="{x:Bind ViewModel.GetStepTitle(1), Mode=OneWay}" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Manage the saved To and CC recipients used when the Volvo email preview is generated."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+        </Grid>
     </Grid>
 </Page>

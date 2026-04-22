@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -19,10 +20,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_Base
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
+    private readonly IService_DunnageWorkflow _workflowService;
     private List<Model_DunnagePart> _allImageParts = new();
 
     public ViewModel_Dunnage_ImagePartSearchDialog(
         IService_MySQL_Dunnage dunnageService,
+        IService_DunnageWorkflow workflowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -30,6 +33,8 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
+        _workflowService = workflowService;
+        _workflowService.StepChanged += OnWorkflowStepChanged;
     }
 
     [ObservableProperty]
@@ -44,6 +49,17 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
     public bool HasNoResults => DisplayedParts.Count == 0;
 
     public string Heading => "Search Dunnage Parts by Image";
+
+    private void OnWorkflowStepChanged(object? sender, EventArgs e)
+    {
+        if (_workflowService.CurrentStep != Enum_DunnageWorkflowStep.ImagePartSearch)
+        {
+            return;
+        }
+
+        FilterText = string.Empty;
+        _ = LoadPartsCommand.ExecuteAsync(null);
+    }
 
     [RelayCommand]
     private async Task LoadPartsAsync()
@@ -85,6 +101,60 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
             DisplayedParts = new ObservableCollection<Model_DunnagePart>();
             EmptyStateMessage = "Failed to load Dunnage parts.";
             OnPropertyChanged(nameof(HasNoResults));
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectPartAsync(Model_DunnagePart? part)
+    {
+        if (part is null || IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+
+            var session = _workflowService.CurrentSession;
+            session.SelectedPart = part;
+            session.SelectedTypeId = part.TypeId;
+            session.SelectedTypeName = part.DunnageTypeName;
+
+            var typeResult = await _dunnageService.GetTypeByIdAsync(part.TypeId);
+            if (typeResult.IsSuccess && typeResult.Data is not null)
+            {
+                session.SelectedType = typeResult.Data;
+            }
+            else
+            {
+                session.SelectedType = new Model_DunnageType
+                {
+                    Id = part.TypeId,
+                    TypeName = part.DunnageTypeName,
+                    ImagePath = part.DunnageTypeImagePath,
+                };
+            }
+
+            _logger.LogInfo(
+                $"ImagePartSearch: Selected part {part.PartId} and navigating to PartSelection",
+                "Dunnage"
+            );
+
+            _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(SelectPartAsync),
+                nameof(ViewModel_Dunnage_ImagePartSearchDialog)
+            );
         }
         finally
         {

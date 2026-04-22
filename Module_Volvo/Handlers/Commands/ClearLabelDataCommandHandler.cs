@@ -10,23 +10,22 @@ using MTM_Receiving_Application.Module_Volvo.Services;
 namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 
 /// <summary>
-/// Handler for ClearLabelDataCommand — moves all active Volvo shipments from the
-/// active queue tables (volvo_label_data, volvo_line_data) into the history archive
-/// tables (volvo_label_history, volvo_line_history) via Dao_VolvoLabelHistory.
-/// Returns the total number of records archived (headers + lines).
+/// Handler for ClearLabelDataCommand — moves all active generated Volvo label rows
+/// from the dedicated label queue into the generated-label history table.
 /// </summary>
 public class ClearLabelDataCommandHandler
     : IRequestHandler<ClearLabelDataCommand, Model_Dao_Result<int>>
 {
-    private readonly IDao_VolvoLabelHistory _historyDao;
+    private readonly IDao_VolvoGeneratedLabelData _generatedLabelDataDao;
     private readonly IService_VolvoAuthorization _authService;
 
     public ClearLabelDataCommandHandler(
-        IDao_VolvoLabelHistory historyDao,
+        IDao_VolvoGeneratedLabelData generatedLabelDataDao,
         IService_VolvoAuthorization authService
     )
     {
-        _historyDao = historyDao ?? throw new ArgumentNullException(nameof(historyDao));
+        _generatedLabelDataDao =
+            generatedLabelDataDao ?? throw new ArgumentNullException(nameof(generatedLabelDataDao));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
@@ -48,7 +47,7 @@ public class ClearLabelDataCommandHandler
             var archivedBy = string.IsNullOrWhiteSpace(request.ArchivedBy)
                 ? "SYSTEM"
                 : request.ArchivedBy;
-            var result = await _historyDao.ClearToHistoryAsync(archivedBy);
+            var result = await _generatedLabelDataDao.ClearToHistoryAsync(archivedBy);
 
             if (!result.IsSuccess)
             {
@@ -57,8 +56,7 @@ public class ClearLabelDataCommandHandler
                 );
             }
 
-            var (headersMoved, linesMoved) = result.Data;
-            return Model_Dao_Result_Factory.Success<int>(headersMoved + linesMoved);
+            return Model_Dao_Result_Factory.Success<int>(result.Data);
         }
         catch (Exception ex)
         {

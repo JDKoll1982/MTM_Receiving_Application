@@ -27,6 +27,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Services;
 
@@ -235,7 +236,11 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_VolvoPart(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_VolvoPartComponent(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_VolvoSettings(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_VolvoRecipientSettings(mySqlConnectionString));
         services.AddSingleton<IDao_VolvoLabelHistory>(_ => new Dao_VolvoLabelHistory(
+            mySqlConnectionString
+        ));
+        services.AddSingleton<IDao_VolvoGeneratedLabelData>(_ => new Dao_VolvoGeneratedLabelData(
             mySqlConnectionString
         ));
 
@@ -247,12 +252,14 @@ public static class ModuleServicesExtensions
             var userPrivileges = sp.GetRequiredService<IService_UserPrivileges>();
             return new Service_VolvoAuthorization(logger, sessionManager, userPrivileges);
         });
+        services.AddSingleton<IService_VolvoRecipientSettings, Service_VolvoRecipientSettings>();
 
         // ViewModels (Transient)
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_EmailPreviewDialog>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentHistoryDetailDialog>();
+        services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_GeneratedLabelDataDialog>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
@@ -260,6 +267,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Volvo.Views.View_Volvo_EmailPreviewDialog>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentHistoryDetailDialog>();
         services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentHistoryDetailWindow>();
+        services.AddTransient<Module_Volvo.Views.View_Volvo_GeneratedLabelDataDialog>();
 
         // Dialogs (Transient - Created on demand)
         services.AddTransient<Module_Volvo.Views.VolvoShipmentEditDialog>();
@@ -284,6 +292,7 @@ public static class ModuleServicesExtensions
 
         // DAOs (Singleton)
         services.AddSingleton(_ => new Dao_Reporting(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ReportingRecipientSettings(mySqlConnectionString));
 
         // Services (Singleton)
         services.AddSingleton<IService_Reporting>(sp =>
@@ -294,6 +303,10 @@ public static class ModuleServicesExtensions
             return new Service_Reporting(dao, logger, receivingSettings);
         });
         services.AddSingleton<IService_ReportingClipboard, Service_ReportingClipboard>();
+        services.AddSingleton<
+            IService_ReportingRecipientSettings,
+            Service_ReportingRecipientSettings
+        >();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Reporting_Main>();
@@ -361,6 +374,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_CategoryHub>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_NavigationHub>();
+        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_EmailRecipients>();
+        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_EmailRecipients>();
 
         // Receiving Settings Pages
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_EntryDefaults>();
@@ -375,8 +390,10 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_WorkflowVisuals>();
 
         // Reporting Settings Pages
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
         // Volvo Settings Pages
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_PartCatalog>();
+        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_EmailRecipients>();
 
         // Settings Views (Transient - Per-view instances with constructor DI)
         RegisterSettingsViews(services);
@@ -399,6 +416,7 @@ public static class ModuleServicesExtensions
 
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
 
         // Dunnage Settings Views
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub>();
@@ -417,6 +435,7 @@ public static class ModuleServicesExtensions
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog>();
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_EmailRecipients>();
     }
 
     /// <summary>

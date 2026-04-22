@@ -10,5 +10,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Enums
         Review = 5, // Review session before saving
         ManualEntry = 6, // Bulk grid entry mode
         EditMode = 7, // Historical data editing mode
+        ImagePartSearch = 8, // Browse image-backed parts and hand off into part selection
     }
 }

@@ -19,6 +19,13 @@ public sealed partial class ViewModel_Settings_Reporting_NavigationHub
     {
         NavigationTitle = "Reporting Settings";
         CurrentStepTitle = NavigationTitle;
+
+        SetSteps(
+            new Model_SettingsNavigationStep(
+                "Email Recipients",
+                typeof(Views.View_Settings_Reporting_EmailRecipients)
+            )
+        );
     }
 
     public void Save() { }

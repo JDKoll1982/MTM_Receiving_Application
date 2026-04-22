@@ -2,7 +2,7 @@
   "id": "reporting-preview-copy",
   "module": "Module_Reporting",
   "name": "Preview And Copy",
-  "summary": "Tabbed preview-card shaping, options-driven row grouping, per-module table sorting, forced Loads/Skids combined-row counts in combine modes, data-aware column selection, and clipboard-ready email formatting for generated report output.",
+  "summary": "Tabbed preview-card shaping, options-driven row grouping, per-module table sorting, forced Loads/Skids combined-row counts in combine modes, data-aware column selection, clipboard-ready email formatting for generated report output, and separate Copy To / Copy CC recipient actions backed by Reporting recipient settings.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Reporting/Contracts/IService_Reporting.cs",
@@ -14,15 +14,19 @@
     "Module_Reporting/Models/Model_ReportingPreviewRow.cs",
     "Module_Reporting/Services/Service_Reporting.cs",
     "Module_Reporting/Services/Service_ReportingClipboard.cs",
+    "Module_Reporting/Services/Service_ReportingRecipientSettings.cs",
     "Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs",
     "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml",
-    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs"
+    "Module_Reporting/Views/View_Reporting_PreviewDialog.xaml.cs",
+    "Module_Reporting/Data/Dao_ReportingRecipientSettings.cs"
   ],
   "relatedServices": [
     "IService_Reporting",
     "IService_ReportingClipboard",
+    "IService_ReportingRecipientSettings",
     "Service_Reporting",
-    "Service_ReportingClipboard"
+    "Service_ReportingClipboard",
+    "Service_ReportingRecipientSettings"
   ],
   "promptDefaults": {
     "audience": "Supervisor",
@@ -53,14 +57,18 @@
       "Row display mode selector",
       "Per-module sort controls",
       "Forced Loads/Skids column during combine modes",
-      "Copy Email Format action"
+      "Copy Email Format action",
+      "Copy To action",
+      "Copy CC action"
     ],
     "userActions": [
       "Review the generated output",
       "Choose row display mode in the options dialog",
       "Choose how each module table is sorted in the options dialog",
       "Choose preview modules and columns in the modal options dialog",
-      "Copy the generated output"
+      "Copy the generated output",
+      "Copy the configured Reporting To recipients",
+      "Copy the configured Reporting CC recipients"
     ],
     "validationHints": [
       "Confirm selected row-display mode shapes both the on-screen detail table and copied output",
@@ -71,7 +79,9 @@
       "Confirm preview sections, summary tables, module cards, and included-card lists still rebuild correctly after whole-collection replacement",
       "Confirm selected preview modules and columns control both the on-screen table and copied output",
       "Confirm columns without data are not enabled by default",
-      "Confirm copy-email behavior still works"
+      "Confirm copy-email behavior still works",
+      "Confirm Copy To copies the persisted Reporting To recipient list",
+      "Confirm Copy CC copies the persisted Reporting CC recipient list or warns when none are configured"
     ]
   }
 }

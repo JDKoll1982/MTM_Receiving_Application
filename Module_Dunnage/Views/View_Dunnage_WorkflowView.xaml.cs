@@ -305,6 +305,9 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         // Navigate back based on current step
         switch (_workflowService.CurrentStep)
         {
+            case Enum_DunnageWorkflowStep.ImagePartSearch:
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+                break;
             case Enum_DunnageWorkflowStep.PartSelection:
                 _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
                 break;

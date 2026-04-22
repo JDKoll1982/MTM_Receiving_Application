@@ -16,14 +16,18 @@ public class DeletePendingShipmentCommandHandler
     : IRequestHandler<DeletePendingShipmentCommand, Model_Dao_Result>
 {
     private readonly Dao_VolvoShipment _shipmentDao;
+    private readonly IDao_VolvoGeneratedLabelData _generatedLabelDataDao;
     private readonly IService_VolvoAuthorization _authService;
 
     public DeletePendingShipmentCommandHandler(
         Dao_VolvoShipment shipmentDao,
+        IDao_VolvoGeneratedLabelData generatedLabelDataDao,
         IService_VolvoAuthorization authService
     )
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+        _generatedLabelDataDao =
+            generatedLabelDataDao ?? throw new ArgumentNullException(nameof(generatedLabelDataDao));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
@@ -39,6 +43,17 @@ public class DeletePendingShipmentCommandHandler
             {
                 return Model_Dao_Result_Factory.Failure(
                     "You are not authorized to delete pending shipments"
+                );
+            }
+
+            var deleteGeneratedRowsResult = await _generatedLabelDataDao.DeleteByShipmentAsync(
+                request.ShipmentId
+            );
+            if (!deleteGeneratedRowsResult.IsSuccess)
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    deleteGeneratedRowsResult.ErrorMessage
+                        ?? "Failed to delete generated label rows for the pending shipment"
                 );
             }
 

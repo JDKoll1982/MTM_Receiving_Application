@@ -24,6 +24,8 @@
             <!--  Mode Selection View  -->
             <views:View_Dunnage_ModeSelectionView Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
+            <views:View_Dunnage_Dialog_ImagePartSearch Visibility="{x:Bind ViewModel.IsImagePartSearchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
             <!--  Wizard Steps  -->
             <views:View_dunnage_typeselectionView Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
@@ -68,6 +70,11 @@
                     ToolTipService.ToolTip="Archive the active dunnage label queue to history and clear the queue"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
+                <Button
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Content="Mode Selection"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Visibility="{x:Bind ViewModel.IsImagePartSearchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button
                     Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                     Content="Mode Selection"

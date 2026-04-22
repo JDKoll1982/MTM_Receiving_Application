@@ -2,15 +2,19 @@
   "id": "settings-reporting-shell",
   "module": "Module_Settings.Reporting",
   "name": "Reporting Settings Shell",
-  "summary": "Single-card Reporting settings placeholder that explicitly communicates Reporting configuration is not implemented yet and no longer exposes the retired placeholder child pages from the old shell.",
+  "summary": "Reporting settings now expose a card-based recipient editor that manages module-specific To and CC email recipients used by the Reporting preview dialog.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_NavigationHub.cs",
+    "Module_Settings.Reporting/ViewModels/ViewModel_Settings_Reporting_EmailRecipients.cs",
     "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml",
     "Module_Settings.Reporting/Views/View_Settings_Reporting_WorkflowHub.xaml.cs",
-    "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs",
-    "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
-    "MainWindow.xaml.cs"
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailRecipients.xaml",
+    "Module_Settings.Reporting/Views/View_Settings_Reporting_EmailRecipients.xaml.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_EmailRecipientsEditorBase.cs",
+    "Module_Settings.Core/Views/Controls/Control_SettingsEmailRecipientsEditor.xaml",
+    "Module_Settings.Core/Views/Controls/Control_SettingsEmailRecipientsEditor.xaml.cs",
+    "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
   ],
   "promptDefaults": {
     "audience": "Supervisor",
@@ -21,36 +25,42 @@
   },
   "uiHints": {
     "workflowAreas": [
-      "Reporting settings placeholder shell",
-      "Future Reporting configuration entry point"
+      "Reporting recipient settings shell",
+      "Reporting preview recipient maintenance"
     ],
-    "screens": ["View_Settings_Reporting_WorkflowHub.xaml"],
+    "screens": [
+      "View_Settings_Reporting_WorkflowHub.xaml",
+      "View_Settings_Reporting_EmailRecipients.xaml"
+    ],
     "currentUiPatterns": ["Card list", "Form"],
     "desiredUiPatterns": ["Card list", "Form"],
     "uiElements": [
-      "Centered placeholder card",
-      "Feature-not-yet-available message",
-      "Reporting iconography",
-      "Settings-shell entry point"
+      "Recipient settings entry card",
+      "Recipient editor form",
+      "To recipient cards",
+      "CC recipient cards",
+      "Add, edit, and delete actions"
     ],
     "userActions": [
-      "Open Reporting settings from the settings shell",
-      "See immediately that Reporting settings are not implemented yet"
+      "Open Reporting recipient settings from the settings shell",
+      "Add a new Reporting recipient",
+      "Edit or delete existing To and CC recipients",
+      "Maintain the recipient lists used by the Reporting preview dialog"
     ],
     "preserveRules": [
-      "Keep Reporting settings clearly marked as a placeholder",
-      "Do not describe Reporting settings as persisted editors",
-      "Do not route users to the retired Reporting child pages"
+      "Keep Reporting recipients stored separately from Volvo recipients",
+      "Keep the settings shell card-based",
+      "Keep recipients presented as cards rather than a grid"
     ],
     "acceptanceCriteria": [
-      "Reporting settings open a single placeholder experience",
-      "Metadata reflects that only the shell placeholder is active",
-      "Metadata does not imply hidden or still-routable Reporting child pages"
+      "Reporting settings open the recipient editor from a card-based shell",
+      "Users can add, edit, and delete Reporting To and CC recipients",
+      "Metadata reflects the live recipient-maintenance surfaces"
     ],
     "validationHints": [
-      "Confirm the settings shell opens the Reporting placeholder card",
-      "Confirm search destinations no longer advertise retired Reporting child pages",
-      "Confirm metadata does not overstate Reporting feature completeness"
+      "Confirm the Reporting settings shell opens the recipient editor from its card",
+      "Confirm recipient cards can be added, edited, and deleted without using a data table",
+      "Confirm Reporting recipient changes are persisted and available to preview copy actions"
     ]
   }
 }

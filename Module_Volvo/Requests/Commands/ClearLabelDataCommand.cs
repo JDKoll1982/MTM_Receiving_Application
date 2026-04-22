@@ -4,9 +4,8 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 
 /// <summary>
-/// Command to clear all active Volvo shipments from the active queue tables
-/// (<c>volvo_label_data</c>, <c>volvo_line_data</c>) by moving them to the
-/// history archive tables (<c>volvo_label_history</c>, <c>volvo_line_history</c>).
+/// Command to clear the dedicated active Volvo generated-label queue by moving
+/// its rows to the generated-label history table.
 /// </summary>
 public record ClearLabelDataCommand : IRequest<Model_Dao_Result<int>>
 {

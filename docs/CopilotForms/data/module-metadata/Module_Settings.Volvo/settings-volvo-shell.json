@@ -2,17 +2,23 @@
   "id": "settings-volvo-shell",
   "module": "Module_Settings.Volvo",
   "name": "Volvo Settings Shell",
-  "summary": "Volvo settings now route directly to the real part-catalog maintenance surface.",
+  "summary": "Volvo settings now expose card-based navigation to both the part catalog and a persisted To/CC recipient editor used by the Volvo email preview dialog.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
     "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_PartCatalog.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_EmailRecipients.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_EmailRecipients.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_EmailRecipients.xaml.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml",
-    "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml.cs"
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_EmailRecipientsEditorBase.cs",
+    "Module_Settings.Core/Views/Controls/Control_SettingsEmailRecipientsEditor.xaml",
+    "Module_Settings.Core/Views/Controls/Control_SettingsEmailRecipientsEditor.xaml.cs"
   ],
   "promptDefaults": {
     "audience": "IT Administrator",
@@ -24,13 +30,20 @@
   "uiHints": {
     "workflowAreas": [
       "Part catalog maintenance",
+      "Volvo recipient maintenance",
       "Volvo settings entry routing"
     ],
-    "screens": ["View_Settings_Volvo_PartCatalog.xaml"],
+    "screens": [
+      "View_Settings_Volvo_PartCatalog.xaml",
+      "View_Settings_Volvo_EmailRecipients.xaml"
+    ],
     "currentUiPatterns": ["Card list", "Form", "DataGrid"],
     "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
     "uiElements": [
       "Part catalog summary cards",
+      "Recipient settings card",
+      "To recipient cards",
+      "CC recipient cards",
       "Part catalog data grid",
       "Part maintenance dialog",
       "Bulk import prompt",
@@ -38,23 +51,25 @@
     ],
     "userActions": [
       "Review, add, edit, deactivate, and import Volvo part master-data rows",
-      "Open Volvo settings directly into the part catalog",
+      "Open Volvo settings into the part catalog or recipient editor",
+      "Add, edit, and delete Volvo To and CC recipients",
       "Review selected part details and related component records"
     ],
     "preserveRules": [
-      "Keep the part catalog described as the only active Volvo settings surface",
-      "Do not describe removed placeholder pages as active navigation targets",
-      "Keep the settings entry path aligned with the direct Part Catalog navigation behavior"
+      "Keep Volvo recipients stored separately from Reporting recipients",
+      "Keep the settings entry path aligned with the card navigation behavior",
+      "Keep recipients presented as cards rather than a grid"
     ],
     "acceptanceCriteria": [
-      "Selecting Volvo settings opens the Part Catalog surface directly",
-      "Metadata reflects only the live Volvo settings files and user-visible workflow",
-      "Metadata does not imply hidden placeholder pages or unimplemented settings editors"
+      "Selecting Volvo settings opens a card-based shell for part catalog and recipient maintenance",
+      "Users can maintain Volvo To and CC recipients from the settings surface",
+      "Metadata reflects the live Volvo settings files and user-visible workflow"
     ],
     "validationHints": [
       "Confirm the part catalog page loads the Volvo part list and still launches add, edit, deactivate, and component-review actions",
-      "Confirm selecting the Volvo settings entry opens the Part Catalog without an intermediate placeholder page",
-      "Confirm metadata no longer references deleted placeholder files"
+      "Confirm the Volvo settings shell opens both the Part Catalog and Email Recipients cards",
+      "Confirm recipient cards can be added, edited, and deleted without using a data table",
+      "Confirm saved Volvo recipients appear in the Volvo email preview dialog"
     ],
     "sensitiveDataRules": [
       "Do not expose raw connection strings in UI change requests or mockups",

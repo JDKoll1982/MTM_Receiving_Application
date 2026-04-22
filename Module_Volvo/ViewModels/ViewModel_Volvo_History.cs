@@ -247,6 +247,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 var shipment = result.Data.Shipment;
                 var lines = result.Data.Lines;
 
+                await EnrichPartDescriptionsFromInforVisualAsync(lines);
+
                 var dialogModel = BuildShipmentHistoryDetailDialogModel(shipment, lines);
                 var detailDialogShown = await ShowShipmentHistoryDetailDialogAsync(dialogModel);
                 if (!detailDialogShown)
@@ -641,6 +643,65 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             Shipment = shipment,
             Lines = lines.ToList(),
         };
+    }
+
+    private async Task EnrichPartDescriptionsFromInforVisualAsync(
+        IReadOnlyCollection<Model_VolvoShipmentLine> lines
+    )
+    {
+        var partNumbers = lines
+            .Select(line => line.PartNumber?.Trim())
+            .Where(partNumber => string.IsNullOrWhiteSpace(partNumber) is false)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Cast<string>()
+            .ToList();
+
+        if (partNumbers.Count == 0)
+        {
+            return;
+        }
+
+        var descriptionsByPartNumber = new Dictionary<string, string>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        foreach (var partNumber in partNumbers)
+        {
+            try
+            {
+                var partResult = await _inforVisualService.GetPartByIDAsync(partNumber);
+                if (
+                    !partResult.IsSuccess
+                    || partResult.Data is null
+                    || string.IsNullOrWhiteSpace(partResult.Data.Description)
+                )
+                {
+                    continue;
+                }
+
+                descriptionsByPartNumber[partNumber] = partResult.Data.Description.Trim();
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Error resolving Infor Visual description for archived part {partNumber}: {ex.Message}",
+                    ex
+                );
+            }
+        }
+
+        foreach (var line in lines)
+        {
+            if (
+                string.IsNullOrWhiteSpace(line.PartNumber)
+                || !descriptionsByPartNumber.TryGetValue(line.PartNumber, out var description)
+            )
+            {
+                continue;
+            }
+
+            line.PartDescription = description;
+        }
     }
 
     private async Task<string> ResolvePartLocationAsync(string partNumber)

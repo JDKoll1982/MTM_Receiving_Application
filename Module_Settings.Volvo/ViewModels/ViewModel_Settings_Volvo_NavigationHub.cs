@@ -24,6 +24,10 @@ public sealed partial class ViewModel_Settings_Volvo_NavigationHub
             new Model_SettingsNavigationStep(
                 "Part Catalog",
                 typeof(Views.View_Settings_Volvo_PartCatalog)
+            ),
+            new Model_SettingsNavigationStep(
+                "Email Recipients",
+                typeof(Views.View_Settings_Volvo_EmailRecipients)
             )
         );
     }

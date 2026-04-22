@@ -216,6 +216,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
             await LoadPartsAsync();
 
+            RestoreWorkflowSelectedPart();
+
             StatusMessage = $"Loaded {AvailableParts.Count} parts for {SelectedTypeName}";
             _logger.LogInfo($"PartSelection: {StatusMessage}", "PartSelection");
         }
@@ -311,6 +313,23 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     #endregion
 
     #region Part Selection
+
+    private void RestoreWorkflowSelectedPart()
+    {
+        var workflowSelectedPart = _workflowService.CurrentSession.SelectedPart;
+        if (workflowSelectedPart is null)
+        {
+            SelectedPart = null;
+            return;
+        }
+
+        var matchingPart = AvailableParts.FirstOrDefault(part =>
+            part.Id == workflowSelectedPart.Id
+            || part.PartId.Equals(workflowSelectedPart.PartId, StringComparison.OrdinalIgnoreCase)
+        );
+
+        SelectedPart = matchingPart;
+    }
 
     partial void OnSelectedPartChanged(Model_DunnagePart? oldValue, Model_DunnagePart? newValue)
     {

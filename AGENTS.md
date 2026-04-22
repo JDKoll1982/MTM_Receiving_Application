@@ -411,8 +411,7 @@ mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < sp_name.sql
 
 ```powershell
 # Get detailed XAML errors
-$vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
-& "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Rebuild "Debug|x64" 2>&1 | Select-String "error|warning"
+pwsh -NoProfile -Command '$vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath; & "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Rebuild "Debug|x64" 2>&1 | Select-String "error|warning"'
 ```
 
 ## Common Pitfalls Reference

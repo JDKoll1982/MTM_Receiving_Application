@@ -114,6 +114,18 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         }
     }
 
+    [RelayCommand]
+    private async Task OpenImageSearchAsync()
+    {
+        _logger.LogInfo("User selected Image Part Search mode");
+
+        if (await ConfirmModeChangeAsync())
+        {
+            ClearWorkflowData();
+            _workflowService.GoToStep(Enum_DunnageWorkflowStep.ImagePartSearch);
+        }
+    }
+
     /// <summary>
     /// Shows confirmation dialog before mode change
     /// </summary>

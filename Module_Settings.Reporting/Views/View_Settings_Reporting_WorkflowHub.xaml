@@ -3,25 +3,39 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Reporting.ViewModels">
-    <Grid Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-            <StackPanel Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Top">
+    <Grid
+        Padding="24"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <Button
+            Width="320"
+            Height="200"
+            Padding="20"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            Click="OnStep0Clicked"
+            CornerRadius="8">
+            <StackPanel Spacing="12">
                 <FontIcon
                     HorizontalAlignment="Center"
                     FontSize="40"
                     Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                    Glyph="&#xE9F9;" />
+                    Glyph="&#xE715;" />
                 <TextBlock
                     HorizontalAlignment="Center"
-                    Style="{StaticResource TitleTextBlockStyle}"
-                    Text="Reporting Settings" />
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.GetStepTitle(0), Mode=OneWay}" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource BodyTextBlockStyle}"
-                    Text="Reporting settings are not currently implemented. Additional reporting configuration will appear here in a future release."
+                    Text="Manage the saved To and CC recipients used by the Reporting preview surface."
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
             </StackPanel>
+        </Button>
     </Grid>
 </Page>
