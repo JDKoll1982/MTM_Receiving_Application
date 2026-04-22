@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
@@ -524,6 +525,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 existingPartsResult.IsSuccess && existingPartsResult.Data != null
                     ? existingPartsResult.Data
                     : new List<Model_DunnagePart>();
+            var quantityTypesResult = await _dunnageService.GetQuantityTypesAsync();
+            var quantityTypes =
+                quantityTypesResult.IsSuccess && quantityTypesResult.Data != null
+                    ? quantityTypesResult.Data
+                    : new List<Model_DunnageQuantityType>();
 
             Model_DunnagePartDialogDraft? dialogDraft = null;
 
@@ -533,6 +539,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     SelectedTypeId,
                     SelectedTypeName,
                     specs,
+                    quantityTypes,
                     dialogDraft
                 )
                 {
@@ -578,6 +585,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     SpecValues = specValuesJson,
                     ImagePath = dialog.SelectedImagePath,
                     DunnageTypeName = SelectedTypeName,
+                    QuantityType = dialog.ResolvedQuantityType,
                     HomeLocation = dialog.HomeLocation,
                 };
 
@@ -598,6 +606,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     if (addedPart != null)
                     {
                         SelectedPart = addedPart;
+                    }
+
+                    if (dialog.RequestSaveQuantityTypeForFutureUse)
+                    {
+                        await PromptToSaveCustomQuantityTypeAsync(dialog.ResolvedQuantityType);
                     }
 
                     StatusMessage = $"Added new part: {partId}";
@@ -648,6 +661,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 existingPartsResult.IsSuccess && existingPartsResult.Data != null
                     ? existingPartsResult.Data
                     : new List<Model_DunnagePart>();
+            var quantityTypesResult = await _dunnageService.GetQuantityTypesAsync();
+            var quantityTypes =
+                quantityTypesResult.IsSuccess && quantityTypesResult.Data != null
+                    ? quantityTypesResult.Data
+                    : new List<Model_DunnageQuantityType>();
 
             var inventoryDetailsResult = await _dunnageService.GetInventoryDetailsAsync(
                 SelectedPart.PartId
@@ -668,6 +686,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(
                     SelectedPart,
                     specs,
+                    quantityTypes,
                     SelectedTypeName,
                     currentInventoryMethod,
                     dialogDraft,
@@ -717,6 +736,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     DunnageTypeName = SelectedTypeName,
                     SpecValues = dialog.UpdatedSpecValuesJson,
                     ImagePath = dialog.SelectedImagePath,
+                    QuantityType = dialog.ResolvedQuantityType,
                     HomeLocation = dialog.UpdatedHomeLocation,
                 };
 
@@ -740,6 +760,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     if (refreshed != null)
                     {
                         SelectedPart = refreshed;
+                    }
+
+                    if (dialog.RequestSaveQuantityTypeForFutureUse)
+                    {
+                        await PromptToSaveCustomQuantityTypeAsync(dialog.ResolvedQuantityType);
                     }
 
                     StatusMessage = $"Updated part: {updatedPartId}";
@@ -943,6 +968,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         var nextDraft = currentDraft.Clone();
         nextDraft.SpecValues = new Dictionary<string, object?>(dialog.SelectedTemplate.SpecValues);
         nextDraft.Notes = dialog.SelectedTemplate.Notes;
+        nextDraft.QuantityType = dialog.SelectedTemplate.QuantityType;
 
         if (string.IsNullOrWhiteSpace(nextDraft.PartId))
         {
@@ -976,6 +1002,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         {
             PartId = part.PartId,
             HomeLocation = part.HomeLocation ?? string.Empty,
+            QuantityType = part.QuantityType,
             Notes = notes,
             SpecValues = specValues,
             SpecSummary = BuildSpecSummary(specValues),
@@ -1022,6 +1049,50 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                         : $"{pair.Key}: {pair.Value}"
                 )
         );
+    }
+
+    private async Task PromptToSaveCustomQuantityTypeAsync(string quantityType)
+    {
+        if (string.IsNullOrWhiteSpace(quantityType))
+        {
+            return;
+        }
+
+        var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return;
+        }
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Save Quantity Type",
+            Content = $"Would you like to save '{quantityType}' for future use?",
+            PrimaryButtonText = "Save",
+            CloseButtonText = "Not Now",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
+            XamlRoot = xamlRoot,
+        };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
+
+        if (await dialog.ShowAsync() != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        var saveResult = await _dunnageService.SaveQuantityTypeIfMissingAsync(quantityType);
+        if (!saveResult.IsSuccess)
+        {
+            await _errorHandler.HandleDaoErrorAsync(
+                saveResult,
+                nameof(PromptToSaveCustomQuantityTypeAsync),
+                true
+            );
+        }
     }
 
     #endregion

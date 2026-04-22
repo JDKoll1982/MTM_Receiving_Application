@@ -16,6 +16,7 @@ public class Model_DunnagePart : INotifyPropertyChanged
     private Dictionary<string, object> _specValuesDict = new();
     private Dictionary<string, SpecDefinition> _partSpecificSpecDefinitions = new();
     private string _dunnageTypeName = string.Empty;
+    private string _quantityType = "Quantity";
     private string? _imagePath;
     private string? _dunnageTypeImagePath;
     private string _createdBy = string.Empty;
@@ -77,6 +78,16 @@ public class Model_DunnagePart : INotifyPropertyChanged
     {
         get => _dunnageTypeName;
         set => SetField(ref _dunnageTypeName, value);
+    }
+
+    public string QuantityType
+    {
+        get => _quantityType;
+        set =>
+            SetField(
+                ref _quantityType,
+                string.IsNullOrWhiteSpace(value) ? "Quantity" : value.Trim()
+            );
     }
 
     public string? ImagePath

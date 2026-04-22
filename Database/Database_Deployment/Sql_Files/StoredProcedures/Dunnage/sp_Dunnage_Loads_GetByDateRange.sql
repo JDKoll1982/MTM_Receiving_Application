@@ -14,6 +14,7 @@ BEGIN
         COALESCE(l.type_name, t.type_name) AS type_name,
         COALESCE(l.type_icon, 'Help') AS type_icon,
         l.quantity,
+        COALESCE(l.quantity_type, p.quantity_type, 'Quantity') AS quantity_type,
         COALESCE(l.po_number, '') AS po_number,
         l.received_date,
         l.created_by,

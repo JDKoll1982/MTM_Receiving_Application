@@ -73,6 +73,27 @@ public sealed class ViewModel_Volvo_EmailPreviewDialogTests
         result.Should().BeFalse();
     }
 
+    [Fact]
+    public void RecipientCommands_ShouldOnlyBeEnabled_WhenRecipientsContainText()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.CopyToRecipientsCommand.CanExecute(null).Should().BeFalse();
+        viewModel.CopyCcRecipientsCommand.CanExecute(null).Should().BeFalse();
+
+        viewModel.ToRecipients = "to@example.com";
+        viewModel.CcRecipients = "cc@example.com";
+
+        viewModel.CopyToRecipientsCommand.CanExecute(null).Should().BeTrue();
+        viewModel.CopyCcRecipientsCommand.CanExecute(null).Should().BeTrue();
+
+        viewModel.ToRecipients = "   ";
+        viewModel.CcRecipients = string.Empty;
+
+        viewModel.CopyToRecipientsCommand.CanExecute(null).Should().BeFalse();
+        viewModel.CopyCcRecipientsCommand.CanExecute(null).Should().BeFalse();
+    }
+
     private static ViewModel_Volvo_EmailPreviewDialog CreateViewModel(
         Mock<IService_ReportingClipboard>? clipboardMock = null
     )

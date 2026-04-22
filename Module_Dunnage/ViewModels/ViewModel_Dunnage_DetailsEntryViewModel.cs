@@ -438,9 +438,12 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
     public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
     {
-        var locationToValidate = string.IsNullOrWhiteSpace(Location)
-            ? await GetDefaultLocationAsync()
-            : Location.Trim();
+        var locationToValidate = Location.Trim();
+
+        if (string.IsNullOrWhiteSpace(locationToValidate))
+        {
+            return Model_ReceivingValidationResult.Error("Please enter a location.");
+        }
 
         var validation = await _receivingValidation.ValidateLocationAsync(
             locationToValidate,
@@ -719,13 +722,25 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
         var currentLocation = _workflowService.CurrentSession.Location?.Trim();
         Location = string.IsNullOrWhiteSpace(currentLocation)
-            ? await GetDefaultLocationAsync()
+            ? await GetInitialLocationAsync()
             : currentLocation;
 
         if (!string.IsNullOrWhiteSpace(_workflowService.CurrentSession.InventoryMethod))
         {
             InventoryMethod = _workflowService.CurrentSession.InventoryMethod;
         }
+    }
+
+    private async Task<string> GetInitialLocationAsync()
+    {
+        var selectedPartLocation =
+            _workflowService.CurrentSession.SelectedPart?.HomeLocation?.Trim();
+        if (!string.IsNullOrWhiteSpace(selectedPartLocation))
+        {
+            return selectedPartLocation;
+        }
+
+        return await GetDefaultLocationAsync();
     }
 
     private async Task<string> GetDefaultLocationAsync()

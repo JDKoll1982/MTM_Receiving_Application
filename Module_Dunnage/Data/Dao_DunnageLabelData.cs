@@ -110,6 +110,15 @@ public class Dao_DunnageLabelData
                 );
 
                 command.Parameters.Add(
+                    new MySqlParameter("p_quantity_type", MySqlDbType.VarChar, 100)
+                    {
+                        Value = string.IsNullOrWhiteSpace(load.QuantityType)
+                            ? "Quantity"
+                            : (object)load.QuantityType,
+                    }
+                );
+
+                command.Parameters.Add(
                     new MySqlParameter("p_po_number", MySqlDbType.VarChar, 50)
                     {
                         Value = string.IsNullOrWhiteSpace(load.PoNumber)
@@ -323,6 +332,12 @@ public class Dao_DunnageLabelData
                 Precision = 10,
                 Scale = 2,
             },
+            new("@p_quantity_type", MySqlDbType.VarChar, 100)
+            {
+                Value = string.IsNullOrWhiteSpace(load.QuantityType)
+                    ? "Quantity"
+                    : (object)load.QuantityType,
+            },
             new("@p_po_number", MySqlDbType.VarChar, 50)
             {
                 Value = string.IsNullOrWhiteSpace(load.PoNumber)
@@ -428,6 +443,8 @@ public class Dao_DunnageLabelData
 
     private static Model_DunnageLoad MapFromReader(IDataReader reader)
     {
+        var hasQuantityTypeColumn = HasColumn(reader, "quantity_type");
+
         return new Model_DunnageLoad
         {
             QueueRowId = reader.IsDBNull(reader.GetOrdinal("id"))
@@ -449,6 +466,10 @@ public class Dao_DunnageLabelData
                 ? "Help"
                 : reader.GetString(reader.GetOrdinal("dunnage_type_icon")),
             Quantity = reader.GetDecimal(reader.GetOrdinal("quantity")),
+            QuantityType =
+                !hasQuantityTypeColumn ? "Quantity"
+                : reader.IsDBNull(reader.GetOrdinal("quantity_type")) ? "Quantity"
+                : reader.GetString(reader.GetOrdinal("quantity_type")),
             PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
                 ? string.Empty
                 : reader.GetString(reader.GetOrdinal("po_number")),
@@ -471,6 +492,21 @@ public class Dao_DunnageLabelData
                 : reader.GetInt32(reader.GetOrdinal("part_skid_total")),
             SpecValues = DeserializeSpecValues(reader),
         };
+    }
+
+    private static bool HasColumn(IDataReader reader, string columnName)
+    {
+        for (var index = 0; index < reader.FieldCount; index++)
+        {
+            if (
+                string.Equals(reader.GetName(index), columnName, StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static Dictionary<string, object>? DeserializeSpecValues(IDataReader reader)

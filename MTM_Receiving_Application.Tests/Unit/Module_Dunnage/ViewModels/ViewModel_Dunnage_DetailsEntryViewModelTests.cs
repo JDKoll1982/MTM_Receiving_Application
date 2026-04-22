@@ -220,4 +220,67 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             .Choices.Should()
             .Equal("Yes", "No");
     }
+
+    [Fact]
+    public async Task LoadSpecsForSelectedPartAsync_ShouldPreFillLocationFromSelectedPartHomeLocation()
+    {
+        var settingsCore = new Mock<IService_SettingsCoreFacade>();
+        settingsCore
+            .Setup(service =>
+                service.GetSettingAsync(
+                    "Dunnage",
+                    DunnageSettingsKeys.UserPreferences.DefaultLocation,
+                    It.IsAny<int?>()
+                )
+            )
+            .ReturnsAsync(
+                new Model_Dao_Result<Model_SettingsValue>
+                {
+                    Success = true,
+                    Data = new Model_SettingsValue { Value = "RECV" },
+                }
+            );
+
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetSpecsForTypeAsync(5))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnageSpec>()));
+
+        var workflowService = new Service_DunnageWorkflow(
+            dunnageService.Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            settingsCore.Object,
+            new Mock<IService_ReceivingValidation>().Object
+        );
+
+        workflowService.CurrentSession.SelectedTypeId = 5;
+        workflowService.CurrentSession.SelectedPart = new Model_DunnagePart
+        {
+            PartId = "DUN-100",
+            HomeLocation = "BACK PAD",
+        };
+
+        var viewModel = new ViewModel_Dunnage_DetailsEntry(
+            workflowService,
+            dunnageService.Object,
+            new Mock<IService_Dispatcher>().Object,
+            new Mock<IService_Help>().Object,
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_InforVisual>().Object,
+            settingsCore.Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        );
+
+        await viewModel.LoadSpecsForSelectedPartAsync();
+
+        viewModel.Location.Should().Be("BACK PAD");
+        workflowService.CurrentSession.Location.Should().Be("BACK PAD");
+    }
 }

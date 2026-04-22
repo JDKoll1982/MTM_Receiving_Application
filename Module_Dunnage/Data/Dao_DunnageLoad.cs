@@ -145,6 +145,8 @@ public class Dao_DunnageLoad
 
     private Model_DunnageLoad MapFromReader(IDataReader reader)
     {
+        var hasQuantityTypeColumn = HasColumn(reader, "quantity_type");
+
         return new Model_DunnageLoad
         {
             LoadUuid = (Guid)reader[reader.GetOrdinal("load_uuid")],
@@ -162,6 +164,10 @@ public class Dao_DunnageLoad
                 ? "Help"
                 : reader.GetString(reader.GetOrdinal("type_icon")),
             Quantity = reader.GetDecimal(reader.GetOrdinal("quantity")),
+            QuantityType =
+                !hasQuantityTypeColumn ? "Quantity"
+                : reader.IsDBNull(reader.GetOrdinal("quantity_type")) ? "Quantity"
+                : reader.GetString(reader.GetOrdinal("quantity_type")),
             PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
                 ? string.Empty
                 : reader.GetString(reader.GetOrdinal("po_number")),
@@ -188,6 +194,21 @@ public class Dao_DunnageLoad
                 : reader.GetInt32(reader.GetOrdinal("part_skid_total")),
             SpecValues = DeserializeSpecValues(reader),
         };
+    }
+
+    private static bool HasColumn(IDataReader reader, string columnName)
+    {
+        for (var index = 0; index < reader.FieldCount; index++)
+        {
+            if (
+                string.Equals(reader.GetName(index), columnName, StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string? SerializeSpecValues(Model_DunnageLoad load)

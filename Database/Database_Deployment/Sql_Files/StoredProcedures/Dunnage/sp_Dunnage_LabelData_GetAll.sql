@@ -19,6 +19,7 @@ BEGIN
         dunnage_type_name,
         dunnage_type_icon,
         quantity,
+        quantity_type,
         po_number,
         received_date,
         user_id,

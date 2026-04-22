@@ -12,6 +12,7 @@ CREATE TABLE dunnage_parts (
     type_id INT NOT NULL COMMENT 'Foreign key to dunnage_types - defines what kind of dunnage this is',
     spec_values JSON COMMENT 'Dynamic attributes based on type specifications (dimensions, capacity, etc.)',
     image_path VARCHAR(255) NULL COMMENT 'Relative PNG path for app-managed part imagery stored in local app data',
+    quantity_type VARCHAR(100) NOT NULL DEFAULT 'Quantity' COMMENT 'Label header used for quantity on printed dunnage labels',
     home_location VARCHAR(100) NULL COMMENT 'Default storage location for this dunnage part',
     created_by VARCHAR(50) NOT NULL COMMENT 'User who created this record',
     created_date DATETIME NOT NULL COMMENT 'Timestamp when record was created',

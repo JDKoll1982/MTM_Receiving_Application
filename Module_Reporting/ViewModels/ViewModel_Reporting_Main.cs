@@ -101,6 +101,12 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _hasIncludedPreviewModuleCards;
 
+    [ObservableProperty]
+    private string _toRecipients = string.Empty;
+
+    [ObservableProperty]
+    private string _ccRecipients = string.Empty;
+
     public bool HasReceivingPreviewModuleCard => ReceivingPreviewModuleCard is not null;
 
     public bool HasDunnagePreviewModuleCard => DunnagePreviewModuleCard is not null;
@@ -343,6 +349,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
 
             BuildPreviewState(sections, summaryTablesResult.Data);
+            await RefreshRecipientCacheAsync();
 
             if (PreviewSections.Count == 0)
             {
@@ -427,16 +434,16 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private bool CanCopyEmail() => IncludedPreviewModuleCards.Count > 0 && !IsBusy;
 
-    [RelayCommand(CanExecute = nameof(CanCopyEmail))]
+    [RelayCommand(CanExecute = nameof(CanCopyToRecipients))]
     private async Task CopyToRecipientsAsync()
     {
-        await CopyRecipientsAsync("To", "To recipients copied to clipboard");
+        await CopyRecipientsAsync(ToRecipients, "To", "To recipients copied to clipboard");
     }
 
-    [RelayCommand(CanExecute = nameof(CanCopyEmail))]
+    [RelayCommand(CanExecute = nameof(CanCopyCcRecipients))]
     private async Task CopyCcRecipientsAsync()
     {
-        await CopyRecipientsAsync("CC", "CC recipients copied to clipboard");
+        await CopyRecipientsAsync(CcRecipients, "CC", "CC recipients copied to clipboard");
     }
 
     [RelayCommand]
@@ -445,7 +452,11 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         IsOptionsOpen = true;
     }
 
-    private async Task CopyRecipientsAsync(string recipientType, string successMessage)
+    private async Task CopyRecipientsAsync(
+        string recipients,
+        string recipientType,
+        string successMessage
+    )
     {
         if (IsBusy)
         {
@@ -456,20 +467,6 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         {
             IsBusy = true;
             NotifyActionCommands();
-
-            var recipientsResult = await _recipientSettings.GetFormattedRecipientsAsync(
-                recipientType
-            );
-            if (!recipientsResult.IsSuccess)
-            {
-                ShowStatus(
-                    recipientsResult.ErrorMessage ?? "Failed to load recipients",
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            var recipients = recipientsResult.Data?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(recipients))
             {
                 ShowStatus(
@@ -1084,6 +1081,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         IsReceivingChecked = false;
         IsDunnageChecked = false;
         IsVolvoChecked = false;
+        ToRecipients = string.Empty;
+        CcRecipients = string.Empty;
         NotifyActionCommands();
     }
 
@@ -1102,8 +1101,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         PreviewTableViewportWidth = 1260d;
         HasIncludedPreviewModuleCards = false;
         IsOptionsOpen = false;
+        ToRecipients = string.Empty;
+        CcRecipients = string.Empty;
         NotifyModulePreviewCardStateChanged();
-        CopyEmailFormatCommand.NotifyCanExecuteChanged();
+        NotifyActionCommands();
     }
 
     private void ResetForDateRangeChange()
@@ -1120,6 +1121,46 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     {
         GenerateReportsCommand.NotifyCanExecuteChanged();
         CopyEmailFormatCommand.NotifyCanExecuteChanged();
+        CopyToRecipientsCommand.NotifyCanExecuteChanged();
+        CopyCcRecipientsCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnToRecipientsChanged(string value)
+    {
+        CopyToRecipientsCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnCcRecipientsChanged(string value)
+    {
+        CopyCcRecipientsCommand.NotifyCanExecuteChanged();
+    }
+
+    private bool CanCopyToRecipients() =>
+        CanCopyEmail() && !string.IsNullOrWhiteSpace(ToRecipients);
+
+    private bool CanCopyCcRecipients() =>
+        CanCopyEmail() && !string.IsNullOrWhiteSpace(CcRecipients);
+
+    private async Task RefreshRecipientCacheAsync()
+    {
+        try
+        {
+            var toResult = await _recipientSettings.GetFormattedRecipientsAsync("To");
+            var ccResult = await _recipientSettings.GetFormattedRecipientsAsync("CC");
+
+            ToRecipients = toResult.IsSuccess
+                ? toResult.Data?.Trim() ?? string.Empty
+                : string.Empty;
+            CcRecipients = ccResult.IsSuccess
+                ? ccResult.Data?.Trim() ?? string.Empty
+                : string.Empty;
+        }
+        catch (Exception ex)
+        {
+            ToRecipients = string.Empty;
+            CcRecipients = string.Empty;
+            _logger.LogError($"Error loading cached email recipients: {ex.Message}", ex);
+        }
     }
 
     partial void OnStartDateChanged(DateTimeOffset value)

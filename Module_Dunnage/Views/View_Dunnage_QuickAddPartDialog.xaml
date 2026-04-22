@@ -34,7 +34,7 @@
                 Margin="0,0,220,0"
                 VerticalAlignment="Center"
                 Style="{StaticResource BodyTextBlockStyle}"
-                Text="Add a new dunnage part in three short steps."
+                Text="Add a new dunnage part in four short steps."
                 TextWrapping="Wrap" />
 
             <Border
@@ -282,6 +282,72 @@
                                 Content="Next" />
                         </Grid>
                     </Grid>
+                </Border>
+            </Grid>
+
+            <Grid
+                x:Name="StepQuantityTypePanel"
+                Padding="4"
+                RowSpacing="12"
+                Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="Choose the label header that should appear next to the quantity on printed Dunnage labels."
+                    TextWrapping="Wrap" />
+
+                <Border
+                    Grid.Row="1"
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="8">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Custom Quantity Type" />
+                            <TextBox
+                                x:Name="QuantityTypeTextBox"
+                                MaxLength="100"
+                                PlaceholderText="For example: Weight, Pieces, Gallons"
+                                TextChanged="QuantityTypeInputChanged" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Leave this blank if you want to pick a saved value from the list below or keep the default label of 'Quantity'."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Saved Quantity Types" />
+                            <ListView
+                                x:Name="QuantityTypesListView"
+                                MinHeight="160"
+                                MaxHeight="280"
+                                BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                ItemsSource="{x:Bind QuantityTypes, Mode=OneWay}"
+                                SelectionChanged="QuantityTypesListView_SelectionChanged"
+                                SelectionMode="Single">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Model_DunnageQuantityType">
+                                        <TextBlock Padding="4" Text="{x:Bind QuantityType}" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="If both the custom box and a saved value are filled in when you save, you'll be asked which one to keep."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </StackPanel>
                 </Border>
             </Grid>
 

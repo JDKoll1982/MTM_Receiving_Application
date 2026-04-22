@@ -131,7 +131,7 @@ public partial class ViewModel_Volvo_EmailPreviewDialog : ViewModel_Shared_Base
         );
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanCopyToRecipients))]
     private async Task CopyToRecipientsAsync()
     {
         await CopyTextToClipboardAsync(
@@ -141,7 +141,7 @@ public partial class ViewModel_Volvo_EmailPreviewDialog : ViewModel_Shared_Base
         );
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanCopyCcRecipients))]
     private async Task CopyCcRecipientsAsync()
     {
         await CopyTextToClipboardAsync(
@@ -156,6 +156,20 @@ public partial class ViewModel_Volvo_EmailPreviewDialog : ViewModel_Shared_Base
     {
         await CopyTextToClipboardAsync(Subject, "email subject", nameof(CopySubjectAsync));
     }
+
+    partial void OnToRecipientsChanged(string value)
+    {
+        CopyToRecipientsCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnCcRecipientsChanged(string value)
+    {
+        CopyCcRecipientsCommand.NotifyCanExecuteChanged();
+    }
+
+    private bool CanCopyToRecipients() => !string.IsNullOrWhiteSpace(ToRecipients);
+
+    private bool CanCopyCcRecipients() => !string.IsNullOrWhiteSpace(CcRecipients);
 
     private async Task CopyTextToClipboardAsync(string text, string description, string methodName)
     {

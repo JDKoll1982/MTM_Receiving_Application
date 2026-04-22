@@ -143,6 +143,7 @@ public sealed class Service_MySQL_DunnageTests
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>()
                 )
             )
@@ -188,6 +189,7 @@ public sealed class Service_MySQL_DunnageTests
                         )
                     ),
                     "Parts/Pallet-PART-300.png",
+                    "Quantity",
                     "A-01",
                     "Not Inventoried",
                     string.Empty,
@@ -260,6 +262,7 @@ public sealed class Service_MySQL_DunnageTests
             new Mock<Dao_DunnageLabelData>("Server=172.16.1.104;Database=test;").Object,
             daoType ?? new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;").Object,
             daoPart,
+            new Mock<Dao_DunnageQuantityType>("Server=172.16.1.104;Database=test;").Object,
             daoSpec ?? new Mock<Dao_DunnageSpec>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_InventoriedDunnage>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;").Object,

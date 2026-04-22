@@ -2,7 +2,7 @@
   "id": "reporting-preview-copy",
   "module": "Module_Reporting",
   "name": "Preview And Copy",
-  "summary": "Tabbed preview-card shaping, options-driven row grouping, per-module table sorting, forced Loads/Skids combined-row counts in combine modes, data-aware column selection, clipboard-ready email formatting for generated report output, and separate Copy To / Copy CC recipient actions backed by Reporting recipient settings.",
+  "summary": "Tabbed preview-card shaping, options-driven row grouping, per-module table sorting, forced Loads/Skids combined-row counts in combine modes, data-aware column selection, clipboard-ready email formatting for generated report output, and separate Copy To / Copy CC recipient actions backed by Reporting recipient settings with command-based enablement when cached recipient text is present.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Reporting/Contracts/IService_Reporting.cs",
@@ -80,6 +80,8 @@
       "Confirm selected preview modules and columns control both the on-screen table and copied output",
       "Confirm columns without data are not enabled by default",
       "Confirm copy-email behavior still works",
+      "Confirm Copy To stays disabled until the Reporting preview has a nonblank To recipient value",
+      "Confirm Copy CC stays disabled until the Reporting preview has a nonblank CC recipient value",
       "Confirm Copy To copies the persisted Reporting To recipient list",
       "Confirm Copy CC copies the persisted Reporting CC recipient list or warns when none are configured"
     ]

@@ -53,6 +53,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
             string inventoryMethod,
             string inventoryNotes = ""
         );
+        public Task<Model_Dao_Result<List<Model_DunnageQuantityType>>> GetQuantityTypesAsync();
+        public Task<Model_Dao_Result> SaveQuantityTypeIfMissingAsync(string quantityType);
         public Task<Model_Dao_Result> DeletePartAsync(string partId);
         public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(
             string searchText,

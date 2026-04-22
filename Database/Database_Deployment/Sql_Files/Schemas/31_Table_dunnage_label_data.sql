@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS dunnage_label_data (
     dunnage_type_name VARCHAR(100) NULL COMMENT 'Type name snapshot (e.g. Corrugated Cardboard)',
     dunnage_type_icon VARCHAR(100) NULL COMMENT 'MaterialIconKind string snapshot (e.g. PackageVariantClosed)',
     quantity DECIMAL(10, 2) NOT NULL COMMENT 'Quantity received in this transaction',
+    quantity_type VARCHAR(100) NOT NULL DEFAULT 'Quantity' COMMENT 'Quantity label header snapshot copied from dunnage_parts at save time',
     po_number VARCHAR(50) NULL COMMENT 'PO number; NULL for non-PO items',
     received_date DATETIME NOT NULL COMMENT 'Date and time the dunnage was received',
     user_id VARCHAR(100) NOT NULL COMMENT 'Application user identifier (Windows username)',

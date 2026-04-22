@@ -10,6 +10,7 @@ CREATE TABLE dunnage_history (
     load_uuid CHAR(36) PRIMARY KEY COMMENT 'Unique identifier for the load transaction',
     part_id VARCHAR(50) NOT NULL COMMENT 'Foreign key to dunnage_parts',
     quantity DECIMAL(10, 2) NOT NULL COMMENT 'Quantity received in this transaction',
+    quantity_type VARCHAR(100) NOT NULL DEFAULT 'Quantity' COMMENT 'Quantity label header snapshot preserved when queue rows move to history',
     received_date DATETIME NOT NULL COMMENT 'Date and time the dunnage was received',
     created_by VARCHAR(50) NOT NULL COMMENT 'Username of user who created the record',
     created_date DATETIME NOT NULL COMMENT 'Timestamp when record was created',

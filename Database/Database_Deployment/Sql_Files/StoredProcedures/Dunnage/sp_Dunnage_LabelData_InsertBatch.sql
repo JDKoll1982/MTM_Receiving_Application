@@ -10,6 +10,7 @@
 --     "dunnage_type_name": "<VARCHAR(100)|null>",
 --     "dunnage_type_icon": "<VARCHAR(100)|null>",
 --     "quantity":          <DECIMAL>,
+--     "quantity_type":     "<VARCHAR(100)|null>",
 --     "po_number":         "<VARCHAR(50)|null>",
 --     "received_date":     "<DATETIME>",
 --     "user_id":           "<VARCHAR(100)>",
@@ -39,6 +40,7 @@ BEGIN
     DECLARE v_dunnage_type_name VARCHAR(100);
     DECLARE v_dunnage_type_icon VARCHAR(100);
     DECLARE v_quantity          DECIMAL(10,2);
+    DECLARE v_quantity_type     VARCHAR(100);
     DECLARE v_po_number         VARCHAR(50);
     DECLARE v_received_date     DATETIME;
     DECLARE v_location          VARCHAR(100);
@@ -56,6 +58,7 @@ BEGIN
         SET v_dunnage_type_name = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].dunnage_type_name')));
         SET v_dunnage_type_icon = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].dunnage_type_icon')));
         SET v_quantity          = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].quantity'));
+        SET v_quantity_type     = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].quantity_type')));
         SET v_po_number         = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].po_number')));
         SET v_received_date     = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].received_date')));
         SET v_location          = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].location')));
@@ -72,6 +75,7 @@ BEGIN
             dunnage_type_name,
             dunnage_type_icon,
             quantity,
+            quantity_type,
             po_number,
             received_date,
             user_id,
@@ -89,6 +93,7 @@ BEGIN
             v_dunnage_type_name,
             v_dunnage_type_icon,
             v_quantity,
+            COALESCE(NULLIF(v_quantity_type, 'null'), 'Quantity'),
             NULLIF(v_po_number, 'null'),
             COALESCE(v_received_date, NOW()),
             p_user,

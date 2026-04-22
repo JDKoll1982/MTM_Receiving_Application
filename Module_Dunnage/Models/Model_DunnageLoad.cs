@@ -32,6 +32,9 @@ public partial class Model_DunnageLoad : ObservableObject
     private decimal _quantity;
 
     [ObservableProperty]
+    private string _quantityType = "Quantity";
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(EditablePoNumber))]
     private string _poNumber = string.Empty;
 

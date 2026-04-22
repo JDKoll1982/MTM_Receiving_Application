@@ -67,7 +67,7 @@ public sealed class Service_DunnageWorkflowTests
     }
 
     [Fact]
-    public async Task AdvanceToNextStepAsync_ShouldApplyConfiguredDefaultLocation_WhenSessionLocationIsBlank()
+    public async Task AdvanceToNextStepAsync_ShouldRequireLocation_WhenSessionLocationIsBlank()
     {
         var service = CreateService(defaultLocation: "QA-RECV");
 
@@ -95,9 +95,9 @@ public sealed class Service_DunnageWorkflowTests
 
         var detailsStepResult = await service.AdvanceToNextStepAsync();
 
-        detailsStepResult.IsSuccess.Should().BeTrue();
-        service.CurrentSession.Location.Should().Be("QA-RECV");
-        service.CurrentSession.Loads.Should().OnlyContain(load => load.Location == "QA-RECV");
+        detailsStepResult.IsSuccess.Should().BeFalse();
+        detailsStepResult.ErrorMessage.Should().Be("Please enter a location.");
+        service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.DetailsEntry);
     }
 
     [Fact]
@@ -119,6 +119,7 @@ public sealed class Service_DunnageWorkflowTests
         service.CurrentSession.SelectedPart = new Model_DunnagePart { PartId = "DUN-100" };
         service.NumberOfLoads = 1;
         service.CurrentSession.LoadQuantities.Add(10m);
+        service.CurrentSession.Location = "BAD-LOC";
 
         service.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
         await service.AdvanceToNextStepAsync();

@@ -2,7 +2,7 @@
   "id": "volvo-label-and-email",
   "module": "Module_Volvo",
   "name": "Label And Email Output",
-  "summary": "Volvo label CSV generation, shipment-entry email preview dialog launching, HTML email-preview formatting, recipient modeling, corrected component roll-up quantities for requested lines, HTML clipboard output, and label-data cleanup operations derived from shipment content.",
+  "summary": "Volvo label CSV generation, shipment-entry email preview dialog launching, HTML email-preview formatting, recipient modeling, recipient copy-button enablement based on available To and CC text, corrected component roll-up quantities for requested lines, HTML clipboard output, and label-data cleanup operations derived from shipment content.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Volvo/Services/Service_Volvo.cs",
@@ -44,11 +44,13 @@
       "Label generation action",
       "Email output action",
       "HTML email preview",
+      "Recipient copy actions",
       "Clear label data action"
     ],
     "userActions": [
       "Generate shipment label output",
       "Prepare email-ready output",
+      "Copy populated To and CC recipient lists when available",
       "Copy Outlook-ready HTML email content",
       "Clear generated label data when needed"
     ],
@@ -56,6 +58,7 @@
       "Confirm label and email output still reflect the selected shipment data accurately",
       "Confirm component roll-up quantities in the email preview use the component inclusion count per parent skid rather than multiplying again by the component part's own quantity-per-skid",
       "Confirm the email preview renders requested lines and discrepancies as formatted HTML rather than raw tab-delimited text",
+      "Confirm the Volvo email preview To and CC copy buttons stay disabled when their corresponding recipient text boxes are blank",
       "Confirm Copy Email Body places rich HTML plus plain-text fallback onto the clipboard"
     ]
   }

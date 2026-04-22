@@ -10,7 +10,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
@@ -19,9 +18,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
     public class Service_DunnageWorkflow : IService_DunnageWorkflow, IDisposable
     {
-        private const string SettingsCategory = "Dunnage";
         private const string WarehouseCode = "002";
-        private const string FallbackDefaultLocation = "RECV";
 
         private readonly IService_MySQL_Dunnage _dunnageService;
         private readonly IService_UserSessionManager _sessionManager;
@@ -488,9 +485,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
             var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(CurrentSession.PONumber);
             CurrentSession.PONumber = normalizedPoNumber;
-            var location = string.IsNullOrWhiteSpace(CurrentSession.Location)
-                ? FallbackDefaultLocation
-                : CurrentSession.Location.Trim();
+            var location = CurrentSession.Location?.Trim() ?? string.Empty;
             var poNumber = string.IsNullOrWhiteSpace(normalizedPoNumber)
                 ? "Nothing Entered"
                 : normalizedPoNumber;
@@ -513,6 +508,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 load.PartImagePath = CurrentSession.SelectedPart?.ImagePath;
                 load.DunnageType = CurrentSession.SelectedTypeName;
                 load.TypeId = CurrentSession.SelectedTypeId;
+                load.QuantityType = CurrentSession.SelectedPart?.QuantityType ?? "Quantity";
                 load.Specs = new Dictionary<string, object>(specs);
                 load.SpecValues = new Dictionary<string, object>(specs);
                 load.InventoryMethod = inventoryMethod;
@@ -531,7 +527,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 PartId = CurrentSession.SelectedPart?.PartId ?? "Unknown",
                 Quantity = quantity,
                 PoNumber = normalizedPoNumber,
-                Location = CurrentSession.Location,
+                Location = CurrentSession.Location?.Trim(),
                 HomeLocation = CurrentSession.SelectedPart?.HomeLocation,
                 DunnageType = CurrentSession.SelectedTypeName,
                 TypeName = CurrentSession.SelectedTypeName,
@@ -539,6 +535,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 TypeImagePath = CurrentSession.SelectedType?.ImagePath,
                 PartImagePath = CurrentSession.SelectedPart?.ImagePath,
                 TypeId = CurrentSession.SelectedTypeId,
+                QuantityType = CurrentSession.SelectedPart?.QuantityType ?? "Quantity",
                 Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
                 SpecValues = CurrentSession.SpecValues is null
                     ? null
@@ -551,9 +548,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         private async Task<Model_ReceivingValidationResult> EnsureDefaultAndValidatedLocationAsync()
         {
-            var resolvedLocation = string.IsNullOrWhiteSpace(CurrentSession.Location)
-                ? await GetDefaultLocationAsync()
-                : CurrentSession.Location.Trim();
+            var resolvedLocation = CurrentSession.Location?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(resolvedLocation))
+            {
+                return Model_ReceivingValidationResult.Error("Please enter a location.");
+            }
 
             var validation = await _receivingValidation.ValidateLocationAsync(
                 resolvedLocation,
@@ -566,36 +566,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
             CurrentSession.Location = resolvedLocation;
             return Model_ReceivingValidationResult.Success();
-        }
-
-        private async Task<string> GetDefaultLocationAsync()
-        {
-            try
-            {
-                var result = await _settingsCore.GetSettingAsync(
-                    SettingsCategory,
-                    DunnageSettingsKeys.UserPreferences.DefaultLocation,
-                    _sessionManager.CurrentSession?.User?.EmployeeNumber
-                );
-
-                if (result.IsSuccess && result.Data is not null)
-                {
-                    var configuredLocation = result.Data.Value?.Trim();
-                    if (!string.IsNullOrWhiteSpace(configuredLocation))
-                    {
-                        return configuredLocation;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(
-                    $"Failed to load default Dunnage location. Falling back to {FallbackDefaultLocation}. Error: {ex.Message}",
-                    "DunnageWorkflow"
-                );
-            }
-
-            return FallbackDefaultLocation;
         }
     }
 }

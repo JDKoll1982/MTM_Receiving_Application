@@ -10,6 +10,10 @@ public class Model_DunnagePartDialogDraft
 
     public string HomeLocation { get; set; } = string.Empty;
 
+    public string QuantityType { get; set; } = "Quantity";
+
+    public string SelectedQuantityType { get; set; } = string.Empty;
+
     public string Notes { get; set; } = string.Empty;
 
     public string SelectedInventoryMethod { get; set; } = "Not Inventoried";
@@ -23,6 +27,8 @@ public class Model_DunnagePartDialogDraft
             PartId = PartId,
             ImagePath = ImagePath,
             HomeLocation = HomeLocation,
+            QuantityType = QuantityType,
+            SelectedQuantityType = SelectedQuantityType,
             Notes = Notes,
             SelectedInventoryMethod = SelectedInventoryMethod,
             SpecValues = new Dictionary<string, object?>(SpecValues),

@@ -23,6 +23,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly Dao_DunnageLabelData _daoDunnageLabelData;
         private readonly Dao_DunnageType _daoDunnageType;
         private readonly Dao_DunnagePart _daoDunnagePart;
+        private readonly Dao_DunnageQuantityType _daoDunnageQuantityType;
         private readonly Dao_DunnageSpec _daoDunnageSpec;
         private readonly Dao_InventoriedDunnage _daoInventoriedDunnage;
         private readonly Dao_DunnageCustomField _daoCustomField;
@@ -41,6 +42,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             Dao_DunnageLabelData daoDunnageLabelData,
             Dao_DunnageType daoDunnageType,
             Dao_DunnagePart daoDunnagePart,
+            Dao_DunnageQuantityType daoDunnageQuantityType,
             Dao_DunnageSpec daoDunnageSpec,
             Dao_InventoriedDunnage daoInventoriedDunnage,
             Dao_DunnageCustomField daoCustomField,
@@ -56,6 +58,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _daoDunnageLabelData = daoDunnageLabelData;
             _daoDunnageType = daoDunnageType;
             _daoDunnagePart = daoDunnagePart;
+            _daoDunnageQuantityType = daoDunnageQuantityType;
             _daoDunnageSpec = daoDunnageSpec;
             _daoInventoriedDunnage = daoInventoriedDunnage;
             _daoCustomField = daoCustomField;
@@ -631,6 +634,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     part.TypeId,
                     part.SpecValues,
                     persistedImagePath,
+                    part.QuantityType,
                     part.HomeLocation,
                     CurrentUser
                 );
@@ -696,6 +700,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     part.TypeId,
                     part.SpecValues,
                     persistedImagePath,
+                    part.QuantityType,
                     part.HomeLocation,
                     inventoryMethod,
                     inventoryNotes,
@@ -752,6 +757,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     part.PartId,
                     part.SpecValues,
                     persistedImagePath,
+                    part.QuantityType,
                     part.HomeLocation,
                     CurrentUser
                 );
@@ -830,6 +836,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     part.PartId,
                     part.SpecValues,
                     persistedImagePath,
+                    part.QuantityType,
                     part.HomeLocation,
                     inventoryMethod,
                     inventoryNotes,
@@ -856,6 +863,54 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure(
                     $"Error updating part with linked references: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result<List<Model_DunnageQuantityType>>> GetQuantityTypesAsync()
+        {
+            try
+            {
+                return await _daoDunnageQuantityType.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(GetQuantityTypesAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<List<Model_DunnageQuantityType>>(
+                    $"Error retrieving quantity types: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result> SaveQuantityTypeIfMissingAsync(string quantityType)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(quantityType))
+                {
+                    return Model_Dao_Result_Factory.Failure("Quantity type cannot be empty.");
+                }
+
+                return await _daoDunnageQuantityType.InsertIfMissingAsync(
+                    quantityType.Trim(),
+                    CurrentUser
+                );
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(SaveQuantityTypeIfMissingAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error saving quantity type: {ex.Message}"
                 );
             }
         }

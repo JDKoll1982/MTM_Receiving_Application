@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-22T05:33:49.6691176-05:00",
+  "generatedAt": "2026-04-22T06:10:46.4213259-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -423,6 +423,75 @@
       "variableTokensUsed": [],
       "temporaryTables": [],
       "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/07_Migration_dunnage_quantity_types.sql",
+      "category": "migration_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_mig43_add_column_if_missing",
+      "procedureCount": 3,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_table_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_column_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_ddl",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "__system__:columns",
+        "__system__:tables"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [
+        "sp_mig43_add_column_if_missing",
+        "sp_mig43_add_table_if_missing",
+        "sp_mig43_apply"
+      ],
+      "parameterTokensUsed": [
+        "p_table_name",
+        "p_column_name",
+        "p_ddl"
+      ],
+      "variableTokensUsed": [
+        "v_exists"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "__system__:columns",
+          "object": "__system__:columns"
+        },
+        {
+          "alias": "__system__:tables",
+          "object": "__system__:tables"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/01_Table_auth_departments.sql",
@@ -1227,6 +1296,27 @@
       "category": "schema_file",
       "objectType": "table",
       "objectName": "settings_reporting_recipients",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/40_Table_dunnage_quantity_types.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "dunnage_quantity_types",
       "procedureCount": 0,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
@@ -3538,6 +3628,11 @@
         {
           "qualifier": "dld",
           "resolvedObject": "dunnage_label_data",
+          "column": "quantity_type"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
           "column": "received_date"
         },
         {
@@ -3598,6 +3693,7 @@
             "load_uuid",
             "part_id",
             "quantity",
+            "quantity_type",
             "received_date",
             "created_by",
             "created_date",
@@ -3773,6 +3869,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
           "name": "p_po_number",
           "sqlType": "VARCHAR(50)"
         },
@@ -3825,6 +3926,7 @@
             "dunnage_type_name",
             "dunnage_type_icon",
             "quantity",
+            "quantity_type",
             "po_number",
             "received_date",
             "user_id",
@@ -3846,6 +3948,7 @@
         "p_dunnage_type_name",
         "p_dunnage_type_icon",
         "p_quantity",
+        "p_quantity_type",
         "p_po_number",
         "p_received_date",
         "p_user_id",
@@ -3914,6 +4017,10 @@
           "sqlType": "DECIMAL(10,2)"
         },
         {
+          "name": "v_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
           "name": "v_po_number",
           "sqlType": "VARCHAR(50)"
         },
@@ -3954,6 +4061,7 @@
             "dunnage_type_name",
             "dunnage_type_icon",
             "quantity",
+            "quantity_type",
             "po_number",
             "received_date",
             "user_id",
@@ -3979,6 +4087,7 @@
         "v_dunnage_type_name",
         "v_dunnage_type_icon",
         "v_quantity",
+        "v_quantity_type",
         "v_po_number",
         "v_received_date",
         "v_location",
@@ -4037,6 +4146,11 @@
           "direction": "IN",
           "name": "p_quantity",
           "sqlType": "DECIMAL(10"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
         },
         {
           "direction": "IN",
@@ -4100,6 +4214,7 @@
         "p_dunnage_type_name",
         "p_dunnage_type_icon",
         "p_quantity",
+        "p_quantity_type",
         "p_po_number",
         "p_received_date",
         "p_user_id",
@@ -4218,6 +4333,16 @@
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
           "column": "quantity"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "quantity_type"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "quantity_type"
         },
         {
           "qualifier": "l",
@@ -4390,6 +4515,16 @@
         {
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
+          "column": "quantity_type"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "quantity_type"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
           "column": "po_number"
         },
         {
@@ -4552,6 +4687,16 @@
           "qualifier": "l",
           "resolvedObject": "dunnage_history",
           "column": "quantity"
+        },
+        {
+          "qualifier": "l",
+          "resolvedObject": "dunnage_history",
+          "column": "quantity_type"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "quantity_type"
         },
         {
           "qualifier": "l",
@@ -5036,6 +5181,11 @@
           "column": "image_path"
         },
         {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "quantity_type"
+        },
+        {
           "qualifier": "t",
           "resolvedObject": "dunnage_types",
           "column": "image_path"
@@ -5148,6 +5298,11 @@
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "image_path"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "quantity_type"
         },
         {
           "qualifier": "t",
@@ -5264,6 +5419,11 @@
           "qualifier": "p",
           "resolvedObject": "dunnage_parts",
           "column": "image_path"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "quantity_type"
         },
         {
           "qualifier": "t",
@@ -5412,6 +5572,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
           "name": "p_home_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -5437,6 +5602,7 @@
             "type_id",
             "spec_values",
             "image_path",
+            "quantity_type",
             "home_location",
             "created_by",
             "created_date"
@@ -5451,6 +5617,7 @@
         "p_type_id",
         "p_spec_values",
         "p_image_path",
+        "p_quantity_type",
         "p_home_location",
         "p_user",
         "p_new_id"
@@ -5499,6 +5666,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
           "name": "p_home_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -5539,6 +5711,7 @@
             "type_id",
             "spec_values",
             "image_path",
+            "quantity_type",
             "home_location",
             "created_by",
             "created_date"
@@ -5563,6 +5736,7 @@
         "p_type_id",
         "p_spec_values",
         "p_image_path",
+        "p_quantity_type",
         "p_home_location",
         "p_inventory_method",
         "p_inventory_notes",
@@ -5735,6 +5909,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
           "name": "p_home_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -5763,6 +5942,7 @@
         "p_part_id",
         "p_spec_values",
         "p_image_path",
+        "p_quantity_type",
         "p_home_location",
         "p_user"
       ],
@@ -5812,6 +5992,11 @@
           "direction": "IN",
           "name": "p_image_path",
           "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
         },
         {
           "direction": "IN",
@@ -5900,6 +6085,7 @@
         "p_new_part_id",
         "p_spec_values",
         "p_image_path",
+        "p_quantity_type",
         "p_home_location",
         "p_inventory_method",
         "p_inventory_notes",
@@ -5913,6 +6099,79 @@
           "object": "dunnage_requires_inventory"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_QuantityTypes_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_QuantityTypes_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_quantity_types"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_quantity_types",
+          "object": "dunnage_quantity_types"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_QuantityTypes_InsertIfMissing.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_QuantityTypes_InsertIfMissing",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageQuantityType.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_user",
+          "sqlType": "VARCHAR(50)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_quantity_type",
+        "p_user"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Specs_CountPartsUsingSpec.sql",

@@ -7,6 +7,7 @@ CREATE PROCEDURE `sp_Dunnage_Parts_Insert`(
     IN p_type_id INT,
     IN p_spec_values JSON,
     IN p_image_path VARCHAR(255),
+    IN p_quantity_type VARCHAR(100),
     IN p_home_location VARCHAR(100),
     IN p_user VARCHAR(50),
     OUT p_new_id INT
@@ -17,6 +18,7 @@ BEGIN
         type_id,
         spec_values,
         image_path,
+        quantity_type,
         home_location,
         created_by,
         created_date
@@ -25,6 +27,7 @@ BEGIN
         p_type_id,
         p_spec_values,
         NULLIF(p_image_path, ''),
+        COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
         p_home_location,
         p_user,
         NOW()

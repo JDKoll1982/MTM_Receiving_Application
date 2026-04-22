@@ -8,6 +8,8 @@ public class Model_DunnageSpecTemplateOption
 
     public string HomeLocation { get; set; } = string.Empty;
 
+    public string QuantityType { get; set; } = "Quantity";
+
     public string Notes { get; set; } = string.Empty;
 
     public string SpecSummary { get; set; } = string.Empty;

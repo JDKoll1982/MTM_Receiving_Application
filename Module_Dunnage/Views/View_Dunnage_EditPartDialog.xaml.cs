@@ -20,22 +20,27 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 {
-    private const int WizardStepCount = 3;
+    private const int WizardStepCount = 4;
     private const int ConfiguredSpecsPerPage = 6;
     private const int CustomSpecsPerPage = 4;
+    private const int QuantityTypeWizardStep = 2;
+    private const int PartSpecificWizardStep = 3;
 
     public bool WasAccepted { get; private set; }
 
     public string UpdatedPartId { get; private set; } = string.Empty;
     public string UpdatedSpecValuesJson { get; private set; } = "{}";
     public string UpdatedHomeLocation { get; private set; } = string.Empty;
+    public string ResolvedQuantityType { get; private set; } = "Quantity";
     public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
     public string SelectedImagePath { get; private set; } = string.Empty;
     public bool RequestChooseExistingSpecs { get; private set; }
     public bool RequestDelete { get; private set; }
+    public bool RequestSaveQuantityTypeForFutureUse { get; private set; }
 
     private readonly Model_DunnagePart _existingPart;
     private readonly List<Model_DunnageSpec> _specs;
+    private readonly List<Model_DunnageQuantityType> _availableQuantityTypes;
     private readonly List<FrameworkElement> _specPanels = new();
     private readonly Dictionary<string, Control> _specInputs = new();
     private readonly ObservableCollection<Model_DunnagePartCustomSpecEntry> _customSpecs = new();
@@ -43,9 +48,11 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         new();
     private readonly ObservableCollection<Model_SpecItem> _partSpecificSpecs = new();
     private readonly ObservableCollection<string> _partSpecificChoices = new();
+    private readonly ObservableCollection<Model_DunnageQuantityType> _quantityTypes = new();
     private readonly IService_DunnageImageStorage _imageStorage;
     private readonly string _typeName;
     private readonly bool _usesDefinitionBasedPartSpecificSpecs;
+    private string _initialResolvedQuantityType = "Quantity";
     private int _currentWizardStep;
     private int _currentSpecPage;
     private int _currentCustomSpecsPage;
@@ -64,9 +71,12 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     public ObservableCollection<string> PartSpecificChoices => _partSpecificChoices;
 
+    public ObservableCollection<Model_DunnageQuantityType> QuantityTypes => _quantityTypes;
+
     public View_Dunnage_EditPartDialog(
         Model_DunnagePart existingPart,
         List<Model_DunnageSpec> specs,
+        List<Model_DunnageQuantityType> quantityTypes,
         string typeName,
         string inventoryMethod,
         Model_DunnagePartDialogDraft? initialDraft = null,
@@ -78,6 +88,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
         _existingPart = existingPart;
         _specs = specs;
+        _availableQuantityTypes = quantityTypes ?? new List<Model_DunnageQuantityType>();
         _typeName = typeName;
         _usesDefinitionBasedPartSpecificSpecs = existingPart.UsesDefinitionBasedPartSpecificSpecs;
         _imageStorage = App.GetService<IService_DunnageImageStorage>();
@@ -91,6 +102,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         TypeNameTextBlock.Text = typeName;
 
         GenerateSpecFields();
+        InitializeQuantityTypes();
         InitializePartSpecificSpecEditors();
         _currentWizardStep = 0;
         UpdateWizardStepVisibility();
@@ -103,6 +115,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             ApplyDraft(initialDraft);
         }
 
+        CaptureInitialQuantityType();
         UpdateValidationState();
     }
 
@@ -135,6 +148,8 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             PartId = PartIdTextBox.Text.Trim(),
             ImagePath = SelectedImagePath,
             HomeLocation = HomeLocationTextBox.Text.Trim(),
+            QuantityType = GetDraftQuantityType(),
+            SelectedQuantityType = GetSelectedQuantityType(),
             Notes = NotesTextBox.Text.Trim(),
             SelectedInventoryMethod = GetSelectedInventoryMethod(),
             SpecValues = new Dictionary<string, object?>(specValues),
@@ -149,6 +164,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         PartIdTextBox.Text = draft.PartId;
         SelectedImagePath = draft.ImagePath;
         HomeLocationTextBox.Text = draft.HomeLocation;
+        ApplyQuantityTypeDraft(draft.QuantityType, draft.SelectedQuantityType);
         NotesTextBox.Text = draft.Notes;
         SelectInventoryMethod(draft.SelectedInventoryMethod);
         UpdateImagePreview();
@@ -361,6 +377,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         PartIdTextBox.Text = _existingPart.PartId;
         SelectedImagePath = _existingPart.ImagePath ?? string.Empty;
         HomeLocationTextBox.Text = _existingPart.HomeLocation ?? string.Empty;
+        ApplyQuantityTypeDraft(_existingPart.QuantityType, string.Empty);
         SelectInventoryMethod(inventoryMethod);
         UpdateImagePreview();
 
@@ -547,6 +564,204 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         LegacyPartSpecificSpecsPanel.Visibility = Visibility.Visible;
         LegacyPartSpecificSpecsListPanel.Visibility = Visibility.Visible;
         RenderCustomSpecsPage();
+    }
+
+    private void InitializeQuantityTypes()
+    {
+        _quantityTypes.Clear();
+
+        foreach (
+            var quantityType in _availableQuantityTypes
+                .Where(item => string.IsNullOrWhiteSpace(item.QuantityType) is false)
+                .GroupBy(item => item.QuantityType.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .OrderBy(item => item.QuantityType, StringComparer.OrdinalIgnoreCase)
+        )
+        {
+            _quantityTypes.Add(quantityType);
+        }
+    }
+
+    private void CaptureInitialQuantityType()
+    {
+        _initialResolvedQuantityType = GetDraftQuantityType();
+        ResolvedQuantityType = _initialResolvedQuantityType;
+    }
+
+    private void ApplyQuantityTypeDraft(string quantityType, string selectedQuantityType)
+    {
+        QuantityTypeTextBox.Text = string.Empty;
+        QuantityTypesListView.SelectedItem = null;
+
+        if (string.IsNullOrWhiteSpace(selectedQuantityType) is false)
+        {
+            var explicitMatch = FindQuantityType(selectedQuantityType);
+            if (explicitMatch is not null)
+            {
+                QuantityTypesListView.SelectedItem = explicitMatch;
+            }
+        }
+
+        if (
+            string.IsNullOrWhiteSpace(quantityType)
+            || string.Equals(quantityType, "Quantity", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return;
+        }
+
+        var matchedQuantityType = FindQuantityType(quantityType);
+        if (matchedQuantityType is not null && QuantityTypesListView.SelectedItem is null)
+        {
+            QuantityTypesListView.SelectedItem = matchedQuantityType;
+            return;
+        }
+
+        QuantityTypeTextBox.Text = quantityType;
+    }
+
+    private Model_DunnageQuantityType? FindQuantityType(string quantityType)
+    {
+        return _quantityTypes.FirstOrDefault(item =>
+            string.Equals(item.QuantityType, quantityType, StringComparison.OrdinalIgnoreCase)
+        );
+    }
+
+    private string GetCustomQuantityType()
+    {
+        return QuantityTypeTextBox.Text.Trim();
+    }
+
+    private string GetSelectedQuantityType()
+    {
+        return (
+                QuantityTypesListView.SelectedItem as Model_DunnageQuantityType
+            )?.QuantityType?.Trim() ?? string.Empty;
+    }
+
+    private string GetDraftQuantityType()
+    {
+        var customQuantityType = GetCustomQuantityType();
+        if (string.IsNullOrWhiteSpace(customQuantityType) is false)
+        {
+            return customQuantityType;
+        }
+
+        var selectedQuantityType = GetSelectedQuantityType();
+        return string.IsNullOrWhiteSpace(selectedQuantityType) ? "Quantity" : selectedQuantityType;
+    }
+
+    private bool ShouldPromptToPersistQuantityType(
+        string quantityType,
+        bool resolvedFromCustomInput
+    )
+    {
+        if (!resolvedFromCustomInput)
+        {
+            return false;
+        }
+
+        if (
+            string.Equals(
+                quantityType,
+                _initialResolvedQuantityType,
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            return false;
+        }
+
+        return _quantityTypes.Any(item =>
+            string.Equals(item.QuantityType, quantityType, StringComparison.OrdinalIgnoreCase)
+        )
+            is false;
+    }
+
+    private async Task<(
+        bool IsResolved,
+        string QuantityType,
+        bool SaveForFutureUse
+    )> ResolveQuantityTypeAsync()
+    {
+        var customQuantityType = GetCustomQuantityType();
+        var selectedQuantityType = GetSelectedQuantityType();
+
+        if (
+            string.IsNullOrWhiteSpace(customQuantityType)
+            && string.IsNullOrWhiteSpace(selectedQuantityType)
+        )
+        {
+            return (true, "Quantity", false);
+        }
+
+        if (string.IsNullOrWhiteSpace(customQuantityType))
+        {
+            return (true, selectedQuantityType, false);
+        }
+
+        if (string.IsNullOrWhiteSpace(selectedQuantityType))
+        {
+            return (
+                true,
+                customQuantityType,
+                ShouldPromptToPersistQuantityType(customQuantityType, true)
+            );
+        }
+
+        if (
+            string.Equals(
+                customQuantityType,
+                selectedQuantityType,
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            return (
+                true,
+                customQuantityType,
+                ShouldPromptToPersistQuantityType(customQuantityType, true)
+            );
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = "Choose Quantity Type",
+            Content =
+                "You entered a custom quantity type and also selected a saved quantity type. Choose which one to save.",
+            PrimaryButtonText = customQuantityType,
+            SecondaryButtonText = selectedQuantityType,
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = XamlRoot,
+        };
+
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, XamlRoot);
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            return (
+                true,
+                customQuantityType,
+                ShouldPromptToPersistQuantityType(customQuantityType, true)
+            );
+        }
+
+        if (result == ContentDialogResult.Secondary)
+        {
+            return (true, selectedQuantityType, false);
+        }
+
+        if (_currentWizardStep != QuantityTypeWizardStep)
+        {
+            _currentWizardStep = QuantityTypeWizardStep;
+            UpdateWizardStepVisibility();
+            UpdateWizardNavigation();
+        }
+
+        QuantityTypeTextBox.Focus(FocusState.Programmatic);
+        return (false, string.Empty, false);
     }
 
     private void LoadExistingPartSpecificSpecDefinitions()
@@ -1091,9 +1306,10 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         return rawValue?.ToString() ?? string.Empty;
     }
 
-    private bool TryCommit()
+    private async Task<bool> TryCommitAsync()
     {
         RequestChooseExistingSpecs = false;
+        RequestSaveQuantityTypeForFutureUse = false;
         if (!ValidationViewModel.ValidateForSubmit())
         {
             PartIdTextBox.Focus(FocusState.Programmatic);
@@ -1105,6 +1321,12 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         if (string.IsNullOrWhiteSpace(UpdatedPartId))
         {
             PartIdTextBox.Focus(FocusState.Programmatic);
+            return false;
+        }
+
+        var quantityTypeResolution = await ResolveQuantityTypeAsync();
+        if (!quantityTypeResolution.IsResolved)
+        {
             return false;
         }
 
@@ -1128,13 +1350,15 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
         UpdatedSpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
         UpdatedHomeLocation = HomeLocationTextBox.Text.Trim();
+        ResolvedQuantityType = quantityTypeResolution.QuantityType;
         SelectedInventoryMethod = GetSelectedInventoryMethod();
+        RequestSaveQuantityTypeForFutureUse = quantityTypeResolution.SaveForFutureUse;
         return true;
     }
 
-    private void OnFooterPrimaryButtonClick(object sender, RoutedEventArgs e)
+    private async void OnFooterPrimaryButtonClick(object sender, RoutedEventArgs e)
     {
-        if (TryCommit())
+        if (await TryCommitAsync())
         {
             WasAccepted = true;
             Hide();
@@ -1187,8 +1411,14 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
             _currentWizardStep == 0 ? Visibility.Visible : Visibility.Collapsed;
         StepTypeSpecsPanel.Visibility =
             _currentWizardStep == 1 ? Visibility.Visible : Visibility.Collapsed;
+        StepQuantityTypePanel.Visibility =
+            _currentWizardStep == QuantityTypeWizardStep
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         StepPartSpecificSpecsPanel.Visibility =
-            _currentWizardStep == 2 ? Visibility.Visible : Visibility.Collapsed;
+            _currentWizardStep == PartSpecificWizardStep
+                ? Visibility.Visible
+                : Visibility.Collapsed;
     }
 
     private void UpdateWizardNavigation()
@@ -1211,15 +1441,26 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
         FooterPrimaryButton.IsEnabled = isRequiredFieldsValid;
         StepSummaryTextBlock.Text = selectedIndex switch
         {
-            0 => "Step 1 of 3 • Part Setup",
-            1 => "Step 2 of 3 • Type Specs",
-            2 => _usesDefinitionBasedPartSpecificSpecs
-                ? "Step 3 of 3 • Part-Specific Spec Definitions"
-                : "Step 3 of 3 • Part-Specific Specs",
+            0 => "Step 1 of 4 • Part Setup",
+            1 => "Step 2 of 4 • Type Specs",
+            2 => "Step 3 of 4 • Quantity Type",
+            3 => _usesDefinitionBasedPartSpecificSpecs
+                ? "Step 4 of 4 • Part-Specific Spec Definitions"
+                : "Step 4 of 4 • Part-Specific Specs",
             _ => string.Empty,
         };
 
         Bindings.Update();
+    }
+
+    private void QuantityTypeInputChanged(object sender, TextChangedEventArgs e)
+    {
+        RequestSaveQuantityTypeForFutureUse = false;
+    }
+
+    private void QuantityTypesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        RequestSaveQuantityTypeForFutureUse = false;
     }
 
     private void RequiredPartFieldChanged(object sender, RoutedEventArgs e)

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -93,9 +94,31 @@ public class Service_ThemeManager : IService_ThemeManager
 
     private static void ApplyThemeToWindow(Window? window, ElementTheme theme)
     {
-        if (window?.Content is FrameworkElement content)
+        if (!TryGetWindowContent(window, out var content))
         {
-            content.RequestedTheme = theme;
+            return;
+        }
+
+        content.RequestedTheme = theme;
+    }
+
+    private static bool TryGetWindowContent(Window? window, out FrameworkElement? content)
+    {
+        content = null;
+
+        if (window is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            content = window.Content as FrameworkElement;
+            return content is not null;
+        }
+        catch (COMException)
+        {
+            return false;
         }
     }
 

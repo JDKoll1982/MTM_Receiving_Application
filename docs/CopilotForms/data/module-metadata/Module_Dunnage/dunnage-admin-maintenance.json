@@ -2,7 +2,7 @@
   "id": "dunnage-admin-maintenance",
   "module": "Module_Dunnage",
   "name": "Quick Add And Edit Dialogs",
-  "summary": "Quick-add type and part dialogs, the Edit Part dialog, and supporting spec, image, and picker flows used from the active Dunnage workflow, including definition-based part-specific specs for newly created parts and mixed payload reuse from existing part templates.",
+  "summary": "Quick-add type and part dialogs, the Edit Part dialog, and supporting spec, quantity-type, image, and picker flows used from the active Dunnage workflow, including reusable quantity-type selection, conflict resolution between custom and saved quantity labels, definition-based part-specific specs for newly created parts, and mixed payload reuse from existing part templates.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml",
@@ -20,6 +20,7 @@
     "Module_Dunnage/Helpers/Helper_Dunnage_PartSpecs.cs",
     "Module_Dunnage/Data/Dao_DunnageCustomField.cs",
     "Module_Dunnage/Data/Dao_DunnagePart.cs",
+    "Module_Dunnage/Data/Dao_DunnageQuantityType.cs",
     "Module_Dunnage/Data/Dao_DunnageSpec.cs",
     "Module_Dunnage/Data/Dao_DunnageType.cs",
     "Module_Dunnage/Services/Service_DunnageImageStorage.cs",
@@ -28,6 +29,7 @@
     "Module_Dunnage/Models/Model_DunnagePart.cs",
     "Module_Dunnage/Models/Model_DunnagePartCustomSpecEntry.cs",
     "Module_Dunnage/Models/Model_DunnagePartDialogDraft.cs",
+    "Module_Dunnage/Models/Model_DunnageQuantityType.cs",
     "Module_Dunnage/Models/Model_DunnageSpec.cs",
     "Module_Dunnage/Models/Model_DunnageSpecTemplateOption.cs",
     "Module_Dunnage/Models/Model_DunnageType.cs",
@@ -49,6 +51,7 @@
       "Quick-add type setup",
       "Quick-add and edit part setup",
       "Spec template reuse",
+      "Quantity-type selection and reuse",
       "Icon and image selection"
     ],
     "screens": [
@@ -61,6 +64,7 @@
     "desiredUiPatterns": ["Form", "Split layout", "Dialog"],
     "uiElements": [
       "Type and part edit forms",
+      "Quantity-type textbox and saved-type list",
       "Icon picker",
       "PNG image picker and preview",
       "Quick-add dialogs",
@@ -70,6 +74,9 @@
     ],
     "userActions": [
       "Add new types and parts quickly",
+      "Choose a saved quantity label header or enter a custom one when adding or editing a part",
+      "Resolve save-time conflicts when both a custom quantity type and a saved list value are provided",
+      "Optionally save a new custom quantity type for future reuse after a successful part save",
       "Upload and clear PNG images for dunnage types and parts",
       "See only the selected filename in the dunnage type image card instead of the full path",
       "Click the selected dunnage type image preview to open its containing folder in File Explorer",
@@ -81,6 +88,12 @@
     ],
     "validationHints": [
       "Confirm type and part dialogs retain a selected PNG when reopened from draft state",
+      "Confirm Quick Add Part and Edit Part include a dedicated quantity-type step with a custom textbox and saved quantity-type list",
+      "Confirm leaving both quantity-type inputs blank saves the default label of Quantity",
+      "Confirm save-time conflict prompts let the user choose between the custom quantity type and the selected saved quantity type",
+      "Confirm canceling the conflict prompt returns the dialog to the quantity-type step when save was attempted from a different step",
+      "Confirm a saved part reopens with its current quantity type shown either in the saved list or the custom textbox, depending on where it came from",
+      "Confirm choosing to save a new custom quantity type inserts it into the reusable Dunnage quantity-type table after the part save succeeds",
       "Confirm clearing an image removes the stored relative path on save",
       "Confirm Quick Add Part and Edit Part can temporarily close, open the existing-spec picker, and reopen with the selected specs applied",
       "Confirm choosing existing specs preserves mixed configured values plus part-specific spec-definition payloads without forcing the source part ID or inventory type",

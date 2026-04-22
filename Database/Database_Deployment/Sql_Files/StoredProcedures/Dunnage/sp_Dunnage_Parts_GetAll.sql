@@ -11,6 +11,7 @@ BEGIN
         t.type_name,
         p.spec_values,
         p.image_path,
+        p.quantity_type,
         t.image_path AS type_image_path,
         p.home_location,
         p.created_by,

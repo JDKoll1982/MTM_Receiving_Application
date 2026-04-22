@@ -65,6 +65,7 @@ public class Dao_DunnagePart
         int typeId,
         string specValues,
         string? imagePath,
+        string quantityType,
         string homeLocation,
         string user
     )
@@ -83,6 +84,7 @@ public class Dao_DunnagePart
                 "@p_image_path",
                 string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath
             ),
+            new MySqlParameter("@p_quantity_type", quantityType),
             new MySqlParameter("@p_home_location", homeLocation),
             new MySqlParameter("@p_user", user),
             pNewId,
@@ -111,6 +113,7 @@ public class Dao_DunnagePart
         int typeId,
         string specValues,
         string? imagePath,
+        string quantityType,
         string homeLocation,
         string inventoryMethod,
         string inventoryNotes,
@@ -131,6 +134,7 @@ public class Dao_DunnagePart
                 "@p_image_path",
                 string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath
             ),
+            new MySqlParameter("@p_quantity_type", quantityType),
             new MySqlParameter("@p_home_location", homeLocation),
             new MySqlParameter("@p_inventory_method", inventoryMethod),
             new MySqlParameter("@p_inventory_notes", inventoryNotes),
@@ -162,6 +166,7 @@ public class Dao_DunnagePart
         string partId,
         string specValues,
         string? imagePath,
+        string quantityType,
         string homeLocation,
         string user
     )
@@ -172,6 +177,7 @@ public class Dao_DunnagePart
             { "part_id", partId },
             { "spec_values", specValues },
             { "image_path", string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath },
+            { "quantity_type", quantityType },
             { "home_location", homeLocation },
             { "user", user },
         };
@@ -189,6 +195,7 @@ public class Dao_DunnagePart
         string newPartId,
         string specValues,
         string? imagePath,
+        string quantityType,
         string homeLocation,
         string inventoryMethod,
         string inventoryNotes,
@@ -202,6 +209,7 @@ public class Dao_DunnagePart
             { "new_part_id", newPartId },
             { "spec_values", specValues },
             { "image_path", string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath },
+            { "quantity_type", quantityType },
             { "home_location", homeLocation },
             { "inventory_method", inventoryMethod },
             { "inventory_notes", inventoryNotes },
@@ -267,6 +275,9 @@ public class Dao_DunnagePart
             DunnageTypeName = reader.IsDBNull(reader.GetOrdinal("type_name"))
                 ? string.Empty
                 : reader.GetString(reader.GetOrdinal("type_name")),
+            QuantityType = reader.IsDBNull(reader.GetOrdinal("quantity_type"))
+                ? "Quantity"
+                : reader.GetString(reader.GetOrdinal("quantity_type")),
             SpecValues = reader.IsDBNull(reader.GetOrdinal("spec_values"))
                 ? "{}"
                 : reader.GetString(reader.GetOrdinal("spec_values")),
