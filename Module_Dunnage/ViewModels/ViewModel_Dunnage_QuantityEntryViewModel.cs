@@ -73,9 +73,11 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
     private int _quantity = 1;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsValid))]
     private ObservableCollection<Model_DunnageLoad> _loads = new();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsValid))]
     private string _validationMessage = string.Empty;
 
     public bool IsValid =>
@@ -89,7 +91,8 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
             RebuildLoadEditors();
 
             var selectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
-            var selectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
+            var selectedPartName =
+                _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
 
             _logger.LogInfo(
                 $"Loaded context: Type={selectedTypeName}, Part={selectedPartName}, LoadCount={NumberOfLoads}",
@@ -140,7 +143,8 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
 
             var selectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
             var selectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
-            var selectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
+            var selectedPartName =
+                _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
             var selectedTypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath;
             var selectedPartImagePath = _workflowService.CurrentSession.SelectedPart?.ImagePath;
 

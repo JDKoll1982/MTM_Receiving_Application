@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>outside_service_request_package — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Breadcrumb">
+        <ul class="top-nav-links">
+            <li><a href="../../features/outside-service/index.html">Outside Service</a></li>
+            <li><a href="../index.html">Database</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../outside_service_request/index.html">outside_service_request</a></li>
+            <li><a href="../outside_service_request_line/index.html">outside_service_request_line</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>outside_service_request_package</code></h1>
+            <p class="lead">
+                Individual package records for each outside service request line.
+                Each row is one physical container (box, pallet, etc.) with its own
+                quantity of parts.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                When parts are split across multiple containers for a single outside service
+                line item, each container becomes one row in this table. The
+                <code>package_number</code> provides a 1-based sequence within the line.
+            </p>
+            <p>
+                The parent line's <code>package_count</code> and
+                <code>package_summary</code> are derived from these rows and cached
+                on the parent when packages are saved.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>outside_service_request_package_id</code></td><td>INT PK AUTO</td><td>No</td><td>Surrogate primary key</td></tr>
+                        <tr><td><code>outside_service_request_line_id</code></td><td>INT FK</td><td>No</td><td>Parent line (CASCADE DELETE)</td></tr>
+                        <tr><td><code>package_number</code></td><td>INT</td><td>No</td><td>1-based package sequence within the line</td></tr>
+                        <tr><td><code>quantity_in_package</code></td><td>INT</td><td>No</td><td>Number of parts in this container</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>A unique constraint on <code>(outside_service_request_line_id, package_number)</code> prevents duplicate package numbers within a line.</li>
+                <li>After inserting or deleting package rows, the app refreshes the parent line's <code>package_count</code> and <code>package_summary</code> fields.</li>
+                <li>Sum of <code>quantity_in_package</code> across all packages for a line equals the total quantity being shipped for that line item.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>outside_service_request_package</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

@@ -14,7 +14,7 @@
     </UserControl.Resources>
 
     <Grid
-        Padding="24"
+        Padding="24,0,24,0"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         RowSpacing="20">

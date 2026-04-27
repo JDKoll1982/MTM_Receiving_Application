@@ -55,6 +55,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private ObservableCollection<Model_InforVisualPart> _parts = new();
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasSelectedPart))]
         private Model_InforVisualPart? _selectedPart;
 
         [ObservableProperty]
@@ -130,6 +131,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _partsListAccessibilityName = "Parts List";
+
+        /// <summary>
+        /// Gets a value indicating whether a part is currently selected for guided PO entry.
+        /// </summary>
+        public bool HasSelectedPart => SelectedPart is not null;
 
         public ViewModel_Receiving_POEntry(
             IService_InforVisual inforVisualService,
@@ -554,6 +560,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (_isClearingRestrictedSelection)
             {
+                NotifyWorkflowNextButtonStateChanged();
                 return;
             }
 
@@ -570,6 +577,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     PackageType = "Skids";
 
                 _ = CheckQualityHoldOnSelectedPartAsync(value);
+            }
+
+            NotifyWorkflowNextButtonStateChanged();
+        }
+
+        private void NotifyWorkflowNextButtonStateChanged()
+        {
+            foreach (
+                var workflowViewModel in _viewModelRegistry.GetViewModels<ViewModel_Receiving_Workflow>()
+            )
+            {
+                workflowViewModel.RefreshNextButtonEnabled();
             }
         }
 

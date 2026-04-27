@@ -33,10 +33,10 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:Model_VolvoPart">
                     <StackPanel Padding="8" Spacing="2">
-                        <TextBlock FontWeight="SemiBold" Text="{x:Bind PartNumber, Mode=OneWay}" />
+                        <TextBlock FontWeight="SemiBold" Text="{x:Bind PartNumber, Mode=OneTime}" />
                         <TextBlock
                             Opacity="0.75"
-                            Text="{x:Bind Description, Mode=OneWay, TargetNullValue=(No Description)}"
+                            Text="{x:Bind Description, Mode=OneTime, TargetNullValue=(No Description)}"
                             TextWrapping="WrapWholeWords" />
                     </StackPanel>
                 </DataTemplate>

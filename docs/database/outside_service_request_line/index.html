@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>outside_service_request_line — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Breadcrumb">
+        <ul class="top-nav-links">
+            <li><a href="../../features/outside-service/index.html">Outside Service</a></li>
+            <li><a href="../index.html">Database</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../outside_service_request/index.html">outside_service_request</a></li>
+            <li><a href="../outside_service_request_package/index.html">outside_service_request_package</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>outside_service_request_line</code></h1>
+            <p class="lead">
+                Line items within an outside service request. Each row is one part
+                destined for one vendor. Tracks the full lifecycle from <em>Initialize</em>
+                through <em>Setup</em> to <em>Complete</em>.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Lines are the operational heart of the Outside Service module.
+                The <code>line_phase</code> ENUM drives the UI state machine —
+                fields become editable or read-only depending on the current phase.
+            </p>
+            <p>
+                Each line can have multiple packages (see
+                <strong>outside_service_request_package</strong>). A cached
+                slash-delimited summary of those packages is stored in
+                <code>package_summary</code> for fast display without a join.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>outside_service_request_line_id</code></td><td>INT PK AUTO</td><td>No</td><td>Surrogate primary key</td></tr>
+                        <tr><td><code>outside_service_request_id</code></td><td>INT FK</td><td>No</td><td>Parent request (CASCADE DELETE)</td></tr>
+                        <tr><td><code>line_number</code></td><td>INT</td><td>No</td><td>1-based line number within the request</td></tr>
+                        <tr><td><code>part_id</code></td><td>VARCHAR(50)</td><td>No</td><td>Infor Visual part identifier</td></tr>
+                        <tr><td><code>package_count</code></td><td>INT</td><td>No</td><td>Number of physical packages for this line</td></tr>
+                        <tr><td><code>package_summary</code></td><td>VARCHAR(500)</td><td>Yes</td><td>Cached slash-delimited package quantity summary for display</td></tr>
+                        <tr><td><code>line_phase</code></td><td>ENUM('Initialize','Setup','Complete')</td><td>No</td><td>Current lifecycle phase; default <code>Initialize</code></td></tr>
+                        <tr><td><code>setup_vendor_id</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Infor Visual vendor ID (set during Setup)</td></tr>
+                        <tr><td><code>setup_vendor_name</code></td><td>VARCHAR(255)</td><td>Yes</td><td>Selected or custom vendor name</td></tr>
+                        <tr><td><code>setup_vendor_source</code></td><td>VARCHAR(30)</td><td>Yes</td><td><code>suggested</code> (from history) or <code>custom</code> (typed in)</td></tr>
+                        <tr><td><code>bol_number</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Bill of lading number</td></tr>
+                        <tr><td><code>scheduled_ship_utc</code></td><td>DATETIME</td><td>Yes</td><td>Scheduled ship timestamp (UTC)</td></tr>
+                        <tr><td><code>shipping_contact</code></td><td>VARCHAR(255)</td><td>Yes</td><td>Shipping contact or handoff owner</td></tr>
+                        <tr><td><code>setup_notes</code></td><td>TEXT</td><td>Yes</td><td>Shipping setup notes</td></tr>
+                        <tr><td><code>completed_utc</code></td><td>DATETIME</td><td>Yes</td><td>UTC timestamp when line was completed</td></tr>
+                        <tr><td><code>completion_notes</code></td><td>TEXT</td><td>Yes</td><td>Notes captured at completion</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>outside_service_request_line_id</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>uq_outside_service_request_line</code></td><td><code>outside_service_request_id, line_number</code></td><td>UNIQUE</td><td>Ensures unique line numbers within a request</td></tr>
+                        <tr><td><code>idx_…_request</code></td><td><code>outside_service_request_id</code></td><td>INDEX</td><td>Parent-child join</td></tr>
+                        <tr><td><code>idx_…_phase</code></td><td><code>line_phase</code></td><td>INDEX</td><td>Filtering by phase for dashboards</td></tr>
+                        <tr><td><code>idx_…_part</code></td><td><code>part_id</code></td><td>INDEX</td><td>Part-based searches</td></tr>
+                        <tr><td><code>idx_…_vendor</code></td><td><code>setup_vendor_name</code></td><td>INDEX</td><td>Vendor-based searches</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>The <code>line_phase</code> ENUM is the state machine driver. Only fields appropriate for the current phase are editable in the UI.</li>
+                <li><code>package_summary</code> is a denormalized cache — always refresh it when the child packages change.</li>
+                <li>Setup fields (<code>setup_vendor_*</code>, <code>bol_number</code>, etc.) are NULL until the line enters Setup phase.</li>
+                <li>Completion fields (<code>completed_utc</code>, <code>completion_notes</code>) are NULL until the line enters Complete phase.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>outside_service_request_line</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

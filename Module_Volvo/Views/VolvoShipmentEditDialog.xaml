@@ -62,7 +62,7 @@
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 Header="Shipment Date"
-                IsEnabled="{x:Bind IsEditableMode, Mode=OneWay}" />
+                IsEnabled="{x:Bind IsEditableMode, Mode=OneTime}" />
 
             <TextBox
                 x:Name="ShipmentNumberBox"
@@ -76,7 +76,7 @@
                 Grid.Column="2"
                 HorizontalAlignment="Stretch"
                 Header="PO Number"
-                IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneWay}"
+                IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneTime}"
                 PlaceholderText="Optional" />
 
             <TextBox
@@ -84,7 +84,7 @@
                 Grid.Column="3"
                 HorizontalAlignment="Stretch"
                 Header="Receiver #"
-                IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneWay}"
+                IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneTime}"
                 PlaceholderText="Optional" />
         </Grid>
 
@@ -96,7 +96,7 @@
             HorizontalAlignment="Stretch"
             AcceptsReturn="True"
             Header="Notes (applies to entire shipment)"
-            IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneWay}"
+            IsReadOnly="{x:Bind IsReadOnlyMode, Mode=OneTime}"
             PlaceholderText="Optional notes..."
             TextWrapping="Wrap" />
 
@@ -129,7 +129,7 @@
                     Height="32"
                     Margin="0,0,8,0"
                     Style="{StaticResource AccentButtonStyle}"
-                    Visibility="{x:Bind ActionControlsVisibility, Mode=OneWay}">
+                    Visibility="{x:Bind ActionControlsVisibility, Mode=OneTime}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <SymbolIcon x:Name="AddPartIcon" Symbol="Add" />
                         <TextBlock x:Name="AddPartButtonText" Text="Add Part" />
@@ -141,7 +141,7 @@
                     Grid.Column="3"
                     Height="32"
                     Content="Remove Selected"
-                    Visibility="{x:Bind ActionControlsVisibility, Mode=OneWay}" />
+                    Visibility="{x:Bind ActionControlsVisibility, Mode=OneTime}" />
             </Grid>
 
             <!--  Add Part Panel (Collapsible)  -->

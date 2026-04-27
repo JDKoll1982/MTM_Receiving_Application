@@ -112,6 +112,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     private string _poNumber = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanProceedToNextStep))]
     private string _location = string.Empty;
 
     [ObservableProperty]
@@ -150,7 +151,10 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";
 
-    public bool CanProceedToNextStep => IsBusy is false && RequiredSpecsAreSatisfied();
+    public bool CanProceedToNextStep =>
+        IsBusy is false
+        && string.IsNullOrWhiteSpace(Location) is false
+        && RequiredSpecsAreSatisfied();
 
     #endregion
 
@@ -422,18 +426,21 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
         UpdateInventoryMessage();
         GoNextCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanProceedToNextStep));
     }
 
     partial void OnLocationChanged(string value)
     {
         _workflowService.CurrentSession.Location = value;
         GoNextCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanProceedToNextStep));
     }
 
     partial void OnSpecInputsChanged(ObservableCollection<Model_SpecInput> value)
     {
         AttachSpecInputHandlers(value);
         GoNextCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanProceedToNextStep));
     }
 
     public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
@@ -585,6 +592,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         }
 
         GoNextCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanProceedToNextStep));
     }
 
     private void OnSpecInputPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -592,6 +600,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         if (string.Equals(e.PropertyName, nameof(Model_SpecInput.Value), StringComparison.Ordinal))
         {
             GoNextCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(CanProceedToNextStep));
         }
     }
 

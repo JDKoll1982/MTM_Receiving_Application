@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Receiving — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+    <style>
+        /* ---- page-specific tweaks ---- */
+        .mode-hero-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0 28px;
+        }
+        @media (max-width: 700px) { .mode-hero-grid { grid-template-columns: 1fr; } }
+
+        .shortcut-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        .shortcut-row:last-child { border-bottom: none; }
+        .shortcut-row .sc-label { color: var(--text-secondary); }
+        .shortcut-keys { display: flex; gap: 4px; align-items: center; }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"      class="is-current"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"                          ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"                        ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../outside-service/index.html"                  ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../volvo/index.html"                            ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"                    ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#modes">Entry Modes</a></li>
+            <li><a href="#guided-wizard">Guided Wizard</a></li>
+            <li><a href="#manual-entry">Manual Entry</a></li>
+            <li><a href="#edit-mode">Edit Mode</a></li>
+            <li><a href="#shortcuts">Keyboard Shortcuts</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Database</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../database/receiving_history/index.html">receiving_history</a></li>
+            <li><a href="../../database/receiving_label_data/index.html">receiving_label_data</a></li>
+            <li><a href="../../database/receiving_package_types/index.html">receiving_package_types</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Hero -->
+        <div class="module-hero">
+            <div class="module-badge">📦 Module</div>
+            <h1>Receiving</h1>
+            <p class="lead">
+                Log incoming materials against purchase orders, generate receiving labels,
+                and build a permanent transaction history — all validated in real time
+                against your Infor Visual purchase orders.
+            </p>
+        </div>
+
+        <!-- ========================
+             SECTION: Overview
+             ======================== -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                The Receiving module is used to record every pallet or shipment that arrives at the
+                dock. Each transaction ties a physical quantity to a specific purchase order line in
+                Infor Visual, creating a searchable record in the <strong>receiving_history</strong>
+                database table. After saving, the operator prints labels separately
+                using LabelView, which reads the data from <strong>receiving_label_data</strong>.
+            </p>
+            <p>
+                The application connects live to Infor Visual (read-only) to pull PO details,
+                part descriptions, remaining quantities, and due dates. You do not need to retype
+                information that already exists in the ERP — just scan or enter the PO number and
+                the app fills in the rest.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Infor Visual connection required.</strong>
+                    If the app cannot reach the Visual database, PO lookups will fail. Contact IT
+                    if you see a "Cannot connect to Visual" error at login.
+                </div>
+            </div>
+
+            <h3>What gets recorded</h3>
+            <ul>
+                <li>Part number, quantity, and unit of measure</li>
+                <li>Purchase order number and line number</li>
+                <li>Package type and weight per package</li>
+                <li>Heat / lot number (when required by your quality rules)</li>
+                <li>Warehouse location (initial put-away location)</li>
+                <li>Employee number and date/time of the transaction</li>
+            </ul>
+        </section>
+
+        <!-- ========================
+             SECTION: Entry Modes
+             ======================== -->
+        <section id="modes" class="content-section">
+            <h2>Entry Modes</h2>
+            <p>
+                When you open Receiving, the first screen you see is <strong>Mode Selection</strong>.
+                Choose the entry mode that best fits what you need to do.
+            </p>
+
+            <div class="mode-hero-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">🧙</div>
+                    <h3>Guided Wizard</h3>
+                    <p>Step-by-step walkthrough. Each screen asks for one thing at a time. Best for learning
+                    the system or ensuring every field is filled correctly.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">⌨️</div>
+                    <h3>Manual Entry</h3>
+                    <p>All fields on one screen. Experienced operators can tab through fields and save
+                    quickly without wizard navigation overhead.</p>
+                </div>
+                <div class="info-card card-gold">
+                    <div class="info-card-icon">✏️</div>
+                    <h3>Edit Mode</h3>
+                    <p>Load a previously saved receiving record to correct quantities, dates, or
+                    other details. Changes are tracked in history.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">💾</span>
+                <div class="callout-body">
+                    <strong>Set a default mode.</strong>
+                    The checkbox under each mode tile on the selection screen lets you mark that mode
+                    as your personal default, so it opens automatically next time.
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================
+             SECTION: Guided Wizard
+             ======================== -->
+        <section id="guided-wizard" class="content-section">
+            <h2>Guided Wizard</h2>
+            <p>
+                The Guided Wizard walks you through receiving a shipment one step at a time.
+                The app validates your entry at each step before allowing you to continue,
+                so nothing gets saved with missing or incorrect information.
+            </p>
+
+            <div class="step-flow" role="list">
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">1</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>PO Entry</h4>
+                        <p>
+                            Scan or type the purchase order number. The app searches Infor Visual
+                            and returns PO details — vendor name, open lines, due dates, and ordered
+                            quantities.
+                        </p>
+                        <div class="step-tip">
+                            All POs require you to select the part from the list — even
+                            single-line POs. Part Selection is always shown so you can
+                            confirm the correct line before continuing.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">2</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Part Selection</h4>
+                        <p>
+                            Select the specific part number and PO line being received.
+                            The screen shows remaining quantity on order and the PO due date
+                            so you can confirm you are receiving the right item.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">3</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Load Entry</h4>
+                        <p>
+                            Enter the load or ASN reference that this shipment arrived on.
+                            This is used to group all labels from the same delivery together.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">4</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Weight &amp; Quantity</h4>
+                        <p>
+                            Enter the quantity of parts on this pallet/skid and the weight per
+                            package. If you are splitting a shipment across multiple skids, use
+                            the <strong>Add Skid</strong> button to add additional quantity rows.
+                        </p>
+                        <div class="step-tip">
+                            The remaining quantity from the PO is shown here as a reference.
+                            You can receive more than the remaining amount if needed.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">5</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Heat / Lot Entry</h4>
+                        <p>
+                            Enter the heat number or lot number printed on the material
+                            certification. This step is shown only when the part's settings
+                            require heat/lot tracking. It can be left blank if not required.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">6</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Package Type</h4>
+                        <p>
+                            Select how the material arrived — Skid, Box, Coil, Reel, etc.
+                            This is printed on the receiving label and recorded in history.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">7</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Review &amp; Save</h4>
+                        <p>
+                            A summary of everything entered is shown before saving. Review
+                            each line and use the <strong>Edit</strong> links to go back
+                            and correct any field. When everything looks correct, press
+                            <strong>Save to Database</strong> to commit the transaction.
+                        </p>
+                        <div class="step-tip">
+                            <span>Saving writes label data to the <code>receiving_label_data</code> table. Labels are not printed automatically — the operator prints them separately using LabelView, which reads from that table.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /step-flow -->
+        </section>
+
+        <!-- ========================
+             SECTION: Manual Entry
+             ======================== -->
+        <section id="manual-entry" class="content-section">
+            <h2>Manual Entry</h2>
+            <p>
+                Manual Entry presents all receiving fields on one screen in a compact grid.
+                It is designed for experienced operators who know the PO and part numbers
+                in advance and want to move quickly without navigating through wizard steps.
+            </p>
+            <h3>When to use Manual Entry</h3>
+            <ul>
+                <li>Receiving multiple lines from the same vendor in one session</li>
+                <li>Quick re-entry when you have a printed packing slip in front of you</li>
+                <li>Situations where the guided wizard feels slower than necessary</li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Validation still applies.</strong>
+                    Manual Entry runs the same PO and part number lookups as the Guided Wizard.
+                    Invalid PO numbers or unrecognized part numbers will be flagged before saving.
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================
+             SECTION: Edit Mode
+             ======================== -->
+        <section id="edit-mode" class="content-section">
+            <h2>Edit Mode</h2>
+            <p>
+                Edit Mode lets you load a previously saved receiving record and make corrections.
+                Use it when a transaction was saved with a wrong quantity, incorrect package type,
+                or a typo in the heat/lot number.
+            </p>
+            <h3>How to edit a record</h3>
+            <ol>
+                <li>Select <strong>Edit Mode</strong> on the Mode Selection screen.</li>
+                <li>Search for the record by PO number, part number, or date.</li>
+                <li>Select the record from the results list.</li>
+                <li>Make your changes on the edit form.</li>
+                <li>Save — the original record is updated and a change log entry is written.</li>
+            </ol>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Edit Mode may require Supervisor access.</strong>
+                    Depending on your facility's settings, editing historical records may be
+                    restricted to Supervisors or Administrators. Contact your supervisor if
+                    the Edit Mode tile is greyed out.
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================
+             SECTION: Keyboard Shortcuts
+             ======================== -->
+        <section id="shortcuts" class="content-section">
+            <h2>Keyboard Shortcuts</h2>
+            <p>
+                Keyboard shortcuts let you navigate the receiving workflow without touching
+                the mouse. All shortcuts are configurable in
+                <strong>Settings → Receiving → Keyboard Shortcuts</strong>.
+            </p>
+
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin:16px 0;">
+                <div class="shortcut-row">
+                    <span class="sc-label">Advance to next step</span>
+                    <span class="shortcut-keys">
+                        <kbd>Ctrl</kbd> <kbd>→</kbd>
+                    </span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="sc-label">Go back to previous step</span>
+                    <span class="shortcut-keys">
+                        <kbd>Ctrl</kbd> <kbd>←</kbd>
+                    </span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="sc-label">Return to mode selection</span>
+                    <span class="shortcut-keys">
+                        <kbd>Ctrl</kbd> <kbd>M</kbd>
+                    </span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="sc-label">Clear label data</span>
+                    <span class="shortcut-keys">
+                        <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>C</kbd>
+                    </span>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    The defaults shown above are the factory defaults. Your administrator or you
+                    (in Settings) may have changed these. The actual shortcuts in effect are always
+                    visible at the bottom of the receiving workflow screen.
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================
+             SECTION: FAQ
+             ======================== -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>The PO number I scanned doesn't show up — what do I do?</summary>
+                    <div class="faq-body">
+                        <p>
+                            First, confirm the PO number on the packing slip matches exactly what
+                            you entered (no extra spaces or hyphens). Infor Visual PO numbers are
+                            case-sensitive.
+                        </p>
+                        <p>
+                            If the PO still isn't found, check with Purchasing to confirm it has
+                            been released in Infor Visual. Unreleased or closed POs will not appear
+                            in the lookup.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I scanned the wrong PO and have already moved to Part Selection. Can I go back?</summary>
+                    <div class="faq-body">
+                        <p>
+                            Yes. Use the <strong>Back</strong> button at the bottom of any wizard step,
+                            or press <kbd>Ctrl</kbd> <kbd>←</kbd> to return to the previous step.
+                            Nothing is saved until you press <strong>Save to Database</strong> on the Review screen.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is the transaction saved even if the label wasn't printed?</summary>
+                    <div class="faq-body">
+                        <p>
+                            Yes. Saving and printing are separate steps. The app writes the data to
+                            <strong>receiving_label_data</strong> when you save — labels are not printed
+                            automatically. The operator prints them using LabelView, which reads from
+                            that table. If a label was never printed, the data is still in the database
+                            and can be printed at any time from LabelView.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does "Quality Hold" mean on the Review screen?</summary>
+                    <div class="faq-body">
+                        <p>
+                            A Quality Hold flag appears when your quality rules require an explicit
+                            acknowledgment before a particular part can be received. You must check
+                            the acknowledgment checkbox on the Review screen to enable the Save button.
+                            This does not stop the receiving — it just creates an audit record that
+                            the hold was acknowledged.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I receive a part that isn't on a PO?</summary>
+                    <div class="faq-body">
+                        <p>
+                            Yes, through the <strong>Non-PO Entry</strong> option. This is available
+                            in Manual Entry mode and in the Guided Wizard when a PO number is left
+                            blank. Non-PO items are flagged with <code>is_non_po_item = 1</code>
+                            in the database and appear in Reporting with a distinct indicator.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I receive the same part across multiple skids?</summary>
+                    <div class="faq-body">
+                        <p>
+                            On the Weight &amp; Quantity step, use the <strong>Add Skid</strong>
+                            button to create additional quantity rows. Each row produces a separate
+                            label with a sequential skid number (1 of 3, 2 of 3, etc.).
+                        </p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>My session timed out mid-receiving — was anything saved?</summary>
+                    <div class="faq-body">
+                        <p>
+                            Nothing is written to the database until you press
+                            <strong>Save to Database</strong> on the final Review screen.
+                            If you were timed out before reaching that screen, no data was saved.
+                            You will need to re-enter the transaction from the start.
+                        </p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Receiving Module</span>
+    <span aria-hidden="true">·</span>
+    <a href="../../database/receiving_history/index.html">receiving_history table</a>
+</footer>
+
+<!-- Back to top -->
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<script src="../shared/app.js"></script>
+</body>
+</html>

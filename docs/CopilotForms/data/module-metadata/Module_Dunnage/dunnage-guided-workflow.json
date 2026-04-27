@@ -2,7 +2,7 @@
   "id": "dunnage-guided-workflow",
   "module": "Module_Dunnage",
   "name": "Guided Workflow",
-  "summary": "Step-by-step dunnage receiving workflow covering mode selection, a hosted image-backed part search step that hands off into standard part selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with selected-part home-location prefilling plus editable Infor Visual location validation, fallback to the configured Dunnage user default only when the selected part has no saved home location, final review with a save-complete decision dialog, configured part inventory-method propagation, add/edit part dialogs that can reuse saved spec templates and capture definition-based part-specific runtime specs for newly created parts, PNG-backed type and part imagery shown in selection, manual entry, and review surfaces, Receiving-style per-part skid counters written to the Dunnage queue and history archive, a responsive 3x3 type card selector that shows either the uploaded image or the icon while always keeping the type name visible, weak-event workflow notifications, and module-scoped unsaved state.",
+  "summary": "Step-by-step dunnage receiving workflow covering mode selection, a hosted image-backed part search step that hands off into standard part selection, type and part selection, Receiving-style load-count entry, per-load quantity entry, details entry with selected-part home-location prefilling plus editable Infor Visual location validation, fallback to the configured Dunnage user default only when the selected part has no saved home location, final review with a save-complete decision dialog, configured part inventory-method propagation, add/edit part dialogs that can reuse saved spec templates and capture definition-based part-specific runtime specs for newly created parts, PNG-backed type and part imagery shown in selection, manual entry, and review surfaces, Receiving-style per-part skid counters written to the Dunnage queue and history archive, a responsive 3x3 type card selector that shows either the uploaded image or the icon while always keeping the type name visible, remembers the user-selected sort option between visits, supports user-controlled sorting by name and recency, exposes Image Search as a persistent default launch mode, adds page-scoped customizable keyboard shortcuts for mode selection, clear-label, next, back, help, and Ctrl+T simple navigation, and retains module-scoped unsaved state.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
@@ -13,11 +13,15 @@
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs",
+    "Module_Dunnage/Contracts/IService_DunnageShortcuts.cs",
     "Module_Dunnage/Settings/DunnageSettingsKeys.cs",
     "Module_Dunnage/Settings/DunnageSettingsDefaults.cs",
     "Module_Dunnage/Helpers/Helper_DunnageImagePaths.cs",
+    "Module_Dunnage/Services/Service_DunnageShortcuts.cs",
     "Module_Dunnage/Services/Service_DunnageImageStorage.cs",
+    "Module_Core/Helpers/UI/Helper_KeyboardShortcuts.cs",
     "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs",
+    "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml",
     "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml",
     "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs",
     "Module_Dunnage/Views/View_Dunnage_Dialog_ImagePartSearch.xaml",
@@ -53,6 +57,7 @@
   ],
   "relatedServices": [
     "IService_DunnageWorkflow",
+    "IService_DunnageShortcuts",
     "IService_MySQL_Dunnage",
     "IService_InforVisual",
     "IService_ReceivingValidation",
@@ -72,6 +77,7 @@
       "Guided dunnage entry",
       "Manual and detail entry",
       "Review before save",
+      "Keyboard-driven workflow navigation",
       "Selected-part location prefill",
       "Infor Visual location validation with fuzzy-match recovery",
       "Unsaved state survives only inside the current module"
@@ -90,8 +96,10 @@
     "desiredUiPatterns": ["Wizard step", "Form", "Card list"],
     "uiElements": [
       "Mode selector",
+      "Mode default checkboxes",
       "Image-backed part browser",
       "Type selector",
+      "Type sort selector",
       "Part selector",
       "Type and part image previews",
       "Selected part spec summary",
@@ -105,13 +113,18 @@
       "Fuzzy location picker",
       "Manual entry fields",
       "Review summary",
+      "Workflow keyboard shortcuts",
+      "Ctrl+T simple navigation toggle",
       "Mode-selection clear-label action",
       "Save-complete decision dialog"
     ],
     "userActions": [
       "Choose the correct dunnage mode",
+      "Set Guided, Edit, or Image Search as the default Dunnage start mode",
       "Identify a part from its configured image and continue into guided entry with that part selected",
       "Move through guided steps",
+      "Sort dunnage types by name, usage, or recency before choosing a card",
+      "Return to the dunnage type selector with the last chosen sort option already selected",
       "Recognize dunnage types and parts from uploaded PNG imagery when available",
       "Set the number of loads and quantity for each load",
       "Reuse saved spec templates when quick-adding or editing a part from Part Selection",
@@ -123,6 +136,7 @@
       "Keep an intentionally typed Dunnage location all the way through save instead of resetting to a saved default",
       "Recover from mistyped Dunnage locations via fuzzy selection",
       "Review and finish the workflow",
+      "Use configurable keyboard shortcuts for mode selection, clear-label, next, back, help, and temporary plain-arrow navigation",
       "Lose unsaved work when leaving the module or exiting before save"
     ],
     "validationHints": [
@@ -133,6 +147,7 @@
       "Confirm Review and Save use the current location textbox value instead of re-reading the selected part's saved home location",
       "Confirm the guided workflow still advances correctly between steps",
       "Confirm the hosted image-search step opens inside the workflow content area and clicking a part card carries the selected type and part into the standard Part Selection step",
+      "Confirm checking Image Search as the default mode persists and reopens Dunnage directly into the image-search surface on the next workflow start",
       "Confirm uploaded type images appear on type cards and selected-type headers when present",
       "Confirm uploaded part images appear in part selection and review when present",
       "Confirm the type-selection step advances by card click without a separate Next button",
@@ -151,13 +166,18 @@
       "Confirm Enter Details proceeds directly to Review when validation passes, without an extra confirmation modal",
       "Confirm Review exposes a Back path to Enter Details and shows a completion dialog offering Start New Entry or Mode Selection after save",
       "Confirm the dunnage type selector shows 9 cards per page in a 3x3 layout, hides the icon when a type image is present, keeps the type name visible, and scales cleanly within the card area when the window is resized",
+      "Confirm the type-selection sort ComboBox reorders cards by Name, Times Used, Last Used, Newest Added, and Recently Updated and returns pagination to page 1 after each sort change",
+      "Confirm the type-selection sort ComboBox restores the user's last saved sort choice when the Dunnage workflow returns to Type Selection and after the app is closed and reopened",
       "Confirm manual entry, details entry, and review all show the active runtime spec set, including values seeded from part-specific definitions on newly created parts",
       "Confirm Dunnage review normalizes PO values such as 62450 or PO-62450 to PO-062450 before display",
       "Confirm Dunnage review shows the vendor name when a valid PO exists in Infor Visual or mock mode",
       "Confirm Dunnage review shows an inline vendor-area not-found message when the PO format is valid but the PO does not exist",
       "Confirm the vendor area stays hidden when the Dunnage PO is blank, free-form non-PO text, or otherwise malformed",
+      "Confirm Dunnage keyboard shortcut changes persist per user and reload into the workflow",
+      "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys",
       "Confirm step-based UI refresh still works after revisiting dunnage views without retaining stale subscribers",
-      "Confirm leaving Dunnage before save clears unsaved workflow data"
+      "Confirm leaving Dunnage before save clears unsaved workflow data",
+      "Confirm leaving Dunnage from Mode Selection, Type Selection, or Image Search does not show the leave-module prompt"
     ]
   }
 }

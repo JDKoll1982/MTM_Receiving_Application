@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>receiving_history — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Breadcrumb">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html">Receiving</a></li>
+            <li><a href="../index.html">Database</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../receiving_label_data/index.html">receiving_label_data</a></li>
+            <li><a href="../receiving_package_types/index.html">receiving_package_types</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>receiving_history</code></h1>
+            <p class="lead">
+                The primary transaction ledger for all completed receiving events.
+                Rows are written here (via stored procedure) when the receiving workflow
+                completes. This table is append-only — rows are never updated or deleted
+                through the application.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Every time an operator completes a receiving session the app calls
+                <code>sp_Receiving_LabelData_ClearToHistory</code>, which moves records
+                from the active <strong>receiving_label_data</strong> queue into this
+                table. This ensures that <code>receiving_history</code> contains only
+                fully committed transactions.
+            </p>
+            <p>
+                Historical import rows (pre-app data migrated from spreadsheets) appear
+                here with <code>load_guid = NULL</code> to distinguish them from
+                application-generated rows.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>INT PK AUTO</td><td>No</td><td>Surrogate primary key</td></tr>
+                        <tr><td><code>load_guid</code></td><td>CHAR(36)</td><td>Yes</td><td>App-session GUID; NULL for imported historical rows</td></tr>
+                        <tr><td><code>quantity</code></td><td>INT</td><td>No</td><td>Quantity of parts received on this label/skid</td></tr>
+                        <tr><td><code>part_id</code></td><td>VARCHAR(50)</td><td>No</td><td>Part identifier from Infor Visual</td></tr>
+                        <tr><td><code>po_number</code></td><td>VARCHAR(20)</td><td>Yes</td><td>Purchase order number (supports formats like PO-066914)</td></tr>
+                        <tr><td><code>po_line_number</code></td><td>VARCHAR(10)</td><td>Yes</td><td>PO line number</td></tr>
+                        <tr><td><code>employee_number</code></td><td>INT</td><td>No</td><td>Employee ID of the receiver; 0 for imports</td></tr>
+                        <tr><td><code>heat</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Heat/lot number for material traceability</td></tr>
+                        <tr><td><code>transaction_date</code></td><td>DATE</td><td>No</td><td>Date the receiving transaction occurred</td></tr>
+                        <tr><td><code>initial_location</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Initial warehouse location</td></tr>
+                        <tr><td><code>coils_on_skid</code></td><td>INT</td><td>Yes</td><td>Coil count (coil materials only)</td></tr>
+                        <tr><td><code>label_number</code></td><td>INT</td><td>No</td><td>Sequential label number when quantity is split across labels; default 1</td></tr>
+                        <tr><td><code>load_number</code></td><td>INT</td><td>Yes</td><td>Sequential load number within the receiving session</td></tr>
+                        <tr><td><code>vendor_name</code></td><td>VARCHAR(255)</td><td>Yes</td><td>Vendor/supplier name snapshot</td></tr>
+                        <tr><td><code>part_description</code></td><td>VARCHAR(500)</td><td>Yes</td><td>Part description from Infor Visual at time of receiving</td></tr>
+                        <tr><td><code>po_status</code></td><td>VARCHAR(100)</td><td>Yes</td><td>PO status snapshot</td></tr>
+                        <tr><td><code>po_due_date</code></td><td>DATE</td><td>Yes</td><td>PO due date snapshot</td></tr>
+                        <tr><td><code>qty_ordered</code></td><td>DECIMAL(18,2)</td><td>Yes</td><td>Ordered quantity snapshot from PO line</td></tr>
+                        <tr><td><code>unit_of_measure</code></td><td>VARCHAR(20)</td><td>Yes</td><td>Unit of measure (EA, LB, FT, etc.)</td></tr>
+                        <tr><td><code>remaining_quantity</code></td><td>INT</td><td>Yes</td><td>Remaining PO quantity snapshot at time of receiving</td></tr>
+                        <tr><td><code>user_id</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Windows/app user identifier snapshot</td></tr>
+                        <tr><td><code>packages_per_load</code></td><td>INT</td><td>Yes</td><td>Number of packages per load/skid</td></tr>
+                        <tr><td><code>package_type_name</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Package type (Skid, Box, Coil, etc.)</td></tr>
+                        <tr><td><code>weight_per_package</code></td><td>DECIMAL(18,2)</td><td>Yes</td><td>Weight of each individual package</td></tr>
+                        <tr><td><code>is_non_po_item</code></td><td>TINYINT(1)</td><td>No</td><td>1 = part was received without a PO</td></tr>
+                        <tr><td><code>is_quality_hold_required</code></td><td>TINYINT(1)</td><td>No</td><td>1 = part requires quality hold acknowledgment</td></tr>
+                        <tr><td><code>is_quality_hold_acknowledged</code></td><td>TINYINT(1)</td><td>No</td><td>1 = quality hold was formally acknowledged</td></tr>
+                        <tr><td><code>quality_hold_restriction_type</code></td><td>VARCHAR(255)</td><td>Yes</td><td>Restriction type code from quality hold check</td></tr>
+                        <tr><td><code>part_skid_sequence</code></td><td>INT</td><td>Yes</td><td>Position of this skid among all skids for same part in the batch</td></tr>
+                        <tr><td><code>part_skid_total</code></td><td>INT</td><td>Yes</td><td>Total skids for the same part in the saved batch</td></tr>
+                        <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>No</td><td>Timestamp when the row was inserted</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>id</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>idx_load_guid</code></td><td><code>load_guid</code></td><td>UNIQUE</td><td>Fast GUID lookup; NULLs allowed for imports</td></tr>
+                        <tr><td><code>idx_part_id</code></td><td><code>part_id</code></td><td>INDEX</td><td>Part-based history queries</td></tr>
+                        <tr><td><code>idx_po_number</code></td><td><code>po_number</code></td><td>INDEX</td><td>PO-based queries and reporting</td></tr>
+                        <tr><td><code>idx_po_line_number</code></td><td><code>po_line_number</code></td><td>INDEX</td><td>PO line lookups</td></tr>
+                        <tr><td><code>idx_po_due_date</code></td><td><code>po_due_date</code></td><td>INDEX</td><td>Due date queries</td></tr>
+                        <tr><td><code>idx_transaction_date</code></td><td><code>transaction_date</code></td><td>INDEX</td><td>Date-range reporting queries</td></tr>
+                        <tr><td><code>idx_employee_number</code></td><td><code>employee_number</code></td><td>INDEX</td><td>Employee activity queries</td></tr>
+                        <tr><td><code>idx_user_id</code></td><td><code>user_id</code></td><td>INDEX</td><td>User-based history queries</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>Always filter by <code>transaction_date</code> when querying for reports — this is the indexed date column.</li>
+                <li>Use <code>load_guid IS NULL</code> to exclude imported rows from application-only queries.</li>
+                <li><code>is_non_po_item = 1</code> rows will have <code>po_number = NULL</code>.</li>
+                <li>Quality hold fields (<code>is_quality_hold_required</code>, <code>is_quality_hold_acknowledged</code>) are informational snapshots captured at receive time.</li>
+                <li>Snapshot columns (<code>vendor_name</code>, <code>part_description</code>, <code>po_status</code>, etc.) preserve the state of Infor Visual data at the moment of receiving. Do not join back to Infor Visual expecting to get the same values — they may have changed since.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>receiving_history</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

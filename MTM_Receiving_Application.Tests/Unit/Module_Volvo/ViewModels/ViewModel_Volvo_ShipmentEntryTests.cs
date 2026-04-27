@@ -5,10 +5,12 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
 using Xunit;
 
@@ -64,8 +66,11 @@ public sealed class ViewModel_Volvo_ShipmentEntryTests
         viewModel.PreviewEmailCommand.CanExecute(null).Should().BeFalse();
     }
 
-    private static ViewModel_Volvo_ShipmentEntry CreateViewModel()
+    private static ViewModel_Volvo_ShipmentEntry CreateViewModel(
+        Mock<IMediator>? mediatorMock = null
+    )
     {
+        mediatorMock ??= new Mock<IMediator>();
         var receivingValidationMock = new Mock<IService_ReceivingValidation>();
         receivingValidationMock
             .SetupGet(service => service.PresetLocations)
@@ -73,7 +78,7 @@ public sealed class ViewModel_Volvo_ShipmentEntryTests
         receivingValidationMock.SetupGet(service => service.UseMockLocationList).Returns(false);
 
         return new ViewModel_Volvo_ShipmentEntry(
-            new Mock<IMediator>().Object,
+            mediatorMock.Object,
             new Mock<IService_InforVisual>().Object,
             receivingValidationMock.Object,
             new Mock<IService_ReportingClipboard>().Object,

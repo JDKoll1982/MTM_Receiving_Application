@@ -315,6 +315,9 @@ public static class ReceivingSettingsDefaults
 
             // Part Number Padding
             [ReceivingSettingsKeys.PartNumberPadding.Enabled] = true,
+
+            // Shortcuts
+            [ReceivingSettingsKeys.Shortcuts.IsToggleSimpleNavigationEnabled] = true,
         };
 
     public static IReadOnlyDictionary<string, int> IntDefaults { get; } =

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Outside Service — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"                              ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"                                ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"                              ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../outside-service/index.html" class="is-current"    ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../volvo/index.html"                                  ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"                          ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#lifecycle">Request Lifecycle</a></li>
+            <li><a href="#creating">Creating a Request</a></li>
+            <li><a href="#setup">Shipping Setup</a></li>
+            <li><a href="#completing">Completing a Line</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+        <p class="sidebar-section-label">Database</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../database/outside_service_request/index.html">outside_service_request</a></li>
+            <li><a href="../../database/outside_service_request_line/index.html">outside_service_request_line</a></li>
+            <li><a href="../../database/outside_service_request_package/index.html">outside_service_request_package</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🔧 Module</div>
+            <h1>Outside Service</h1>
+            <div class="callout callout-warning" style="margin-bottom: 1.25rem;">
+                <span class="callout-icon" aria-hidden="true">🚧</span>
+                <div class="callout-body">
+                    <strong>In Development — not available in the current release.</strong>
+                    This module is disabled in the application. The documentation below
+                    reflects the planned design and may change before launch.
+                </div>
+            </div>
+            <p class="lead">
+                Create and track requests to ship parts to an outside vendor for processing
+                (plating, heat treat, machining, etc.) and manage the full lifecycle from
+                initial request through shipping and completion.
+            </p>
+        </div>
+
+        <!-- Overview -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                When a manufactured part needs to go to an outside vendor for a service operation
+                (e.g., heat treatment, plating, grinding), the Outside Service module manages
+                the paperwork and tracking. Each request is identified by a human-readable
+                <strong>request number</strong> in the format <code>OS-000001</code>.
+            </p>
+            <p>
+                A request contains one or more <strong>lines</strong>. Each line represents
+                a specific part going to a specific vendor. Each line can have multiple
+                <strong>packages</strong> describing how the parts are physically split
+                across containers.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Three-table data model.</strong>
+                    Requests → Lines → Packages. A request groups the shipment;
+                    lines identify the parts; packages describe the physical containers.
+                </div>
+            </div>
+        </section>
+
+        <!-- Lifecycle -->
+        <section id="lifecycle" class="content-section">
+            <h2>Request Lifecycle</h2>
+            <p>Each line on a request moves through three phases:</p>
+
+            <div class="step-flow" role="list">
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">1</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Initialize</h4>
+                        <p>The line has been created. The part, package count, and quantity per
+                        package have been entered by the requestor. The line is waiting for
+                        Shipping to pick it up.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">2</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Setup</h4>
+                        <p>Shipping has taken ownership of the line. They have entered the
+                        vendor, bill of lading number, scheduled ship date, and shipping
+                        contact. The line is ready to ship.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">3</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Complete</h4>
+                        <p>The shipment has left the building. A completion timestamp and
+                        optional completion notes are recorded. The line is closed.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Creating -->
+        <section id="creating" class="content-section">
+            <h2>Creating a Request</h2>
+            <p>
+                Anyone with access to the Outside Service module can create a new request.
+                The request number is assigned automatically in <code>OS-NNNNNN</code> format.
+            </p>
+            <h3>Steps to create a new request</h3>
+            <ol>
+                <li>Click <strong>New Request</strong> on the Outside Service home screen.</li>
+                <li>Optionally add request-level notes for Shipping (e.g., "Priority — needed by Friday").</li>
+                <li>Click <strong>Add Line</strong> for the first part.</li>
+                <li>Enter the Infor Visual part number.</li>
+                <li>Enter the number of packages and the quantity in each package.</li>
+                <li>Repeat steps 3–5 for additional parts on the same request.</li>
+                <li>Click <strong>Submit Request</strong> to save it and make it visible to Shipping.</li>
+            </ol>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Part validation.</strong> Part numbers are validated against Infor Visual
+                    when entered. Parts not found in Visual will be flagged — confirm the part ID
+                    with Engineering before submitting.
+                </div>
+            </div>
+        </section>
+
+        <!-- Setup -->
+        <section id="setup" class="content-section">
+            <h2>Shipping Setup</h2>
+            <p>
+                When Shipping is ready to process a line, they open the request, select the
+                line, and advance it to <strong>Setup</strong> phase. During setup they enter:
+            </p>
+            <ul>
+                <li><strong>Vendor</strong> — selected from Infor Visual vendor history or entered manually</li>
+                <li><strong>Bill of Lading number</strong> — assigned by the carrier</li>
+                <li><strong>Scheduled ship date/time</strong></li>
+                <li><strong>Shipping contact</strong> — person handing off the shipment</li>
+                <li><strong>Setup notes</strong> — any special instructions for the vendor</li>
+            </ul>
+        </section>
+
+        <!-- Completing -->
+        <section id="completing" class="content-section">
+            <h2>Completing a Line</h2>
+            <p>
+                Once the shipment has physically left, Shipping marks the line as
+                <strong>Complete</strong>. This records a UTC completion timestamp and
+                locks the line from further edits.
+            </p>
+            <p>
+                A completion note can be added to document anything unusual about the shipment.
+            </p>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Completion is final.</strong>
+                    Once a line is marked Complete it cannot be re-opened through the normal UI.
+                    Contact a Supervisor or Administrator if a completed line needs to be corrected.
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>Can I add a line after a request has already been submitted?</summary>
+                    <div class="faq-body">
+                        <p>Yes, as long as no lines on the request are in Setup or Complete phase.
+                        Open the request and use <strong>Add Line</strong> to append a new line.
+                        Once any line has been picked up by Shipping, the request header is
+                        locked for new lines.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What if the vendor changes after Setup?</summary>
+                    <div class="faq-body">
+                        <p>A Shipping user can edit the Setup fields (vendor, BOL, scheduled date)
+                        as long as the line is still in Setup phase. Once the line is marked
+                        Complete, vendor information is locked.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Where can I see all open outside service requests?</summary>
+                    <div class="faq-body">
+                        <p>The Outside Service home screen lists all requests that have at least
+                        one line in Initialize or Setup phase. Fully completed requests can be
+                        found using the date-range search on the same screen.</p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Outside Service Module</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../shared/app.js"></script>
+</body>
+</html>

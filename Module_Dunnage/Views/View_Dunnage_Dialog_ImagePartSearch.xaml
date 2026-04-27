@@ -8,7 +8,7 @@
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
-    <Grid MaxWidth="980" HorizontalAlignment="Center">
+    <Grid HorizontalAlignment="Stretch" Padding="40,0,40,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -41,8 +41,7 @@
         <Grid Grid.Row="1" Margin="0,16,0,0">
             <GridView
                 x:Name="PartGridView"
-                MaxWidth="912"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Stretch"
                 IsItemClickEnabled="True"
                 ItemClick="PartGridView_ItemClick"
                 ItemsSource="{x:Bind ViewModel.DisplayedParts, Mode=OneWay}"
@@ -53,7 +52,7 @@
                 SelectionMode="None">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                        <ItemsWrapGrid Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
                 <GridView.ItemContainerStyle>
@@ -90,14 +89,16 @@
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="8">
-                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="Uniform" />
+                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="Uniform"/>
                                 </Border>
 
                                 <TextBlock
                                     Grid.Row="1"
                                     HorizontalAlignment="Center"
+                                    MaxLines="1"
                                     Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind PartId}" />
+                                    Text="{x:Bind PartId}"
+                                    ToolTipService.ToolTip="{x:Bind PartId}"/>
                                 <TextBlock
                                     Grid.Row="2"
                                     Margin="0,4,0,0"
@@ -105,6 +106,7 @@
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
                                     Text="{x:Bind DunnageTypeName}"
+                                    ToolTipService.ToolTip="{x:Bind DunnageTypeName}"
                                     TextAlignment="Center"
                                     TextWrapping="Wrap" />
                             </Grid>

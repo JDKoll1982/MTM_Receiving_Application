@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volvo — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"                        ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"                          ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"                        ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../outside-service/index.html"                  ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../volvo/index.html"         class="is-current"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"                    ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#shipment-lifecycle">Shipment Lifecycle</a></li>
+            <li><a href="#creating">Creating a Shipment</a></li>
+            <li><a href="#labels">Label Generation</a></li>
+            <li><a href="#po-entry">PO &amp; Receiver Entry</a></li>
+            <li><a href="#archive">Archiving</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+        <p class="sidebar-section-label">Database</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../database/volvo_label_data/index.html">volvo_label_data</a></li>
+            <li><a href="../../database/volvo_line_data/index.html">volvo_line_data</a></li>
+            <li><a href="../../database/volvo_label_history/index.html">volvo_label_history</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🚚 Module</div>
+            <h1>Volvo</h1>
+            <p class="lead">
+                Manage Volvo-specific dunnage shipments — create outbound shipment records,
+                generate customer-compliant shipping labels, and track PO and receiver
+                numbers through the shipment lifecycle.
+            </p>
+        </div>
+
+        <!-- Overview -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                The Volvo module handles the outbound side of dunnage management for Volvo
+                accounts. When dunnage (e.g., returnable containers, trays, racks) is shipped
+                back to Volvo, this module creates the shipment header, generates the required
+                line-item records and labels, and tracks the subsequent PO and Infor Visual
+                receiver number assignment.
+            </p>
+            <p>
+                Shipments are identified by a <strong>shipment date</strong> and a daily
+                <strong>shipment number</strong> that resets to 1 each day. A shipment
+                transitions from <code>pending_po</code> status to <code>completed</code>
+                once a PO and receiver number have been entered.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Volvo-specific configuration required.</strong>
+                    Volvo master data (part numbers, components, customer-specific settings)
+                    is managed in <strong>Settings → Volvo</strong>. Ensure master data is
+                    up-to-date before creating shipments.
+                </div>
+            </div>
+        </section>
+
+        <!-- Lifecycle -->
+        <section id="shipment-lifecycle" class="content-section">
+            <h2>Shipment Lifecycle</h2>
+
+            <div class="step-flow" role="list">
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">1</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Create Shipment</h4>
+                        <p>A new shipment header is created with today's date and the next
+                        available daily sequence number. Optional notes can be added.</p>
+                        <div class="badge">Status: <code>pending_po</code></div>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">2</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Add Lines &amp; Generate Labels</h4>
+                        <p>Volvo line items (parts and quantities) are added to the shipment.
+                        Label data is saved to the label data table for the operator to print
+                        via LabelView before the shipment leaves the dock.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">3</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Enter PO &amp; Receiver Number</h4>
+                        <p>After the shipment is received by Volvo and a PO is issued,
+                        Purchasing enters the PO number and Infor Visual receiver number
+                        to close out the shipment record.</p>
+                        <div class="badge">Status: <code>completed</code></div>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true">
+                        <span class="step-num">4</span>
+                        <div class="step-connector"></div>
+                    </div>
+                    <div class="step-body">
+                        <h4>Archive</h4>
+                        <p>Completed shipments can be soft-archived (flagged
+                        <code>is_archived = 1</code>) to remove them from the active view
+                        while preserving the full historical record.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Creating -->
+        <section id="creating" class="content-section">
+            <h2>Creating a Shipment</h2>
+            <ol>
+                <li>Click <strong>New Shipment</strong> on the Volvo home screen.</li>
+                <li>Confirm the shipment date (defaults to today).</li>
+                <li>Add optional notes about the shipment.</li>
+                <li>Click <strong>Create</strong> — the shipment number is assigned automatically.</li>
+                <li>Add line items (see Label Generation below).</li>
+            </ol>
+        </section>
+
+        <!-- Labels -->
+        <section id="labels" class="content-section">
+            <h2>Label Generation</h2>
+            <p>
+                Each line item on a Volvo shipment generates a label that meets Volvo's
+                customer-specific labeling requirements. Labels include part number,
+                quantity, shipment number, and other required fields.
+            </p>
+            <p>
+                Generated label data is written to <strong>volvo_generated_label_data</strong>
+                and archived to <strong>volvo_generated_label_history</strong> after the
+                shipment is completed.
+            </p>
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Reprint from history.</strong> Labels can be reprinted from the
+                    <strong>volvo_label_history</strong> view in the Volvo module without
+                    modifying the original shipment record.
+                </div>
+            </div>
+        </section>
+
+        <!-- PO Entry -->
+        <section id="po-entry" class="content-section">
+            <h2>PO &amp; Receiver Entry</h2>
+            <p>
+                After Volvo issues a purchase order for the returned dunnage, Purchasing
+                enters the PO number and the Infor Visual receiver number against the
+                shipment. This marks the shipment as <strong>completed</strong>.
+            </p>
+            <ol>
+                <li>Open the shipment from the <strong>Pending PO</strong> list.</li>
+                <li>Enter the PO number provided by Volvo / Purchasing.</li>
+                <li>Enter the Infor Visual receiver number after receiving the PO in Visual.</li>
+                <li>Click <strong>Save</strong> — status changes to <code>completed</code>.</li>
+            </ol>
+        </section>
+
+        <!-- Archive -->
+        <section id="archive" class="content-section">
+            <h2>Archiving</h2>
+            <p>
+                To keep the active shipment list manageable, completed shipments can be
+                archived. Archiving sets <code>is_archived = 1</code> on the
+                <strong>volvo_label_data</strong> record. Archived shipments are hidden
+                from the default view but remain queryable from the Archive search.
+            </p>
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Archiving is not deletion.</strong>
+                    Archived shipments and their label history are fully preserved in the
+                    database. Use the Archive filter in the Volvo home screen to view them.
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>The shipment number reset to 1 mid-day — is that normal?</summary>
+                    <div class="faq-body">
+                        <p>The daily shipment number resets at midnight each day. If a new
+                        shipment is the first one created on a given date, its number will
+                        be 1 regardless of what the previous day's last number was. This is
+                        by design — the combination of date + number is always unique.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I edit a shipment after it is marked completed?</summary>
+                    <div class="faq-body">
+                        <p>No. Once a shipment has a PO number and receiver number and is
+                        marked completed, it is read-only. Contact your supervisor if a
+                        completed shipment needs correction.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I find archived shipments?</summary>
+                    <div class="faq-body">
+                        <p>Use the <strong>Show Archived</strong> toggle on the Volvo home
+                        screen. This adds archived shipments to the list alongside active ones,
+                        filtered by whatever date range you have set.</p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Volvo Module</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../shared/app.js"></script>
+</body>
+</html>

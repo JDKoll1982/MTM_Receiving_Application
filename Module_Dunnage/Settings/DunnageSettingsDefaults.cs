@@ -14,6 +14,7 @@ public static class DunnageSettingsDefaults
             [DunnageSettingsKeys.UserPreferences.DefaultLocation] = "RECV",
             [DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize] = "96",
             [DunnageSettingsKeys.UserPreferences.PreferPartImages] = "true",
+            [DunnageSettingsKeys.UserPreferences.TypeSelectionSort] = "Name (A-Z)",
             [DunnageSettingsKeys.UiUx.EnableTypeImages] = "true",
             [DunnageSettingsKeys.UiUx.EnablePartImages] = "true",
             [DunnageSettingsKeys.UiUx.DefaultThumbnailSize] = "96",
@@ -23,5 +24,11 @@ public static class DunnageSettingsDefaults
             [DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection] = "true",
             [DunnageSettingsKeys.Workflow.ShowImagesOnReview] = "true",
             [DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing] = "true",
+        };
+
+    public static IReadOnlyDictionary<string, bool> BoolDefaults { get; } =
+        new Dictionary<string, bool>
+        {
+            [DunnageSettingsKeys.Shortcuts.IsToggleSimpleNavigationEnabled] = true,
         };
 }

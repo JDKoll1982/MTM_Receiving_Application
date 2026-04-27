@@ -325,6 +325,17 @@ public static class ReceivingSettingsKeys
             "Receiving.UserPreferences.IgnoredReconciliationLocationsJson";
     }
 
+    public static class Shortcuts
+    {
+        public const string ModeSelection = "Receiving.Shortcuts.ModeSelection";
+        public const string ClearLabelData = "Receiving.Shortcuts.ClearLabelData";
+        public const string NextStep = "Receiving.Shortcuts.NextStep";
+        public const string BackStep = "Receiving.Shortcuts.BackStep";
+        public const string Help = "Receiving.Shortcuts.Help";
+        public const string IsToggleSimpleNavigationEnabled =
+            "Receiving.Shortcuts.IsToggleSimpleNavigationEnabled";
+    }
+
     public static class Defaults
     {
         public const string DefaultLocation = "Receiving.Defaults.DefaultLocation";

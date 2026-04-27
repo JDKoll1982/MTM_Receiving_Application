@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application Update Mockup</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Patch Update Mockup</h1>
+                    <p class="hero-copy">Use this layout, content rhythm, and interaction pattern for all end-user update pages created under versioned folders.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 1.0.1</span>
+                <span class="meta-text">Sample release page pattern</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+                <p class="sidebar-note">Every generated page should keep this simple navigation, a clear version badge, and a direct callout for user action.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>Lead with the most useful changes</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Daily workflow</p>
+                            <p class="highlight-text">Open with a short summary of the biggest improvement for day-to-day work.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Bug fixes</p>
+                            <p class="highlight-text">Call out fixes that remove friction, confusion, or repeated manual steps.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">User action</p>
+                            <p class="highlight-text">State plainly whether users need to do anything after the update.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Keep details readable and skimmable</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Workflow improvements</summary>
+                        <p>Describe the behavior change in plain language, then briefly explain what will feel different for the user.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Issue fixes</summary>
+                        <p>List the fixes that matter most to end users. Avoid internal file names, implementation details, or developer jargon.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Helpful notes</summary>
+                        <p>Use this section for rollout guidance, reminders, or anything support teams should know while helping operators.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>Connect changes to user outcomes</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Less rework</h3>
+                            <p>Explain how the update saves clicks, reduces confusion, or shortens common tasks.</p>
+                        </article>
+                        <article>
+                            <h3>Clearer status</h3>
+                            <p>Highlight when the update makes it easier to know what happened or what to do next.</p>
+                        </article>
+                        <article>
+                            <h3>Better support</h3>
+                            <p>Note anything that makes troubleshooting, training, or handoff easier for the floor team.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Prefer one clear answer</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update.</p>
+                    <ul class="action-list">
+                        <li>If action is required, keep it short and task-oriented.</li>
+                        <li>If settings changed, tell the user exactly where to check them.</li>
+                        <li>If nothing is required, leave the checklist out of generated pages.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Always close with support guidance</h2>
+                    </div>
+                    <p>If a user reports a problem after the update, direct them to the normal MTM support path and include the version number shown at the top of the page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="app.js"></script>
+</body>
+</html>

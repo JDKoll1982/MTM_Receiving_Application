@@ -36,6 +36,10 @@ public sealed partial class ViewModel_Settings_Dunnage_CategoryHub
             new Model_SettingsNavigationStep(
                 "Workflow Visuals",
                 typeof(Views.View_Settings_Dunnage_WorkflowVisuals)
+            ),
+            new Model_SettingsNavigationStep(
+                "Keyboard Shortcuts",
+                typeof(Views.View_Settings_Dunnage_KeyboardShortcuts)
             )
         );
     }

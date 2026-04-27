@@ -2303,6 +2303,72 @@
     },
     {
       "category": "Receiving",
+      "key": "Receiving.Shortcuts.ModeSelection",
+      "displayName": "Shortcuts - Mode Selection",
+      "defaultValue": "{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Shortcuts.ClearLabelData",
+      "displayName": "Shortcuts - Clear Label Data",
+      "defaultValue": "{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Shortcuts.NextStep",
+      "displayName": "Shortcuts - Next Step",
+      "defaultValue": "{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Shortcuts.BackStep",
+      "displayName": "Shortcuts - Back Step",
+      "defaultValue": "{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Shortcuts.Help",
+      "displayName": "Shortcuts - Help",
+      "defaultValue": "{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Shortcuts.IsToggleSimpleNavigationEnabled",
+      "displayName": "Shortcuts - Enable Ctrl+T Simple Navigation Toggle",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
+    },
+    {
+      "category": "Receiving",
       "key": "Receiving.Defaults.DefaultPackageType",
       "displayName": "Defaults - Default Package Type",
       "defaultValue": "Pallet",
@@ -2498,6 +2564,72 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Shortcuts.ModeSelection",
+      "displayName": "Shortcuts - Mode Selection",
+      "defaultValue": "{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Shortcuts.ClearLabelData",
+      "displayName": "Shortcuts - Clear Label Data",
+      "defaultValue": "{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Shortcuts.NextStep",
+      "displayName": "Shortcuts - Next Step",
+      "defaultValue": "{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Shortcuts.BackStep",
+      "displayName": "Shortcuts - Back Step",
+      "defaultValue": "{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Shortcuts.Help",
+      "displayName": "Shortcuts - Help",
+      "defaultValue": "{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled",
+      "displayName": "Shortcuts - Enable Ctrl+T Simple Navigation Toggle",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
     }
   ]
 }

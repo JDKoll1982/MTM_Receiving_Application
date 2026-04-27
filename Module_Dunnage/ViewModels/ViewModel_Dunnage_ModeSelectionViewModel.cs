@@ -17,6 +17,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// </summary>
 public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 {
+    private const string GuidedModeValue = "guided";
+    private const string ManualModeValue = "manual";
+    private const string EditModeValue = "edit";
+    private const string ImageSearchModeValue = "image-search";
+
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Help _helpService;
     private readonly IService_UserSessionManager _sessionManager;
@@ -56,6 +61,9 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _isEditModeDefault;
 
+    [ObservableProperty]
+    private bool _isImageSearchModeDefault;
+
     #endregion
 
     #region Initialization
@@ -65,13 +73,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
     /// </summary>
     private void LoadDefaultMode()
     {
-        var currentUser = _sessionManager.CurrentSession?.User;
-        if (currentUser != null)
-        {
-            IsGuidedModeDefault = currentUser.DefaultDunnageMode == "guided";
-            IsManualModeDefault = currentUser.DefaultDunnageMode == "manual";
-            IsEditModeDefault = currentUser.DefaultDunnageMode == "edit";
-        }
+        ApplyDefaultModeSelection(_sessionManager.CurrentSession?.User?.DefaultDunnageMode);
     }
 
     #endregion
@@ -245,117 +247,19 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetGuidedAsDefaultAsync(bool isChecked)
     {
-        try
-        {
-            var currentUser = _sessionManager.CurrentSession?.User;
-            if (currentUser == null)
-            {
-                return;
-            }
-
-            string? newMode = isChecked ? "guided" : null;
-
-            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
-                currentUser.WindowsUsername,
-                newMode ?? ""
-            );
-
-            if (result.IsSuccess)
-            {
-                // Update in-memory user object
-                currentUser.DefaultDunnageMode = newMode;
-
-                // Update UI state
-                IsGuidedModeDefault = isChecked;
-                if (isChecked)
-                {
-                    IsManualModeDefault = false;
-                    IsEditModeDefault = false;
-                }
-
-                _logger.LogInfo($"Dunnage default mode set to: {newMode ?? "none"}");
-                StatusMessage = isChecked ? "Guided mode set as default" : "Default mode cleared";
-            }
-            else
-            {
-                await _errorHandler.ShowErrorDialogAsync(
-                    "Save Error",
-                    result.ErrorMessage,
-                    Enum_ErrorSeverity.Error
-                );
-                // Revert checkbox
-                IsGuidedModeDefault = !isChecked;
-            }
-        }
-        catch (Exception ex)
-        {
-            await _errorHandler.HandleErrorAsync(
-                $"Failed to set default dunnage mode: {ex.Message}",
-                Enum_ErrorSeverity.Error,
-                ex,
-                true
-            );
-            // Revert checkbox
-            IsGuidedModeDefault = !isChecked;
-        }
+        await SetDefaultModeAsync(
+            isChecked ? GuidedModeValue : null,
+            isChecked ? "Guided mode set as default" : "Default mode cleared"
+        );
     }
 
     [RelayCommand]
     private async Task SetManualAsDefaultAsync(bool isChecked)
     {
-        try
-        {
-            var currentUser = _sessionManager.CurrentSession?.User;
-            if (currentUser == null)
-            {
-                return;
-            }
-
-            string? newMode = isChecked ? "manual" : null;
-
-            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
-                currentUser.WindowsUsername,
-                newMode ?? ""
-            );
-
-            if (result.IsSuccess)
-            {
-                // Update in-memory user object
-                currentUser.DefaultDunnageMode = newMode;
-
-                // Update UI state
-                IsManualModeDefault = isChecked;
-                if (isChecked)
-                {
-                    IsGuidedModeDefault = false;
-                    IsEditModeDefault = false;
-                }
-
-                _logger.LogInfo($"Dunnage default mode set to: {newMode ?? "none"}");
-                StatusMessage = isChecked ? "Manual mode set as default" : "Default mode cleared";
-            }
-            else
-            {
-                await _errorHandler.ShowErrorDialogAsync(
-                    "Save Error",
-                    result.ErrorMessage,
-                    Enum_ErrorSeverity.Error
-                );
-                // Revert checkbox
-                IsManualModeDefault = !isChecked;
-            }
-        }
-        catch (Exception ex)
-        {
-            await _errorHandler.HandleErrorAsync(
-                $"Failed to set default dunnage mode: {ex.Message}",
-                Enum_ErrorSeverity.Error,
-                ex,
-                true
-            );
-            // Revert checkbox
-            IsManualModeDefault = !isChecked;
-        }
+        await SetDefaultModeAsync(
+            isChecked ? ManualModeValue : null,
+            isChecked ? "Manual mode set as default" : "Default mode cleared"
+        );
     }
 
     /// <summary>
@@ -370,6 +274,33 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SetEditAsDefaultAsync(bool isChecked)
     {
+        await SetDefaultModeAsync(
+            isChecked ? EditModeValue : null,
+            isChecked ? "Edit mode set as default" : "Default mode cleared"
+        );
+    }
+
+    [RelayCommand]
+    private async Task SetImageSearchAsDefaultAsync(bool isChecked)
+    {
+        await SetDefaultModeAsync(
+            isChecked ? ImageSearchModeValue : null,
+            isChecked ? "Image Search mode set as default" : "Default mode cleared"
+        );
+    }
+
+    private void ApplyDefaultModeSelection(string? defaultMode)
+    {
+        string normalizedMode = defaultMode?.Trim().ToLowerInvariant() ?? string.Empty;
+
+        IsGuidedModeDefault = normalizedMode == GuidedModeValue;
+        IsManualModeDefault = normalizedMode == ManualModeValue;
+        IsEditModeDefault = normalizedMode == EditModeValue;
+        IsImageSearchModeDefault = normalizedMode == ImageSearchModeValue;
+    }
+
+    private async Task SetDefaultModeAsync(string? newMode, string statusMessage)
+    {
         try
         {
             var currentUser = _sessionManager.CurrentSession?.User;
@@ -378,8 +309,6 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
                 return;
             }
 
-            string? newMode = isChecked ? "edit" : null;
-
             var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
                 currentUser.WindowsUsername,
                 newMode ?? ""
@@ -387,19 +316,10 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
             if (result.IsSuccess)
             {
-                // Update in-memory user object
                 currentUser.DefaultDunnageMode = newMode;
-
-                // Update UI state
-                IsEditModeDefault = isChecked;
-                if (isChecked)
-                {
-                    IsGuidedModeDefault = false;
-                    IsManualModeDefault = false;
-                }
-
+                ApplyDefaultModeSelection(newMode);
                 _logger.LogInfo($"Dunnage default mode set to: {newMode ?? "none"}");
-                StatusMessage = isChecked ? "Edit mode set as default" : "Default mode cleared";
+                StatusMessage = statusMessage;
             }
             else
             {
@@ -408,8 +328,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
                     result.ErrorMessage,
                     Enum_ErrorSeverity.Error
                 );
-                // Revert checkbox
-                IsEditModeDefault = !isChecked;
+                ApplyDefaultModeSelection(currentUser.DefaultDunnageMode);
             }
         }
         catch (Exception ex)
@@ -420,8 +339,8 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
                 ex,
                 true
             );
-            // Revert checkbox
-            IsEditModeDefault = !isChecked;
+
+            ApplyDefaultModeSelection(_sessionManager.CurrentSession?.User?.DefaultDunnageMode);
         }
     }
 

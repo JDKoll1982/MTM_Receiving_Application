@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -21,10 +22,17 @@ namespace MTM_Receiving_Application.Module_Reporting.ViewModels;
 
 public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 {
+    private const string CustomDateRangePreset = "Custom";
+    private const string YesterdayDateRangePreset = "Yesterday";
+    private const string TodayDateRangePreset = "Today";
+    private const string ThisWeekDateRangePreset = "This Week";
+
     private readonly IService_Reporting _reportingService;
     private readonly IService_ReportingClipboard _reportingClipboard;
     private readonly IService_ReportingRecipientSettings _recipientSettings;
     private bool _isSynchronizingModuleSelections;
+    private bool _isApplyingDateRangePreset;
+    private bool _suppressDateRangeReset;
 
     public event EventHandler? PreviewRequested;
 
@@ -33,6 +41,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     [ObservableProperty]
     private DateTimeOffset _endDate = DateTimeOffset.Now;
+
+    [ObservableProperty]
+    private string _selectedDateRangePreset = CustomDateRangePreset;
 
     [ObservableProperty]
     private bool _isReceivingChecked;
@@ -106,6 +117,14 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     [ObservableProperty]
     private string _ccRecipients = string.Empty;
+
+    public IReadOnlyList<string> DateRangePresetOptions { get; } =
+    [
+        CustomDateRangePreset,
+        YesterdayDateRangePreset,
+        TodayDateRangePreset,
+        ThisWeekDateRangePreset,
+    ];
 
     public bool HasReceivingPreviewModuleCard => ReceivingPreviewModuleCard is not null;
 
@@ -897,7 +916,12 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         };
     }
 
-    private string GetDateRangeText() => $"{StartDate:M/d/yyyy} - {EndDate:M/d/yyyy}";
+    private string GetDateRangeText()
+    {
+        return StartDate.Date == EndDate.Date
+            ? $"{StartDate:M/d/yyyy}"
+            : $"{StartDate:M/d/yyyy} - {EndDate:M/d/yyyy}";
+    }
 
     private void OnPreviewModuleCardPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -1117,6 +1141,44 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         );
     }
 
+    private void ApplyDateRangePreset(string preset)
+    {
+        var today = DateTimeOffset.Now.Date;
+        var startDate = preset switch
+        {
+            YesterdayDateRangePreset => today.AddDays(-1),
+            TodayDateRangePreset => today,
+            ThisWeekDateRangePreset => GetStartOfWeek(today),
+            _ => StartDate.Date,
+        };
+
+        var endDate = preset == YesterdayDateRangePreset ? today.AddDays(-1) : today;
+
+        _isApplyingDateRangePreset = true;
+        _suppressDateRangeReset = true;
+
+        try
+        {
+            StartDate = startDate;
+            EndDate = endDate;
+        }
+        finally
+        {
+            _suppressDateRangeReset = false;
+            _isApplyingDateRangePreset = false;
+        }
+
+        ResetForDateRangeChange();
+    }
+
+    private static DateTimeOffset GetStartOfWeek(DateTimeOffset value)
+    {
+        var currentDate = value.Date;
+        var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+        var delta = ((int)currentDate.DayOfWeek - (int)firstDayOfWeek + 7) % 7;
+        return currentDate.AddDays(-delta);
+    }
+
     private void NotifyActionCommands()
     {
         GenerateReportsCommand.NotifyCanExecuteChanged();
@@ -1165,12 +1227,42 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     partial void OnStartDateChanged(DateTimeOffset value)
     {
+        if (!_isApplyingDateRangePreset && SelectedDateRangePreset != CustomDateRangePreset)
+        {
+            SelectedDateRangePreset = CustomDateRangePreset;
+        }
+
+        if (_suppressDateRangeReset)
+        {
+            return;
+        }
+
         ResetForDateRangeChange();
     }
 
     partial void OnEndDateChanged(DateTimeOffset value)
     {
+        if (!_isApplyingDateRangePreset && SelectedDateRangePreset != CustomDateRangePreset)
+        {
+            SelectedDateRangePreset = CustomDateRangePreset;
+        }
+
+        if (_suppressDateRangeReset)
+        {
+            return;
+        }
+
         ResetForDateRangeChange();
+    }
+
+    partial void OnSelectedDateRangePresetChanged(string value)
+    {
+        if (_isApplyingDateRangePreset || value == CustomDateRangePreset)
+        {
+            return;
+        }
+
+        ApplyDateRangePreset(value);
     }
 
     partial void OnIsReceivingEnabledChanged(bool value)

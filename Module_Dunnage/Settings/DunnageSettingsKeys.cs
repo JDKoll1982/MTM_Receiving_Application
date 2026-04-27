@@ -13,6 +13,7 @@ public static class DunnageSettingsKeys
         public const string PreferredThumbnailSize =
             "Dunnage.UserPreferences.PreferredThumbnailSize";
         public const string PreferPartImages = "Dunnage.UserPreferences.PreferPartImages";
+        public const string TypeSelectionSort = "Dunnage.UserPreferences.TypeSelectionSort";
     }
 
     public static class UiUx
@@ -33,5 +34,16 @@ public static class DunnageSettingsKeys
         public const string ShowImagesOnReview = "Dunnage.Workflow.ShowImagesOnReview";
         public const string FallbackToTypeImageWhenPartMissing =
             "Dunnage.Workflow.FallbackToTypeImageWhenPartMissing";
+    }
+
+    public static class Shortcuts
+    {
+        public const string ModeSelection = "Dunnage.Shortcuts.ModeSelection";
+        public const string ClearLabelData = "Dunnage.Shortcuts.ClearLabelData";
+        public const string NextStep = "Dunnage.Shortcuts.NextStep";
+        public const string BackStep = "Dunnage.Shortcuts.BackStep";
+        public const string Help = "Dunnage.Shortcuts.Help";
+        public const string IsToggleSimpleNavigationEnabled =
+            "Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled";
     }
 }

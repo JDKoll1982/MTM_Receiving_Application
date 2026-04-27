@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShipRec Tools — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"                              ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"                                ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"                              ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../outside-service/index.html"                        ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../volvo/index.html"                                  ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"   class="is-current"    ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#material-availability">Material Availability Board</a></li>
+            <li><a href="#outside-service-history">Outside Service History</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🛠️ Module</div>
+            <h1>ShipRec Tools</h1>
+            <p class="lead">
+                A collection of utility tools for the Shipping and Receiving team —
+                including a live Material Availability Board and an Outside Service
+                History viewer.
+            </p>
+        </div>
+
+        <!-- Overview -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                ShipRec Tools is a toolbox module. Unlike the other modules it does not
+                capture new transactions — it presents useful cross-module views and
+                utilities that help the Shipping and Receiving team make decisions in
+                real time.
+            </p>
+            <p>
+                The tool selection screen lists available tools. Select any tool tile to
+                launch it. Tools can be opened simultaneously in separate windows.
+            </p>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">📊</div>
+                    <h3>Material Availability Board</h3>
+                    <p>Live view of incoming and outgoing material availability, including
+                    work order details and PO receiving status.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">📋</div>
+                    <h3>Outside Service History</h3>
+                    <p>Search and review completed outside service requests — a read-only
+                    view of the data managed in the Outside Service module.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Material Availability Board -->
+        <section id="material-availability" class="content-section">
+            <h2>Material Availability Board</h2>
+            <p>
+                The Material Availability Board gives a live at-a-glance summary of parts
+                that are expected or in progress — helping the team prioritize work and
+                communicate with production.
+            </p>
+
+            <h3>Incoming Details view</h3>
+            <p>
+                Shows open PO lines from Infor Visual with expected delivery dates.
+                Drill into any row to see the full PO line details, quantity ordered,
+                quantity received to date, and remaining balance.
+            </p>
+
+            <h3>Work Order Details view</h3>
+            <p>
+                Shows open work orders from Infor Visual that are waiting on material.
+                Each row displays the work order number, required part, required quantity,
+                and the work order due date.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Read-only from Infor Visual.</strong>
+                    All data on the Material Availability Board is sourced directly from
+                    Infor Visual (SQL Server read-only connection). No data is modified by
+                    this tool.
+                </div>
+            </div>
+
+            <h3>Using the board</h3>
+            <ol>
+                <li>Open <strong>ShipRec Tools → Material Availability Board</strong>.</li>
+                <li>Use the tab bar to switch between <strong>Incoming</strong> and
+                <strong>Work Orders</strong>.</li>
+                <li>Click any row to expand the detail panel on the right.</li>
+                <li>Use the search box to filter by part number or work order number.</li>
+                <li>Press <strong>Refresh</strong> to reload data from Infor Visual.</li>
+            </ol>
+        </section>
+
+        <!-- Outside Service History -->
+        <section id="outside-service-history" class="content-section">
+            <h2>Outside Service History</h2>
+            <p>
+                The Outside Service History tool is a read-only view of all completed
+                outside service requests. It allows Shipping, Receiving, and supervisors
+                to look up past requests without opening the Outside Service module.
+            </p>
+
+            <h3>Search options</h3>
+            <ul>
+                <li>Date range (required)</li>
+                <li>Request number (e.g., <code>OS-000042</code>)</li>
+                <li>Part number</li>
+                <li>Vendor name</li>
+                <li>Created by (person who submitted the request)</li>
+            </ul>
+
+            <h3>Columns displayed</h3>
+            <ul>
+                <li>Request number and creation date</li>
+                <li>Line number and part ID</li>
+                <li>Vendor and bill of lading number</li>
+                <li>Scheduled and actual ship date/time</li>
+                <li>Package count and quantity summary</li>
+                <li>Completion notes</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Cannot edit from here.</strong>
+                    To correct a completed outside service record, use the Outside Service
+                    module and contact a supervisor.
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>The Material Availability Board shows stale data — how do I refresh?</summary>
+                    <div class="faq-body">
+                        <p>Press the <strong>Refresh</strong> button at the top of the board.
+                        Data is pulled live from Infor Visual on demand and is not automatically
+                        refreshed in the background. There is no polling or scheduled refresh.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I export the Material Availability Board to Excel?</summary>
+                    <div class="faq-body">
+                        <p>Not directly from this tool. For export-quality data, use the
+                        Reporting module which supports Excel export for receiving history.
+                        For production material data, run the equivalent report from Infor Visual.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>A tool I used before is no longer on the selection screen — what happened?</summary>
+                    <div class="faq-body">
+                        <p>Tools can be enabled or disabled by an Administrator in Settings.
+                        Contact your supervisor or administrator if a tool you rely on has
+                        disappeared from the selection screen.</p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>ShipRec Tools Module</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../shared/app.js"></script>
+</body>
+</html>

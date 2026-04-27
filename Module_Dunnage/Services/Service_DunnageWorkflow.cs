@@ -114,6 +114,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         GoToStep(Enum_DunnageWorkflowStep.EditMode);
                         _statusMessageRaised.Raise(this, "Starting Edit mode");
                         break;
+                    case "image-search":
+                        GoToStep(Enum_DunnageWorkflowStep.ImagePartSearch);
+                        _statusMessageRaised.Raise(this, "Starting Image Search mode");
+                        break;
                     default:
                         GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
                         _statusMessageRaised.Raise(this, "Workflow started");

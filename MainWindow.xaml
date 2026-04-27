@@ -101,7 +101,12 @@
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
             <NavigationView.Header>
-                <StackPanel>
+                <Grid MinHeight="100" Padding="0,0,40,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="64" />
+                    </Grid.RowDefinitions>
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -110,17 +115,17 @@
 
                         <TextBlock
                             x:Name="PageTitleTextBlock"
-                            Margin="16,0"
+                            HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            Style="{StaticResource TitleTextBlockStyle}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyLargeStrongTextBlockStyle}"
                             Text="Dashboard" />
 
                         <Button
                             x:Name="UserMenuButton"
                             Grid.Column="1"
-                            Margin="0,0,24,0"
-                            Padding="0"
-                            HorizontalAlignment="Right"
+                            Padding="8"
+                            HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             Background="Transparent"
                             BorderThickness="0">
@@ -138,21 +143,22 @@
                                 <TextBlock
                                     x:Name="UserDisplayTextBlock"
                                     VerticalAlignment="Center"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
                                     Text="Not Logged In" />
                             </StackPanel>
                         </Button>
                     </Grid>
+
                     <InfoBar
                         x:Name="StatusInfoBar"
-                        Margin="0,20,0,20"
-                        HorizontalAlignment="Center"
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
                         IsClosable="True"
                         IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
                         Message="{x:Bind ViewModel.NotificationService.StatusMessage, Mode=OneWay}"
                         Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}" />
-                </StackPanel>
+                </Grid>
             </NavigationView.Header>
 
             <NavigationView.MenuItems>

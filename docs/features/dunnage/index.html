@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dunnage — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"                        ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"       class="is-current"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"                        ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../outside-service/index.html"                  ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../volvo/index.html"                            ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"                    ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#modes">Entry Modes</a></li>
+            <li><a href="#guided-wizard">Guided Wizard</a></li>
+            <li><a href="#manual-entry">Manual Entry</a></li>
+            <li><a href="#edit-mode">Edit Mode</a></li>
+            <li><a href="#image-search">Image Part Search</a></li>
+            <li><a href="#review">Review &amp; Save</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+        <p class="sidebar-section-label">Database</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../database/dunnage_history/index.html">dunnage_history</a></li>
+            <li><a href="../../database/dunnage_parts/index.html">dunnage_parts</a></li>
+            <li><a href="../../database/dunnage_types/index.html">dunnage_types</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">📋 Module</div>
+            <h1>Dunnage</h1>
+            <p class="lead">
+                Receive, track, and manage dunnage — the packaging materials (pallets, dividers,
+                boxes, reels, and more) that arrive with your parts shipments.
+            </p>
+        </div>
+
+        <!-- Overview -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Dunnage refers to the protective and structural packaging that comes in with
+                inbound shipments. The Dunnage module lets you log each receipt, associate it
+                with a purchase order or mark it as a non-PO item, record quantities and
+                specifications, and generate labels — all in one workflow.
+            </p>
+            <p>
+                Every completed transaction is written to the <strong>dunnage_history</strong>
+                table, preserving a snapshot of the type, quantity, specs, and who processed it.
+            </p>
+
+            <h3>What the module tracks</h3>
+            <ul>
+                <li>Dunnage type (Pallet, Corrugated Divider, Coil Reel, etc.)</li>
+                <li>Specific part number and its associated specifications</li>
+                <li>Quantity and the unit of measure for that type</li>
+                <li>PO number (optional — non-PO items are supported)</li>
+                <li>Warehouse location</li>
+                <li>Per-line dynamic specs captured as JSON</li>
+                <li>Who received it and when</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Types and parts are managed in Settings.</strong>
+                    Administrators set up dunnage types (e.g., "Pallet") and the specific parts
+                    within each type (e.g., "GKN-48x40 Wood Pallet") in
+                    <strong>Settings → Dunnage</strong> before operators can receive them.
+                </div>
+            </div>
+        </section>
+
+        <!-- Entry Modes -->
+        <section id="modes" class="content-section">
+            <h2>Entry Modes</h2>
+            <p>Choose the entry mode that fits your workflow on the Mode Selection screen.</p>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">🧙</div>
+                    <h3>Guided Wizard</h3>
+                    <p>Step-by-step screens for selecting type, part, quantity, and details one at a time. Recommended for new operators.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">⌨️</div>
+                    <h3>Manual Entry</h3>
+                    <p>All fields on one grid-style screen. Faster for operators who already know the type and part numbers.</p>
+                </div>
+                <div class="info-card card-gold">
+                    <div class="info-card-icon">✏️</div>
+                    <h3>Edit Mode</h3>
+                    <p>Load a historical dunnage record to correct quantities, dates, PO numbers, or specs.</p>
+                </div>
+                <div class="info-card card-red">
+                    <div class="info-card-icon">🖼️</div>
+                    <h3>Image Part Search</h3>
+                    <p>Browse an image catalog to identify dunnage parts visually, then hand off into the standard guided flow.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Guided Wizard -->
+        <section id="guided-wizard" class="content-section">
+            <h2>Guided Wizard</h2>
+            <p>The Guided Wizard walks through dunnage entry one step at a time. Each step is validated before you can advance.</p>
+
+            <div class="step-flow" role="list">
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true"><span class="step-num">1</span><div class="step-connector"></div></div>
+                    <div class="step-body">
+                        <h4>Type Selection</h4>
+                        <p>Choose the category of dunnage — Pallet, Divider, Box, Reel, etc.
+                        The types shown here are configured by your administrator.
+                        Each type tile shows its icon and name.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true"><span class="step-num">2</span><div class="step-connector"></div></div>
+                    <div class="step-body">
+                        <h4>Part Selection</h4>
+                        <p>Select the specific dunnage part within the chosen type.
+                        Parts have names, part IDs, and can include images to aid identification.
+                        Use the search box to filter if there are many parts in a type.</p>
+                        <div class="step-tip">
+                            Can't find the part visually? Use <strong>Image Part Search</strong> mode
+                            from the Mode Selection screen to browse photos and auto-select the part.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true"><span class="step-num">3</span><div class="step-connector"></div></div>
+                    <div class="step-body">
+                        <h4>Quantity Entry</h4>
+                        <p>Enter how many units of this dunnage part arrived.
+                        The quantity label (e.g., "Quantity", "Pieces", "Bundles") is set per-type
+                        in Settings and is shown above the entry field.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true"><span class="step-num">4</span><div class="step-connector"></div></div>
+                    <div class="step-body">
+                        <h4>Details Entry</h4>
+                        <p>Enter additional information: PO number (optional), warehouse location,
+                        and any per-type custom specification fields configured by your administrator.</p>
+                        <div class="step-tip">
+                            Location is required when your settings enforce it. Check with your
+                            supervisor if the field appears greyed out or mandatory.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card" role="listitem">
+                    <div class="step-number-col" aria-hidden="true"><span class="step-num">5</span><div class="step-connector"></div></div>
+                    <div class="step-body">
+                        <h4>Review &amp; Save</h4>
+                        <p>A summary of all entries is displayed. Confirm the details and press
+                        <strong>Save</strong> to write the transaction to history and prepare label data for printing.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Manual Entry -->
+        <section id="manual-entry" class="content-section">
+            <h2>Manual Entry</h2>
+            <p>
+                Manual Entry presents a compact grid where you can add multiple dunnage lines
+                at once before saving. Each row represents one dunnage receipt item.
+            </p>
+            <h3>When to use Manual Entry</h3>
+            <ul>
+                <li>Processing several different dunnage types from the same delivery</li>
+                <li>When you have a packing slip with all the information already written down</li>
+                <li>For high-volume, repetitive receiving where wizard navigation slows you down</li>
+            </ul>
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>All rows are saved at once.</strong>
+                    In Manual Entry, nothing is committed until you press <strong>Save All</strong>.
+                    If you close the screen before saving, all entered lines are lost.
+                </div>
+            </div>
+        </section>
+
+        <!-- Edit Mode -->
+        <section id="edit-mode" class="content-section">
+            <h2>Edit Mode</h2>
+            <p>
+                Edit Mode loads historical dunnage records so you can correct mistakes
+                after a transaction has been saved. Search by date range, part, or the
+                person who originally entered the record.
+            </p>
+            <h3>Editable fields</h3>
+            <ul>
+                <li>Quantity</li>
+                <li>PO number</li>
+                <li>Location</li>
+                <li>Received date</li>
+                <li>Dynamic spec values</li>
+            </ul>
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Edit Mode may require elevated access.</strong>
+                    Contact your supervisor if the Edit Mode option is not visible on the
+                    Mode Selection screen.
+                </div>
+            </div>
+        </section>
+
+        <!-- Image Part Search -->
+        <section id="image-search" class="content-section">
+            <h2>Image Part Search</h2>
+            <p>
+                Image Part Search is a visual catalog that lets you identify a dunnage part
+                by looking at photos rather than reading part numbers. This is especially
+                useful when a shipment arrives without clear labeling.
+            </p>
+            <h3>How it works</h3>
+            <ol>
+                <li>Select <strong>Image Part Search</strong> on the Mode Selection screen.</li>
+                <li>Browse the photo grid — each card shows the dunnage part image, name, and type.</li>
+                <li>Tap the part that matches what arrived.</li>
+                <li>The app hands you off to the standard Guided Wizard with the type and part pre-selected.</li>
+                <li>Continue from the Quantity Entry step as normal.</li>
+            </ol>
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    Images are uploaded and managed by your administrator in
+                    <strong>Settings → Dunnage → Image Assets</strong>. If a part has no
+                    image assigned, it will not appear in Image Part Search.
+                </div>
+            </div>
+        </section>
+
+        <!-- Review -->
+        <section id="review" class="content-section">
+            <h2>Review &amp; Save</h2>
+            <p>
+                The Review screen (final step in the Guided Wizard) shows a complete
+                summary of everything entered. You can use the <strong>Edit</strong>
+                links next to any field to jump back and correct a value.
+            </p>
+            <p>
+                When you press <strong>Save to Database</strong>, the app:
+            </p>
+            <ol>
+                <li>Writes a row to <strong>dunnage_history</strong>.</li>
+                <li>Writes label data to the label data table for LabelView to consume.</li>
+                <li>Returns you to Mode Selection for the next transaction.</li>
+            </ol>
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Printing is a separate step.</strong> The app saves label data to the
+                    database — the operator prints labels using LabelView, which reads from that table.
+                    The transaction is always saved regardless of whether printing has occurred.
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>The type I need isn't listed — what do I do?</summary>
+                    <div class="faq-body">
+                        <p>Types are managed in Settings → Dunnage → Category Management.
+                        Contact your administrator or supervisor to have the new type added.
+                        Until it is added, use the closest matching type and note it in the
+                        transaction comments if available.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I receive dunnage without a PO number?</summary>
+                    <div class="faq-body">
+                        <p>Yes. The PO number field on the Details Entry screen is optional.
+                        Transactions without a PO number are stored with a NULL po_number in
+                        dunnage_history and can still be searched and reported on.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I added a row in Manual Entry but it disappeared — why?</summary>
+                    <div class="faq-body">
+                        <p>In Manual Entry, rows exist only in the session until you press
+                        <strong>Save All</strong>. Navigating away, timing out, or closing the
+                        app before saving will discard all unsaved rows. Make sure to save
+                        before leaving the screen.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Where can I see what dunnage was received this week?</summary>
+                    <div class="faq-body">
+                        <p>The Reporting module provides date-range queries. You can also use
+                        Edit Mode to search dunnage_history by date and view results without
+                        making any changes.</p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Dunnage Module</span>
+    <span aria-hidden="true">·</span>
+    <a href="../../database/dunnage_history/index.html">dunnage_history table</a>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../shared/app.js"></script>
+</body>
+</html>

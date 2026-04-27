@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reporting — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"                        ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"                          ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"     class="is-current"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../outside-service/index.html"                  ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../volvo/index.html"                            ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"                    ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#receiving-report">Receiving History Report</a></li>
+            <li><a href="#dunnage-report">Dunnage Report</a></li>
+            <li><a href="#exporting">Exporting &amp; Copying</a></li>
+            <li><a href="#scheduled">Scheduled Reports</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+        <p class="sidebar-section-label">Database</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../database/receiving_history/index.html">receiving_history</a></li>
+            <li><a href="../../database/reporting_scheduled_reports/index.html">reporting_scheduled_reports</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">📊 Module</div>
+            <h1>Reporting</h1>
+            <p class="lead">
+                Query, filter, and export receiving and dunnage history.
+                Generate reports by date range, employee, part number, or PO — and
+                optionally schedule reports to be emailed automatically.
+            </p>
+        </div>
+
+        <!-- Overview -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                The Reporting module reads from the transaction history tables built up by
+                the Receiving and Dunnage modules. It is read-only — nothing you do in
+                Reporting changes the underlying records.
+            </p>
+            <p>
+                Reports can be generated on-demand and viewed on screen, exported to Excel,
+                or copied to the clipboard as tab-delimited text for pasting into spreadsheets
+                or emails.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Data is live.</strong> Every report reflects transactions that have
+                    been committed to the database — there is no cache. A transaction saved a
+                    moment ago will appear in a fresh report immediately.
+                </div>
+            </div>
+        </section>
+
+        <!-- Receiving History Report -->
+        <section id="receiving-report" class="content-section">
+            <h2>Receiving History Report</h2>
+            <p>
+                The most commonly used report. It queries <strong>receiving_history</strong> and
+                displays every committed receiving transaction within the selected filters.
+            </p>
+            <h3>Available filters</h3>
+            <ul>
+                <li><strong>Date range</strong> — required; limits results to the selected window</li>
+                <li><strong>Part number</strong> — filter by one specific part</li>
+                <li><strong>PO number</strong> — filter by a specific purchase order</li>
+                <li><strong>Employee</strong> — filter to one employee's transactions</li>
+                <li><strong>Department</strong> — filter to all employees in a department</li>
+            </ul>
+            <h3>Columns displayed</h3>
+            <ul>
+                <li>Transaction date and time</li>
+                <li>Part ID and description</li>
+                <li>PO number and line</li>
+                <li>Quantity received</li>
+                <li>Package type and weight</li>
+                <li>Heat / lot number</li>
+                <li>Employee name</li>
+                <li>Vendor name</li>
+            </ul>
+        </section>
+
+        <!-- Dunnage Report -->
+        <section id="dunnage-report" class="content-section">
+            <h2>Dunnage Report</h2>
+            <p>
+                Queries <strong>dunnage_history</strong> to summarize dunnage receipts.
+                Useful for verifying what dunnage was returned or received over a period.
+            </p>
+            <h3>Available filters</h3>
+            <ul>
+                <li><strong>Date range</strong> — required</li>
+                <li><strong>Dunnage type</strong> — filter to a specific category</li>
+                <li><strong>Part</strong> — filter to a specific dunnage part</li>
+                <li><strong>PO number</strong> — for dunnage tied to a specific PO</li>
+                <li><strong>Employee</strong> — who performed the receipt</li>
+            </ul>
+        </section>
+
+        <!-- Exporting -->
+        <section id="exporting" class="content-section">
+            <h2>Exporting &amp; Copying</h2>
+            <p>After generating a report you have two ways to take the data out of the app:</p>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">📥</div>
+                    <h3>Export to Excel</h3>
+                    <p>Generates an <code>.xlsx</code> file with all visible columns and rows.
+                    Saves to your Documents folder by default; a Save dialog lets you change the location.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">📋</div>
+                    <h3>Copy to Clipboard</h3>
+                    <p>Copies all visible data as tab-delimited text. Paste directly into Excel,
+                    Google Sheets, or the body of an email.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Filters are respected when exporting.</strong>
+                    Only the rows matching your current filter set are included in exports.
+                    Clear all filters before exporting if you want the full result set.
+                </div>
+            </div>
+        </section>
+
+        <!-- Scheduled Reports -->
+        <section id="scheduled" class="content-section">
+            <h2>Scheduled Reports</h2>
+            <p>
+                Scheduled reports run automatically at a configured interval and send the
+                results to one or more email recipients. They are managed in
+                <strong>Settings → Reporting → Scheduled Reports</strong>.
+            </p>
+            <h3>How to set up a scheduled report</h3>
+            <ol>
+                <li>Go to <strong>Settings → Reporting</strong>.</li>
+                <li>Click <strong>Add Scheduled Report</strong>.</li>
+                <li>Select the report type (Receiving History or Dunnage).</li>
+                <li>Configure the date window (e.g., "Previous 7 days" or "Previous month").</li>
+                <li>Set the schedule frequency (Daily, Weekly, Monthly).</li>
+                <li>Add recipient email addresses.</li>
+                <li>Save the schedule.</li>
+            </ol>
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Requires Administrator access.</strong>
+                    Only Administrators can create or edit scheduled reports.
+                    Contact your administrator if you need a report added to the schedule.
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>My report shows no results — is something wrong?</summary>
+                    <div class="faq-body">
+                        <p>First check your date range — the most common cause of empty results is
+                        a date window that doesn't include any transactions. Also confirm that any
+                        secondary filters (part number, employee) match data that actually exists
+                        in the date range.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The Excel export has the wrong date format — how do I fix it?</summary>
+                    <div class="faq-body">
+                        <p>The export writes dates in ISO format (YYYY-MM-DD HH:MM:SS). If Excel
+                        displays them as numbers, select the date columns, right-click, choose
+                        <strong>Format Cells</strong>, and apply a Date format.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I generate a report for all employees at once?</summary>
+                    <div class="faq-body">
+                        <p>Yes. Leave the Employee filter blank and all employees will be included
+                        in the results. Use the Department filter to narrow to a group.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How often do scheduled reports run?</summary>
+                    <div class="faq-body">
+                        <p>The schedule is set per-report in Settings. Common intervals are Daily
+                        (runs at a configured time), Weekly (runs on a selected day of the week),
+                        and Monthly. The exact run time is shown in the
+                        <strong>reporting_scheduled_reports</strong> table.</p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Reporting Module</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../shared/app.js"></script>
+</body>
+</html>

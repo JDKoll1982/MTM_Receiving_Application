@@ -13,6 +13,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -22,6 +23,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// </summary>
 public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IResettableViewModel
 {
+    private const string SortByNameOption = "Name (A-Z)";
+    private const string SortByTimesUsedOption = "Times Used";
+    private const string SortByLastUsedOption = "Last Used";
+    private const string SortByNewestAddedOption = "Newest Added";
+    private const string SortByRecentlyUpdatedOption = "Recently Updated";
+
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
@@ -29,6 +36,11 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
     private readonly IService_ViewModelRegistry _viewModelRegistry;
     private readonly IService_UserPrivileges _userPrivileges;
     private readonly IService_UserSessionManager _sessionManager;
+    private readonly IService_DunnageSettings _dunnageSettings;
+    private readonly List<Model_DunnageType> _allTypes = new();
+    private Dictionary<int, int> _typeUsageCounts = new();
+    private Dictionary<int, DateTime> _typeLastUsedDates = new();
+    private bool _isRestoringSortPreference;
 
     public ViewModel_dunnage_typeselection(
         IService_DunnageWorkflow workflowService,
@@ -37,6 +49,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         IService_Help helpService,
         IService_UserPrivileges userPrivileges,
         IService_UserSessionManager sessionManager,
+        IService_DunnageSettings dunnageSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_ViewModelRegistry viewModelRegistry,
@@ -51,6 +64,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         _viewModelRegistry = viewModelRegistry;
         _userPrivileges = userPrivileges;
         _sessionManager = sessionManager;
+        _dunnageSettings = dunnageSettings;
 
         // Subscribe to pagination events
         _paginationService.PageChanged += OnPageChanged;
@@ -63,6 +77,16 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         SelectedType = null;
         _paginationService?.FirstPage();
     }
+
+    public IReadOnlyList<string> SortOptions { get; } =
+        new[]
+        {
+            SortByNameOption,
+            SortByTimesUsedOption,
+            SortByLastUsedOption,
+            SortByNewestAddedOption,
+            SortByRecentlyUpdatedOption,
+        };
 
     #region Observable Properties
 
@@ -91,7 +115,25 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
     [NotifyCanExecuteChangedFor(nameof(DeleteTypeCommand))]
     private bool _canManageDefinitions;
 
+    [ObservableProperty]
+    private string _selectedSortOption = SortByNameOption;
+
     #endregion
+
+    partial void OnSelectedSortOptionChanged(string value)
+    {
+        if (_isRestoringSortPreference)
+        {
+            return;
+        }
+
+        if (_allTypes.Count > 0)
+        {
+            ApplySorting();
+        }
+
+        PersistSortPreference(value);
+    }
 
     #region Initialization
 
@@ -116,6 +158,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             IsBusy = true;
             StatusMessage = "Loading dunnage types...";
             await EnsurePrivilegeStateAsync();
+            await LoadSortPreferenceAsync();
             _logger.LogInfo(
                 "TypeSelection: Starting to load types",
                 "ViewModel_dunnage_typeselection"
@@ -159,7 +202,15 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 "ViewModel_dunnage_typeselection"
             );
 
-            var result = await _dunnageService.GetAllTypesAsync();
+            Task<Model_Dao_Result<List<Model_DunnageType>>> typesTask =
+                _dunnageService.GetAllTypesAsync();
+            Task<Model_Dao_Result<List<Model_DunnageLoad>>> loadsTask =
+                _dunnageService.GetAllLoadsAsync();
+
+            await Task.WhenAll(typesTask, loadsTask);
+
+            Model_Dao_Result<List<Model_DunnageType>> result = await typesTask;
+            Model_Dao_Result<List<Model_DunnageLoad>> loadsResult = await loadsTask;
 
             _logger.LogInfo(
                 $"TypeSelection: Service returned - IsSuccess: {result.IsSuccess}, Data null: {result.Data == null}, Count: {result.Data?.Count ?? 0}",
@@ -168,16 +219,15 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
             if (result.IsSuccess && result.Data != null)
             {
-                // Configure pagination for 3x3 grid (9 items per page)
-                _paginationService.PageSize = 9;
-                _paginationService.SetSource(result.Data);
+                _allTypes.Clear();
+                _allTypes.AddRange(result.Data);
+                UpdateSortMetrics(loadsResult);
+                ApplySorting();
+
                 _logger.LogInfo(
-                    $"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}",
+                    $"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}, Sort={SelectedSortOption}",
                     "ViewModel_dunnage_typeselection"
                 );
-
-                UpdatePaginationProperties();
-                UpdatePageDisplay();
 
                 _logger.LogInfo(
                     $"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}",
@@ -658,6 +708,144 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             $"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}",
             "ViewModel_dunnage_typeselection"
         );
+    }
+
+    private void ApplySorting()
+    {
+        IEnumerable<Model_DunnageType> sortedTypes = SelectedSortOption switch
+        {
+            SortByTimesUsedOption => _allTypes
+                .OrderByDescending(GetUsageCount)
+                .ThenByDescending(GetLastUsedDate)
+                .ThenByDescending(GetRecentlyUpdatedDate)
+                .ThenBy(type => type.TypeName, StringComparer.CurrentCultureIgnoreCase),
+            SortByLastUsedOption => _allTypes
+                .OrderByDescending(GetLastUsedDate)
+                .ThenByDescending(GetUsageCount)
+                .ThenByDescending(GetRecentlyUpdatedDate)
+                .ThenBy(type => type.TypeName, StringComparer.CurrentCultureIgnoreCase),
+            SortByNewestAddedOption => _allTypes
+                .OrderByDescending(type => type.CreatedDate)
+                .ThenBy(type => type.TypeName, StringComparer.CurrentCultureIgnoreCase),
+            SortByRecentlyUpdatedOption => _allTypes
+                .OrderByDescending(GetRecentlyUpdatedDate)
+                .ThenBy(type => type.TypeName, StringComparer.CurrentCultureIgnoreCase),
+            _ => _allTypes.OrderBy(type => type.TypeName, StringComparer.CurrentCultureIgnoreCase),
+        };
+
+        _paginationService.PageSize = 9;
+        _paginationService.SetSource(sortedTypes.ToList());
+        _paginationService.FirstPage();
+        UpdatePaginationProperties();
+        UpdatePageDisplay();
+    }
+
+    private void UpdateSortMetrics(Model_Dao_Result<List<Model_DunnageLoad>> loadsResult)
+    {
+        _typeUsageCounts = new Dictionary<int, int>();
+        _typeLastUsedDates = new Dictionary<int, DateTime>();
+
+        if (loadsResult.IsSuccess is false || loadsResult.Data == null)
+        {
+            _logger.LogWarning(
+                $"TypeSelection: Unable to load history metrics for sorting: {loadsResult.ErrorMessage}",
+                "ViewModel_dunnage_typeselection"
+            );
+            return;
+        }
+
+        IEnumerable<IGrouping<int, Model_DunnageLoad>> loadsByType = loadsResult
+            .Data.Where(load => load.TypeId.HasValue)
+            .GroupBy(load => load.TypeId!.Value);
+
+        foreach (IGrouping<int, Model_DunnageLoad> loadGroup in loadsByType)
+        {
+            _typeUsageCounts[loadGroup.Key] = loadGroup.Count();
+            _typeLastUsedDates[loadGroup.Key] = loadGroup.Max(GetLoadUsedOn);
+        }
+    }
+
+    private int GetUsageCount(Model_DunnageType type)
+    {
+        return _typeUsageCounts.GetValueOrDefault(type.Id);
+    }
+
+    private async Task LoadSortPreferenceAsync()
+    {
+        _isRestoringSortPreference = true;
+
+        try
+        {
+            string persistedValue = await _dunnageSettings.GetStringAsync(
+                DunnageSettingsKeys.UserPreferences.TypeSelectionSort,
+                GetCurrentUserId()
+            );
+
+            SelectedSortOption = SortOptions.Contains(persistedValue, StringComparer.Ordinal)
+                ? persistedValue
+                : SortByNameOption;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"TypeSelection: Failed to load saved sort option. Falling back to {SortByNameOption}. Error: {ex.Message}",
+                "ViewModel_dunnage_typeselection"
+            );
+            SelectedSortOption = SortByNameOption;
+        }
+        finally
+        {
+            _isRestoringSortPreference = false;
+        }
+    }
+
+    private void PersistSortPreference(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        try
+        {
+            Task.Run(() =>
+                    _dunnageSettings.SaveStringAsync(
+                        DunnageSettingsKeys.UserPreferences.TypeSelectionSort,
+                        value,
+                        GetCurrentUserId()
+                    )
+                )
+                .GetAwaiter()
+                .GetResult();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"TypeSelection: Failed to save sort option '{value}'. Error: {ex.Message}",
+                "ViewModel_dunnage_typeselection"
+            );
+        }
+    }
+
+    private int? GetCurrentUserId()
+    {
+        int? employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        return employeeNumber.HasValue && employeeNumber.Value > 0 ? employeeNumber : null;
+    }
+
+    private DateTime GetLastUsedDate(Model_DunnageType type)
+    {
+        return _typeLastUsedDates.GetValueOrDefault(type.Id, DateTime.MinValue);
+    }
+
+    private static DateTime GetRecentlyUpdatedDate(Model_DunnageType type)
+    {
+        return type.ModifiedDate ?? type.CreatedDate;
+    }
+
+    private static DateTime GetLoadUsedOn(Model_DunnageLoad load)
+    {
+        return load.ReceivedDate == default ? load.CreatedDate : load.ReceivedDate;
     }
 
     private async Task EnsurePrivilegeStateAsync()

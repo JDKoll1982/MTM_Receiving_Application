@@ -36,6 +36,10 @@ public sealed partial class ViewModel_Settings_Receiving_CategoryHub
             new Model_SettingsNavigationStep(
                 "Workflow Defaults",
                 typeof(Views.View_Settings_Receiving_WorkflowDefaults)
+            ),
+            new Model_SettingsNavigationStep(
+                "Keyboard Shortcuts",
+                typeof(Views.View_Settings_Receiving_KeyboardShortcuts)
             )
         );
     }

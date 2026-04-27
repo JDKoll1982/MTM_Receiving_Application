@@ -2,7 +2,7 @@
   "id": "settings-dunnage-shell",
   "module": "Module_Settings.Dunnage",
   "name": "Dunnage Settings Shell",
-  "summary": "Category-based Dunnage settings workflow rebuilt around live setting behavior only: personal defaults, shared image assets, image presentation, and workflow visuals. The retired overview, permissions, and audit placeholder pages remain on disk only and are no longer part of runtime navigation.",
+  "summary": "Category-based Dunnage settings workflow rebuilt around live setting behavior only: personal defaults, shared image assets, image presentation, workflow visuals, and keyboard shortcuts. The retired overview, permissions, and audit placeholder pages remain on disk only and are no longer part of runtime navigation.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs",
@@ -10,6 +10,7 @@
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_ImageAssets.cs",
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_ImagePresentation.cs",
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_WorkflowVisuals.cs",
+    "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_KeyboardShortcuts.cs",
     "Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml",
     "Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml.cs",
     "Module_Settings.Dunnage/Views/View_Settings_Dunnage_PersonalDefaults.xaml",
@@ -20,7 +21,13 @@
     "Module_Settings.Dunnage/Views/View_Settings_Dunnage_ImagePresentation.xaml.cs",
     "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowVisuals.xaml",
     "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowVisuals.xaml.cs",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_KeyboardShortcuts.xaml",
+    "Module_Settings.Dunnage/Views/View_Settings_Dunnage_KeyboardShortcuts.xaml.cs",
+    "Module_Settings.Dunnage/Models/Model_Settings_DunnageShortcuts.cs",
     "Module_Dunnage/Settings/DunnageSettingsKeys.cs",
+    "Module_Dunnage/Contracts/IService_DunnageShortcuts.cs",
+    "Module_Dunnage/Services/Service_DunnageShortcuts.cs",
+    "Module_Core/Helpers/UI/Helper_KeyboardShortcuts.cs",
     "Module_Dunnage/Services/Service_DunnageSettings.cs",
     "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs",
     "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
@@ -39,14 +46,16 @@
       "Personal defaults",
       "Shared image assets",
       "Image presentation",
-      "Workflow visuals"
+      "Workflow visuals",
+      "Keyboard shortcuts"
     ],
     "screens": [
       "View_Settings_Dunnage_CategoryHub.xaml",
       "View_Settings_Dunnage_PersonalDefaults.xaml",
       "View_Settings_Dunnage_ImageAssets.xaml",
       "View_Settings_Dunnage_ImagePresentation.xaml",
-      "View_Settings_Dunnage_WorkflowVisuals.xaml"
+      "View_Settings_Dunnage_WorkflowVisuals.xaml",
+      "View_Settings_Dunnage_KeyboardShortcuts.xaml"
     ],
     "currentUiPatterns": ["Card list", "Form"],
     "desiredUiPatterns": ["Card list", "Form", "Split layout"],
@@ -59,6 +68,9 @@
       "Type and part image toggles",
       "Visual source priority selector",
       "Workflow image visibility toggles",
+      "Shortcut key selectors",
+      "Modifier toggles",
+      "Ctrl+T simple navigation toggle",
       "Save and reset actions"
     ],
     "userActions": [
@@ -69,6 +81,7 @@
       "Set the maximum image import file size",
       "Control whether type and part images appear in Dunnage screens",
       "Control when images appear during the Dunnage workflow",
+      "Configure Dunnage workflow keyboard shortcuts and the Ctrl+T simple navigation toggle",
       "Save or reset each category independently"
     ],
     "preserveRules": [
@@ -78,15 +91,16 @@
       "Keep personal and shared Dunnage settings scoped the same way they are in code"
     ],
     "acceptanceCriteria": [
-      "The hub routes only to the four live Dunnage setting categories",
+      "The hub routes only to the five live Dunnage setting categories",
       "Metadata reflects that Dunnage settings are now organized by behavior instead of the old page names",
       "Metadata does not imply the retired placeholder pages are still part of runtime navigation"
     ],
     "validationHints": [
-      "Confirm the Dunnage hub opens the four new category pages",
+      "Confirm the Dunnage hub opens the five live category pages",
       "Confirm personal defaults still validate Dunnage location values with fuzzy suggestions",
       "Confirm the image-assets page updates the shared image folder and file size limit",
       "Confirm the image-presentation and workflow-visual pages preserve the existing Dunnage setting keys",
+      "Confirm the keyboard-shortcuts page persists Dunnage shortcut changes per user and updates the Ctrl+T toggle setting",
       "Confirm search destinations no longer include retired Dunnage overview, permissions, or audit pages"
     ]
   }

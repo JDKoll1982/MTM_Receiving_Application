@@ -36,7 +36,7 @@ $script:BaseShare = "X:\Software Development\Live Applications"
 $script:OutputRootPath = $script:BaseShare
 $script:ProjectFile = $defaultProjectFile
 $script:PublishVerbosity = 'detailed'
-$script:SatelliteResourceLanguages = ''
+$script:SatelliteResourceLanguages = 'en-US'
 $script:PublishLogFile = $null
 $script:LastStatusMessage = ''
 $script:PublishLogBuffer = $null
@@ -49,7 +49,7 @@ function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
 
     $allLanguagesItem = New-Object System.Windows.Controls.ComboBoxItem
-    $allLanguagesItem.Content = 'All available languages (default)'
+    $allLanguagesItem.Content = 'All available languages'
     $allLanguagesItem.Tag = ''
     [void]$languageOptions.Add($allLanguagesItem)
 
@@ -588,7 +588,8 @@ $xaml = @"
                 <Border Name="OutputBorder" Background="#1E1E1E" CornerRadius="3"
                         Margin="0,4,0,0" Visibility="Collapsed">
                     <ScrollViewer Name="OutputScrollViewer" Height="130"
-                                  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" >
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
                         <TextBlock Name="OutputText" FontFamily="Consolas" FontSize="10"
                                    Foreground="#D4D4D4" TextWrapping="Wrap" Margin="8"/>
                     </ScrollViewer>
@@ -631,8 +632,17 @@ $xaml = @"
 # ---------------------------------------------------------------------------
 # Load XAML
 # ---------------------------------------------------------------------------
-$reader = [System.Xml.XmlNodeReader]::new([xml]$xaml)
-$window = [Windows.Markup.XamlReader]::Load($reader)
+try {
+    $reader = [System.Xml.XmlNodeReader]::new([xml]$xaml)
+    $window = [Windows.Markup.XamlReader]::Load($reader)
+}
+catch {
+    throw "Failed to load the publish window XAML. $($_.Exception.Message)"
+}
+
+if ($null -eq $window) {
+    throw 'Failed to load the publish window XAML.'
+}
 
 # ---------------------------------------------------------------------------
 # Bind controls
@@ -643,6 +653,9 @@ $outputPathText = $window.FindName("OutputPathText")
 $browseOutputPathButton = $window.FindName("BrowseOutputPathButton")
 $projectPathText = $window.FindName("ProjectPathText")
 $satelliteLanguagesComboBox = $window.FindName("SatelliteLanguagesComboBox")
+if ($null -eq $satelliteLanguagesComboBox -and $null -ne $window) {
+    $satelliteLanguagesComboBox = [System.Windows.LogicalTreeHelper]::FindLogicalNode($window, "SatelliteLanguagesComboBox")
+}
 $statusText = $window.FindName("StatusText")
 $publishProgress = $window.FindName("PublishProgress")
 $outputBorder = $window.FindName("OutputBorder")
@@ -654,6 +667,10 @@ $errorBorder = $window.FindName("ErrorBorder")
 $errorText = $window.FindName("ErrorText")
 $publishButton = $window.FindName("PublishButton")
 $closeButton = $window.FindName("CloseButton")
+
+if ($null -eq $satelliteLanguagesComboBox) {
+    throw "Could not find the SatelliteLanguagesComboBox control in the loaded publish window XAML."
+}
 
 $projectPathText.Text = $script:ProjectFile
 $satelliteLanguagesComboBox.Items.Clear()

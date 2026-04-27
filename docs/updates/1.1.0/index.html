@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application — Version 1.1.0</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>What's New in 1.1.0</h1>
+                    <p class="hero-copy">This release adds customizable keyboard shortcuts for the Receiving and Dunnage workflows, faster date filtering in Reports, and smarter navigation buttons throughout the app.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 1.1.0</span>
+                <p class="meta-text">Released April 26, 2026</p>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>The biggest improvements in this update</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Keyboard shortcuts</p>
+                            <p class="highlight-text">Both the Receiving and Dunnage workflows now support fully configurable keyboard shortcuts. Set the keys that fit your flow in Settings.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Faster reporting</p>
+                            <p class="highlight-text">Pick Today, Yesterday, or This Week from a dropdown instead of manually entering both dates — reports load with one click.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Accurate date ranges</p>
+                            <p class="highlight-text">Reports now correctly include all transactions recorded on the end date, not just those before midnight.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="settings">Settings</button>
+                            <button type="button" class="filter-chip" data-filter="visual">Visual</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="settings" open>
+                        <summary>Keyboard shortcuts — Receiving workflow</summary>
+                        <p>You can now assign custom keyboard shortcuts for the most common Receiving actions: moving to the next or previous step, jumping back to mode selection, clearing label data, and opening help. A new setting also lets you turn on simple arrow-key navigation with a single toggle (Ctrl+T by default). Go to <strong>Settings → Receiving → Keyboard Shortcuts</strong> to configure.</p>
+                    </details>
+
+                    <details class="change-item" data-category="settings" open>
+                        <summary>Keyboard shortcuts — Dunnage workflow</summary>
+                        <p>The same configurable shortcut system has been added to the Dunnage workflow. Assign keys for next step, back step, mode selection, clear label data, and help. Find these options under <strong>Settings → Dunnage → Keyboard Shortcuts</strong>.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Reporting — date range presets</summary>
+                        <p>A new dropdown in the Reports screen offers four quick presets: <strong>Custom</strong> (use your own dates, same as before), <strong>Today</strong>, <strong>Yesterday</strong>, and <strong>This Week</strong>. Selecting a preset fills in both dates automatically. You can still switch back to Custom and type any range you need.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Reporting — end-of-day records now included</summary>
+                        <p>Previously, reports with an end date of — for example — April 25 could miss transactions recorded in the final hours of that day. The date range logic has been corrected so the end date is now fully inclusive. If you ran reports recently and noticed missing late-day entries, re-running them will now show the correct totals.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Receiving workflow — smart navigation buttons</summary>
+                        <p>The Back and Next buttons in the Receiving workflow now show or hide automatically based on which step you are on. The Back button only appears when there is a previous step to return to; the Next button is only shown when moving forward is available. This removes visual clutter on the first and last steps.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage workflow — image search entry point</summary>
+                        <p>The Dunnage workflow now supports launching directly into Image Search mode from the workflow controller. This makes image-based part lookup accessible as a first-class step rather than a secondary action.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage mode selection — "Manual Entry" replaced with "Edit Mode"</summary>
+                        <p>The old <strong>Manual Entry</strong> mode tile has been replaced by <strong>Edit Mode</strong>, which is dedicated to loading and correcting historical dunnage records. The icon and description have been updated to reflect this new purpose.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Receiving — navigation guard now prevents leaving mid-save</summary>
+                        <p>If a receiving save is in progress when you try to navigate away, the app now shows a "Save In Progress" dialog and blocks the navigation until the save completes. Previously, navigating away too quickly could leave the workflow in an inconsistent state.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Dunnage details — location field now required before advancing</summary>
+                        <p>The <strong>Go Next</strong> button on the Dunnage Details Entry step is now disabled until a location has been entered. This prevents saving records with a blank location.</p>
+                    </details>
+
+                    <details class="change-item" data-category="visual" open>
+                        <summary>Splash screen — now shows the MTM logo</summary>
+                        <p>The loading screen that appears while the app starts up now displays the MTM logo image instead of a generic icon, giving the startup sequence a more polished, branded look.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means for your day-to-day work</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Fewer hands off the keyboard</h3>
+                            <p>Configurable shortcuts let heavy users move through Receiving and Dunnage steps without reaching for the mouse, reducing cycle time on the floor.</p>
+                        </article>
+                        <article>
+                            <h3>Reports you can trust</h3>
+                            <p>The date range fix and the new presets together mean fewer re-runs and less second-guessing about whether a report captured everything it should have.</p>
+                        </article>
+                        <article>
+                            <h3>Cleaner, less confusing screens</h3>
+                            <p>Navigation buttons that only appear when relevant, a required location field, and a save guard on navigation reduce mistakes and make the workflows easier to follow.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Optional setup, nothing required</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update. The app will open normally and all existing workflows continue as before.</p>
+                    <ul class="action-list">
+                        <li>To use keyboard shortcuts, open <strong>Settings → Receiving → Keyboard Shortcuts</strong> or <strong>Settings → Dunnage → Keyboard Shortcuts</strong> and assign your preferred keys.</li>
+                        <li>If you run regular end-of-day reports, consider re-running any recent reports that may have been affected by the date range fix.</li>
+                        <li>The Dunnage <strong>Manual Entry</strong> mode has been renamed to <strong>Edit Mode</strong>. If you had it set as your default, it will continue to work — the underlying function is the same.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Something not working as expected?</h2>
+                    </div>
+                    <p>Contact your MTM support contact and include <strong>Version 1.1.0</strong> in your message. If a report looks different after this update, that is most likely the date range fix working correctly — but reach out if you are unsure.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="app.js"></script>
+</body>
+</html>

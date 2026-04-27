@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>receiving_package_types — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Breadcrumb">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html">Receiving</a></li>
+            <li><a href="../index.html">Database</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../receiving_history/index.html">receiving_history</a></li>
+            <li><a href="../receiving_label_data/index.html">receiving_label_data</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>receiving_package_types</code></h1>
+            <p class="lead">
+                Stores the user's remembered package type preference per part number.
+                When a part is received, the app pre-selects the last-used package type
+                from this table to reduce re-entry.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                This is a small lookup/preference table. Each row maps one
+                Infor Visual <code>PartID</code> to a package type choice (e.g., Skid, Box,
+                Pallet, Custom). The unique constraint on <code>PartID</code> enforces
+                a one-preference-per-part rule — updating the preference is an
+                INSERT … ON DUPLICATE KEY UPDATE.
+            </p>
+            <p>
+                When <code>PackageTypeName</code> is <code>Custom</code>, the
+                <code>CustomTypeName</code> column holds the user-defined label text.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PreferenceID</code></td><td>INT PK AUTO</td><td>No</td><td>Surrogate primary key</td></tr>
+                        <tr><td><code>PartID</code></td><td>VARCHAR(50) UNIQUE</td><td>No</td><td>Infor Visual part identifier; unique constraint</td></tr>
+                        <tr><td><code>PackageTypeName</code></td><td>VARCHAR(50)</td><td>No</td><td>Selected package type (Box, Pallet, Custom, etc.)</td></tr>
+                        <tr><td><code>CustomTypeName</code></td><td>VARCHAR(100)</td><td>Yes</td><td>User-defined type name when PackageTypeName = "Custom"</td></tr>
+                        <tr><td><code>LastModified</code></td><td>DATETIME</td><td>No</td><td>Timestamp of last preference update</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>Row count is bounded by the number of unique parts ever received — typically a few hundred rows.</li>
+                <li>Managed via <strong>Settings → Receiving</strong> as well as implicitly when a receiving session completes.</li>
+                <li>Never joins to <code>receiving_history</code> at query time; the resolved value is snapshotted into <code>package_type_name</code> on the history row at receive time.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>receiving_package_types</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

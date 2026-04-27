@@ -31,9 +31,16 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Choose a start and end date, then check which modules have data available."
+                                Text="Choose a quick range or set start and end dates, then check which modules have data available."
                                 TextWrapping="WrapWholeWords" />
                         </StackPanel>
+
+                        <ComboBox
+                            Width="220"
+                            HorizontalAlignment="Left"
+                            Header="Quick range"
+                            ItemsSource="{x:Bind ViewModel.DateRangePresetOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedDateRangePreset, Mode=TwoWay}" />
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>

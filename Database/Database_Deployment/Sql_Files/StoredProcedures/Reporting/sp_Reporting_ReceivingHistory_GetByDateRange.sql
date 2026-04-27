@@ -3,8 +3,8 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS `sp_Reporting_ReceivingHistory_GetByDateRange`$$
 
 CREATE PROCEDURE `sp_Reporting_ReceivingHistory_GetByDateRange`(
-    IN p_start_date DATE,
-    IN p_end_date DATE
+    IN p_start_date DATETIME,
+    IN p_end_date DATETIME
 )
 BEGIN
     SELECT
@@ -43,7 +43,8 @@ BEGIN
         NULL AS quantity_per_skid,
         NULL AS received_skid_count
     FROM view_receiving_history
-    WHERE DATE(created_at) BETWEEN p_start_date AND p_end_date
+        WHERE created_at >= p_start_date
+            AND created_at < p_end_date
     ORDER BY created_at DESC, id DESC;
 END $$
 

@@ -19,7 +19,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
-/// ViewModel for Dunnage Review &amp; Save
+/// ViewModel for Dunnage Review & Save
 /// </summary>
 public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettableViewModel
 {
@@ -53,7 +53,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
         _windowService = windowService;
         _viewModelRegistry = viewModelRegistry;
 
-        // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
         _viewModelRegistry.Register(this);
     }
@@ -102,7 +101,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     private bool _canSave = true;
 
     [ObservableProperty]
-    private bool _isSuccessMessageVisible = false;
+    private bool _isSuccessMessageVisible;
 
     [ObservableProperty]
     private string _successMessage = string.Empty;
@@ -111,13 +110,13 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     private bool _isSingleView = true;
 
     [ObservableProperty]
-    private bool _isTableView = false;
+    private bool _isTableView;
 
     [ObservableProperty]
-    private bool _canGoBack = false;
+    private bool _canGoBack;
 
     [ObservableProperty]
-    private bool _canGoNext = false;
+    private bool _canGoNext;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasCurrentVendorState))]
@@ -154,7 +153,10 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
             foreach (var load in SessionLoads)
             {
                 var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(load.PoNumber);
-                if (string.Equals(load.PoNumber, normalizedPoNumber, StringComparison.Ordinal) is false)
+                if (
+                    string.Equals(load.PoNumber, normalizedPoNumber, StringComparison.Ordinal)
+                    is false
+                )
                 {
                     load.PoNumber = normalizedPoNumber;
                 }
@@ -163,7 +165,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
             LoadCount = SessionLoads.Count;
             CanSave = LoadCount > 0;
 
-            // Set up first entry for single view
             if (LoadCount > 0)
             {
                 CurrentEntryIndex = 1;
@@ -312,134 +313,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     #region Commands
 
     [RelayCommand]
-    private async Task AddAnotherAsync()
-    {
-        _logger.LogInfo("User requested to add another load", "Review");
-
-        try
-        {
-            // Show confirmation dialog to prevent accidental data loss
-            if (!await ConfirmAddAnotherAsync())
-            {
-                _logger.LogInfo("User cancelled add another load", "Review");
-                return;
-            }
-
-            // Clear transient workflow data to prepare for new entry
-            ClearTransientWorkflowData();
-
-            // Navigate back to Type Selection without clearing session loads
-            _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
-
-            _logger.LogInfo(
-                "Navigated to Type Selection for new load, workflow data cleared",
-                "Review"
-            );
-        }
-        catch (Exception ex)
-        {
-            IsBusy = false;
-            _logger.LogError($"Error in AddAnotherAsync: {ex.Message}", ex);
-            await _errorHandler.HandleErrorAsync(
-                "Failed to prepare for new load entry",
-                Enum_ErrorSeverity.Medium,
-                ex,
-                true
-            );
-        }
-    }
-
-    /// <summary>
-    /// Shows confirmation dialog before clearing data for new entry
-    /// </summary>
-    private async Task<bool> ConfirmAddAnotherAsync()
-    {
-        try
-        {
-            var xamlRoot = _windowService.GetXamlRoot();
-            if (xamlRoot == null)
-            {
-                _logger.LogWarning("XamlRoot is null, proceeding without confirmation", "Review");
-                return true;
-            }
-
-            var dialog = new ContentDialog
-            {
-                Title = "Add Another Load",
-                Content =
-                    "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
-                PrimaryButtonText = "Continue",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = xamlRoot,
-            };
-
-            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                dialog,
-                xamlRoot
-            );
-
-            var result = await dialog.ShowAsync();
-            return result == ContentDialogResult.Primary;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error showing confirmation dialog: {ex.Message}", ex, "Review");
-            return true; // Proceed if dialog fails
-        }
-    }
-
-    /// <summary>
-    /// Clears transient workflow data from intermediate steps (not the session loads)
-    /// This prevents data duplication when adding another load
-    /// </summary>
-    private void ClearTransientWorkflowData()
-    {
-        try
-        {
-            // Clear the current session properties that hold form data
-            // but preserve the Loads collection (already reviewed loads)
-            var session = _workflowService.CurrentSession;
-            if (session != null)
-            {
-                // Clear selection properties to start fresh
-                session.SelectedTypeId = 0;
-                session.SelectedTypeName = string.Empty;
-                session.SelectedPart = null;
-                session.NumberOfLoads = 1;
-                session.Quantity = 0;
-                session.LoadQuantities.Clear();
-                session.PONumber = string.Empty;
-                session.Location = string.Empty;
-                // Preserve Loads collection - these are already reviewed
-            }
-
-            // Clear UI inputs in connected ViewModels
-            ClearUIInputsForNewEntry();
-
-            _logger.LogInfo(
-                "Transient workflow data and UI inputs cleared for new entry",
-                "Review"
-            );
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error clearing transient workflow data: {ex.Message}", ex, "Review");
-        }
-    }
-
-    /// <summary>
-    /// Clears UI input properties in ViewModels to prepare for new entry
-    /// while preserving reviewed loads
-    /// </summary>
-    private void ClearUIInputsForNewEntry()
-    {
-        // Transient ViewModels state reset is handled by the transient nature or session clearing.
-        // Direct property manipulation via Service Locator is removed.
-        _logger.LogInfo("UI inputs cleared via session reset (loads preserved).");
-    }
-
-    [RelayCommand]
     private async Task SaveAllAsync()
     {
         if (IsBusy)
@@ -456,7 +329,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
 
             await _logger.LogInfoAsync($"Starting SaveAllAsync: {LoadCount} loads to save");
 
-            // Save loads to database
             var saveResult = await _dunnageService.SaveLoadsAsync(SessionLoads.ToList());
 
             if (!saveResult.Success)
@@ -464,7 +336,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
                 await _logger.LogErrorAsync(
                     $"Failed to save {LoadCount} loads: {saveResult.ErrorMessage}"
                 );
-                await _errorHandler.HandleDaoErrorAsync(saveResult, "SaveAllAsync", true);
+                await _errorHandler.HandleDaoErrorAsync(saveResult, nameof(SaveAllAsync), true);
                 return;
             }
 
@@ -500,7 +372,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     [RelayCommand]
     private void StartNewEntry()
     {
-        // Clear session and return to Type Selection for another guided entry.
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
     }
@@ -525,8 +396,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     private void Cancel()
     {
         _logger.LogInfo("Cancelling review, clearing session", "Review");
-
-        // Clear session and return to Mode Selection
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
     }
@@ -569,22 +438,10 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
 
     #region Help Content Helpers
 
-    /// <summary>
-    /// Gets a tooltip by key from the help service
-    /// </summary>
-    /// <param name="key"></param>
     public string GetTooltip(string key) => _helpService.GetTooltip(key);
 
-    /// <summary>
-    /// Gets a placeholder by key from the help service
-    /// </summary>
-    /// <param name="key"></param>
     public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
 
-    /// <summary>
-    /// Gets a tip by key from the help service
-    /// </summary>
-    /// <param name="key"></param>
     public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion

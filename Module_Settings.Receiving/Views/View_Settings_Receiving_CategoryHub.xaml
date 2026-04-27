@@ -17,23 +17,23 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Button
                 Grid.Row="0"
                 Grid.Column="0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -60,11 +60,11 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -91,11 +91,11 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="2"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -122,11 +122,11 @@
             <Button
                 Grid.Row="1"
                 Grid.Column="0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -145,6 +145,37 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="Control startup mode, confirmation behavior, review table defaults, and developer-only mock data mode."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="320"
+                Height="200"
+                Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep4Clicked"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE92E;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Keyboard Shortcuts" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Customize keyboard shortcuts for the Receiving workflow, and configure the simple navigation toggle."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>

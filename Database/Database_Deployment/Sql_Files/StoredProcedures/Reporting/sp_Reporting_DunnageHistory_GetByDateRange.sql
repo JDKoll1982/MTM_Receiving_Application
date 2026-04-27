@@ -3,8 +3,8 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS `sp_Reporting_DunnageHistory_GetByDateRange`$$
 
 CREATE PROCEDURE `sp_Reporting_DunnageHistory_GetByDateRange`(
-    IN p_start_date DATE,
-    IN p_end_date DATE
+    IN p_start_date DATETIME,
+    IN p_end_date DATETIME
 )
 BEGIN
     SELECT
@@ -27,7 +27,8 @@ BEGIN
         NULL AS quantity_per_skid,
         NULL AS received_skid_count
     FROM view_dunnage_history
-    WHERE created_date BETWEEN p_start_date AND p_end_date
+        WHERE created_date >= p_start_date
+            AND created_date < p_end_date
     ORDER BY created_date DESC;
 END $$
 

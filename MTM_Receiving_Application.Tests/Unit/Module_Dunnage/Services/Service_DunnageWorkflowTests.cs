@@ -19,6 +19,36 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Services;
 public sealed class Service_DunnageWorkflowTests
 {
     [Fact]
+    public async Task StartWorkflowAsync_ShouldNavigateToImageSearch_WhenUserDefaultModeIsImageSearch()
+    {
+        var sessionManager = new Mock<IService_UserSessionManager>();
+        sessionManager
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new MTM_Receiving_Application.Module_Core.Models.Systems.Model_UserSession(
+                    new MTM_Receiving_Application.Module_Core.Models.Systems.Model_User
+                    {
+                        DefaultDunnageMode = "image-search",
+                    }
+                )
+            );
+
+        var service = new Service_DunnageWorkflow(
+            new Mock<IService_MySQL_Dunnage>().Object,
+            sessionManager.Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_SettingsCoreFacade>().Object,
+            new Mock<IService_ReceivingValidation>().Object
+        );
+
+        await service.StartWorkflowAsync();
+
+        service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.ImagePartSearch);
+    }
+
+    [Fact]
     public async Task AdvanceToNextStepAsync_ShouldGenerateLoadsAndApplyDetails_ForGuidedWorkflowBatch()
     {
         var service = CreateService();

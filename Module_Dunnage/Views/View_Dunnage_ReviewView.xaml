@@ -312,22 +312,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Button
                 Grid.Column="1"
-                AutomationProperties.Name="Add Another Load"
-                Command="{x:Bind ViewModel.AddAnotherCommand}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddAnother'), Mode=OneWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon FontSize="16" Glyph="&#xE710;" />
-                    <TextBlock Text="Add Another" />
-                </StackPanel>
-            </Button>
-
-            <Button
-                Grid.Column="2"
                 AutomationProperties.Name="Save to Database"
                 Command="{x:Bind ViewModel.SaveAllCommand}"
                 IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}"

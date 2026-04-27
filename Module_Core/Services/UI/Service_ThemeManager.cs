@@ -94,7 +94,7 @@ public class Service_ThemeManager : IService_ThemeManager
 
     private static void ApplyThemeToWindow(Window? window, ElementTheme theme)
     {
-        if (!TryGetWindowContent(window, out var content))
+        if (!TryGetWindowContent(window, out var content) || content is null)
         {
             return;
         }

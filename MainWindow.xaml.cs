@@ -919,13 +919,13 @@ namespace MTM_Receiving_Application
             string destinationTitle
         )
         {
-            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow)
+            if (
+                ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView
+            )
             {
                 if (destinationPageType != typeof(Module_Receiving.Views.View_Receiving_Workflow))
                 {
-                    var receivingWorkflow =
-                        _serviceProvider.GetRequiredService<IService_ReceivingWorkflow>();
-                    await receivingWorkflow.ResetWorkflowAsync();
+                    return await receivingView.ConfirmLeaveModuleAsync(destinationTitle);
                 }
 
                 return true;

@@ -6,8 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
-    mc:Ignorable="d"
->
+    mc:Ignorable="d">
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_BoolToString x:Key="BoolToStringConverter" />
@@ -26,31 +25,27 @@
             Grid.Row="1"
             Margin="16,12,16,16"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-        >
+            VerticalAlignment="Stretch">
             <!--  Mode Selection View  -->
             <ContentControl
                 x:Name="ModeSelectionHost"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
-                Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Manual Entry View  -->
             <ContentControl
                 x:Name="ManualEntryHost"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
-                Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Edit Mode View  -->
             <ContentControl
                 x:Name="EditModeHost"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
-                Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Guided Wizard Views  -->
             <!--  PO Entry View  -->
@@ -58,64 +53,58 @@
                 x:Name="POEntryHost"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Load Entry View  -->
             <ContentControl
                 x:Name="LoadEntryHost"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Weight/Quantity Entry View  -->
             <ContentControl
                 x:Name="WeightQuantityHost"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Heat/Lot Entry View  -->
             <ContentControl
                 x:Name="HeatLotHost"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Package Type Entry View  -->
             <ContentControl
                 x:Name="PackageTypeHost"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Review View  -->
             <ContentControl
                 x:Name="ReviewHost"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            />
+                Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Saving Progress  -->
             <StackPanel
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Spacing="16"
-                Visibility="{x:Bind ViewModel.IsSavingVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            >
-                <ProgressRing Width="64" Height="64" IsActive="True" />
+                Visibility="{x:Bind ViewModel.IsSavingVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ProgressRing
+                    Width="64"
+                    Height="64"
+                    IsActive="True" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     Style="{StaticResource SubtitleTextBlockStyle}"
-                    Text="{x:Bind ViewModel.SaveProgressMessage, Mode=OneWay}"
-                />
+                    Text="{x:Bind ViewModel.SaveProgressMessage, Mode=OneWay}" />
                 <ProgressBar
                     MinWidth="300"
                     MaxWidth="600"
                     HorizontalAlignment="Stretch"
                     Maximum="100"
-                    Value="{x:Bind ViewModel.SaveProgressValue, Mode=OneWay}"
-                />
+                    Value="{x:Bind ViewModel.SaveProgressValue, Mode=OneWay}" />
             </StackPanel>
 
             <!--  Completion Summary  -->
@@ -124,38 +113,30 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Spacing="24"
-                Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            >
+                Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <FontIcon
                     FontSize="64"
                     Foreground="{ThemeResource SystemFillColorSuccessBrush}"
                     Glyph="&#xE930;"
-                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                />
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <FontIcon
                     FontSize="64"
                     Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                     Glyph="&#xE783;"
-                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                />
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
 
                 <TextBlock
                     HorizontalAlignment="Center"
                     Style="{StaticResource TitleTextBlockStyle}"
                     Text="{x:Bind ViewModel.CompletionSuccessTitleText, Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                />
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     Style="{StaticResource TitleTextBlockStyle}"
                     Text="{x:Bind ViewModel.CompletionFailureTitleText, Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                />
+                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
 
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                >
+                <TextBlock HorizontalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}">
                     <Run Text="{x:Bind ViewModel.LastSaveResult.LoadsSaved, Mode=OneWay}" />
                     <Run Text="{x:Bind ViewModel.CompletionLoadsSavedSuffixText, Mode=OneWay}" />
                 </TextBlock>
@@ -164,25 +145,19 @@
                     Padding="16"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     CornerRadius="8"
-                    Spacing="8"
-                >
-                    <TextBlock
-                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                        Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}"
-                    />
+                    Spacing="8">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}" />
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind ViewModel.CompletionLabelDataLabelText, Mode=OneWay}" />
                         <TextBlock
                             Foreground="Green"
                             Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}"
-                            Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        />
+                            Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock
                             Foreground="Red"
                             Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}"
-                            Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                        />
+                            Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                     </StackPanel>
 
                     <!--  File Path Display  -->
@@ -193,55 +168,48 @@
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind ViewModel.LastSaveResult.ArchiveQueuePath, Mode=OneWay}"
                         TextWrapping="Wrap"
-                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    />
+                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind ViewModel.CompletionDatabaseLabelText, Mode=OneWay}" />
                         <TextBlock
                             Foreground="Green"
                             Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}"
-                            Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        />
+                            Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <TextBlock
                             Foreground="Red"
                             Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}"
-                            Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                        />
+                            Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                     </StackPanel>
                 </StackPanel>
 
                 <!--  Failure Reason Display  -->
-                <StackPanel
-                    Spacing="8"
-                    Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                >
+                <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
                     <TextBlock
                         Foreground="Red"
                         Text="{x:Bind ViewModel.LastSaveResult.LabelDataErrorMessage, Mode=OneWay}"
                         TextWrapping="Wrap"
-                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelDataSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                    />
+                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelDataSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                     <TextBlock
                         Foreground="Red"
                         Text="{x:Bind ViewModel.LastSaveResult.DatabaseErrorMessage, Mode=OneWay}"
                         TextWrapping="Wrap"
-                        Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                    />
+                        Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                 </StackPanel>
 
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="12">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="12">
                     <Button
                         Command="{x:Bind ViewModel.StartNewEntryCommand}"
                         Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}"
                         Style="{StaticResource AccentButtonStyle}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"
-                    />
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}" />
                     <Button
                         Command="{x:Bind ViewModel.ResetLabelDataCommand}"
                         Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
-                    />
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -251,6 +219,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <!--  Left-aligned buttons  -->
@@ -258,14 +227,12 @@
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Orientation="Horizontal"
-                Spacing="12"
-            >
+                Spacing="12">
                 <Button
                     Background="Transparent"
                     BorderBrush="{ThemeResource SystemAccentColor}"
                     Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                    Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
-                />
+                    Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}" />
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
@@ -273,44 +240,42 @@
                     Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
                     Foreground="Red"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-                />
+                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
             </StackPanel>
 
             <!--  Center help button  -->
             <Button
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Padding="12,8"
-                HorizontalAlignment="Center"
-                Canvas.ZIndex="1000"
+                Grid.Column="2"
+                HorizontalAlignment="Right"
                 Click="HelpButton_Click"
-                Style="{StaticResource AccentButtonStyle}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}"
-            >
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon FontSize="16" Glyph="&#xE946;" />
-                    <TextBlock Text="{x:Bind ViewModel.WorkflowHelpText, Mode=OneWay}" />
-                </StackPanel>
+                Style="{StaticResource WindowChromeStyle}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
+                <FontIcon FontSize="16" Glyph="&#xE946;" />
             </Button>
 
-            <!--  Right-aligned navigation buttons  -->
+            <!--  Center navigation buttons  -->
             <StackPanel
                 Grid.Column="1"
-                HorizontalAlignment="Right"
+                HorizontalAlignment="Center"
                 Orientation="Horizontal"
                 Spacing="12"
-                Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
-            >
-                <Button
-                    Command="{x:Bind ViewModel.PreviousStepCommand}"
-                    Content="{x:Bind ViewModel.WorkflowBackText, Mode=OneWay}"
-                />
+                Visibility="{x:Bind ViewModel.ShowWorkflowNavigationButtons, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button Command="{x:Bind ViewModel.PreviousStepCommand}" Visibility="{x:Bind ViewModel.ShowWorkflowBackButton, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE760;" />
+                        <TextBlock Text="{x:Bind ViewModel.WorkflowBackText, Mode=OneWay}" />
+                    </StackPanel>
+                </Button>
                 <Button
                     Command="{x:Bind ViewModel.NextStepCommand}"
-                    Content="{x:Bind ViewModel.WorkflowNextText, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.IsNextButtonEnabled, Mode=OneWay}"
                     Style="{StaticResource AccentButtonStyle}"
-                />
+                    Visibility="{x:Bind ViewModel.ShowWorkflowNextButton, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{x:Bind ViewModel.WorkflowNextText, Mode=OneWay}" />
+                        <FontIcon Glyph="&#xE761;" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>

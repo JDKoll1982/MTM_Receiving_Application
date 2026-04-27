@@ -2,7 +2,7 @@
   "id": "reporting-availability",
   "module": "Module_Reporting",
   "name": "Availability Check",
-  "summary": "Date-range availability checks that count reportable receiving, dunnage, and Volvo data before generation begins.",
+  "summary": "Date-range availability checks that count reportable receiving, dunnage, and Volvo data before generation begins, with quick presets for Yesterday, Today, and This Week plus full-day date boundaries.",
   "owner": "Reporting Team",
   "relatedFiles": [
     "Module_Reporting/Contracts/IService_Reporting.cs",
@@ -29,16 +29,20 @@
     "currentUiPatterns": ["Form"],
     "desiredUiPatterns": ["Form", "Split layout"],
     "uiElements": [
+      "Quick range selector",
       "Start date",
       "End date",
       "Check Availability button",
       "Module availability indicators"
     ],
     "userActions": [
+      "Pick Yesterday, Today, or This Week from the quick range selector",
       "Check which modules have reportable data before generating output"
     ],
     "validationHints": [
-      "Confirm availability counts and enabled states still match the chosen date range"
+      "Confirm Yesterday, Today, and This Week quick ranges populate the expected start and end dates",
+      "Confirm availability counts and enabled states still match the chosen date range",
+      "Confirm records created later on the selected end date are still included in availability results"
     ]
   }
 }

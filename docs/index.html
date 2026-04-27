@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application — Documentation</title>
+    <link rel="stylesheet" href="features/shared/styles.css" />
+    <style>
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 2rem;
+        }
+        .home-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            background: var(--surface);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .home-card:hover, .home-card:focus-visible {
+            border-color: var(--accent);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            outline: none;
+        }
+        .home-card-icon { font-size: 2rem; line-height: 1; }
+        .home-card-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+        .home-card-desc  { font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; }
+        .home-card--disabled {
+            opacity: 0.65;
+            cursor: default;
+            pointer-events: none;
+            border-style: dashed;
+        }
+        .home-card--disabled .home-card-title::after {
+            content: " — In Development";
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--gold);
+        }
+        .home-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin: 2.5rem 0 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="#" class="top-nav-brand" aria-label="MTM home" aria-current="page">MTM</a>
+</header>
+
+<div class="page-layout">
+    <main id="main-content" class="main-content" style="grid-column: 1 / -1; max-width: 960px; margin: 0 auto;">
+
+        <div class="module-hero">
+            <div class="module-badge">📚 Documentation</div>
+            <h1>MTM Receiving Application</h1>
+            <p class="lead">
+                Developer and maintainer reference for the WinUI 3 desktop application
+                used by the manufacturing floor to manage receiving, dunnage, outside service,
+                and Volvo EDI workflows.
+            </p>
+        </div>
+
+        <p class="home-section-label">Feature modules</p>
+        <nav class="home-grid" aria-label="Feature modules">
+            <a href="features/receiving/index.html" class="home-card">
+                <span class="home-card-icon" aria-hidden="true">📦</span>
+                <span class="home-card-title">Receiving</span>
+                <span class="home-card-desc">PO lookup, label generation, quantity tracking, quality holds, and receiving history.</span>
+            </a>
+            <a href="features/dunnage/index.html" class="home-card">
+                <span class="home-card-icon" aria-hidden="true">📋</span>
+                <span class="home-card-title">Dunnage</span>
+                <span class="home-card-desc">Container tracking, dunnage specs, inventory management, and label printing.</span>
+            </a>
+            <a href="features/reporting/index.html" class="home-card">
+                <span class="home-card-icon" aria-hidden="true">📊</span>
+                <span class="home-card-title">Reporting</span>
+                <span class="home-card-desc">On-demand and scheduled reports, Excel exports, and email delivery.</span>
+            </a>
+            <a href="features/outside-service/index.html" class="home-card home-card--disabled" aria-disabled="true" tabindex="-1">
+                <span class="home-card-icon" aria-hidden="true">🔧</span>
+                <span class="home-card-title">Outside Service</span>
+                <span class="home-card-desc">Create, track, and complete outside service requests across Initialize → Setup → Complete phases. <strong>Not yet available in the current release.</strong></span>
+            </a>
+            <a href="features/volvo/index.html" class="home-card">
+                <span class="home-card-icon" aria-hidden="true">🚚</span>
+                <span class="home-card-title">Volvo</span>
+                <span class="home-card-desc">EDI-driven receiving workflow, AIAG barcode scanning, and Volvo-specific label generation.</span>
+            </a>
+            <a href="features/shiprec-tools/index.html" class="home-card">
+                <span class="home-card-icon" aria-hidden="true">🛠️</span>
+                <span class="home-card-title">ShipRec Tools</span>
+                <span class="home-card-desc">Shipping and receiving utility tools, pack slips, and shared cross-module helpers.</span>
+            </a>
+        </nav>
+
+        <p class="home-section-label">Reference</p>
+        <nav class="home-grid" aria-label="Reference sections" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));">
+            <a href="database/index.html" class="home-card">
+                <span class="home-card-icon" aria-hidden="true">🗄️</span>
+                <span class="home-card-title">Database Reference</span>
+                <span class="home-card-desc">MySQL table schemas, column definitions, indexes, and usage notes for all tables.</span>
+            </a>
+        </nav>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Documentation Home</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="features/shared/app.js"></script>
+</body>
+</html>

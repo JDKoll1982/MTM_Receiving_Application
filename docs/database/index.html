@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Database Reference — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../features/receiving/index.html"    ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../features/dunnage/index.html"      ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../features/reporting/index.html"    ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../features/outside-service/index.html"><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
+            <li><a href="../features/volvo/index.html"        ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="index.html"   class="is-current"    ><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="Table groups">
+        <p class="sidebar-label">Table groups</p>
+        <ul class="sidebar-nav">
+            <li><a href="#receiving">Receiving</a></li>
+            <li><a href="#outside-service">Outside Service</a></li>
+            <li><a href="#dunnage">Dunnage</a></li>
+            <li><a href="#volvo">Volvo</a></li>
+            <li><a href="#reporting">Reporting</a></li>
+            <li><a href="#auth">Auth &amp; Users</a></li>
+            <li><a href="#settings">Settings</a></li>
+            <li><a href="#system">System</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Reference</div>
+            <h1>Database Reference</h1>
+            <p class="lead">
+                All MySQL tables used by the MTM Receiving Application —
+                grouped by functional area. Each table page includes
+                the full column list, indexes, and usage notes.
+            </p>
+        </div>
+
+        <div class="callout callout-info">
+            <span class="callout-icon" aria-hidden="true">ℹ️</span>
+            <div class="callout-body">
+                <strong>MySQL only.</strong> These tables are in the
+                <code>mtm_receiving_application</code> database on the local MySQL 5.7
+                server. Infor Visual (SQL Server) tables are READ ONLY and are not
+                documented here — see the CSV schema files in
+                <code>docs/InforVisual/DatabaseCSVFiles/</code>.
+            </div>
+        </div>
+
+        <!-- Receiving -->
+        <section id="receiving" class="content-section">
+            <h2>📦 Receiving</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="receiving_history/index.html"><code>receiving_history</code></a></td>
+                            <td>Permanent ledger of all completed receiving transactions</td>
+                        </tr>
+                        <tr>
+                            <td><a href="receiving_label_data/index.html"><code>receiving_label_data</code></a></td>
+                            <td>Active queue for in-progress receiving sessions; rows promoted to history on completion</td>
+                        </tr>
+                        <tr>
+                            <td><a href="receiving_package_types/index.html"><code>receiving_package_types</code></a></td>
+                            <td>Remembered package type preference per part number</td>
+                        </tr>
+                        <tr>
+                            <td><code>receiving_package_type_mapping</code></td>
+                            <td>Maps package type names to label template codes</td>
+                        </tr>
+                        <tr>
+                            <td><code>receiving_quality_holds</code></td>
+                            <td>Quality hold records tied to receiving transactions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Outside Service -->
+        <section id="outside-service" class="content-section">
+            <h2>🔧 Outside Service</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="outside_service_request/index.html"><code>outside_service_request</code></a></td>
+                            <td>Header row per outside service request; holds creator and request-level notes</td>
+                        </tr>
+                        <tr>
+                            <td><a href="outside_service_request_line/index.html"><code>outside_service_request_line</code></a></td>
+                            <td>Line items (one per part/vendor); tracks lifecycle phase and shipping details</td>
+                        </tr>
+                        <tr>
+                            <td><a href="outside_service_request_package/index.html"><code>outside_service_request_package</code></a></td>
+                            <td>Individual packages for each line item with quantity per container</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Dunnage -->
+        <section id="dunnage" class="content-section">
+            <h2>📋 Dunnage</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>dunnage_types</code></td><td>Master list of dunnage container types</td></tr>
+                        <tr><td><code>dunnage_parts</code></td><td>Parts that require dunnage containers</td></tr>
+                        <tr><td><code>dunnage_history</code></td><td>Completed dunnage transaction history</td></tr>
+                        <tr><td><code>dunnage_requires_inventory</code></td><td>Dunnage items that track inventory levels</td></tr>
+                        <tr><td><code>dunnage_specs</code></td><td>Dunnage container specifications per part</td></tr>
+                        <tr><td><code>dunnage_custom_fields</code></td><td>User-defined custom fields for dunnage types</td></tr>
+                        <tr><td><code>dunnage_non_po_entries</code></td><td>Dunnage entries not linked to a PO</td></tr>
+                        <tr><td><code>dunnage_label_data</code></td><td>Label print queue for dunnage</td></tr>
+                        <tr><td><code>dunnage_quantity_types</code></td><td>Quantity type definitions (individual, pallet, etc.)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Volvo -->
+        <section id="volvo" class="content-section">
+            <h2>🚚 Volvo</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>volvo_masterdata</code></td><td>Master data for Volvo parts and EDI configuration</td></tr>
+                        <tr><td><code>volvo_label_data</code></td><td>Active label print queue for Volvo transactions</td></tr>
+                        <tr><td><code>volvo_label_history</code></td><td>Historical record of printed Volvo labels</td></tr>
+                        <tr><td><code>volvo_line_data</code></td><td>Active line items for Volvo receiving</td></tr>
+                        <tr><td><code>volvo_line_history</code></td><td>Historical Volvo receiving lines</td></tr>
+                        <tr><td><code>volvo_part_components</code></td><td>Bill of materials components for Volvo parts</td></tr>
+                        <tr><td><code>volvo_generated_label_data</code></td><td>System-generated Volvo label data</td></tr>
+                        <tr><td><code>volvo_generated_label_history</code></td><td>History of system-generated Volvo labels</td></tr>
+                        <tr><td><code>settings_module_volvo</code></td><td>Volvo module configuration settings</td></tr>
+                        <tr><td><code>settings_volvo_recipients</code></td><td>Email recipients for Volvo notifications</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Reporting -->
+        <section id="reporting" class="content-section">
+            <h2>📊 Reporting</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>reporting_scheduled_reports</code></td><td>Scheduled report configurations and email recipient lists</td></tr>
+                        <tr><td><code>settings_reporting_recipients</code></td><td>Email recipients for scheduled report delivery</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Auth & Users -->
+        <section id="auth" class="content-section">
+            <h2>🔐 Auth &amp; Users</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>auth_departments</code></td><td>Department list used for user assignment</td></tr>
+                        <tr><td><code>auth_users</code></td><td>Application user accounts linked to Windows usernames</td></tr>
+                        <tr><td><code>auth_workstation_config</code></td><td>Per-workstation configuration (printer assignments, defaults)</td></tr>
+                        <tr><td><code>settings_roles</code></td><td>Role definitions (names, access flags)</td></tr>
+                        <tr><td><code>settings_user_roles</code></td><td>Many-to-many assignment of roles to users</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Settings -->
+        <section id="settings" class="content-section">
+            <h2>⚙️ Settings</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>settings_universal</code></td><td>Global application settings (key-value pairs)</td></tr>
+                        <tr><td><code>settings_personal</code></td><td>Per-user personal settings</td></tr>
+                        <tr><td><code>settings_personal_activity_log</code></td><td>Audit log for personal settings changes</td></tr>
+                        <tr><td><code>settings_activity</code></td><td>General settings activity/audit log</td></tr>
+                        <tr><td><code>settings_dunnage_personal</code></td><td>Per-user dunnage module settings</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- System -->
+        <section id="system" class="content-section">
+            <h2>🖥️ System</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>software_version</code></td><td>Deployed software version history</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Database Reference</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../features/shared/app.js"></script>
+</body>
+</html>

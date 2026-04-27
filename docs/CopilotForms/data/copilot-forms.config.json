@@ -113,12 +113,13 @@
       "id": "receiving-workflow",
       "module": "Module_Receiving",
       "name": "Receiving Workflow",
-      "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, a resized reconciliation review modal with Save and Ignore actions, user-scoped ignored-location reconciliation preferences, transaction-history-based reconciliation smart-fix behavior, and mock-mode save behavior that preserves whole-load quantities while moving current inventory totals for reconciliation.",
+      "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, final save orchestration, runtime-configurable keyboard shortcuts, a Ctrl+T simple-navigation override for Next and Back, a resized reconciliation review modal with Save and Ignore actions, user-scoped ignored-location reconciliation preferences, transaction-history-based reconciliation smart-fix behavior, and mock-mode save behavior that preserves whole-load quantities while moving current inventory totals for reconciliation.",
       "owner": "Receiving Team",
       "relatedFiles": [
         "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
         "Module_Receiving/Contracts/IService_ReceivingSettings.cs",
         "Module_Receiving/Contracts/IService_ReceivingValidation.cs",
+        "Module_Receiving/Contracts/IService_ReceivingShortcuts.cs",
         "Module_Core/Contracts/Services/IService_InforVisual.cs",
         "Module_Core/Contracts/Services/IService_InforVisualMockDataCatalog.cs",
         "Module_Core/Models/InforVisual/Model_InforVisualLocationTransaction.cs",
@@ -126,6 +127,7 @@
         "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
         "Module_Receiving/Services/Service_ReceivingSettings.cs",
         "Module_Receiving/Services/Service_ReceivingValidation.cs",
+        "Module_Receiving/Services/Service_ReceivingShortcuts.cs",
         "Module_Receiving/Services/Service_SessionManager.cs",
         "Module_Receiving/Services/Service_MySQL_Receiving.cs",
         "Module_Receiving/Services/Service_ReceivingLabelData.cs",
@@ -145,8 +147,13 @@
         "Module_Receiving/Models/Model_SaveResult.cs",
         "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
         "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Core/Models/Core/Model_KeyboardShortcutBinding.cs",
+        "Module_Core/Helpers/UI/Helper_KeyboardShortcuts.cs",
         "Module_Receiving/Views/View_Receiving_Workflow.xaml",
         "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+        "Module_Settings.Receiving/Models/Model_Settings_ReceivingShortcuts.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_KeyboardShortcuts.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_KeyboardShortcuts.xaml",
         "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
         "Module_Receiving/Views/View_Receiving_POEntry.xaml.cs",
         "Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs",
@@ -166,11 +173,13 @@
         "IService_ReceivingWorkflow",
         "IService_ReceivingSettings",
         "IService_ReceivingValidation",
+        "IService_ReceivingShortcuts",
         "IService_InforVisual",
         "IService_MySQL_Receiving",
         "Service_ReceivingWorkflow",
         "Service_ReceivingSettings",
         "Service_ReceivingValidation",
+        "Service_ReceivingShortcuts",
         "Service_SessionManager",
         "Service_InforVisualConnect",
         "Service_MySQL_Receiving",
@@ -187,6 +196,7 @@
       "uiHints": {
         "workflowAreas": [
           "Guided receiving workflow",
+          "Workflow keyboard navigation",
           "Startup routing",
           "Step-by-step wizard",
           "Unsaved state survives only inside the current module",
@@ -218,6 +228,8 @@
           "Primary Next button",
           "Primary Back button",
           "Mode-specific startup routing",
+          "Keyboard shortcut accelerators",
+          "Simple navigation toggle shortcut",
           "Help text",
           "Review area",
           "Save action",
@@ -228,6 +240,9 @@
         ],
         "userActions": [
           "Move through the workflow one step at a time",
+          "Move through the workflow by keyboard shortcuts",
+          "Toggle plain-arrow navigation with Ctrl+T when the setting is enabled",
+          "Open contextual help with a keyboard shortcut",
           "Understand what to do next quickly",
           "Lose unsaved work when leaving the module or exiting before save",
           "Review entries before saving",
@@ -253,7 +268,8 @@
           "No business logic or save behavior changes",
           "The UI is easier to understand at a glance",
           "Edit Mode defaults surface the same core columns used in Manual Mode",
-          "Ignored reconciliation locations are skipped automatically during preview"
+          "Ignored reconciliation locations are skipped automatically during preview",
+          "Workflow shortcuts load from user settings at runtime instead of static XAML markup"
         ],
         "reviewFocusAreas": [
           "Workflow regressions",
@@ -286,6 +302,9 @@
           "Confirm mock-mode saves append receiving transactions that keep the receipt location but move current inventory to the mocked destination location so reconciliation can detect an update",
           "Confirm default-mode routing still sends the user to the intended startup screen",
           "Confirm the same workflow can still be completed from start to finish",
+          "Confirm Mode Selection, Clear Label Data, Next, Back, and Help shortcuts invoke the intended actions",
+          "Confirm Ctrl+T switches Next and Back to plain Right and Left only when the setting is enabled",
+          "Confirm the Receiving workflow shortcuts can duplicate Dunnage workflow shortcuts without cross-module conflicts because only one workflow page is active at a time",
           "Confirm validation still blocks invalid input",
           "Confirm review and save behavior are unchanged"
         ],
@@ -1287,7 +1306,7 @@
       "id": "dunnage-guided-workflow",
       "module": "Module_Dunnage",
       "name": "Guided Workflow",
-      "summary": "Step-by-step dunnage receiving workflow covering mode selection, type and part selection, quantity entry, manual and detail entry, and final review.",
+      "summary": "Step-by-step dunnage receiving workflow covering mode selection, hosted image-backed part search, type and part selection, quantity entry, manual and detail entry, final review, and page-scoped configurable keyboard shortcuts including Ctrl+T simple navigation.",
       "owner": "Operations Team",
       "relatedFiles": [
         "Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs",
@@ -1297,7 +1316,11 @@
         "Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs",
         "Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs",
         "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs",
+        "Module_Dunnage/Contracts/IService_DunnageShortcuts.cs",
+        "Module_Dunnage/Services/Service_DunnageShortcuts.cs",
+        "Module_Core/Helpers/UI/Helper_KeyboardShortcuts.cs",
         "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs",
+        "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml",
         "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml",
         "Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs",
         "Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml",
@@ -1318,7 +1341,7 @@
         "Module_Dunnage/Models/Model_DunnagePart.cs",
         "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs"
       ],
-      "relatedServices": ["IService_DunnageWorkflow", "IService_MySQL_Dunnage"],
+      "relatedServices": ["IService_DunnageWorkflow", "IService_DunnageShortcuts", "IService_MySQL_Dunnage"],
       "promptDefaults": {
         "audience": "Receiving Clerk",
         "docAudience": "Receiving Clerk",
@@ -1329,12 +1352,15 @@
       "uiHints": {
         "workflowAreas": [
           "Mode selection",
+          "Image-backed part search",
           "Guided dunnage entry",
           "Manual and detail entry",
-          "Review before save"
+          "Review before save",
+          "Keyboard-driven workflow navigation"
         ],
         "screens": [
           "View_Dunnage_ModeSelectionView.xaml",
+          "View_Dunnage_Dialog_ImagePartSearch.xaml",
           "View_Dunnage_TypeSelectionView.xaml",
           "View_Dunnage_PartSelectionView.xaml",
           "View_Dunnage_QuantityEntryView.xaml",
@@ -1352,14 +1378,17 @@
           "Review PO vendor feedback",
           "Quantity field",
           "Manual entry fields",
-          "Review summary"
+          "Review summary",
+          "Workflow keyboard shortcuts",
+          "Ctrl+T simple navigation toggle"
         ],
         "userActions": [
           "Choose the correct dunnage mode",
           "Move through guided steps",
           "See the review PO normalized to the canonical Receiving format with vendor feedback when available",
           "Capture manual or detailed information",
-          "Review and finish the workflow"
+          "Review and finish the workflow",
+          "Use configurable keyboard shortcuts for mode selection, clear-label, next, back, help, and temporary plain-arrow navigation"
         ],
         "validationHints": [
           "Confirm the guided workflow still advances correctly between steps",
@@ -1369,7 +1398,9 @@
           "Confirm Dunnage review shows the vendor name when a valid PO exists in Infor Visual or mock mode",
           "Confirm Dunnage review shows an inline vendor-area not-found message when the PO format is valid but the PO does not exist",
           "Confirm the vendor area stays hidden when the Dunnage PO is blank, free-form non-PO text, or otherwise malformed",
-          "Confirm manual and detail entry remain aligned with review behavior"
+          "Confirm manual and detail entry remain aligned with review behavior",
+          "Confirm Dunnage keyboard shortcut changes persist per user and reload into the workflow",
+          "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys"
         ]
       },
       "subFeatures": []
@@ -2912,30 +2943,40 @@
       "id": "settings-receiving-configuration",
       "module": "Module_Settings.Receiving",
       "name": "Receiving Settings Configuration",
-      "summary": "Navigation-hub-driven receiving settings for defaults, validation rules, part number auto-padding, and user-scoped reconciliation preferences including the history-scope toggle, a validated ignored-location list, and a developer-only mock-data toggle backed by appsettings.",
+      "summary": "Category-based receiving settings for entry defaults, validation rules, part formatting and reconciliation preferences, workflow defaults, and a new keyboard shortcuts page backed by reusable shared shortcut models and helpers that other workflow modules can adopt.",
       "owner": "Receiving Team",
       "relatedFiles": [
         "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_NavigationHub.cs",
         "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Defaults.cs",
         "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_Validation.cs",
         "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_UserPreferences.cs",
-        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowHub.xaml.cs",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_Defaults.xaml.cs",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_Validation.xaml.cs",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml.cs",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml",
-        "Module_Settings.Receiving/Views/View_Settings_Receiving_BusinessRules.xaml.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_KeyboardShortcuts.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_CategoryHub.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_CategoryHub.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_EntryDefaults.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_EntryDefaults.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_ValidationRules.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_ValidationRules.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_PartFormatting.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_PartFormatting.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowDefaults.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowDefaults.xaml.cs",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_KeyboardShortcuts.xaml",
+        "Module_Settings.Receiving/Views/View_Settings_Receiving_KeyboardShortcuts.xaml.cs",
+        "Module_Settings.Receiving/Models/Model_Settings_ReceivingShortcuts.cs",
         "Module_Core/Contracts/Services/IService_AppSettings.cs",
         "Module_Core/Services/Service_AppSettings.cs",
+        "Module_Core/Models/Core/Model_KeyboardShortcutBinding.cs",
+        "Module_Core/Helpers/UI/Helper_KeyboardShortcuts.cs",
+        "Module_Settings.Core/Models/Model_Settings_KeyValueOption.cs",
+        "Module_Settings.Core/Helpers/Helper_Settings_KeyboardShortcutOptions.cs",
+        "Module_Receiving/Contracts/IService_ReceivingShortcuts.cs",
+        "Module_Receiving/Services/Service_ReceivingShortcuts.cs",
         "appsettings.json",
         "appsettings.Development.json",
         "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
-        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs"
       ],
       "promptDefaults": {
         "audience": "Supervisor",
@@ -2946,23 +2987,25 @@
       },
       "uiHints": {
         "workflowAreas": [
-          "Settings navigation hub",
+          "Category hub",
           "Receiving defaults",
           "Validation rules and limits",
-          "Part number auto-padding preferences",
-          "Workflow options"
+          "Part formatting and reconciliation preferences",
+          "Workflow defaults",
+          "Keyboard shortcuts"
         ],
         "screens": [
-          "View_Settings_Receiving_WorkflowHub.xaml",
-          "View_Settings_Receiving_Defaults.xaml",
-          "View_Settings_Receiving_Validation.xaml",
-          "View_Settings_Receiving_UserPreferences.xaml",
-          "View_Settings_Receiving_BusinessRules.xaml"
+          "View_Settings_Receiving_CategoryHub.xaml",
+          "View_Settings_Receiving_EntryDefaults.xaml",
+          "View_Settings_Receiving_ValidationRules.xaml",
+          "View_Settings_Receiving_PartFormatting.xaml",
+          "View_Settings_Receiving_WorkflowDefaults.xaml",
+          "View_Settings_Receiving_KeyboardShortcuts.xaml"
         ],
         "currentUiPatterns": ["Card list", "Form", "Split layout"],
         "desiredUiPatterns": ["Card list", "Form", "Split layout"],
         "uiElements": [
-          "Navigation cards",
+          "Category cards",
           "Save and reset actions",
           "Default receiving mode selector",
           "Default location field",
@@ -2972,12 +3015,15 @@
           "Rule add and remove actions",
           "Auto-padding preview",
           "Workflow option toggles",
-          "Location reconciliation history-scope toggle",
           "Ignored reconciliation locations list",
-          "Developer-only InforVisual mock-data toggle"
+          "Developer-only InforVisual mock-data toggle",
+          "Keyboard shortcuts card",
+          "Shortcut key selectors",
+          "Shortcut modifier toggles",
+          "Simple navigation toggle"
         ],
         "userActions": [
-          "Open a receiving settings area from the hub",
+          "Open a receiving settings category from the hub",
           "Change default receiving mode and default location",
           "Toggle validation requirements and warning rules",
           "Adjust min and max receiving limits",
@@ -2985,20 +3031,24 @@
           "Change workflow startup and review-table behavior",
           "Choose whether location reconciliation checks only today’s history or all visible history",
           "Add and remove validated reconciliation locations to ignore",
+          "Customize receiving workflow keyboard shortcuts",
+          "Enable or disable the Ctrl+T simple navigation toggle",
           "Enable or disable InforVisual mock data when the signed-in user has Developer rights",
-          "Save, reset, or cancel settings changes"
+          "Save or reset each settings category independently"
         ],
         "preserveRules": [
-          "Keep settings persistence routed through IService_SettingsCoreFacade",
+          "Keep settings persistence routed through IService_SettingsCoreFacade for shared settings",
           "Keep the mock-data flag routed through IService_AppSettings instead of the shared settings facade",
           "Keep navigation actions wired through ISettingsNavigationActions",
           "Keep x:Bind-based forms unchanged unless the request is explicitly about UI",
-          "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId"
+          "Keep receiving workflow behavior settings user-scoped where the current code uses CurrentUserId",
+          "Keep workflow shortcut persistence behind IService_ReceivingShortcuts so shared shortcut models and helpers stay reusable across modules"
         ],
         "acceptanceCriteria": [
-          "Each hub card still opens the intended receiving settings page",
-          "Defaults, validation, auto-padding, and workflow options remain separately accessible",
-          "Save, reset, and cancel paths remain available on the implemented settings pages",
+          "Each category card still opens the intended receiving settings page",
+          "Defaults, validation, part formatting with reconciliation, workflow defaults, and keyboard shortcuts remain separately accessible",
+          "The keyboard shortcuts card opens the new settings page and saves per-user shortcut bindings",
+          "Save and reset paths remain available on the implemented settings pages",
           "Metadata does not hide the fact that this module already has real settings persistence behavior"
         ],
         "validationHints": [
@@ -3008,7 +3058,9 @@
           "Confirm workflow option values still load, save, and reset through the shared settings facade",
           "Confirm the mock-data toggle is visible only for Developer users and persists to appsettings",
           "Confirm the location-reconciliation history-scope toggle still loads and saves correctly from User Preferences",
-          "Confirm ignored reconciliation locations validate like Receiving Load Entry locations and persist per user"
+          "Confirm ignored reconciliation locations validate like Receiving Load Entry locations and persist per user",
+          "Confirm keyboard shortcut changes persist per user and reload into the workflow at runtime",
+          "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys"
         ],
         "reviewFocusAreas": [
           "Correctness and regressions",
@@ -3024,30 +3076,31 @@
       "id": "settings-dunnage-shell",
       "module": "Module_Settings.Dunnage",
       "name": "Dunnage Settings Shell",
-      "summary": "Card-based dunnage settings shell with placeholder overview, user preference, UI/UX, workflow, permissions, and audit pages that document intended controls without implementing persistence yet.",
+      "summary": "Category-based Dunnage settings workflow built around live setting behavior for personal defaults, shared image assets, image presentation, workflow visuals, and keyboard shortcuts. Retired overview, permissions, and audit placeholder pages remain on disk only and are not part of runtime navigation.",
       "owner": "Operations Team",
       "relatedFiles": [
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_NavigationHub.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_SettingsOverview.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UserPreferences.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_UiUx.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Workflow.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Permissions.cs",
-        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_Audit.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowHub.xaml.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_SettingsOverview.xaml.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UserPreferences.xaml.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_UiUx.xaml.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Workflow.xaml.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Permissions.xaml.cs",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml",
-        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_Audit.xaml.cs"
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_PersonalDefaults.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_ImageAssets.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_ImagePresentation.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_WorkflowVisuals.cs",
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_KeyboardShortcuts.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_PersonalDefaults.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_PersonalDefaults.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_ImageAssets.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_ImageAssets.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_ImagePresentation.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_ImagePresentation.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowVisuals.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_WorkflowVisuals.xaml.cs",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_KeyboardShortcuts.xaml",
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_KeyboardShortcuts.xaml.cs",
+        "Module_Settings.Dunnage/Models/Model_Settings_DunnageShortcuts.cs",
+        "Module_Dunnage/Contracts/IService_DunnageShortcuts.cs",
+        "Module_Dunnage/Services/Service_DunnageShortcuts.cs",
+        "Module_Core/Helpers/UI/Helper_KeyboardShortcuts.cs"
       ],
       "promptDefaults": {
         "audience": "Supervisor",
@@ -3058,53 +3111,66 @@
       },
       "uiHints": {
         "workflowAreas": [
-          "Settings overview",
-          "User preferences",
-          "UI and UX tuning",
-          "Workflow defaults and guardrails",
-          "Permissions",
-          "Audit history"
+          "Category hub",
+          "Personal defaults",
+          "Shared image assets",
+          "Image presentation",
+          "Workflow visuals",
+          "Keyboard shortcuts"
         ],
         "screens": [
-          "View_Settings_Dunnage_WorkflowHub.xaml",
-          "View_Settings_Dunnage_SettingsOverview.xaml",
-          "View_Settings_Dunnage_UserPreferences.xaml",
-          "View_Settings_Dunnage_UiUx.xaml",
-          "View_Settings_Dunnage_Workflow.xaml",
-          "View_Settings_Dunnage_Permissions.xaml",
-          "View_Settings_Dunnage_Audit.xaml"
+          "View_Settings_Dunnage_CategoryHub.xaml",
+          "View_Settings_Dunnage_PersonalDefaults.xaml",
+          "View_Settings_Dunnage_ImageAssets.xaml",
+          "View_Settings_Dunnage_ImagePresentation.xaml",
+          "View_Settings_Dunnage_WorkflowVisuals.xaml",
+          "View_Settings_Dunnage_KeyboardShortcuts.xaml"
         ],
         "currentUiPatterns": ["Card list", "Form"],
-        "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
+        "desiredUiPatterns": ["Card list", "Form", "Split layout"],
         "uiElements": [
-          "Navigation cards",
-          "Placeholder overview content",
-          "Suggested controls notes",
-          "Permission matrix guidance",
-          "Audit grid guidance",
-          "Date and user filter guidance",
-          "Workflow threshold guidance"
+          "Category cards",
+          "Default location editor",
+          "Fuzzy location picker",
+          "Shared image-folder picker",
+          "Image file-size limit input",
+          "Type and part image toggles",
+          "Visual source priority selector",
+          "Workflow image visibility toggles",
+          "Shortcut key selectors",
+          "Modifier toggles",
+          "Ctrl+T simple navigation toggle",
+          "Save and reset actions"
         ],
         "userActions": [
-          "Browse dunnage settings areas from the hub",
-          "Review placeholder guidance for future settings implementation",
-          "Inspect suggested controls for permissions and audit history",
-          "Understand which dunnage settings areas still need full implementation"
+          "Open a Dunnage settings category from the hub",
+          "Change the default Dunnage location used when guided entry leaves location blank",
+          "Tune personal thumbnail size and part-image preference",
+          "Choose the shared folder used for Dunnage images",
+          "Set the maximum image import file size",
+          "Control whether type and part images appear in Dunnage screens",
+          "Control when images appear during the Dunnage workflow",
+          "Configure Dunnage workflow keyboard shortcuts and the Ctrl+T simple navigation toggle",
+          "Save or reset each category independently"
         ],
         "preserveRules": [
-          "Keep the placeholder status explicit in metadata",
-          "Do not describe placeholder pages as fully implemented settings editors",
-          "Keep the existing navigation hub step list unchanged unless the code changes"
+          "Keep all live Dunnage setting keys unchanged",
+          "Do not route users to the retired overview, permissions, or audit pages",
+          "Keep the default-location fuzzy validation behavior against warehouse 002",
+          "Keep personal and shared Dunnage settings scoped the same way they are in code"
         ],
         "acceptanceCriteria": [
-          "The hub still routes to overview, preferences, UI/UX, workflow, permissions, and audit pages",
-          "Metadata makes it clear these screens are currently placeholders with suggested controls",
-          "Metadata does not claim data persistence or business logic that the module does not implement"
+          "The hub routes only to the five live Dunnage setting categories",
+          "Metadata reflects that Dunnage settings are now organized by behavior instead of the old page names",
+          "Metadata does not imply the retired placeholder pages are still part of runtime navigation"
         ],
         "validationHints": [
-          "Confirm each dunnage card still opens the intended placeholder screen",
-          "Confirm titles and descriptions still match the current placeholder content",
-          "Confirm metadata continues to describe suggested controls as future-facing guidance"
+          "Confirm the Dunnage hub opens the five live category pages",
+          "Confirm personal defaults still validate Dunnage location values with fuzzy suggestions",
+          "Confirm the image-assets page updates the shared image folder and file size limit",
+          "Confirm the image-presentation and workflow-visual pages preserve the existing Dunnage setting keys",
+          "Confirm the keyboard-shortcuts page persists Dunnage shortcut changes per user and updates the Ctrl+T toggle setting",
+          "Confirm search destinations no longer include retired Dunnage overview, permissions, or audit pages"
         ]
       },
       "relatedServices": [],

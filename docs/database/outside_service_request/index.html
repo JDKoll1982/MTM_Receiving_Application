@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>outside_service_request — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Breadcrumb">
+        <ul class="top-nav-links">
+            <li><a href="../../features/outside-service/index.html">Outside Service</a></li>
+            <li><a href="../index.html">Database</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../outside_service_request_line/index.html">outside_service_request_line</a></li>
+            <li><a href="../outside_service_request_package/index.html">outside_service_request_package</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>outside_service_request</code></h1>
+            <p class="lead">
+                Header table for outside service requests. One row per request.
+                The human-readable <code>request_number</code> (format <code>OS-000001</code>)
+                is unique and used for all display and search operations.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Each outside service request is a container for one or more lines
+                (stored in <strong>outside_service_request_line</strong>). The header
+                captures who created the request and any request-level notes for Shipping.
+            </p>
+            <p>
+                There is no status field on the request header itself — the aggregate status
+                of the request is derived from the <code>line_phase</code> values on its
+                child lines.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>outside_service_request_id</code></td><td>INT PK AUTO</td><td>No</td><td>Surrogate primary key</td></tr>
+                        <tr><td><code>request_number</code></td><td>VARCHAR(20) UNIQUE</td><td>No</td><td>Human-readable identifier in <code>OS-000001</code> format</td></tr>
+                        <tr><td><code>created_by_user</code></td><td>VARCHAR(255)</td><td>No</td><td>Windows username of the creator</td></tr>
+                        <tr><td><code>created_by_display</code></td><td>VARCHAR(255)</td><td>No</td><td>Display name of the creator</td></tr>
+                        <tr><td><code>created_utc</code></td><td>DATETIME</td><td>No</td><td>UTC creation timestamp; defaults to <code>CURRENT_TIMESTAMP</code></td></tr>
+                        <tr><td><code>request_notes</code></td><td>TEXT</td><td>Yes</td><td>Request-level notes for Shipping</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>Use <code>request_number</code> for all user-facing lookups and display — it is unique and indexed.</li>
+                <li>The request-level status (open / partially complete / fully complete) is computed on the fly from child line phases — it is not stored on this row.</li>
+                <li>Child lines are deleted (via CASCADE) if a header row is deleted. The application does not delete headers through normal workflow — deletion would only occur as an administrative correction.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>outside_service_request</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

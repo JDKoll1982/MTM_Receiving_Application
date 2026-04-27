@@ -40,33 +40,63 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isModeSelectionVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isManualEntryVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isEditModeVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isPOEntryVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isPartSelectionVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isLoadEntryVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isWeightQuantityEntryVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isHeatLotEntryVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isPackageTypeEntryVisible;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isReviewVisible;
 
         [ObservableProperty]
@@ -80,6 +110,36 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _saveProgressMessage = "Initializing...";
+
+        private bool _isNextButtonEnabled = true;
+
+        /// <summary>
+        /// Gets a value indicating whether the workflow Next button is currently available.
+        /// </summary>
+        public bool IsNextButtonEnabled
+        {
+            get => _isNextButtonEnabled;
+            private set => SetProperty(ref _isNextButtonEnabled, value);
+        }
+
+        public bool ShowWorkflowBackButton =>
+            IsPartSelectionVisible
+            || IsLoadEntryVisible
+            || IsWeightQuantityEntryVisible
+            || IsHeatLotEntryVisible
+            || IsPackageTypeEntryVisible
+            || IsReviewVisible;
+
+        public bool ShowWorkflowNextButton =>
+            IsPOEntryVisible
+            || IsPartSelectionVisible
+            || IsLoadEntryVisible
+            || IsWeightQuantityEntryVisible
+            || IsHeatLotEntryVisible
+            || IsPackageTypeEntryVisible;
+
+        public bool ShowWorkflowNavigationButtons =>
+            ShowWorkflowBackButton || ShowWorkflowNextButton;
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
@@ -164,6 +224,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
+            _viewModelRegistry.Register(this);
             _workflowService.StepChanged += OnWorkflowStepChanged;
             _workflowService.StatusMessageRaised += (_, message) => ShowStatus(message);
 
@@ -370,6 +431,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _logger.LogInfo(
                 $"Visibility updated. Current Step: {_workflowService.CurrentStep}, Title: {CurrentStepTitle}"
             );
+
+            UpdateNextButtonEnabled();
+        }
+
+        private void UpdateNextButtonEnabled()
+        {
+            IsNextButtonEnabled = !IsPOEntryVisible || _workflowService.CurrentPart is not null;
+        }
+
+        public void RefreshNextButtonEnabled()
+        {
+            UpdateNextButtonEnabled();
         }
 
         [RelayCommand]

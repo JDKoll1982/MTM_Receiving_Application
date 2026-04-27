@@ -23,11 +23,7 @@ public class Dao_Reporting
         DateTime endDate
     )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "start_date", startDate.Date },
-            { "end_date", endDate.Date },
-        };
+        var parameters = CreateDateRangeParameters(startDate, endDate);
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -42,11 +38,7 @@ public class Dao_Reporting
         DateTime endDate
     )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "start_date", startDate.Date },
-            { "end_date", endDate.Date },
-        };
+        var parameters = CreateDateRangeParameters(startDate, endDate);
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -61,11 +53,7 @@ public class Dao_Reporting
         DateTime endDate
     )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "start_date", startDate.Date },
-            { "end_date", endDate.Date },
-        };
+        var parameters = CreateDateRangeParameters(startDate, endDate);
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
@@ -80,11 +68,7 @@ public class Dao_Reporting
         DateTime endDate
     )
     {
-        var parameters = new Dictionary<string, object>
-        {
-            { "start_date", startDate.Date },
-            { "end_date", endDate.Date },
-        };
+        var parameters = CreateDateRangeParameters(startDate, endDate);
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
@@ -92,6 +76,18 @@ public class Dao_Reporting
             MapAvailabilityFromReader,
             parameters
         );
+    }
+
+    private static Dictionary<string, object> CreateDateRangeParameters(
+        DateTime startDate,
+        DateTime endDate
+    )
+    {
+        return new Dictionary<string, object>
+        {
+            ["start_date"] = startDate.Date,
+            ["end_date"] = endDate.Date.AddDays(1),
+        };
     }
 
     private static Model_ReportRow MapReportRowFromReader(IDataReader reader)

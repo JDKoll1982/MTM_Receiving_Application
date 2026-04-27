@@ -117,6 +117,7 @@ public static class ModuleServicesExtensions
             Module_Receiving.Contracts.IService_ReceivingSettings,
             Module_Receiving.Services.Service_ReceivingSettings
         >();
+        services.AddSingleton<IService_ReceivingShortcuts, Service_ReceivingShortcuts>();
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -178,6 +179,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
         services.AddSingleton<IService_DunnageImageStorage, Service_DunnageImageStorage>();
         services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
+        services.AddSingleton<IService_DunnageShortcuts, Service_DunnageShortcuts>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
 
         // ViewModels (Transient)
@@ -383,12 +385,14 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_ValidationRules>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_PartFormatting>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WorkflowDefaults>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_KeyboardShortcuts>();
 
         // Dunnage Settings Pages
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_PersonalDefaults>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_ImageAssets>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_ImagePresentation>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_WorkflowVisuals>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_KeyboardShortcuts>();
 
         // Reporting Settings Pages
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
@@ -425,6 +429,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImageAssets>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImagePresentation>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_KeyboardShortcuts>();
 
         // Receiving Settings Views
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub>();
@@ -432,6 +437,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_ValidationRules>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();

@@ -20,6 +20,7 @@
 
             <StackPanel
                 HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Orientation="Horizontal"
                 Spacing="24">
                 <!--  Guided Wizard Column  -->
@@ -62,46 +63,6 @@
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickGuidedWizard'), Mode=OneWay}" />
                 </StackPanel>
 
-                <!--  Manual Entry Column  -->
-                <StackPanel Spacing="12">
-                    <Button
-                        Width="280"
-                        Height="180"
-                        Padding="20"
-                        AutomationProperties.Name="Manual Entry Mode"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        Command="{x:Bind ViewModel.SelectManualModeCommand}"
-                        CornerRadius="8">
-                        <StackPanel Spacing="12">
-                            <FontIcon
-                                FontSize="48"
-                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                Glyph="&#xE7F0;" />
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                                Text="Manual Entry" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Bulk grid entry for receiving multiple dunnage items simultaneously."
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Button>
-
-                    <!--  Manual Mode Checkbox  -->
-                    <CheckBox
-                        HorizontalAlignment="Center"
-                        Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
-                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                        Content="Set as default mode"
-                        IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickManualEntry'), Mode=OneWay}" />
-                </StackPanel>
-
                 <!--  Edit Mode Column  -->
                 <StackPanel Spacing="12">
                     <Button
@@ -141,33 +102,46 @@
                         IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}" />
                 </StackPanel>
-            </StackPanel>
 
-            <Button
-                Grid.Row="1"
-                Margin="12,24,12,0"
-                Padding="16"
-                HorizontalAlignment="Stretch"
-                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                Command="{x:Bind ViewModel.OpenImageSearchCommand}"
-                CornerRadius="8">
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <FontIcon
-                        FontSize="28"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE721;" />
-                    <StackPanel Spacing="4">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Search Dunnage Parts by Image" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Open a visual 3x3 browser of Dunnage parts that already have image paths so you can identify a part from its picture before viewing the full record."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                <StackPanel Spacing="12">
+                    <Button
+                        Width="280"
+                        Height="180"
+                        Padding="20"
+                        AutomationProperties.Name="Search Mode"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Command="{x:Bind ViewModel.OpenImageSearchCommand}"
+                        CornerRadius="8">
+                        <StackPanel Spacing="12">
+                            <FontIcon
+                                FontSize="48"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                Glyph="&#xE7C5;" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                Text="Image Search" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Search Dunnage Parts by Image."
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button>
+                    <!--  Search Mode Checkbox  -->
+                    <CheckBox
+                        HorizontalAlignment="Center"
+                        Command="{x:Bind ViewModel.SetImageSearchAsDefaultCommand}"
+                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        Content="Set as default mode"
+                        IsChecked="{x:Bind ViewModel.IsImageSearchModeDefault, Mode=TwoWay}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ImageSearchDefaultMode'), Mode=OneWay}" />
                 </StackPanel>
-            </Button>
+
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>

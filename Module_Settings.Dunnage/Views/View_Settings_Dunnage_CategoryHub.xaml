@@ -17,23 +17,23 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Button
                 Grid.Row="0"
                 Grid.Column="0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -50,8 +50,9 @@
                         Text="Personal Defaults" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Manage the Dunnage default location, personal thumbnail preference, and whether part images should be preferred for your account."
+                        Text="Set your default Dunnage location, thumbnail size, and part image preference."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -60,12 +61,11 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="1"
-                
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -82,8 +82,9 @@
                         Text="Image Assets" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Configure the shared Dunnage image folder and the maximum file size accepted for image imports across the application."
+                        Text="Choose the shared Dunnage image folder and the max import file size."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -92,12 +93,11 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="2"
-                
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -114,8 +114,9 @@
                         Text="Image Presentation" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set which Dunnage visuals can appear, the application thumbnail standard, and the source priority used when multiple visuals are available."
+                        Text="Choose which Dunnage visuals appear and how image sources are prioritized."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -124,12 +125,11 @@
             <Button
                 Grid.Row="1"
                 Grid.Column="0"
-                
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
                 Width="320"
                 Height="200"
                 Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -146,8 +146,41 @@
                         Text="Workflow Visuals" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Control when images appear during the Dunnage workflow and whether missing part images should fall back to the selected type image."
+                        Text="Choose where workflow images appear and when type images replace missing part images."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="320"
+                Height="200"
+                Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep4Clicked"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE765;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Keyboard Shortcuts" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="3"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Set Dunnage shortcuts for mode select, label clear, navigation, help, and Ctrl+T."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
