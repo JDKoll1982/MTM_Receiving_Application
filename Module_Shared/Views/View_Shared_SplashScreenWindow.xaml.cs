@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -7,12 +7,12 @@ namespace MTM_Receiving_Application.Module_Shared.Views
     /// <summary>
     /// Splash screen window displayed during application startup
     /// Shows branding, progress, and status messages during initialization
-    /// Window size: 500x450 pixels (optimized for dialog display)
+    /// Window size: 950x800 pixels (optimized for dialog display)
     /// </summary>
     public sealed partial class View_Shared_SplashScreenWindow : Window
     {
-        private const int WindowWidth = 850;
-        private const int WindowHeight = 700;
+        private const int WindowWidth = 950;
+        private const int WindowHeight = 800;
         private bool _isClosingOrClosed;
 
         public ViewModel_Shared_SplashScreen ViewModel { get; }
@@ -44,8 +44,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
 
             if (!IsProgrammaticClose)
             {
-                App.GetService<Module_Core.Contracts.Services.IService_ApplicationShutdown>()
-                    .RequestShutdown("splash_manual_close");
+                _ = App.RequestShutdownAsync("splash_manual_close");
             }
 
             ViewModel.PropertyChanged -= ViewModel_PropertyChanged;

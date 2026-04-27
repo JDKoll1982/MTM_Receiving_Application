@@ -1,0 +1,383 @@
+/* ============================================================
+   MTM Help & Tutorial -- Supplemental Stylesheet
+   Extends:  ../features/shared/styles.css
+   Applies to:  docs/help/**/*.html
+
+   Color palette: deep teal -- distinct from the blue+parchment
+   palette used by developer feature docs and update pages.
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   Palette overrides -- teal
+   These override the :root variables set in styles.css.
+   ---------------------------------------------------------- */
+:root {
+    /* Replace steel-blue accent with deep teal */
+    --blue:      #1a7a6b;
+    --blue-soft: rgba(26, 122, 107, 0.10);
+    --blue-mid:  rgba(26, 122, 107, 0.20);
+
+    /* Cooler, slightly minty page background (vs warm parchment) */
+    --page-bg:      #e8f3f1;
+    --surface:      rgba(255, 255, 255, 0.92);
+    --surface-muted:#f0f8f6;
+}
+
+body {
+    background-color: var(--page-bg);
+    background-image:
+        radial-gradient(ellipse 120% 60% at 20%   0%, rgba(26,122,107,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse  80% 50% at 80% 100%, rgba(158,110,34,0.06) 0%, transparent 50%);
+}
+
+/* Top-nav uses --blue for border/hover -- teal variant */
+.top-nav {
+    border-bottom-color: rgba(26, 122, 107, 0.15);
+}
+.top-nav-links a:hover,
+.top-nav-links a.is-current {
+    color: var(--blue);
+    border-bottom-color: var(--blue);
+}
+
+/* Module badge teal border */
+.module-badge {
+    border-color: var(--blue-mid);
+    background: var(--blue-soft);
+    color: var(--blue);
+}
+
+/* ----------------------------------------------------------
+   Breadcrumb trail
+   ---------------------------------------------------------- */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+.breadcrumb a {
+    color: var(--blue);
+    text-decoration: none;
+}
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep {
+    color: var(--border-strong);
+    font-size: 0.75rem;
+    user-select: none;
+}
+.breadcrumb-current { color: var(--text-secondary); font-weight: 500; }
+
+/* ----------------------------------------------------------
+   Tutorial hero
+   ---------------------------------------------------------- */
+.tut-hero {
+    margin-bottom: 40px;
+}
+.tut-hero .module-badge {
+    background: var(--green-soft);
+    color: var(--green);
+}
+.tut-hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--text);
+    margin: 0 0 12px;
+}
+.tut-hero .lead {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 640px;
+    margin: 0;
+}
+
+/* ----------------------------------------------------------
+   Screenshot frame
+   ---------------------------------------------------------- */
+.screenshot-wrap {
+    margin: 20px 0 28px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    background: var(--surface-strong);
+    cursor: zoom-in;
+    display: block;
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+.screenshot-wrap:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+}
+.screenshot-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.screenshot-caption {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: -6px;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+/* ----------------------------------------------------------
+   Inline screenshot (narrow / callout)
+   ---------------------------------------------------------- */
+.screenshot-inline {
+    display: block;
+    max-width: 340px;
+    margin: 12px 0 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    cursor: zoom-in;
+    transition: box-shadow var(--transition);
+}
+.screenshot-inline:hover { box-shadow: var(--shadow); }
+.screenshot-inline img { display: block; width: 100%; height: auto; border-radius: inherit; }
+
+/* ----------------------------------------------------------
+   Step block (numbered walkthrough)
+   ---------------------------------------------------------- */
+.tut-step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 0 16px;
+    margin-bottom: 8px;
+}
+.tut-step-num-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.tut-step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
+.tut-step-line {
+    width: 2px;
+    flex: 1;
+    min-height: 16px;
+    background: var(--border-strong);
+    margin: 4px 0;
+}
+.tut-step:last-child .tut-step-line { display: none; }
+
+.tut-step-body {
+    padding: 4px 0 32px;
+}
+.tut-step-body h4 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 2px 0 8px;
+}
+.tut-step-body p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 10px;
+}
+
+/* ----------------------------------------------------------
+   Mode card grid (visual representation of app UI)
+   ---------------------------------------------------------- */
+.mode-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0 28px;
+}
+.mode-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+.mode-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+.mode-card-icon {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 10px;
+}
+.mode-card-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+.mode-card-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ----------------------------------------------------------
+   Lightbox overlay
+   ---------------------------------------------------------- */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(10, 8, 6, 0.88);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    cursor: zoom-out;
+}
+.lightbox-overlay.is-open { display: flex; }
+.lightbox-img {
+    max-width: min(1100px, 95vw);
+    max-height: 90vh;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    object-fit: contain;
+    display: block;
+    cursor: default;
+}
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition);
+}
+.lightbox-close:hover { background: rgba(255,255,255,0.28); }
+.lightbox-caption {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8125rem;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90vw;
+}
+
+/* ----------------------------------------------------------
+   Highlight annotation badge (e.g. "highlighted in yellow")
+   ---------------------------------------------------------- */
+.anno {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.anno-yellow { background: #fef08a; color: #78350f; border: 1px solid #fbbf24; }
+.anno-pink   { background: #fce7f3; color: #9d174d; border: 1px solid #f9a8d4; }
+.anno-blue   { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.anno-red    { background: var(--red-soft); color: var(--red); border: 1px solid rgba(139,32,32,0.25); }
+
+/* ----------------------------------------------------------
+   Quality Hold banner (mirrors app styling)
+   ---------------------------------------------------------- */
+.quality-hold-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--red-soft);
+    border: 1px solid rgba(139, 32, 32, 0.25);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius-sm);
+    margin: 16px 0;
+    font-size: 0.875rem;
+}
+.quality-hold-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.quality-hold-banner-body h4 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--red);
+    margin: 0 0 4px;
+}
+.quality-hold-banner-body p {
+    color: var(--text-secondary);
+    margin: 0 0 6px;
+}
+.quality-hold-banner-body ul {
+    color: var(--text-secondary);
+    padding-left: 18px;
+    margin: 0;
+}
+.quality-hold-banner-body li + li { margin-top: 3px; }
+
+/* ----------------------------------------------------------
+   Related links section
+   ---------------------------------------------------------- */
+.related-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+}
+.related-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.875rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+.related-link:hover {
+    border-color: var(--blue);
+    box-shadow: var(--shadow-sm);
+}
+.related-link-icon { font-size: 1.25rem; flex-shrink: 0; }
+.related-link-text strong { display: block; color: var(--text); font-weight: 600; }
+.related-link-text span  { display: block; color: var(--text-muted); font-size: 0.8rem; margin-top: 1px; }
+
+/* ----------------------------------------------------------
+   Responsive adjustments
+   ---------------------------------------------------------- */
+@media (max-width: 600px) {
+    .mode-card-grid { grid-template-columns: 1fr; }
+    .screenshot-inline { max-width: 100%; }
+    .tut-step { grid-template-columns: 36px 1fr; gap: 0 10px; }
+}

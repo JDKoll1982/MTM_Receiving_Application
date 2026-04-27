@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Starting the App — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../features/shared/styles.css" />
+    <link rel="stylesheet" href="tutorial.css" />
+    <style>
+        /* Centered screenshot for the splash window (narrower than full-width) */
+        .splash-screenshot-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 1.25rem 0;
+        }
+        .splash-screenshot-wrap a {
+            display: block;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            max-width: 560px;
+            width: 100%;
+            transition: box-shadow var(--transition);
+        }
+        .splash-screenshot-wrap a:hover { box-shadow: var(--shadow); }
+        .splash-screenshot-wrap img { display: block; width: 100%; height: auto; }
+
+        /* Status message label table */
+        .status-table { width: 100%; border-collapse: collapse; }
+        .status-table th,
+        .status-table td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        .status-table th {
+            background: var(--surface-muted);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .status-table td:first-child {
+            font-family: var(--font-mono, monospace);
+            font-size: 0.82rem;
+            color: var(--text);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#what-you-see">What You See</a></li>
+            <li><a href="#status-messages">Status Messages</a></li>
+            <li><a href="#first-time">First Time on This Computer?</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Getting Started</p>
+        <ul class="sidebar-nav">
+            <li><a href="startup.html" class="is-active">Starting the App</a></li>
+            <li><a href="new-user-setup.html">New User Setup</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Receiving Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="receiving/mode-selection.html">Mode Selection</a></li>
+            <li><a href="receiving/guided-wizard-po-entry.html">PO Entry (Guided Wizard)</a></li>
+            <li><a href="receiving/smart-part-search.html">Smart Part Search</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Quick Links</p>
+        <ul class="sidebar-nav">
+            <li><a href="index.html">← Help Center</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="index.html">Help Center</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Starting the App</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>Starting the App</h1>
+            <p class="lead">
+                When you launch the MTM Receiving Application a startup screen appears while
+                the app loads in the background.  This page explains what that screen shows,
+                what the progress messages mean, and what happens when the app finishes starting —
+                especially if you are logging in for the first time on this computer.
+            </p>
+        </div>
+
+        <!-- ================================================================
+             WHAT YOU SEE
+             ================================================================ -->
+        <section id="what-you-see" class="content-section">
+            <h2>What You See</h2>
+            <p>
+                While the app is loading you will see a startup window with the MTM logo,
+                the application name and version, a short status message, and a blue
+                progress bar.
+            </p>
+
+            <div class="splash-screenshot-wrap">
+                <a href="../Tutorial_Images/Module_Shared/View_Shared_SplashScreenWindow/View_Shared_SplashScreenWindow-Main.png"
+                   class="screenshot-wrap"
+                   data-caption="Startup screen — MTM logo, version, status message, and blue progress bar"
+                   aria-label="Click to enlarge: startup screen">
+                    <img src="../Tutorial_Images/Module_Shared/View_Shared_SplashScreenWindow/View_Shared_SplashScreenWindow-Main.png"
+                         alt="MTM Receiving Application startup window showing the MTM Tool and Mfg logo, version 1.2.0, the text 'Creating user session...' and a blue progress bar at 90%" />
+                </a>
+            </div>
+            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:-0.5rem; margin-bottom:1.25rem;">
+                <em>The startup screen — you do not need to click anything</em>
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>You do not need to do anything during startup.</strong>
+                    The app handles everything automatically.  Simply wait for the progress
+                    bar to complete and the main window to open.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             STATUS MESSAGES
+             ================================================================ -->
+        <section id="status-messages" class="content-section">
+            <h2>Status Messages</h2>
+            <p>
+                The text underneath the progress bar changes as the app moves through each
+                startup step.  Here is what each message means:
+            </p>
+
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th>Message you see</th>
+                        <th>What the app is doing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Initializing…</td>
+                        <td>Setting up internal components — this is the very first step.</td>
+                    </tr>
+                    <tr>
+                        <td>Loading settings…</td>
+                        <td>Reading your saved preferences and application configuration.</td>
+                    </tr>
+                    <tr>
+                        <td>Connecting to database…</td>
+                        <td>Establishing a connection to MySQL and verifying the InforVisual (ERP) database is reachable.</td>
+                    </tr>
+                    <tr>
+                        <td>Loading label templates…</td>
+                        <td>Preparing the LabelView templates used for printing receiving labels.</td>
+                    </tr>
+                    <tr>
+                        <td>Creating user session…</td>
+                        <td>Looking up your Windows login in the user database and building your session profile.</td>
+                    </tr>
+                    <tr>
+                        <td>Ready</td>
+                        <td>Startup complete — the main window is about to open.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>The startup screen stays open for longer than usual?</strong>
+                    If the progress bar stalls for more than 20–30 seconds on
+                    <em>Connecting to database…</em>, the app may not be able to reach a
+                    required database.  Check that you are on the plant network (or VPN) and
+                    let your supervisor or IT know.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             FIRST TIME ON THIS COMPUTER
+             ================================================================ -->
+        <section id="first-time" class="content-section">
+            <h2>First Time on This Computer?</h2>
+            <p>
+                When the app reaches <em>Creating user session…</em>, it checks whether your
+                Windows username already has a profile in the receiving database.
+            </p>
+            <ul>
+                <li>
+                    <strong>Returning user</strong> — your profile is found and the app opens
+                    the main window straight away.
+                </li>
+                <li>
+                    <strong>First time on this computer</strong> — no profile is found for your
+                    Windows username, so the app automatically opens the
+                    <strong>New User Entry</strong> form where you enter your name, employee
+                    number, department, shift, PIN, and InforVisual credentials.
+                </li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">📋</span>
+                <div class="callout-body">
+                    <strong>New User Entry will open automatically</strong> — you do not need
+                    to find it yourself.  Have your employee number, shift, department, and
+                    InforVisual (ERP) username and password ready.
+                    <br /><br />
+                    <a href="new-user-setup.html">See the New User Setup guide for a complete walkthrough →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             FAQ
+             ================================================================ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>The startup screen appeared and then disappeared. Is something wrong?</summary>
+                    <div class="faq-body">
+                        No — that is normal.  The startup screen closes automatically once the app is
+                        fully loaded and the main window is ready.  If the main window did not appear
+                        after the splash screen closed, check the Windows taskbar; the app may have
+                        opened behind another window.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>After startup, a "New User Entry" form opened. What do I do?</summary>
+                    <div class="faq-body">
+                        The app could not find a profile for your Windows username so it launched
+                        the setup form automatically.  Fill it in to create your account.
+                        See <a href="new-user-setup.html">New User Setup</a> for a step-by-step guide.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The app shows an error during startup instead of opening normally.</summary>
+                    <div class="faq-body">
+                        <p>Common causes:</p>
+                        <ul>
+                            <li><strong>Not on the plant network</strong> — the app needs to reach
+                                the MySQL and InforVisual servers.  Make sure you are connected to
+                                the plant LAN or the company VPN.</li>
+                            <li><strong>Database server is down</strong> — contact IT to check
+                                server status.</li>
+                            <li><strong>App needs to be re-installed</strong> — if the error
+                                mentions a missing file, contact IT for a fresh installation.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How long should startup normally take?</summary>
+                    <div class="faq-body">
+                        On a healthy network the startup screen should complete in under 10 seconds.
+                        If it consistently takes longer, report it to IT so they can check database
+                        connection performance.
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="content-section">
+            <h2>Related Pages</h2>
+            <div class="related-links">
+                <a href="new-user-setup.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">👤</span>
+                    <span class="related-link-text">
+                        <strong>New User Setup</strong>
+                        <span>Step-by-step guide to completing the New User Entry form the first time you log in on a computer.</span>
+                    </span>
+                </a>
+                <a href="receiving/mode-selection.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">📦</span>
+                    <span class="related-link-text">
+                        <strong>Mode Selection</strong>
+                        <span>Once you are in the app, this is the first screen you will see for receiving work.</span>
+                    </span>
+                </a>
+                <a href="index.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🎓</span>
+                    <span class="related-link-text">
+                        <strong>Help Center</strong>
+                        <span>All end-user guides for the MTM Receiving Application.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="index.html">Help Center</a>
+    <span aria-hidden="true">·</span>
+    <span>Starting the App</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../features/shared/app.js"></script>
+<script src="tutorial.js"></script>
+</body>
+</html>

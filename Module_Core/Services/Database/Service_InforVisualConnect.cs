@@ -310,7 +310,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             var normalizedLine = string.IsNullOrWhiteSpace(poLineNumber)
                 ? string.Empty
                 : poLineNumber.Trim();
-            var matchingTransactions = (_mockDataCatalog.GetReceivingTransactions() ?? [])
+            var candidateTransactions = (_mockDataCatalog.GetReceivingTransactions() ?? [])
                 .Where(transaction =>
                     string.Equals(
                         transaction.PONumber,
@@ -330,14 +330,26 @@ public class Service_InforVisualConnect : IService_InforVisual
                             StringComparison.OrdinalIgnoreCase
                         )
                     )
-                    && (
-                        !receivedDate.HasValue
-                        || transaction.ReceivedDate.Date >= receivedDate.Value.Date.AddDays(-2)
-                            && transaction.ReceivedDate.Date <= receivedDate.Value.Date.AddDays(2)
-                    )
+                )
+                .ToList();
+
+            var matchingTransactions = candidateTransactions
+                .Where(transaction =>
+                    !receivedDate.HasValue
+                    || transaction.ReceivedDate.Date >= receivedDate.Value.Date.AddDays(-2)
+                        && transaction.ReceivedDate.Date <= receivedDate.Value.Date.AddDays(2)
                 )
                 .OrderByDescending(transaction => transaction.TransactionDate)
                 .ToList();
+
+            // Default mock catalog dates are static, so fall back to PO/part/line matching
+            // when a date-window lookup would otherwise hide valid seeded inventory evidence.
+            if (matchingTransactions.Count == 0 && receivedDate.HasValue)
+            {
+                matchingTransactions = candidateTransactions
+                    .OrderByDescending(transaction => transaction.TransactionDate)
+                    .ToList();
+            }
 
             if (matchingTransactions.Count == 0)
             {

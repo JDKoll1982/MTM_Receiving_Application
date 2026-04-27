@@ -53,6 +53,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         try
         {
             await _workflowService.StartWorkflowAsync();
+            await RefreshClearLabelDataAvailabilityAsync();
         }
         catch (Exception ex)
         {
@@ -106,6 +107,9 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanNavigate))]
     private bool _isNavigationLocked;
+
+    [ObservableProperty]
+    private bool _canClearLabelData;
 
     public string CurrentHeaderTitle => CurrentStepTitle;
     public bool CanNavigate => !IsNavigationLocked;
@@ -167,6 +171,24 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                 CurrentStepTitle = "Dunnage - Search Parts by Image";
                 break;
         }
+
+        _ = RefreshClearLabelDataAvailabilityAsync();
+    }
+
+    private async Task RefreshClearLabelDataAvailabilityAsync()
+    {
+        try
+        {
+            CanClearLabelData = await _workflowService.HasActiveLabelDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                $"Failed to refresh dunnage label-data availability: {ex.Message}",
+                ex
+            );
+            CanClearLabelData = false;
+        }
     }
 
     private void OnNavigationLockChanged(object? sender, EventArgs e)
@@ -214,6 +236,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                 StatusMessage = clearResult.IsSuccess
                     ? $"Label data cleared — {clearResult.Data} row(s) archived to history."
                     : $"Clear Label Data failed: {clearResult.ErrorMessage}";
+                await RefreshClearLabelDataAvailabilityAsync();
             }
             finally
             {

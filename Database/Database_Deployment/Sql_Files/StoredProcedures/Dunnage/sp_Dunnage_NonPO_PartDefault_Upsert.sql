@@ -1,0 +1,23 @@
+-- ============================================================
+-- Procedure: sp_Dunnage_NonPO_PartDefault_Upsert
+-- Purpose:   Saves or replaces the per-part default non-PO
+--            reference for a Dunnage part.
+-- ============================================================
+
+DROP PROCEDURE IF EXISTS `sp_Dunnage_NonPO_PartDefault_Upsert`;
+
+DELIMITER $$
+CREATE PROCEDURE `sp_Dunnage_NonPO_PartDefault_Upsert`(
+    IN p_part_id VARCHAR(100),
+    IN p_value VARCHAR(100),
+    IN p_updated_by VARCHAR(100)
+)
+BEGIN
+    INSERT INTO `dunnage_non_po_part_defaults` (`part_id`, `value`, `updated_by`)
+    VALUES (p_part_id, p_value, p_updated_by)
+    ON DUPLICATE KEY UPDATE
+        `value` = VALUES(`value`),
+        `updated_by` = VALUES(`updated_by`),
+        `updated_at` = CURRENT_TIMESTAMP;
+END $$
+DELIMITER ;

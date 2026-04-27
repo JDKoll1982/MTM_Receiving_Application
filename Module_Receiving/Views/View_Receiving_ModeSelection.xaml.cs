@@ -1,4 +1,5 @@
 using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
@@ -15,6 +16,36 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ViewModel = viewModel;
             DataContext = ViewModel;
             this.InitializeComponent();
+        }
+
+        private async void OnGuidedDefaultChecked(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.HandleGuidedDefaultChangedAsync(true);
+        }
+
+        private async void OnGuidedDefaultUnchecked(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.HandleGuidedDefaultChangedAsync(false);
+        }
+
+        private async void OnManualDefaultChecked(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.HandleManualDefaultChangedAsync(true);
+        }
+
+        private async void OnManualDefaultUnchecked(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.HandleManualDefaultChangedAsync(false);
+        }
+
+        private async void OnEditDefaultChecked(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.HandleEditDefaultChangedAsync(true);
+        }
+
+        private async void OnEditDefaultUnchecked(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.HandleEditDefaultChangedAsync(false);
         }
     }
 }

@@ -241,4 +241,14 @@ public partial class App : Application
         return app._host.Services.GetService<T>()
             ?? throw new InvalidOperationException($"Service {typeof(T).Name} not found");
     }
+
+    internal static Task RequestShutdownAsync(string reason, int exitCode = 0)
+    {
+        if (Current is not App app)
+        {
+            throw new InvalidOperationException("Application instance not available");
+        }
+
+        return app.EnsureShutdownAsync(reason, exitCode);
+    }
 }

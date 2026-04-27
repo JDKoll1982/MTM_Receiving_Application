@@ -33116,6 +33116,30 @@
   ],
   "Parts": [
     {
+      "PartID": "MMCCS00740",
+      "POLineNumber": "N/A",
+      "PartType": "Coil",
+      "QtyOrdered": 4800.0,
+      "UnitOfMeasure": "EA",
+      "Description": "Mock coil part for Guided Wizard non-PO fuzzy search validation",
+      "DefaultLocationId": "RECV",
+      "RemainingQuantity": 960,
+      "DueDate": "2026-05-15T00:00:00",
+      "DisplayText": "MMCCS00740 - Mock coil part for Guided Wizard non-PO fuzzy search validation (Line N/A)"
+    },
+    {
+      "PartID": "MMFCS01145",
+      "POLineNumber": "N/A",
+      "PartType": "Sheet",
+      "QtyOrdered": 2400.0,
+      "UnitOfMeasure": "EA",
+      "Description": "Mock sheet part for Guided Wizard non-PO fuzzy search validation",
+      "DefaultLocationId": "S-00",
+      "RemainingQuantity": 480,
+      "DueDate": "2026-05-22T00:00:00",
+      "DisplayText": "MMFCS01145 - Mock sheet part for Guided Wizard non-PO fuzzy search validation (Line N/A)"
+    },
+    {
       "PartID": "MMC0000420",
       "POLineNumber": "N/A",
       "PartType": "Coil",
@@ -39804,6 +39828,38 @@
       "ReceiptLocationId": "RECV",
       "CurrentWarehouseId": "002",
       "CurrentLocationId": "T-00",
+      "EmployeeNumber": 0,
+      "UserId": "seed"
+    },
+    {
+      "SourceLoadId": "seed-PO-033349-MMFSR0001-2-quality",
+      "PONumber": "PO-033349",
+      "PartID": "MMFSR0001",
+      "POLineNumber": "2",
+      "Quantity": 36.0,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2025-11-14T08:30:00",
+      "TransactionDate": "2025-11-14T08:30:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "QUALITY",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "QUALITY",
+      "EmployeeNumber": 0,
+      "UserId": "seed"
+    },
+    {
+      "SourceLoadId": "seed-PO-033349-MMFSR0001-2-r04",
+      "PONumber": "PO-033349",
+      "PartID": "MMFSR0001",
+      "POLineNumber": "2",
+      "Quantity": 12.0,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2025-11-14T08:45:00",
+      "TransactionDate": "2025-11-14T08:45:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "QUALITY",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "R-04",
       "EmployeeNumber": 0,
       "UserId": "seed"
     }

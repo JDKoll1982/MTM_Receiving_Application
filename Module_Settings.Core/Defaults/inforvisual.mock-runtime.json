@@ -7,6 +7,38 @@
   "Parts": [],
   "ReceivingTransactions": [
     {
+      "SourceLoadId": "c6dcb7ea-f7be-42d2-be1f-562394cc00cc",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 1000,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-27T10:57:51.6853249-05:00",
+      "TransactionDate": "2026-04-27T10:57:51.6853249-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "T-00",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    },
+    {
+      "SourceLoadId": "3015e8c4-ea8c-41e1-b662-62741cc00eff",
+      "PONumber": "PO-033349",
+      "PartID": "MMF0005007",
+      "POLineNumber": "1",
+      "Quantity": 5000,
+      "UnitOfMeasure": "EA",
+      "ReceivedDate": "2026-04-27T10:57:28.1250045-05:00",
+      "TransactionDate": "2026-04-27T10:57:28.1250045-05:00",
+      "ReceiptWarehouseId": "002",
+      "ReceiptLocationId": "T-00",
+      "CurrentWarehouseId": "002",
+      "CurrentLocationId": "T-00",
+      "EmployeeNumber": 6229,
+      "UserId": "johnk"
+    },
+    {
       "SourceLoadId": "9ec40262-1ccf-46cf-b210-94c8c161cb53",
       "PONumber": "PO-033349",
       "PartID": "MMF0005007",

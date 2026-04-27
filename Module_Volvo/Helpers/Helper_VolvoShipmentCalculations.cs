@@ -23,6 +23,8 @@ public static class Helper_VolvoShipmentCalculations
     /// needed per skid of the parent part, so the request quantity is based only on parent skid
     /// count and that inclusion quantity.
     /// </summary>
+    /// <param name="receivedSkidCount"></param>
+    /// <param name="component"></param>
     public static int CalculateRequestedComponentQuantity(
         int receivedSkidCount,
         Model_VolvoPartComponent component

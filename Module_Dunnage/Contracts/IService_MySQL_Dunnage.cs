@@ -65,6 +65,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         public Task<Model_Dao_Result> SaveLoadsAsync(List<Model_DunnageLoad> loads);
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetActiveLabelDataAsync();
+        public Task<bool> HasActiveLabelDataAsync();
         public Task<Model_Dao_Result<int>> ClearLabelDataAsync();
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(
             DateTime start,
@@ -142,5 +143,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result<List<Model_DunnageNonPOEntry>>> GetNonPOEntriesAsync();
         public Task<Model_Dao_Result> SaveNonPOEntryAsync(string value, string createdBy);
         public Task<Model_Dao_Result> DeleteNonPOEntryAsync(int id);
+        public Task<Model_Dao_Result<string?>> GetNonPOPartDefaultAsync(string partId);
+        public Task<Model_Dao_Result> SaveNonPOPartDefaultAsync(
+            string partId,
+            string value,
+            string updatedBy
+        );
     }
 }

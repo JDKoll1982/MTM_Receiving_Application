@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Windowing;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using WinRT.Interop;
 
@@ -94,14 +94,16 @@ public static class Helper_WindowExtensions
         var appWindow = window.GetAppWindow();
         var titleBar = appWindow.TitleBar;
 
+        var presenter = appWindow.Presenter;
+        
         titleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
-        titleBar.ButtonForegroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonInactiveForegroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonHoverBackgroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonHoverForegroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonPressedBackgroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonPressedForegroundColor = Microsoft.UI.Colors.Transparent;
+
     }
 
     /// <summary>

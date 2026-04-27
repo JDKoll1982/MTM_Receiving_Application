@@ -484,4 +484,68 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         );
         sessionManagerMock.Verify(manager => manager.ClearSessionAsync(), Times.Never);
     }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldPreserveNonPoReference_WhenGuidedLoadsAreGenerated()
+    {
+        var sessionManagerMock = new Mock<IService_SessionManager>();
+        var receivingLabelDataMock = new Mock<IService_ReceivingLabelData>();
+        var mySqlReceivingMock = new Mock<IService_MySQL_Receiving>();
+        var validationMock = new Mock<IService_ReceivingValidation>();
+        var qualityHoldWarningMock = new Mock<IService_QualityHoldWarning>();
+        var receivingSettingsMock = new Mock<IService_ReceivingSettings>();
+        var appSettingsMock = new Mock<IService_AppSettings>();
+        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        var viewModelRegistryMock = new Mock<IService_ViewModelRegistry>();
+        var userSessionManagerMock = new Mock<IService_UserSessionManager>();
+
+        receivingSettingsMock
+            .Setup(service => service.GetStringAsync(It.IsAny<string>(), It.IsAny<int?>()))
+            .ReturnsAsync(string.Empty);
+        validationMock
+            .Setup(service => service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>()))
+            .ReturnsAsync(Model_ReceivingValidationResult.Success());
+        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
+        sessionManagerMock.Setup(service => service.SessionExists()).Returns(false);
+
+        var service = new Service_ReceivingWorkflow(
+            sessionManagerMock.Object,
+            receivingLabelDataMock.Object,
+            mySqlReceivingMock.Object,
+            validationMock.Object,
+            qualityHoldWarningMock.Object,
+            receivingSettingsMock.Object,
+            appSettingsMock.Object,
+            mockCatalog.Object,
+            new Mock<IService_LoggingUtility>().Object,
+            viewModelRegistryMock.Object,
+            userSessionManagerMock.Object
+        );
+
+        await service.StartWorkflowAsync();
+        service.IsNonPOItem = true;
+        service.CurrentPONumber = "Stock Replenishment";
+        service.CurrentPart = new Model_InforVisualPart
+        {
+            PartID = "MMFTEST001",
+            POLineNumber = string.Empty,
+            Description = "Non-PO receiving test part",
+            UnitOfMeasure = "EA",
+        };
+        service.NumberOfLoads = 2;
+        service.CurrentLocation = "RECV";
+        service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+
+        var poStepResult = await service.AdvanceToNextStepAsync();
+        var loadStepResult = await service.AdvanceToNextStepAsync();
+
+        poStepResult.Success.Should().BeTrue();
+        loadStepResult.Success.Should().BeTrue();
+        service.CurrentSession.IsNonPO.Should().BeTrue();
+        service.CurrentSession.PoNumber.Should().Be("Stock Replenishment");
+        service.CurrentSession.Loads.Should().HaveCount(2);
+        service.CurrentSession.Loads.Should().OnlyContain(load =>
+            load.IsNonPOItem && load.PoNumber == "Stock Replenishment"
+        );
+    }
 }

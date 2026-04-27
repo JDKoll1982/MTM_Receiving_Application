@@ -83,6 +83,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_ReceivingLine(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_PackageTypePreference(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_QualityHold(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ReceivingNonPOEntry(mySqlConnectionString));
 
         // Services (Singleton - Stateless business logic)
         services.AddSingleton<IService_MySQL_Receiving, Service_MySQL_Receiving>();

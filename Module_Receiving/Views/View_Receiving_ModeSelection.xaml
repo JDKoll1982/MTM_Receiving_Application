@@ -65,11 +65,11 @@
                 <!--  Guided Mode Checkbox  -->
                 <CheckBox
                     HorizontalAlignment="Center"
-                    Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
-                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    Checked="OnGuidedDefaultChecked"
                     Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
                     IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickGuidedWizard'), Mode=OneWay}" />
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickGuidedWizard'), Mode=OneWay}"
+                    Unchecked="OnGuidedDefaultUnchecked" />
             </StackPanel>
 
             <!--  Manual Mode Column  -->
@@ -111,11 +111,11 @@
                 <!--  Manual Mode Checkbox  -->
                 <CheckBox
                     HorizontalAlignment="Center"
-                    Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
-                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    Checked="OnManualDefaultChecked"
                     Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
                     IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickManualEntry'), Mode=OneWay}" />
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickManualEntry'), Mode=OneWay}"
+                    Unchecked="OnManualDefaultUnchecked" />
             </StackPanel>
 
             <!--  Edit Mode Column  -->
@@ -157,11 +157,11 @@
                 <!--  Edit Mode Checkbox  -->
                 <CheckBox
                     HorizontalAlignment="Center"
-                    Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
-                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    Checked="OnEditDefaultChecked"
                     Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
                     IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}" />
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"
+                    Unchecked="OnEditDefaultUnchecked" />
             </StackPanel>
 
             <Button

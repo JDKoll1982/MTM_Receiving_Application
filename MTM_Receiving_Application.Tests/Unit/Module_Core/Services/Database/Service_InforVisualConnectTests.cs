@@ -53,6 +53,19 @@ public sealed class Service_InforVisualConnectTests
     }
 
     [Fact]
+    public async Task FuzzySearchPartsAsync_ShouldReturnRequestedMockParts_WhenTermMatchesPrefix()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.FuzzySearchPartsAsync("MM");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Select(item => item.Key).Should().Contain("MMCCS00740");
+        result.Data.Select(item => item.Key).Should().Contain("MMFCS01145");
+    }
+
+    [Fact]
     public async Task GetReceivingLocationEvidenceAsync_ShouldReturnMockTransactions_WhenCatalogContainsSavedReceivingRows()
     {
         var service = CreateService(useMockData: true);
@@ -74,6 +87,26 @@ public sealed class Service_InforVisualConnectTests
         result.Data[0].LatestTransactionLocationId.Should().Be("A-01");
         result.Data[0].LatestTransactionQuantity.Should().Be(10);
         result.Data[0].LatestTransactionUserId.Should().Be("seed-user");
+        result.Data[0].ReceiptCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetReceivingLocationEvidenceAsync_ShouldFallBackToPoPartMatch_WhenMockDatesAreOutsideRequestedWindow()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.GetReceivingLocationEvidenceAsync(
+            "PO-066868",
+            "MMC-100",
+            "1",
+            new System.DateTime(2026, 4, 20)
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().ContainSingle();
+        result.Data![0].CurrentLocationId.Should().Be("A-01");
+        result.Data[0].MatchedTransactionQuantity.Should().Be(10);
         result.Data[0].ReceiptCount.Should().Be(1);
     }
 
@@ -138,6 +171,33 @@ public sealed class Service_InforVisualConnectTests
                 new Model_InforVisualMockDataCatalog
                 {
                     Locations = new List<string>(locations),
+                    Parts = new List<Model_InforVisualPart>
+                    {
+                        new()
+                        {
+                            PartID = "MMCCS00740",
+                            POLineNumber = "N/A",
+                            PartType = "Coil",
+                            QtyOrdered = 4800,
+                            UnitOfMeasure = "EA",
+                            Description =
+                                "Mock coil part for Guided Wizard non-PO fuzzy search validation",
+                            DefaultLocationId = "RECV",
+                            RemainingQuantity = 960,
+                        },
+                        new()
+                        {
+                            PartID = "MMFCS01145",
+                            POLineNumber = "N/A",
+                            PartType = "Sheet",
+                            QtyOrdered = 2400,
+                            UnitOfMeasure = "EA",
+                            Description =
+                                "Mock sheet part for Guided Wizard non-PO fuzzy search validation",
+                            DefaultLocationId = "S-00",
+                            RemainingQuantity = 480,
+                        },
+                    },
                     AssociatedPartRuns = new List<Model_InforVisualAssociatedPartRunRow>
                     {
                         new()

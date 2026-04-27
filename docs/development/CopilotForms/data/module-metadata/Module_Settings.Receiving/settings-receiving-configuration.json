@@ -127,6 +127,7 @@
       "Confirm auto-padding rule editing and test preview still work",
       "Confirm ignored recommended locations still validate and persist per user",
       "Confirm the workflow-defaults page still controls startup mode and developer-only mock data",
+      "Confirm the workflow-defaults startup-mode selector stays in sync with the Receiving mode-selection default-mode checkboxes and still applies after relaunch",
         "Confirm shortcut changes persist per user and reload into the workflow at runtime",
         "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys",
       "Confirm search destinations use the new category-based page names"

@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels;
@@ -22,7 +23,11 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     );
 
     private readonly IService_ReceivingLocationReconciliation _locationReconciliationService;
+    private readonly IService_ReceivingWorkflow _workflowService;
+    private readonly IService_ReceivingSettings _receivingSettings;
+    private readonly IService_UserSessionManager _sessionManager;
     private readonly Queue<Model_ReceivingLocationReconciliationItem> _pendingItems = new();
+    private bool _isRefreshingPreview;
 
     [ObservableProperty]
     private Model_ReceivingLocationReconciliationSummary? _previewSummary;
@@ -37,6 +42,12 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     private bool _isProcessing;
 
     [ObservableProperty]
+    private bool _isLoadingPreview;
+
+    [ObservableProperty]
+    private string _loadingMessage = "Reconciling saved locations from InforVisual...";
+
+    [ObservableProperty]
     private int _savedCount;
 
     [ObservableProperty]
@@ -44,6 +55,9 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     public ViewModel_Receiving_LocationReconciliationReview(
         IService_ReceivingLocationReconciliation locationReconciliationService,
+        IService_ReceivingWorkflow workflowService,
+        IService_ReceivingSettings receivingSettings,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -51,6 +65,10 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
         : base(errorHandler, logger, notificationService)
     {
         _locationReconciliationService = locationReconciliationService;
+        _workflowService = workflowService;
+        _receivingSettings = receivingSettings;
+        _sessionManager = sessionManager;
+        _workflowService.StepChanged += OnWorkflowStepChanged;
     }
 
     public ObservableCollection<Model_ReceivingLocationReconciliationItem> SavedItems { get; } = [];
@@ -145,6 +163,67 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     public string UnresolvedSectionTitle => $"Needs Attention ({NeedsAttentionCount})";
 
     public bool CanProcessCurrentItem => !IsProcessing && HasPendingItems;
+
+    private void OnWorkflowStepChanged(object? sender, EventArgs e)
+    {
+        if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.ReconciliationReview)
+        {
+            _ = LoadPreviewAsync();
+        }
+    }
+
+    public async Task LoadPreviewAsync()
+    {
+        if (_isRefreshingPreview)
+        {
+            return;
+        }
+
+        _isRefreshingPreview = true;
+        IsLoadingPreview = true;
+        LoadingMessage = "Reconciling saved locations from InforVisual...";
+
+        try
+        {
+            var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+            var includeAllHistory = await _receivingSettings.GetBoolAsync(
+                ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation,
+                currentUserId
+            );
+
+            var previewResult = await _locationReconciliationService.PreviewLocationsAsync(
+                includeAllHistory
+            );
+
+            if (!previewResult.IsSuccess || previewResult.Data == null)
+            {
+                await _errorHandler.ShowErrorDialogAsync(
+                    "InforVisual Reconciliation Failed",
+                    previewResult.ErrorMessage,
+                    Enum_ErrorSeverity.Error
+                );
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
+                return;
+            }
+
+            Initialize(previewResult.Data);
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                $"Failed to reconcile saved locations: {ex.Message}",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
+        }
+        finally
+        {
+            IsLoadingPreview = false;
+            _isRefreshingPreview = false;
+        }
+    }
 
     public void Initialize(Model_ReceivingLocationReconciliationSummary previewSummary)
     {

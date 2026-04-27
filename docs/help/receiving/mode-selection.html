@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mode Selection — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#modes">The Three Modes</a></li>
+            <li><a href="#guided-wizard">Guided Wizard</a></li>
+            <li><a href="#manual-entry">Manual Entry</a></li>
+            <li><a href="#edit-mode">Edit Mode</a></li>
+            <li><a href="#set-default">Setting a Default Mode</a></li>
+            <li><a href="#reconcile">Reconcile Saved Locations</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Help Pages</p>
+        <ul class="sidebar-nav">
+            <li><a href="mode-selection.html" class="is-active">Mode Selection</a></li>
+            <li><a href="guided-wizard-po-entry.html">PO Entry (Guided Wizard)</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Developer Docs</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../features/receiving/index.html">Receiving Module</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Receiving Help</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Mode Selection</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>Choosing a Receiving Mode</h1>
+            <p class="lead">
+                When you open the Receiving module, the first screen lets you pick <em>how</em>
+                you want to receive parts today. Each mode is designed for a different workflow.
+                This page explains every option so you can pick the right one and get started fast.
+            </p>
+        </div>
+
+        <!-- -------- Overview -------- -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                The <strong>Mode Selection</strong> screen is the entry point for all receiving work.
+                It shows three large mode cards and one utility action below them.
+                Simply click the card for the mode you want to use — the app navigates to that
+                workflow immediately.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Main.png"
+               class="screenshot-wrap"
+               data-caption="Mode Selection screen — all three modes visible"
+               aria-label="Click to enlarge: Mode Selection screen">
+                <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Main.png"
+                     alt="Mode Selection screen showing Guided Wizard, Manual Entry, and Edit Mode cards with a Reconcile button below" />
+            </a>
+            <span class="screenshot-caption">Mode Selection screen — click any card to enter that mode</span>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Your default mode loads automatically.</strong>
+                    If you have set a default mode, the app may navigate straight to it on launch,
+                    skipping this screen.  You can always return here via the
+                    <strong>Mode Selection</strong> button at the bottom of any wizard step.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- The Three Modes -------- -->
+        <section id="modes" class="content-section">
+            <h2>The Three Modes</h2>
+            <p>Each mode is designed for a specific type of receiving work:</p>
+
+            <div class="mode-card-grid">
+                <div class="mode-card">
+                    <div class="mode-card-icon">✏️</div>
+                    <div class="mode-card-name">Guided Wizard</div>
+                    <div class="mode-card-desc">
+                        Step-by-step walk-through — best for standard daily receiving.
+                        The app prompts you at every stage.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-card-icon">📋</div>
+                    <div class="mode-card-name">Manual Entry</div>
+                    <div class="mode-card-desc">
+                        An editable grid for bulk entry.
+                        Best when receiving many lines or doing corrections.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-card-icon">🖊️</div>
+                    <div class="mode-card-name">Edit Mode</div>
+                    <div class="mode-card-desc">
+                        Opens previously saved loads so you can update quantities or
+                        fix mistakes — without creating new entries.
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Not sure which to use?</strong> Start with <strong>Guided Wizard</strong>.
+                    It walks you through every field and won't let you skip a required step.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Guided Wizard -------- -->
+        <section id="guided-wizard" class="content-section">
+            <h2>Guided Wizard</h2>
+            <p>
+                The Guided Wizard is the recommended mode for most operators.  It takes you through
+                receiving one step at a time — PO lookup, part selection, quantity entry, and label
+                printing — so nothing gets missed.
+            </p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items:start;">
+                <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Guided_Wizard.png"
+                   class="screenshot-wrap"
+                   data-caption="Guided Wizard mode card"
+                   aria-label="Click to enlarge: Guided Wizard card">
+                    <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Guided_Wizard.png"
+                         alt="Guided Wizard mode card showing a paintbrush icon and description" />
+                </a>
+                <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Guided_Wizard-CheckBox.png"
+                   class="screenshot-wrap"
+                   data-caption="Guided Wizard card with 'Set as default mode' checkbox checked"
+                   aria-label="Click to enlarge: Guided Wizard checkbox">
+                    <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Guided_Wizard-CheckBox.png"
+                         alt="Guided Wizard card with the Set as default mode checkbox ticked" />
+                </a>
+            </div>
+
+            <h3>When to use it</h3>
+            <ul>
+                <li>Receiving parts against a Purchase Order (most common)</li>
+                <li>Receiving Non-PO items by Part ID</li>
+                <li>Any time you are new to the receiving process</li>
+                <li>Any time a Quality Hold part may be involved</li>
+            </ul>
+
+            <div class="callout callout-success">
+                <span class="callout-icon" aria-hidden="true">✅</span>
+                <div class="callout-body">
+                    The Guided Wizard automatically detects <strong>Quality Hold</strong> parts and
+                    requires a two-step acknowledgment before you can continue.
+                    You cannot accidentally bypass this step.
+                </div>
+            </div>
+
+            <p>
+                <a href="guided-wizard-po-entry.html">→ See the PO Entry step-by-step walkthrough</a>
+            </p>
+        </section>
+
+        <!-- -------- Manual Entry -------- -->
+        <section id="manual-entry" class="content-section">
+            <h2>Manual Entry</h2>
+            <p>
+                Manual Entry gives you a spreadsheet-style grid where you can type values directly
+                into rows.  This is faster when you have a large batch of line items and prefer
+                to enter them all at once rather than going step-by-step.
+            </p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items:start;">
+                <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Manual_Entry.png"
+                   class="screenshot-wrap"
+                   data-caption="Manual Entry mode card"
+                   aria-label="Click to enlarge: Manual Entry card">
+                    <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Manual_Entry.png"
+                         alt="Manual Entry mode card showing a CC icon and description" />
+                </a>
+                <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Manual_Entry-CheckBox.png"
+                   class="screenshot-wrap"
+                   data-caption="Manual Entry card with 'Set as default mode' checkbox"
+                   aria-label="Click to enlarge: Manual Entry checkbox">
+                    <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Manual_Entry-CheckBox.png"
+                         alt="Manual Entry card with checkbox arrow callout" />
+                </a>
+            </div>
+
+            <h3>When to use it</h3>
+            <ul>
+                <li>Receiving many line items at once (bulk receiving)</li>
+                <li>Correcting quantities on multiple lines quickly</li>
+                <li>Users who prefer typing over wizard-style navigation</li>
+            </ul>
+        </section>
+
+        <!-- -------- Edit Mode -------- -->
+        <section id="edit-mode" class="content-section">
+            <h2>Edit Mode</h2>
+            <p>
+                Edit Mode opens existing receiving loads so you can make changes.  It does
+                <strong>not</strong> create new loads — it only lets you modify ones that have
+                already been saved.
+            </p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items:start;">
+                <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Edit_Mode.png"
+                   class="screenshot-wrap"
+                   data-caption="Edit Mode card"
+                   aria-label="Click to enlarge: Edit Mode card">
+                    <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Edit_Mode.png"
+                         alt="Edit Mode card showing a pencil icon and description" />
+                </a>
+                <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Edit_Mode-CheckBox.png"
+                   class="screenshot-wrap"
+                   data-caption="Edit Mode card with 'Set as default mode' checkbox"
+                   aria-label="Click to enlarge: Edit Mode checkbox">
+                    <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Edit_Mode-CheckBox.png"
+                         alt="Edit Mode card with checkbox arrow callout" />
+                </a>
+            </div>
+
+            <h3>When to use it</h3>
+            <ul>
+                <li>Fixing a quantity entered incorrectly earlier</li>
+                <li>Updating a load that was partially received</li>
+                <li>Reviewing and correcting loads before finalising</li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    Edit Mode cannot be used to add new receiving lines to a PO.
+                    To add new lines, use <strong>Guided Wizard</strong> or <strong>Manual Entry</strong> instead.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Setting a Default Mode -------- -->
+        <section id="set-default" class="content-section">
+            <h2>Setting a Default Mode</h2>
+            <p>
+                Each mode card has a <strong>Set as default mode</strong> checkbox directly beneath it.
+                Checking this box saves your preference so the app remembers it the next time you log in.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Find the checkbox below your preferred mode card</h4>
+                    <p>The checkbox labelled <em>"Set as default mode"</em> sits directly below each mode button.</p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Check the box</h4>
+                    <p>
+                        Click or tap the checkbox.  A blue checkmark confirms it is saved.
+                        The other two mode checkboxes will automatically uncheck — only one
+                        default is allowed at a time.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Guided_Wizard-CheckBox.png"
+                       class="screenshot-inline"
+                       data-caption="Default mode checkbox checked (blue)"
+                       aria-label="Click to enlarge: checkbox checked">
+                        <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Guided_Wizard-CheckBox.png"
+                             alt="Guided Wizard card showing checked Set as default mode checkbox" />
+                    </a>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>The app remembers your choice</h4>
+                    <p>
+                        Your default is saved per user account.  Other operators logged into the same
+                        computer will keep their own default settings.
+                    </p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    To <strong>clear</strong> your default, simply uncheck the box.  The app will then
+                    always show the Mode Selection screen when you open Receiving.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Reconcile -------- -->
+        <section id="reconcile" class="content-section">
+            <h2>Reconcile Saved Locations from InforVisual</h2>
+            <p>
+                The <strong>Reconcile Saved Locations from InforVisual</strong> button runs a special
+                process that checks each saved load against InforVisual's transaction history and
+                current inventory.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Reconcile.png"
+               class="screenshot-wrap"
+               data-caption="Reconcile Saved Locations button at the bottom of the Mode Selection screen"
+               aria-label="Click to enlarge: Reconcile button">
+                <img src="../../Tutorial_Images/Module_Receiving/View_Receiving_ModeSelection/View_Receiving_ModeSelection-Reconcile.png"
+                     alt="Reconcile Saved Locations from InforVisual button with sync icon and description" />
+            </a>
+            <span class="screenshot-caption">The Reconcile button spans the full width below the three mode cards</span>
+
+            <h3>What does it do?</h3>
+            <p>
+                When quantities in InforVisual exactly match what is saved locally, the app
+                automatically places the load and marks it as reconciled.  Loads with mismatched
+                quantities are left for you to review manually.
+            </p>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Only run Reconcile when instructed by your supervisor.</strong>
+                    This action updates load placement records and cannot be undone automatically.
+                </div>
+            </div>
+
+            <h3>When to use it</h3>
+            <ul>
+                <li>After a system outage that may have left loads in an unresolved state</li>
+                <li>During end-of-shift reconciliation as directed by your warehouse manager</li>
+                <li>When InforVisual and the app appear to show different quantities for the same PO</li>
+            </ul>
+        </section>
+
+        <!-- -------- FAQ -------- -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>I don't see the Mode Selection screen — the app jumped straight into a workflow.</summary>
+                    <div class="faq-body">
+                        You or a previous user has set a default mode.  Look for the
+                        <strong>Mode Selection</strong> button in the bottom-left corner of the
+                        current view and click it to return to this screen.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I change my default mode at any time?</summary>
+                    <div class="faq-body">
+                        Yes.  Return to Mode Selection at any time, check the box under the mode
+                        you want as your new default, and the change is saved immediately.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens if I check two default boxes?</summary>
+                    <div class="faq-body">
+                        The app only allows one default at a time.  When you check a new box,
+                        the previously checked box is automatically unchecked.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I selected a mode by mistake. How do I go back?</summary>
+                    <div class="faq-body">
+                        Click the <strong>Mode Selection</strong> button in the bottom-left corner
+                        of the wizard screen.  If you have entered any data, you will be asked
+                        whether you want to discard it before returning.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Does the mode setting affect other users on this computer?</summary>
+                    <div class="faq-body">
+                        No.  Default modes are stored per user account.  Each person who logs
+                        in has their own independent default preference.
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="content-section">
+            <h2>Next Steps</h2>
+            <div class="related-links">
+                <a href="guided-wizard-po-entry.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🧭</span>
+                    <span class="related-link-text">
+                        <strong>PO Entry — Guided Wizard</strong>
+                        <span>Step-by-step walkthrough of finding a PO, selecting a part, and handling Quality Holds.</span>
+                    </span>
+                </a>
+                <a href="../../features/receiving/index.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">📦</span>
+                    <span class="related-link-text">
+                        <strong>Receiving Module — Developer Reference</strong>
+                        <span>Technical documentation for the Receiving module.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="../index.html">Receiving Help</a>
+    <span aria-hidden="true">·</span>
+    <span>Mode Selection</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

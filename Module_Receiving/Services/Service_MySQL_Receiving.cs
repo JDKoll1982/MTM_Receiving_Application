@@ -20,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         private readonly Dao_ReceivingLoad _receivingLoadDao;
         private readonly Dao_ReceivingLabelData _receivingLabelDataDao;
+        private readonly Dao_ReceivingNonPOEntry _receivingNonPoEntryDao;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_UserSessionManager? _sessionManager;
         private readonly IService_UserPrivileges? _userPrivileges;
@@ -27,6 +28,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public Service_MySQL_Receiving(
             Dao_ReceivingLoad receivingLoadDao,
             Dao_ReceivingLabelData receivingLabelDataDao,
+            Dao_ReceivingNonPOEntry receivingNonPoEntryDao,
             IService_LoggingUtility logger,
             IService_UserSessionManager sessionManager,
             IService_UserPrivileges userPrivileges
@@ -34,6 +36,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             _receivingLoadDao = receivingLoadDao;
             _receivingLabelDataDao = receivingLabelDataDao;
+            _receivingNonPoEntryDao = receivingNonPoEntryDao;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _sessionManager =
                 sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
@@ -46,6 +49,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         {
             _receivingLoadDao = new Dao_ReceivingLoad(connectionString);
             _receivingLabelDataDao = new Dao_ReceivingLabelData(connectionString);
+            _receivingNonPoEntryDao = new Dao_ReceivingNonPOEntry(connectionString);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _sessionManager = null;
             _userPrivileges = null;
@@ -287,6 +291,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return result;
         }
 
+        public async Task<bool> HasActiveLabelDataAsync()
+        {
+            _logger.LogInfo("Checking whether receiving_label_data contains any rows");
+            var result = await _receivingLabelDataDao.GetCurrentLabelDataAsync();
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError(
+                    $"Failed to check receiving label data availability: {result.ErrorMessage}",
+                    result.Exception
+                );
+                return false;
+            }
+
+            return (result.Data?.Count ?? 0) > 0;
+        }
+
         public async Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads)
         {
             if (loads == null)
@@ -369,6 +390,35 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 result.Exception
             );
             throw new InvalidOperationException(result.ErrorMessage, result.Exception);
+        }
+
+        public async Task<Model_Dao_Result<List<Model_ReceivingNonPOEntry>>> GetNonPOEntriesAsync()
+        {
+            return await _receivingNonPoEntryDao.GetAllAsync();
+        }
+
+        public async Task<Model_Dao_Result> SaveNonPOEntryAsync(string value, string createdBy)
+        {
+            return await _receivingNonPoEntryDao.UpsertAsync(value, createdBy);
+        }
+
+        public async Task<Model_Dao_Result> DeleteNonPOEntryAsync(int id)
+        {
+            return await _receivingNonPoEntryDao.DeleteAsync(id);
+        }
+
+        public async Task<Model_Dao_Result<string?>> GetNonPOPartDefaultAsync(string partId)
+        {
+            return await _receivingNonPoEntryDao.GetPartDefaultAsync(partId);
+        }
+
+        public async Task<Model_Dao_Result> SaveNonPOPartDefaultAsync(
+            string partId,
+            string value,
+            string updatedBy
+        )
+        {
+            return await _receivingNonPoEntryDao.UpsertPartDefaultAsync(partId, value, updatedBy);
         }
 
         private async Task<(

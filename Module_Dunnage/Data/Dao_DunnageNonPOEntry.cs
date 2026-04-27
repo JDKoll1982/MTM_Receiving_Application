@@ -9,8 +9,7 @@ using MTM_Receiving_Application.Module_Dunnage.Models;
 namespace MTM_Receiving_Application.Module_Dunnage.Data;
 
 /// <summary>
-/// Data access object for the dunnage_non_po_entries table.
-/// Provides CRUD operations for saved non-PO reference reasons.
+/// Data access object for Dunnage reusable non-PO entries and per-part defaults.
 /// </summary>
 public class Dao_DunnageNonPOEntry
 {
@@ -53,6 +52,41 @@ public class Dao_DunnageNonPOEntry
         return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
             "sp_Dunnage_NonPO_Delete",
+            parameters
+        );
+    }
+
+    public Task<Model_Dao_Result<string?>> GetPartDefaultAsync(string partId)
+    {
+        var parameters = new Dictionary<string, object> { { "p_part_id", partId } };
+
+        return Helper_Database_StoredProcedure.ExecuteSingleAsync<string?>(
+            _connectionString,
+            "sp_Dunnage_NonPO_PartDefault_GetByPartId",
+            reader =>
+                reader.IsDBNull(reader.GetOrdinal("value"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("value")),
+            parameters
+        );
+    }
+
+    public Task<Model_Dao_Result> UpsertPartDefaultAsync(
+        string partId,
+        string value,
+        string updatedBy
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_part_id", partId },
+            { "p_value", value },
+            { "p_updated_by", updatedBy },
+        };
+
+        return Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_NonPO_PartDefault_Upsert",
             parameters
         );
     }

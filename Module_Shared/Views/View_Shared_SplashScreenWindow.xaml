@@ -80,6 +80,6 @@
             HorizontalAlignment="Center"
             Foreground="{ThemeResource TextFillColorTertiaryBrush}"
             Style="{StaticResource CaptionTextBlockStyle}"
-            Text="© 2025 MTM Manufacturing. All rights reserved." />
+            Text="© 2025 John Koll. All rights reserved." />
     </Grid>
 </Window>

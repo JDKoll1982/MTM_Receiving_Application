@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Part Search — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+    <style>
+        /* ---- dialog screenshot — constrained, centered ---- */
+        .dialog-screenshot-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 1.25rem 0;
+        }
+        .dialog-screenshot-wrap a {
+            display: block;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            max-width: 460px;
+            width: 100%;
+            transition: box-shadow var(--transition);
+        }
+        .dialog-screenshot-wrap a:hover { box-shadow: var(--shadow); }
+        .dialog-screenshot-wrap img { display: block; width: 100%; height: auto; }
+
+        /* ---- annotated UI element table ---- */
+        .ui-parts-table { width: 100%; border-collapse: collapse; }
+        .ui-parts-table th,
+        .ui-parts-table td {
+            padding: 0.55rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        .ui-parts-table th {
+            background: var(--surface-muted);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .ui-parts-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+        /* ---- annotation badge reused from po-entry ---- */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 1px 9px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--blue-soft);
+            color: var(--blue);
+            border: 1px solid var(--blue-mid);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#when">When does this appear?</a></li>
+            <li><a href="#dialog-walkthrough">The Dialog — Step by Step</a></li>
+            <li><a href="#no-match">What if nothing looks right?</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Receiving Help Pages</p>
+        <ul class="sidebar-nav">
+            <li><a href="mode-selection.html">Mode Selection</a></li>
+            <li><a href="guided-wizard-po-entry.html">PO Entry (Guided Wizard)</a></li>
+            <li><a href="smart-part-search.html" class="is-active">Smart Part Search</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Developer Docs</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../features/receiving/index.html">Receiving Module</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Help Center</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="guided-wizard-po-entry.html">PO Entry — Guided Wizard</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Smart Part Search</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>Smart Part Search</h1>
+            <p class="lead">
+                If you type a Part ID that doesn't exactly match anything in the system, the app
+                doesn't just give up — it automatically finds the closest matches and shows you a
+                <strong>Select Part</strong> dialog so you can pick the right one.
+                This page explains when that dialog appears, how to use it, and what to do when
+                none of the suggestions look correct.
+            </p>
+        </div>
+
+        <!-- ================================================================
+             WHEN DOES THIS APPEAR?
+             ================================================================ -->
+        <section id="when" class="content-section">
+            <h2>When does this appear?</h2>
+            <p>
+                The Smart Part Search dialog opens automatically during
+                <strong>Non-PO receiving</strong> in the <strong>Guided Wizard</strong>.
+                Here is the exact sequence:
+            </p>
+            <ol>
+                <li>You click <strong>Switch to Non-PO</strong> on the PO Entry screen.</li>
+                <li>You type a Part ID in the <strong>Part Identifier</strong> field.</li>
+                <li>You click <strong>Look Up Part</strong> (or press <kbd>Enter</kbd>).</li>
+                <li>
+                    The app searches InforVisual.
+                    <strong>If the Part ID you typed is not an exact match</strong> — for example,
+                    you typed <code>MMCCS</code> instead of <code>MMCCS00740</code> — the app does
+                    not show an error.  Instead it finds all parts whose IDs <em>start with</em>
+                    or <em>closely resemble</em> what you typed and opens the
+                    <strong>Select Part</strong> dialog.
+                </li>
+            </ol>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>This only happens in Non-PO mode.</strong>
+                    When you enter a PO number and click <strong>Load PO</strong>, the app loads
+                    whatever parts InforVisual has on that PO — the Smart Part Search dialog is not
+                    involved.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             DIALOG WALKTHROUGH
+             ================================================================ -->
+        <section id="dialog-walkthrough" class="content-section">
+            <h2>The Dialog — Step by Step</h2>
+            <p>
+                Here is what the <strong>Select Part</strong> dialog looks like and what
+                each part of it does:
+            </p>
+
+            <div class="dialog-screenshot-wrap">
+                <a href="../../Tutorial_Images/Module_Core/Dialog_FuzzySearchPicker/FuzzySearch-PartID.png"
+                   class="screenshot-wrap"
+                   data-caption="Select Part dialog — Smart Part Search with 2 similar matches found"
+                   aria-label="Click to enlarge: Select Part dialog">
+                    <img src="../../Tutorial_Images/Module_Core/Dialog_FuzzySearchPicker/FuzzySearch-PartID.png"
+                         alt="Select Part dialog showing the message 'No exact part match was found for MMCCS', a filter text box, two similar parts listed (MMCCS00740 and MMCCS00880), a 2 matches count, and Select and Cancel buttons" />
+                </a>
+            </div>
+            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:-0.5rem; margin-bottom:1.25rem;">
+                <em>Example: typing "MMCCS" found 2 similar parts</em>
+            </p>
+
+            <table class="ui-parts-table">
+                <thead>
+                    <tr>
+                        <th>Part of the dialog</th>
+                        <th>What it means / what to do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Message at the top</td>
+                        <td>
+                            Tells you what Part ID you typed and confirms no exact match was found.
+                            This is normal — it just means you typed a partial or slightly different ID.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>"Type to narrow results…" box</td>
+                        <td>
+                            Start typing any part of the Part ID or description to filter the list
+                            in real time.  Useful when there are many matches and you need to narrow
+                            it down quickly.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Part list (rows)</td>
+                        <td>
+                            Each row shows a <strong>Part ID</strong> and a short <strong>description</strong>.
+                            Click a row to select it — it highlights yellow/gold.
+                            You can only select one row at a time.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Match count</td>
+                        <td>
+                            Shows how many similar parts were found (e.g., "2 matches").
+                            If this is a large number, use the filter box to narrow it down.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Select</strong> button (blue)</td>
+                        <td>
+                            Confirms your choice and loads the selected part into the
+                            <strong>Available Parts</strong> table on the PO Entry screen.
+                            Only active once you have clicked a row to highlight it.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cancel</strong> button</td>
+                        <td>
+                            Closes the dialog without selecting anything and returns you to
+                            the PO Entry screen so you can retype the Part ID.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top:1.75rem;">How to use it</h3>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Read the message and scan the list</h4>
+                    <p>
+                        Confirm the Part ID shown in the message matches what you intended to type.
+                        Look at the list of similar parts and find the one that matches the part
+                        label on the physical delivery.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Filter if the list is long</h4>
+                    <p>
+                        If there are many suggestions, type a few more characters in the
+                        <strong>Type to narrow results…</strong> box — the list updates instantly.
+                        For example, if the physical label says <code>MMCCS00740</code>, typing
+                        <code>740</code> in the filter would show only that part.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Click the correct row, then click Select</h4>
+                    <p>
+                        Click the row that matches your physical part.  The row highlights
+                        to confirm your selection, and the <strong>Select</strong> button
+                        becomes active (turns solid blue).  Click <strong>Select</strong> to confirm.
+                    </p>
+                    <div class="callout callout-warning">
+                        <span class="callout-icon" aria-hidden="true">⚠️</span>
+                        <div class="callout-body">
+                            <strong>Always verify before clicking Select.</strong>
+                            Match the Part ID <em>and</em> the description against the physical delivery
+                            label.  Selecting the wrong part will assign receiving labels to the
+                            wrong item in the system.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             WHAT IF NOTHING LOOKS RIGHT?
+             ================================================================ -->
+        <section id="no-match" class="content-section">
+            <h2>What if none of the suggestions look right?</h2>
+            <p>
+                Click <strong>Cancel</strong> to close the dialog without selecting anything.
+                You will be returned to the PO Entry screen where you can try again.
+            </p>
+            <p>Try these steps before contacting a supervisor:</p>
+            <ul>
+                <li>
+                    <strong>Re-check the part label.</strong>
+                    Copy the Part ID exactly as it appears on the physical label — including dashes
+                    and capitalisation.
+                </li>
+                <li>
+                    <strong>Try a shorter search.</strong>
+                    Type only the first four or five characters of the Part ID so the app casts a
+                    wider net of similar results.
+                </li>
+                <li>
+                    <strong>Try a PO search instead.</strong>
+                    If the delivery came with a PO number, switch back to PO mode
+                    (<strong>Switch to PO Entry</strong>) and load the PO — the correct part
+                    will appear automatically in the Available Parts table.
+                </li>
+            </ul>
+
+            <div class="callout callout-danger">
+                <span class="callout-icon" aria-hidden="true">🚫</span>
+                <div class="callout-body">
+                    <strong>Do not guess.</strong>
+                    If you cannot find an exact or clearly correct match, stop and contact your
+                    supervisor.  Receiving a part under the wrong Part ID causes inventory errors
+                    that are difficult to correct later.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             FAQ
+             ================================================================ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>Will this dialog ever appear when I'm using a PO number?</summary>
+                    <div class="faq-body">
+                        No. The Smart Part Search dialog only appears in <strong>Non-PO mode</strong>
+                        when you type a Part ID directly. When you use a PO number the app looks up
+                        the parts attached to that specific PO and does not do a similarity search.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does "derived from receiving history" mean in the description?</summary>
+                    <div class="faq-body">
+                        Some suggestions come from parts that have been received before under a
+                        similar Part ID.  The system remembers past transactions and includes them
+                        as suggestions.  Always verify against the physical part label — do not rely
+                        on the description alone.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The dialog showed 0 matches. What do I do?</summary>
+                    <div class="faq-body">
+                        <p>
+                            If no similar parts are found, the dialog shows "0 matches" and
+                            the <strong>Select</strong> button stays disabled.  Click
+                            <strong>Cancel</strong> and try the following:
+                        </p>
+                        <ul>
+                            <li>Re-check the Part ID from the physical label for typos.</li>
+                            <li>Try entering fewer characters — a shorter prefix casts a wider net.</li>
+                            <li>Switch to PO mode if a PO number is available on the delivery paperwork.</li>
+                            <li>Contact your supervisor if the part still cannot be found.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I accidentally clicked the wrong row. Can I change my selection?</summary>
+                    <div class="faq-body">
+                        Yes — just click a different row in the list.  The highlight moves to the
+                        new row and the <strong>Select</strong> button will confirm that row instead.
+                        You can also click <strong>Cancel</strong> to start over.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How many results can the list show?</summary>
+                    <div class="faq-body">
+                        The list will show all parts that closely match the characters you typed.
+                        If the list is long, use the <strong>Type to narrow results…</strong> filter
+                        box to reduce it to the specific part you need.
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="content-section">
+            <h2>Related Pages</h2>
+            <div class="related-links">
+                <a href="guided-wizard-po-entry.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🧭</span>
+                    <span class="related-link-text">
+                        <strong>PO Entry — Guided Wizard</strong>
+                        <span>Full walkthrough of the PO Entry screen, including Non-PO mode and Quality Hold parts.</span>
+                    </span>
+                </a>
+                <a href="mode-selection.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🔀</span>
+                    <span class="related-link-text">
+                        <strong>Mode Selection</strong>
+                        <span>How to choose Guided Wizard, Manual Entry, or Edit Mode.</span>
+                    </span>
+                </a>
+                <a href="../index.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🎓</span>
+                    <span class="related-link-text">
+                        <strong>Help Center</strong>
+                        <span>All available end-user guides for the MTM Receiving Application.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="../index.html">Help Center</a>
+    <span aria-hidden="true">·</span>
+    <a href="guided-wizard-po-entry.html">PO Entry — Guided Wizard</a>
+    <span aria-hidden="true">·</span>
+    <span>Smart Part Search</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

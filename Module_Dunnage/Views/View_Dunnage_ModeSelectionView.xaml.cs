@@ -1,4 +1,5 @@
 using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -17,6 +18,36 @@ public sealed partial class View_Dunnage_ModeSelectionView : UserControl
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;
+    }
+
+    private async void OnGuidedDefaultChecked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.HandleGuidedDefaultChangedAsync(true);
+    }
+
+    private async void OnGuidedDefaultUnchecked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.HandleGuidedDefaultChangedAsync(false);
+    }
+
+    private async void OnEditDefaultChecked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.HandleEditDefaultChangedAsync(true);
+    }
+
+    private async void OnEditDefaultUnchecked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.HandleEditDefaultChangedAsync(false);
+    }
+
+    private async void OnImageSearchDefaultChecked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.HandleImageSearchDefaultChangedAsync(true);
+    }
+
+    private async void OnImageSearchDefaultUnchecked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.HandleImageSearchDefaultChangedAsync(false);
     }
 
     /// <summary>

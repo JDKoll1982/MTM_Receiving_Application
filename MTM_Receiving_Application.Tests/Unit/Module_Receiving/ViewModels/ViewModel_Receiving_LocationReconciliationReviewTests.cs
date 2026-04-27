@@ -3,6 +3,7 @@ using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Xunit;
 
@@ -15,6 +16,9 @@ public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
     {
         var viewModel = new ViewModel_Receiving_LocationReconciliationReview(
             new Mock<IService_ReceivingLocationReconciliation>().Object,
+            new Mock<IService_ReceivingWorkflow>().Object,
+            new Mock<IService_ReceivingSettings>().Object,
+            new Mock<IService_UserSessionManager>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

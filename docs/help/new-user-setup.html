@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New User Setup — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../features/shared/styles.css" />
+    <link rel="stylesheet" href="tutorial.css" />
+    <style>
+        /* ---- full-dialog overview screenshot ---- */
+        .dialog-overview-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 1.25rem 0;
+        }
+        .dialog-overview-wrap a {
+            display: block;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            max-width: 560px;
+            width: 100%;
+            transition: box-shadow var(--transition);
+        }
+        .dialog-overview-wrap a:hover { box-shadow: var(--shadow); }
+        .dialog-overview-wrap img { display: block; width: 100%; height: auto; }
+
+        /* ---- step screenshot — medium width, left-aligned ---- */
+        .step-screenshot-wrap {
+            margin: 0.9rem 0 1rem;
+        }
+        .step-screenshot-wrap a {
+            display: inline-block;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            max-width: 420px;
+            width: 100%;
+            transition: box-shadow var(--transition);
+        }
+        .step-screenshot-wrap a:hover { box-shadow: var(--shadow); }
+        .step-screenshot-wrap img { display: block; width: 100%; height: auto; }
+
+        /* ---- field reference table (reuse from smart-part-search) ---- */
+        .ui-parts-table { width: 100%; border-collapse: collapse; }
+        .ui-parts-table th,
+        .ui-parts-table td {
+            padding: 0.55rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        .ui-parts-table th {
+            background: var(--surface-muted);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .ui-parts-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+        .ui-parts-table tr:last-child td { border-bottom: none; }
+
+        /* ---- required / optional badge ---- */
+        .badge {
+            display: inline-block;
+            padding: 1px 7px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            vertical-align: middle;
+            line-height: 1.6;
+        }
+        .badge-required { background: #fde8e8; color: #8b2020; border: 1px solid #f5c6c6; }
+        .badge-optional { background: var(--surface-muted); color: var(--text-muted); border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#when">When does this appear?</a></li>
+            <li><a href="#before-you-start">Before You Start</a></li>
+            <li><a href="#the-form">The Form at a Glance</a></li>
+            <li><a href="#step1">Step 1 — Name</a></li>
+            <li><a href="#step2">Step 2 — Employee Details</a></li>
+            <li><a href="#step3">Step 3 — Department</a></li>
+            <li><a href="#step4">Step 4 — Work Schedule</a></li>
+            <li><a href="#step5">Step 5 — Account Security</a></li>
+            <li><a href="#step6">Step 6 — ERP Access</a></li>
+            <li><a href="#create-account">Creating the Account</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Getting Started</p>
+        <ul class="sidebar-nav">
+            <li><a href="startup.html">Starting the App</a></li>
+            <li><a href="new-user-setup.html" class="is-active">New User Setup</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Receiving Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="receiving/mode-selection.html">Mode Selection</a></li>
+            <li><a href="receiving/guided-wizard-po-entry.html">PO Entry (Guided Wizard)</a></li>
+            <li><a href="receiving/smart-part-search.html">Smart Part Search</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Quick Links</p>
+        <ul class="sidebar-nav">
+            <li><a href="index.html">← Help Center</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="index.html">Help Center</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="startup.html">Starting the App</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">New User Setup</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>New User Setup</h1>
+            <p class="lead">
+                The first time you use the MTM Receiving Application on a new computer,
+                the app automatically opens the <strong>New User Entry</strong> form so
+                it can create a profile for you.  This page walks through every field
+                so you can complete the form quickly and correctly.
+            </p>
+        </div>
+
+        <!-- ================================================================
+             WHEN DOES THIS APPEAR?
+             ================================================================ -->
+        <section id="when" class="content-section">
+            <h2>When does this appear?</h2>
+            <p>
+                The New User Entry form opens automatically at the end of the startup
+                sequence when the app cannot find an existing account for your
+                Windows username.  This happens in two situations:
+            </p>
+            <ul>
+                <li><strong>You are logging in to this computer for the first time</strong> — no profile exists yet.</li>
+                <li><strong>You have been issued a new Windows username</strong> — the old profile won't match the new login.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>You only need to do this once per computer.</strong>
+                    Once your account is created, the app will recognise you on every subsequent
+                    launch and skip this form entirely.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             BEFORE YOU START
+             ================================================================ -->
+        <section id="before-you-start" class="content-section">
+            <h2>Before You Start</h2>
+            <p>Have the following information ready before filling out the form:</p>
+
+            <table class="ui-parts-table">
+                <thead>
+                    <tr>
+                        <th>Information needed</th>
+                        <th>Where to find it</th>
+                        <th>Required?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Your first and last name</td>
+                        <td>Your employee badge or your supervisor</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                    </tr>
+                    <tr>
+                        <td>Employee number</td>
+                        <td>Your pay stub, badge, or HR — e.g., <code>6229</code></td>
+                        <td><span class="badge badge-required">Required</span></td>
+                    </tr>
+                    <tr>
+                        <td>Your department</td>
+                        <td>Your supervisor — select from the dropdown or enter a custom name</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                    </tr>
+                    <tr>
+                        <td>Your shift</td>
+                        <td>Your work schedule (e.g., Day, Afternoon, Night)</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                    </tr>
+                    <tr>
+                        <td>4-digit PIN</td>
+                        <td>Choose a PIN yourself — used for shared terminal login</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                    </tr>
+                    <tr>
+                        <td>InforVisual (ERP) username &amp; password</td>
+                        <td>Provided by IT — the same credentials used to log in to Infor Visual</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ================================================================
+             THE FORM AT A GLANCE
+             ================================================================ -->
+        <section id="the-form" class="content-section">
+            <h2>The Form at a Glance</h2>
+            <p>
+                Here is the complete <strong>New User Entry</strong> form.  The sections are
+                arranged in two columns on the top half and one wide column at the bottom.
+                Work through each section from left to right, top to bottom.
+            </p>
+
+            <div class="dialog-overview-wrap">
+                <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Main.png"
+                   class="screenshot-wrap"
+                   data-caption="New User Entry form — all sections visible"
+                   aria-label="Click to enlarge: New User Entry form">
+                    <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Main.png"
+                         alt="New User Entry dialog showing Name, Employee Details, Department Assignment, Work Schedule, Account Security, and ERP System Access sections with Cancel and Create Account buttons at the bottom" />
+                </a>
+            </div>
+            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:-0.5rem; margin-bottom:1.25rem;">
+                <em>The complete New User Entry form — click to enlarge</em>
+            </p>
+        </section>
+
+        <!-- ================================================================
+             STEP 1 — NAME
+             ================================================================ -->
+        <section id="step1" class="content-section">
+            <h2>Step 1 — Name</h2>
+            <p>
+                The <strong>Name</strong> section is in the top-left of the form.
+                Enter your legal first and last name exactly as it appears on your employee badge.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Type your First Name and Last Name</h4>
+                    <p>
+                        Click the <strong>First Name</strong> field (highlighted yellow in the
+                        screenshot) and type your first name.  Press <kbd>Tab</kbd> to move to
+                        <strong>Last Name</strong> and type your surname.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step1.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 1 — First Name and Last Name fields highlighted"
+                           aria-label="Click to enlarge: Name fields">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step1.png"
+                                 alt="Name section of New User Entry showing First Name and Last Name text boxes highlighted yellow" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">Enter your first and last name in the highlighted fields</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             STEP 2 — EMPLOYEE DETAILS
+             ================================================================ -->
+        <section id="step2" class="content-section">
+            <h2>Step 2 — Employee Details</h2>
+            <p>
+                The <strong>Employee Details</strong> section sits below the Name section.
+                It has two fields: <strong>Employee Number</strong> (which you type) and
+                <strong>Windows Username</strong> (which is filled in automatically).
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Enter your Employee Number</h4>
+                    <p>
+                        Type your employee number (for example, <code>6229</code>) into the
+                        <strong>Employee Number</strong> field.  This number appears on your
+                        pay stub, badge, or can be provided by HR.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step2.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 2 — Employee Number field highlighted"
+                           aria-label="Click to enlarge: Employee Details">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step2.png"
+                                 alt="Employee Details section showing the Employee Number field highlighted yellow and the Windows Username pre-filled with 'johnk'" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">Enter your employee number — the Windows Username is filled in automatically</span>
+                    <div class="callout callout-info" style="margin-top: 0.9rem;">
+                        <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                        <div class="callout-body">
+                            <strong>Windows Username is read-only.</strong>
+                            The app detects your current Windows login and fills in the
+                            <strong>Windows Username</strong> field automatically.
+                            You cannot change it — this is the username that will be used to
+                            recognise you on future logins.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             STEP 3 — DEPARTMENT ASSIGNMENT
+             ================================================================ -->
+        <section id="step3" class="content-section">
+            <h2>Step 3 — Department Assignment</h2>
+            <p>
+                The <strong>Department Assignment</strong> section is directly below Employee
+                Details.  Select your department from the dropdown list.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Select your Department</h4>
+                    <p>
+                        Click the <strong>Department</strong> dropdown (highlighted yellow) and
+                        choose your department from the list.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step3.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 3 — Department dropdown highlighted"
+                           aria-label="Click to enlarge: Department dropdown">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step3.png"
+                                 alt="Department Assignment section with the Department dropdown highlighted yellow showing 'Select department'" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">Click the Department dropdown and select your department</span>
+
+                    <h4 style="margin-top: 1.25rem;">Don't see your department? Select "Other"</h4>
+                    <p>
+                        If your department is not in the list, choose <strong>Other</strong>.
+                        A new <strong>Custom Department Name</strong> field appears (highlighted
+                        yellow below) — type your department name there.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step3-Other.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 3 — 'Other' selected, Custom Department Name field visible"
+                           aria-label="Click to enlarge: Custom Department Name field">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step3-Other.png"
+                                 alt="Department Assignment section with 'Other' selected in the dropdown and a Custom Department Name text field highlighted yellow below it" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">When "Other" is selected, type your department name in the Custom Department Name field</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             STEP 4 — WORK SCHEDULE
+             ================================================================ -->
+        <section id="step4" class="content-section">
+            <h2>Step 4 — Work Schedule</h2>
+            <p>
+                The <strong>Work Schedule</strong> section is in the top-right of the form,
+                opposite the Name section.  It has a single <strong>Shift</strong> dropdown.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">4</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Select your Shift</h4>
+                    <p>
+                        Click the <strong>Shift</strong> dropdown (highlighted yellow) and
+                        choose your normal working shift — for example, Day, Afternoon, or Night.
+                        If you are unsure, ask your supervisor.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step4.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 4 — Shift dropdown highlighted"
+                           aria-label="Click to enlarge: Shift dropdown">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step4.png"
+                                 alt="Work Schedule section with the Shift dropdown highlighted yellow showing 'Select shift'" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">Select your shift from the dropdown</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             STEP 5 — ACCOUNT SECURITY
+             ================================================================ -->
+        <section id="step5" class="content-section">
+            <h2>Step 5 — Account Security</h2>
+            <p>
+                The <strong>Account Security</strong> section is in the right column below
+                Work Schedule.  You create a 4-digit PIN here.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">5</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Create your 4-Digit PIN</h4>
+                    <p>
+                        Type a 4-digit PIN into the <strong>4-Digit PIN</strong> field (highlighted
+                        yellow), then retype the same PIN in the <strong>Confirm PIN</strong> field.
+                        Both entries must match before the <strong>Create Account</strong> button
+                        becomes active.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step5.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 5 — 4-Digit PIN and Confirm PIN fields highlighted"
+                           aria-label="Click to enlarge: PIN fields">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step5.png"
+                                 alt="Account Security section showing the 4-Digit PIN and Confirm PIN fields highlighted yellow with placeholder text 'Create PIN' and 'Re-enter PIN'" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">Enter your chosen PIN in both fields — they must match</span>
+                    <div class="callout callout-warning" style="margin-top: 0.9rem;">
+                        <span class="callout-icon" aria-hidden="true">⚠️</span>
+                        <div class="callout-body">
+                            <strong>Remember your PIN.</strong>
+                            This PIN is used when logging in on a shared terminal where multiple
+                            users share the same Windows login.  Choose something memorable but
+                            do not reuse a PIN you use for banking or other personal accounts.
+                        </div>
+                    </div>
+                    <div class="callout callout-info" style="margin-top: 0.75rem;">
+                        <span class="callout-icon" aria-hidden="true">🔒</span>
+                        <div class="callout-body">
+                            <strong>Your PIN is strongly encrypted.</strong>
+                            The app uses <strong>AES-256 encryption</strong> — the same
+                            industry standard used by banks and government systems — to
+                            scramble your PIN before saving it.
+                            The encrypted data is stored only on this computer, in your
+                            personal Windows user profile, and is tied to this machine.
+                            It cannot be read by other users on the same computer, cannot
+                            be transferred to another machine, and is never sent over the
+                            network.  Nobody — including IT staff — can recover your
+                            PIN from the stored data.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             STEP 6 — ERP SYSTEM ACCESS
+             ================================================================ -->
+        <section id="step6" class="content-section">
+            <h2>Step 6 — ERP System Access</h2>
+            <p>
+                The <strong>ERP System Access</strong> section spans the full width at the
+                bottom of the form.  Enter the credentials you use to log in to
+                <strong>Infor Visual</strong> (the ERP system).
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">6</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Enter your Visual/Infor Username and Password</h4>
+                    <p>
+                        Type your Infor Visual username in the <strong>Visual/Infor Username</strong>
+                        field and your password in the <strong>Visual/Infor Password</strong> field
+                        (both highlighted yellow).  These are the same credentials you use to log in
+                        to the Infor Visual desktop application.
+                    </p>
+                    <div class="step-screenshot-wrap">
+                        <a href="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step6.png"
+                           class="screenshot-wrap"
+                           data-caption="Step 6 — Visual/Infor Username and Password fields highlighted"
+                           aria-label="Click to enlarge: ERP credentials fields">
+                            <img src="../Tutorial_Images/Module_Shared/View_Shared_NewUserSetupDialog/View_Shared_NewUserSetupDialog-Step6.png"
+                                 alt="ERP System Access section with the Visual/Infor Username and Visual/Infor Password fields highlighted yellow" />
+                        </a>
+                    </div>
+                    <span class="screenshot-caption">Enter the same username and password you use in Infor Visual</span>
+                    <div class="callout callout-info" style="margin-top: 0.9rem;">
+                        <span class="callout-icon" aria-hidden="true">🔒</span>
+                        <div class="callout-body">
+                            <strong>Your credentials are strongly encrypted.</strong>
+                            The app uses <strong>AES-256 encryption</strong> — the same
+                            industry standard used by banks and government systems — to
+                            scramble your username and password before saving them.
+                            The encrypted data is stored only on this computer, in your
+                            personal Windows user profile, and is tied to this machine.
+                            It cannot be read by other users on the same computer, cannot
+                            be transferred to another machine, and is never sent over the
+                            network.  Nobody — including IT staff — can recover your
+                            password from the stored data.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             CREATING THE ACCOUNT
+             ================================================================ -->
+        <section id="create-account" class="content-section">
+            <h2>Creating the Account</h2>
+            <p>
+                Once all required fields are filled in, the <strong>Create Account</strong>
+                button at the bottom-right becomes active (turns solid blue).
+                Click it to save your profile.
+            </p>
+            <ul>
+                <li>
+                    <strong>Create Account (blue)</strong> — saves your profile and opens the
+                    main application window.  You will not see this form again on this computer.
+                </li>
+                <li>
+                    <strong>Cancel (grey)</strong> — closes the form without creating an account.
+                    The app will close and you will need to relaunch it.  The form will reappear
+                    because your profile still does not exist.
+                </li>
+            </ul>
+
+            <div class="callout callout-success">
+                <span class="callout-icon" aria-hidden="true">✅</span>
+                <div class="callout-body">
+                    <strong>Create Account is still grey?</strong>
+                    Check that all required fields are filled in — Name, Employee Number,
+                    Department, Shift, PIN (with matching Confirm PIN), and
+                    Visual/Infor Username and Password.
+                    Any missing required field will keep the button disabled.
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             FAQ
+             ================================================================ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>Do I fill this out every time I log in?</summary>
+                    <div class="faq-body">
+                        No.  You only fill it out once per computer.  After your account is
+                        created, the app recognises your Windows username on every launch and
+                        goes straight to the main window.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>My Windows Username is already filled in — can I change it?</summary>
+                    <div class="faq-body">
+                        No.  The Windows Username field is read-only.  It is filled in automatically
+                        from your current Windows login.  If the username shown is wrong, log out
+                        of Windows, log back in with the correct account, and then relaunch the app.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I don't know my employee number. What should I enter?</summary>
+                    <div class="faq-body">
+                        Check your pay stub, employee badge, or ask your supervisor or HR.
+                        The employee number is typically a 4–5 digit number (for example, <code>6229</code>).
+                        Do not leave this field blank or enter a placeholder — it is used to match
+                        your records in the system.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>My department isn't in the dropdown. What do I do?</summary>
+                    <div class="faq-body">
+                        Select <strong>Other</strong> from the dropdown.  A
+                        <strong>Custom Department Name</strong> field will appear directly below
+                        the dropdown — type your department name there.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What is the PIN used for?</summary>
+                    <div class="faq-body">
+                        The 4-digit PIN is used on <strong>shared terminals</strong> where multiple
+                        employees log in using the same Windows account.  Instead of each person
+                        needing their own Windows login, you identify yourself with your PIN.
+                        If you have your own dedicated Windows login, you may still be asked for
+                        the PIN in certain workflows — choose something you will remember.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I don't have my InforVisual credentials right now. Can I skip that section?</summary>
+                    <div class="faq-body">
+                        No — the ERP System Access section is required.  The
+                        <strong>Create Account</strong> button will remain disabled until
+                        a username and password are entered.  Contact your IT department
+                        or supervisor to obtain your Infor Visual credentials before
+                        completing setup.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The "Create Account" button is still greyed out even though I filled in everything.</summary>
+                    <div class="faq-body">
+                        <p>Check the following:</p>
+                        <ul>
+                            <li>Both the <strong>4-Digit PIN</strong> and <strong>Confirm PIN</strong>
+                                fields must contain the same number.  Even a one-digit difference
+                                will keep the button disabled.</li>
+                            <li>Make sure <strong>First Name</strong>, <strong>Last Name</strong>,
+                                <strong>Employee Number</strong>, <strong>Department</strong>,
+                                and <strong>Shift</strong> are all filled in.</li>
+                            <li>If you chose <strong>Other</strong> for department, the
+                                <strong>Custom Department Name</strong> field must not be blank.</li>
+                        </ul>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="content-section">
+            <h2>Related Pages</h2>
+            <div class="related-links">
+                <a href="startup.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🚀</span>
+                    <span class="related-link-text">
+                        <strong>Starting the App</strong>
+                        <span>What the startup screen shows, what each status message means, and what triggers this setup form.</span>
+                    </span>
+                </a>
+                <a href="receiving/mode-selection.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">📦</span>
+                    <span class="related-link-text">
+                        <strong>Mode Selection</strong>
+                        <span>The first screen you see after setup completes — choose how you want to receive parts.</span>
+                    </span>
+                </a>
+                <a href="index.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🎓</span>
+                    <span class="related-link-text">
+                        <strong>Help Center</strong>
+                        <span>All available end-user guides for the MTM Receiving Application.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="index.html">Help Center</a>
+    <span aria-hidden="true">·</span>
+    <a href="startup.html">Starting the App</a>
+    <span aria-hidden="true">·</span>
+    <span>New User Setup</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../features/shared/app.js"></script>
+<script src="tutorial.js"></script>
+</body>
+</html>

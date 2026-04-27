@@ -80,6 +80,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetCurrentLabelDataAsync();
 
         /// <summary>
+        /// Checks whether the active receiving label queue currently contains any rows.
+        /// </summary>
+        public Task<bool> HasActiveLabelDataAsync();
+
+        /// <summary>
         /// Deletes rows from the active receiving_label_data print queue.
         /// Used by Edit Mode when rows are removed from Current Labels.
         /// </summary>
@@ -92,5 +97,41 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="loads">The list of receiving loads to update.</param>
         public Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads);
+
+        /// <summary>
+        /// Returns all reusable non-PO reference entries for Receiving.
+        /// </summary>
+        public Task<Model_Dao_Result<List<Model_ReceivingNonPOEntry>>> GetNonPOEntriesAsync();
+
+        /// <summary>
+        /// Saves or increments a reusable non-PO reference entry for Receiving.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="createdBy"></param>
+        public Task<Model_Dao_Result> SaveNonPOEntryAsync(string value, string createdBy);
+
+        /// <summary>
+        /// Deletes a reusable non-PO reference entry for Receiving.
+        /// </summary>
+        /// <param name="id"></param>
+        public Task<Model_Dao_Result> DeleteNonPOEntryAsync(int id);
+
+        /// <summary>
+        /// Returns the saved per-part default non-PO reference for a Receiving part.
+        /// </summary>
+        /// <param name="partId"></param>
+        public Task<Model_Dao_Result<string?>> GetNonPOPartDefaultAsync(string partId);
+
+        /// <summary>
+        /// Saves the per-part default non-PO reference for a Receiving part.
+        /// </summary>
+        /// <param name="partId"></param>
+        /// <param name="value"></param>
+        /// <param name="updatedBy"></param>
+        public Task<Model_Dao_Result> SaveNonPOPartDefaultAsync(
+            string partId,
+            string value,
+            string updatedBy
+        );
     }
 }

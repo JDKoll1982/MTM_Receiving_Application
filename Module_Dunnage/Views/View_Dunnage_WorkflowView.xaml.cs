@@ -42,6 +42,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     /// <param name="workflowService">The dunnage workflow service.</param>
     /// <param name="helpService">The help service.</param>
     /// <param name="focusService">The focus service.</param>
+    /// <param name="dunnageShortcuts"></param>
     public View_Dunnage_WorkflowView(
         ViewModel_Dunnage_WorkFlowViewModel viewModel,
         IService_DunnageWorkflow workflowService,
@@ -311,7 +312,12 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             // before we advance. The dialog also persists commonly-used reasons.
             if (string.IsNullOrWhiteSpace(_workflowService.CurrentSession.PONumber))
             {
-                var nonPoDialog = new View_Dunnage_Dialog_NonPOEntry { XamlRoot = this.XamlRoot };
+                var nonPoDialog = new View_Dunnage_Dialog_NonPOEntry(
+                    _workflowService.CurrentSession.SelectedPart?.PartId
+                )
+                {
+                    XamlRoot = this.XamlRoot,
+                };
                 await nonPoDialog.ShowAsync();
 
                 if (nonPoDialog.Result is null)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -24,12 +25,15 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
     public ObservableCollection<Model_DunnageNonPOEntry> SavedEntries { get; } = new();
 
     private readonly IService_MySQL_Dunnage _dunnageService;
+    private readonly string? _partId;
+    private string? _savedPartDefaultValue;
 
-    public View_Dunnage_Dialog_NonPOEntry()
+    public View_Dunnage_Dialog_NonPOEntry(string? partId = null)
     {
         InitializeComponent();
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
         _dunnageService = App.GetService<IService_MySQL_Dunnage>();
+        _partId = string.IsNullOrWhiteSpace(partId) ? null : partId.Trim();
         _ = LoadSavedEntriesAsync();
     }
 
@@ -45,6 +49,34 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
 
             SavedEntriesPanel.Visibility =
                 SavedEntries.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        if (string.IsNullOrWhiteSpace(_partId))
+        {
+            return;
+        }
+
+        var partDefaultResult = await _dunnageService.GetNonPOPartDefaultAsync(_partId);
+        if (
+            partDefaultResult.IsSuccess
+            && string.IsNullOrWhiteSpace(partDefaultResult.Data) is false
+        )
+        {
+            _savedPartDefaultValue = partDefaultResult.Data.Trim();
+            ReferenceTextBox.Text = _savedPartDefaultValue;
+
+            var matchingEntry = SavedEntries.FirstOrDefault(entry =>
+                string.Equals(
+                    entry.Value,
+                    _savedPartDefaultValue,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+
+            if (matchingEntry != null)
+            {
+                SavedEntriesList.SelectedItem = matchingEntry;
+            }
         }
     }
 
@@ -88,13 +120,52 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
 
         Result = reference;
 
+        var currentUser =
+            App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_UserSessionManager>().CurrentSession?.User?.WindowsUsername
+            ?? "System";
+
         if (SaveForNextTimeCheckBox.IsChecked == true)
         {
-            var currentUser =
-                App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_UserSessionManager>().CurrentSession?.User?.WindowsUsername
-                ?? "System";
-
             await _dunnageService.SaveNonPOEntryAsync(reference, currentUser);
         }
+
+        if (!string.IsNullOrWhiteSpace(_partId))
+        {
+            var shouldPersistPartDefault = true;
+
+            if (
+                string.IsNullOrWhiteSpace(_savedPartDefaultValue) is false
+                && !string.Equals(
+                    _savedPartDefaultValue,
+                    reference,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                shouldPersistPartDefault = await ConfirmOverwritePartDefaultAsync(reference);
+            }
+
+            if (shouldPersistPartDefault)
+            {
+                await _dunnageService.SaveNonPOPartDefaultAsync(_partId, reference, currentUser);
+            }
+        }
+    }
+
+    private async Task<bool> ConfirmOverwritePartDefaultAsync(string reference)
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "Overwrite saved part default?",
+            Content =
+                $"Part {_partId} already has '{_savedPartDefaultValue}' saved. Overwrite it with '{reference}' for future non-PO prompts?",
+            PrimaryButtonText = "Overwrite",
+            CloseButtonText = "Keep Existing",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = XamlRoot,
+        };
+
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, XamlRoot);
+        return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 }

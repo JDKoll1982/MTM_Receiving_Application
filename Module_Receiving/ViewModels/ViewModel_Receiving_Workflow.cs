@@ -11,6 +11,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Receiving.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
@@ -56,6 +57,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isEditModeVisible;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
+        private bool _isReconciliationReviewVisible;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
@@ -158,6 +165,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _workflowResetLabelDataText = "Clear Label Data";
 
         [ObservableProperty]
+        private bool _canClearLabelData;
+
+        [ObservableProperty]
         private string _completionSuccessTitleText = "Success!";
 
         [ObservableProperty]
@@ -243,6 +253,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             try
             {
                 await _workflowService.StartWorkflowAsync();
+                await RefreshClearLabelDataAvailabilityAsync();
             }
             catch (Exception ex)
             {
@@ -356,6 +367,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsModeSelectionVisible = false;
             IsManualEntryVisible = false;
             IsEditModeVisible = false;
+            IsReconciliationReviewVisible = false;
             IsPOEntryVisible = false;
             IsPartSelectionVisible = false;
             IsLoadEntryVisible = false;
@@ -380,6 +392,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.EditMode:
                     IsEditModeVisible = true;
                     CurrentStepTitle = "Receiving - Edit Mode";
+                    break;
+                case Enum_ReceivingWorkflowStep.ReconciliationReview:
+                    IsReconciliationReviewVisible = true;
+                    CurrentStepTitle = "Receiving - Reconcile Saved Locations";
                     break;
                 case Enum_ReceivingWorkflowStep.POEntry:
                     IsPOEntryVisible = true;
@@ -433,6 +449,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             );
 
             UpdateNextButtonEnabled();
+            _ = RefreshClearLabelDataAvailabilityAsync();
+        }
+
+        private async Task RefreshClearLabelDataAvailabilityAsync()
+        {
+            try
+            {
+                CanClearLabelData = await _workflowService.HasActiveLabelDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    $"Failed to refresh receiving label-data availability: {ex.Message}",
+                    ex
+                );
+                CanClearLabelData = false;
+            }
         }
 
         private void UpdateNextButtonEnabled()
@@ -451,6 +484,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             try
             {
                 _logger.LogInfo("NextStepAsync command triggered.");
+
+                if (!await EnsureReceivingNonPoReferenceAsync())
+                {
+                    return;
+                }
 
                 // Removed Task.Yield() to avoid context switching issues
                 // await Task.Yield();
@@ -478,6 +516,62 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     $"An error occurred: {ex.Message}",
                     Enum_ErrorSeverity.Error
                 );
+            }
+        }
+
+        private async Task<bool> EnsureReceivingNonPoReferenceAsync()
+        {
+            if (_workflowService.CurrentStep != Enum_ReceivingWorkflowStep.PackageTypeEntry)
+            {
+                return true;
+            }
+
+            if (!_workflowService.IsNonPOItem)
+            {
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber) is false)
+            {
+                return true;
+            }
+
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to open the non-PO reference dialog.",
+                    Enum_ErrorSeverity.Error
+                );
+                return false;
+            }
+
+            var nonPoDialog = new View_Receiving_Dialog_NonPOEntry(
+                _workflowService.CurrentPart?.PartID
+            )
+            {
+                XamlRoot = xamlRoot,
+            };
+
+            await nonPoDialog.ShowAsync();
+
+            if (nonPoDialog.Result is null)
+            {
+                return false;
+            }
+
+            ApplyReceivingNonPoReference(nonPoDialog.Result);
+            return true;
+        }
+
+        private void ApplyReceivingNonPoReference(string reference)
+        {
+            _workflowService.CurrentPONumber = reference;
+            _workflowService.CurrentSession.PoNumber = reference;
+
+            foreach (var load in _workflowService.CurrentSession.Loads)
+            {
+                load.PoNumber = reference;
             }
         }
 
@@ -602,6 +696,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         ),
                         InfoBarSeverity.Success
                     );
+                    await RefreshClearLabelDataAvailabilityAsync();
                 }
                 else
                 {
@@ -702,6 +797,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.EditMode:
                     _startNewEntryStep = Enum_ReceivingWorkflowStep.EditMode;
                     break;
+                case Enum_ReceivingWorkflowStep.ReconciliationReview:
                 case Enum_ReceivingWorkflowStep.POEntry:
                 case Enum_ReceivingWorkflowStep.PartSelection:
                 case Enum_ReceivingWorkflowStep.LoadEntry:

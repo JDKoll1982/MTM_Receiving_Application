@@ -56,11 +56,11 @@
                     <!--  Guided Mode Checkbox  -->
                     <CheckBox
                         HorizontalAlignment="Center"
-                        Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
-                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        Checked="OnGuidedDefaultChecked"
                         Content="Set as default mode"
                         IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickGuidedWizard'), Mode=OneWay}" />
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickGuidedWizard'), Mode=OneWay}"
+                        Unchecked="OnGuidedDefaultUnchecked" />
                 </StackPanel>
 
                 <!--  Edit Mode Column  -->
@@ -96,11 +96,11 @@
                     <!--  Edit Mode Checkbox  -->
                     <CheckBox
                         HorizontalAlignment="Center"
-                        Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
-                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        Checked="OnEditDefaultChecked"
                         Content="Set as default mode"
                         IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}" />
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"
+                        Unchecked="OnEditDefaultUnchecked" />
                 </StackPanel>
 
                 <StackPanel Spacing="12">
@@ -134,11 +134,11 @@
                     <!--  Search Mode Checkbox  -->
                     <CheckBox
                         HorizontalAlignment="Center"
-                        Command="{x:Bind ViewModel.SetImageSearchAsDefaultCommand}"
-                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        Checked="OnImageSearchDefaultChecked"
                         Content="Set as default mode"
                         IsChecked="{x:Bind ViewModel.IsImageSearchModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ImageSearchDefaultMode'), Mode=OneWay}" />
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ImageSearchDefaultMode'), Mode=OneWay}"
+                        Unchecked="OnImageSearchDefaultUnchecked" />
                 </StackPanel>
 
             </StackPanel>

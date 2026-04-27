@@ -215,14 +215,14 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
 
     private static void ApplySafeUserDefaults(Model_User user)
     {
-        if (string.IsNullOrWhiteSpace(user.DefaultReceivingMode))
+        if (string.IsNullOrWhiteSpace(user.DefaultReceivingMode) is false)
         {
-            user.DefaultReceivingMode = "guided";
+            user.DefaultReceivingMode = user.DefaultReceivingMode.Trim().ToLowerInvariant();
         }
 
-        if (string.IsNullOrWhiteSpace(user.DefaultDunnageMode))
+        if (string.IsNullOrWhiteSpace(user.DefaultDunnageMode) is false)
         {
-            user.DefaultDunnageMode = "guided";
+            user.DefaultDunnageMode = user.DefaultDunnageMode.Trim().ToLowerInvariant();
         }
     }
 }

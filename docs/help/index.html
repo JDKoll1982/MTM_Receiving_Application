@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help Center — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../features/shared/styles.css" />
+    <link rel="stylesheet" href="tutorial.css" />
+    <style>
+        /* ---- Module index cards (home-grid style, scoped to help) ---- */
+        .help-module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0 2.5rem;
+        }
+        .help-module-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.25rem 1rem;
+            background: var(--surface);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .help-module-card:hover,
+        .help-module-card:focus-visible {
+            border-color: var(--blue);
+            box-shadow: var(--shadow-sm);
+            outline: none;
+        }
+        .help-module-card--soon {
+            opacity: 0.6;
+            cursor: default;
+            pointer-events: none;
+            border-style: dashed;
+        }
+        .help-module-card-icon { font-size: 1.75rem; line-height: 1; }
+        .help-module-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .help-module-card--soon .help-module-card-title::after {
+            content: " — Coming Soon";
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--gold);
+        }
+        .help-module-card-count {
+            font-size: 0.78rem;
+            color: var(--blue);
+            font-weight: 600;
+        }
+        .help-module-card--soon .help-module-card-count { color: var(--text-muted); }
+        .help-module-card-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ---- Guide list inside a module section ---- */
+        .guide-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1rem 0 0;
+        }
+        .guide-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.125rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            text-decoration: none;
+            color: inherit;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .guide-item:hover,
+        .guide-item:focus-visible {
+            border-color: var(--blue);
+            box-shadow: var(--shadow-sm);
+            outline: none;
+        }
+        .guide-item-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .guide-item-body { flex: 1; min-width: 0; }
+        .guide-item-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 0.2rem;
+        }
+        .guide-item-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+        .guide-item-arrow {
+            font-size: 0.9rem;
+            color: var(--blue);
+            font-weight: 700;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        /* ---- Module section divider header ---- */
+        .module-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 2.5rem 0 0.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--blue-mid);
+        }
+        .module-section-header-icon { font-size: 1.4rem; line-height: 1; }
+        .module-section-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        /* ---- Coming soon placeholder ---- */
+        .coming-soon-block {
+            padding: 1.5rem;
+            border: 1px dashed var(--border-strong);
+            border-radius: var(--radius-sm);
+            background: var(--surface-muted);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="Help Center navigation">
+        <p class="sidebar-label">Modules</p>
+        <ul class="sidebar-nav">
+            <li><a href="#receiving">📦 Receiving</a></li>
+            <li><a href="#dunnage">📋 Dunnage</a></li>
+            <li><a href="#reporting">📊 Reporting</a></li>
+            <li><a href="#volvo">🚚 Volvo</a></li>
+            <li><a href="#shiprec-tools">🛠️ ShipRec Tools</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Getting Started</p>
+        <ul class="sidebar-nav">
+            <li><a href="startup.html">Starting the App</a></li>
+            <li><a href="new-user-setup.html">New User Setup</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Receiving Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="receiving/mode-selection.html">Mode Selection</a></li>
+            <li><a href="receiving/guided-wizard-po-entry.html">PO Entry — Guided Wizard</a></li>
+            <li><a href="receiving/smart-part-search.html">Smart Part Search</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Quick Links</p>
+        <ul class="sidebar-nav">
+            <li><a href="#quick-ref">Quick Reference</a></li>
+            <li><a href="../index.html">← Docs Home</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Help Center</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="tut-hero">
+            <div class="module-badge">🎓 Help Center</div>
+            <h1>MTM Receiving Application — Help Center</h1>
+            <p class="lead">
+                Step-by-step guides written for operators on the warehouse floor.
+                Pick a module below to find guides for the screens you use every day.
+            </p>
+        </div>
+
+        <!-- -------- Module index grid -------- -->
+        <nav class="help-module-grid" aria-label="Module help sections">
+
+            <a href="#getting-started" class="help-module-card">
+                <span class="help-module-card-icon" aria-hidden="true">🚀</span>
+                <span class="help-module-card-title">Getting Started</span>
+                <span class="help-module-card-count">2 guides available</span>
+                <span class="help-module-card-desc">What happens at startup, and how to create your account the first time you use the app.</span>
+            </a>
+
+            <a href="#receiving" class="help-module-card">
+                <span class="help-module-card-icon" aria-hidden="true">📦</span>
+                <span class="help-module-card-title">Receiving</span>
+                <span class="help-module-card-count">3 guides available</span>
+                <span class="help-module-card-desc">Mode selection, PO entry, quality holds, and label printing.</span>
+            </a>
+
+            <span class="help-module-card help-module-card--soon" aria-disabled="true">
+                <span class="help-module-card-icon" aria-hidden="true">📋</span>
+                <span class="help-module-card-title">Dunnage</span>
+                <span class="help-module-card-count">Guides not yet published</span>
+                <span class="help-module-card-desc">Container tracking, dunnage specs, and label printing.</span>
+            </span>
+
+            <span class="help-module-card help-module-card--soon" aria-disabled="true">
+                <span class="help-module-card-icon" aria-hidden="true">📊</span>
+                <span class="help-module-card-title">Reporting</span>
+                <span class="help-module-card-count">Guides not yet published</span>
+                <span class="help-module-card-desc">End-of-day reports, Excel exports, and email delivery.</span>
+            </span>
+
+            <span class="help-module-card help-module-card--soon" aria-disabled="true">
+                <span class="help-module-card-icon" aria-hidden="true">🚚</span>
+                <span class="help-module-card-title">Volvo</span>
+                <span class="help-module-card-count">Guides not yet published</span>
+                <span class="help-module-card-desc">EDI receiving, AIAG barcode scanning, and Volvo labels.</span>
+            </span>
+
+            <span class="help-module-card help-module-card--soon" aria-disabled="true">
+                <span class="help-module-card-icon" aria-hidden="true">🛠️</span>
+                <span class="help-module-card-title">ShipRec Tools</span>
+                <span class="help-module-card-count">Guides not yet published</span>
+                <span class="help-module-card-desc">Shipping and receiving utilities and pack slip tools.</span>
+            </span>
+
+        </nav>
+
+        <!-- ================================================================
+             GETTING STARTED
+             ================================================================ -->
+        <div class="module-section-header" id="getting-started">
+            <span class="module-section-header-icon" aria-hidden="true">🚀</span>
+            <h2>Getting Started</h2>
+        </div>
+        <p>
+            These guides cover the very first things you see when you launch the application —
+            the startup screen that appears while the app loads, and the account setup form
+            that opens automatically the first time you use the app on a new computer.
+        </p>
+
+        <div class="guide-list">
+            <a href="startup.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🚀</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">Starting the App</p>
+                    <p class="guide-item-desc">
+                        What the startup splash screen shows, what each status message means,
+                        and what to do if the app opens the New User Entry form instead of
+                        going straight to the main window.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="new-user-setup.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">👤</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">New User Setup</p>
+                    <p class="guide-item-desc">
+                        Step-by-step walkthrough of the New User Entry form — name, employee
+                        number, department, shift, PIN, and InforVisual credentials — with
+                        annotated screenshots of every field.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <!-- ================================================================
+             RECEIVING
+             ================================================================ -->
+        <div class="module-section-header" id="receiving">
+            <span class="module-section-header-icon" aria-hidden="true">📦</span>
+            <h2>Receiving</h2>
+        </div>
+        <p>
+            The Receiving module is where you log incoming materials, scan or type PO numbers,
+            handle Quality Hold parts, and print receiving labels.
+            The guides below cover each screen in the order you will encounter them.
+        </p>
+
+        <div class="guide-list">
+            <a href="receiving/mode-selection.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🔀</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">Mode Selection</p>
+                    <p class="guide-item-desc">
+                        How to choose Guided Wizard, Manual Entry, or Edit Mode — and how to save your
+                        preference so the app launches directly into it next time.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="receiving/guided-wizard-po-entry.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🧭</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">PO Entry — Guided Wizard</p>
+                    <p class="guide-item-desc">
+                        Loading a PO number, switching to Non-PO mode, reading the Available Parts table,
+                        and handling Quality Hold parts before selecting a row.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="receiving/smart-part-search.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🔍</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">Smart Part Search</p>
+                    <p class="guide-item-desc">
+                        What to do when the app can't find an exact Part ID match during Non-PO
+                        receiving — how to use the Select Part dialog to pick the right similar part.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <!-- ================================================================
+             DUNNAGE
+             ================================================================ -->
+        <div class="module-section-header" id="dunnage">
+            <span class="module-section-header-icon" aria-hidden="true">📋</span>
+            <h2>Dunnage</h2>
+        </div>
+        <div class="coming-soon-block">
+            Help guides for the Dunnage module are not yet published.
+            Check back after the next release.
+        </div>
+
+        <!-- ================================================================
+             REPORTING
+             ================================================================ -->
+        <div class="module-section-header" id="reporting">
+            <span class="module-section-header-icon" aria-hidden="true">📊</span>
+            <h2>Reporting</h2>
+        </div>
+        <div class="coming-soon-block">
+            Help guides for the Reporting module are not yet published.
+            Check back after the next release.
+        </div>
+
+        <!-- ================================================================
+             VOLVO
+             ================================================================ -->
+        <div class="module-section-header" id="volvo">
+            <span class="module-section-header-icon" aria-hidden="true">🚚</span>
+            <h2>Volvo</h2>
+        </div>
+        <div class="coming-soon-block">
+            Help guides for the Volvo module are not yet published.
+            Check back after the next release.
+        </div>
+
+        <!-- ================================================================
+             SHIPREC TOOLS
+             ================================================================ -->
+        <div class="module-section-header" id="shiprec-tools">
+            <span class="module-section-header-icon" aria-hidden="true">🛠️</span>
+            <h2>ShipRec Tools</h2>
+        </div>
+        <div class="coming-soon-block">
+            Help guides for ShipRec Tools are not yet published.
+            Check back after the next release.
+        </div>
+
+        <!-- ================================================================
+             QUICK REFERENCE — RECEIVING
+             ================================================================ -->
+        <section id="quick-ref" class="content-section" style="margin-top: 2.5rem;">
+            <h2>Quick Reference — Receiving</h2>
+            <p>Find the right guide for a common task at a glance.</p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>I want to…</th>
+                            <th>Go to</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Choose which receiving mode to use</td>
+                            <td><a href="receiving/mode-selection.html">Mode Selection</a></td>
+                        </tr>
+                        <tr>
+                            <td>Set a default mode so the app remembers my preference</td>
+                            <td><a href="receiving/mode-selection.html#set-default">Mode Selection → Setting a Default</a></td>
+                        </tr>
+                        <tr>
+                            <td>Receive parts against a Purchase Order</td>
+                            <td><a href="receiving/guided-wizard-po-entry.html#po-entry">PO Entry → With a PO Number</a></td>
+                        </tr>
+                        <tr>
+                            <td>Receive parts without a PO number</td>
+                            <td><a href="receiving/guided-wizard-po-entry.html#non-po-entry">PO Entry → Non-PO</a></td>
+                        </tr>
+                        <tr>
+                            <td>Understand what the Available Parts columns mean</td>
+                            <td><a href="receiving/guided-wizard-po-entry.html#parts-table">PO Entry → Parts Table</a></td>
+                        </tr>
+                        <tr>
+                            <td>Handle a Quality Hold part</td>
+                            <td><a href="receiving/guided-wizard-po-entry.html#quality-hold">PO Entry → Quality Hold</a></td>
+                        </tr>
+                        <tr>
+                            <td>A "No exact part match" dialog appeared</td>
+                            <td><a href="receiving/smart-part-search.html">Smart Part Search</a></td>
+                        </tr>
+                        <tr>
+                            <td>Understand what happens when the app is starting up</td>
+                            <td><a href="startup.html">Starting the App</a></td>
+                        </tr>
+                        <tr>
+                            <td>The app opened a "New User Entry" form on first launch</td>
+                            <td><a href="new-user-setup.html">New User Setup</a></td>
+                        </tr>
+                        <tr>
+                            <td>The "Create Account" button is greyed out</td>
+                            <td><a href="new-user-setup.html#create-account">New User Setup → Creating the Account</a></td>
+                        </tr>
+                        <tr>
+                            <td>Use the Reconcile feature</td>
+                            <td><a href="receiving/mode-selection.html#reconcile">Mode Selection → Reconcile</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="../index.html">Docs Home</a>
+    <span aria-hidden="true">·</span>
+    <span>Help Center</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<script src="../features/shared/app.js"></script>
+<script src="tutorial.js"></script>
+</body>
+</html>

@@ -19,11 +19,7 @@ public sealed class ViewModel_Dunnage_ModeSelectionViewModelTests
     public void Constructor_ShouldMarkImageSearchAsDefault_WhenUserPreferenceMatches()
     {
         var session = new Model_UserSession(
-            new Model_User
-            {
-                WindowsUsername = "DOMAIN\\user",
-                DefaultDunnageMode = "image-search",
-            }
+            new Model_User { WindowsUsername = "DOMAIN\\user", DefaultDunnageMode = "image-search" }
         );
 
         var viewModel = CreateViewModel(session: session);
@@ -45,7 +41,9 @@ public sealed class ViewModel_Dunnage_ModeSelectionViewModelTests
         var session = new Model_UserSession(currentUser);
         var userPreferences = new Mock<IService_UserPreferences>();
         userPreferences
-            .Setup(service => service.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, "image-search"))
+            .Setup(service =>
+                service.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, "image-search")
+            )
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
 
         var viewModel = CreateViewModel(userPreferences: userPreferences, session: session);
@@ -58,7 +56,8 @@ public sealed class ViewModel_Dunnage_ModeSelectionViewModelTests
         viewModel.IsEditModeDefault.Should().BeFalse();
         viewModel.StatusMessage.Should().Be("Image Search mode set as default");
         userPreferences.Verify(
-            service => service.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, "image-search"),
+            service =>
+                service.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, "image-search"),
             Times.Once
         );
     }
@@ -73,7 +72,34 @@ public sealed class ViewModel_Dunnage_ModeSelectionViewModelTests
 
         await viewModel.OpenImageSearchCommand.ExecuteAsync(null);
 
-        workflow.Verify(service => service.GoToStep(Enum_DunnageWorkflowStep.ImagePartSearch), Times.Once);
+        workflow.Verify(
+            service => service.GoToStep(Enum_DunnageWorkflowStep.ImagePartSearch),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task HandleGuidedDefaultChangedAsync_ShouldIgnoreConflictingUnchecked_WhenAnotherModeIsSelected()
+    {
+        var currentUser = new Model_User
+        {
+            WindowsUsername = "DOMAIN\\user",
+            DefaultDunnageMode = "image-search",
+        };
+        var session = new Model_UserSession(currentUser);
+        var userPreferences = new Mock<IService_UserPreferences>();
+
+        var viewModel = CreateViewModel(userPreferences: userPreferences, session: session);
+
+        await viewModel.HandleGuidedDefaultChangedAsync(false);
+
+        currentUser.DefaultDunnageMode.Should().Be("image-search");
+        viewModel.IsImageSearchModeDefault.Should().BeTrue();
+        userPreferences.Verify(
+            service =>
+                service.UpdateDefaultDunnageModeAsync(It.IsAny<string>(), It.IsAny<string?>()),
+            Times.Never
+        );
     }
 
     private static ViewModel_Dunnage_ModeSelection CreateViewModel(
@@ -87,14 +113,17 @@ public sealed class ViewModel_Dunnage_ModeSelectionViewModelTests
 
         userPreferences ??= new Mock<IService_UserPreferences>();
         userPreferences
-            .Setup(service => service.UpdateDefaultDunnageModeAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(service =>
+                service.UpdateDefaultDunnageModeAsync(It.IsAny<string>(), It.IsAny<string>())
+            )
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
 
         var sessionManager = new Mock<IService_UserSessionManager>();
         sessionManager.SetupGet(service => service.CurrentSession).Returns(session);
 
         var help = new Mock<IService_Help>();
-        help.Setup(service => service.ShowHelpAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+        help.Setup(service => service.ShowHelpAsync(It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
 
         return new ViewModel_Dunnage_ModeSelection(
             workflow.Object,

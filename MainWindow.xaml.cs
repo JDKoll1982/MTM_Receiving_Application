@@ -331,9 +331,7 @@ namespace MTM_Receiving_Application
 
             if (tag == "AppDocumentation")
             {
-                var docsPath = Path.GetFullPath(
-                    Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\docs\index.html")
-                );
+                var docsPath = Path.Combine(AppContext.BaseDirectory, "docs", "index.html");
                 var docsUri = new Uri(docsPath);
                 _ = Windows.System.Launcher.LaunchUriAsync(docsUri);
                 SetNavigationSelectionByTag(GetCurrentRouteTag());

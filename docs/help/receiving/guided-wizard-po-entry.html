@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PO Entry (Guided Wizard) — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+    <style>
+        /* ---- page-specific: side-by-side step screenshots ---- */
+        .step-img-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0 20px;
+        }
+        @media (max-width: 700px) { .step-img-pair { grid-template-columns: 1fr; } }
+
+        /* Numbered annotation chip inside step body */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 1px 9px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--blue-soft);
+            color: var(--blue);
+            border: 1px solid var(--blue-mid);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .chip-red {
+            background: var(--red-soft);
+            color: var(--red);
+            border-color: rgba(139,32,32,0.25);
+        }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#po-entry">With a PO Number</a></li>
+            <li><a href="#non-po-entry">Without a PO (Non-PO)</a></li>
+            <li><a href="#parts-table">Reading the Parts Table</a></li>
+            <li><a href="#quality-hold">Quality Hold Parts</a></li>
+            <li><a href="#navigation">Screen Navigation</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Help Pages</p>
+        <ul class="sidebar-nav">
+            <li><a href="mode-selection.html">Mode Selection</a></li>
+            <li><a href="guided-wizard-po-entry.html" class="is-active">PO Entry (Guided Wizard)</a></li>
+            <li><a href="smart-part-search.html">Smart Part Search</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Developer Docs</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../features/receiving/index.html">Receiving Module</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Receiving Help</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="mode-selection.html">Mode Selection</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">PO Entry — Guided Wizard</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>PO Entry — Guided Wizard</h1>
+            <p class="lead">
+                The first step of the Guided Wizard asks you to identify <em>what</em> you are
+                receiving — either by entering a Purchase Order number or by looking up a part
+                directly.  This page covers both paths, the parts selection table, and what to
+                do if you encounter a Quality Hold part.
+            </p>
+        </div>
+
+        <!-- -------- Overview -------- -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                The <strong>PO Entry</strong> screen is the first step of the Guided Wizard.
+                It has two input modes that you can switch between freely:
+            </p>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">📄</div>
+                    <h3>PO Entry mode</h3>
+                    <p>Type a Purchase Order number, click <strong>Load PO</strong>, then pick the part from the list.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">🔍</div>
+                    <h3>Non-PO mode</h3>
+                    <p>Type a Part ID, click <strong>Look Up Part</strong>, then pick the part from the list.</p>
+                </div>
+            </div>
+
+            <p>
+                Both paths end at the same <strong>Available Parts</strong> table, where you
+                click the correct row and then hit <strong>Next</strong> to continue.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Main.png"
+               class="screenshot-wrap"
+               data-caption="PO Entry screen — PO mode active"
+               aria-label="Click to enlarge: PO Entry main view">
+                <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Main.png"
+                     alt="PO Entry screen showing PO Number field, Load PO and Switch to Non-PO buttons, and an Available Parts grid with two parts" />
+            </a>
+            <span class="screenshot-caption">PO Entry screen — PO number loaded, Available Parts shown below</span>
+        </section>
+
+        <!-- -------- PO Entry -------- -->
+        <section id="po-entry" class="content-section">
+            <h2>Receiving with a PO Number</h2>
+            <p>
+                Use this path when you have the Purchase Order number from your paperwork or the
+                delivery documentation.
+            </p>
+
+            <!-- Step 1 -->
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Enter the PO Number</h4>
+                    <p>
+                        Click the <strong>Purchase Order Number</strong> field and type the PO number
+                        from your paperwork (for example, <code>PO-033349</code>).
+                        The field is highlighted in yellow in the screenshot below.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-WithPO-Step1.png"
+                       class="screenshot-wrap"
+                       data-caption="Step 1 — type the PO number into the highlighted field"
+                       aria-label="Click to enlarge: Step 1 PO number entry">
+                        <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-WithPO-Step1.png"
+                             alt="PO Entry screen with the PO Number text box highlighted in yellow and the Load PO button called out with a pink arrow" />
+                    </a>
+                    <span class="screenshot-caption">Type the PO number, then click the <strong>Load PO</strong> button (pink arrow)</span>
+                    <div class="callout callout-info">
+                        <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                        <div class="callout-body">
+                            The <strong>Status</strong> line below the text box updates once the PO is
+                            loaded.  Common statuses include <em>Partially Received</em>, <em>Open</em>,
+                            and <em>Closed</em>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Click "Load PO"</h4>
+                    <p>
+                        Press <kbd>Enter</kbd> or click the blue <strong>Load PO</strong> button.
+                        A brief loading indicator appears while the app retrieves the PO from InforVisual.
+                        The <strong>Available Parts</strong> table then populates with every open
+                        line item on that PO.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-WithPO-Step2.png"
+                       class="screenshot-wrap"
+                       data-caption="Step 2 — Available Parts table populated after loading the PO"
+                       aria-label="Click to enlarge: Step 2 parts list">
+                        <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-WithPO-Step2.png"
+                             alt="PO Entry screen showing the Available Parts table highlighted with two rows; the Next button is greyed out" />
+                    </a>
+                    <span class="screenshot-caption">Available Parts table populated — select a row to enable the <strong>Next</strong> button</span>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Select a part and click "Next"</h4>
+                    <p>
+                        Click the row in the <strong>Available Parts</strong> table that matches
+                        the part you are receiving.  The row turns blue when selected.
+                        The <strong>Next</strong> button becomes active — click it to continue to
+                        the next wizard step.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-WithPO-Step3.png"
+                       class="screenshot-wrap"
+                       data-caption="Step 3 — part row selected (blue highlight), Next button now active"
+                       aria-label="Click to enlarge: Step 3 part selected">
+                        <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-WithPO-Step3.png"
+                             alt="PO Entry screen with a part row highlighted blue, the Next button active and highlighted with a pink circle" />
+                    </a>
+                    <span class="screenshot-caption">Row selected (blue) → <strong>Next</strong> button becomes active (pink circle)</span>
+                    <div class="callout callout-warning">
+                        <span class="callout-icon" aria-hidden="true">⚠️</span>
+                        <div class="callout-body">
+                            If a part row shows its Part ID in <strong style="color:#8b2020;">red</strong>,
+                            it is flagged for a <strong>Quality Hold</strong>.  Read the
+                            <a href="#quality-hold">Quality Hold section below</a> before selecting it.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Non-PO Entry -------- -->
+        <section id="non-po-entry" class="content-section">
+            <h2>Receiving Without a PO (Non-PO)</h2>
+            <p>
+                If you are receiving material that does not have a Purchase Order — for example,
+                a return shipment or a direct-issue part — use the Non-PO path.
+                Click <strong>Switch to Non-PO</strong> at the top of the screen to switch modes.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Main.png"
+               class="screenshot-wrap"
+               data-caption="Switch to Non-PO button highlighted"
+               aria-label="Click to enlarge: Switch to Non-PO button">
+                <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Main.png"
+                     alt="Non-PO Entry screen showing the Switch to Non-PO button highlighted with a pink circle" />
+            </a>
+            <span class="screenshot-caption">Click <strong>Switch to Non-PO</strong> (pink circle) to enter Non-PO mode</span>
+
+            <!-- Step 1 Non-PO -->
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Enter the Part ID</h4>
+                    <p>
+                        Type the Part ID (e.g. <code>MMC-001</code> or <code>MMF-456</code>) into the
+                        <strong>Part Identifier</strong> field.
+                        The <strong>Package Type</strong> line below automatically updates
+                        to show the detected package category (such as <em>Skids</em>, <em>Coils</em>,
+                        <em>Sheet Material</em>, etc.) once you type a recognized part.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step1.png"
+                       class="screenshot-wrap"
+                       data-caption="Non-PO Step 1 — Part Identifier field highlighted in yellow"
+                       aria-label="Click to enlarge: Non-PO Step 1">
+                        <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step1.png"
+                             alt="Non-PO entry screen with the Part Identifier text box highlighted yellow and Look Up Part button called out" />
+                    </a>
+                    <span class="screenshot-caption">Type the Part ID in the highlighted field, then click <strong>Look Up Part</strong></span>
+                </div>
+            </div>
+
+            <!-- Step 2 Non-PO -->
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Click "Look Up Part"</h4>
+                    <p>
+                        Click the blue <strong>Look Up Part</strong> button (or press <kbd>Enter</kbd>).
+                        The app performs a search and populates the <strong>Available Parts</strong>
+                        table with matching results.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step2.png"
+                       class="screenshot-wrap"
+                       data-caption="Non-PO Step 2 — Look Up Part button highlighted, search in progress"
+                       aria-label="Click to enlarge: Non-PO Step 2">
+                        <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step2.png"
+                             alt="Non-PO entry screen showing a Part ID entered and the Look Up Part button with a loading progress bar" />
+                    </a>
+                    <span class="screenshot-caption">A loading indicator (green bar) shows while the app searches InforVisual</span>
+                </div>
+            </div>
+
+            <!-- Smart Part Search callout -->
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">🔍</span>
+                <div class="callout-body">
+                    <strong>Part ID not an exact match?</strong>
+                    If the Part ID you typed isn't found exactly in InforVisual, the app
+                    automatically opens the <strong>Smart Part Search</strong> dialog —
+                    a list of similar parts so you can pick the correct one.
+                    This is normal and does <em>not</em> mean an error occurred.
+                    <a href="smart-part-search.html">See the Smart Part Search guide for full details →</a>
+                </div>
+            </div>
+
+            <!-- Step 3 Non-PO -->
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Select the matching part and click "Next"</h4>
+                    <p>
+                        The matching part appears in the <strong>Available Parts</strong> table
+                        (highlighted yellow in the screenshot).  Click the row to select it
+                        (it turns blue), then click <strong>Next</strong>.
+                    </p>
+                    <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step3.png"
+                       class="screenshot-wrap"
+                       data-caption="Non-PO Step 3 — part row selected (blue), Next active"
+                       aria-label="Click to enlarge: Non-PO Step 3">
+                        <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step3.png"
+                             alt="Non-PO entry screen with a single part row highlighted blue and the Next button highlighted with a pink circle" />
+                    </a>
+                    <span class="screenshot-caption">Part selected (blue) → click <strong>Next</strong> to continue</span>
+                    <div class="callout callout-info">
+                        <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                        <div class="callout-body">
+                            For Non-PO items the <strong>Line #</strong> column shows <em>N/A</em>
+                            because there is no PO line associated with the part.
+                        </div>
+                    </div>
+                    <p>
+                        To switch back to PO mode, click <strong>Switch to PO Entry</strong> at any
+                        time before clicking Next.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Parts Table -------- -->
+        <section id="parts-table" class="content-section">
+            <h2>Reading the Available Parts Table</h2>
+            <p>
+                Once a PO is loaded (or a Non-PO part is looked up), the
+                <strong>Available Parts</strong> table shows the matching parts.
+                Here is what each column means:
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>What it shows</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-name">Part ID</td>
+                            <td>The unique identifier for the part as it appears in InforVisual</td>
+                            <td>Shown in <strong style="color:#8b2020;">red</strong> if the part is on Quality Hold</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Description</td>
+                            <td>The part description from InforVisual</td>
+                            <td>May be truncated for long descriptions</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Remaining</td>
+                            <td>Quantity still outstanding on the PO (ordered minus already received)</td>
+                            <td>For Non-PO parts this reflects available stock</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Qty Ordered</td>
+                            <td>Original quantity ordered on the PO line</td>
+                            <td>N/A for Non-PO items</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Line #</td>
+                            <td>The PO line number from InforVisual</td>
+                            <td>Shows <em>N/A</em> for Non-PO items</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Selecting a row</h3>
+            <p>
+                Click anywhere on a row to select it.  The selected row turns blue and the
+                <strong>Next</strong> button in the bottom toolbar becomes active.
+                You can only select one row at a time.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    If <strong>Next</strong> is still greyed out after clicking a row, check
+                    whether the part is on Quality Hold — you may need to complete the
+                    acknowledgment first.  See the <a href="#quality-hold">Quality Hold section</a>.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Quality Hold -------- -->
+        <section id="quality-hold" class="content-section">
+            <h2>Quality Hold Parts</h2>
+            <p>
+                Some parts are flagged in InforVisual as requiring a <strong>Quality Hold</strong>.
+                The app detects these automatically and requires two acknowledgments before
+                you can proceed.  <strong>This cannot be bypassed.</strong>
+            </p>
+
+            <h3>How to identify a Quality Hold part</h3>
+            <p>
+                Quality Hold parts appear in the <strong>Available Parts</strong> table with their
+                Part ID shown in <strong style="color:#8b2020;">red text</strong>.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Both-QualityHold-Selection.png"
+               class="screenshot-wrap"
+               data-caption="Available Parts table — Quality Hold part shown in red text"
+               aria-label="Click to enlarge: Quality Hold in parts table">
+                <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Both-QualityHold-Selection.png"
+                     alt="Available Parts table with a part row highlighted in red indicating Quality Hold status" />
+            </a>
+            <span class="screenshot-caption">The Quality Hold part (MMFSR0001) is displayed in red in the parts table</span>
+
+            <h3>The Quality Hold acknowledgment dialog</h3>
+            <p>
+                When you select a Quality Hold part and click <strong>Next</strong>, the app
+                shows an acknowledgment dialog.  There are <strong>two</strong> acknowledgments —
+                you must confirm both before the wizard can continue.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Both-QualityHold-Notice.png"
+               class="screenshot-wrap"
+               data-caption="Quality Hold acknowledgment dialog (Acknowledgment 1 of 2)"
+               aria-label="Click to enlarge: Quality Hold dialog">
+                <img src="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Both-QualityHold-Notice.png"
+                     alt="Quality Hold acknowledgment dialog showing part details, immediate action instructions, and two buttons: I Understand - Will Contact Quality, and Cancel Entry" />
+            </a>
+            <span class="screenshot-caption">Read the entire dialog before clicking — it shows the Part ID, material type, and required actions</span>
+
+            <div class="quality-hold-banner">
+                <div class="quality-hold-banner-icon" aria-hidden="true">⚠️</div>
+                <div class="quality-hold-banner-body">
+                    <h4>QUALITY HOLD — Immediate Actions Required</h4>
+                    <p>The dialog displays the following required steps:</p>
+                    <ul>
+                        <li>Contact Quality <strong>NOW</strong></li>
+                        <li>Quality <strong>MUST</strong> inspect and accept this load</li>
+                        <li><strong>DO NOT</strong> sign any paperwork until Quality accepts</li>
+                    </ul>
+                    <p>You will be asked to confirm <strong>twice</strong> before saving.</p>
+                </div>
+            </div>
+
+            <h3>What each button does</h3>
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Button</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-name">I Understand — Will Contact Quality</td>
+                            <td>Confirms you have read the notice and will contact the Quality team.  Click this to advance to Acknowledgment 2 of 2.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Cancel Entry</td>
+                            <td>Cancels the current selection and returns to the parts table so you can choose a different part or stop the transaction.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-danger">
+                <span class="callout-icon" aria-hidden="true">🚫</span>
+                <div class="callout-body">
+                    <strong>Do not sign delivery paperwork for a Quality Hold part until the
+                    Quality team has physically inspected and accepted the load.</strong>
+                    Clicking "I Understand" in the app does not replace this physical inspection.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Navigation -------- -->
+        <section id="navigation" class="content-section">
+            <h2>Screen Navigation</h2>
+            <p>
+                The bottom toolbar of the PO Entry screen contains three controls.
+                Here is what each one does:
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Control</th>
+                            <th>Location</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-name">Mode Selection</td>
+                            <td>Bottom-left</td>
+                            <td>Returns you to the Mode Selection screen.  Any unsaved input may be cleared.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Clear Label Data</td>
+                            <td>Bottom-left (next to Mode Selection)</td>
+                            <td>
+                                Clears the currently selected part and resets the form so you can
+                                start over.  Appears in <strong style="color:#8b2020;">red</strong>
+                                when a Quality Hold part is selected — a reminder that clearing will
+                                remove that selection.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Next ›</td>
+                            <td>Bottom-center</td>
+                            <td>
+                                Advances to the next wizard step.  Only becomes active (clickable blue)
+                                when a part has been selected <em>and</em> any required Quality Hold
+                                acknowledgments have been completed.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Keyboard tip:</strong> Press <kbd>Enter</kbd> after typing a PO number or
+                    Part ID to trigger <strong>Load PO</strong> / <strong>Look Up Part</strong>
+                    without reaching for the mouse.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- FAQ -------- -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+
+                <details class="faq-item">
+                    <summary>I typed the PO number but the parts list is empty. What's wrong?</summary>
+                    <div class="faq-body">
+                        <p>Check the following:</p>
+                        <ul>
+                            <li>Make sure you clicked <strong>Load PO</strong> after typing the number.</li>
+                            <li>Verify the PO number is correct — check for extra spaces or typos.</li>
+                            <li>The PO Status may show <em>Closed</em>, meaning all lines have been fully
+                                received and no open lines remain.</li>
+                            <li>If the status shows an error, contact your supervisor or IT support.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The "Next" button is greyed out even though I selected a row.</summary>
+                    <div class="faq-body">
+                        The most common reason is that the selected part is on <strong>Quality Hold</strong>.
+                        Click the row, then look for the Quality Hold acknowledgment dialog.
+                        You must click <strong>I Understand — Will Contact Quality</strong> on both
+                        acknowledgment screens before <strong>Next</strong> becomes active.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>There are two parts on the PO — how do I know which one to pick?</summary>
+                    <div class="faq-body">
+                        Match the <strong>Part ID</strong> and <strong>Description</strong> in the
+                        table to the part label on the physical delivery.  If you are unsure, compare
+                        the <strong>Line #</strong> to the PO document.
+                        When in doubt, check with your supervisor before selecting.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I accidentally selected the wrong part. How do I clear it?</summary>
+                    <div class="faq-body">
+                        Click <strong>Clear Label Data</strong> in the bottom-left toolbar.
+                        This resets your selection and lets you choose a different row from the
+                        Available Parts table.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does "Partially Received" mean in the PO Status?</summary>
+                    <div class="faq-body">
+                        It means at least one line on this PO has already been received, but some
+                        quantity is still outstanding.  This is normal — the <strong>Remaining</strong>
+                        column in the parts table shows exactly how much is still expected.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The Part ID field shows "Package Type: Skids" — can I change this?</summary>
+                    <div class="faq-body">
+                        The package type is <em>automatically detected</em> from the part's InforVisual
+                        configuration.  It cannot be changed on this screen.  If the package type
+                        appears wrong, contact your supervisor — the part may need to be reconfigured
+                        in InforVisual.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I switch from Non-PO back to PO Entry?</summary>
+                    <div class="faq-body">
+                        Yes.  Click <strong>Switch to PO Entry</strong> at any time before clicking Next.
+                        Any Part ID you have typed will be cleared when you switch modes.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>A dialog appeared saying "No exact part match was found". What do I do?</summary>
+                    <div class="faq-body">
+                        <p>
+                            That is the <strong>Smart Part Search</strong> dialog.  It opens automatically
+                            when you type a Part ID that isn't an exact match in InforVisual.  The app
+                            found similar parts and is asking you to pick the right one.
+                        </p>
+                        <p>
+                            Click the row that matches the part label on the physical delivery, then
+                            click <strong>Select</strong>.  If none of the suggestions look correct,
+                            click <strong>Cancel</strong> and double-check the Part ID from the label.
+                            See <a href="smart-part-search.html">Smart Part Search</a> for a
+                            complete walkthrough.
+                        </p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="content-section">
+            <h2>Related Pages</h2>
+            <div class="related-links">
+                <a href="smart-part-search.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🔍</span>
+                    <span class="related-link-text">
+                        <strong>Smart Part Search</strong>
+                        <span>Full guide to the "Select Part" dialog that appears when no exact Part ID match is found during Non-PO receiving.</span>
+                    </span>
+                </a>
+                <a href="mode-selection.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🔀</span>
+                    <span class="related-link-text">
+                        <strong>Mode Selection</strong>
+                        <span>How to choose Guided Wizard, Manual Entry, or Edit Mode — and how to set a default.</span>
+                    </span>
+                </a>
+                <a href="../../features/receiving/index.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">📦</span>
+                    <span class="related-link-text">
+                        <strong>Receiving Module — Developer Reference</strong>
+                        <span>Technical documentation for database tables, services, and architecture.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="../index.html">Receiving Help</a>
+    <span aria-hidden="true">·</span>
+    <span>PO Entry — Guided Wizard</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

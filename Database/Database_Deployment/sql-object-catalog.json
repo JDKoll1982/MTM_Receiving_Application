@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-26T23:15:35.9151714-05:00",
+  "generatedAt": "2026-04-27T11:41:14.1854072-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1317,6 +1317,69 @@
       "category": "schema_file",
       "objectType": "table",
       "objectName": "dunnage_quantity_types",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/41_Table_dunnage_non_po_part_defaults.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "dunnage_non_po_part_defaults",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/42_Table_receiving_non_po_entries.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "receiving_non_po_entries",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/43_Table_receiving_non_po_part_defaults.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "receiving_non_po_part_defaults",
       "procedureCount": 0,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
@@ -4994,6 +5057,102 @@
           "object": "dunnage_non_po_entries"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_PartDefault_GetByPartId.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_NonPO_PartDefault_GetByPartId",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_non_po_part_defaults"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_non_po_part_defaults",
+          "object": "dunnage_non_po_part_defaults"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_PartDefault_Upsert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_NonPO_PartDefault_Upsert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageNonPOEntry.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_value",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_updated_by",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "dunnage_non_po_part_defaults",
+          "columns": [
+            "part_id",
+            "value",
+            "updated_by"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id",
+        "p_value",
+        "p_updated_by"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_Upsert.sql",
@@ -9419,6 +9578,233 @@
         "p_WeightPerPackage",
         "p_IsNonPOItem",
         "p_ReceivedDate"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_NonPO_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_NonPO_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Receiving/Data/Dao_ReceivingNonPOEntry.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT UNSIGNED"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_non_po_entries"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "receiving_non_po_entries"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_non_po_entries",
+          "object": "receiving_non_po_entries"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_NonPO_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_NonPO_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_non_po_entries"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_non_po_entries",
+          "object": "receiving_non_po_entries"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_NonPO_PartDefault_GetByPartId.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_NonPO_PartDefault_GetByPartId",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_non_po_part_defaults"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_non_po_part_defaults",
+          "object": "receiving_non_po_part_defaults"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_NonPO_PartDefault_Upsert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_NonPO_PartDefault_Upsert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Receiving/Data/Dao_ReceivingNonPOEntry.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_value",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_updated_by",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "receiving_non_po_part_defaults",
+          "columns": [
+            "part_id",
+            "value",
+            "updated_by"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id",
+        "p_value",
+        "p_updated_by"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_NonPO_Upsert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_NonPO_Upsert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Receiving/Data/Dao_ReceivingNonPOEntry.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_value",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_created_by",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "receiving_non_po_entries",
+          "columns": [
+            "value",
+            "created_by",
+            "use_count"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_value",
+        "p_created_by"
       ],
       "variableTokensUsed": [],
       "temporaryTables": [],

@@ -42,7 +42,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             View_Receiving_WeightQuantity weightQuantityView,
             View_Receiving_HeatLot heatLotView,
             View_Receiving_PackageType packageTypeView,
-            View_Receiving_Review reviewView
+            View_Receiving_Review reviewView,
+            View_Receiving_Dialog_LocationReconciliationReview reconciliationReviewView
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
@@ -58,6 +59,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ArgumentNullException.ThrowIfNull(heatLotView);
             ArgumentNullException.ThrowIfNull(packageTypeView);
             ArgumentNullException.ThrowIfNull(reviewView);
+            ArgumentNullException.ThrowIfNull(reconciliationReviewView);
 
             ViewModel = viewModel;
             _workflowService = workflowService;
@@ -76,6 +78,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             HeatLotHost.Content = heatLotView;
             PackageTypeHost.Content = packageTypeView;
             ReviewHost.Content = reviewView;
+            ReconciliationReviewHost.Content = reconciliationReviewView;
 
             _ = LoadShortcutsAsync();
         }

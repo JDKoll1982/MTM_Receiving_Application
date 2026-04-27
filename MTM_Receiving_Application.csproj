@@ -47,6 +47,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <!-- Help / documentation web files — published alongside the exe in a docs\ subfolder -->
+  <ItemGroup>
+    <Content Include="docs\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>docs\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
   <!-- Configuration Files -->
   <ItemGroup>
     <None Include=".agent_work\Action-Log.md" />

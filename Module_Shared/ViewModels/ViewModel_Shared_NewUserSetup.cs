@@ -50,9 +50,6 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         private bool _showCustomDepartment = false;
 
         [ObservableProperty]
-        private bool _configureErpAccess = false;
-
-        [ObservableProperty]
         private string? _visualUsername;
 
         [ObservableProperty]
@@ -180,8 +177,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
                     Shift = Shift,
                     Pin = Pin,
                     IsActive = true,
-                    VisualUsername = ConfigureErpAccess ? VisualUsername : null,
-                    VisualPassword = ConfigureErpAccess ? VisualPassword : null,
+                    VisualUsername = VisualUsername,
+                    VisualPassword = VisualPassword,
                 };
 
                 // Call authentication service to create new user

@@ -336,24 +336,42 @@ $xaml = @"
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Name="SwapHostsButton" Content="Swap Host References"
-                Width="180" Height="35" Margin="0,0,10,0"
-                Background="#6A1B9A" Foreground="White"
-                BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
-            <Button Name="ModeSwitchButton" Content="Object Catalog Mode"
-                Width="170" Height="35" Margin="0,0,10,0"
-                Background="#37474F" Foreground="White"
-                BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
-            <Button Name="DeployButton" Content="Start Deployment"
-                    Width="140" Height="35"
-                    Background="#2196F3" Foreground="White"
+        <Grid Grid.Row="5" Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <CheckBox Grid.Column="0"
+                      Name="RunValidationCheckBox"
+                      VerticalAlignment="Center"
+                      IsChecked="False"
+                      Margin="0,0,16,0">
+                <TextBlock Text="Run SQL object catalog and validation report after deployment"
+                           TextWrapping="Wrap"
+                           MaxWidth="360"
+                           Foreground="#333"/>
+            </CheckBox>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="SwapHostsButton" Content="Swap Host References"
+                    Width="180" Height="35" Margin="0,0,10,0"
+                    Background="#6A1B9A" Foreground="White"
                     BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
-            <Button Name="CloseButton" Content="Close"
-                    Width="100" Height="35" Margin="10,0,0,0"
-                    Background="#9E9E9E" Foreground="White"
-                    BorderThickness="0" Cursor="Hand"/>
-        </StackPanel>
+                <Button Name="ModeSwitchButton" Content="Object Catalog Mode"
+                    Width="170" Height="35" Margin="0,0,10,0"
+                    Background="#37474F" Foreground="White"
+                    BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+                <Button Name="DeployButton" Content="Start Deployment"
+                        Width="140" Height="35"
+                        Background="#2196F3" Foreground="White"
+                        BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+                <Button Name="CloseButton" Content="Close"
+                        Width="100" Height="35" Margin="10,0,0,0"
+                        Background="#9E9E9E" Foreground="White"
+                        BorderThickness="0" Cursor="Hand"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
 "@
@@ -399,6 +417,7 @@ $catalogPathText = $window.FindName("CatalogPathText")
 $catalogGeneratedText = $window.FindName("CatalogGeneratedText")
 $catalogEntryCountText = $window.FindName("CatalogEntryCountText")
 $catalogDataGrid = $window.FindName("CatalogDataGrid")
+$runValidationCheckBox = $window.FindName("RunValidationCheckBox")
 $swapHostsButton = $window.FindName("SwapHostsButton")
 $modeSwitchButton = $window.FindName("ModeSwitchButton")
 $deployButton = $window.FindName("DeployButton")
@@ -2156,46 +2175,55 @@ $deployButton.Add_Click({
                             }
                         }
                         elseif ($script:step -eq 13) {
-                            Write-Host "DEBUG: Building SQL object catalog and validation report" -ForegroundColor Green
-                            $overallStatusText.Text = "Validating deployed SQL objects..."
-                            $currentFileText.Text = "Refreshing SQL object catalog..."
+                            $finalStatusMessage = 'SQL object catalog and validation report skipped.'
 
-                            $reportPaths = New-ValidationOutputPaths -OutputsDirectory $script:ValidationOutputsPath
+                            if ($runValidationCheckBox.IsChecked) {
+                                Write-Host "DEBUG: Building SQL object catalog and validation report" -ForegroundColor Green
+                                $overallStatusText.Text = "Validating deployed SQL objects..."
+                                $currentFileText.Text = "Refreshing SQL object catalog..."
 
-                            try {
-                                $catalog = Save-SqlObjectCatalog -RepoRoot $script:ProjectRoot -DatabaseRoot $script:DatabaseRoot -OutputPath $script:CatalogPath
-                                $currentFileText.Text = "Writing validation report..."
-                                $validationResult = Test-SqlObjectCatalogAgainstDatabase -Catalog $catalog -MySqlExe (Find-MySqlExe) -Server $Server -Port $Port -Database $Database -User $User -Password $Password
-                                Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
-                            }
-                            catch {
-                                $validationResult = [ordered]@{
-                                    generatedAt = (Get-Date).ToString('o')
-                                    database    = $Database
-                                    resultCount = 1
-                                    results     = @(
-                                        [ordered]@{
-                                            relativePath = 'validation'
-                                            objectType   = 'validation'
-                                            objectName   = 'catalog'
-                                            issueCount   = 1
-                                            issues       = @(
-                                                [ordered]@{
-                                                    severity = 'error'
-                                                    code     = 'VALIDATION_FAILURE'
-                                                    message  = $_.Exception.Message
-                                                }
-                                            )
-                                        }
-                                    )
+                                $reportPaths = New-ValidationOutputPaths -OutputsDirectory $script:ValidationOutputsPath
+
+                                try {
+                                    $catalog = Save-SqlObjectCatalog -RepoRoot $script:ProjectRoot -DatabaseRoot $script:DatabaseRoot -OutputPath $script:CatalogPath
+                                    $currentFileText.Text = "Writing validation report..."
+                                    $validationResult = Test-SqlObjectCatalogAgainstDatabase -Catalog $catalog -MySqlExe (Find-MySqlExe) -Server $Server -Port $Port -Database $Database -User $User -Password $Password
+                                    Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
                                 }
-                                Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
+                                catch {
+                                    $validationResult = [ordered]@{
+                                        generatedAt = (Get-Date).ToString('o')
+                                        database    = $Database
+                                        resultCount = 1
+                                        results     = @(
+                                            [ordered]@{
+                                                relativePath = 'validation'
+                                                objectType   = 'validation'
+                                                objectName   = 'catalog'
+                                                issueCount   = 1
+                                                issues       = @(
+                                                    [ordered]@{
+                                                        severity = 'error'
+                                                        code     = 'VALIDATION_FAILURE'
+                                                        message  = $_.Exception.Message
+                                                    }
+                                                )
+                                            }
+                                        )
+                                    }
+                                    Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
+                                }
+
+                                $finalStatusMessage = "Validation report: $($reportPaths.markdown)"
+                            }
+                            else {
+                                Write-Host "DEBUG: Skipping optional SQL object catalog and validation report" -ForegroundColor DarkYellow
                             }
 
                             Write-Host "DEBUG: Deployment complete!" -ForegroundColor Green
                             $script:timer.Stop()
                             $overallStatusText.Text = "Deployment completed successfully!"
-                            $currentFileText.Text = "Validation report: $($reportPaths.markdown)"
+                            $currentFileText.Text = $finalStatusMessage
                             $summaryBorder.Visibility = "Visible"
                             $summarySchemas.Text = "$($script:SchemaCountTotal) file(s)"
                             $summaryMigrations.Text = "$($script:MigrationCountTotal) file(s)"

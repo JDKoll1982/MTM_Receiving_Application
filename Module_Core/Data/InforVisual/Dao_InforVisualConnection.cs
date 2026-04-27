@@ -312,6 +312,10 @@ public class Dao_InforVisualConnection
     /// Retrieves ordered PO transaction-history rows used during smart-fix reconciliation.
     /// Uses: 17_GetReceivingLocationTransactionHistory.sql
     /// </summary>
+    /// <param name="poNumber"></param>
+    /// <param name="partNumber"></param>
+    /// <param name="poLineNumber"></param>
+    /// <param name="receivedDate"></param>
     public async Task<
         Model_Dao_Result<List<Model_InforVisualLocationTransaction>>
     > GetReceivingLocationTransactionHistoryAsync(
@@ -1029,6 +1033,9 @@ public class Dao_InforVisualConnection
     /// currently found in the requested warehouse location.
     /// Uses: 18_GetMaterialAvailabilityCurrentStock.sql
     /// </summary>
+    /// <param name="locationId"></param>
+    /// <param name="partId"></param>
+    /// <param name="warehouseCode"></param>
     public async Task<
         Model_Dao_Result<List<Model_InforVisualMaterialLocationRow>>
     > GetMaterialAvailabilityCurrentStockAsync(
@@ -1101,6 +1108,9 @@ public class Dao_InforVisualConnection
     /// in the requested warehouse location.
     /// Uses: 19_GetMaterialAvailabilityIncomingSupply.sql
     /// </summary>
+    /// <param name="locationId"></param>
+    /// <param name="partId"></param>
+    /// <param name="warehouseCode"></param>
     public async Task<
         Model_Dao_Result<List<Model_InforVisualIncomingSupplyRow>>
     > GetMaterialAvailabilityIncomingSupplyAsync(
@@ -1192,6 +1202,9 @@ public class Dao_InforVisualConnection
     /// together with the best available next run date.
     /// Uses: 20_GetMaterialAvailabilityAssociatedPartRuns.sql
     /// </summary>
+    /// <param name="locationId"></param>
+    /// <param name="partId"></param>
+    /// <param name="warehouseCode"></param>
     public async Task<
         Model_Dao_Result<List<Model_InforVisualAssociatedPartRunRow>>
     > GetMaterialAvailabilityAssociatedPartRunsAsync(

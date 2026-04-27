@@ -244,6 +244,36 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
     #region Set Default Mode Commands
 
+    public Task HandleGuidedDefaultChangedAsync(bool isChecked)
+    {
+        if (ShouldIgnoreUncheckedDefaultChange(isChecked, GuidedModeValue))
+        {
+            return Task.CompletedTask;
+        }
+
+        return SetGuidedAsDefaultAsync(isChecked);
+    }
+
+    public Task HandleEditDefaultChangedAsync(bool isChecked)
+    {
+        if (ShouldIgnoreUncheckedDefaultChange(isChecked, EditModeValue))
+        {
+            return Task.CompletedTask;
+        }
+
+        return SetEditAsDefaultAsync(isChecked);
+    }
+
+    public Task HandleImageSearchDefaultChangedAsync(bool isChecked)
+    {
+        if (ShouldIgnoreUncheckedDefaultChange(isChecked, ImageSearchModeValue))
+        {
+            return Task.CompletedTask;
+        }
+
+        return SetImageSearchAsDefaultAsync(isChecked);
+    }
+
     [RelayCommand]
     private async Task SetGuidedAsDefaultAsync(bool isChecked)
     {
@@ -299,6 +329,23 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         IsImageSearchModeDefault = normalizedMode == ImageSearchModeValue;
     }
 
+    private bool ShouldIgnoreUncheckedDefaultChange(bool isChecked, string selectedMode)
+    {
+        if (isChecked)
+        {
+            return false;
+        }
+
+        return selectedMode switch
+        {
+            GuidedModeValue => IsManualModeDefault || IsEditModeDefault || IsImageSearchModeDefault,
+            ManualModeValue => IsGuidedModeDefault || IsEditModeDefault || IsImageSearchModeDefault,
+            EditModeValue => IsGuidedModeDefault || IsManualModeDefault || IsImageSearchModeDefault,
+            ImageSearchModeValue => IsGuidedModeDefault || IsManualModeDefault || IsEditModeDefault,
+            _ => false,
+        };
+    }
+
     private async Task SetDefaultModeAsync(string? newMode, string statusMessage)
     {
         try
@@ -311,7 +358,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
             var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(
                 currentUser.WindowsUsername,
-                newMode ?? ""
+                newMode
             );
 
             if (result.IsSuccess)

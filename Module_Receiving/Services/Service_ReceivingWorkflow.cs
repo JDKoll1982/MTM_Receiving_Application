@@ -258,7 +258,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                     // Update session with PO/Part info
                     CurrentSession.IsNonPO = IsNonPOItem;
-                    CurrentSession.PoNumber = IsNonPOItem ? null : CurrentPONumber;
+                    CurrentSession.PoNumber = string.IsNullOrWhiteSpace(CurrentPONumber)
+                        ? null
+                        : CurrentPONumber;
 
                     CurrentStep = Enum_ReceivingWorkflowStep.LoadEntry;
                     break;
@@ -406,7 +408,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 {
                     PartID = CurrentPart?.PartID ?? string.Empty,
                     // PartType will be auto-set by OnPartIDChanged logic (MMC=Coil, MMF=Sheet)
-                    PoNumber = IsNonPOItem ? null : CurrentPONumber,
+                    PoNumber = string.IsNullOrWhiteSpace(CurrentPONumber) ? null : CurrentPONumber,
                     PoLineNumber = CurrentPart?.POLineNumber ?? string.Empty,
                     LoadNumber = CurrentSession.Loads.Count + 1, // Increment load number globally
                     IsNonPOItem = IsNonPOItem,
@@ -755,6 +757,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 ArchiveQueueCleared = false,
                 ArchiveQueueError = clearResult.ErrorMessage,
             };
+        }
+
+        public async Task<bool> HasActiveLabelDataAsync()
+        {
+            return await _mysqlReceiving.HasActiveLabelDataAsync();
         }
 
         public async Task PersistSessionAsync()

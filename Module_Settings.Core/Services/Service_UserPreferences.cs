@@ -68,10 +68,10 @@ public class Service_UserPreferences : IService_UserPreferences
                 DefaultReceivingMode = string.IsNullOrWhiteSpace(
                     userResult.Data.DefaultReceivingMode
                 )
-                    ? "guided"
+                    ? null
                     : userResult.Data.DefaultReceivingMode,
                 DefaultDunnageMode = string.IsNullOrWhiteSpace(userResult.Data.DefaultDunnageMode)
-                    ? "guided"
+                    ? null
                     : userResult.Data.DefaultDunnageMode,
             };
 

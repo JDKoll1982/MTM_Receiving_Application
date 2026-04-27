@@ -69,6 +69,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         _settingsCore = settingsCore;
         _sessionManager = sessionManager;
         _viewModelRegistry = viewModelRegistry;
+        PropertyChanged += OnViewModelPropertyChanged;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -441,6 +442,15 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         AttachSpecInputHandlers(value);
         GoNextCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(CanProceedToNextStep));
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (string.Equals(e.PropertyName, nameof(IsBusy), StringComparison.Ordinal))
+        {
+            GoNextCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(CanProceedToNextStep));
+        }
     }
 
     public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()

@@ -4,6 +4,7 @@ using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
@@ -115,6 +116,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     // Set splash screen as parent
                     if (_splashScreen?.Content is Microsoft.UI.Xaml.UIElement rootElement)
                     {
+                        _splashScreen.SetWindowSize(950, 900);
+                        _splashScreen.CenterOnScreen();
                         newUserDialog.XamlRoot = rootElement.XamlRoot;
                     }
 
@@ -151,12 +154,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                                 Shift = newUserViewModel.Shift,
                                 Pin = newUserViewModel.Pin,
                                 IsActive = true,
-                                VisualUsername = newUserViewModel.ConfigureErpAccess
-                                    ? newUserViewModel.VisualUsername
-                                    : null,
-                                VisualPassword = newUserViewModel.ConfigureErpAccess
-                                    ? newUserViewModel.VisualPassword
-                                    : null,
+                                VisualUsername = newUserViewModel.VisualUsername,
+                                VisualPassword = newUserViewModel.VisualPassword,
                             };
 
                             ApplySafeUserDefaults(authenticatedUser);
@@ -338,7 +337,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     );
                     if (ShouldAbortStartup())
                     {
-                        RequestShutdown(_applicationShutdown.Reason ?? "software_version_mismatch", _applicationShutdown.ExitCode);
+                        RequestShutdown(
+                            _applicationShutdown.Reason ?? "software_version_mismatch",
+                            _applicationShutdown.ExitCode
+                        );
                         return;
                     }
                 }
@@ -424,14 +426,14 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(user.DefaultReceivingMode))
+            if (string.IsNullOrWhiteSpace(user.DefaultReceivingMode) is false)
             {
-                user.DefaultReceivingMode = "guided";
+                user.DefaultReceivingMode = user.DefaultReceivingMode.Trim().ToLowerInvariant();
             }
 
-            if (string.IsNullOrWhiteSpace(user.DefaultDunnageMode))
+            if (string.IsNullOrWhiteSpace(user.DefaultDunnageMode) is false)
             {
-                user.DefaultDunnageMode = "guided";
+                user.DefaultDunnageMode = user.DefaultDunnageMode.Trim().ToLowerInvariant();
             }
         }
 

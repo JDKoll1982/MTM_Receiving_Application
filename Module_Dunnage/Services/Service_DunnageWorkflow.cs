@@ -314,6 +314,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             return await SaveToDatabaseOnlyAsync();
         }
 
+        public async Task<bool> HasActiveLabelDataAsync()
+        {
+            return await _dunnageService.HasActiveLabelDataAsync();
+        }
+
         public void ClearSession()
         {
             _currentEntryLoads.Clear();

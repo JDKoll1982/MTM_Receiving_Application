@@ -1121,6 +1121,33 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
+        public async Task<bool> HasActiveLabelDataAsync()
+        {
+            try
+            {
+                var result = await _daoDunnageLabelData.GetActiveLabelDataAsync();
+                if (!result.IsSuccess)
+                {
+                    await _logger.LogErrorAsync(
+                        $"Failed to check dunnage label data availability: {result.ErrorMessage}"
+                    );
+                    return false;
+                }
+
+                return (result.Data?.Count ?? 0) > 0;
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(HasActiveLabelDataAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return false;
+            }
+        }
+
         /// <summary>
         /// Atomically moves all rows from <c>dunnage_label_data</c> to <c>dunnage_history</c> and
         /// clears the active queue. Returns the number of rows moved.
@@ -1879,6 +1906,50 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure(
                     $"Error deleting non-PO entry: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result<string?>> GetNonPOPartDefaultAsync(string partId)
+        {
+            try
+            {
+                return await _daoNonPOEntry.GetPartDefaultAsync(partId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(GetNonPOPartDefaultAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<string?>(
+                    $"Error retrieving dunnage non-PO part default: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result> SaveNonPOPartDefaultAsync(
+            string partId,
+            string value,
+            string updatedBy
+        )
+        {
+            try
+            {
+                return await _daoNonPOEntry.UpsertPartDefaultAsync(partId, value, updatedBy);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(SaveNonPOPartDefaultAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error saving dunnage non-PO part default: {ex.Message}"
                 );
             }
         }

@@ -23,6 +23,7 @@ public interface IDao_VolvoLabelHistory
     /// <summary>
     /// Gets an archived shipment header by history-table ID.
     /// </summary>
+    /// <param name="shipmentHistoryId"></param>
     Task<Model_Dao_Result<Model_VolvoShipment?>> GetArchivedShipmentByIdAsync(
         int shipmentHistoryId
     );
@@ -30,6 +31,7 @@ public interface IDao_VolvoLabelHistory
     /// <summary>
     /// Gets archived shipment lines by archived shipment header ID.
     /// </summary>
+    /// <param name="shipmentHistoryId"></param>
     Task<
         Model_Dao_Result<System.Collections.Generic.List<Model_VolvoShipmentLine>>
     > GetArchivedLinesByShipmentHistoryIdAsync(int shipmentHistoryId);
@@ -37,5 +39,6 @@ public interface IDao_VolvoLabelHistory
     /// <summary>
     /// Deletes an archived shipment header and its archived lines.
     /// </summary>
+    /// <param name="shipmentHistoryId"></param>
     Task<Model_Dao_Result> DeleteArchivedShipmentAsync(int shipmentHistoryId);
 }

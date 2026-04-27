@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -13,6 +17,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
     /// </summary>
     public sealed partial class View_Shared_NewUserSetupDialog : ContentDialog
     {
+        private readonly Dictionary<Control, Border> _cardBorders = new();
         public ViewModel_Shared_NewUserSetup ViewModel { get; }
 
         /// <summary>
@@ -24,12 +29,25 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             InitializeComponent();
             Helper_UI_ContentDialogTheme.ApplyTheme(this);
             ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            InitializeCardBorders();
+            ClearCardHighlights();
 
-            // Wire up event handlers
-            PrimaryButtonClick += OnCreateAccountButtonClick;
-            CloseButtonClick += OnCancelButtonClick;
             Closing += OnDialogClosing;
             Loaded += OnDialogLoaded;
+        }
+
+        private void InitializeCardBorders()
+        {
+            _cardBorders[FirstNameTextBox] = NameCardBorder;
+            _cardBorders[LastNameTextBox] = NameCardBorder;
+            _cardBorders[EmployeeNumberTextBox] = EmployeeDetailsCardBorder;
+            _cardBorders[DepartmentComboBox] = DepartmentAssignmentCardBorder;
+            _cardBorders[CustomDepartmentTextBox] = DepartmentAssignmentCardBorder;
+            _cardBorders[ShiftComboBox] = WorkScheduleCardBorder;
+            _cardBorders[PinPasswordBox] = AccountSecurityCardBorder;
+            _cardBorders[ConfirmPinPasswordBox] = AccountSecurityCardBorder;
+            _cardBorders[VisualUsernameTextBox] = ErpAccessCardBorder;
+            _cardBorders[VisualPasswordBox] = ErpAccessCardBorder;
         }
 
         /// <summary>
@@ -130,60 +148,41 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             }
         }
 
-        /// <summary>
-        /// Handle ERP configuration checkbox checked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ConfigureErpCheckBox_Checked(object sender, RoutedEventArgs e)
+        private void InputControl_GotFocus(object sender, RoutedEventArgs e)
         {
-            ErpCredentialsPanel.Visibility = Visibility.Visible;
-            ViewModel.ConfigureErpAccess = true;
-
-            // Ensure expander is expanded to show the content
-            if (!ErpExpander.IsExpanded)
+            if (sender is Control control && _cardBorders.TryGetValue(control, out var activeCard))
             {
-                ErpExpander.IsExpanded = true;
+                ActivateCard(activeCard);
             }
-
-            // Set focus to first ERP field after a brief delay to allow UI to render
-            _ = DispatcherQueue.TryEnqueue(
-                Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal,
-                () =>
-                {
-                    VisualUsernameTextBox.Focus(FocusState.Programmatic);
-                }
-            );
         }
 
-        /// <summary>
-        /// Handle ERP configuration checkbox unchecked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ConfigureErpCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        private void InputControl_LostFocus(object sender, RoutedEventArgs e)
         {
-            ErpCredentialsPanel.Visibility = Visibility.Collapsed;
-            ViewModel.ConfigureErpAccess = false;
+            _ = DispatcherQueue.TryEnqueue(() =>
+            {
+                if (FocusManager.GetFocusedElement(XamlRoot) is Control control
+                    && _cardBorders.TryGetValue(control, out var activeCard))
+                {
+                    ActivateCard(activeCard);
+                    return;
+                }
 
-            // Clear ERP fields when unchecked
-            VisualUsernameTextBox.Text = string.Empty;
-            VisualPasswordBox.Password = string.Empty;
+                ClearCardHighlights();
+            });
         }
 
         /// <summary>
         /// Handle Create Account button click
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private async void OnCreateAccountButtonClick(
-            ContentDialog sender,
-            ContentDialogButtonClickEventArgs args
-        )
+        /// <param name="e"></param>
+        private async void CreateAccountActionButton_Click(object sender, RoutedEventArgs e)
         {
-            args.Cancel = true;
+            await CreateAccountAsync();
+        }
 
-            // Clear previous errors
+        private async System.Threading.Tasks.Task CreateAccountAsync()
+        {
             StatusInfoBar.IsOpen = false;
 
             // Collect form data
@@ -196,6 +195,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 (ShiftComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
             string pin = PinPasswordBox.Password?.Trim() ?? string.Empty;
             string confirmPin = ConfirmPinPasswordBox.Password?.Trim() ?? string.Empty;
+            string visualUsername = VisualUsernameTextBox.Text?.Trim() ?? string.Empty;
+            string visualPassword = VisualPasswordBox.Password?.Trim() ?? string.Empty;
 
             // Use custom department if "Other" selected
             if (department == "Other")
@@ -270,6 +271,20 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(visualUsername))
+            {
+                ShowValidationError("Visual/Infor Username is required.");
+                VisualUsernameTextBox.Focus(FocusState.Programmatic);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(visualPassword))
+            {
+                ShowValidationError("Visual/Infor Password is required.");
+                VisualPasswordBox.Focus(FocusState.Programmatic);
+                return;
+            }
+
             // Set loading state
             SetLoadingState(true);
 
@@ -280,13 +295,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             ViewModel.Department = department;
             ViewModel.Shift = shift;
             ViewModel.Pin = pin;
-
-            // Update ERP credentials if configured
-            if (ViewModel.ConfigureErpAccess)
-            {
-                ViewModel.VisualUsername = VisualUsernameTextBox.Text?.Trim();
-                ViewModel.VisualPassword = VisualPasswordBox.Password?.Trim();
-            }
+            ViewModel.VisualUsername = visualUsername;
+            ViewModel.VisualPassword = visualPassword;
 
             // Attempt to create account
             bool success = await ViewModel.CreateAccountAsync();
@@ -319,14 +329,11 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// Handle Cancel button click
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void OnCancelButtonClick(
-            ContentDialog sender,
-            ContentDialogButtonClickEventArgs args
-        )
+        /// <param name="e"></param>
+        private void CancelActionButton_Click(object sender, RoutedEventArgs e)
         {
-            // User cancelled account creation
             ViewModel.IsCancelled = true;
+            Hide();
         }
 
         /// <summary>
@@ -348,6 +355,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         private void SetLoadingState(bool isLoading)
         {
             // Disable/enable input controls
+            EmployeeNumberTextBox.IsEnabled = !isLoading;
             FirstNameTextBox.IsEnabled = !isLoading;
             LastNameTextBox.IsEnabled = !isLoading;
             DepartmentComboBox.IsEnabled = !isLoading;
@@ -355,10 +363,11 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             ShiftComboBox.IsEnabled = !isLoading;
             PinPasswordBox.IsEnabled = !isLoading;
             ConfirmPinPasswordBox.IsEnabled = !isLoading;
+            VisualUsernameTextBox.IsEnabled = !isLoading;
+            VisualPasswordBox.IsEnabled = !isLoading;
 
-            // Disable/enable buttons
-            IsPrimaryButtonEnabled = !isLoading;
-            IsSecondaryButtonEnabled = !isLoading;
+            CreateAccountActionButton.IsEnabled = !isLoading;
+            CancelActionButton.IsEnabled = !isLoading;
 
             // Show/hide progress bar
             LoadingProgressBar.Visibility = isLoading ? Visibility.Visible : Visibility.Collapsed;
@@ -370,6 +379,40 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 StatusInfoBar.Severity = InfoBarSeverity.Informational;
                 StatusInfoBar.IsOpen = true;
             }
+        }
+
+        private void ActivateCard(Border activeCard)
+        {
+            foreach (var border in _cardBorders.Values.Distinct())
+            {
+                SetCardState(border, border == activeCard);
+            }
+        }
+
+        private void ClearCardHighlights()
+        {
+            foreach (var border in _cardBorders.Values.Distinct())
+            {
+                SetCardState(border, isActive: false);
+            }
+        }
+
+        private void SetCardState(Border border, bool isActive)
+        {
+            border.Background = GetBrush(
+                isActive ? "CardBackgroundFillColorSecondaryBrush" : "CardBackgroundFillColorDefaultBrush",
+                border.Background);
+            border.BorderBrush = GetBrush(
+                isActive ? "AccentFillColorDefaultBrush" : "ControlStrongStrokeColorDefaultBrush",
+                border.BorderBrush);
+        }
+
+        private static Brush GetBrush(string resourceKey, Brush fallback)
+        {
+            return Application.Current.Resources.TryGetValue(resourceKey, out var resource)
+                && resource is Brush brush
+                ? brush
+                : fallback ?? new SolidColorBrush(Colors.Transparent);
         }
     }
 }

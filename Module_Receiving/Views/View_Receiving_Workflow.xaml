@@ -47,6 +47,13 @@
                 VerticalContentAlignment="Center"
                 Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
+            <!--  Reconciliation Review View  -->
+            <ContentControl
+                x:Name="ReconciliationReviewHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsReconciliationReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
             <!--  Guided Wizard Views  -->
             <!--  PO Entry View  -->
             <ContentControl
@@ -230,15 +237,26 @@
                 Spacing="12">
                 <Button
                     Background="Transparent"
+                    BorderBrush="Transparent"
+                    Command="{x:Bind ViewModel.ResetLabelDataCommand}"
+                    Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
+                    Foreground="Red"
+                    IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button
+                    Background="Transparent"
                     BorderBrush="{ThemeResource SystemAccentColor}"
                     Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                    Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}" />
+                    Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
                     Command="{x:Bind ViewModel.ResetLabelDataCommand}"
                     Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
                     Foreground="Red"
+                    IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
             </StackPanel>

@@ -113,7 +113,7 @@
                             <th style="width: 120px;">STATUS</th>
                         </tr>
                     </thead>
-                    <tbody id="recentRequestsTableBody">
+                    <tbody id="reCenterquestsTableBody">
                         <!-- Populated by JavaScript -->
                     </tbody>
                 </table>
@@ -166,8 +166,8 @@
             document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
         }
 
-        function populateRecentRequests() {
-            const tbody = document.getElementById('recentRequestsTableBody');
+        function populateReCenterquests() {
+            const tbody = document.getElementById('reCenterquestsTableBody');
             
             // In a real app, this would fetch from an API and might filter by the current operator/press.
             // Using MockData.recentTasks as a source
@@ -215,7 +215,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('filterDate').value = today;
             
-            populateRecentRequests();
+            populateReCenterquests();
         });
     </script>
 </body>

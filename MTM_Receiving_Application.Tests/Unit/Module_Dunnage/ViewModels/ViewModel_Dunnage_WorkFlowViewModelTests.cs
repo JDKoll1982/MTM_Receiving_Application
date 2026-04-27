@@ -34,7 +34,11 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         await Task.Delay(25);
 
         currentStep = Enum_DunnageWorkflowStep.ImagePartSearch;
-        workflow.Raise(service => service.StepChanged += null, workflow.Object, System.EventArgs.Empty);
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
 
         viewModel.IsImagePartSearchVisible.Should().BeTrue();
         viewModel.IsModeSelectionVisible.Should().BeFalse();
@@ -53,7 +57,10 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         await viewModel.ReturnToModeSelectionCommand.ExecuteAsync(null);
 
         workflow.Verify(service => service.ClearSession(), Times.Once);
-        workflow.Verify(service => service.GoToStep(Enum_DunnageWorkflowStep.ModeSelection), Times.Once);
+        workflow.Verify(
+            service => service.GoToStep(Enum_DunnageWorkflowStep.ModeSelection),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -68,9 +75,53 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         viewModel.CanNavigate.Should().BeTrue();
 
         isLocked = true;
-        workflow.Raise(service => service.NavigationLockChanged += null, workflow.Object, System.EventArgs.Empty);
+        workflow.Raise(
+            service => service.NavigationLockChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
 
         viewModel.CanNavigate.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Constructor_ShouldLoadClearLabelDataAvailability()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow.Setup(service => service.HasActiveLabelDataAsync()).ReturnsAsync(true);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+
+        viewModel.CanClearLabelData.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task StepChanged_ShouldRefreshClearLabelDataAvailability()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        var hasActiveLabelData = true;
+
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+        workflow
+            .Setup(service => service.HasActiveLabelDataAsync())
+            .ReturnsAsync(() => hasActiveLabelData);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        viewModel.CanClearLabelData.Should().BeTrue();
+
+        hasActiveLabelData = false;
+        currentStep = Enum_DunnageWorkflowStep.TypeSelection;
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
+        await Task.Delay(25);
+
+        viewModel.CanClearLabelData.Should().BeFalse();
     }
 
     private static Mock<IService_DunnageWorkflow> CreateWorkflowMock()
@@ -78,6 +129,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         var workflow = new Mock<IService_DunnageWorkflow>();
         workflow.SetupGet(service => service.CurrentSession).Returns(new Model_DunnageSession());
         workflow.Setup(service => service.StartWorkflowAsync()).ReturnsAsync(true);
+        workflow.Setup(service => service.HasActiveLabelDataAsync()).ReturnsAsync(false);
         workflow.Setup(service => service.HasUnsavedData()).Returns(false);
 
         return workflow;

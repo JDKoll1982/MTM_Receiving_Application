@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
@@ -27,6 +28,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly IService_Window _windowService;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IService_ReceivingSettings _receivingSettings;
         private DateTime? _currentPoHeaderPromiseDate;
@@ -146,6 +148,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_QualityHoldWarning qualityHoldWarning,
             IService_InforVisualMockDataCatalog mockDataCatalog,
             IService_ViewModelRegistry viewModelRegistry,
+            IService_Window windowService,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
             IService_ReceivingSettings receivingSettings,
             IService_Notification notificationService
@@ -158,6 +161,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _qualityHoldWarning = qualityHoldWarning;
             _mockDataCatalog = mockDataCatalog;
             _viewModelRegistry = viewModelRegistry;
+            _windowService = windowService;
             _configuration = configuration;
             _receivingSettings = receivingSettings;
 
@@ -395,15 +399,85 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsLoading = true;
             try
             {
-                var result = await _inforVisualService.GetPartByIDAsync(PartID);
+                var searchTerm = PartID.Trim();
+                var result = await _inforVisualService.GetPartByIDAsync(searchTerm);
                 if (result.IsSuccess && result.Data != null)
                 {
+                    PartID = result.Data.PartID.Trim();
                     _currentPoHeaderPromiseDate = null;
                     _workflowService.CurrentPODueDate = null;
                     ReplaceParts([result.Data], result.Data);
                     var msg = await _receivingSettings.FormatAsync(
                         ReceivingSettingsKeys.Messages.InfoPartFound,
-                        PartID
+                        result.Data.PartID
+                    );
+                    _workflowService.RaiseStatusMessage(msg);
+                }
+                else if (IsNonPOItem)
+                {
+                    var fuzzyResults = await _inforVisualService.FuzzySearchPartsAsync(searchTerm);
+                    if (!fuzzyResults.IsSuccess)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            fuzzyResults.ErrorMessage
+                                ?? await _receivingSettings.GetStringAsync(
+                                    ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                                ),
+                            Enum_ErrorSeverity.Error
+                        );
+                        ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
+                        _workflowService.CurrentLocation = string.Empty;
+                        return;
+                    }
+
+                    if (fuzzyResults.Data is null || fuzzyResults.Data.Count == 0)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            result.ErrorMessage
+                                ?? await _receivingSettings.GetStringAsync(
+                                    ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                                ),
+                            Enum_ErrorSeverity.Error
+                        );
+                        ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
+                        _workflowService.CurrentLocation = string.Empty;
+                        return;
+                    }
+
+                    var selectedResult = await ShowPartFuzzyPickerAsync(
+                        searchTerm,
+                        fuzzyResults.Data
+                    );
+                    if (selectedResult is null)
+                    {
+                        return;
+                    }
+
+                    var selectedPartResult = await _inforVisualService.GetPartByIDAsync(
+                        selectedResult.Key.Trim()
+                    );
+
+                    if (!selectedPartResult.IsSuccess || selectedPartResult.Data is null)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            selectedPartResult.ErrorMessage
+                                ?? await _receivingSettings.GetStringAsync(
+                                    ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                                ),
+                            Enum_ErrorSeverity.Error
+                        );
+                        ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
+                        _workflowService.CurrentLocation = string.Empty;
+                        return;
+                    }
+
+                    PartID = selectedPartResult.Data.PartID.Trim();
+                    _currentPoHeaderPromiseDate = null;
+                    _workflowService.CurrentPODueDate = null;
+                    ReplaceParts([selectedPartResult.Data], selectedPartResult.Data);
+                    var msg = await _receivingSettings.FormatAsync(
+                        ReceivingSettingsKeys.Messages.InfoPartFound,
+                        selectedPartResult.Data.PartID
                     );
                     _workflowService.RaiseStatusMessage(msg);
                 }
@@ -424,6 +498,42 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        private async Task<Model_FuzzySearchResult?> ShowPartFuzzyPickerAsync(
+            string searchTerm,
+            IReadOnlyList<Model_FuzzySearchResult> items
+        )
+        {
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "Unable to display part selection dialog.",
+                    Enum_ErrorSeverity.Error
+                );
+                return null;
+            }
+
+            var dialog = new Dialog_FuzzySearchPicker(
+                items,
+                "Select Part",
+                $"No exact part match was found for '{searchTerm}'. Select a similar part to continue."
+            )
+            {
+                XamlRoot = xamlRoot,
+            };
+
+            var dialogResult = await dialog.ShowAsync();
+            if (
+                dialogResult != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary
+                || dialog.SelectedResult is null
+            )
+            {
+                return null;
+            }
+
+            return dialog.SelectedResult;
         }
 
         private void ReplaceParts(

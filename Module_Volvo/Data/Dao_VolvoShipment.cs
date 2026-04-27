@@ -126,6 +126,7 @@ public class Dao_VolvoShipment
     /// <param name="shipmentId">Shipment ID</param>
     /// <param name="poNumber">Purchase order number</param>
     /// <param name="receiverNumber">Receiver number</param>
+    /// <param name="archivedBy"></param>
     /// <returns>Model_Dao_Result indicating success/failure</returns>
     public async Task<Model_Dao_Result> CompleteAsync(
         int shipmentId,

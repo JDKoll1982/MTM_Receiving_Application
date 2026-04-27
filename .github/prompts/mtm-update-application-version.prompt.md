@@ -46,17 +46,22 @@ If additional version sources are discovered later in the repo, update them too 
 
 After choosing the new version, create a versioned update page that explains the current patch in plain language for operators and other end users.
 
-Create these files under `docs/updates/{version}/`:
+Create or update these files:
 
-1. `index.html`
-2. `styles.css`
-3. `app.js`
+1. `docs/updates/{version}/index.html`
+2. `docs/updates/index.html`
+3. `docs/updates/styles.css`
+4. `docs/updates/app.js`
 
 Use the reusable mockup in `docs/updates/mockup/` as the required design and content pattern reference:
 
 1. `docs/updates/mockup/index.html`
 2. `docs/updates/mockup/styles.css`
 3. `docs/updates/mockup/app.js`
+
+The mockup assets are reference files only. Do not create version-local `styles.css` or `app.js` copies for each release page.
+All versioned update pages must reuse the shared assets in `docs/updates/styles.css` and `docs/updates/app.js`.
+If the shared assets need changes to support the new page, update the shared files once instead of adding per-version duplicates.
 
 Requirements for the versioned update page:
 
@@ -65,14 +70,22 @@ Requirements for the versioned update page:
 - Summarize only changes that are supported by the actual uncommitted diff.
 - Group the update into clear sections such as highlights, what changed, why it matters, and any action the user should take.
 - If no user action is required, say so explicitly.
-- Use the companion CSS and JavaScript files for a polished experience rather than embedding everything inline.
+- Reference the shared `../styles.css` and `../app.js` files from each versioned page rather than embedding everything inline.
 - Keep the structure and visual pattern aligned with the mockup unless the current change set clearly needs a small, justified variation.
+
+Requirements for `docs/updates/index.html`:
+
+- Add the new version to the Releases table.
+- Keep the newest version at the top of the list.
+- Use a short end-user-facing summary that matches the actual release page content.
+- Do not remove existing release entries unless the user explicitly asks for cleanup.
 
 ## Step 5 - Validate Consistency
 
 - Confirm the same version string appears in every updated file.
 - Confirm the chosen bump matches the actual scope of the uncommitted changes.
-- Confirm the generated HTML page matches the chosen version folder name and references its local `styles.css` and `app.js` files.
+- Confirm the generated HTML page matches the chosen version folder name and references the shared `../styles.css` and `../app.js` files.
+- Confirm `docs/updates/index.html` includes the new version entry with the correct link and summary.
 - Confirm the page uses the shared MTM logo path correctly.
 - Do not guess a prerelease suffix unless the user asked for one.
 
@@ -85,6 +98,7 @@ Return:
 3. Why that semantic version bump was chosen.
 4. Which files were updated.
 5. Where the end-user update page was created.
+6. Whether `docs/updates/index.html` was updated.
 
 ## Guardrails
 

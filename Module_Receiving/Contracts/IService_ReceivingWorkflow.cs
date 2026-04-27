@@ -154,6 +154,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<Model_LabelDataClearResult> ResetLabelDataAsync();
 
         /// <summary>
+        /// Checks whether the active receiving label-data queue contains any rows.
+        /// </summary>
+        public Task<bool> HasActiveLabelDataAsync();
+
+        /// <summary>
         /// Persists current session state to JSON.
         /// </summary>
         public Task PersistSessionAsync();

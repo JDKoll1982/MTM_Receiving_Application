@@ -13,6 +13,37 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Settings.Core.Services;
 public sealed class Service_UserPreferencesTests
 {
     [Fact]
+    public async Task GetLatestUserPreferenceAsync_ShouldPreserveMissingModuleDefaults()
+    {
+        var userDao = new Mock<Dao_User>(
+            "Server=172.16.1.104;Database=test;",
+            new Mock<IService_AuthCredentialProtection>().Object
+        );
+        userDao
+            .Setup(dao => dao.GetUserByWindowsUsernameAsync("DOMAIN\\user"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_User
+                    {
+                        EmployeeNumber = 6229,
+                        WindowsUsername = "DOMAIN\\user",
+                        DefaultReceivingMode = " ",
+                        DefaultDunnageMode = null,
+                    }
+                )
+            );
+
+        var service = CreateService(userDao.Object);
+
+        var result = await service.GetLatestUserPreferenceAsync("DOMAIN\\user");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.DefaultReceivingMode.Should().BeNull();
+        result.Data.DefaultDunnageMode.Should().BeNull();
+    }
+
+    [Fact]
     public async Task UpdateDefaultDunnageModeAsync_ShouldNormalizeModeAndPassUserIdToDao()
     {
         var userDao = new Mock<Dao_User>(

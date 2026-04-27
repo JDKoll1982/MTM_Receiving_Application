@@ -88,8 +88,6 @@ body {
     padding: 32px 28px 64px;
 }
 
-/* ─── Hero ─── */
-
 .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.7fr);
@@ -239,8 +237,6 @@ h3 {
     gap: 10px;
 }
 
-/* ─── Buttons ─── */
-
 .button,
 .filter-chip,
 .back-to-top {
@@ -308,8 +304,6 @@ h3 {
     outline-offset: 3px;
 }
 
-/* ─── Layout ─── */
-
 .content-grid {
     display: grid;
     grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
@@ -324,8 +318,6 @@ h3 {
     background: var(--surface);
     box-shadow: var(--shadow);
 }
-
-/* ─── Sidebar ─── */
 
 .sidebar {
     position: sticky;
@@ -397,8 +389,6 @@ h3 {
     border: 1px solid var(--border);
 }
 
-/* ─── Main column ─── */
-
 .main-column {
     display: grid;
     gap: 20px;
@@ -423,8 +413,6 @@ h3 {
     align-items: flex-end;
     flex-wrap: wrap;
 }
-
-/* ─── Highlights ─── */
 
 .highlight-grid {
     display: grid;
@@ -465,8 +453,6 @@ h3 {
 .accent-green { border-top: 3px solid var(--green); }
 .accent-gold  { border-top: 3px solid var(--gold); }
 
-/* ─── Filter row ─── */
-
 .filter-row {
     display: flex;
     flex-wrap: wrap;
@@ -495,8 +481,6 @@ h3 {
     border-color: transparent;
     box-shadow: 0 2px 8px rgba(20, 17, 14, 0.16);
 }
-
-/* ─── Change items ─── */
 
 .change-item {
     margin-top: 12px;
@@ -555,7 +539,8 @@ h3 {
     background: var(--surface-muted);
 }
 
-.change-item p {
+.change-item p,
+.change-item ul {
     padding: 4px 18px 18px;
     margin: 0;
     font-size: 0.9rem;
@@ -564,7 +549,13 @@ h3 {
     border-top: 1px solid var(--border);
 }
 
-/* ─── Impact list ─── */
+.change-item ul {
+    padding-left: 36px;
+}
+
+.change-item ul li {
+    margin-bottom: 4px;
+}
 
 .impact-list {
     display: grid;
@@ -610,8 +601,6 @@ h3 {
     line-height: 1.6;
     margin: 0;
 }
-
-/* ─── Action section ─── */
 
 .action-panel {
     background:
@@ -666,16 +655,12 @@ h3 {
     line-height: 1.6;
 }
 
-/* ─── Support section ─── */
-
 .support-panel p {
     font-size: 0.9rem;
     color: var(--text-secondary);
     line-height: 1.65;
     margin: 14px 0 0;
 }
-
-/* ─── Back to top ─── */
 
 .back-to-top {
     position: fixed;
@@ -704,8 +689,6 @@ h3 {
     opacity: 1;
     pointer-events: auto;
 }
-
-/* ─── Responsive ─── */
 
 @media (max-width: 1060px) {
     .hero {
