@@ -1,0 +1,99 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_Reconciliation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Reconciliation Scope" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Choose how broadly location reconciliation checks receiving history."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <ToggleSwitch
+                            Header="Validate All History During Reconciliation"
+                            IsOn="{x:Bind ViewModel.ValidateAllHistoryForLocationReconciliation, Mode=TwoWay}"
+                            ToolTipService.ToolTip="When turned on, location reconciliation checks all visible receiving history rows instead of only today and Current Labels." />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Ignored Recommended Locations" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="WC, NCM, FG, and RECV are always excluded automatically. Add any extra InforVisual locations you never want suggested in Recommended Locations or auto-applied during reconciliation."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                x:Name="IgnoredLocationTextBox"
+                                Grid.Column="0"
+                                Header="Additional Ignored Locations"
+                                LostFocus="IgnoredLocationTextBox_LostFocus"
+                                PlaceholderText="Enter a location to exclude from recommendations"
+                                Text="{x:Bind ViewModel.PendingIgnoredLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Button
+                                Grid.Column="1"
+                                MinWidth="120"
+                                VerticalAlignment="Bottom"
+                                Click="AddIgnoredLocationButton_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                                    <TextBlock Text="Add Location" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <Border
+                            MinHeight="140"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <ListView
+                                ItemsSource="{x:Bind ViewModel.IgnoredReconciliationLocations, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedIgnoredLocation, Mode=TwoWay}"
+                                SelectionMode="Single" />
+                        </Border>
+
+                        <StackPanel
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <Button Command="{x:Bind ViewModel.RemoveIgnoredLocationCommand}" Content="Remove Selected" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

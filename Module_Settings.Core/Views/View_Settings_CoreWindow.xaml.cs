@@ -241,8 +241,12 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Control required fields, warnings, and threshold rules applied during Receiving."
             ),
             "View_Settings_Receiving_PartFormatting" => (
-                "Part Formatting & Reconciliation",
-                "Configure receiving part-number padding and reconciliation preferences in one place."
+                "Part Formatting",
+                "Configure receiving part-number padding rules and test part normalization behavior."
+            ),
+            "View_Settings_Receiving_Reconciliation" => (
+                "Reconciliation",
+                "Configure ignored recommended locations and the history scope used during reconciliation."
             ),
             "View_Settings_Receiving_WorkflowDefaults" => (
                 "Workflow Defaults",

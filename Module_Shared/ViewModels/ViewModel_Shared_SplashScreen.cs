@@ -1,4 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Options;
+using MTM_Receiving_Application.Infrastructure.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -15,13 +17,17 @@ public partial class ViewModel_Shared_SplashScreen : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _isIndeterminate = false;
 
+    public string AppVersion { get; }
+
     public ViewModel_Shared_SplashScreen(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService
+        IService_Notification notificationService,
+        IOptions<ApplicationSettings> applicationSettings
     )
         : base(errorHandler, logger, notificationService)
     {
+        AppVersion = $"Version {applicationSettings.Value.Version}";
         StatusMessage = "Initializing...";
     }
 

@@ -107,4 +107,6 @@ public sealed partial class View_Settings_Receiving_CategoryHub : Page
     private void OnStep3Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(3);
 
     private void OnStep4Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(4);
+
+    private void OnStep5Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(5);
 }

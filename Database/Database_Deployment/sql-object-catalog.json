@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-22T06:10:46.4213259-05:00",
+  "generatedAt": "2026-04-26T23:15:35.9151714-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -10179,12 +10179,12 @@
         {
           "direction": "IN",
           "name": "p_start_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         },
         {
           "direction": "IN",
           "name": "p_end_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         }
       ],
       "declaredVariables": [],
@@ -10240,12 +10240,12 @@
         {
           "direction": "IN",
           "name": "p_start_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         },
         {
           "direction": "IN",
           "name": "p_end_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         }
       ],
       "declaredVariables": [],
@@ -10291,12 +10291,12 @@
         {
           "direction": "IN",
           "name": "p_start_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         },
         {
           "direction": "IN",
           "name": "p_end_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         }
       ],
       "declaredVariables": [],
@@ -10342,12 +10342,12 @@
         {
           "direction": "IN",
           "name": "p_start_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         },
         {
           "direction": "IN",
           "name": "p_end_date",
-          "sqlType": "DATE"
+          "sqlType": "DATETIME"
         }
       ],
       "declaredVariables": [],

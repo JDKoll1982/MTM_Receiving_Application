@@ -436,6 +436,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_EntryDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_ValidationRules>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Reconciliation>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
 

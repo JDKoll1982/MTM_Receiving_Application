@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -328,6 +329,17 @@ namespace MTM_Receiving_Application
                 return;
             }
 
+            if (tag == "AppDocumentation")
+            {
+                var docsPath = Path.GetFullPath(
+                    Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\docs\index.html")
+                );
+                var docsUri = new Uri(docsPath);
+                _ = Windows.System.Launcher.LaunchUriAsync(docsUri);
+                SetNavigationSelectionByTag(GetCurrentRouteTag());
+                return;
+            }
+
             if (!_navRoutes.TryGetValue(tag, out var route))
             {
                 return;
@@ -515,12 +527,20 @@ namespace MTM_Receiving_Application
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting),
-                    "Part Formatting & Reconciliation",
-                    "Receiving part-number padding and reconciliation preferences",
+                    "Receiving Part Formatting",
+                    "Receiving part-number auto-padding rules and formatting test tools",
                     "part formatting",
                     "part padding",
-                    "reconciliation settings",
                     "receiving part formatting"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_Reconciliation),
+                    "Receiving Reconciliation",
+                    "Ignored recommended locations and reconciliation validation scope",
+                    "reconciliation",
+                    "reconciliation settings",
+                    "ignored locations",
+                    "recommended locations"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults),

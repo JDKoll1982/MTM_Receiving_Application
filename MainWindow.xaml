@@ -101,7 +101,7 @@
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
             <NavigationView.Header>
-                <Grid MinHeight="100" Padding="0,0,40,0" >
+                <Grid MinHeight="100" Padding="0,0,40,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="64" />
@@ -205,6 +205,14 @@
                     Tag="ShipRecToolsPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE90F;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem
+                    Margin="0,0,0,4"
+                    Content="Documentation"
+                    Tag="AppDocumentation">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE946;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

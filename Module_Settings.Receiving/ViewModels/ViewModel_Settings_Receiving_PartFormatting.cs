@@ -68,7 +68,7 @@ public sealed partial class ViewModel_Settings_Receiving_PartFormatting : ViewMo
     )
         : base(errorHandler, logger, notificationService)
     {
-        Title = "Receiving Part Formatting & Reconciliation";
+        Title = "Receiving Settings";
         _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
         _receivingValidation =

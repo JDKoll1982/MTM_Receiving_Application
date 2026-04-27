@@ -39,8 +39,10 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// <param name="args"></param>
         private void OnDialogClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
-            // If user closes with X or Cancel button, mark as cancelled
-            if (args.Result != ContentDialogResult.Primary)
+            // Only mark as cancelled if the account was not already created.
+            // When Hide() is called programmatically after success, args.Result is None (not Primary),
+            // so without this guard IsCancelled would be incorrectly set to true after a successful creation.
+            if (args.Result != ContentDialogResult.Primary && ViewModel.NewEmployeeNumber <= 0)
             {
                 ViewModel.IsCancelled = true;
             }
@@ -289,11 +291,9 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             // Attempt to create account
             bool success = await ViewModel.CreateAccountAsync();
 
-            // Restore normal state
-            SetLoadingState(false);
-
             if (success)
             {
+                // Keep everything disabled — startup will continue automatically after the dialog closes.
                 // Show success message with employee number
                 StatusInfoBar.Title = "Account Created Successfully!";
                 StatusInfoBar.Message =
@@ -301,15 +301,14 @@ namespace MTM_Receiving_Application.Module_Shared.Views
                 StatusInfoBar.Severity = InfoBarSeverity.Success;
                 StatusInfoBar.IsOpen = true;
 
-                // Wait a moment for user to see success message
+                // Wait a moment for user to see success message, then close
                 await System.Threading.Tasks.Task.Delay(2000);
-
-                // Close dialog
                 Hide();
             }
             else
             {
-                // Show error message
+                // Restore interactive state so the user can correct and retry
+                SetLoadingState(false);
                 ShowValidationError(
                     ViewModel.ErrorMessage ?? "Failed to create account. Please try again."
                 );

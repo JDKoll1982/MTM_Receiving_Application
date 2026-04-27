@@ -35,7 +35,7 @@
                 HorizontalAlignment="Center"
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                 Style="{StaticResource CaptionTextBlockStyle}"
-                Text="Version 1.0.0" />
+                Text="{x:Bind ViewModel.AppVersion, Mode=OneTime}" />
 
             <TextBlock
                 HorizontalAlignment="Center"
