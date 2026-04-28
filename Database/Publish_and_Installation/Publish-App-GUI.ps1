@@ -32,7 +32,7 @@ $defaultProjectFile = Join-Path $repoRoot "MTM_Receiving_Application.csproj"
 # ---------------------------------------------------------------------------
 # Publish option definitions — mirrors PublishAppScript.md
 # ---------------------------------------------------------------------------
-$script:BaseShare = "X:\Software Development\Live Applications"
+$script:BaseShare = "X:\MH_RESOURCE\Material_Handler"
 $script:OutputRootPath = $script:BaseShare
 $script:ProjectFile = $defaultProjectFile
 $script:PublishVerbosity = 'detailed'
