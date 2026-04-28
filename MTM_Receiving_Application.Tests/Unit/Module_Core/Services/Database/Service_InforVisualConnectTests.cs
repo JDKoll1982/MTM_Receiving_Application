@@ -66,6 +66,51 @@ public sealed class Service_InforVisualConnectTests
     }
 
     [Fact]
+    public async Task GetRemainingQuantityAsync_ShouldSumRemainingAcrossDuplicatePartLines_WhenMockPOContainsMultipleLines()
+    {
+        var service = CreateService(
+            useMockData: true,
+            catalog: new Model_InforVisualMockDataCatalog
+            {
+                Locations = new List<string> { "RECV" },
+                PurchaseOrders = new List<Model_InforVisualPO>
+                {
+                    new()
+                    {
+                        PONumber = "PO-068202",
+                        Vendor = "Stern Steel LLC",
+                        Status = "R",
+                        Parts = new List<Model_InforVisualPart>
+                        {
+                            new()
+                            {
+                                PartID = "MMC0000850",
+                                POLineNumber = "1",
+                                QtyOrdered = 172000,
+                                RemainingQuantity = 36220,
+                                Description = "Coil, .312 X 14.330",
+                            },
+                            new()
+                            {
+                                PartID = "MMC0000850",
+                                POLineNumber = "2",
+                                QtyOrdered = 156000,
+                                RemainingQuantity = 156000,
+                                Description = "Coil, .312 X 14.330",
+                            },
+                        },
+                    },
+                },
+            }
+        );
+
+        var result = await service.GetRemainingQuantityAsync("PO-068202", "MMC0000850");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().Be(192220);
+    }
+
+    [Fact]
     public async Task GetReceivingLocationEvidenceAsync_ShouldReturnMockTransactions_WhenCatalogContainsSavedReceivingRows()
     {
         var service = CreateService(useMockData: true);
@@ -145,7 +190,10 @@ public sealed class Service_InforVisualConnectTests
         result.Data![0].InputPartNumber.Should().Be("MMC-100");
     }
 
-    private static Service_InforVisualConnect CreateService(bool useMockData)
+    private static Service_InforVisualConnect CreateService(
+        bool useMockData,
+        Model_InforVisualMockDataCatalog? catalog = null
+    )
     {
         var dao = new Dao_InforVisualConnection(
             "Server=VISUAL;Database=MTMFG;ApplicationIntent=ReadOnly;Trusted_Connection=True;",
@@ -162,108 +210,14 @@ public sealed class Service_InforVisualConnectTests
             "QA-RECV",
             "RECV",
         };
+        var activeCatalog = catalog ?? CreateDefaultCatalog(locations);
 
         mockCatalog.Setup(service => service.GetLocations()).Returns(locations);
         appSettings.Setup(service => service.GetUseInforVisualMockData()).Returns(useMockData);
-        mockCatalog
-            .Setup(service => service.GetCatalog())
-            .Returns(
-                new Model_InforVisualMockDataCatalog
-                {
-                    Locations = new List<string>(locations),
-                    Parts = new List<Model_InforVisualPart>
-                    {
-                        new()
-                        {
-                            PartID = "MMCCS00740",
-                            POLineNumber = "N/A",
-                            PartType = "Coil",
-                            QtyOrdered = 4800,
-                            UnitOfMeasure = "EA",
-                            Description =
-                                "Mock coil part for Guided Wizard non-PO fuzzy search validation",
-                            DefaultLocationId = "RECV",
-                            RemainingQuantity = 960,
-                        },
-                        new()
-                        {
-                            PartID = "MMFCS01145",
-                            POLineNumber = "N/A",
-                            PartType = "Sheet",
-                            QtyOrdered = 2400,
-                            UnitOfMeasure = "EA",
-                            Description =
-                                "Mock sheet part for Guided Wizard non-PO fuzzy search validation",
-                            DefaultLocationId = "S-00",
-                            RemainingQuantity = 480,
-                        },
-                    },
-                    AssociatedPartRuns = new List<Model_InforVisualAssociatedPartRunRow>
-                    {
-                        new()
-                        {
-                            InputPartNumber = "MMC-100",
-                            InputPartDescription = "Mock component part",
-                            AssociatedPartNumber = "ASSY-1000",
-                            AssociatedPartDescription = "Mock parent assembly",
-                            NextDueToRunDate = new System.DateTime(2026, 4, 15),
-                            IsFutureOrTodayRun = true,
-                            NextDueDateSource = "WORK_ORDER.SCHED_START_DATE",
-                            WorkOrderType = "M",
-                            WorkOrderBaseId = "5001",
-                            WorkOrderLotId = "0",
-                            WorkOrderSplitId = "0",
-                            WorkOrderSubId = "0",
-                            OperationSeqNo = 10,
-                            RequirementPieceNo = 1,
-                            WorkOrderStatus = "R",
-                            RequirementStatus = "O",
-                        },
-                    },
-                    ReceivingTransactions = new List<Model_InforVisualMockReceivingTransaction>
-                    {
-                        new()
-                        {
-                            SourceLoadId = "seed-load-1",
-                            PONumber = "PO-066868",
-                            PartID = "MMC-100",
-                            POLineNumber = "1",
-                            Quantity = 10,
-                            UnitOfMeasure = "EA",
-                            ReceivedDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
-                            TransactionDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
-                            ReceiptWarehouseId = "002",
-                            ReceiptLocationId = "RECV",
-                            CurrentWarehouseId = "002",
-                            CurrentLocationId = "A-01",
-                            UserId = "seed-user",
-                        },
-                    },
-                }
-            );
+        mockCatalog.Setup(service => service.GetCatalog()).Returns(activeCatalog);
         mockCatalog
             .Setup(service => service.GetReceivingTransactions())
-            .Returns(
-                new List<Model_InforVisualMockReceivingTransaction>
-                {
-                    new()
-                    {
-                        SourceLoadId = "seed-load-1",
-                        PONumber = "PO-066868",
-                        PartID = "MMC-100",
-                        POLineNumber = "1",
-                        Quantity = 10,
-                        UnitOfMeasure = "EA",
-                        ReceivedDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
-                        TransactionDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
-                        ReceiptWarehouseId = "002",
-                        ReceiptLocationId = "RECV",
-                        CurrentWarehouseId = "002",
-                        CurrentLocationId = "A-01",
-                        UserId = "seed-user",
-                    },
-                }
-            );
+            .Returns(activeCatalog.ReceivingTransactions);
 
         return new Service_InforVisualConnect(
             dao,
@@ -271,5 +225,79 @@ public sealed class Service_InforVisualConnectTests
             new Mock<IService_LoggingUtility>().Object,
             mockCatalog.Object
         );
+    }
+
+    private static Model_InforVisualMockDataCatalog CreateDefaultCatalog(string[] locations)
+    {
+        return new Model_InforVisualMockDataCatalog
+        {
+            Locations = new List<string>(locations),
+            Parts = new List<Model_InforVisualPart>
+            {
+                new()
+                {
+                    PartID = "MMCCS00740",
+                    POLineNumber = "N/A",
+                    PartType = "Coil",
+                    QtyOrdered = 4800,
+                    UnitOfMeasure = "EA",
+                    Description = "Mock coil part for Guided Wizard non-PO fuzzy search validation",
+                    DefaultLocationId = "RECV",
+                    RemainingQuantity = 960,
+                },
+                new()
+                {
+                    PartID = "MMFCS01145",
+                    POLineNumber = "N/A",
+                    PartType = "Sheet",
+                    QtyOrdered = 2400,
+                    UnitOfMeasure = "EA",
+                    Description = "Mock sheet part for Guided Wizard non-PO fuzzy search validation",
+                    DefaultLocationId = "S-00",
+                    RemainingQuantity = 480,
+                },
+            },
+            AssociatedPartRuns = new List<Model_InforVisualAssociatedPartRunRow>
+            {
+                new()
+                {
+                    InputPartNumber = "MMC-100",
+                    InputPartDescription = "Mock component part",
+                    AssociatedPartNumber = "ASSY-1000",
+                    AssociatedPartDescription = "Mock parent assembly",
+                    NextDueToRunDate = new System.DateTime(2026, 4, 15),
+                    IsFutureOrTodayRun = true,
+                    NextDueDateSource = "WORK_ORDER.SCHED_START_DATE",
+                    WorkOrderType = "M",
+                    WorkOrderBaseId = "5001",
+                    WorkOrderLotId = "0",
+                    WorkOrderSplitId = "0",
+                    WorkOrderSubId = "0",
+                    OperationSeqNo = 10,
+                    RequirementPieceNo = 1,
+                    WorkOrderStatus = "R",
+                    RequirementStatus = "O",
+                },
+            },
+            ReceivingTransactions = new List<Model_InforVisualMockReceivingTransaction>
+            {
+                new()
+                {
+                    SourceLoadId = "seed-load-1",
+                    PONumber = "PO-066868",
+                    PartID = "MMC-100",
+                    POLineNumber = "1",
+                    Quantity = 10,
+                    UnitOfMeasure = "EA",
+                    ReceivedDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
+                    TransactionDate = new System.DateTime(2026, 4, 5, 8, 0, 0),
+                    ReceiptWarehouseId = "002",
+                    ReceiptLocationId = "RECV",
+                    CurrentWarehouseId = "002",
+                    CurrentLocationId = "A-01",
+                    UserId = "seed-user",
+                },
+            },
+        };
     }
 }

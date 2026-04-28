@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -622,6 +623,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                         nameof(QuickAddPartAsync),
                         true
                     );
+
+                    if (IsDuplicatePartError(insertResult))
+                    {
+                        dialogDraft = dialog.GetDraft();
+                        continue;
+                    }
                 }
 
                 break;
@@ -776,6 +783,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                         nameof(EditPartAsync),
                         true
                     );
+
+                    if (IsDuplicatePartError(updateResult))
+                    {
+                        dialogDraft = dialog.GetDraft();
+                        continue;
+                    }
                 }
 
                 break;
@@ -796,6 +809,15 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     private async Task DeletePartAsync()
     {
         await DeletePartInternalAsync(SelectedPart);
+    }
+
+    private static bool IsDuplicatePartError(Model_Dao_Result result)
+    {
+        return !string.IsNullOrWhiteSpace(result.ErrorMessage)
+            && (
+                result.ErrorMessage.Contains("already exists", StringComparison.OrdinalIgnoreCase)
+                || result.ErrorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
+            );
     }
 
     /// <summary>

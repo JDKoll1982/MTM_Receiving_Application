@@ -200,6 +200,53 @@ public sealed class Service_MySQL_DunnageTests
     }
 
     [Fact]
+    public async Task InsertPartWithInventoryAsync_ShouldReturnFriendlyDuplicateFailure_WhenPartIdAlreadyExists()
+    {
+        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        daoPart
+            .Setup(dao => dao.GetAllAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_DunnagePart>
+                    {
+                        new() { Id = 1, PartId = null! },
+                        new() { Id = 2, PartId = "PART-300" },
+                    }
+                )
+            );
+
+        var service = CreateService(daoPart.Object);
+        var part = new Model_DunnagePart
+        {
+            PartId = "PART-300",
+            TypeId = 9,
+            DunnageTypeName = "Pallet",
+            SpecValues = "{}",
+            HomeLocation = "A-01",
+        };
+
+        var result = await service.InsertPartWithInventoryAsync(part, "Not Inventoried");
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Be("A dunnage part with Part ID 'PART-300' already exists.");
+        daoPart.Verify(
+            dao =>
+                dao.InsertWithInventoryAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()
+                ),
+            Times.Never
+        );
+    }
+
+    [Fact]
     public async Task InsertTypeAsync_ShouldUseTypeImageImport_WhenImagePathIsAbsolute()
     {
         var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");

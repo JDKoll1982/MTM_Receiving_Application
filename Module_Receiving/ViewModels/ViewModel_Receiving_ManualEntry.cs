@@ -1761,22 +1761,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             var parts = poResult.Data.Parts.ToList();
-            foreach (var part in parts)
-            {
-                if (part.RemainingQuantity > 0)
-                {
-                    continue;
-                }
-
-                var remainingQtyResult = await _inforVisualService.GetRemainingQuantityAsync(
-                    normalizedPo,
-                    part.PartID
-                );
-                if (remainingQtyResult.IsSuccess)
-                {
-                    part.RemainingQuantity = remainingQtyResult.Data;
-                }
-            }
 
             var pickerItems = parts.ConvertAll(part => new Model_FuzzySearchResult
             {

@@ -103,7 +103,7 @@ public sealed class ViewModel_Receiving_ModeSelectionTests
             .Setup(service =>
                 service.SaveStringAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>())
             )
-            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+            .Returns(Task.CompletedTask);
 
         var sessionManager = new Mock<IService_UserSessionManager>();
         sessionManager.SetupGet(service => service.CurrentSession).Returns(session);

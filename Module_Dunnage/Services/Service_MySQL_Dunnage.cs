@@ -678,7 +678,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 if (
                     existingParts.IsSuccess
                     && existingParts.Data?.Any(existingPart =>
-                        existingPart.PartId.Equals(part.PartId, StringComparison.OrdinalIgnoreCase)
+                        string.Equals(
+                            existingPart.PartId,
+                            part.PartId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
                     ) == true
                 )
                 {
@@ -803,7 +807,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     existingParts.IsSuccess
                     && existingParts.Data?.Any(existingPart =>
                         existingPart.Id != part.Id
-                        && existingPart.PartId.Equals(
+                        && string.Equals(
+                            existingPart.PartId,
                             part.PartId,
                             StringComparison.OrdinalIgnoreCase
                         )

@@ -325,21 +325,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _currentPoHeaderPromiseDate = result.Data.HeaderPromiseDate;
                     _workflowService.CurrentPODueDate = _currentPoHeaderPromiseDate;
 
-                    // Load parts and populate remaining quantity for each
-                    foreach (var part in parts)
-                    {
-                        // Get remaining quantity for this part
-                        var remainingQtyResult =
-                            await _inforVisualService.GetRemainingQuantityAsync(
-                                PoNumber,
-                                part.PartID
-                            );
-                        if (remainingQtyResult.IsSuccess)
-                        {
-                            part.RemainingQuantity = remainingQtyResult.Data;
-                        }
-                    }
-
                     ReplaceParts(parts, clearSelection: true);
 
                     var msg = await _receivingSettings.FormatAsync(

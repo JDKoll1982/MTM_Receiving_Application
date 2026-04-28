@@ -254,17 +254,17 @@ public class Service_InforVisualConnect : IService_InforVisual
                 return Model_Dao_Result_Factory.Failure<int>("PO not found");
             }
 
-            var matchingLine = result.Data.FirstOrDefault(line =>
-                line.PartNumber.Equals(partID, StringComparison.OrdinalIgnoreCase)
-            );
+            var matchingLines = result.Data
+                .Where(line => line.PartNumber.Equals(partID, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            if (matchingLine == null)
+            if (matchingLines.Count == 0)
             {
                 _logger?.LogWarning($"Part {partID} not found on PO {poNumber}");
                 return Model_Dao_Result_Factory.Failure<int>("Part not found on PO");
             }
 
-            int remaining = (int)matchingLine.RemainingQty;
+            int remaining = (int)matchingLines.Sum(line => line.RemainingQty);
             _logger?.LogInfo($"Remaining quantity: {remaining}");
 
             return Model_Dao_Result_Factory.Success<int>(remaining);
