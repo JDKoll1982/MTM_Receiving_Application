@@ -44,6 +44,7 @@ $script:PublishProcess = $null
 $script:PollTimer = $null
 $script:OutFile = $null
 $script:PublishStagingPath = $null
+$script:selectedOption = $null
 
 function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
