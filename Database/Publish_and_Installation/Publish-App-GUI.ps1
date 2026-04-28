@@ -413,7 +413,7 @@ $script:Options = @(
     @{
         Index         = 0
         Label         = "1  Self-Contained  (Recommended)"
-        Folder        = "MTM_Receiving_Application"
+        Folder        = "MTM Receiving Application"
         Args          = "-c Release -r win-x64 --self-contained true"
         SelfContained = $true
         TagColor      = "#388E3C"
@@ -422,7 +422,7 @@ $script:Options = @(
     @{
         Index         = 1
         Label         = "2  Framework-Dependent  ⚠"
-        Folder        = "MTM_Receiving_Application_FD"
+        Folder        = "MTM Receiving Application FD"
         Args          = "-c Release -r win-x64 --self-contained false"
         SelfContained = $false
         TagColor      = "#E65100"
@@ -431,7 +431,7 @@ $script:Options = @(
     @{
         Index         = 2
         Label         = "3  ReadyToRun — Faster Startup"
-        Folder        = "MTM_Receiving_Application_R2R"
+        Folder        = "MTM Receiving Application R2R"
         Args          = "-c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true"
         SelfContained = $true
         TagColor      = "#388E3C"
@@ -440,7 +440,7 @@ $script:Options = @(
     @{
         Index         = 3
         Label         = "4  Trimmed  ⚠  (High Risk)"
-        Folder        = "MTM_Receiving_Application_Trimmed"
+        Folder        = "MTM Receiving Application Trimmed"
         Args          = "-c Release -r win-x64 --self-contained true -p:PublishTrimmed=true"
         SelfContained = $true
         TagColor      = "#C62828"
