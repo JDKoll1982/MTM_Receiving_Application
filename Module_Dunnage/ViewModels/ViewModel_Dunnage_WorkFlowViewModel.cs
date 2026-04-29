@@ -9,6 +9,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -21,10 +22,14 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         IViewModel_HeaderTitleProvider
 {
     private readonly IService_DunnageWorkflow _workflowService;
+    private readonly IService_DunnageSettings _dunnageSettings;
+    private readonly IService_LabelViewLauncher _labelViewLauncher;
     private readonly IService_Window _windowService;
 
     public ViewModel_Dunnage_WorkFlowViewModel(
         IService_DunnageWorkflow workflowService,
+        IService_DunnageSettings dunnageSettings,
+        IService_LabelViewLauncher labelViewLauncher,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -33,6 +38,8 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
+        _dunnageSettings = dunnageSettings;
+        _labelViewLauncher = labelViewLauncher;
         _windowService = windowService;
         _workflowService.StepChanged += OnWorkflowStepChanged;
         _workflowService.NavigationLockChanged += OnNavigationLockChanged;
@@ -249,6 +256,12 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     #region Commands
 
     [RelayCommand]
+    private async Task OpenDunnageLabelAsync()
+    {
+        await OpenLabelAsync(DunnageSettingsKeys.Labels.DunnageLabelPath, "Dunnage Label");
+    }
+
+    [RelayCommand]
     private async Task ReturnToModeSelectionAsync()
     {
         if (_workflowService.IsNavigationLocked)
@@ -287,6 +300,46 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
 
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+    }
+
+    private async Task OpenLabelAsync(string settingsKey, string labelName)
+    {
+        var executablePath = await _labelViewLauncher.ResolveExecutablePathAsync();
+        if (string.IsNullOrWhiteSpace(executablePath))
+        {
+            await RedirectToSettingsPageAsync(
+                typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                "LabelView is not configured. Opening LabelView settings."
+            );
+            return;
+        }
+
+        var labelPath = await _dunnageSettings.GetStringAsync(settingsKey);
+        if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
+        {
+            await RedirectToSettingsPageAsync(
+                typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
+                $"{labelName} path is missing or invalid. Opening Dunnage label settings."
+            );
+            return;
+        }
+
+        var launchResult = await _labelViewLauncher.LaunchLabelAsync(labelPath);
+        if (!launchResult.IsSuccess)
+        {
+            await _errorHandler.HandleDaoErrorAsync(launchResult, nameof(OpenLabelAsync));
+            return;
+        }
+
+        StatusMessage = $"{labelName} opened in LabelView.";
+    }
+
+    private async Task RedirectToSettingsPageAsync(Type pageType, string statusMessage)
+    {
+        var navigationSucceeded = await _windowService.NavigateToSettingsPageAsync(pageType);
+        StatusMessage = navigationSucceeded
+            ? statusMessage
+            : $"{statusMessage} Unable to navigate automatically.";
     }
 
     #endregion

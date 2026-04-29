@@ -51,6 +51,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
@@ -117,15 +118,25 @@
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
             </StackPanel>
 
-            <!--  Center help button  -->
-            <Button
+            <!--  Right-aligned utility buttons  -->
+            <StackPanel
                 Grid.Column="2"
                 HorizontalAlignment="Right"
-                Click="HelpButton_Click"
-                Style="{StaticResource WindowChromeStyle}"
-                ToolTipService.ToolTip="Click for help about the current step">
-                <FontIcon FontSize="16" Glyph="&#xE946;" />
-            </Button>
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Command="{x:Bind ViewModel.OpenDunnageLabelCommand}"
+                    Style="{StaticResource WindowChromeStyle}"
+                    ToolTipService.ToolTip="Open Dunnage Label">
+                    <FontIcon FontSize="16" Glyph="&#xE8A5;" />
+                </Button>
+                <Button
+                    Click="HelpButton_Click"
+                    Style="{StaticResource WindowChromeStyle}"
+                    ToolTipService.ToolTip="Click for help about the current step">
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                </Button>
+            </StackPanel>
 
             <!--  Right-aligned navigation buttons (wizard flow)  -->
             <StackPanel

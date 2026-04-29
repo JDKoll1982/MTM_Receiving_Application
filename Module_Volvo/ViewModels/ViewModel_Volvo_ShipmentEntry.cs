@@ -24,6 +24,7 @@ using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+using MTM_Receiving_Application.Module_Volvo.Settings;
 using Windows.ApplicationModel.DataTransfer;
 using AppInfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
@@ -38,8 +39,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private readonly IService_InforVisual _inforVisualService;
     private readonly IService_ReceivingValidation _receivingValidation;
 
+    private readonly IService_LabelViewLauncher _labelViewLauncher;
     private readonly IService_ReportingClipboard _reportingClipboard;
     private readonly IService_VolvoRecipientSettings _recipientSettings;
+    private readonly IService_VolvoSettings _volvoSettings;
     private readonly Views.View_Volvo_GeneratedLabelDataDialog? _generatedLabelDataDialog;
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
@@ -54,8 +57,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IMediator mediator,
         IService_InforVisual inforVisualService,
         IService_ReceivingValidation receivingValidation,
+        IService_LabelViewLauncher labelViewLauncher,
         IService_ReportingClipboard reportingClipboard,
         IService_VolvoRecipientSettings recipientSettings,
+        IService_VolvoSettings volvoSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -70,10 +75,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         _receivingValidation =
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
+        _labelViewLauncher =
+            labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
         _reportingClipboard =
             reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
         _recipientSettings =
             recipientSettings ?? throw new ArgumentNullException(nameof(recipientSettings));
+        _volvoSettings = volvoSettings ?? throw new ArgumentNullException(nameof(volvoSettings));
         _generatedLabelDataDialog = generatedLabelDataDialog;
         _windowService = windowService;
         _sessionManager = sessionManager;
@@ -937,6 +945,39 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
     }
 
+    [RelayCommand]
+    private async Task OpenVolvoLabelAsync()
+    {
+        var executablePath = await _labelViewLauncher.ResolveExecutablePathAsync();
+        if (string.IsNullOrWhiteSpace(executablePath))
+        {
+            await RedirectToSettingsPageAsync(
+                typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                "LabelView is not configured. Opening LabelView settings."
+            );
+            return;
+        }
+
+        var labelPath = await _volvoSettings.GetStringAsync(VolvoSettingsKeys.Labels.VolvoLabelPath);
+        if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
+        {
+            await RedirectToSettingsPageAsync(
+                typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
+                "Volvo Label path is missing or invalid. Opening Volvo label settings."
+            );
+            return;
+        }
+
+        var launchResult = await _labelViewLauncher.LaunchLabelAsync(labelPath);
+        if (!launchResult.IsSuccess)
+        {
+            await _errorHandler.HandleDaoErrorAsync(launchResult, nameof(OpenVolvoLabelAsync));
+            return;
+        }
+
+        StatusMessage = "Volvo Label opened in LabelView.";
+    }
+
     private async Task ShowEmailPreviewDialogAsync(Model_VolvoEmailData emailData)
     {
         try
@@ -1054,6 +1095,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 nameof(ViewLabelDataAsync)
             );
         }
+    }
+
+    private async Task RedirectToSettingsPageAsync(Type pageType, string statusMessage)
+    {
+        var navigationSucceeded = await _windowService.NavigateToSettingsPageAsync(pageType);
+        StatusMessage = navigationSucceeded
+            ? statusMessage
+            : $"{statusMessage} Unable to navigate automatically.";
     }
 
     private Model_VolvoEmailPreviewDialog BuildEmailPreviewDialogModel(

@@ -141,6 +141,8 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     {
         return new ViewModel_Dunnage_WorkFlowViewModel(
             workflow.Object,
+            new Mock<IService_DunnageSettings>().Object,
+            new Mock<IService_LabelViewLauncher>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Window>().Object,
