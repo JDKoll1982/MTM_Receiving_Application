@@ -55,6 +55,8 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         /// </summary>
         private void ConfigureWindow()
         {
+            this.ApplySharedIcon();
+
             // Use custom title bar with transparent styling
             this.UseCustomTitleBar();
             this.HideTitleBarIcon();

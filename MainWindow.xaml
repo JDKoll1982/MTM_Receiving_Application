@@ -61,7 +61,7 @@
                 Width="16"
                 Height="16"
                 Margin="8,0,4,0"
-                Source="Assets/MTMIcon.ico" />
+                Source="Assets/Square44x44Logo.scale-200.png" />
 
             <!--  App Title  -->
             <TextBlock

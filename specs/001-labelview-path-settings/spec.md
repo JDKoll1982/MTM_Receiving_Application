@@ -13,7 +13,14 @@ As a user who needs to launch label files from the application, I need a core se
 
 **Why this priority**: No label-launch workflow can succeed unless the application can resolve a valid `LV.exe` path first.
 
-**Independent Test**: A user can open the core settings area, see the default LabelView path, enter or update a custom path that points to `LV.exe`, save it, reopen the page, and verify the saved value is still available.
+**Independent Test**: 
+1. User navigates to core settings and locates the LabelView settings card.
+2. User clicks the card and opens the LabelView settings page.
+3. User observes the default path `C:\Program Files (x86)\Teklynx\LABELVIEW 2022\LV.exe` is displayed.
+4. User enters or modifies the executable path to point to a valid `LV.exe` file.
+5. User saves the new path.
+6. User closes and reopens the LabelView settings page.
+7. User verifies the saved custom path is still displayed and persisted through the existing Settings Core MySQL settings store.
 
 **Acceptance Scenarios**:
 
@@ -30,7 +37,7 @@ As a user managing label templates, I need module-specific settings pages for Re
 
 **Why this priority**: Label launching depends on correct label file locations, and each module owns a distinct set of labels.
 
-**Independent Test**: A user can open each module's settings navigation page, access a new label settings card, enter label paths, save them, and verify the saved values remain available on return.
+**Independent Test**: A user can open each module's settings navigation page, access a new label settings card, enter label paths, save them, and verify the saved values remain available on return from the existing Settings Core MySQL settings store.
 
 **Acceptance Scenarios**:
 
@@ -67,6 +74,7 @@ As a Receiving user working in the main workflow, I need quick-access buttons fo
 - The user enters a path that points to a folder, a different executable name, or a non-label file.
 - The user lacks permission to open the resolved executable or label file.
 - A redirect target exists in settings navigation, but the settings page was not yet initialized in the current session.
+- A setting definition exists for a new path key but no MySQL row has been created yet, so first-load behavior must resolve the registered default without falling back to local config files.
 
 ## Requirements *(mandatory)*
 
@@ -83,7 +91,7 @@ As a Receiving user working in the main workflow, I need quick-access buttons fo
 - **FR-009**: The Dunnage settings navigation page MUST include a new card that routes the user to the Dunnage label settings page.
 - **FR-010**: The system MUST provide a Volvo label settings page with a configurable path for `Volvo Label`.
 - **FR-011**: The Volvo settings navigation page MUST include a new card that routes the user to the Volvo label settings page.
-- **FR-012**: The system MUST persist the saved LabelView executable path and all saved label file paths across application sessions.
+- **FR-012**: The system MUST persist the saved LabelView executable path and all saved label file paths across application sessions in the existing Settings Core MySQL settings database.
 - **FR-013**: The Receiving workflow bottom action row in `Module_Receiving/Views/View_Receiving_Workflow.xaml` MUST include two new buttons labeled `Receiving Label` and `Mini-Receiving Label`.
 - **FR-014**: Before launching any label file, the system MUST resolve a valid LabelView executable by first using a saved executable path when valid, otherwise checking the default path, and otherwise redirecting the user to the core LabelView settings page.
 - **FR-015**: The system MUST validate the selected label's configured path before launch and redirect the user to the corresponding module label settings page if the path is missing or invalid.
@@ -92,11 +100,13 @@ As a Receiving user working in the main workflow, I need quick-access buttons fo
 - **FR-018**: Redirect behavior from the Receiving workflow MUST take the user directly to the missing configuration page relevant to the failed pre-launch check.
 - **FR-019**: The system MUST preserve the existing workflow navigation buttons and bottom-row behavior while adding the two new Receiving label buttons.
 - **FR-020**: The system MUST support distinct saved label file paths for each configured label name rather than sharing one path across modules.
+- **FR-021**: The system MUST read and write all new LabelView and label-file paths through the existing Settings Core settings infrastructure used by current settings pages, using category/key-based settings persisted by the MySQL settings stored procedures rather than local appsettings files, registry-only storage, or transient in-memory state.
+- **FR-022**: The system MUST define registry-backed settings entries for each new path so the current settings pipeline can resolve defaults, validate allowed values, and persist the values consistently with existing settings behavior.
 
 ### Key Entities *(include if feature involves data)*
 
-- **LabelView Executable Setting**: Stores the resolved or user-entered path to `LV.exe`, including the default fallback location used when no custom path is available.
-- **Module Label Path Setting**: Stores a label name and its file path for a specific module, including `Receiving Label`, `Mini-Receiving Label`, `Dunnage Label`, and `Volvo Label`.
+- **LabelView Executable Setting**: A Settings Core category/key record stored in the MySQL settings database that holds the resolved or user-entered path to `LV.exe`, including the default fallback location used when no custom path has been saved yet.
+- **Module Label Path Setting**: A Settings Core category/key record stored in the MySQL settings database that holds a label name and its file path for a specific module, including `Receiving Label`, `Mini-Receiving Label`, `Dunnage Label`, and `Volvo Label`.
 - **Label Launch Request**: Represents a user action to open one specific label from the UI and the pre-launch validation outcome that either launches the file or redirects to settings.
 
 ## Success Criteria *(mandatory)*
@@ -107,4 +117,4 @@ As a Receiving user working in the main workflow, I need quick-access buttons fo
 - **SC-002**: A user can navigate to each new module label settings page from its module settings landing page in no more than 2 interactions.
 - **SC-003**: When valid executable and label paths are present, each Receiving workflow label button opens the intended label through LabelView in a single user action.
 - **SC-004**: When setup is incomplete, selecting a Receiving workflow label button routes the user to the correct settings page without attempting an invalid launch in 100% of tested scenarios.
-- **SC-005**: Saved executable and label paths remain available after closing and reopening the application.
+- **SC-005**: Saved executable and label paths remain available after closing and reopening the application because they are retrieved again from the existing Settings Core MySQL settings database.

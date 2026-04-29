@@ -60,6 +60,7 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
         _logger = serviceProvider.GetRequiredService<IService_LoggingUtility>();
 
         _logger.LogInfo("View_Settings_CoreWindow initialized", "Settings.CoreWindow");
+        this.ApplySharedIcon(_logger);
 
         SettingsFrame.Navigated += OnSettingsFrameNavigated;
 

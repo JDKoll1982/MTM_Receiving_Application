@@ -32,6 +32,7 @@ public sealed class View_Volvo_ShipmentHistoryDetailWindow : Window
             windowContent.RequestedTheme = mainContent.RequestedTheme;
         }
 
+        this.ApplySharedIcon();
         ExtendsContentIntoTitleBar = true;
         _contentPage.Loaded += OnContentPageLoaded;
         WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1180, 860);

@@ -40,6 +40,8 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
             Debug.WriteLine($"Failed to get logging service: {ex.Message}");
         }
 
+        this.ApplySharedIcon(_loggingService);
+
         // Custom Title Bar
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);

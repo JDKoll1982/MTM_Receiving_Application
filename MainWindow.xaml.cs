@@ -9,6 +9,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
@@ -140,8 +141,8 @@ namespace MTM_Receiving_Application
             // Configure custom title bar
             ConfigureTitleBar();
 
-            // Set window icon
-            SetWindowIcon();
+            // Apply the shared window icon so published builds match debug behavior.
+            this.ApplySharedIcon(_logger);
 
             // Set user display from current session
             if (_sessionManager.CurrentSession?.User != null)
@@ -1454,58 +1455,6 @@ namespace MTM_Receiving_Application
                 titleBar.ButtonHoverForegroundColor = foregroundColor;
                 titleBar.ButtonPressedForegroundColor = foregroundColor;
                 titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 96, 96, 96);
-            }
-        }
-
-        /// <summary>
-        /// Set the custom window icon
-        /// </summary>
-        private void SetWindowIcon()
-        {
-            try
-            {
-                // Try multiple icon paths
-                var iconPaths = new[]
-                {
-                    System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "MTMIcon.ico"),
-                    System.IO.Path.Combine(AppContext.BaseDirectory, "MTMIcon.ico"),
-                    "Assets/MTMIcon.ico",
-                    "MTMIcon.ico",
-                };
-
-                string? foundIconPath = null;
-                foreach (var path in iconPaths)
-                {
-                    if (System.IO.File.Exists(path))
-                    {
-                        foundIconPath = path;
-                        break;
-                    }
-                }
-
-                if (foundIconPath != null)
-                {
-                    AppWindow.SetIcon(foundIconPath);
-                    _logger?.LogInfo(
-                        $"Window icon set successfully: {foundIconPath}",
-                        "MainWindow"
-                    );
-                }
-                else
-                {
-                    _logger?.LogWarning(
-                        $"Icon file not found. Searched paths: {string.Join(", ", iconPaths)}",
-                        "MainWindow"
-                    );
-                    _logger?.LogWarning(
-                        $"Current directory: {AppContext.BaseDirectory}",
-                        "MainWindow"
-                    );
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError($"Failed to set window icon: {ex.Message}", ex, "MainWindow");
             }
         }
 

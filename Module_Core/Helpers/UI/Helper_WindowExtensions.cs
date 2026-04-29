@@ -1,5 +1,7 @@
+using System;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using WinRT.Interop;
 
 namespace MTM_Receiving_Application.Module_Core.Helpers.UI;
@@ -10,6 +12,8 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI;
 /// </summary>
 public static class Helper_WindowExtensions
 {
+    private const string SharedWindowIconRelativePath = "Assets\\MTMIcon.ico";
+
     /// <summary>
     /// Sets the window size
     /// </summary>
@@ -72,6 +76,43 @@ public static class Helper_WindowExtensions
     }
 
     /// <summary>
+    /// Applies the shared application icon to a top-level window so the taskbar and window
+    /// frame use the same icon in packaged and unpackaged runs.
+    /// </summary>
+    /// <param name="window">The window to configure.</param>
+    /// <param name="logger">Optional logger for diagnostic output.</param>
+    public static void ApplySharedIcon(
+        this Window window,
+        IService_LoggingUtility? logger = null
+    )
+    {
+        ArgumentNullException.ThrowIfNull(window);
+
+        var iconPath = System.IO.Path.Combine(AppContext.BaseDirectory, SharedWindowIconRelativePath);
+        if (!System.IO.File.Exists(iconPath))
+        {
+            logger?.LogWarning(
+                $"Shared window icon was not found at '{iconPath}'.",
+                nameof(Helper_WindowExtensions)
+            );
+            return;
+        }
+
+        try
+        {
+            window.GetAppWindow().SetIcon(iconPath);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(
+                $"Failed to apply the shared window icon from '{iconPath}'.",
+                ex,
+                nameof(Helper_WindowExtensions)
+            );
+        }
+    }
+
+    /// <summary>
     /// Extends content into the title bar area (custom title bar)
     /// </summary>
     /// <param name="window">The window to configure</param>
@@ -95,7 +136,7 @@ public static class Helper_WindowExtensions
         var titleBar = appWindow.TitleBar;
 
         var presenter = appWindow.Presenter;
-        
+
         titleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonInactiveForegroundColor = Microsoft.UI.Colors.Transparent;
@@ -103,7 +144,6 @@ public static class Helper_WindowExtensions
         titleBar.ButtonHoverForegroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonPressedBackgroundColor = Microsoft.UI.Colors.Transparent;
         titleBar.ButtonPressedForegroundColor = Microsoft.UI.Colors.Transparent;
-
     }
 
     /// <summary>
