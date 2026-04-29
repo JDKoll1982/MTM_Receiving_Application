@@ -34,18 +34,44 @@
 
                         <StackPanel Spacing="4">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Receiving Label" />
-                            <TextBox
-                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                                PlaceholderText="Select the main Receiving .lbl file"
-                                Text="{x:Bind ViewModel.ReceivingLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    Grid.Column="0"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                    PlaceholderText="Select the main Receiving .lbl file"
+                                    Text="{x:Bind ViewModel.ReceivingLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
+                                    CommandParameter="{x:Bind ViewModel.ReceivingLabelPath, Mode=OneWay}"
+                                    Content="Open Folder"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            </Grid>
                         </StackPanel>
 
                         <StackPanel Spacing="4">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Mini-Receiving Label" />
-                            <TextBox
-                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                                PlaceholderText="Select the mini Receiving .lbl file"
-                                Text="{x:Bind ViewModel.MiniReceivingLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    Grid.Column="0"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                    PlaceholderText="Select the mini Receiving .lbl file"
+                                    Text="{x:Bind ViewModel.MiniReceivingLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
+                                    CommandParameter="{x:Bind ViewModel.MiniReceivingLabelPath, Mode=OneWay}"
+                                    Content="Open Folder"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            </Grid>
                         </StackPanel>
 
                         <TextBlock

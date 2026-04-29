@@ -2,7 +2,7 @@
   "id": "settings-volvo-shell",
   "module": "Module_Settings.Volvo",
   "name": "Volvo Settings Shell",
-  "summary": "Volvo settings now expose card-based navigation to the part catalog, a persisted To/CC recipient editor used by the Volvo email preview dialog, and a label-files page for the Volvo LabelView template path.",
+  "summary": "Volvo settings now expose card-based navigation to the part catalog, a persisted To/CC recipient editor used by the Volvo email preview dialog, and a label-files page for the Volvo LabelView template path with an open-folder shortcut.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
@@ -48,6 +48,7 @@
       "Part catalog summary cards",
       "Recipient settings card",
       "Label files card",
+      "Open-folder button for the saved Volvo label path",
       "To recipient cards",
       "CC recipient cards",
       "Part catalog data grid",
@@ -59,6 +60,7 @@
       "Review, add, edit, deactivate, and import Volvo part master-data rows",
       "Open Volvo settings into the part catalog or recipient editor",
       "Save the Volvo LabelView template path used for label launching",
+      "Open File Explorer for the saved Volvo label folder or Documents when the folder is not available yet",
       "Add, edit, and delete Volvo To and CC recipients",
       "Review selected part details and related component records"
     ],
@@ -76,6 +78,7 @@
       "Confirm the part catalog page loads the Volvo part list and still launches add, edit, deactivate, and component-review actions",
       "Confirm the Volvo settings shell opens the Part Catalog, Email Recipients, and Label Files cards",
       "Confirm the Label Files page validates and saves the Volvo .lbl path",
+      "Confirm the Label Files page opens the saved Volvo label folder or Documents from its Open Folder button",
       "Confirm recipient cards can be added, edited, and deleted without using a data table",
       "Confirm saved Volvo recipients appear in the Volvo email preview dialog"
     ],

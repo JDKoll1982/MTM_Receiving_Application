@@ -2,7 +2,7 @@
   "id": "settings-core-shell-navigation",
   "module": "Module_Settings.Core",
   "name": "Settings Shell And Navigation",
-  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page and the LabelView executable page.",
+  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page and the LabelView executable page, which now includes an open-folder shortcut for the saved executable path.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
@@ -69,6 +69,7 @@
       "LabelView settings card",
       "Built-in back navigation",
       "Cancel, save, and reset actions",
+      "Open-folder shortcut for the LabelView executable path",
       "Placeholder content"
     ],
     "userActions": [
@@ -77,6 +78,7 @@
       "Move between settings areas",
       "Open the Material Availability field settings page from the Core hub",
       "Open the LabelView executable settings page from the Core hub",
+      "Open File Explorer for the saved LabelView executable folder or Documents when no folder is available",
       "Return to the originating module's default route after leaving settings mode",
       "Use the built-in back button to return to the active module hub",
       "Understand which navigation actions are available",
@@ -98,6 +100,7 @@
       "Confirm visible steps still match the current button page after whole-collection replacement",
       "Confirm the new Material Availability card opens the dedicated settings page and updates the shell header",
       "Confirm the new LabelView card opens the executable settings page and updates the shell header",
+      "Confirm the LabelView executable page opens the saved folder or Documents from its Open Folder button",
       "Confirm the built-in back button returns to the selected module hub when a child page is active",
       "Confirm the shell still hosts the selected settings page correctly"
     ]

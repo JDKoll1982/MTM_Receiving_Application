@@ -14,4 +14,6 @@ public interface IService_LabelViewLauncher
     Task<string?> ResolveExecutablePathAsync();
 
     Task<Model_Dao_Result> LaunchLabelAsync(string labelFilePath);
+
+    Task<Model_Dao_Result> OpenFolderForPathAsync(string? configuredPath);
 }

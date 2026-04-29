@@ -47,6 +47,19 @@ public partial class ViewModel_Settings_LabelViewExecutable : ViewModel_Shared_B
     }
 
     [RelayCommand]
+    private async Task OpenFolderAsync(string? configuredPath)
+    {
+        var result = await _labelViewLauncher.OpenFolderForPathAsync(configuredPath);
+        if (!result.IsSuccess)
+        {
+            await _errorHandler.HandleDaoErrorAsync(result, nameof(OpenFolderAsync));
+            return;
+        }
+
+        StatusMessage = "Opened File Explorer for the current path.";
+    }
+
+    [RelayCommand]
     private async Task SaveAsync()
     {
         if (IsBusy)

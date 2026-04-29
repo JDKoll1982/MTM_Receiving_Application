@@ -259,19 +259,33 @@
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                <Button Command="{x:Bind ViewModel.OpenReceivingLabelCommand}" Content="Receiving Label" />
-                <Button Command="{x:Bind ViewModel.OpenMiniReceivingLabelCommand}" Content="Mini-Receiving Label" />
             </StackPanel>
 
-            <!--  Center help button  -->
-            <Button
+            <!--  Right-aligned utility buttons  -->
+            <StackPanel
                 Grid.Column="2"
                 HorizontalAlignment="Right"
-                Click="HelpButton_Click"
-                Style="{StaticResource WindowChromeStyle}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
-                <FontIcon FontSize="16" Glyph="&#xE946;" />
-            </Button>
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Command="{x:Bind ViewModel.OpenReceivingLabelCommand}"
+                    Style="{StaticResource WindowChromeStyle}"
+                    ToolTipService.ToolTip="Open Receiving Label">
+                    <FontIcon FontSize="16" Glyph="&#xE8A5;" />
+                </Button>
+                <Button
+                    Command="{x:Bind ViewModel.OpenMiniReceivingLabelCommand}"
+                    Style="{StaticResource WindowChromeStyle}"
+                    ToolTipService.ToolTip="Open Mini-Receiving Label">
+                    <FontIcon FontSize="16" Glyph="&#xE7C3;" />
+                </Button>
+                <Button
+                    Click="HelpButton_Click"
+                    Style="{StaticResource WindowChromeStyle}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                </Button>
+            </StackPanel>
 
             <!--  Center navigation buttons  -->
             <StackPanel

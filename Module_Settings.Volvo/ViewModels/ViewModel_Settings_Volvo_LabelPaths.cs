@@ -38,6 +38,19 @@ public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
     }
 
     [RelayCommand]
+    private async Task OpenFolderAsync(string? configuredPath)
+    {
+        var result = await _labelViewLauncher.OpenFolderForPathAsync(configuredPath);
+        if (!result.IsSuccess)
+        {
+            await _errorHandler.HandleDaoErrorAsync(result, nameof(OpenFolderAsync));
+            return;
+        }
+
+        StatusMessage = "Opened File Explorer for the current path.";
+    }
+
+    [RelayCommand]
     private async Task SaveAsync()
     {
         if (IsBusy)

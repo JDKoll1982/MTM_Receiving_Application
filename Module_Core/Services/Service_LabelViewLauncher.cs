@@ -11,6 +11,10 @@ namespace MTM_Receiving_Application.Module_Core.Services;
 
 public class Service_LabelViewLauncher : IService_LabelViewLauncher
 {
+    private static readonly string DocumentsFolder = Environment.GetFolderPath(
+        Environment.SpecialFolder.MyDocuments
+    );
+
     private readonly IService_LoggingUtility _logger;
     private readonly IService_SettingsCoreFacade _settingsCore;
 
@@ -80,18 +84,21 @@ public class Service_LabelViewLauncher : IService_LabelViewLauncher
             );
         }
 
+        var workingDirectory = ResolveFolderToOpen(labelFilePath);
+
         try
         {
             Process.Start(
-                new ProcessStartInfo(executablePath!, $"\"{labelFilePath}\"")
+                new ProcessStartInfo(labelFilePath)
                 {
                     UseShellExecute = true,
-                    WorkingDirectory = Path.GetDirectoryName(labelFilePath) ?? string.Empty,
+                    Verb = "open",
+                    WorkingDirectory = workingDirectory,
                 }
             );
 
             _logger.LogInfo(
-                $"Opened label '{labelFilePath}' with LabelView '{executablePath}'.",
+                $"Opened label '{labelFilePath}' through the Windows shell after validating LabelView '{executablePath}'.",
                 nameof(Service_LabelViewLauncher)
             );
 
@@ -100,7 +107,7 @@ public class Service_LabelViewLauncher : IService_LabelViewLauncher
         catch (Exception ex)
         {
             _logger.LogError(
-                $"Failed to open label '{labelFilePath}' with LabelView '{executablePath}': {ex.Message}",
+                $"Failed to open label '{labelFilePath}' through the Windows shell after validating LabelView '{executablePath}': {ex.Message}",
                 ex,
                 nameof(Service_LabelViewLauncher)
             );
@@ -110,5 +117,70 @@ public class Service_LabelViewLauncher : IService_LabelViewLauncher
                 ex
             );
         }
+    }
+
+    public Task<Model_Dao_Result> OpenFolderForPathAsync(string? configuredPath)
+    {
+        var folderPath = ResolveFolderToOpen(configuredPath);
+
+        try
+        {
+            Process.Start(
+                new ProcessStartInfo("explorer.exe", $"\"{folderPath}\"")
+                {
+                    UseShellExecute = true,
+                    WorkingDirectory = folderPath,
+                }
+            );
+
+            _logger.LogInfo(
+                $"Opened folder '{folderPath}' for configured path '{configuredPath ?? string.Empty}'.",
+                nameof(Service_LabelViewLauncher)
+            );
+
+            return Task.FromResult(Model_Dao_Result_Factory.Success());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                $"Failed to open folder '{folderPath}' for configured path '{configuredPath ?? string.Empty}': {ex.Message}",
+                ex,
+                nameof(Service_LabelViewLauncher)
+            );
+
+            return Task.FromResult(
+                Model_Dao_Result_Factory.Failure($"Failed to open File Explorer: {ex.Message}", ex)
+            );
+        }
+    }
+
+    private static string ResolveFolderToOpen(string? configuredPath)
+    {
+        var sanitizedPath = configuredPath?.Trim().Trim('"') ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(sanitizedPath))
+        {
+            return DocumentsFolder;
+        }
+
+        if (Directory.Exists(sanitizedPath))
+        {
+            return sanitizedPath;
+        }
+
+        if (File.Exists(sanitizedPath))
+        {
+            return Path.GetDirectoryName(sanitizedPath) ?? DocumentsFolder;
+        }
+
+        var parentDirectory = Path.GetDirectoryName(sanitizedPath);
+        if (
+            string.IsNullOrWhiteSpace(parentDirectory) is false
+            && Directory.Exists(parentDirectory)
+        )
+        {
+            return parentDirectory;
+        }
+
+        return DocumentsFolder;
     }
 }

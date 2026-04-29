@@ -34,10 +34,23 @@
 
                         <StackPanel Spacing="4">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Volvo Label" />
-                            <TextBox
-                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                                PlaceholderText="Select the Volvo .lbl file"
-                                Text="{x:Bind ViewModel.VolvoLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    Grid.Column="0"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                    PlaceholderText="Select the Volvo .lbl file"
+                                    Text="{x:Bind ViewModel.VolvoLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
+                                    CommandParameter="{x:Bind ViewModel.VolvoLabelPath, Mode=OneWay}"
+                                    Content="Open Folder"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            </Grid>
                         </StackPanel>
 
                         <TextBlock

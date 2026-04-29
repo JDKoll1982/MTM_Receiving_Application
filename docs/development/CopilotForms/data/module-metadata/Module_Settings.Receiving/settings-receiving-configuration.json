@@ -2,7 +2,7 @@
   "id": "settings-receiving-configuration",
   "module": "Module_Settings.Receiving",
   "name": "Receiving Settings Configuration",
-  "summary": "Category-based Receiving settings workflow rebuilt around live behavior: entry defaults, validation rules, separate part formatting and reconciliation pages, workflow defaults, a keyboard shortcuts page backed by reusable shared shortcut models and helpers so other workflow modules can adopt the same pattern, and a label-files page for the Receiving Label and Mini-Receiving Label template paths.",
+  "summary": "Category-based Receiving settings workflow rebuilt around live behavior: entry defaults, validation rules, separate part formatting and reconciliation pages, workflow defaults, a keyboard shortcuts page backed by reusable shared shortcut models and helpers so other workflow modules can adopt the same pattern, and a label-files page for the Receiving Label and Mini-Receiving Label template paths with open-folder shortcuts for each saved location.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_CategoryHub.cs",
@@ -94,6 +94,7 @@
       "Shortcut modifier toggles",
       "Simple navigation toggle",
       "Receiving label path editors",
+      "Open-folder buttons for each saved label path",
       "Save and reset actions"
     ],
     "userActions": [
@@ -108,6 +109,7 @@
       "Customize Receiving workflow keyboard shortcuts",
       "Enable or disable the Ctrl+T simple navigation toggle",
       "Save the Receiving Label and Mini-Receiving Label template paths",
+      "Open File Explorer for a saved label folder or Documents when a folder is not available yet",
       "Enable or disable InforVisual mock data when the signed-in user has Developer rights",
       "Save or reset each settings category independently"
     ],
@@ -137,6 +139,7 @@
       "Confirm ignored recommended locations still validate and persist per user",
       "Confirm the workflow-defaults page still controls startup mode and developer-only mock data",
       "Confirm the workflow-defaults startup-mode selector stays in sync with the Receiving mode-selection default-mode checkboxes and still applies after relaunch",
+      "Confirm each label-path Open Folder button opens the saved label folder or Documents when the folder cannot be resolved",
       "Confirm shortcut changes persist per user and reload into the workflow at runtime",
       "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys",
       "Confirm the Label Files page validates and saves both Receiving .lbl paths",

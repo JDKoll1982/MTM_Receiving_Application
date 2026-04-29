@@ -2,7 +2,7 @@
   "id": "settings-dunnage-shell",
   "module": "Module_Settings.Dunnage",
   "name": "Dunnage Settings Shell",
-  "summary": "Category-based Dunnage settings workflow rebuilt around live setting behavior only: personal defaults, shared image assets, image presentation, workflow visuals, keyboard shortcuts, and a label-files page for the Dunnage LabelView template path. The retired overview, permissions, and audit placeholder pages remain on disk only and are no longer part of runtime navigation.",
+  "summary": "Category-based Dunnage settings workflow rebuilt around live setting behavior only: personal defaults, shared image assets, image presentation, workflow visuals, keyboard shortcuts, and a label-files page for the Dunnage LabelView template path with an open-folder shortcut. The retired overview, permissions, and audit placeholder pages remain on disk only and are no longer part of runtime navigation.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs",
@@ -74,6 +74,7 @@
       "Visual source priority selector",
       "Workflow image visibility toggles",
       "Dunnage label path editor",
+      "Open-folder button for the saved label path",
       "Shortcut key selectors",
       "Modifier toggles",
       "Ctrl+T simple navigation toggle",
@@ -89,6 +90,7 @@
       "Control when images appear during the Dunnage workflow",
       "Configure Dunnage workflow keyboard shortcuts and the Ctrl+T simple navigation toggle",
       "Save the Dunnage LabelView template path used for label launching",
+      "Open File Explorer for the saved Dunnage label folder or Documents when the folder is not available yet",
       "Save or reset each category independently"
     ],
     "preserveRules": [
@@ -105,6 +107,7 @@
     "validationHints": [
       "Confirm the Dunnage hub opens the six live category pages",
       "Confirm the Label Files page validates and saves the Dunnage .lbl path",
+      "Confirm the Label Files page opens the saved Dunnage label folder or Documents from its Open Folder button",
       "Confirm personal defaults still validate Dunnage location values with fuzzy suggestions",
       "Confirm the image-assets page updates the shared image folder and file size limit",
       "Confirm the image-presentation and workflow-visual pages preserve the existing Dunnage setting keys",
