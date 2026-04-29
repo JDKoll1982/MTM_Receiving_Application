@@ -259,6 +259,8 @@
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                <Button Command="{x:Bind ViewModel.OpenReceivingLabelCommand}" Content="Receiving Label" />
+                <Button Command="{x:Bind ViewModel.OpenMiniReceivingLabelCommand}" Content="Mini-Receiving Label" />
             </StackPanel>
 
             <!--  Center help button  -->

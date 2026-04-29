@@ -10,6 +10,7 @@ public static class DunnageSettingsDefaults
     public static IReadOnlyDictionary<string, string> StringDefaults { get; } =
         new Dictionary<string, string>
         {
+            [DunnageSettingsKeys.Labels.DunnageLabelPath] = string.Empty,
             [DunnageSettingsKeys.Application.DefaultImageLocation] = string.Empty,
             [DunnageSettingsKeys.UserPreferences.DefaultLocation] = "RECV",
             [DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize] = "96",

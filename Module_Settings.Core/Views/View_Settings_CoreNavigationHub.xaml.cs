@@ -129,6 +129,11 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         NavigateUsingServiceProvider(typeof(View_Settings_SharedPaths));
     }
 
+    private void OnNavigateLabelView(object sender, RoutedEventArgs e)
+    {
+        NavigateUsingServiceProvider(typeof(View_Settings_LabelViewExecutable));
+    }
+
     private void OnNavigateMaterialAvailabilityFields(object sender, RoutedEventArgs e)
     {
         NavigateUsingServiceProvider(typeof(View_Settings_MaterialAvailabilityBoardFields));

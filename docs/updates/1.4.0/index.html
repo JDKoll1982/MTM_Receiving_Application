@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application — Version 1.4.0</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 1.4.0</h1>
+                    <p class="hero-copy">This update adds quick label-launch support in Receiving and introduces new settings pages that let your team manage the LabelView program path and the label template files used by Receiving, Dunnage, and Volvo.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 1.4.0</span>
+                <span class="meta-text">Released April 29, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+                <p class="sidebar-note">Use this page when you need the release version while talking with a supervisor or the MTM support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What's new in this release</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Receiving label buttons</p>
+                            <p class="highlight-text">The Receiving workflow now includes quick buttons for the main Receiving Label and the Mini-Receiving Label.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Central LabelView setup</p>
+                            <p class="highlight-text">A new settings page lets IT or supervisors save the LabelView executable path once instead of relying on each user to browse for it.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Per-module label file paths</p>
+                            <p class="highlight-text">Receiving, Dunnage, and Volvo now each have dedicated settings pages for the label templates their teams use.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="setup">Setup</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Receiving can open label templates directly from the workflow</summary>
+                        <p>
+                            Two new buttons were added to the Receiving workflow footer: <strong>Receiving Label</strong>
+                            and <strong>Mini-Receiving Label</strong>. When those label paths are configured, the app opens
+                            the selected LabelView template directly instead of making users leave the workflow to find it manually.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="setup" open>
+                        <summary>New LabelView executable settings page</summary>
+                        <p>
+                            The Settings area now includes a dedicated <strong>LabelView</strong> page under the Core hub.
+                            That page stores the full path to <strong>LV.exe</strong> and keeps the expected default install path visible,
+                            which makes setup easier on shared workstations and after machine replacement.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="setup" open>
+                        <summary>Receiving, Dunnage, and Volvo each have label-file settings pages</summary>
+                        <p>
+                            New <strong>Label Files</strong> pages were added to the Receiving, Dunnage, and Volvo settings hubs.
+                            These pages save the exact <strong>.lbl</strong> template paths used by each area, so operators and supervisors
+                            can keep setup organized by workflow instead of relying on shared notes or manual file browsing.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Missing setup now sends users to the right settings page</summary>
+                        <p>
+                            If LabelView is not configured yet, or if a required label file path is missing, the new Receiving buttons
+                            route the user to the matching settings page instead of failing silently. This makes first-time setup and support
+                            troubleshooting much clearer.
+                        </p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means for daily work</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Fewer extra steps</h3>
+                            <p>Operators can get to the right label template faster because the workflow now opens the file directly when setup is already complete.</p>
+                        </article>
+                        <article>
+                            <h3>Cleaner setup</h3>
+                            <p>Supervisors and IT now have clear pages for the LabelView program path and each workflow's template files instead of relying on workstation memory.</p>
+                        </article>
+                        <article>
+                            <h3>Easier support handoff</h3>
+                            <p>When something is missing, the app points users to the exact settings page that needs attention, which reduces back-and-forth during support calls.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>No immediate action is required</h2>
+                    </div>
+                    <p class="action-state success">No action is required to keep using your current workflows.</p>
+                    <ul class="action-list">
+                        <li>If your team wants to use the new quick label buttons, have a supervisor or IT confirm the LabelView path in Settings.</li>
+                        <li>Have the appropriate Receiving, Dunnage, or Volvo label template paths entered once for the workstation or environment.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Questions or setup issues?</h2>
+                    </div>
+                    <p>
+                        If a label button does not open the expected template after the update, note the version number shown at the top of
+                        this page (<strong>1.4.0</strong>) and contact your supervisor or the MTM IT support team. They should verify the
+                        LabelView executable path first, then the module-specific label file path.
+                    </p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

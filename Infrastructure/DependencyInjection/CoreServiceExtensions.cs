@@ -59,6 +59,7 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_Notification, Service_Notification>();
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
+        services.AddSingleton<IService_LabelViewLauncher, Service_LabelViewLauncher>();
         services.AddSingleton<IService_Help, Service_Help>();
         services.AddSingleton<IService_ThemeManager, Service_ThemeManager>();
         services.AddSingleton(_ =>

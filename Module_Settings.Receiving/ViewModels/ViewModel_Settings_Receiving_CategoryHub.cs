@@ -44,6 +44,10 @@ public sealed partial class ViewModel_Settings_Receiving_CategoryHub
             new Model_SettingsNavigationStep(
                 "Keyboard Shortcuts",
                 typeof(Views.View_Settings_Receiving_KeyboardShortcuts)
+            ),
+            new Model_SettingsNavigationStep(
+                "Label Files",
+                typeof(Views.View_Settings_Receiving_LabelPaths)
             )
         );
     }

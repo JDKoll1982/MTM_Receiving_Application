@@ -5,6 +5,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Settings;
 /// </summary>
 public static class ReceivingSettingsKeys
 {
+    public static class Labels
+    {
+        public const string ReceivingLabelPath = "Receiving.Labels.ReceivingLabelPath";
+        public const string MiniReceivingLabelPath = "Receiving.Labels.MiniReceivingLabelPath";
+    }
+
     public static class UiText
     {
         public const string ModeSelectionGuidedTitle = "Receiving.UiText.ModeSelection.GuidedTitle";

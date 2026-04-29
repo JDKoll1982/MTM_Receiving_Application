@@ -2,7 +2,7 @@
   "id": "settings-receiving-configuration",
   "module": "Module_Settings.Receiving",
   "name": "Receiving Settings Configuration",
-  "summary": "Category-based Receiving settings workflow rebuilt around live behavior: entry defaults, validation rules, separate part formatting and reconciliation pages, workflow defaults, and a keyboard shortcuts page backed by reusable shared shortcut models and helpers so other workflow modules can adopt the same pattern.",
+  "summary": "Category-based Receiving settings workflow rebuilt around live behavior: entry defaults, validation rules, separate part formatting and reconciliation pages, workflow defaults, a keyboard shortcuts page backed by reusable shared shortcut models and helpers so other workflow modules can adopt the same pattern, and a label-files page for the Receiving Label and Mini-Receiving Label template paths.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_CategoryHub.cs",
@@ -11,6 +11,7 @@
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_PartFormatting.cs",
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_WorkflowDefaults.cs",
     "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_KeyboardShortcuts.cs",
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_LabelPaths.cs",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_CategoryHub.xaml",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_CategoryHub.xaml.cs",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_EntryDefaults.xaml",
@@ -25,6 +26,8 @@
     "Module_Settings.Receiving/Views/View_Settings_Receiving_WorkflowDefaults.xaml.cs",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_KeyboardShortcuts.xaml",
     "Module_Settings.Receiving/Views/View_Settings_Receiving_KeyboardShortcuts.xaml.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_LabelPaths.xaml",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_LabelPaths.xaml.cs",
     "Module_Settings.Receiving/Models/Model_Settings_ReceivingShortcuts.cs",
     "Module_Core/Contracts/Services/IService_AppSettings.cs",
     "Module_Core/Services/Service_AppSettings.cs",
@@ -58,7 +61,8 @@
       "Part formatting",
       "Reconciliation",
       "Workflow defaults",
-      "Keyboard shortcuts"
+      "Keyboard shortcuts",
+      "Label files"
     ],
     "screens": [
       "View_Settings_Receiving_CategoryHub.xaml",
@@ -67,7 +71,8 @@
       "View_Settings_Receiving_PartFormatting.xaml",
       "View_Settings_Receiving_Reconciliation.xaml",
       "View_Settings_Receiving_WorkflowDefaults.xaml",
-      "View_Settings_Receiving_KeyboardShortcuts.xaml"
+      "View_Settings_Receiving_KeyboardShortcuts.xaml",
+      "View_Settings_Receiving_LabelPaths.xaml"
     ],
     "currentUiPatterns": ["Card list", "Form", "Split layout"],
     "desiredUiPatterns": ["Card list", "Form", "Split layout"],
@@ -84,10 +89,11 @@
       "Default receiving mode selector",
       "Workflow option toggles",
       "Developer-only InforVisual mock-data toggle",
-        "Keyboard shortcuts card",
-        "Shortcut key selectors",
-        "Shortcut modifier toggles",
-        "Simple navigation toggle",
+      "Keyboard shortcuts card",
+      "Shortcut key selectors",
+      "Shortcut modifier toggles",
+      "Simple navigation toggle",
+      "Receiving label path editors",
       "Save and reset actions"
     ],
     "userActions": [
@@ -99,8 +105,9 @@
       "Choose whether reconciliation checks all visible history",
       "Add and remove validated ignored reconciliation locations",
       "Change startup-mode and review-table defaults",
-        "Customize Receiving workflow keyboard shortcuts",
-        "Enable or disable the Ctrl+T simple navigation toggle",
+      "Customize Receiving workflow keyboard shortcuts",
+      "Enable or disable the Ctrl+T simple navigation toggle",
+      "Save the Receiving Label and Mini-Receiving Label template paths",
       "Enable or disable InforVisual mock data when the signed-in user has Developer rights",
       "Save or reset each settings category independently"
     ],
@@ -109,13 +116,15 @@
       "Keep the mock-data flag routed through IService_AppSettings",
       "Keep the existing live setting keys unchanged",
       "Keep the part-number rule reload behavior replacing the bound collection without leaving SelectedRule stale",
-        "Keep the ignored-location validation behavior aligned with Receiving location validation",
-        "Keep workflow shortcut persistence behind IService_ReceivingShortcuts so shared shortcut models and helpers stay reusable across modules"
+      "Keep the ignored-location validation behavior aligned with Receiving location validation",
+      "Keep workflow shortcut persistence behind IService_ReceivingShortcuts so shared shortcut models and helpers stay reusable across modules",
+      "Keep label template paths persisted through IService_ReceivingSettings and the shared Settings Core manifest"
     ],
     "acceptanceCriteria": [
       "Each category card opens the intended Receiving settings page",
       "Defaults, validation, part formatting, reconciliation, and workflow defaults remain separately accessible",
       "The keyboard shortcuts card opens the new settings page and saves per-user shortcut bindings",
+      "The label-files card opens the label path page and saves both Receiving template paths",
       "Metadata reflects that reconciliation scope now lives with the reconciliation preferences page instead of a separate workflow page mention",
       "Metadata does not imply the retired hub or page names are still the active runtime workflow"
     ],
@@ -128,8 +137,9 @@
       "Confirm ignored recommended locations still validate and persist per user",
       "Confirm the workflow-defaults page still controls startup mode and developer-only mock data",
       "Confirm the workflow-defaults startup-mode selector stays in sync with the Receiving mode-selection default-mode checkboxes and still applies after relaunch",
-        "Confirm shortcut changes persist per user and reload into the workflow at runtime",
-        "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys",
+      "Confirm shortcut changes persist per user and reload into the workflow at runtime",
+      "Confirm disabling the Ctrl+T toggle prevents the workflow from switching Next and Back to plain arrow keys",
+      "Confirm the Label Files page validates and saves both Receiving .lbl paths",
       "Confirm search destinations use the new category-based page names"
     ],
     "reviewFocusAreas": [

@@ -2,7 +2,7 @@
   "id": "receiving-workflow",
   "module": "Module_Receiving",
   "name": "Receiving Workflow",
-  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, runtime-configurable keyboard shortcuts, a Ctrl+T simple-navigation override for Next and Back, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, a Guided Mode recommended-locations card driven by current InforVisual stock evidence and the user ignore list, package-type updates for Manual Mode rows, a pre-review non-PO reference dialog that supports reusable saved entries plus per-part remembered defaults with overwrite confirmation, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence while requiring exact quantity matches unless one destination location holds the full matched same-day transfer quantity for the receipt group, resolving transfer destinations from the paired InforVisual movement, excluding same-location matches from review, and falling back to WC when history proves work-center transfer plus full adjustment-out, a hosted reconciliation review step that presents proposed changes before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review and recommendation display, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
+  "summary": "Primary guided, manual, and edit receiving flow with settings-driven startup, validation gates, module-scoped unsaved state, weak-event workflow notifications, final save orchestration, runtime-configurable keyboard shortcuts, footer actions that open the configured Receiving Label and Mini-Receiving Label templates through LabelView after validating both the LabelView executable path and the selected label path, a Ctrl+T simple-navigation override for Next and Back, Manual Mode part-first or PO-first part/PO resolution, textbox-based Manual Mode location entry, a Guided Mode recommended-locations card driven by current InforVisual stock evidence and the user ignore list, package-type updates for Manual Mode rows, a pre-review non-PO reference dialog that supports reusable saved entries plus per-part remembered defaults with overwrite confirmation, a mode-selection action that reconciles saved MTM loads against InforVisual receipt history, current inventory totals, and transaction-history smart-fix evidence while requiring exact quantity matches unless one destination location holds the full matched same-day transfer quantity for the receipt group, resolving transfer destinations from the paired InforVisual movement, excluding same-location matches from review, and falling back to WC when history proves work-center transfer plus full adjustment-out, a hosted reconciliation review step that presents proposed changes before any row is updated, user-scoped reconciliation preferences that can ignore configured locations during automatic review and recommendation display, a JSON-backed mock Infor Visual catalog plus runtime transaction store for default PO and location behavior, mock-mode save writes that preserve whole-load quantities while aggregating mocked destination totals by location, PO-assisted part ordering that prioritizes earlier expected receive dates before mostly satisfied lines, and PO due-date persistence that prefers the selected line-level date before falling back to the PO header promise date.",
   "owner": "Receiving Team",
   "relatedFiles": [
     "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs",
@@ -48,6 +48,12 @@
     "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
     "Module_Receiving/Views/View_Receiving_Workflow.xaml",
     "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+    "Module_Core/Contracts/Services/IService_LabelViewLauncher.cs",
+    "Module_Core/Services/Service_LabelViewLauncher.cs",
+    "Module_Settings.Core/Views/View_Settings_LabelViewExecutable.xaml",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_LabelViewExecutable.cs",
+    "Module_Settings.Receiving/Views/View_Settings_Receiving_LabelPaths.xaml",
+    "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_LabelPaths.cs",
     "Module_Receiving/Views/View_Receiving_ModeSelection.xaml",
     "Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs",
     "Module_Receiving/Views/View_Receiving_Dialog_LocationReconciliationReview.xaml",
@@ -142,6 +148,7 @@
       "Keyboard shortcut accelerators",
       "Simple navigation toggle shortcut",
       "Mode-specific startup routing",
+      "Footer label-launch actions",
       "Help text",
       "Manual Mode location textbox",
       "Guided recommended locations card",
@@ -176,6 +183,7 @@
       "Choose from all schema-backed Edit Mode columns including Location",
       "Run InforVisual location reconciliation for saved rows",
       "Exclude specific destination locations from automatic reconciliation",
+      "Open Receiving Label or Mini-Receiving Label from the workflow footer",
       "Review each suggested location change and choose Save or Ignore"
     ],
     "accessibilityNeeds": [
@@ -197,6 +205,7 @@
       "The UI is easier to understand at a glance",
         "Edit Mode defaults surface the same core columns used in Manual Mode",
         "Workflow shortcuts load from user settings at runtime instead of static XAML markup"
+      , "Footer label buttons open LabelView only when the executable and selected label path are valid"
     ],
     "reviewFocusAreas": [
       "Workflow regressions",
@@ -253,6 +262,9 @@
       "Confirm the same workflow can still be completed from start to finish",
       "Confirm Mode Selection, Clear Label Data, Next, Back, and Help shortcuts invoke the intended actions",
       "Confirm Ctrl+T switches Next and Back to plain Right and Left only when the setting is enabled",
+      "Confirm Receiving Label redirects to LabelView settings when LV.exe cannot be resolved",
+      "Confirm each footer label button redirects to Receiving label settings when its .lbl path is missing or invalid",
+      "Confirm each footer label button opens the intended label in LabelView when setup is complete",
       "Confirm the Receiving workflow shortcuts can duplicate Dunnage workflow shortcuts without cross-module conflicts because only one workflow page is active at a time",
       "Confirm validation still blocks invalid input",
       "Confirm Guided Wizard non-PO Lookup Part reuses the shared fuzzy search picker and resolves the selected part into the workflow state",

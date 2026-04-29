@@ -1,0 +1,64 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters">
+    <Page.Resources>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+    </Page.Resources>
+
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <InfoBar
+                    IsClosable="False"
+                    IsOpen="True"
+                    Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                    Severity="Informational" />
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Volvo Label File" />
+                        <TextBlock
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Set the full path to the LabelView template file used by Volvo. Leave the field blank to clear the saved path."
+                            TextWrapping="WrapWholeWords" />
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Volvo Label" />
+                            <TextBox
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                PlaceholderText="Select the Volvo .lbl file"
+                                Text="{x:Bind ViewModel.VolvoLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="The saved path must point to an existing .lbl file."
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

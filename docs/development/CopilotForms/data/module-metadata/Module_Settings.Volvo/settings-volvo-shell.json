@@ -2,18 +2,21 @@
   "id": "settings-volvo-shell",
   "module": "Module_Settings.Volvo",
   "name": "Volvo Settings Shell",
-  "summary": "Volvo settings now expose card-based navigation to both the part catalog and a persisted To/CC recipient editor used by the Volvo email preview dialog.",
+  "summary": "Volvo settings now expose card-based navigation to the part catalog, a persisted To/CC recipient editor used by the Volvo email preview dialog, and a label-files page for the Volvo LabelView template path.",
   "owner": "Integration Team",
   "relatedFiles": [
     "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_NavigationHub.cs",
     "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_PartCatalog.cs",
     "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_EmailRecipients.cs",
+    "Module_Settings.Volvo/ViewModels/ViewModel_Settings_Volvo_LabelPaths.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_WorkflowHub.xaml.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartCatalog.xaml.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_EmailRecipients.xaml",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_EmailRecipients.xaml.cs",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_LabelPaths.xaml",
+    "Module_Settings.Volvo/Views/View_Settings_Volvo_LabelPaths.xaml.cs",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml",
     "Module_Settings.Volvo/Views/View_Settings_Volvo_PartAddEditDialog.xaml.cs",
     "Module_Settings.Core/ViewModels/ViewModel_Settings_EmailRecipientsEditorBase.cs",
@@ -31,17 +34,20 @@
     "workflowAreas": [
       "Part catalog maintenance",
       "Volvo recipient maintenance",
+      "Volvo label path configuration",
       "Volvo settings entry routing"
     ],
     "screens": [
       "View_Settings_Volvo_PartCatalog.xaml",
-      "View_Settings_Volvo_EmailRecipients.xaml"
+      "View_Settings_Volvo_EmailRecipients.xaml",
+      "View_Settings_Volvo_LabelPaths.xaml"
     ],
     "currentUiPatterns": ["Card list", "Form", "DataGrid"],
     "desiredUiPatterns": ["Card list", "Form", "DataGrid"],
     "uiElements": [
       "Part catalog summary cards",
       "Recipient settings card",
+      "Label files card",
       "To recipient cards",
       "CC recipient cards",
       "Part catalog data grid",
@@ -52,6 +58,7 @@
     "userActions": [
       "Review, add, edit, deactivate, and import Volvo part master-data rows",
       "Open Volvo settings into the part catalog or recipient editor",
+      "Save the Volvo LabelView template path used for label launching",
       "Add, edit, and delete Volvo To and CC recipients",
       "Review selected part details and related component records"
     ],
@@ -61,13 +68,14 @@
       "Keep recipients presented as cards rather than a grid"
     ],
     "acceptanceCriteria": [
-      "Selecting Volvo settings opens a card-based shell for part catalog and recipient maintenance",
+      "Selecting Volvo settings opens a card-based shell for part catalog, recipient maintenance, and label path configuration",
       "Users can maintain Volvo To and CC recipients from the settings surface",
       "Metadata reflects the live Volvo settings files and user-visible workflow"
     ],
     "validationHints": [
       "Confirm the part catalog page loads the Volvo part list and still launches add, edit, deactivate, and component-review actions",
-      "Confirm the Volvo settings shell opens both the Part Catalog and Email Recipients cards",
+      "Confirm the Volvo settings shell opens the Part Catalog, Email Recipients, and Label Files cards",
+      "Confirm the Label Files page validates and saves the Volvo .lbl path",
       "Confirm recipient cards can be added, edited, and deleted without using a data table",
       "Confirm saved Volvo recipients appear in the Volvo email preview dialog"
     ],

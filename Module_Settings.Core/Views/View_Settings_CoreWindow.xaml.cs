@@ -253,6 +253,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Workflow Defaults",
                 "Configure startup mode, review defaults, and developer-only workflow options."
             ),
+            "View_Settings_Receiving_LabelPaths" => (
+                "Label Files",
+                "Configure the LabelView template paths used by Receiving workflow label buttons."
+            ),
             "View_Settings_Receiving_CategoryHub" => (
                 "Receiving Settings",
                 "Manage Receiving settings by category."
@@ -274,6 +278,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             "View_Settings_Dunnage_WorkflowVisuals" => (
                 "Workflow Visuals",
                 "Control when Dunnage images appear during the workflow and how missing images should fall back."
+            ),
+            "View_Settings_Dunnage_LabelPaths" => (
+                "Label Files",
+                "Configure the LabelView template path used for Dunnage labels."
             ),
             "View_Settings_Dunnage_CategoryHub" => (
                 "Dunnage Settings",
@@ -315,6 +323,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Part Catalog",
                 "Manage Volvo part master data, import catalog rows, and launch part maintenance actions."
             ),
+            "View_Settings_Volvo_LabelPaths" => (
+                "Label Files",
+                "Configure the LabelView template path used for Volvo labels."
+            ),
             "View_Settings_Volvo_NavigationHub" => (
                 "Volvo Settings",
                 "Open the active Volvo settings surface."
@@ -345,6 +357,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             "View_Settings_SharedPaths" => (
                 "Shared Paths",
                 "Configure shared file paths and locations."
+            ),
+            "View_Settings_LabelViewExecutable" => (
+                "LabelView",
+                "Configure the LabelView executable path used when opening label template files."
             ),
             "View_Settings_MaterialAvailabilityBoardFields" => (
                 "Material Availability Fields",

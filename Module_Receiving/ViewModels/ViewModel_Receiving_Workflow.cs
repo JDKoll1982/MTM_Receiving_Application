@@ -23,6 +23,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
+        private readonly IService_LabelViewLauncher _labelViewLauncher;
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
 
@@ -222,6 +223,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Dispatcher dispatcherService,
             IService_Window windowService,
             IService_Help helpService,
+            IService_LabelViewLauncher labelViewLauncher,
             IService_ReceivingSettings receivingSettings,
             IService_ViewModelRegistry viewModelRegistry,
             IService_Notification notificationService
@@ -232,6 +234,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _windowService = windowService;
             _workflowService = workflowService;
             _helpService = helpService;
+            _labelViewLauncher = labelViewLauncher;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
             _viewModelRegistry.Register(this);
@@ -631,6 +634,24 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         [RelayCommand]
+        private async Task OpenReceivingLabelAsync()
+        {
+            await OpenLabelAsync(
+                ReceivingSettingsKeys.Labels.ReceivingLabelPath,
+                "Receiving Label"
+            );
+        }
+
+        [RelayCommand]
+        private async Task OpenMiniReceivingLabelAsync()
+        {
+            await OpenLabelAsync(
+                ReceivingSettingsKeys.Labels.MiniReceivingLabelPath,
+                "Mini-Receiving Label"
+            );
+        }
+
+        [RelayCommand]
         private async Task StartNewEntryAsync()
         {
             await _workflowService.ResetWorkflowAsync();
@@ -714,6 +735,53 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void PreviousStep()
         {
             var result = _workflowService.GoToPreviousStep();
+        }
+
+        private async Task OpenLabelAsync(string settingsKey, string labelName)
+        {
+            var executablePath = await _labelViewLauncher.ResolveExecutablePathAsync();
+            if (string.IsNullOrWhiteSpace(executablePath))
+            {
+                await RedirectToSettingsPageAsync(
+                    typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                    "LabelView is not configured. Opening LabelView settings."
+                );
+                return;
+            }
+
+            var labelPath = await _receivingSettings.GetStringAsync(settingsKey);
+            if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
+            {
+                await RedirectToSettingsPageAsync(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
+                    $"{labelName} path is missing or invalid. Opening Receiving label settings."
+                );
+                return;
+            }
+
+            var launchResult = await _labelViewLauncher.LaunchLabelAsync(labelPath);
+            if (!launchResult.IsSuccess)
+            {
+                await _errorHandler.HandleDaoErrorAsync(launchResult, nameof(OpenLabelAsync));
+                return;
+            }
+
+            ShowStatus($"{labelName} opened in LabelView.", InfoBarSeverity.Success);
+        }
+
+        private async Task RedirectToSettingsPageAsync(Type pageType, string statusMessage)
+        {
+            var navigationSucceeded = await _windowService.NavigateToSettingsPageAsync(pageType);
+            if (navigationSucceeded)
+            {
+                ShowStatus(statusMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            await _errorHandler.HandleErrorAsync(
+                "Unable to open the required settings page.",
+                Enum_ErrorSeverity.Warning
+            );
         }
 
         [RelayCommand]

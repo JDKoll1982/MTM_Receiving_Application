@@ -2,6 +2,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Settings;
 
 public static class DunnageSettingsKeys
 {
+    public static class Labels
+    {
+        public const string DunnageLabelPath = "Dunnage.Labels.DunnageLabelPath";
+    }
+
     public static class Application
     {
         public const string DefaultImageLocation = "Dunnage.Application.DefaultImageLocation";

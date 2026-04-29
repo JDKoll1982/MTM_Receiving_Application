@@ -40,6 +40,10 @@ public sealed partial class ViewModel_Settings_Dunnage_CategoryHub
             new Model_SettingsNavigationStep(
                 "Keyboard Shortcuts",
                 typeof(Views.View_Settings_Dunnage_KeyboardShortcuts)
+            ),
+            new Model_SettingsNavigationStep(
+                "Label Files",
+                typeof(Views.View_Settings_Dunnage_LabelPaths)
             )
         );
     }

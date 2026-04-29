@@ -11,6 +11,9 @@ public static class ReceivingSettingsDefaults
     public static IReadOnlyDictionary<string, string> StringDefaults { get; } =
         new Dictionary<string, string>
         {
+            [ReceivingSettingsKeys.Labels.ReceivingLabelPath] = string.Empty,
+            [ReceivingSettingsKeys.Labels.MiniReceivingLabelPath] = string.Empty,
+
             // Mode selection
             [ReceivingSettingsKeys.UiText.ModeSelectionGuidedTitle] = "Guided Wizard",
             [ReceivingSettingsKeys.UiText.ModeSelectionGuidedDescription] =

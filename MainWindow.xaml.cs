@@ -978,6 +978,12 @@ namespace MTM_Receiving_Application
             return true;
         }
 
+        public Task<bool> NavigateToSettingsPageAsync(Type pageType)
+        {
+            ArgumentNullException.ThrowIfNull(pageType);
+            return EnterSettingsModeAsync(pageType);
+        }
+
         private async Task<bool> EnterSettingsModeAsync(Type? targetPageType = null)
         {
             if (!_isSettingsMode)

@@ -1,8 +1,12 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 public interface IService_Window
 {
     public XamlRoot? GetXamlRoot();
+
+    public Task<bool> NavigateToSettingsPageAsync(Type pageType);
 }

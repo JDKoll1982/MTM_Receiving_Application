@@ -2,7 +2,7 @@
   "id": "settings-core-shell-navigation",
   "module": "Module_Settings.Core",
   "name": "Settings Shell And Navigation",
-  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page.",
+  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page and the LabelView executable page.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
@@ -17,9 +17,14 @@
     "Module_Settings.Core/Views/Controls/View_SettingsPlaceholderControl.xaml.cs",
     "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
     "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+    "Module_Settings.Core/Views/View_Settings_LabelViewExecutable.xaml",
+    "Module_Settings.Core/Views/View_Settings_LabelViewExecutable.xaml.cs",
+    "Module_Settings.Core/ViewModels/ViewModel_Settings_LabelViewExecutable.cs",
     "Module_Settings.Core/Views/View_Settings_MaterialAvailabilityBoardFields.xaml",
     "Module_Settings.Core/Views/View_Settings_MaterialAvailabilityBoardFields.xaml.cs",
     "Module_Settings.Core/ViewModels/ViewModel_Settings_MaterialAvailabilityBoardFields.cs",
+    "Module_Settings.Core/Settings/CoreSettingsKeys.cs",
+    "Module_Settings.Core/Defaults/settings.manifest.json",
     "MainWindow.xaml",
     "MainWindow.xaml.cs",
     "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml",
@@ -44,11 +49,13 @@
       "Paged settings navigation",
       "Settings host compatibility bridge",
       "Shared configuration routing",
+      "LabelView executable configuration",
       "Placeholder and empty-state UI"
     ],
     "screens": [
       "View_Settings_CoreWindow.xaml",
       "View_Settings_CoreNavigationHub.xaml",
+      "View_Settings_LabelViewExecutable.xaml",
       "View_Settings_MaterialAvailabilityBoardFields.xaml",
       "View_SettingsPlaceholderControl.xaml"
     ],
@@ -59,6 +66,7 @@
       "Settings shell title",
       "Navigation step buttons",
       "Core navigation cards",
+      "LabelView settings card",
       "Built-in back navigation",
       "Cancel, save, and reset actions",
       "Placeholder content"
@@ -68,6 +76,7 @@
       "Use the built-in Settings item as a Return toggle while settings mode is active",
       "Move between settings areas",
       "Open the Material Availability field settings page from the Core hub",
+      "Open the LabelView executable settings page from the Core hub",
       "Return to the originating module's default route after leaving settings mode",
       "Use the built-in back button to return to the active module hub",
       "Understand which navigation actions are available",
@@ -88,6 +97,7 @@
       "Confirm navigation buttons still page correctly",
       "Confirm visible steps still match the current button page after whole-collection replacement",
       "Confirm the new Material Availability card opens the dedicated settings page and updates the shell header",
+      "Confirm the new LabelView card opens the executable settings page and updates the shell header",
       "Confirm the built-in back button returns to the selected module hub when a child page is active",
       "Confirm the shell still hosts the selected settings page correctly"
     ]

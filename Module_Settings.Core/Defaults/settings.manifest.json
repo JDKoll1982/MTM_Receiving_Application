@@ -70,6 +70,17 @@
     },
     {
       "category": "System",
+      "key": "Core.LabelView.ExecutablePath",
+      "displayName": "LabelView Executable Path",
+      "defaultValue": "C:\\Program Files (x86)\\Teklynx\\LABELVIEW 2022\\LV.exe",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path to LV.exe"
+    },
+    {
+      "category": "System",
       "key": "Core.Database.ConnectionSecret",
       "displayName": "Database Connection Secret",
       "defaultValue": "",
@@ -111,6 +122,50 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "Boolean"
+    },
+    {
+      "category": "Dunnage",
+      "key": "Dunnage.Labels.DunnageLabelPath",
+      "displayName": "Dunnage Label Path",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path to .lbl file"
+    },
+    {
+      "category": "Volvo",
+      "key": "Volvo.Labels.VolvoLabelPath",
+      "displayName": "Volvo Label Path",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path to .lbl file"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Labels.ReceivingLabelPath",
+      "displayName": "Receiving Label Path",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path to .lbl file"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.Labels.MiniReceivingLabelPath",
+      "displayName": "Mini Receiving Label Path",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Path to .lbl file"
     },
     {
       "category": "Receiving",
