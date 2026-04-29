@@ -15,7 +15,7 @@
                 <div>
                     <p class="eyebrow">MTM Receiving Application</p>
                     <h1>Version 1.4.1</h1>
-                    <p class="hero-copy">This update refines the new LabelView workflow so labels open more cleanly from an existing LabelView session, folder paths are easier to inspect from settings, and the Receiving footer stays clear around Back, Next, and Help.</p>
+                    <p class="hero-copy">This update refines the new LabelView workflow so labels open more cleanly from an existing LabelView session, saved paths can be inspected directly in Explorer, and the Receiving footer stays clear around Back, Next, and Help.</p>
                 </div>
             </div>
             <div class="hero-meta">
@@ -54,8 +54,8 @@
                             <p class="highlight-text">Labels now open the same way a desktop shortcut opens them, which gives LabelView a better chance to reuse the current session.</p>
                         </article>
                         <article class="highlight-card accent-green">
-                            <p class="highlight-title">Open-folder shortcuts</p>
-                            <p class="highlight-text">Each new label-path editor now includes an Open Folder button so support staff can jump to the saved location quickly.</p>
+                            <p class="highlight-title">Explorer file selection</p>
+                            <p class="highlight-text">Each new label-path editor now includes an Open Folder button that selects the saved file in Explorer when it exists.</p>
                         </article>
                         <article class="highlight-card accent-gold">
                             <p class="highlight-title">Tidier footer actions</p>
@@ -96,11 +96,11 @@
                     </details>
 
                     <details class="change-item" data-category="setup" open>
-                        <summary>Label path pages now include Open Folder buttons</summary>
+                        <summary>Label path pages now open Explorer with file selection when possible</summary>
                         <p>
                             The LabelView executable page and the Receiving, Dunnage, and Volvo label-file pages now include an
-                            <strong>Open Folder</strong> button next to each saved path. If the saved folder is available, File Explorer opens there.
-                            If not, the app falls back to the current user's Documents folder so support staff still land in a safe location.
+                            <strong>Open Folder</strong> button next to each saved path. When the saved file exists, File Explorer opens with that file selected.
+                            If the file cannot be found, the app falls back to the containing folder when available, or to the current user's Documents folder.
                         </p>
                     </details>
 
@@ -125,7 +125,7 @@
                         </article>
                         <article>
                             <h3>Faster path checks</h3>
-                            <p>When a label path needs review, supervisors and IT can jump straight to the folder instead of browsing from scratch.</p>
+                            <p>When a label path needs review, supervisors and IT can jump straight to the saved file in Explorer instead of browsing from scratch.</p>
                         </article>
                         <article>
                             <h3>Clearer workflow footer</h3>
@@ -152,8 +152,8 @@
                     </div>
                     <p>
                         If a label still does not open as expected after this update, note the version number shown at the top of this page
-                        (<strong>1.4.1</strong>) and contact your supervisor or the MTM IT support team. They should first verify the saved
-                        executable and label folders using the new Open Folder buttons in Settings.
+                        (<strong>1.4.2</strong>) and contact your supervisor or the MTM IT support team. They should first verify the saved
+                        executable and label paths using the new Explorer-selection buttons in Settings.
                     </p>
                 </section>
             </div>

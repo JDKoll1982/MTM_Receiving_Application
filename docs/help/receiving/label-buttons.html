@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Label Buttons — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#where">Where the buttons are</a></li>
+            <li><a href="#what-they-open">What each button opens</a></li>
+            <li><a href="#before-you-use">Before you use them</a></li>
+            <li><a href="#missing-setup">If setup is missing</a></li>
+            <li><a href="#settings-help">Checking saved paths in Settings</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Receiving Help Pages</p>
+        <ul class="sidebar-nav">
+            <li><a href="mode-selection.html">Mode Selection</a></li>
+            <li><a href="guided-wizard-po-entry.html">PO Entry (Guided Wizard)</a></li>
+            <li><a href="smart-part-search.html">Smart Part Search</a></li>
+            <li><a href="label-buttons.html" class="is-active">Label Buttons</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Developer Docs</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../features/receiving/index.html">Receiving Module</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Receiving Help</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Label Buttons</span>
+        </nav>
+
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>Using the Receiving Label Buttons</h1>
+            <p class="lead">
+                The Receiving workflow includes two quick label buttons that open the configured LabelView templates
+                without leaving the workflow. This page explains what each button does, what the app checks first,
+                and what happens if a required path is missing.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                The label buttons are shortcut actions for the templates most Receiving users need during daily work.
+                They are meant to save time by opening the configured label directly from the workflow instead of making
+                you browse to the label file by hand.
+            </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">🏷️</span>
+                <div class="callout-body">
+                    <strong>The buttons open LabelView templates only after validation.</strong>
+                    Before anything opens, the app checks that LabelView is configured and that the selected label file path is valid.
+                </div>
+            </div>
+        </section>
+
+        <section id="where" class="content-section">
+            <h2>Where the buttons are</h2>
+            <p>
+                The label buttons sit in the bottom-right utility area of the Receiving workflow beside the
+                <strong>Help</strong> button. They use compact icons so they do not crowd the main <strong>Back</strong>
+                and <strong>Next</strong> workflow buttons.
+            </p>
+
+            <div class="callout callout-success">
+                <span class="callout-icon" aria-hidden="true">✅</span>
+                <div class="callout-body">
+                    Keep using <strong>Back</strong> and <strong>Next</strong> for the workflow itself.
+                    The label icons are utility shortcuts and do not change your current wizard step.
+                </div>
+            </div>
+        </section>
+
+        <section id="what-they-open" class="content-section">
+            <h2>What each button opens</h2>
+            <ul>
+                <li><strong>Receiving Label</strong> opens the main Receiving label template.</li>
+                <li><strong>Mini-Receiving Label</strong> opens the smaller Receiving label template.</li>
+            </ul>
+
+            <p>
+                Each button uses the path saved in the Receiving settings page. If your workstation is configured correctly,
+                the app opens the selected <strong>.lbl</strong> file the same way a Windows shortcut would open it.
+            </p>
+        </section>
+
+        <section id="before-you-use" class="content-section">
+            <h2>Before you use them</h2>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>LabelView must be installed and configured</h4>
+                    <p>
+                        The app first checks the saved path to <strong>LV.exe</strong>. If that path is missing or no longer valid,
+                        the label will not open.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>The label file path must point to a real .lbl file</h4>
+                    <p>
+                        The app then checks the saved path for the specific label button you clicked. If the file is missing,
+                        renamed, or moved, the app will send you to the settings page instead of guessing.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>The label opens through Windows</h4>
+                    <p>
+                        When both checks pass, the app opens the label through normal Windows shell behavior.
+                        This gives LabelView the chance to reuse an already open session instead of forcing a separate new one.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="missing-setup" class="content-section">
+            <h2>If setup is missing</h2>
+            <p>
+                The app does not try to open a label when setup is incomplete. Instead, it sends you to the correct settings page.
+            </p>
+
+            <div class="faq-list">
+                <details class="faq-item" open>
+                    <summary>LabelView is not configured</summary>
+                    <div class="faq-body">
+                        The app opens the <strong>LabelView</strong> settings page under Core settings so the saved executable path can be reviewed.
+                    </div>
+                </details>
+
+                <details class="faq-item" open>
+                    <summary>The label file path is missing or invalid</summary>
+                    <div class="faq-body">
+                        The app opens the <strong>Receiving Label Files</strong> settings page so the saved template path can be corrected.
+                    </div>
+                </details>
+            </div>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>The app will not guess a replacement label file.</strong>
+                    If the path is wrong, it always sends you to settings so you can confirm the correct file.
+                </div>
+            </div>
+        </section>
+
+        <section id="settings-help" class="content-section">
+            <h2>Checking saved paths in Settings</h2>
+            <p>
+                The LabelView page and each label-path page include an <strong>Open Folder</strong> button beside the saved path.
+                That button is meant for support and setup checks.
+            </p>
+
+            <ul>
+                <li>If the saved file exists, File Explorer opens with that file selected.</li>
+                <li>If the file does not exist but the folder still does, Explorer opens the folder.</li>
+                <li>If no usable folder can be found yet, Explorer opens your Documents folder.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">📁</span>
+                <div class="callout-body">
+                    This is useful when a label was moved, renamed, or copied to a different network folder and you need to confirm what the app is pointing to.
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Do the label buttons save or submit my receiving work?</summary>
+                    <div class="faq-body">
+                        No. They only open the configured label template. They do not change your current wizard step and they do not save data by themselves.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Why did Settings open instead of LabelView?</summary>
+                    <div class="faq-body">
+                        One of the required paths could not be validated. The app sends you straight to the page that needs to be fixed.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Will clicking the button always open a new LabelView window?</summary>
+                    <div class="faq-body">
+                        The app opens the label the same way Windows opens a shortcut to the file. LabelView itself decides whether it reuses the current session or opens another window.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Who should update the saved label paths?</summary>
+                    <div class="faq-body">
+                        Usually a supervisor or IT support person should update those paths, especially when the labels live in shared network folders.
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>Next Steps</h2>
+            <div class="related-links">
+                <a href="mode-selection.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🔀</span>
+                    <span class="related-link-text">
+                        <strong>Mode Selection</strong>
+                        <span>See how the Receiving workflows are organized and where the utility buttons sit in the overall screen layout.</span>
+                    </span>
+                </a>
+                <a href="../../features/receiving/index.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">📦</span>
+                    <span class="related-link-text">
+                        <strong>Receiving Module — Developer Reference</strong>
+                        <span>Technical documentation for the Receiving module.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="../index.html">Receiving Help</a>
+    <span aria-hidden="true">·</span>
+    <span>Label Buttons</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

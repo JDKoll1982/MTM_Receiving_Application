@@ -121,20 +121,20 @@ public class Service_LabelViewLauncher : IService_LabelViewLauncher
 
     public Task<Model_Dao_Result> OpenFolderForPathAsync(string? configuredPath)
     {
-        var folderPath = ResolveFolderToOpen(configuredPath);
+        var explorerArguments = ResolveExplorerArguments(configuredPath, out var workingDirectory);
 
         try
         {
             Process.Start(
-                new ProcessStartInfo("explorer.exe", $"\"{folderPath}\"")
+                new ProcessStartInfo("explorer.exe", explorerArguments)
                 {
                     UseShellExecute = true,
-                    WorkingDirectory = folderPath,
+                    WorkingDirectory = workingDirectory,
                 }
             );
 
             _logger.LogInfo(
-                $"Opened folder '{folderPath}' for configured path '{configuredPath ?? string.Empty}'.",
+                $"Opened Explorer with arguments '{explorerArguments}' for configured path '{configuredPath ?? string.Empty}'.",
                 nameof(Service_LabelViewLauncher)
             );
 
@@ -143,7 +143,7 @@ public class Service_LabelViewLauncher : IService_LabelViewLauncher
         catch (Exception ex)
         {
             _logger.LogError(
-                $"Failed to open folder '{folderPath}' for configured path '{configuredPath ?? string.Empty}': {ex.Message}",
+                $"Failed to open Explorer with arguments '{explorerArguments}' for configured path '{configuredPath ?? string.Empty}': {ex.Message}",
                 ex,
                 nameof(Service_LabelViewLauncher)
             );
@@ -152,6 +152,23 @@ public class Service_LabelViewLauncher : IService_LabelViewLauncher
                 Model_Dao_Result_Factory.Failure($"Failed to open File Explorer: {ex.Message}", ex)
             );
         }
+    }
+
+    private static string ResolveExplorerArguments(
+        string? configuredPath,
+        out string workingDirectory
+    )
+    {
+        var sanitizedPath = configuredPath?.Trim().Trim('"') ?? string.Empty;
+
+        if (File.Exists(sanitizedPath))
+        {
+            workingDirectory = Path.GetDirectoryName(sanitizedPath) ?? DocumentsFolder;
+            return $"/select,\"{sanitizedPath}\"";
+        }
+
+        workingDirectory = ResolveFolderToOpen(configuredPath);
+        return $"\"{workingDirectory}\"";
     }
 
     private static string ResolveFolderToOpen(string? configuredPath)
