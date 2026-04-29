@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -162,10 +161,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             var html = new StringBuilder();
             var plainText = new StringBuilder();
-            var normalizedSearchLabel = NormalizePrintableValue(safeSearchLabel, "Search");
-            var normalizedSearchTerm = NormalizePrintableValue(safeSearchTerm, "Current results");
             var subtitle =
-                $"<strong>{HtmlEncode(normalizedSearchLabel)}:</strong> {HtmlEncode(normalizedSearchTerm)}";
+                $"<strong>{HtmlEncode(safeSearchLabel)}:</strong> {HtmlEncode(safeSearchTerm)}";
 
             html.AppendLine(
                 "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
@@ -178,20 +175,14 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             );
 
             plainText.AppendLine("Material Availability Board");
-            plainText.AppendLine($"{normalizedSearchLabel}: {normalizedSearchTerm}");
+            plainText.AppendLine($"{safeSearchLabel}: {safeSearchTerm}");
 
             foreach (var card in cards)
             {
-                var normalizedPartId = NormalizePrintableValue(card.PartId, "Unknown part");
-                var normalizedDescription = NormalizePrintableValue(
-                    card.PartDescription,
-                    "Description not available"
-                );
-
                 html.AppendLine("<div class='material-card'>");
                 AppendSectionStart(
                     html,
-                    $"{normalizedPartId} - {normalizedDescription}",
+                    $"{card.PartId} - {card.PartDescription}",
                     CardBackground,
                     CardBorder,
                     AccentBackground,
@@ -208,27 +199,28 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 );
                 AppendHeaderCell(html, card.QuantitySummaryLabel, null);
                 AppendHeaderCell(html, "Total on hand", null);
+                AppendHeaderCell(html, "Locations", null);
+                AppendHeaderCell(html, "Next summary", null);
                 html.AppendLine("</tr>");
                 html.AppendLine("</thead>");
                 html.AppendLine("<tbody>");
                 html.AppendLine("<tr style='background-color: #ffffff;'>");
                 AppendBodyCell(html, card.QuantitySummaryDisplay, "right");
                 AppendBodyCell(html, card.TotalPositiveQuantityDisplay, "right");
+                AppendBodyCell(html, card.LocationCountSummary);
+                AppendBodyCell(html, card.NextRunSummaryDisplay);
                 html.AppendLine("</tr>");
                 html.AppendLine("</tbody>");
                 html.AppendLine("</table>");
                 html.AppendLine("</div>");
 
                 plainText.AppendLine();
-                plainText.AppendLine($"{normalizedPartId} - {normalizedDescription}");
-                plainText.AppendLine(
-                    $"{NormalizePrintableValue(card.QuantitySummaryLabel)}: {NormalizePrintableValue(card.QuantitySummaryDisplay)}"
-                );
-                plainText.AppendLine(
-                    $"Total on hand: {NormalizePrintableValue(card.TotalPositiveQuantityDisplay)}"
-                );
+                plainText.AppendLine($"{card.PartId} - {card.PartDescription}");
+                plainText.AppendLine($"{card.QuantitySummaryLabel}: {card.QuantitySummaryDisplay}");
+                plainText.AppendLine($"Total on hand: {card.TotalPositiveQuantityDisplay}");
+                plainText.AppendLine($"Locations: {card.LocationCountSummary}");
+                plainText.AppendLine($"Next summary: {card.NextRunSummaryDisplay}");
 
-                AppendNextSummarySection(html, plainText, card);
                 AppendLocationsSection(html, plainText, card);
                 AppendIncomingSection(html, plainText, card);
                 AppendAssociatedPartsSection(html, plainText, card);
@@ -1329,28 +1321,6 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         html.AppendLine("</table></div>");
     }
 
-    private static void AppendNextSummarySection(
-        StringBuilder html,
-        StringBuilder plainText,
-        Model_Tool_MaterialAvailabilityCard card
-    )
-    {
-        var summaryText = NormalizePrintableValue(
-            card.NextRunSummaryDisplay,
-            "No associated run summary is available."
-        );
-
-        html.AppendLine(
-            "<div style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Next Summary</div>"
-        );
-        html.AppendLine(
-            $"<div style='padding: 0 16px 16px 16px; font-size: 10pt; color: #1f2937; line-height: 1.45;'>{HtmlEncode(summaryText)}</div>"
-        );
-
-        plainText.AppendLine("Next Summary");
-        plainText.AppendLine(summaryText);
-    }
-
     private static void AppendIncomingSection(
         StringBuilder html,
         StringBuilder plainText,
@@ -1500,14 +1470,14 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     {
         var widthStyle = string.IsNullOrWhiteSpace(width) ? string.Empty : $" width: {width};";
         html.AppendLine(
-            $"<th style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: left; vertical-align: top;{widthStyle}'>{HtmlEncode(NormalizePrintableValue(text))}</th>"
+            $"<th style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: left; vertical-align: top;{widthStyle}'>{HtmlEncode(text)}</th>"
         );
     }
 
     private static void AppendBodyCell(StringBuilder html, string? value, string alignment = "left")
     {
         html.AppendLine(
-            $"<td style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: {alignment}; vertical-align: top;'>{HtmlEncode(NormalizePrintableValue(value))}</td>"
+            $"<td style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: {alignment}; vertical-align: top;'>{HtmlEncode(value)}</td>"
         );
     }
 
@@ -1524,7 +1494,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             $"<div style='margin: 0 0 16px 0; border: 1px solid {cardBorder}; border-radius: 4px; overflow: hidden; background-color: {cardBackground};'>"
         );
         html.AppendLine(
-            $"<div style='padding: 12px 16px; background-color: {accentBackground}; color: {accentForeground}; font-size: 12pt; font-weight: 700;'>{HtmlEncode(NormalizePrintableValue(heading, "Material availability"))}</div>"
+            $"<div style='padding: 12px 16px; background-color: {accentBackground}; color: {accentForeground}; font-size: 12pt; font-weight: 700;'>{HtmlEncode(heading)}</div>"
         );
     }
 
@@ -1541,15 +1511,14 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         var html = new StringBuilder();
         var plainText = new StringBuilder();
         var orderedCards = cards
-            .OrderBy(card => NormalizePrintableText(card.PartId), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(card => card.PartId, StringComparer.OrdinalIgnoreCase)
             .ToList();
         var pages = orderedCards.Chunk(7).ToList();
-        var normalizedLocationId = NormalizePrintableValue(locationId, "Current results");
 
         html.AppendLine("<div class='transaction-sheet-wrapper'>");
 
         plainText.AppendLine("Material Availability Transaction Sheet");
-        plainText.AppendLine($"Warehouse Location: {normalizedLocationId}");
+        plainText.AppendLine($"Warehouse Location: {locationId}");
         plainText.AppendLine();
 
         for (var pageIndex = 0; pageIndex < pages.Count; pageIndex++)
@@ -1559,7 +1528,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
             );
             html.AppendLine(
-                $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(normalizedLocationId)}</div>"
+                $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(locationId)}</div>"
             );
             html.AppendLine("<table class='transaction-sheet'>");
             html.AppendLine(
@@ -1569,23 +1538,17 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             foreach (var card in pages[pageIndex])
             {
-                var normalizedPartId = NormalizePrintableValue(card.PartId, "Unknown part");
-                var normalizedQuantity = NormalizePrintableValue(
-                    card.QuantitySummaryDisplay,
-                    "Not available"
-                );
-
                 html.AppendLine("<tr class='transaction-row'>");
                 html.AppendLine("<td class='identity-cell'>");
                 html.AppendLine("<div class='identity-card'>");
                 html.AppendLine("<div class='identity-label'>Part Number</div>");
                 html.AppendLine(
-                    $"<div class='identity-part-value'>{HtmlEncode(normalizedPartId)}</div>"
+                    $"<div class='identity-part-value'>{HtmlEncode(card.PartId)}</div>"
                 );
                 html.AppendLine("<div class='identity-divider'></div>");
                 html.AppendLine("<div class='identity-label'>Quantity</div>");
                 html.AppendLine(
-                    $"<div class='identity-from-value'>{HtmlEncode(normalizedQuantity)}</div>"
+                    $"<div class='identity-from-value'>{HtmlEncode(card.QuantitySummaryDisplay)}</div>"
                 );
                 html.AppendLine("</div>");
                 html.AppendLine("</td>");
@@ -1594,8 +1557,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 html.AppendLine("</td>");
                 html.AppendLine("</tr>");
 
-                plainText.AppendLine($"Part Number: {normalizedPartId}");
-                plainText.AppendLine($"Quantity: {normalizedQuantity}");
+                plainText.AppendLine($"Part Number: {card.PartId}");
+                plainText.AppendLine($"Quantity: {card.QuantitySummaryDisplay}");
                 plainText.AppendLine(
                     "Coil Transfer Entries: 3 rows with 4 quantity/to pairs each."
                 );
@@ -1681,22 +1644,19 @@ body { margin: 0; background: #ffffff; }
 .transaction-sheet-title { font-size: 15pt; font-weight: 700; text-align: center; margin: 0 0 4px 0; }
 .transaction-sheet-subtitle { font-size: 9pt; text-align: center; margin: 0 0 8px 0; }
 .transaction-sheet-footer { font-size: 9pt; text-align: right; margin-top: 8px; }
-.transaction-sheet { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.transaction-sheet { width: 100%; border-collapse: collapse; table-layout: auto; }
 .transaction-sheet thead { display: table-header-group; }
 .transaction-sheet th, .transaction-sheet td { border: 1px solid #111827; padding: 3px 4px; vertical-align: top; }
 .transaction-sheet th { background: #f3f4f6; font-weight: 700; text-align: left; }
 .transaction-row { break-inside: avoid; page-break-inside: avoid; }
-.identity-header { width: 2.2in; white-space: nowrap; }
+.identity-header { width: 1%; white-space: nowrap; }
 .entries-header { width: 99%; }
-.identity-cell { width: 2.2in; white-space: normal; background: #faf5ff; padding: 5px; vertical-align: middle; }
+.identity-cell { width: 1%; white-space: nowrap; background: #faf5ff; padding: 5px; display: flex; align-items: center; justify-content: center; }
 .identity-card {
-    width: 100%;
-    min-width: 0;
-    max-width: 2.1in;
+    min-width: 1.9in;
     background: linear-gradient(180deg, #fcfaff 0%, #f3e8ff 100%);
     border: 1px solid #c4b5fd;
     border-radius: 8px;
-    margin: 0 auto;
     padding: 8px 10px;
     box-sizing: border-box;
 }
@@ -1742,22 +1702,6 @@ body { margin: 0; background: #ffffff; }
     private static string HtmlEncode(string? value)
     {
         return System.Net.WebUtility.HtmlEncode(value ?? string.Empty);
-    }
-
-    private static string NormalizePrintableText(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        return Regex.Replace(value.Trim(), @"\s+", " ");
-    }
-
-    private static string NormalizePrintableValue(string? value, string fallback = "Not available")
-    {
-        var normalizedValue = NormalizePrintableText(value);
-        return string.IsNullOrWhiteSpace(normalizedValue) ? fallback : normalizedValue;
     }
 
     private sealed record IncomingLinePresentation(

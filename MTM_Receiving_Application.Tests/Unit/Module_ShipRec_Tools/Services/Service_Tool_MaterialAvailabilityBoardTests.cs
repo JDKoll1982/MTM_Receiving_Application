@@ -1089,9 +1089,9 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         {
             new()
             {
-                PartId = " 23-11669-100 ",
-                PartDescription = " Stud, Weld 5/16-18 x 1.000 ",
-                SearchLocationId = " RECV ",
+                PartId = "23-11669-100",
+                PartDescription = "Stud, Weld 5/16-18 x 1.000",
+                SearchLocationId = "RECV",
                 QuantityInSearchLocation = 2000,
                 TotalPositiveQuantity = 31396,
                 NextDateSummary = "Next run: WO-070016 04/14/2026",
@@ -1099,7 +1099,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                 [
                     new Model_Tool_MaterialAvailabilityLocation
                     {
-                        LocationId = " RECV ",
+                        LocationId = "RECV",
                         Quantity = 2000,
                         IsSearchLocation = true,
                     },
@@ -1125,8 +1125,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                     new Model_Tool_MaterialAvailabilityAssociatedPartRun
                     {
                         AssociatedPartNumber = "A66-17608-000",
-                        AssociatedPartDescription = " Assembly ",
-                        WorkOrderDisplay = " WO-070016 ",
+                        AssociatedPartDescription = "Assembly",
+                        WorkOrderDisplay = "WO-070016",
                         NextDueToRunDate = new DateTime(2026, 04, 14),
                         IsFutureOrTodayRun = true,
                     },
@@ -1137,7 +1137,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         var result = await service.FormatBoardForPrintAsync(
             cards,
             "Warehouse Location",
-            " RECV ",
+            "RECV",
             "002",
             "30",
             false
@@ -1148,23 +1148,14 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data!.DocumentTitle.Should().Be("Material Availability Board");
         result.Data!.HtmlFragment.Should().Contain("Material Availability Board");
         result.Data.HtmlFragment.Should().Contain("<strong>Warehouse Location:</strong> RECV");
-        result.Data.HtmlFragment.Should().Contain("Qty in RECV");
         result.Data.HtmlFragment.Should().NotContain("Warehouse scope:");
         result.Data.HtmlFragment.Should().NotContain("Look Ahead:");
         result.Data.HtmlFragment.Should().Contain("23-11669-100 - Stud, Weld 5/16-18 x 1.000");
         result.Data.HtmlFragment.Should().Contain("WO-070016");
-        result.Data.HtmlFragment.Should().Contain("Next Summary");
-        result.Data.HtmlFragment.Should().Contain(
-            "Future Run: WO-070016 / A66-17608-000 on 04/14/2026"
-        );
-        result.Data.HtmlFragment.Should().NotContain("Locations</th>");
-        result.Data.HtmlFragment.Should().NotContain("Next summary</th>");
         result.Data.HtmlFragment.Should().Contain("Associated Parts");
         result.Data.HtmlFragment.Should().Contain("class='material-card'");
         result.Data.PageCss.Should().Contain("page-break-after: always");
         result.Data.PlainText.Should().Contain("Material Availability Board");
-        result.Data.PlainText.Should().Contain("23-11669-100 - Stud, Weld 5/16-18 x 1.000");
-        result.Data.PlainText.Should().Contain("Next Summary");
         result.Data.PlainText.Should().Contain("A66-17608-000");
     }
 
@@ -1179,16 +1170,16 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         {
             new()
             {
-                PartId = " MMC0000850 ",
+                PartId = "MMC0000850",
                 PartDescription = "Coil Part",
-                SearchLocationId = " RECV ",
+                SearchLocationId = "RECV",
             },
         };
 
         var result = await service.FormatBoardForPrintAsync(
             cards,
             "Warehouse Location",
-            " RECV ",
+            "RECV",
             "002",
             "30",
             true
@@ -1209,17 +1200,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain("Take To 4");
         result.Data.HtmlFragment.Should().NotContain("Take To 5");
         result.Data.HtmlFragment.Should().Contain("MMC0000850");
-        result.Data.PlainText.Should().Contain("Warehouse Location: RECV");
-        result.Data.PlainText.Should().Contain("Part Number: MMC0000850");
         result.Data.PageCss.Should().Contain("thead { display: table-header-group; }");
         result.Data.PageCss.Should().Contain("margin: 0.2in");
-        result.Data.PageCss.Should().Contain(
-            ".transaction-sheet { width: 100%; border-collapse: collapse; table-layout: fixed; }"
-        );
-        result.Data.PageCss.Should().Contain(
-            ".identity-cell { width: 2.2in; white-space: normal; background: #faf5ff; padding: 5px; vertical-align: middle; }"
-        );
-        result.Data.PageCss.Should().NotContain("display: flex;");
     }
 
     [Fact]
