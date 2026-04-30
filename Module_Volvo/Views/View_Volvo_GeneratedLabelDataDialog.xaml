@@ -38,7 +38,7 @@
 
             <Button
                 Grid.Column="1"
-                Command="{x:Bind ViewModel.ClearLabelDataCommand}"
+                Click="OnClearLabelDataClick"
                 IsEnabled="{x:Bind ViewModel.HasRows, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <SymbolIcon Symbol="Delete" />

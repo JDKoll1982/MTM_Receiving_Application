@@ -958,7 +958,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
-        var labelPath = await _volvoSettings.GetStringAsync(VolvoSettingsKeys.Labels.VolvoLabelPath);
+        var labelPath = await _volvoSettings.GetStringAsync(
+            VolvoSettingsKeys.Labels.VolvoLabelPath
+        );
         if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
         {
             await RedirectToSettingsPageAsync(
@@ -1819,7 +1821,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// history archive tables after an explicit user confirmation.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanClearLabelData))]
-    private async Task ClearLabelDataAsync()
+    private async Task ClearLabelDataAsync(bool clearAllRows = false)
     {
         try
         {
@@ -1856,7 +1858,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Clearing label data...";
 
-            var command = new ClearLabelDataCommand { ArchivedBy = Environment.UserName };
+            var command = new ClearLabelDataCommand
+            {
+                ArchivedBy = Environment.UserName,
+                ClearAllRows = clearAllRows,
+            };
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)

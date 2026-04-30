@@ -36,6 +36,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
+        private readonly IService_UserPrivileges _userPrivileges;
         private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
@@ -97,7 +98,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_InforVisualMockDataCatalog mockDataCatalog,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
-            IService_UserSessionManager userSessionManager
+            IService_UserSessionManager userSessionManager,
+            IService_UserPrivileges userPrivileges
         )
         {
             _sessionManager =
@@ -119,6 +121,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
             _userSessionManager =
                 userSessionManager ?? throw new ArgumentNullException(nameof(userSessionManager));
+            _userPrivileges =
+                userPrivileges ?? throw new ArgumentNullException(nameof(userPrivileges));
         }
 
         public async Task<bool> StartWorkflowAsync()
@@ -733,13 +737,45 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _stepChanged.Raise(this, EventArgs.Empty);
         }
 
-        public async Task<Model_LabelDataClearResult> ResetLabelDataAsync()
+        public async Task<Model_LabelDataClearResult> ResetLabelDataAsync(bool clearAllRows = false)
         {
-            var archivedBy =
-                _userSessionManager.CurrentSession?.User?.WindowsUsername ?? Environment.UserName;
+            var currentUser = _userSessionManager.CurrentSession?.User;
+            var employeeNumber = currentUser?.EmployeeNumber ?? 0;
+            if (!clearAllRows && employeeNumber <= 0)
+            {
+                return new Model_LabelDataClearResult
+                {
+                    LabelQueueCleared = false,
+                    ArchiveQueueCleared = false,
+                    ArchiveQueueError =
+                        "A valid 4-digit employee number is required to clear your receiving label rows.",
+                };
+            }
+
+            if (clearAllRows)
+            {
+                var authorizationResult = await EnsureAdminOrDeveloperAsync(employeeNumber);
+                if (!authorizationResult.IsSuccess)
+                {
+                    return new Model_LabelDataClearResult
+                    {
+                        LabelQueueCleared = false,
+                        ArchiveQueueCleared = false,
+                        ArchiveQueueError =
+                            authorizationResult.ErrorMessage
+                            ?? "Only Admin or Developer users can clear all receiving label rows.",
+                    };
+                }
+            }
+
+            var archivedBy = currentUser?.WindowsUsername ?? Environment.UserName;
             _logger.LogInfo($"Clear Label Data requested by {archivedBy}.");
 
-            var clearResult = await _mysqlReceiving.ClearLabelDataToHistoryAsync(archivedBy);
+            var clearResult = await _mysqlReceiving.ClearLabelDataToHistoryAsync(
+                archivedBy,
+                employeeNumber,
+                clearAllRows
+            );
             if (clearResult.IsSuccess)
             {
                 _logger.LogInfo($"Clear Label Data succeeded. Rows moved: {clearResult.Data}");
@@ -757,6 +793,31 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 ArchiveQueueCleared = false,
                 ArchiveQueueError = clearResult.ErrorMessage,
             };
+        }
+
+        private async Task<Model_Dao_Result> EnsureAdminOrDeveloperAsync(int employeeNumber)
+        {
+            if (employeeNumber <= 0)
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    "Only Admin or Developer users can clear all receiving label rows."
+                );
+            }
+
+            if (!_userPrivileges.IsInitialized || _userPrivileges.CurrentUserId != employeeNumber)
+            {
+                var initializeResult = await _userPrivileges.InitializeAsync(employeeNumber);
+                if (!initializeResult.IsSuccess)
+                {
+                    return initializeResult;
+                }
+            }
+
+            return _userPrivileges.HasAnyRole("Admin", "Developer")
+                ? Model_Dao_Result_Factory.Success()
+                : Model_Dao_Result_Factory.Failure(
+                    "Only Admin or Developer users can clear all receiving label rows."
+                );
         }
 
         public async Task<bool> HasActiveLabelDataAsync()

@@ -13,6 +13,7 @@ CREATE TABLE dunnage_history (
     quantity_type VARCHAR(100) NOT NULL DEFAULT 'Quantity' COMMENT 'Quantity label header snapshot preserved when queue rows move to history',
     received_date DATETIME NOT NULL COMMENT 'Date and time the dunnage was received',
     created_by VARCHAR(50) NOT NULL COMMENT 'Username of user who created the record',
+    employee_number INT NULL COMMENT '4-digit employee identifier preserved from the active queue row',
     created_date DATETIME NOT NULL COMMENT 'Timestamp when record was created',
     modified_by VARCHAR(50) COMMENT 'Username of user who last modified the record',
     modified_date DATETIME COMMENT 'Timestamp when record was last modified',
@@ -30,6 +31,7 @@ CREATE TABLE dunnage_history (
     archive_batch_id CHAR(36) NULL COMMENT 'UUID shared by all rows archived in the same Clear Label Data operation',
     INDEX IDX_LOADS_DATE (received_date) COMMENT 'Edit Mode date range filtering',
     INDEX IDX_LOADS_USER (created_by) COMMENT 'Edit Mode user filtering',
+    INDEX IDX_LOADS_EMPLOYEE (employee_number) COMMENT 'Edit Mode employee filtering',
     INDEX IDX_HISTORY_ARCHIVE_BATCH (archive_batch_id) COMMENT 'Clear Label Data archive batch lookups',
     INDEX IDX_HISTORY_PO_NUMBER (po_number) COMMENT 'PO-based dunnage history queries',
     CONSTRAINT FK_dunnage_history_part_id FOREIGN KEY (part_id) REFERENCES dunnage_parts (part_id) ON DELETE RESTRICT

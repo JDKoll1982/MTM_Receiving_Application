@@ -12,7 +12,8 @@ CREATE PROCEDURE `sp_Volvo_GeneratedLabelData_Insert`(
     IN p_quantity INT,
     IN p_skid_number INT,
     IN p_total_skids INT,
-    IN p_part_description VARCHAR(255)
+    IN p_part_description VARCHAR(255),
+    IN p_employee_number INT
 )
 BEGIN
     INSERT INTO volvo_generated_label_data (
@@ -23,7 +24,8 @@ BEGIN
         quantity,
         skid_number,
         total_skids,
-        part_description
+        part_description,
+        employee_number
     )
     VALUES (
         p_shipment_id,
@@ -33,7 +35,8 @@ BEGIN
         p_quantity,
         p_skid_number,
         p_total_skids,
-        p_part_description
+        p_part_description,
+        p_employee_number
     );
 END $$
 

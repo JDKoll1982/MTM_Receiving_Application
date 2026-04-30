@@ -115,6 +115,9 @@ public partial class Model_DunnageLoad : ObservableObject
     private string _createdBy = string.Empty;
 
     [ObservableProperty]
+    private int? _employeeNumber;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CreatedDateDisplay))]
     [NotifyPropertyChangedFor(nameof(CreatedTimeDisplay))]
     private DateTime _createdDate = DateTime.Now;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -188,10 +189,26 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     {
         _ = sender;
 
-        if (ViewModel.ClearLabelDataCommand.CanExecute(null))
+        if (ViewModel.ClearLabelDataCommand.CanExecute(false))
         {
-            ViewModel.ClearLabelDataCommand.Execute(null);
+            ViewModel.ClearLabelDataCommand.Execute(false);
             args.Handled = true;
+        }
+    }
+
+    private void OnClearLabelDataClick(object sender, RoutedEventArgs e)
+    {
+        _ = sender;
+        _ = e;
+
+        var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
+        bool clearAllRows =
+            (shiftState & Windows.UI.Core.CoreVirtualKeyStates.Down)
+            == Windows.UI.Core.CoreVirtualKeyStates.Down;
+
+        if (ViewModel.ClearLabelDataCommand.CanExecute(clearAllRows))
+        {
+            ViewModel.ClearLabelDataCommand.Execute(clearAllRows);
         }
     }
 

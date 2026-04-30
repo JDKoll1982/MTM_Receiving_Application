@@ -82,7 +82,7 @@ public partial class ViewModel_Volvo_GeneratedLabelDataDialog : ViewModel_Shared
     }
 
     [RelayCommand(CanExecute = nameof(CanClearLabelData))]
-    private async Task ClearLabelDataAsync()
+    private async Task ClearLabelDataAsync(bool clearAllRows = false)
     {
         try
         {
@@ -90,7 +90,11 @@ public partial class ViewModel_Volvo_GeneratedLabelDataDialog : ViewModel_Shared
             StatusMessage = "Clearing generated label data...";
 
             var result = await _mediator.Send(
-                new ClearLabelDataCommand { ArchivedBy = Environment.UserName }
+                new ClearLabelDataCommand
+                {
+                    ArchivedBy = Environment.UserName,
+                    ClearAllRows = clearAllRows,
+                }
             );
             if (!result.IsSuccess)
             {

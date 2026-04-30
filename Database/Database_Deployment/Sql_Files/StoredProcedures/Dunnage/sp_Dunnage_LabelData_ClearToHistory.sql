@@ -12,6 +12,8 @@ DELIMITER $$
 
 CREATE PROCEDURE `sp_Dunnage_LabelData_ClearToHistory`(
     IN  p_archived_by       VARCHAR(100),
+    IN  p_employee_number   INT,
+    IN  p_clear_all         TINYINT(1),
     OUT p_rows_moved        INT,
     OUT p_archive_batch_id  CHAR(36),
     OUT p_status            INT,
@@ -34,66 +36,79 @@ BEGIN
     SET p_error_message   = NULL;
     SET p_archive_batch_id = UUID();
 
-    START TRANSACTION;
-
-    SELECT COUNT(*) INTO v_rows_to_move
-    FROM dunnage_label_data;
-
-    IF v_rows_to_move = 0 THEN
-        -- Nothing to move — succeed silently.
-        COMMIT;
+    IF COALESCE(p_clear_all, 0) = 0 AND COALESCE(p_employee_number, 0) <= 0 THEN
+        SET p_status = 1;
+        SET p_error_message = 'A valid employee number is required to clear your own dunnage label rows.';
     ELSE
-        -- Archive all queue rows into dunnage_history, stamping archive metadata.
-        INSERT INTO dunnage_history
-        (
-            load_uuid,
-            part_id,
-            quantity,
-            quantity_type,
-            received_date,
-            created_by,
-            created_date,
-            po_number,
-            type_id,
-            type_name,
-            type_icon,
-            location,
-            label_number,
-            part_skid_sequence,
-            part_skid_total,
-            specs_json,
-            archived_at,
-            archived_by,
-            archive_batch_id
-        )
-        SELECT
-            dld.load_uuid,
-            dld.part_id,
-            dld.quantity,
-            dld.quantity_type,
-            COALESCE(dld.received_date, NOW())  AS received_date,
-            dld.user_id                         AS created_by,
-            NOW()                               AS created_date,
-            dld.po_number,
-            dld.dunnage_type_id                 AS type_id,
-            dld.dunnage_type_name               AS type_name,
-            dld.dunnage_type_icon               AS type_icon,
-            dld.location,
-            dld.label_number,
-            dld.part_skid_sequence,
-            dld.part_skid_total,
-            dld.specs_json,
-            NOW()                               AS archived_at,
-            p_archived_by                       AS archived_by,
-            p_archive_batch_id                  AS archive_batch_id
-        FROM dunnage_label_data dld;
+        START TRANSACTION;
 
-        -- Remove archived rows from the active queue.
-        DELETE FROM dunnage_label_data;
+        SELECT COUNT(*) INTO v_rows_to_move
+        FROM dunnage_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
 
-        COMMIT;
+        IF v_rows_to_move = 0 THEN
+            -- Nothing to move — succeed silently.
+            COMMIT;
+        ELSE
+            -- Archive matching queue rows into dunnage_history, stamping archive metadata.
+            INSERT INTO dunnage_history
+            (
+                load_uuid,
+                part_id,
+                quantity,
+                quantity_type,
+                received_date,
+                created_by,
+                employee_number,
+                created_date,
+                po_number,
+                type_id,
+                type_name,
+                type_icon,
+                location,
+                label_number,
+                part_skid_sequence,
+                part_skid_total,
+                specs_json,
+                archived_at,
+                archived_by,
+                archive_batch_id
+            )
+            SELECT
+                dld.load_uuid,
+                dld.part_id,
+                dld.quantity,
+                dld.quantity_type,
+                COALESCE(dld.received_date, NOW())  AS received_date,
+                dld.user_id                         AS created_by,
+                dld.employee_number                AS employee_number,
+                NOW()                               AS created_date,
+                dld.po_number,
+                dld.dunnage_type_id                 AS type_id,
+                dld.dunnage_type_name               AS type_name,
+                dld.dunnage_type_icon               AS type_icon,
+                dld.location,
+                dld.label_number,
+                dld.part_skid_sequence,
+                dld.part_skid_total,
+                dld.specs_json,
+                NOW()                               AS archived_at,
+                p_archived_by                       AS archived_by,
+                p_archive_batch_id                  AS archive_batch_id
+            FROM dunnage_label_data dld
+            WHERE COALESCE(p_clear_all, 0) = 1
+               OR dld.employee_number = p_employee_number;
 
-        SET p_rows_moved = v_rows_to_move;
+            -- Remove archived rows from the active queue.
+            DELETE FROM dunnage_label_data
+            WHERE COALESCE(p_clear_all, 0) = 1
+               OR employee_number = p_employee_number;
+
+            COMMIT;
+
+            SET p_rows_moved = v_rows_to_move;
+        END IF;
     END IF;
 END $$
 

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS volvo_generated_label_history (
     skid_number INT NOT NULL COMMENT '1-based skid sequence for this part within the shipment',
     total_skids INT NOT NULL COMMENT 'Total skid count for this part within the shipment',
     part_description VARCHAR(255) NOT NULL COMMENT 'Part description snapshot preserved from the active label row',
+    employee_number INT NULL COMMENT '4-digit employee identifier preserved from the active generated label row',
     source_created_at DATETIME NOT NULL COMMENT 'Original created_at value from the active queue row',
     source_updated_at DATETIME NOT NULL COMMENT 'Original updated_at value from the active queue row',
     archived_at DATETIME NOT NULL COMMENT 'Timestamp when this label row was moved to history',
@@ -21,5 +22,6 @@ CREATE TABLE IF NOT EXISTS volvo_generated_label_history (
     INDEX idx_volvo_generated_label_history_batch_id (archive_batch_id),
     INDEX idx_volvo_generated_label_history_shipment_id (shipment_id),
     INDEX idx_volvo_generated_label_history_part_number (part_number),
+    INDEX idx_volvo_generated_label_history_employee_number (employee_number),
     INDEX idx_volvo_generated_label_history_archived_at (archived_at)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Archived Volvo generated label rows cleared from the active queue';

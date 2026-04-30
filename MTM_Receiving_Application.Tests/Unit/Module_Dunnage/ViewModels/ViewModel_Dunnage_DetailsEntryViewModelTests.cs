@@ -57,7 +57,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
-            receivingValidation.Object
+            receivingValidation.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -185,7 +186,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_SettingsCoreFacade>().Object,
-            new Mock<IService_ReceivingValidation>().Object
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -254,7 +256,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
-            new Mock<IService_ReceivingValidation>().Object
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -317,7 +320,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
-            new Mock<IService_ReceivingValidation>().Object
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;

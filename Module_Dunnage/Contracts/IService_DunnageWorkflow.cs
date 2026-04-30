@@ -29,7 +29,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public bool HasUnsavedData();
         public void SetNavigationLock(bool isLocked);
 
-        public Task<Model_Dao_Result<int>> ClearLabelDataAsync();
+        public Task<Model_Dao_Result<int>> ClearLabelDataAsync(bool clearAllRows = false);
         public Task<bool> HasActiveLabelDataAsync();
         public void AddCurrentLoadToSession();
     }

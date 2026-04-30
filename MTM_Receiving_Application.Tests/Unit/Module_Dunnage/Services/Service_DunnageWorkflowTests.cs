@@ -40,7 +40,8 @@ public sealed class Service_DunnageWorkflowTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_SettingsCoreFacade>().Object,
-            new Mock<IService_ReceivingValidation>().Object
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         await service.StartWorkflowAsync();
@@ -161,6 +162,51 @@ public sealed class Service_DunnageWorkflowTests
         service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.DetailsEntry);
     }
 
+    [Fact]
+    public async Task ClearLabelDataAsync_WhenClearAllRequestedByNonAdmin_ShouldFail()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        var sessionManager = new Mock<IService_UserSessionManager>();
+        sessionManager
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new MTM_Receiving_Application.Module_Core.Models.Systems.Model_UserSession(
+                    new MTM_Receiving_Application.Module_Core.Models.Systems.Model_User
+                    {
+                        EmployeeNumber = 42,
+                        WindowsUsername = "tester",
+                    }
+                )
+            );
+
+        var userPrivileges = new Mock<IService_UserPrivileges>();
+        userPrivileges.SetupGet(service => service.IsInitialized).Returns(true);
+        userPrivileges.SetupGet(service => service.CurrentUserId).Returns(42);
+        userPrivileges.Setup(service => service.HasAnyRole("Admin", "Developer")).Returns(false);
+
+        var service = new Service_DunnageWorkflow(
+            dunnageService.Object,
+            sessionManager.Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_SettingsCoreFacade>().Object,
+            new Mock<IService_ReceivingValidation>().Object,
+            userPrivileges.Object
+        );
+
+        var result = await service.ClearLabelDataAsync(clearAllRows: true);
+
+        result.IsSuccess.Should().BeFalse();
+        result
+            .ErrorMessage.Should()
+            .Be("Only Admin or Developer users can clear all dunnage label rows.");
+        dunnageService.Verify(
+            db => db.ClearLabelDataAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()),
+            Times.Never
+        );
+    }
+
     private static Service_DunnageWorkflow CreateService(
         string defaultLocation = "RECV",
         Model_ReceivingValidationResult? locationValidationResult = null
@@ -197,7 +243,8 @@ public sealed class Service_DunnageWorkflowTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
-            receivingValidation.Object
+            receivingValidation.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
     }
 }

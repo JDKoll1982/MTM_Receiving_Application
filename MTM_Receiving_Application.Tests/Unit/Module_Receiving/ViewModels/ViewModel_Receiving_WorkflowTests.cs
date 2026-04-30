@@ -106,6 +106,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
             dispatcher.Object,
             new Mock<IService_Window>().Object,
             new Mock<IService_Help>().Object,
+            new Mock<IService_LabelViewLauncher>().Object,
             receivingSettings.Object,
             registry.Object,
             new Mock<IService_Notification>().Object

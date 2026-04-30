@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using MTM_Receiving_Application.Module_Volvo.Models;
 
 namespace MTM_Receiving_Application.Module_Volvo.Helpers;
@@ -15,6 +16,7 @@ public static class Helper_VolvoGeneratedLabelDataBuilder
     )
     {
         var rows = new List<Model_VolvoGeneratedLabelData>();
+        int? employeeNumber = ParseEmployeeNumber(shipment.EmployeeNumber);
 
         foreach (var line in lines)
         {
@@ -41,11 +43,26 @@ public static class Helper_VolvoGeneratedLabelDataBuilder
                         SkidNumber = skidNumber,
                         TotalSkids = line.ReceivedSkidCount,
                         PartDescription = resolvedDescription,
+                        EmployeeNumber = employeeNumber,
                     }
                 );
             }
         }
 
         return rows;
+    }
+
+    private static int? ParseEmployeeNumber(string? employeeNumber)
+    {
+        return
+            int.TryParse(
+                employeeNumber,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var parsed
+            )
+            && parsed > 0
+            ? parsed
+            : null;
     }
 }

@@ -10,6 +10,8 @@ DELIMITER $$
 
 CREATE PROCEDURE `sp_Receiving_LabelData_ClearToHistory`(
     IN p_archived_by VARCHAR(100),
+    IN p_employee_number INT,
+    IN p_clear_all TINYINT(1),
     OUT p_rows_moved INT,
     OUT p_archive_batch_id CHAR(36),
     OUT p_status INT,
@@ -31,17 +33,23 @@ BEGIN
     SET p_error_message = NULL;
     SET p_archive_batch_id = UUID();
 
-    START TRANSACTION;
-
-    SELECT COUNT(*) INTO v_rows_to_move
-    FROM receiving_label_data;
-
-    IF v_rows_to_move = 0 THEN
-        COMMIT;
-        SET p_rows_moved = 0;
-        SET p_status = 0;
-        SET p_error_message = NULL;
+    IF COALESCE(p_clear_all, 0) = 0 AND COALESCE(p_employee_number, 0) <= 0 THEN
+        SET p_status = 1;
+        SET p_error_message = 'A valid employee number is required to clear your own receiving label rows.';
     ELSE
+        START TRANSACTION;
+
+        SELECT COUNT(*) INTO v_rows_to_move
+        FROM receiving_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
+
+        IF v_rows_to_move = 0 THEN
+            COMMIT;
+            SET p_rows_moved = 0;
+            SET p_status = 0;
+            SET p_error_message = NULL;
+        ELSE
         -- Insert into receiving_history using snake_case column names
         -- that match the current receiving_history table schema.
         -- packages_per_load remains the package-count snapshot, while
@@ -113,7 +121,9 @@ BEGIN
             rld.quality_hold_restriction_type                          AS quality_hold_restriction_type,
             rld.part_skid_sequence                                     AS part_skid_sequence,
             rld.part_skid_total                                        AS part_skid_total
-        FROM receiving_label_data rld
+          FROM receiving_label_data rld
+          WHERE COALESCE(p_clear_all, 0) = 1
+              OR rld.employee_number = p_employee_number
         ON DUPLICATE KEY UPDATE
             quantity         = VALUES(quantity),
             part_id          = VALUES(part_id),
@@ -145,13 +155,16 @@ BEGIN
             part_skid_sequence = VALUES(part_skid_sequence),
             part_skid_total  = VALUES(part_skid_total);
 
-        DELETE FROM receiving_label_data;
+        DELETE FROM receiving_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
 
-        COMMIT;
+            COMMIT;
 
-        SET p_rows_moved = v_rows_to_move;
-        SET p_status = 0;
-        SET p_error_message = NULL;
+            SET p_rows_moved = v_rows_to_move;
+            SET p_status = 0;
+            SET p_error_message = NULL;
+        END IF;
     END IF;
 END $$
 

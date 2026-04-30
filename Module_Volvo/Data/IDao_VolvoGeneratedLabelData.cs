@@ -19,5 +19,9 @@ public interface IDao_VolvoGeneratedLabelData
 
     Task<Model_Dao_Result<int>> DeleteByShipmentAsync(int shipmentId);
 
-    Task<Model_Dao_Result<int>> ClearToHistoryAsync(string archivedBy);
+    Task<Model_Dao_Result<int>> ClearToHistoryAsync(
+        string archivedBy,
+        int employeeNumber,
+        bool clearAllRows
+    );
 }

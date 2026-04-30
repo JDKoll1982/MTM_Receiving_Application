@@ -238,7 +238,7 @@
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
-                    Command="{x:Bind ViewModel.ResetLabelDataCommand}"
+                    Click="OnResetLabelDataClick"
                     Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
                     Foreground="Red"
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
@@ -253,7 +253,7 @@
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
-                    Command="{x:Bind ViewModel.ResetLabelDataCommand}"
+                    Click="OnResetLabelDataClick"
                     Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
                     Foreground="Red"
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"

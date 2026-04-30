@@ -151,7 +151,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         ///  <summary>
         /// Resets the label-data store.
         /// </summary>
-        public Task<Model_LabelDataClearResult> ResetLabelDataAsync();
+        public Task<Model_LabelDataClearResult> ResetLabelDataAsync(bool clearAllRows = false);
 
         /// <summary>
         /// Checks whether the active receiving label-data queue contains any rows.

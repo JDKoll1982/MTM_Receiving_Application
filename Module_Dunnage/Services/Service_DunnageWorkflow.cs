@@ -27,6 +27,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_SettingsCoreFacade _settingsCore;
         private readonly IService_ReceivingValidation _receivingValidation;
+        private readonly IService_UserPrivileges _userPrivileges;
         private readonly List<Model_DunnageLoad> _currentEntryLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
@@ -74,7 +75,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             IService_ErrorHandler errorHandler,
             IService_ViewModelRegistry viewModelRegistry,
             IService_SettingsCoreFacade settingsCore,
-            IService_ReceivingValidation receivingValidation
+            IService_ReceivingValidation receivingValidation,
+            IService_UserPrivileges userPrivileges
         )
         {
             _dunnageService = dunnageService;
@@ -84,6 +86,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _viewModelRegistry = viewModelRegistry;
             _settingsCore = settingsCore;
             _receivingValidation = receivingValidation;
+            _userPrivileges = userPrivileges;
 
             _sessionManager.SessionTimedOut += OnSessionTimedOut;
         }
@@ -374,11 +377,37 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _navigationLockChanged.Raise(this, EventArgs.Empty);
         }
 
-        public async Task<Model_Dao_Result<int>> ClearLabelDataAsync()
+        public async Task<Model_Dao_Result<int>> ClearLabelDataAsync(bool clearAllRows = false)
         {
             try
             {
-                var result = await _dunnageService.ClearLabelDataAsync();
+                var currentUser = _sessionManager.CurrentSession?.User;
+                var employeeNumber = currentUser?.EmployeeNumber ?? 0;
+                if (!clearAllRows && employeeNumber <= 0)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(
+                        "A valid 4-digit employee number is required to clear your dunnage label rows."
+                    );
+                }
+
+                if (clearAllRows)
+                {
+                    var authorizationResult = await EnsureAdminOrDeveloperAsync(employeeNumber);
+                    if (!authorizationResult.IsSuccess)
+                    {
+                        return Model_Dao_Result_Factory.Failure<int>(
+                            authorizationResult.ErrorMessage
+                                ?? "Only Admin or Developer users can clear all dunnage label rows."
+                        );
+                    }
+                }
+
+                var archivedBy = currentUser?.WindowsUsername ?? "System";
+                var result = await _dunnageService.ClearLabelDataAsync(
+                    archivedBy,
+                    employeeNumber,
+                    clearAllRows
+                );
                 if (result.IsSuccess)
                 {
                     _statusMessageRaised.Raise(
@@ -409,6 +438,31 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     $"Error clearing label data: {ex.Message}"
                 );
             }
+        }
+
+        private async Task<Model_Dao_Result> EnsureAdminOrDeveloperAsync(int employeeNumber)
+        {
+            if (employeeNumber <= 0)
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    "Only Admin or Developer users can clear all dunnage label rows."
+                );
+            }
+
+            if (!_userPrivileges.IsInitialized || _userPrivileges.CurrentUserId != employeeNumber)
+            {
+                var initializeResult = await _userPrivileges.InitializeAsync(employeeNumber);
+                if (!initializeResult.IsSuccess)
+                {
+                    return initializeResult;
+                }
+            }
+
+            return _userPrivileges.HasAnyRole("Admin", "Developer")
+                ? Model_Dao_Result_Factory.Success()
+                : Model_Dao_Result_Factory.Failure(
+                    "Only Admin or Developer users can clear all dunnage label rows."
+                );
         }
 
         public void AddCurrentLoadToSession()
@@ -500,6 +554,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 : normalizedPoNumber;
             var specs = CurrentSession.SpecValues ?? new Dictionary<string, object>();
             var createdBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
+            var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
             var inventoryMethod = string.IsNullOrWhiteSpace(CurrentSession.InventoryMethod)
                 ? string.IsNullOrWhiteSpace(normalizedPoNumber)
                     ? "Adjust In"
@@ -522,6 +577,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 load.SpecValues = new Dictionary<string, object>(specs);
                 load.InventoryMethod = inventoryMethod;
                 load.CreatedBy = createdBy;
+                load.EmployeeNumber = employeeNumber;
                 load.ReceivedDate = DateTime.Now;
             }
         }
@@ -551,6 +607,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     : new Dictionary<string, object>(CurrentSession.SpecValues),
                 ReceivedDate = DateTime.Now,
                 CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
+                EmployeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber,
                 LoadNumber = loadNumber,
             };
         }

@@ -92,7 +92,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             mockCatalog.Object,
             new Mock<IService_LoggingUtility>().Object,
             viewModelRegistryMock.Object,
-            userSessionManagerMock.Object
+            userSessionManagerMock.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         await service.StartWorkflowAsync();
@@ -203,7 +204,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             mockCatalog.Object,
             new Mock<IService_LoggingUtility>().Object,
             viewModelRegistryMock.Object,
-            userSessionManagerMock.Object
+            userSessionManagerMock.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         await service.StartWorkflowAsync();
@@ -297,7 +299,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             mockCatalog.Object,
             new Mock<IService_LoggingUtility>().Object,
             viewModelRegistryMock.Object,
-            userSessionManagerMock.Object
+            userSessionManagerMock.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         await service.StartWorkflowAsync();
@@ -371,7 +374,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             mockCatalog.Object,
             new Mock<IService_LoggingUtility>().Object,
             viewModelRegistryMock.Object,
-            userSessionManagerMock.Object
+            userSessionManagerMock.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         service.CurrentSession.Loads.Add(
@@ -448,7 +452,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             mockCatalog.Object,
             new Mock<IService_LoggingUtility>().Object,
             viewModelRegistryMock.Object,
-            userSessionManagerMock.Object
+            userSessionManagerMock.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         service.CurrentSession.Loads.Add(
@@ -503,7 +508,9 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             .Setup(service => service.GetStringAsync(It.IsAny<string>(), It.IsAny<int?>()))
             .ReturnsAsync(string.Empty);
         validationMock
-            .Setup(service => service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>()))
+            .Setup(service =>
+                service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>())
+            )
             .ReturnsAsync(Model_ReceivingValidationResult.Success());
         appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
         sessionManagerMock.Setup(service => service.SessionExists()).Returns(false);
@@ -519,7 +526,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             mockCatalog.Object,
             new Mock<IService_LoggingUtility>().Object,
             viewModelRegistryMock.Object,
-            userSessionManagerMock.Object
+            userSessionManagerMock.Object,
+            new Mock<IService_UserPrivileges>().Object
         );
 
         await service.StartWorkflowAsync();
@@ -544,8 +552,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         service.CurrentSession.IsNonPO.Should().BeTrue();
         service.CurrentSession.PoNumber.Should().Be("Stock Replenishment");
         service.CurrentSession.Loads.Should().HaveCount(2);
-        service.CurrentSession.Loads.Should().OnlyContain(load =>
-            load.IsNonPOItem && load.PoNumber == "Stock Replenishment"
-        );
+        service
+            .CurrentSession.Loads.Should()
+            .OnlyContain(load => load.IsNonPOItem && load.PoNumber == "Stock Replenishment");
     }
 }

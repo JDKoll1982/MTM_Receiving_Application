@@ -66,6 +66,7 @@ public class Dao_VolvoGeneratedLabelData : IDao_VolvoGeneratedLabelData
                         { "skid_number", row.SkidNumber },
                         { "total_skids", row.TotalSkids },
                         { "part_description", row.PartDescription },
+                        { "employee_number", row.EmployeeNumber ?? (object)DBNull.Value },
                     }
                 );
 
@@ -119,7 +120,11 @@ public class Dao_VolvoGeneratedLabelData : IDao_VolvoGeneratedLabelData
             );
     }
 
-    public async Task<Model_Dao_Result<int>> ClearToHistoryAsync(string archivedBy)
+    public async Task<Model_Dao_Result<int>> ClearToHistoryAsync(
+        string archivedBy,
+        int employeeNumber,
+        bool clearAllRows
+    )
     {
         try
         {
@@ -135,6 +140,8 @@ public class Dao_VolvoGeneratedLabelData : IDao_VolvoGeneratedLabelData
             };
 
             command.Parameters.AddWithValue("p_archived_by", archivedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+            command.Parameters.AddWithValue("p_clear_all", clearAllRows);
 
             var rowsMovedParam = new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
@@ -200,6 +207,9 @@ public class Dao_VolvoGeneratedLabelData : IDao_VolvoGeneratedLabelData
             SkidNumber = reader.GetInt32(reader.GetOrdinal("skid_number")),
             TotalSkids = reader.GetInt32(reader.GetOrdinal("total_skids")),
             PartDescription = reader.GetString(reader.GetOrdinal("part_description")),
+            EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number"))
+                ? null
+                : reader.GetInt32(reader.GetOrdinal("employee_number")),
             CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
             UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
         };

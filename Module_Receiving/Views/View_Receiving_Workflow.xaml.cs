@@ -270,10 +270,26 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         {
             _ = sender;
 
-            if (ViewModel.ResetLabelDataCommand.CanExecute(null))
+            if (ViewModel.ResetLabelDataCommand.CanExecute(false))
             {
-                ViewModel.ResetLabelDataCommand.Execute(null);
+                ViewModel.ResetLabelDataCommand.Execute(false);
                 args.Handled = true;
+            }
+        }
+
+        private void OnResetLabelDataClick(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+
+            var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
+            bool clearAllRows =
+                (shiftState & Windows.UI.Core.CoreVirtualKeyStates.Down)
+                == Windows.UI.Core.CoreVirtualKeyStates.Down;
+
+            if (ViewModel.ResetLabelDataCommand.CanExecute(clearAllRows))
+            {
+                ViewModel.ResetLabelDataCommand.Execute(clearAllRows);
             }
         }
 

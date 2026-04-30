@@ -16,6 +16,7 @@ BEGIN
         skid_number,
         total_skids,
         part_description,
+        employee_number,
         created_at,
         updated_at
     FROM volvo_generated_label_data

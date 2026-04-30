@@ -65,7 +65,7 @@
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
-                    Command="{x:Bind ViewModel.ClearLabelDataCommand}"
+                    Click="OnClearLabelDataClick"
                     Content="Clear All Labels"
                     Foreground="Red"
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
@@ -110,7 +110,7 @@
                     Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                 <Button
-                    Command="{x:Bind ViewModel.ClearLabelDataCommand}"
+                    Click="OnClearLabelDataClick"
                     Content="Clear All Labels"
                     Foreground="Red"
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"

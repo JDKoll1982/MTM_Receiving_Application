@@ -204,7 +204,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     }
 
     [RelayCommand]
-    private async Task ClearLabelDataAsync()
+    private async Task ClearLabelDataAsync(bool clearAllRows = false)
     {
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot == null)
@@ -239,7 +239,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
             IsBusy = true;
             try
             {
-                var clearResult = await _workflowService.ClearLabelDataAsync();
+                var clearResult = await _workflowService.ClearLabelDataAsync(clearAllRows);
                 StatusMessage = clearResult.IsSuccess
                     ? $"Label data cleared — {clearResult.Data} row(s) archived to history."
                     : $"Clear Label Data failed: {clearResult.ErrorMessage}";

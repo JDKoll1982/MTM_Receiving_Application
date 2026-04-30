@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS dunnage_label_data (
     po_number VARCHAR(50) NULL COMMENT 'PO number; NULL for non-PO items',
     received_date DATETIME NOT NULL COMMENT 'Date and time the dunnage was received',
     user_id VARCHAR(100) NOT NULL COMMENT 'Application user identifier (Windows username)',
+    employee_number INT NULL COMMENT '4-digit employee identifier for the user who saved the queue row',
     location VARCHAR(100) NULL COMMENT 'Warehouse location for received dunnage',
     label_number VARCHAR(50) NULL COMMENT 'Label number for this row (supports multi-label splits)',
     part_skid_sequence INT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
@@ -18,5 +19,6 @@ CREATE TABLE IF NOT EXISTS dunnage_label_data (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the queue record was inserted',
     INDEX idx_load_uuid (load_uuid) COMMENT 'Lookup by workflow session GUID',
     INDEX idx_part_id (part_id) COMMENT 'Part-based queue queries',
+    INDEX idx_employee_number (employee_number) COMMENT 'User-scoped clear queue filtering',
     INDEX idx_received_date (received_date) COMMENT 'Date range filtering for queue consumers'
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Active dunnage label queue. Rows are moved to dunnage_history on Clear Label Data. Do not write directly to dunnage_history from the workflow.';

@@ -659,7 +659,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         [RelayCommand]
-        private async Task ResetLabelDataAsync()
+        private async Task ResetLabelDataAsync(bool clearAllRows = false)
         {
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
@@ -701,7 +701,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (result == ContentDialogResult.Primary)
             {
                 // Clear active label data by moving it to history.
-                var deleteResult = await _workflowService.ResetLabelDataAsync();
+                var deleteResult = await _workflowService.ResetLabelDataAsync(clearAllRows);
                 if (deleteResult.LabelQueueCleared || deleteResult.ArchiveQueueCleared)
                 {
                     foreach (
@@ -722,9 +722,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 else
                 {
                     ShowStatus(
-                        await _receivingSettings.GetStringAsync(
-                            ReceivingSettingsKeys.Workflow.StatusLabelDataClearedFailed
-                        ),
+                        deleteResult.ArchiveQueueError
+                            ?? deleteResult.LabelQueueError
+                            ?? await _receivingSettings.GetStringAsync(
+                                ReceivingSettingsKeys.Workflow.StatusLabelDataClearedFailed
+                            ),
                         InfoBarSeverity.Warning
                     );
                 }

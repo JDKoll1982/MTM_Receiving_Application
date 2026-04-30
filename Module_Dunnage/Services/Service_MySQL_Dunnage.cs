@@ -1154,17 +1154,27 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         }
 
         /// <summary>
-        /// Atomically moves all rows from <c>dunnage_label_data</c> to <c>dunnage_history</c> and
-        /// clears the active queue. Returns the number of rows moved.
+        /// Atomically moves matching rows from <c>dunnage_label_data</c> to <c>dunnage_history</c>
+        /// and clears them from the active queue. Returns the number of rows moved.
         /// </summary>
-        public async Task<Model_Dao_Result<int>> ClearLabelDataAsync()
+        public async Task<Model_Dao_Result<int>> ClearLabelDataAsync(
+            string archivedBy,
+            int employeeNumber,
+            bool clearAllRows
+        )
         {
             try
             {
                 await _logger.LogInfoAsync(
-                    $"Clearing dunnage label data to history by user: {CurrentUser}"
+                    clearAllRows
+                        ? $"Clearing all dunnage label data to history by user: {archivedBy}"
+                        : $"Clearing dunnage label data to history for employee {employeeNumber} by user: {archivedBy}"
                 );
-                var result = await _daoDunnageLabelData.ClearToHistoryAsync(CurrentUser);
+                var result = await _daoDunnageLabelData.ClearToHistoryAsync(
+                    archivedBy,
+                    employeeNumber,
+                    clearAllRows
+                );
                 if (result.IsSuccess)
                 {
                     await _logger.LogInfoAsync(

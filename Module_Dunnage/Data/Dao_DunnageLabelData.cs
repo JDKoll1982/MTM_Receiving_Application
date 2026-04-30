@@ -139,6 +139,15 @@ public class Dao_DunnageLabelData
                 );
 
                 command.Parameters.Add(
+                    new MySqlParameter("p_employee_number", MySqlDbType.Int32)
+                    {
+                        Value = load.EmployeeNumber.HasValue
+                            ? (object)load.EmployeeNumber.Value
+                            : DBNull.Value,
+                    }
+                );
+
+                command.Parameters.Add(
                     new MySqlParameter("p_location", MySqlDbType.VarChar, 100)
                     {
                         Value = string.IsNullOrWhiteSpace(load.Location)
@@ -200,7 +209,13 @@ public class Dao_DunnageLabelData
     /// and deletes them from the queue. Returns the number of rows moved.
     /// </summary>
     /// <param name="archivedBy">User or system identifier recorded in the archive record.</param>
-    public async Task<Model_Dao_Result<int>> ClearToHistoryAsync(string archivedBy)
+    /// <param name="employeeNumber">Employee number used for user-scoped clears.</param>
+    /// <param name="clearAllRows">When true, archives every queue row regardless of owner.</param>
+    public async Task<Model_Dao_Result<int>> ClearToHistoryAsync(
+        string archivedBy,
+        int employeeNumber,
+        bool clearAllRows
+    )
     {
         try
         {
@@ -216,6 +231,8 @@ public class Dao_DunnageLabelData
             };
 
             command.Parameters.AddWithValue("p_archived_by", archivedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+            command.Parameters.AddWithValue("p_clear_all", clearAllRows);
 
             var rowsMovedParam = new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
@@ -349,6 +366,12 @@ public class Dao_DunnageLabelData
             {
                 Value = string.IsNullOrWhiteSpace(load.CreatedBy) ? fallbackUser : load.CreatedBy,
             },
+            new("@p_employee_number", MySqlDbType.Int32)
+            {
+                Value = load.EmployeeNumber.HasValue
+                    ? (object)load.EmployeeNumber.Value
+                    : DBNull.Value,
+            },
             new("@p_location", MySqlDbType.VarChar, 100)
             {
                 Value = string.IsNullOrWhiteSpace(load.Location)
@@ -444,6 +467,7 @@ public class Dao_DunnageLabelData
     private static Model_DunnageLoad MapFromReader(IDataReader reader)
     {
         var hasQuantityTypeColumn = HasColumn(reader, "quantity_type");
+        var hasEmployeeNumberColumn = HasColumn(reader, "employee_number");
 
         return new Model_DunnageLoad
         {
@@ -475,6 +499,10 @@ public class Dao_DunnageLabelData
                 : reader.GetString(reader.GetOrdinal("po_number")),
             ReceivedDate = reader.GetDateTime(reader.GetOrdinal("received_date")),
             CreatedBy = reader.GetString(reader.GetOrdinal("user_id")),
+            EmployeeNumber =
+                !hasEmployeeNumberColumn ? null
+                : reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null
+                : reader.GetInt32(reader.GetOrdinal("employee_number")),
             CreatedDate = reader.IsDBNull(reader.GetOrdinal("created_at"))
                 ? default
                 : reader.GetDateTime(reader.GetOrdinal("created_at")),

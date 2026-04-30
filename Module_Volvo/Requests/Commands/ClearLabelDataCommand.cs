@@ -13,4 +13,9 @@ public record ClearLabelDataCommand : IRequest<Model_Dao_Result<int>>
     /// Employee identifier to stamp on all archived records as <c>archived_by</c>.
     /// </summary>
     public string ArchivedBy { get; init; } = string.Empty;
+
+    /// <summary>
+    /// When true, requests a full queue clear instead of a user-scoped clear.
+    /// </summary>
+    public bool ClearAllRows { get; init; }
 }

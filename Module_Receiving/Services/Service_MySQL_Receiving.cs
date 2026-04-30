@@ -229,10 +229,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return true;
         }
 
-        public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy)
+        public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(
+            string archivedBy,
+            int employeeNumber,
+            bool clearAllRows
+        )
         {
-            _logger.LogInfo($"Clearing receiving label queue to history by user: {archivedBy}");
-            var result = await _receivingLabelDataDao.ClearLabelDataToHistoryAsync(archivedBy);
+            _logger.LogInfo(
+                clearAllRows
+                    ? $"Clearing all receiving label queue rows to history by user: {archivedBy}"
+                    : $"Clearing receiving label queue rows for employee {employeeNumber} by user: {archivedBy}"
+            );
+            var result = await _receivingLabelDataDao.ClearLabelDataToHistoryAsync(
+                archivedBy,
+                employeeNumber,
+                clearAllRows
+            );
 
             if (result.IsSuccess)
             {

@@ -10,11 +10,13 @@ CREATE TABLE IF NOT EXISTS volvo_generated_label_data (
     skid_number INT NOT NULL COMMENT '1-based skid sequence for this part within the shipment',
     total_skids INT NOT NULL COMMENT 'Total skid count for this part within the shipment',
     part_description VARCHAR(255) NOT NULL COMMENT 'Part description resolved for the label at generation time',
+    employee_number INT NULL COMMENT '4-digit employee identifier for the user whose shipment generated this label row',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when this generated label row was written',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when this generated label row was last refreshed',
     PRIMARY KEY (id),
     INDEX idx_volvo_generated_label_shipment_id (shipment_id),
     INDEX idx_volvo_generated_label_shipment_number (shipment_number),
     INDEX idx_volvo_generated_label_part_number (part_number),
+    INDEX idx_volvo_generated_label_employee_number (employee_number),
     INDEX idx_volvo_generated_label_created_at (created_at)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Active Volvo label rows queued for LabelView generation';

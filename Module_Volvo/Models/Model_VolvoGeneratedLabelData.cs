@@ -25,6 +25,8 @@ public class Model_VolvoGeneratedLabelData
 
     public string PartDescription { get; set; } = string.Empty;
 
+    public int? EmployeeNumber { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }

@@ -23,6 +23,7 @@ BEGIN
         po_number,
         received_date,
         user_id,
+        employee_number,
         location,
         label_number,
         part_skid_sequence,

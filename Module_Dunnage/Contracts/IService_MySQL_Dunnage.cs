@@ -66,7 +66,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> SaveLoadsAsync(List<Model_DunnageLoad> loads);
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetActiveLabelDataAsync();
         public Task<bool> HasActiveLabelDataAsync();
-        public Task<Model_Dao_Result<int>> ClearLabelDataAsync();
+        public Task<Model_Dao_Result<int>> ClearLabelDataAsync(
+            string archivedBy,
+            int employeeNumber,
+            bool clearAllRows
+        );
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(
             DateTime start,
             DateTime end

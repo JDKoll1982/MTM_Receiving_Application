@@ -70,7 +70,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="archivedBy">User performing the archive action</param>
         /// <returns>DAO result containing number of rows moved</returns>
-        public Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy);
+        public Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(
+            string archivedBy,
+            int employeeNumber,
+            bool clearAllRows
+        );
 
         /// <summary>
         /// Retrieves all rows from the active label queue (receiving_label_data).

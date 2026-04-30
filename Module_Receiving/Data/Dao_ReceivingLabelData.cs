@@ -223,7 +223,11 @@ public class Dao_ReceivingLabelData
         );
     }
 
-    public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(string archivedBy)
+    public async Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(
+        string archivedBy,
+        int employeeNumber,
+        bool clearAllRows
+    )
     {
         try
         {
@@ -239,6 +243,8 @@ public class Dao_ReceivingLabelData
             };
 
             command.Parameters.AddWithValue("p_archived_by", archivedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+            command.Parameters.AddWithValue("p_clear_all", clearAllRows);
 
             var rowsMovedParam = new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
@@ -448,7 +454,10 @@ public class Dao_ReceivingLabelData
                 var parameters = new Dictionary<string, object>
                 {
                     { "p_label_data_record_id", load.LabelDataRecordID ?? (object)DBNull.Value },
-                    { "p_load_id", load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString() },
+                    {
+                        "p_load_id",
+                        load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString()
+                    },
                 };
 
                 var execResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
