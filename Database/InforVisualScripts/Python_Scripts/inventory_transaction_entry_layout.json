@@ -1,0 +1,80 @@
+{
+  "process_name": "VMINVENT.EXE",
+  "accepted_titles": [
+    "Inventory Transaction Entry - Infor VISUAL - MTMFG",
+    "Inventory Transfers"
+  ],
+  "created_at": "2026-05-01T13:04:33",
+  "anchors": {
+    "PartIdField": {
+      "prompt": "1. Part ID field",
+      "root_title": "Inventory Transfers",
+      "relative_x": 163,
+      "relative_y": 121,
+      "child_class": "Edit",
+      "child_control_id": 4102,
+      "screen_x": 880,
+      "screen_y": 236
+    },
+    "QuantityField": {
+      "prompt": "2. Quantity field",
+      "root_title": "Inventory Transfers",
+      "relative_x": 204,
+      "relative_y": 211,
+      "child_class": "Edit",
+      "child_control_id": 4111,
+      "screen_x": 921,
+      "screen_y": 326
+    },
+    "FromWarehouseField": {
+      "prompt": "3. From Warehouse ID field",
+      "root_title": "Inventory Transfers",
+      "relative_x": 183,
+      "relative_y": 329,
+      "child_class": "Edit",
+      "child_control_id": 4123,
+      "screen_x": 900,
+      "screen_y": 444
+    },
+    "FromLocationField": {
+      "prompt": "4. From Location ID field",
+      "root_title": "Inventory Transfers",
+      "relative_x": 300,
+      "relative_y": 328,
+      "child_class": "Edit",
+      "child_control_id": 4124,
+      "screen_x": 1017,
+      "screen_y": 443
+    },
+    "ToWarehouseField": {
+      "prompt": "5. To Warehouse ID field",
+      "root_title": "Inventory Transfers",
+      "relative_x": 134,
+      "relative_y": 434,
+      "child_class": "Edit",
+      "child_control_id": 4142,
+      "screen_x": 851,
+      "screen_y": 549
+    },
+    "ToLocationField": {
+      "prompt": "6. To Location ID field",
+      "root_title": "Inventory Transfers",
+      "relative_x": 284,
+      "relative_y": 434,
+      "child_class": "Edit",
+      "child_control_id": 4143,
+      "screen_x": 1001,
+      "screen_y": 549
+    },
+    "SaveButton": {
+      "prompt": "7. Save button",
+      "root_title": "Inventory Transfers",
+      "relative_x": 54,
+      "relative_y": 544,
+      "child_class": "Button",
+      "child_control_id": 4171,
+      "screen_x": 771,
+      "screen_y": 659
+    }
+  }
+}

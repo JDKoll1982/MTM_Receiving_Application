@@ -90,6 +90,10 @@
                             Orientation="Horizontal"
                             Spacing="12">
                             <Button Command="{x:Bind ViewModel.RemoveIgnoredLocationCommand}" Content="Remove Selected" />
+                            <Button
+                                Command="{x:Bind ViewModel.SaveCommand}"
+                                Content="Save"
+                                Style="{StaticResource AccentButtonStyle}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

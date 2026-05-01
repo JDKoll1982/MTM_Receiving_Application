@@ -1,0 +1,67 @@
+{
+  "WindowTitle": "Purchase Receipt Entry - Infor VISUAL - MTMFG",
+  "DiscoveredAt": "2026-05-01T12:00:42.6999545-05:00",
+  "RowHeight": 22,
+  "Anchors": {
+    "PurchaseOrderField": {
+      "Prompt": "1. Purchase Order field",
+      "ScreenX": 196,
+      "ScreenY": 128,
+      "RelativeX": 204,
+      "RelativeY": 136,
+      "ChildHandle": "0x007501F8",
+      "ChildClass": "Edit",
+      "ChildControlId": 4103,
+      "RootHandle": "0x00110F40",
+      "RootTitle": "Purchase Receipt Entry - Infor VISUAL - MTMFG"
+    },
+    "FirstRowSelector": {
+      "Prompt": "2. First row selector area (far-left row cell area)",
+      "ScreenX": 22,
+      "ScreenY": 411,
+      "RelativeX": 30,
+      "RelativeY": 419,
+      "ChildHandle": "0x00450D30",
+      "ChildClass": "Gupta:ChildTable",
+      "ChildControlId": 4146,
+      "RootHandle": "0x00110F40",
+      "RootTitle": "Purchase Receipt Entry - Infor VISUAL - MTMFG"
+    },
+    "SecondRowSelector": {
+      "Prompt": "3. Second row selector area (same far-left area on row 2)",
+      "ScreenX": 25,
+      "ScreenY": 433,
+      "RelativeX": 33,
+      "RelativeY": 441,
+      "ChildHandle": "0x00450D30",
+      "ChildClass": "Gupta:ChildTable",
+      "ChildControlId": 4146,
+      "RootHandle": "0x00110F40",
+      "RootTitle": "Purchase Receipt Entry - Infor VISUAL - MTMFG"
+    },
+    "FirstRowQuantityCell": {
+      "Prompt": "4. First row Quantity Received cell",
+      "ScreenX": 430,
+      "ScreenY": 412,
+      "RelativeX": 438,
+      "RelativeY": 420,
+      "ChildHandle": "0x003A06E6",
+      "ChildClass": "Edit",
+      "ChildControlId": 32791,
+      "RootHandle": "0x00110F40",
+      "RootTitle": "Purchase Receipt Entry - Infor VISUAL - MTMFG"
+    },
+    "FirstRowLocationCell": {
+      "Prompt": "5. First row Location cell",
+      "ScreenX": 690,
+      "ScreenY": 410,
+      "RelativeX": 698,
+      "RelativeY": 418,
+      "ChildHandle": "0x003B06E6",
+      "ChildClass": "Edit",
+      "ChildControlId": 32812,
+      "RootHandle": "0x00110F40",
+      "RootTitle": "Purchase Receipt Entry - Infor VISUAL - MTMFG"
+    }
+  }
+}

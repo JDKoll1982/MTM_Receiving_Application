@@ -59,5 +59,6 @@
   "htmlPreviewPro.enableHotReload": true,
   "htmlPreviewPro.showConsole": false,
   "htmlPreviewPro.preserveScrollPosition": true,
-  "htmlPreviewPro.defaultDevice": "desktop"
+  "htmlPreviewPro.defaultDevice": "desktop",
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }

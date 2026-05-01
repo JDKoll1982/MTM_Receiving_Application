@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application — Version 1.5.0</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 1.5.0</h1>
+                    <p class="hero-copy">This update adds new Purchase Receipt Entry support tooling for working with Infor Visual and makes the Receiving reconciliation settings page easier to use by adding a direct Save action.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 1.5.0</span>
+                <span class="meta-text">Released May 1, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+                <p class="sidebar-note">Use this version number if you need help from a supervisor or MTM support after the update.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What stands out in this release</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Purchase receipt support tools</p>
+                            <p class="highlight-text">New helper scripts were added for locating and filling Purchase Receipt Entry fields in Infor Visual more consistently.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Reconciliation settings save action</p>
+                            <p class="highlight-text">The Receiving reconciliation settings page now has a visible Save button so changes can be committed directly from that screen.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Clearer process reference</p>
+                            <p class="highlight-text">A new plain-language reconciliation process guide was added to explain how the current review logic decides what needs attention.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                            <button type="button" class="filter-chip" data-filter="docs">Guidance</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Receiving reconciliation settings can now be saved directly from the Reconciliation page</summary>
+                        <p>
+                            The dedicated Reconciliation settings page now includes its own <strong>Save</strong> button. Users no longer need to rely on a different page layout or assume the screen auto-saves after changing the history-scope toggle or ignored-location list.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>New Infor Visual Purchase Receipt Entry helper scripts were added</summary>
+                        <p>
+                            The repository now includes new discovery and entry scripts for Purchase Receipt Entry. These tools capture the live screen layout and help populate purchase order, quantity, and location fields more repeatably during support or operator-assisted workflows.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Layout data can now be captured and reused for repeatable Purchase Receipt Entry work</summary>
+                        <p>
+                            A saved layout configuration file is now part of the tooling flow, which makes repeated Purchase Receipt Entry automation less dependent on stale hard-coded field handles.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="docs" open>
+                        <summary>Receiving reconciliation now has a simple step-by-step process guide</summary>
+                        <p>
+                            A new operator-friendly process page explains how the current reconciliation logic decides whether a saved row is skipped, kept unchanged, moved into review, or left for manual follow-up.
+                        </p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means in practice</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Less guesswork in settings</h3>
+                            <p>The reconciliation preferences page now behaves more like the rest of Settings, which makes it clearer when a change has actually been committed.</p>
+                        </article>
+                        <article>
+                            <h3>More repeatable Infor Visual support work</h3>
+                            <p>The new purchase-receipt tooling gives MTM staff a more consistent way to inspect and target fields in Infor Visual when troubleshooting or assisting with entry tasks.</p>
+                        </article>
+                        <article>
+                            <h3>Easier explanation of reconciliation decisions</h3>
+                            <p>The new process guide makes it easier to explain why one row was auto-matched, another stayed unchanged, and another still needs manual follow-up.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>No action is required</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">
+                        If you use the Receiving reconciliation settings page, you can now save changes directly from that screen.
+                    </p>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Questions about reconciliation or receipt entry?</h2>
+                    </div>
+                    <p>
+                        If you need help after this update, share the version number shown at the top of this page (<strong>1.5.0</strong>) with your supervisor or the MTM IT support team. That helps them confirm you are using the latest reconciliation settings page and the newest Purchase Receipt Entry support tooling.
+                    </p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
