@@ -74,7 +74,6 @@ Create department-specific JSON files for:
 - Maintenance
 - Setup Technicians
 - Inventory Specialist
-- Outside Service Coordinator
 
 **Current temporary mapping:**
 
@@ -114,7 +113,7 @@ To use Fetch Mode during development:
 
 ```powershell
 python -m http.server 8080
-# Open: http://172.16.1.104:8080/generated/questionnaire.html
+# Open: http://localhost:8080/generated/questionnaire.html
 ```
 
 #### Adding New Department

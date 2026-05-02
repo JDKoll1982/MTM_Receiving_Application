@@ -27,7 +27,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UiUx : ViewModel_Shared_B
     private int _maximumImageFileSizeKb = 512;
 
     [ObservableProperty]
-    private string _defaultVisualSource = "PartThenTypeThenIcon";
+    private string _defaultVisualSource = "Part , Type then Icon";
 
     public ViewModel_Settings_Dunnage_UiUx(
         IService_DunnageSettings dunnageSettings,
@@ -125,7 +125,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UiUx : ViewModel_Shared_B
 
             if (string.IsNullOrWhiteSpace(DefaultVisualSource))
             {
-                DefaultVisualSource = "PartThenTypeThenIcon";
+                DefaultVisualSource = "Part , Type then Icon";
             }
         }
         catch (Exception ex)

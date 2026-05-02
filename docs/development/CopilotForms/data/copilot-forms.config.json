@@ -16,8 +16,7 @@
       "data/module-metadata/Module_Settings.Dunnage/index.json",
       "data/module-metadata/Module_Settings.Reporting/index.json",
       "data/module-metadata/Module_Settings.Volvo/index.json",
-      "data/module-metadata/Module_ShipRec_Tools/index.json",
-      "data/module-metadata/Module_OutsideService/index.json"
+      "data/module-metadata/Module_ShipRec_Tools/index.json"
     ],
     "notes": [
       "WinUI 3 desktop app with MVVM, CQRS, and database-backed workflows.",

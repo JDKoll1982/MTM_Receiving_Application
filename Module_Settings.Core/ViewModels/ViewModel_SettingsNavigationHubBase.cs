@@ -49,11 +49,6 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
         return index >= 0 && index < Steps.Count;
     }
 
-    public string GetStepTitle(int index)
-    {
-        return HasStep(index) ? Steps[index].Title : string.Empty;
-    }
-
     public Visibility GetStepVisibility(int index)
     {
         return HasStep(index) ? Visibility.Visible : Visibility.Collapsed;

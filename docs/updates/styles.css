@@ -394,6 +394,13 @@ h3 {
     gap: 20px;
 }
 
+.muted-note {
+    margin: 10px 0 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
 .section-block {
     padding: 28px;
 }
@@ -600,6 +607,53 @@ h3 {
     color: var(--text-muted);
     line-height: 1.6;
     margin: 0;
+}
+
+.release-table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface-strong);
+}
+
+.release-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+}
+
+.release-table th,
+.release-table td {
+    padding: 15px 18px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+}
+
+.release-table thead th {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface-muted);
+}
+
+.release-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.release-table tbody tr:hover {
+    background: rgba(47, 88, 128, 0.035);
+}
+
+.release-link {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.release-link:hover {
+    color: var(--blue);
 }
 
 .action-panel {

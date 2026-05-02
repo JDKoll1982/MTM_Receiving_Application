@@ -30,7 +30,7 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -50,8 +50,9 @@
                         Text="Entry Defaults" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Manage the default location and other baseline values that should be prefilled when users begin a receiving workflow."
+                        Text="Set default locations and baseline values for new receiving entries."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -61,7 +62,7 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -81,8 +82,9 @@
                         Text="Validation Rules" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set required fields, warning rules, and quantity or load thresholds enforced during Receiving."
+                        Text="Configure required fields, warnings, and quantity thresholds for Receiving."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -92,7 +94,7 @@
                 Grid.Row="0"
                 Grid.Column="2"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -112,8 +114,9 @@
                         Text="Part Formatting" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Manage part-number auto-padding rules and test how part numbers are normalized."
+                        Text="Manage auto-padding rules and preview normalized part numbers."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -123,7 +126,7 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -143,8 +146,9 @@
                         Text="Reconciliation" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Manage ignored reconciliation locations and choose whether reconciliation checks all visible history rows."
+                        Text="Choose ignored locations and how visible history rows are checked."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -154,7 +158,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -174,8 +178,9 @@
                         Text="Workflow Defaults" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Control startup mode, confirmation behavior, review table defaults, and developer-only mock data mode."
+                        Text="Set startup mode, confirmations, review defaults, and mock data."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -185,7 +190,7 @@
                 Grid.Row="1"
                 Grid.Column="2"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -205,8 +210,9 @@
                         Text="Keyboard Shortcuts" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Customize keyboard shortcuts for the Receiving workflow, and configure the simple navigation toggle."
+                        Text="Customize workflow shortcuts and the simple navigation toggle."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -216,7 +222,7 @@
                 Grid.Row="2"
                 Grid.Column="0"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -236,8 +242,9 @@
                         Text="Label Files" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set the main Receiving and Mini-Receiving LabelView template paths used by workflow launch buttons."
+                        Text="Set LabelView template paths for Receiving and Mini-Receiving."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>

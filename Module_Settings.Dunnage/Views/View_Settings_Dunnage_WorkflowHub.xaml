@@ -38,7 +38,6 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(0), Mode=OneWay}"
             >
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -47,7 +46,7 @@
                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     />
                     <TextBlock
-                        Text="{x:Bind ViewModel.GetStepTitle(0), Mode=OneWay}"
+                        Text="Overview"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         HorizontalAlignment="Center"
                     />
@@ -72,7 +71,6 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(1), Mode=OneWay}"
             >
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -81,7 +79,7 @@
                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     />
                     <TextBlock
-                        Text="{x:Bind ViewModel.GetStepTitle(1), Mode=OneWay}"
+                        Text="User Preferences"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         HorizontalAlignment="Center"
                     />
@@ -106,7 +104,6 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(2), Mode=OneWay}"
             >
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -115,7 +112,7 @@
                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     />
                     <TextBlock
-                        Text="{x:Bind ViewModel.GetStepTitle(2), Mode=OneWay}"
+                        Text="UI/UX"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         HorizontalAlignment="Center"
                     />
@@ -140,7 +137,6 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(3), Mode=OneWay}"
             >
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -149,7 +145,7 @@
                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     />
                     <TextBlock
-                        Text="{x:Bind ViewModel.GetStepTitle(3), Mode=OneWay}"
+                        Text="Workflow"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         HorizontalAlignment="Center"
                     />
@@ -174,7 +170,6 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(4), Mode=OneWay}"
             >
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -183,7 +178,7 @@
                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     />
                     <TextBlock
-                        Text="{x:Bind ViewModel.GetStepTitle(4), Mode=OneWay}"
+                        Text="Permissions"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         HorizontalAlignment="Center"
                     />
@@ -208,7 +203,6 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(5), Mode=OneWay}"
             >
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -217,7 +211,7 @@
                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                     />
                     <TextBlock
-                        Text="{x:Bind ViewModel.GetStepTitle(5), Mode=OneWay}"
+                        Text="Audit"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         HorizontalAlignment="Center"
                     />

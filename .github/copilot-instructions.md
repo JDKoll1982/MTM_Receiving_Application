@@ -9,7 +9,7 @@ Manufacturing receiving operations desktop application for streamlined label gen
 
 ## 🚨 CRITICAL ARCHITECTURE RULES - READ FIRST
 
-### BEFORE GOING FORWARD ALWAYS ATTEMPT TO INITIALIZE THE SERENA AI ASSISTANT AND READ THE MEMORIES IN THE `.serena/memories/` FOLDER, ESPECIALLY `architectural_patterns.md` AND `forbidden_practices.md`. THESE MEMORIES CONTAIN CRUCIAL INFORMATION ABOUT THE PROJECT'S ARCHITECTURE, CODING STANDARDS, AND COMMON PITFALLS TO AVOID. FAILURE TO ADHERE TO THESE GUIDELINES MAY RESULT IN CODE THAT VIOLATES THE MVVM ARCHITECTURE, INTRODUCES TECHNICAL DEBT, OR CAUSES MAINTAINABILITY ISSUES DOWN THE LINE.
+### BEFORE GOING FORWARD ALWAYS ATTEMPT TO INITIALIZE THE SERENA AI ASSISTANT AND READ THE MEMORIES IN THE `.serena/memories/` FOLDER, ESPECIALLY `architectural_patterns.md` AND `forbidden_practices.md`. THESE MEMORIES CONTAIN CRUCIAL INFORMATION ABOUT THE PROJECT'S ARCHITECTURE, CODING STANDARDS, AND COMMON PITFALLS TO AVOID. FAILURE TO ADHERE TO THESE GUIDELINES MAY RESULT IN CODE THAT VIOLATES THE MVVM ARCHITECTURE, INTRODUCES TECHNICAL DEBT, OR CAUSES MAINTAINABILITY ISSUES DOWN ...
 
 - YOU ONLY NEED TO DO THIS ONCE PER SERENA SESSION. ONCE YOU HAVE READ THE MEMORIES, YOU CAN REFERENCE THEM IN YOUR PROMPTS TO THE AI TO ENSURE COMPLIANCE WITH THE PROJECT'S STANDARDS.
 
@@ -441,7 +441,12 @@ services.AddTransient<ViewModel_Receiving_Workflow>();
 // Views as Transient
 services.AddTransient<View_Receiving_Workflow>();
 
-````
+## User Interface Guidelines
+
+### User Management Page
+
+- For the Core Settings user management page, user card hover should show a grey underline below the card.
+- Selected cards should show a blue underline, not a full-card highlight.
 
 ## Code Quality Standards
 
@@ -457,7 +462,7 @@ if (condition)
 // ❌ FORBIDDEN - No braces
 if (condition)
     DoSomething();
-````
+```
 
 ### Accessibility Modifiers (REQUIRED)
 
@@ -813,7 +818,7 @@ catch (Exception ex)
 - `Models/` - Data models and DTOs
 - `Contracts/Services/` - Service interfaces
 
-## Key Interfaces and Base Classes
+## Key Interfaces and Base_classes
 
 **Base Classes:**
 

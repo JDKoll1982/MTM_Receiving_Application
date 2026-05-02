@@ -49,6 +49,7 @@
     ],
     "acceptanceCriteria": [
       "The correct tool host becomes visible after selection",
+      "The Outside Service History host becomes visible when its tool card is selected",
       "The Material Availability Board host becomes visible when its tool card is selected",
       "The Back to Tools action returns the user to the selection screen"
     ],

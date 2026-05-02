@@ -6,14 +6,18 @@ This folder contains end-user update pages generated alongside application versi
 
 - `mockup/` contains the reference pattern that versioned update pages should follow.
 - `{version}/` contains the actual release page for a specific application version.
+- Shared release assets live in the parent folder as `styles.css` and `app.js`.
 
 ## Expected Files Per Version
 
 Each version folder should contain:
 
 1. `index.html`
-2. `styles.css`
-3. `app.js`
+
+Version folders must reuse the shared assets in the parent updates folder:
+
+- `../styles.css`
+- `../app.js`
 
 ## Logo Usage
 

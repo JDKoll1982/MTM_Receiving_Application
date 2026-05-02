@@ -51,7 +51,7 @@ if (scrollButton) {
 
 if (copyVersionButton && versionBadge) {
     copyVersionButton.addEventListener("click", async () => {
-        const versionText = versionBadge.textContent.trim();
+        const versionText = copyVersionButton.dataset.copyText || versionBadge.textContent.trim();
         try {
             await navigator.clipboard.writeText(versionText);
             copyVersionButton.textContent = "Version copied";

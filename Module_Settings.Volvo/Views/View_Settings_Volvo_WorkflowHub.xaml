@@ -17,16 +17,15 @@
             <Button
                 Grid.Column="0"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
-                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 Click="OnStep0Clicked"
-                CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(0), Mode=OneWay}">
+                CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
                         FontSize="40"
@@ -35,7 +34,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="{x:Bind ViewModel.GetStepTitle(0), Mode=OneWay}" />
+                        Text="Part Catalog" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
@@ -48,16 +47,15 @@
             <Button
                 Grid.Column="1"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
-                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 Click="OnStep1Clicked"
-                CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(1), Mode=OneWay}">
+                CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
                         FontSize="40"
@@ -66,7 +64,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="{x:Bind ViewModel.GetStepTitle(1), Mode=OneWay}" />
+                        Text="Email Recipients" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
@@ -79,16 +77,15 @@
             <Button
                 Grid.Column="2"
                 Width="320"
-                Height="200"
+                Height="180"
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
-                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 Click="OnStep2Clicked"
-                CornerRadius="8"
-                Visibility="{x:Bind ViewModel.GetStepVisibility(2), Mode=OneWay}">
+                CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
                         FontSize="40"
@@ -97,7 +94,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="{x:Bind ViewModel.GetStepTitle(2), Mode=OneWay}" />
+                        Text="Label Files" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"

@@ -18,7 +18,6 @@
             <li><a href="../receiving/index.html"                              ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
             <li><a href="../dunnage/index.html"                                ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
             <li><a href="../reporting/index.html"                              ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
-            <li><a href="../outside-service/index.html"                        ><span class="nav-icon" aria-hidden="true">🔧</span> Outside Service</a></li>
             <li><a href="../volvo/index.html"                                  ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
             <li><a href="../shiprec-tools/index.html"   class="is-current"    ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
         </ul>
@@ -74,7 +73,7 @@
                     <div class="info-card-icon">📋</div>
                     <h3>Outside Service History</h3>
                     <p>Search and review completed outside service requests — a read-only
-                    view of the data managed in the Outside Service module.</p>
+                    view of Infor Visual dispatch history by part or vendor.</p>
                 </div>
             </div>
         </section>
@@ -127,36 +126,35 @@
         <section id="outside-service-history" class="content-section">
             <h2>Outside Service History</h2>
             <p>
-                The Outside Service History tool is a read-only view of all completed
-                outside service requests. It allows Shipping, Receiving, and supervisors
-                to look up past requests without opening the Outside Service module.
+                The Outside Service History tool is a read-only lookup into Infor Visual service
+                dispatch history. It helps Shipping and Receiving review which vendors handled a part,
+                or which parts a vendor has serviced, without depending on the removed
+                Outside Service module.
             </p>
 
             <h3>Search options</h3>
             <ul>
-                <li>Date range (required)</li>
-                <li>Request number (e.g., <code>OS-000042</code>)</li>
-                <li>Part number</li>
-                <li>Vendor name</li>
-                <li>Created by (person who submitted the request)</li>
+                <li>Search by <strong>Part Number</strong> to see dispatch history for one part</li>
+                <li>Search by <strong>Vendor Name</strong> to review serviced parts for a vendor</li>
+                <li>Use the fuzzy picker when multiple matches are returned</li>
+                <li>Sort the results grid without enabling edits</li>
             </ul>
 
-            <h3>Columns displayed</h3>
+            <h3>What the results show</h3>
             <ul>
-                <li>Request number and creation date</li>
-                <li>Line number and part ID</li>
-                <li>Vendor and bill of lading number</li>
-                <li>Scheduled and actual ship date/time</li>
-                <li>Package count and quantity summary</li>
-                <li>Completion notes</li>
+                <li>Vendor ID and vendor name</li>
+                <li>Part number</li>
+                <li>Dispatch ID and dispatch date</li>
+                <li>Quantity sent</li>
+                <li>Dispatch status and combined-date markers when aggregation is enabled</li>
             </ul>
 
             <div class="callout callout-info">
                 <span class="callout-icon" aria-hidden="true">ℹ️</span>
                 <div class="callout-body">
-                    <strong>Cannot edit from here.</strong>
-                    To correct a completed outside service record, use the Outside Service
-                    module and contact a supervisor.
+                    <strong>Infor Visual only.</strong>
+                    This tool reads from Infor Visual dispatch history. It does not edit, complete,
+                    or recreate outside service requests.
                 </div>
             </div>
         </section>

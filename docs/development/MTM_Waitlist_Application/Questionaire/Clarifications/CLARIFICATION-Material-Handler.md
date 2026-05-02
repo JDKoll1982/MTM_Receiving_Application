@@ -474,22 +474,6 @@ This questionnaire is specifically for Material Handlers. Please also fill out t
 
 ---
 
-### 9.2 Outside Service Coordination
-
-**Question:** When parts need to go to Outside Service (heat treat, plating, etc.), what's your role?
-
-**Should you:**
-- [ ] Just deliver to staging area (Outside Service Coordinator handles paperwork)
-- [ ] Complete a task in the app that logs the move
-- [ ] Not involved (different process)
-- [ ] Other: _______________________
-
-> **Example:**  
-> Task: "Move 100 pcs Part Y789 to Outside Service staging for heat treat." You deliver, mark complete. Coordinator sees it's ready and arranges pickup.
-
-**Your Answer:**
-
-**Decided By:** _________________ **Date:** _____________
 
 ---
 

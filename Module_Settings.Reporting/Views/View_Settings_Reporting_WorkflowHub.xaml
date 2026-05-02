@@ -9,7 +9,7 @@
         VerticalAlignment="Stretch">
         <Button
             Width="320"
-            Height="200"
+            Height="180"
             Padding="20"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
@@ -27,7 +27,7 @@
                 <TextBlock
                     HorizontalAlignment="Center"
                     Style="{StaticResource SubtitleTextBlockStyle}"
-                    Text="{x:Bind ViewModel.GetStepTitle(0), Mode=OneWay}" />
+                    Text="Email Recipients" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"

@@ -20,7 +20,7 @@ public static class DunnageSettingsDefaults
             [DunnageSettingsKeys.UiUx.EnablePartImages] = "true",
             [DunnageSettingsKeys.UiUx.DefaultThumbnailSize] = "96",
             [DunnageSettingsKeys.UiUx.MaximumImageFileSizeKb] = "512",
-            [DunnageSettingsKeys.UiUx.DefaultVisualSource] = "PartThenTypeThenIcon",
+            [DunnageSettingsKeys.UiUx.DefaultVisualSource] = "Part , Type then Icon",
             [DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection] = "true",
             [DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection] = "true",
             [DunnageSettingsKeys.Workflow.ShowImagesOnReview] = "true",

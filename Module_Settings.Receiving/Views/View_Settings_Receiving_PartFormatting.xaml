@@ -8,29 +8,8 @@
             <StackPanel
                 Width="960"
                 HorizontalAlignment="Center"
-                Spacing="20">
-                <Border
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                    <StackPanel Spacing="12">
-                        <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Part Number Auto-Padding" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Automatically format part numbers based on prefix patterns." />
-                        </StackPanel>
+                Spacing="16">
 
-                        <ToggleSwitch
-                            Header="Enable Auto-Padding"
-                            IsOn="{x:Bind ViewModel.IsPaddingEnabled, Mode=TwoWay}"
-                            OffContent="Disabled - Part numbers will not be auto-formatted"
-                            OnContent="Enabled - Part numbers will be formatted on entry" />
-                    </StackPanel>
-                </Border>
 
                 <Border
                     Padding="20"
@@ -39,14 +18,30 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="16">
-                        <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Padding Rules" />
-                            <TextBlock
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>                                
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <ToggleSwitch Grid.Column="2" Grid.Row="0"
+                            IsOn="{x:Bind ViewModel.IsPaddingEnabled, Mode=TwoWay}"
+                            OffContent="Disabled - Part numbers will not be auto-formatted"
+                            OnContent="Enabled - Part numbers will be formatted on entry" />
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource SubtitleTextBlockStyle}" Text="Padding Rules" />
+                            <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
                                 Text="Configure prefix patterns to auto-format part numbers."
                                 TextWrapping="Wrap" />
-                        </StackPanel>
+                        </Grid>
+
 
                         <Grid ColumnSpacing="20">
                             <Grid.ColumnDefinitions>
@@ -210,14 +205,7 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="16">
-                        <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Test Padding" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Preview how the current rules will normalize a part number."
-                                TextWrapping="Wrap" />
-                        </StackPanel>
+
 
                         <Grid ColumnSpacing="16">
                             <Grid.ColumnDefinitions>

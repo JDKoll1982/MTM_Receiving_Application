@@ -31,6 +31,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     private readonly Dao_SettingsCoreUserRoles _daoSettingsUserRoles;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_UserPrivileges _userPrivileges;
+    private List<ViewModel_SettingsUserRoleRow> _allUserRows = new();
     private Dictionary<string, Model_SettingsRole> _rolesByName = new(
         StringComparer.OrdinalIgnoreCase
     );
@@ -48,7 +49,13 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedUser))]
     [NotifyPropertyChangedFor(nameof(SelectedUserIsActive))]
+    [NotifyPropertyChangedFor(nameof(CanToggleSelectedUser))]
+    [NotifyPropertyChangedFor(nameof(ToggleSelectedUserButtonText))]
     private ViewModel_SettingsUserRoleRow? _selectedUserRow;
+
+    private string _searchText = string.Empty;
+
+    private bool? _showDeactivatedOnly;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(VisualPasswordMask))]
@@ -74,6 +81,45 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
 
     /// <summary>True when the selected user is currently active.</summary>
     public bool SelectedUserIsActive => SelectedUser?.IsActive ?? false;
+
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (SetProperty(ref _searchText, value))
+            {
+                ApplyFilters();
+            }
+        }
+    }
+
+    public bool? ShowDeactivatedOnly
+    {
+        get => _showDeactivatedOnly;
+        set
+        {
+            if (SetProperty(ref _showDeactivatedOnly, value))
+            {
+                OnPropertyChanged(nameof(ShowDeactivatedFilterLabel));
+                ApplyFilters();
+            }
+        }
+    }
+
+    /// <summary>True when the selected user can have its active state changed.</summary>
+    public bool CanToggleSelectedUser => SelectedUser is not null && IsCurrentSessionUser(SelectedUser) is false;
+
+    /// <summary>Gets the action text for the active-state button.</summary>
+    public string ToggleSelectedUserButtonText => SelectedUserIsActive ? "Deactivate" : "Activate";
+
+    /// <summary>Gets the display text for the deactivated-user tri-state filter.</summary>
+    public string ShowDeactivatedFilterLabel => ShowDeactivatedOnly switch
+    {
+        true => "Deactivated: Show Only",
+        false => "Deactivated: Hide",
+        _ => "Deactivated: Show Both",
+    };
 
     public Model_User? SelectedUser => SelectedUserRow?.User;
 
@@ -176,23 +222,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     [RelayCommand]
     private void EditUser(Model_User user)
     {
-        EditingUser = new Model_User
-        {
-            EmployeeNumber = user.EmployeeNumber,
-            WindowsUsername = user.WindowsUsername,
-            FullName = user.FullName,
-            Pin = string.Empty,
-            Department = user.Department,
-            Shift = user.Shift,
-            IsActive = user.IsActive,
-            VisualUsername = user.VisualUsername,
-            VisualPassword = user.VisualPassword,
-            DefaultReceivingMode = user.DefaultReceivingMode,
-            DefaultDunnageMode = user.DefaultDunnageMode,
-            CreatedDate = user.CreatedDate,
-            CreatedBy = user.CreatedBy,
-            ModifiedDate = user.ModifiedDate,
-        };
+        EditingUser = CreateUserCopy(user);
         IsAddingNew = false;
         IsEditing = true;
         PinPlaceholderText = "Leave blank to keep the current PIN";
@@ -253,6 +283,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
             if (result.IsSuccess)
             {
                 row.CurrentRoleName = selectedRoleName;
+                ApplyFilters();
                 ShowStatus(
                     $"Updated {row.User.FullName} to {selectedRoleName}.",
                     InfoBarSeverity.Success
@@ -422,27 +453,35 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private async Task DeactivateUserAsync(Model_User user)
+    private async Task ToggleUserActiveAsync(Model_User user)
     {
         if (user is null || IsBusy)
         {
             return;
         }
 
-        var currentEmp = _sessionManager.CurrentSession?.User?.EmployeeNumber;
-        if (currentEmp == user.EmployeeNumber)
+        if (IsCurrentSessionUser(user))
         {
-            ShowStatus("Cannot deactivate the currently logged-in user.", InfoBarSeverity.Warning);
+            ShowStatus(
+                "Cannot change the active state of the currently logged-in user.",
+                InfoBarSeverity.Warning
+            );
             return;
         }
+
+        var activateUser = user.IsActive is false;
+        var actionText = activateUser ? "Activate" : "Deactivate";
+        var actionPastTense = activateUser ? "activated" : "deactivated";
 
         if (XamlRoot is not null)
         {
             var dialog = new ContentDialog
             {
-                Title = "Deactivate User",
-                Content = $"Deactivate '{user.FullName}'? They will no longer be able to log in.",
-                PrimaryButtonText = "Deactivate",
+                Title = $"{actionText} User",
+                Content = activateUser
+                    ? $"Activate '{user.FullName}'? They will be able to log in again."
+                    : $"Deactivate '{user.FullName}'? They will no longer be able to log in.",
+                PrimaryButtonText = actionText,
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = XamlRoot,
@@ -465,15 +504,17 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
             IsBusy = true;
             var updatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "SYSTEM";
 
-            var result = await _daoUser.DeactivateAsync(user.EmployeeNumber, updatedBy);
+            var result = activateUser
+                ? await UpdateUserActiveStateAsync(user, true, updatedBy)
+                : await _daoUser.DeactivateAsync(user.EmployeeNumber, updatedBy);
             if (result.IsSuccess)
             {
-                ShowStatus($"'{user.FullName}' has been deactivated.", InfoBarSeverity.Success);
+                ShowStatus($"'{user.FullName}' has been {actionPastTense}.", InfoBarSeverity.Success);
                 await LoadUsersAsync();
             }
             else
             {
-                ShowStatus(result.ErrorMessage ?? "Deactivation failed.", InfoBarSeverity.Error);
+                ShowStatus(result.ErrorMessage ?? $"{actionText} failed.", InfoBarSeverity.Error);
             }
         }
         catch (Exception ex)
@@ -481,7 +522,7 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Medium,
-                nameof(DeactivateUserAsync),
+                nameof(ToggleUserActiveAsync),
                 nameof(ViewModel_Settings_Users)
             );
         }
@@ -556,7 +597,134 @@ public partial class ViewModel_Settings_Users : ViewModel_Shared_Base
             rows.Add(row);
         }
 
-        UserRows = new ObservableCollection<ViewModel_SettingsUserRoleRow>(rows);
+        _allUserRows = rows;
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        IEnumerable<ViewModel_SettingsUserRoleRow> filteredRows = ShowDeactivatedOnly switch
+        {
+            true => _allUserRows.Where(row => row.User.IsActive is false),
+            false => _allUserRows.Where(row => row.User.IsActive),
+            _ => _allUserRows,
+        };
+
+        if (string.IsNullOrWhiteSpace(SearchText) is false)
+        {
+            filteredRows = ApplySearchFilter(filteredRows, SearchText.Trim());
+        }
+
+        var filteredList = filteredRows.ToList();
+        UserRows = new ObservableCollection<ViewModel_SettingsUserRoleRow>(filteredList);
+
+        if (SelectedUserRow is not null && filteredList.Contains(SelectedUserRow) is false)
+        {
+            SelectedUserRow = null;
+        }
+    }
+
+    private static IEnumerable<ViewModel_SettingsUserRoleRow> ApplySearchFilter(
+        IEnumerable<ViewModel_SettingsUserRoleRow> rows,
+        string searchText
+    )
+    {
+        var (searchField, term) = ParseSearchText(searchText);
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return rows;
+        }
+
+        return searchField switch
+        {
+            "name" => rows.Where(row =>
+                row.User.FullName.Contains(term, StringComparison.OrdinalIgnoreCase)
+            ),
+            "department" => rows.Where(row =>
+                row.User.Department.Contains(term, StringComparison.OrdinalIgnoreCase)
+            ),
+            "role" => rows.Where(row =>
+                row.CurrentRoleName.Contains(term, StringComparison.OrdinalIgnoreCase)
+            ),
+            "shift" => rows.Where(row =>
+                row.User.Shift.Contains(term, StringComparison.OrdinalIgnoreCase)
+            ),
+            _ => rows.Where(row =>
+                row.User.FullName.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || row.User.Department.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || row.CurrentRoleName.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || row.User.Shift.Contains(term, StringComparison.OrdinalIgnoreCase)
+            ),
+        };
+    }
+
+    private static (string SearchField, string Term) ParseSearchText(string searchText)
+    {
+        var separatorIndex = searchText.IndexOf(':');
+        if (separatorIndex <= 0 || separatorIndex >= searchText.Length - 1)
+        {
+            return (string.Empty, searchText);
+        }
+
+        var prefix = searchText[..separatorIndex].Trim();
+        var term = searchText[(separatorIndex + 1)..].Trim();
+
+        var normalizedField = prefix.ToLowerInvariant() switch
+        {
+            "name" => "name",
+            "user" => "name",
+            "department" => "department",
+            "dept" => "department",
+            "role" => "role",
+            "privilege" => "role",
+            "shift" => "shift",
+            _ => string.Empty,
+        };
+
+        return (normalizedField, term);
+    }
+
+    private bool IsCurrentSessionUser(Model_User user)
+    {
+        var currentEmployeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        return currentEmployeeNumber == user.EmployeeNumber;
+    }
+
+    private Task<Model_Dao_Result> UpdateUserActiveStateAsync(
+        Model_User user,
+        bool isActive,
+        string updatedBy
+    )
+    {
+        var updatedUser = CreateUserCopy(user);
+        updatedUser.IsActive = isActive;
+        return _daoUser.UpdateAsync(updatedUser, updatedBy);
+    }
+
+    internal Task ToggleSelectedUserActiveAsync()
+    {
+        return SelectedUser is null ? Task.CompletedTask : ToggleUserActiveAsync(SelectedUser);
+    }
+
+    private static Model_User CreateUserCopy(Model_User user)
+    {
+        return new Model_User
+        {
+            EmployeeNumber = user.EmployeeNumber,
+            WindowsUsername = user.WindowsUsername,
+            FullName = user.FullName,
+            Pin = string.Empty,
+            Department = user.Department,
+            Shift = user.Shift,
+            IsActive = user.IsActive,
+            VisualUsername = user.VisualUsername,
+            VisualPassword = user.VisualPassword,
+            DefaultReceivingMode = user.DefaultReceivingMode,
+            DefaultDunnageMode = user.DefaultDunnageMode,
+            CreatedDate = user.CreatedDate,
+            CreatedBy = user.CreatedBy,
+            ModifiedDate = user.ModifiedDate,
+        };
     }
 
     private string ResolveDisplayRole(List<string> mappedRoles)

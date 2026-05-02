@@ -53,7 +53,6 @@ This questionnaire is specifically for Operators. Please also fill out the **Cor
 - [ ] Setup technician help
 - [ ] Maintenance/repair
 - [ ] Tool/die issue
-- [ ] Parts to Outside Service
 - [ ] Other: _______________________
 
 **Or should Operators be able to submit ANY type of request?**
@@ -297,22 +296,6 @@ This questionnaire is specifically for Operators. Please also fill out the **Cor
 
 ## Section 6: Requests to Other Departments
 
-### 6.1 Outside Service Requests
-
-**Question:** Should Operators be able to request parts be sent to Outside Service, or is that handled differently?
-
-**Options:**
-- Operators can request it directly
-- Only Leads/Outside Service Coordinator can create these
-- Operator requests it, but Coordinator has to approve
-- Other approach: _______________________
-
-> **Example:**  
-> You notice parts need heat treat. Can you submit the request, or tell your Lead/Coordinator?
-
-**Your Answer:**
-
-**Decided By:** _________________ **Date:** _____________
 
 ---
 

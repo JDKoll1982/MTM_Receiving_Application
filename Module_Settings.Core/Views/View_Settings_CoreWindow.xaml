@@ -116,7 +116,7 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
-            <Frame x:Name="SettingsFrame" />
+            <Frame x:Name="SettingsFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </NavigationView>
     </Grid>
 </Window>

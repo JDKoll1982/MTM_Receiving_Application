@@ -178,7 +178,7 @@ Or load from `appsettings.json`:
 ```json
 {
   "AppSettings": {
-    "UseInforVisualMockData": false
+    "UseInforVisualMockData": true
   }
 }
 ```

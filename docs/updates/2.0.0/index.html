@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application — Version 2.0.0</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 2.0.0</h1>
+                    <p class="hero-copy">This update removes the standalone Outside Service module from the current application release, keeps the ShipRec Outside Service History lookup available, gives administrators stronger user-management controls, and simplifies settings pages across the supported modules.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 2.0.0</span>
+                <span class="meta-text">Released May 2, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Collapse all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+                <p class="sidebar-note">Use this version number if you need help from a supervisor or the MTM IT support team after the update.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What stands out in this release</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Standalone module removed</p>
+                            <p class="highlight-text">The standalone Outside Service module was removed from the current release, but the ShipRec Outside Service History lookup remains available.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Better user administration</p>
+                            <p class="highlight-text">Core Settings user management now supports search, inactive-user filtering, and direct activate or deactivate actions.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Cleaner settings experience</p>
+                            <p class="highlight-text">Settings hubs and page labels were tightened up so supported workflows are easier to scan and navigate.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="admin">Administration</button>
+                            <button type="button" class="filter-chip" data-filter="ui">Interface</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Outside Service is no longer included in the current application release</summary>
+                        <p>The standalone Outside Service module and its dedicated module documentation were removed from the active release path. The ShipRec Outside Service History lookup remains in place as a read-only Infor Visual reference tool.</p>
+                    </details>
+
+                    <details class="change-item" data-category="admin" open>
+                        <summary>Core Settings user management now supports search, inactive-user filters, and account reactivation</summary>
+                        <p>Administrators can now search the Users page with simple field prefixes, switch between active and inactive account views, and reactivate users directly from the same screen when needed.</p>
+                    </details>
+
+                    <details class="change-item" data-category="ui" open>
+                        <summary>Settings pages were simplified across Dunnage, Receiving, Reporting, Volvo, and Core Settings</summary>
+                        <p>Multiple settings hubs and detail pages were cleaned up with shorter labels, tighter card heights, and less repeated page text. The goal is a faster scan path for the screens operators and administrators use most often.</p>
+                    </details>
+
+                    <details class="change-item" data-category="ui" open>
+                        <summary>Unused placeholder and developer-only settings screens were removed</summary>
+                        <p>Placeholder pages for inactive settings areas and the old Settings Developer Tools shell were removed so the Settings experience stays focused on the pages that are actually meant to be used.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means in practice</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Less navigation clutter</h3>
+                            <p>Users now see a release path that focuses on the workflows the application currently supports instead of carrying extra links for features that are no longer included.</p>
+                        </article>
+                        <article>
+                            <h3>Faster account support</h3>
+                            <p>Supervisors and administrators can find users more quickly and restore access without jumping between multiple tools or recreating accounts.</p>
+                        </article>
+                        <article>
+                            <h3>Clearer settings screens</h3>
+                            <p>Shorter labels and tighter layouts reduce scrolling and make it easier to spot the setting you need to change during day-to-day support.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Action depends on whether your team used Outside Service</h2>
+                    </div>
+                    <p class="action-state success">No action is required for Receiving, Dunnage, Reporting, Volvo, or standard ShipRec users.</p>
+                    <ul class="action-list">
+                        <li>If your team relied on the removed standalone Outside Service screens, contact your supervisor or MTM IT before rollout.</li>
+                        <li>If you used the ShipRec Outside Service History lookup, it remains available in ShipRec Tools.</li>
+                        <li>If you administer user accounts, the new search and activation controls are now available on the Core Settings Users page.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Questions about the removed module or user access?</h2>
+                    </div>
+                    <p>If you need help after this update, share the version number shown at the top of this page (<strong>2.0.0</strong>) with your supervisor or the MTM IT support team. That helps them confirm you are looking at the release that removed the standalone Outside Service module, kept the ShipRec history lookup, and added the new user-management controls.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

@@ -290,7 +290,7 @@ The word and design marks set forth herein are trademarks and/or registered trad
 
 [Specifying Shop Resource Standard Costs 5-8](#_bookmark211)
 
-[Specifying Outside Service Standard Costs 5-9](#_bookmark212)
+[Specifying Service Standard Costs 5-9](#_bookmark212)
 
 [Setting up Actual Costing 5-10](#_bookmark213)
 
@@ -3458,7 +3458,7 @@ To add existing parts to a site:
 - Click the **Add to Site** check box for the services to add to the site. To add all services to the site, click **Select All for Add**. To clear all selections in the Add to Site column, click **Unselect All for Add**.
 - Click **Save** to add the services to the site. After you click save, the **Exists in Site** check box is selected for the services you added.
 
-After you add services to the site, you can modify certain service information in Outside Service Maintenance.
+After you add services to the site, you can modify certain service information in Service Maintenance.
 
 ## Adding Shop Resources to a Site
 
@@ -3620,7 +3620,7 @@ You can use Standard Costing methods for your consigned inventory without restri
 
 Standard costing is the method of comparing predetermined estimates of cost to the actual expenditures for building/purchasing a product. Any difference between the standard and actual is a **variance**. With standard costing, every part, component, operation, and assembly has a standard cost. Typically, you would derive standard costs annually, usually in conjunction with the annual physical inventory.
 
-To set up standard costing, specify the Standard option in Accounting Entity Maintenance and determine other costing settings. Use Part Maintenance, Shop Resource Maintenance, Outside Service Maintenance, and Employee Maintenance to set up cost standards.
+To set up standard costing, specify the Standard option in Accounting Entity Maintenance and determine other costing settings. Use Part Maintenance, Shop Resource Maintenance, Service Maintenance, and Employee Maintenance to set up cost standards.
 
 ### Specifying Standard Costing Options
 
@@ -3663,7 +3663,7 @@ and this total is added to the material cost only of Part B (100+1000=1100)
 
 ### Specifying Standards
 
-Use Part Maintenance, Shop Resource Maintenance, and Outside Service Maintenance to set up standard costs.
+Use Part Maintenance, Shop Resource Maintenance, and Service Maintenance to set up standard costs.
 
 #### Specifying Part Standard Costs
 
@@ -3788,13 +3788,13 @@ If you are licensed to use multiple sites, specify costing information at the si
 
 - Click **Save**.
 
-#### Specifying Outside Service Standard Costs
+#### Specifying Service Standard Costs
 
-Use Outside Service Maintenance to specify standard costs for services. The standard costs you specify in Outside Service Maintenance contribute to the Service costs for a fabricated part.
+Use Service Maintenance to specify standard costs for services. The standard costs you specify in Service Maintenance contribute to the Service costs for a fabricated part.
 
 If you are licensed to use multiple sites, specify cost information at the site level. To specify service standard costs:
 
-- Select **Eng/Mfg**, **Outside Service Maintenance**.
+- Select **Eng/Mfg**, **Service Maintenance**.
 - If you are licensed to use multiple sites, click the Site ID arrow and select the site to use to specify costs. If you are licensed to use a single site, this field is unavailable.
 - Click the **Service ID** browse button and select the resource for which you are setting up costs.
 - Specify this information:
@@ -5944,7 +5944,7 @@ Manufacturing Window - Material Requirement Card
 
 Order Management Window
 
-Outside Service Maintenance
+Service Maintenance
 
 Part Maintenance
 

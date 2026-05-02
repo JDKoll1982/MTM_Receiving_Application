@@ -21,29 +21,14 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  Page heading  -->
-        <StackPanel Spacing="4">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Users" />
-            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="Manage user accounts and Infor Visual credentials." />
-        </StackPanel>
-
-        <!--  Status bar  -->
-        <InfoBar
-            Grid.Row="1"
-            Margin="0,8,0,0"
-            IsClosable="True"
-            IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=OneWay}"
-            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-            Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}" />
-
         <!--  Two-column body  -->
         <Grid
             Grid.Row="2"
             Margin="0,12,0,0"
             ColumnSpacing="24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="360" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!--
@@ -53,12 +38,14 @@
             -->
             <Border
                 Padding="16"
+                HorizontalAlignment="Stretch"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="6">
                 <Grid RowSpacing="12">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
@@ -71,68 +58,92 @@
                             Content="Edit"
                             IsEnabled="{x:Bind ViewModel.HasSelectedUser, Mode=OneWay}" />
                         <Button
-                            Click="DeactivateSelectedUser_Click"
-                            Content="Deactivate"
-                            IsEnabled="{x:Bind ViewModel.SelectedUserIsActive, Mode=OneWay}" />
+                            Click="ToggleSelectedUserActive_Click"
+                            Content="{x:Bind ViewModel.ToggleSelectedUserButtonText, Mode=OneWay}"
+                            IsEnabled="{x:Bind ViewModel.CanToggleSelectedUser, Mode=OneWay}" />
                     </StackPanel>
+
+                    <Grid Grid.Row="1" ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox
+                            x:Name="UserSearchTextBox"
+                            PlaceholderText="Search users or use name:, dept:, role:, shift:"
+                            TextChanged="UserSearchTextBox_TextChanged" />
+
+                        <CheckBox
+                            x:Name="ShowDeactivatedFilterCheckBox"
+                            Grid.Column="1"
+                            Content="{x:Bind ViewModel.ShowDeactivatedFilterLabel, Mode=OneWay}"
+                            Click="ShowDeactivatedFilterCheckBox_Click"
+                            IsThreeState="True"
+                            VerticalAlignment="Center" />
+                    </Grid>
 
                     <!--  User list  -->
                     <ListView
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Background="Transparent"
                         BorderThickness="0"
                         ItemsSource="{x:Bind ViewModel.UserRows, Mode=OneWay}"
                         SelectedItem="{x:Bind ViewModel.SelectedUserRow, Mode=TwoWay}"
                         SelectionMode="Single">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="12" />
+                                <Setter Property="Margin" Value="0,0,0,12" />
+                                <Setter Property="Background" Value="{ThemeResource LayerFillColorDefaultBrush}" />
+                                <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="CornerRadius" Value="6" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ViewModel_SettingsUserRoleRow">
-                                <Border
-                                    Margin="0,0,0,12"
-                                    Padding="12"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6">
-                                    <StackPanel Spacing="10">
-                                        <Grid ColumnSpacing="8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel>
-                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind User.FullName}" />
-                                                <TextBlock Opacity="0.7">
-                                                    <Run Text="{x:Bind User.Department}" />
-                                                    <Run Text=" · " />
-                                                    <Run Text="{x:Bind User.Shift}" />
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind CurrentRoleDisplayName, Mode=OneWay}" />
-                                            </StackPanel>
-                                            <TextBlock
-                                                Grid.Column="1"
-                                                VerticalAlignment="Center"
-                                                FontSize="11"
-                                                Opacity="0.7"
-                                                Text="{x:Bind User.IsActive, Mode=OneTime, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Active|Inactive'}" />
-                                        </Grid>
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind User.FullName}" />
+                                            <TextBlock Opacity="0.7">
+                                                <Run Text="{x:Bind User.Department}" />
+                                                <Run Text=" · " />
+                                                <Run Text="{x:Bind User.Shift}" />
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind CurrentRoleDisplayName, Mode=OneWay}" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            FontSize="11"
+                                            Opacity="0.7"
+                                            Text="{x:Bind User.IsActive, Mode=OneTime, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Active|Inactive'}" />
+                                    </Grid>
 
-                                        <Grid ColumnSpacing="8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <ComboBox
-                                                IsEnabled="{x:Bind CanEditRole, Mode=OneWay}"
-                                                ItemsSource="{x:Bind AvailableRoleNames, Mode=OneWay}"
-                                                SelectedItem="{x:Bind SelectedRoleName, Mode=TwoWay}" />
-                                            <Button
-                                                Grid.Column="1"
-                                                Click="SaveUserRole_Click"
-                                                Content="Save Role"
-                                                IsEnabled="{x:Bind CanEditRole, Mode=OneWay}" />
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
+                                    <Grid ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox
+                                            IsEnabled="{x:Bind CanEditRole, Mode=OneWay}"
+                                            ItemsSource="{x:Bind AvailableRoleNames, Mode=OneWay}"
+                                            SelectedItem="{x:Bind SelectedRoleName, Mode=TwoWay}" />
+                                        <Button
+                                            Grid.Column="1"
+                                            Click="SaveUserRole_Click"
+                                            Content="Save Role"
+                                            IsEnabled="{x:Bind CanEditRole, Mode=OneWay}" />
+                                    </Grid>
+                                </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>

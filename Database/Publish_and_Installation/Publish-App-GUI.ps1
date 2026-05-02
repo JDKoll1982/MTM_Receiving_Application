@@ -1,4 +1,4 @@
-# MTM Receiving Application — Publish Tool (WPF GUI)
+# MTM Receiving Application - Publish Tool (WPF GUI)
 # Select a publish option; notes are shown alongside; click Publish to run dotnet publish.
 
 # WPF requires an STA thread. The VS Code PowerShell Extension REPL runs MTA and will
@@ -20,22 +20,22 @@ Add-Type -AssemblyName System.Windows.Forms
 # ---------------------------------------------------------------------------
 $n1 = "RECOMMENDED for server-share deployment.`n`nBundles the .NET 10 runtime and Windows App SDK alongside the app. No software needs to be installed on any user PC. Users launch straight from the network share using their desktop shortcut.`n`n  WHEN TO CHOOSE THIS:`n  - Zero prerequisites on user PCs`n  - Most reliable launch from a network share`n  - Everything needed is in the output folder`n  - Safe for all WinUI 3 features`n`n  WHEN TO AVOID:`n  - Disk space on the share is severely constrained`n  - IT centrally manages runtimes via Intune/SCCM"
 
-$n2 = "NOT RECOMMENDED unless IT manages runtimes centrally.`n`nPublishes only the app code — no runtime bundled. The .NET 10 Desktop Runtime and Windows App SDK must already be installed on every PC that runs the app.`n`n  WHY YOU MIGHT STILL CHOOSE THIS:`n  - IT manages workstations via Intune/SCCM — runtimes are always present`n  - Publish output is significantly smaller, so share updates are faster`n  - .NET security patches handled by IT — no full app republish needed`n  - Disk space on the share is tightly constrained`n`n  DO NOT USE IF:`n  - Any user PC may not have the runtimes installed`n  - You cannot confirm deployment status with IT"
+$n2 = "NOT RECOMMENDED unless IT manages runtimes centrally.`n`nPublishes only the app code - no runtime bundled. The .NET 10 Desktop Runtime and Windows App SDK must already be installed on every PC that runs the app.`n`n  WHY YOU MIGHT STILL CHOOSE THIS:`n  - IT manages workstations via Intune/SCCM - runtimes are always present`n  - Publish output is significantly smaller, so share updates are faster`n  - .NET security patches handled by IT - no full app republish needed`n  - Disk space on the share is tightly constrained`n`n  DO NOT USE IF:`n  - Any user PC may not have the runtimes installed`n  - You cannot confirm deployment status with IT"
 
-$n4 = "GOOD CHOICE for server-share — faster startup over a network.`n`nPre-compiles assemblies to native code at publish time. Results in noticeably faster cold-start times, partially compensating for network file-read overhead on each launch.`n`n  WHY CHOOSE THIS:`n  - Best startup performance for a server-share deployment`n  - Reduces CPU work on the user PC at launch time`n  - No prerequisites or run-time caveats`n  - Safe choice for all WinUI 3 features`n`n  NOTE:`n  - Output folder will be larger than standard self-contained`n  - For best results, build machine RID should match target RID"
+$n4 = "EXPERIMENTAL for WinUI 3 - not recommended for routine production publishes.`n`nReadyToRun pre-compiles assemblies to native code at publish time, but this project currently treats the option as unstable because WinUI 3 COM interop issues have caused runtime problems in prior validation.`n`n  WHEN TO CONSIDER THIS:`n  - You are doing an intentional performance experiment`n  - You can fully validate startup and core workflows before deployment`n  - You understand this option is not the normal supported publish path`n`n  RISKS:`n  - May reintroduce WinUI 3 COM interop failures`n  - Output folder is larger than standard self-contained`n  - Should be treated as an advanced troubleshooting or benchmarking option only"
 
-$n5 = "HIGH RISK with WinUI 3 — test thoroughly before deploying.`n`nRemoves unused assemblies and types to reduce output folder size. WinUI 3 relies heavily on reflection and dynamic type loading, which conflicts with aggressive trimming.`n`n  WHY YOU MIGHT STILL CHOOSE THIS:`n  - Server share is on a slow/VPN link and folder size affects launch time`n  - Disk space on the share is severely constrained`n  - All trim warnings resolved and a full end-to-end test pass is done`n  - Smallest possible artifact for automated deployment pipelines`n`n  RISKS:`n  - Runtime failures from missing types are common with WinUI 3`n  - ALWAYS test every screen before deploying to users`n  - Do not use as the primary production build until fully validated"
+$n5 = "HIGH RISK with WinUI 3 - test thoroughly before deploying.`n`nRemoves unused assemblies and types to reduce output folder size. WinUI 3 relies heavily on reflection and dynamic type loading, which conflicts with aggressive trimming.`n`n  WHY YOU MIGHT STILL CHOOSE THIS:`n  - Server share is on a slow/VPN link and folder size affects launch time`n  - Disk space on the share is severely constrained`n  - All trim warnings resolved and a full end-to-end test pass is done`n  - Smallest possible artifact for automated deployment pipelines`n`n  RISKS:`n  - Runtime failures from missing types are common with WinUI 3`n  - ALWAYS test every screen before deploying to users`n  - Do not use as the primary production build until fully validated"
 
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $defaultProjectFile = Join-Path $repoRoot "MTM_Receiving_Application.csproj"
 
 # ---------------------------------------------------------------------------
-# Publish option definitions — mirrors PublishAppScript.md
+# Publish option definitions - mirrors PublishAppScript.md
 # ---------------------------------------------------------------------------
 $script:BaseShare = "X:\MH_RESOURCE\Material_Handler"
 $script:OutputRootPath = $script:BaseShare
 $script:ProjectFile = $defaultProjectFile
-$script:PublishVerbosity = 'detailed'
+$script:PublishVerbosity = 'normal'
 $script:SatelliteResourceLanguages = 'en-US'
 $script:PublishLogFile = $null
 $script:LastStatusMessage = ''
@@ -157,9 +157,17 @@ Select No to keep existing matching self-contained files and publish only new or
 }
 
 function New-PublishStagingDirectory {
-    $stagingPath = Join-Path ([System.IO.Path]::GetTempPath()) ("MTM_Receiving_Application-Publish-" + [guid]::NewGuid().ToString('N'))
+    $workingRoot = Join-Path $env:LOCALAPPDATA "MTM Receiving Application\PublishTool\Staging"
+    New-Item -ItemType Directory -Path $workingRoot -Force | Out-Null
+    $stagingPath = Join-Path $workingRoot ((Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $stagingPath -Force | Out-Null
     return $stagingPath
+}
+
+function Get-PublishLogDirectory {
+    $logDirectory = Join-Path $env:LOCALAPPDATA "MTM Receiving Application\PublishTool\Logs"
+    New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+    return $logDirectory
 }
 
 function Remove-PublishStagingDirectory {
@@ -274,6 +282,22 @@ function Get-Utf8Encoding {
     return [System.Text.UTF8Encoding]::new($false)
 }
 
+function Get-SelectedPublishVerbosity {
+    if ($null -eq $detailedLoggingCheckBox -or $true -ne [bool]$detailedLoggingCheckBox.IsChecked) {
+        return $script:PublishVerbosity
+    }
+
+    return 'detailed'
+}
+
+function Get-ShowExperimentalOptions {
+    if ($null -eq $showExperimentalOptionsCheckBox) {
+        return $false
+    }
+
+    return $true -eq [bool]$showExperimentalOptionsCheckBox.IsChecked
+}
+
 function Add-PublishLogText {
     param(
         [string]$Text
@@ -339,6 +363,97 @@ function Update-OutputPathDisplay {
     }
 
     $outputPathText.Text = Get-EffectiveOutputPath -Option $script:selectedOption
+}
+
+function Confirm-SyncStagedPublishOutput {
+    param(
+        [string]$DestinationPath,
+        [string]$StagingPath,
+        [string]$OptionLabel
+    )
+
+    $message = @"
+The publish completed successfully in the local staging folder:
+
+$StagingPath
+
+Selected option: $OptionLabel
+Deployment target: $DestinationPath
+
+Select Yes to sync the staged output to the deployment target now.
+Select No to keep the staged output locally and sync it later.
+"@
+
+    $result = [System.Windows.MessageBox]::Show(
+        $message,
+        'Sync Staged Publish Output',
+        [System.Windows.MessageBoxButton]::YesNo,
+        [System.Windows.MessageBoxImage]::Question)
+
+    return $result -eq [System.Windows.MessageBoxResult]::Yes
+}
+
+function Update-PublishOptionList {
+    if ($null -eq $optionList) {
+        return
+    }
+
+    $selectedOptionIndex = if ($null -ne $script:selectedOption) {
+        $script:selectedOption.Index
+    }
+    else {
+        $null
+    }
+
+    $optionList.Items.Clear()
+
+    foreach ($opt in ($script:Options | Where-Object { -not $_.Experimental -or (Get-ShowExperimentalOptions) })) {
+        $item = New-Object System.Windows.Controls.ListBoxItem
+        $item.Padding = "10,7"
+        $item.Tag = $opt.Index
+
+        $sp = New-Object System.Windows.Controls.StackPanel
+
+        $labelBlock = New-Object System.Windows.Controls.TextBlock
+        $labelBlock.Text = $opt.Label
+        $labelBlock.FontWeight = [System.Windows.FontWeights]::SemiBold
+        $labelBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
+        $labelBlock.Foreground = $brushConverter.ConvertFromString($opt.TagColor)
+
+        $folderBlock = New-Object System.Windows.Controls.TextBlock
+        $folderBlock.Text = $opt.Folder
+        $folderBlock.FontSize = 10
+        $folderBlock.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
+        $folderBlock.Foreground = $brushConverter.ConvertFromString("#888888")
+        $folderBlock.Margin = New-Object System.Windows.Thickness(0, 2, 0, 0)
+
+        [void]$sp.Children.Add($labelBlock)
+        [void]$sp.Children.Add($folderBlock)
+        $item.Content = $sp
+        [void]$optionList.Items.Add($item)
+    }
+
+    if ($null -ne $selectedOptionIndex) {
+        foreach ($item in $optionList.Items) {
+            if ([int]$item.Tag -eq $selectedOptionIndex) {
+                $optionList.SelectedItem = $item
+                return
+            }
+        }
+    }
+
+    $script:selectedOption = $null
+
+    if ($null -ne $notesText) {
+        $notesText.Text = 'Select a publish option on the left to see notes here.'
+    }
+
+    if ($null -ne $publishButton) {
+        $publishButton.IsEnabled = $false
+    }
+
+    Update-OutputPathDisplay
+    Update-PublishStatus 'Ready. Select a publish option above and click Publish.'
 }
 
 function Select-OutputRootFolder {
@@ -421,7 +536,7 @@ $script:Options = @(
     },
     @{
         Index         = 1
-        Label         = "2  Framework-Dependent  ⚠"
+        Label         = "2  Framework-Dependent  [Caution]"
         Folder        = "MTM Receiving Application FD"
         Args          = "-c Release -r win-x64 --self-contained false"
         SelfContained = $false
@@ -430,20 +545,22 @@ $script:Options = @(
     },
     @{
         Index         = 2
-        Label         = "3  ReadyToRun — Faster Startup"
+        Label         = "3  ReadyToRun - Experimental"
         Folder        = "MTM Receiving Application R2R"
         Args          = "-c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true"
         SelfContained = $true
-        TagColor      = "#388E3C"
+        TagColor      = "#E65100"
+        Experimental  = $true
         Notes         = $n4
     },
     @{
         Index         = 3
-        Label         = "4  Trimmed  ⚠  (High Risk)"
+        Label         = "4  Trimmed  [Caution]  (High Risk)"
         Folder        = "MTM Receiving Application Trimmed"
         Args          = "-c Release -r win-x64 --self-contained true -p:PublishTrimmed=true"
         SelfContained = $true
         TagColor      = "#C62828"
+        Experimental  = $false
         Notes         = $n5
     }
 )
@@ -454,7 +571,7 @@ $script:Options = @(
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MTM Receiving Application — Publish Tool"
+        Title="MTM Receiving Application - Publish Tool"
         Height="740" Width="940"
         MinHeight="640" MinWidth="800"
         WindowStartupLocation="CenterScreen"
@@ -473,7 +590,7 @@ $xaml = @"
         <StackPanel Grid.Row="0" Margin="0,0,0,14">
             <TextBlock Text="MTM Receiving Application"
                        FontSize="22" FontWeight="Bold" Foreground="#2196F3"/>
-            <TextBlock Text="Publish Tool — select an option on the left, review the notes, then click Publish."
+            <TextBlock Text="Publish Tool - select an option on the left, review the notes, then click Publish."
                        FontSize="13" Foreground="#666"/>
         </StackPanel>
 
@@ -548,6 +665,7 @@ $xaml = @"
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Project:" FontWeight="Bold" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="0" Grid.Column="1" Name="ProjectPathText"
@@ -564,6 +682,17 @@ $xaml = @"
                           IsTextSearchEnabled="True"
                           MaxDropDownHeight="320"
                           ToolTip="Optional. Pick one language to limit satellite resources, or leave the default option selected to publish all available languages."/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Extras:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0">
+                    <CheckBox Name="DetailedLoggingCheckBox"
+                              Content="Detailed logging"
+                              ToolTip="Enable verbose publish output only when troubleshooting."/>
+                    <CheckBox Name="ShowExperimentalOptionsCheckBox"
+                              Content="Show experimental options"
+                              Margin="18,0,0,0"
+                              ToolTip="Displays advanced publish options such as ReadyToRun that are not part of the normal supported path."/>
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -657,6 +786,8 @@ $satelliteLanguagesComboBox = $window.FindName("SatelliteLanguagesComboBox")
 if ($null -eq $satelliteLanguagesComboBox -and $null -ne $window) {
     $satelliteLanguagesComboBox = [System.Windows.LogicalTreeHelper]::FindLogicalNode($window, "SatelliteLanguagesComboBox")
 }
+$detailedLoggingCheckBox = $window.FindName("DetailedLoggingCheckBox")
+$showExperimentalOptionsCheckBox = $window.FindName("ShowExperimentalOptionsCheckBox")
 $statusText = $window.FindName("StatusText")
 $publishProgress = $window.FindName("PublishProgress")
 $outputBorder = $window.FindName("OutputBorder")
@@ -689,35 +820,10 @@ if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
 # Populate option ListBox
 # ---------------------------------------------------------------------------
 $brushConverter = New-Object System.Windows.Media.BrushConverter
-
-foreach ($opt in $script:Options) {
-    $item = New-Object System.Windows.Controls.ListBoxItem
-    $item.Padding = "10,7"
-    $item.Tag = $opt.Index
-
-    $sp = New-Object System.Windows.Controls.StackPanel
-
-    $labelBlock = New-Object System.Windows.Controls.TextBlock
-    $labelBlock.Text = $opt.Label
-    $labelBlock.FontWeight = [System.Windows.FontWeights]::SemiBold
-    $labelBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
-    $labelBlock.Foreground = $brushConverter.ConvertFromString($opt.TagColor)
-
-    $folderBlock = New-Object System.Windows.Controls.TextBlock
-    $folderBlock.Text = $opt.Folder
-    $folderBlock.FontSize = 10
-    $folderBlock.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
-    $folderBlock.Foreground = $brushConverter.ConvertFromString("#888888")
-    $folderBlock.Margin = New-Object System.Windows.Thickness(0, 2, 0, 0)
-
-    [void]$sp.Children.Add($labelBlock)
-    [void]$sp.Children.Add($folderBlock)
-    $item.Content = $sp
-    [void]$optionList.Items.Add($item)
-}
+Update-PublishOptionList
 
 # ---------------------------------------------------------------------------
-# Selection changed — update notes panel
+# Selection changed - update notes panel
 # ---------------------------------------------------------------------------
 $script:selectedOption = $null
 
@@ -743,8 +849,12 @@ $browseOutputPathButton.Add_Click({
         Select-OutputRootFolder
     })
 
+$showExperimentalOptionsCheckBox.Add_Click({
+        Update-PublishOptionList
+    })
+
 # ---------------------------------------------------------------------------
-# Publish button — run dotnet publish, show live output, show result
+# Publish button - run dotnet publish, show live output, show result
 # ---------------------------------------------------------------------------
 $publishButton.Add_Click({
         if ($null -eq $script:selectedOption) { return }
@@ -760,7 +870,7 @@ $publishButton.Add_Click({
             $errorText.Text = "The selected project file does not exist. Update the Project path to the current MTM_Receiving_Application.csproj before publishing."
             $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
             $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
-            Update-PublishStatus "Publish blocked — project file path is invalid."
+            Update-PublishStatus "Publish blocked - project file path is invalid."
             return
         }
 
@@ -778,33 +888,14 @@ $publishButton.Add_Click({
             " -p:SatelliteResourceLanguages=`"$satelliteLanguages`""
         }
 
-        $useStagingPublish = $false
+        $script:PublishStagingPath = New-PublishStagingDirectory
+        $publishOutputPath = $script:PublishStagingPath
+        $selectedPublishVerbosity = Get-SelectedPublishVerbosity
+        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $selectedPublishVerbosity -o `"$publishOutputPath`""
 
-        if ($opt.SelfContained -and (Test-PublishOutputDirectoryHasFiles -Path $script:currentOutputPath -IgnoreNames @('_PublishLogs'))) {
-            if (-not (Confirm-SelfContainedOverwrite -Path $script:currentOutputPath -OptionLabel $opt.Label)) {
-                $script:PublishStagingPath = New-PublishStagingDirectory
-                $useStagingPublish = $true
-            }
-        }
+        Update-PublishStatus "Preparing local staged publish output..."
 
-        $publishOutputPath = if ($useStagingPublish) {
-            $script:PublishStagingPath
-        }
-        else {
-            $script:currentOutputPath
-        }
-
-        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $($script:PublishVerbosity) -o `"$publishOutputPath`""
-
-        if (-not $useStagingPublish) {
-            Update-PublishStatus "Preparing publish output folder..."
-            Clear-PublishOutputDirectory -Path $script:currentOutputPath -PreserveNames @('_PublishLogs')
-        }
-        else {
-            Update-PublishStatus "Preparing staged publish output..."
-        }
-
-        $logDirectory = Join-Path $script:currentOutputPath "_PublishLogs"
+        $logDirectory = Get-PublishLogDirectory
         New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
         $script:PublishLogFile = Join-Path $logDirectory ("publish-{0}.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
         $script:LastStatusMessage = ''
@@ -820,9 +911,9 @@ Started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 Option: $($opt.Label)
 Project: $projectPath
 Output: $($script:currentOutputPath)
-PublishMode: $(if ($useStagingPublish) { 'Reuse existing matching files' } else { 'Full overwrite' })
+PublishMode: Local staging first
 PublishCommandOutput: $publishOutputPath
-Verbosity: $($script:PublishVerbosity)
+Verbosity: $selectedPublishVerbosity
 SatelliteResourceLanguages: $(if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) { 'all' } else { $satelliteLanguages })
 Command: $publishCommand
 LogFile: $($script:PublishLogFile)
@@ -831,7 +922,7 @@ LogFile: $($script:PublishLogFile)
         Add-PublishLogText $outputText.Text
         $publishProgress.Visibility = [System.Windows.Visibility]::Visible
         $publishButton.IsEnabled = $false
-        Update-PublishStatus "Publishing — please wait..."
+        Update-PublishStatus "Publishing - please wait..."
 
         # Redirect stdout+stderr to a temp file via cmd /c.
         # This avoids DataReceived event callbacks crossing into the PowerShell runspace
@@ -852,7 +943,7 @@ LogFile: $($script:PublishLogFile)
         $script:publishProcess.StartInfo = $psi
         $script:publishProcess.Start() | Out-Null
 
-        # Poll the temp file for new lines every 200 ms — all on the UI thread, no callbacks
+        # Poll the temp file for new lines every 200 ms - all on the UI thread, no callbacks
         $script:pollTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:pollTimer.Interval = [TimeSpan]::FromMilliseconds(200)
         $script:pollTimer.Add_Tick({
@@ -878,11 +969,11 @@ LogFile: $($script:PublishLogFile)
                         $outputScrollViewer.ScrollToEnd()
                     }
                 }
-                catch { <# file briefly locked — skip this tick #> }
+                catch { <# file briefly locked - skip this tick #> }
 
                 if (-not $script:publishProcess.HasExited) { return }
 
-                # Process exited — do one final read to capture the last bytes
+                # Process exited - do one final read to capture the last bytes
                 $script:pollTimer.Stop()
                 try {
                     $fs = [System.IO.File]::Open($script:outFile,
@@ -919,21 +1010,30 @@ LogFile: $($script:PublishLogFile)
 
                 $mergeSummaryText = ''
                 if ($publishExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($stagingPath)) {
-                    try {
-                        Update-PublishStatus "Applying staged publish output..."
-                        $mergeResult = Sync-PublishOutputDirectory -SourcePath $stagingPath -DestinationPath $script:currentOutputPath -PreserveNames @('_PublishLogs')
-                        $mergeSummaryText = "`nReused unchanged files: $($mergeResult.SkippedFiles)`nCopied new or changed files: $($mergeResult.CopiedFiles)`nRemoved stale files/folders: $($mergeResult.RemovedItems)"
-                        Add-PublishLogText "`r`nMerge Summary`r`nReused unchanged files: $($mergeResult.SkippedFiles)`r`nCopied new or changed files: $($mergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($mergeResult.RemovedItems)`r`n"
-                        Remove-Item -LiteralPath $stagingPath -Recurse -Force -ErrorAction SilentlyContinue
+                    if (Confirm-SyncStagedPublishOutput -DestinationPath $script:currentOutputPath -StagingPath $stagingPath -OptionLabel $opt.Label) {
+                        try {
+                            Update-PublishStatus "Syncing staged publish output to the deployment target..."
+                            $mergeResult = Sync-PublishOutputDirectory -SourcePath $stagingPath -DestinationPath $script:currentOutputPath -PreserveNames @('_PublishLogs')
+                            $mergeSummaryText = "`nSync completed to: $($script:currentOutputPath)`nReused unchanged files: $($mergeResult.SkippedFiles)`nCopied new or changed files: $($mergeResult.CopiedFiles)`nRemoved stale files/folders: $($mergeResult.RemovedItems)"
+                            Add-PublishLogText "`r`nSync Summary`r`nReused unchanged files: $($mergeResult.SkippedFiles)`r`nCopied new or changed files: $($mergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($mergeResult.RemovedItems)`r`n"
+                            Remove-Item -LiteralPath $stagingPath -Recurse -Force -ErrorAction SilentlyContinue
+                            $script:PublishStagingPath = $null
+                        }
+                        catch {
+                            $script:PublishStagingPath = $null
+                            $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
+                            $publishButton.IsEnabled = $true
+                            $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+                            $errorText.Text = "Publish succeeded, but syncing the staged output failed. Staged output: $stagingPath`nLog file: $script:PublishLogFile`n$($_.Exception.Message)"
+                            Update-PublishStatus "Publish sync failed - check build output."
+                            Add-PublishLogText "`r`nSync Failed: $($_.Exception.Message)`r`n"
+                            return
+                        }
                     }
-                    catch {
-                        $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
-                        $publishButton.IsEnabled = $true
-                        $errorBorder.Visibility = [System.Windows.Visibility]::Visible
-                        $errorText.Text = "Publish succeeded, but merging the staged output failed. Staged output: $stagingPath`nLog file: $script:PublishLogFile`n$($_.Exception.Message)"
-                        Update-PublishStatus "Publish merge failed — check build output."
-                        Add-PublishLogText "`r`nMerge Failed: $($_.Exception.Message)`r`n"
-                        return
+                    else {
+                        $mergeSummaryText = "`nStaged output retained locally: $stagingPath`nDeployment target not updated yet."
+                        Add-PublishLogText "`r`nSync Deferred`r`nStaged output retained locally: $stagingPath`r`n"
+                        $script:PublishStagingPath = $null
                     }
                 }
 
@@ -948,7 +1048,7 @@ LogFile: $($script:PublishLogFile)
                 else {
                     $errorBorder.Visibility = [System.Windows.Visibility]::Visible
                     $errorText.Text = "Publish failed (exit code $publishExitCode). See the build output above for details.`nLog file: $script:PublishLogFile"
-                    Update-PublishStatus "Publish failed — check build output."
+                    Update-PublishStatus "Publish failed - check build output."
                 }
 
                 Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $publishExitCode`r`n"

@@ -57,13 +57,9 @@ This document consolidates all known requirements and design decisions for the M
    - Ensuring material is on the floor before production begins
    - Ordering dunnage when needed
 
-8. **Outside Service Coordinator**
-   - Coordinates parts sent to 3rd parties for work
-   - Manages parts returning from outside services
+8. **IT Department**
 
-9. **IT Department**
-
-10. **Management**
+9. **Management**
     - Production Leads
     - Production Managers
     - Plant Managers
@@ -139,7 +135,6 @@ This document consolidates all known requirements and design decisions for the M
 - Setup technician help
 - Maintenance/repair
 - Tool/die issues
-- Parts to Outside Service
 - Custom/Other (fallback for anything not predefined)
 
 **Data Auto-Population:**
@@ -213,27 +208,6 @@ This document consolidates all known requirements and design decisions for the M
 - If Quality inspection fails, NCM flagging workflow TBD
 - Material Handler may need to move NCM to designated area
 - Tracking and traceability required
-
-### Outside Service Coordination
-
-**Operator Role:**
-
-- Can operators directly request parts be sent to Outside Service?
-- Or must this go through Outside Service Coordinator?
-- Approval workflow TBD
-
-**Material Handler Role:**
-
-- Deliver parts to staging area
-- Log the move in app
-- Coordinator handles paperwork and 3rd party coordination
-
-**Coordinator Role:**
-
-- Sees parts ready for shipment
-- Arranges pickup with 3rd party
-- Tracks parts while out
-- Logs return and routes back to production
 
 ### Inventory Specialist Workflow
 
@@ -316,13 +290,6 @@ This document consolidates all known requirements and design decisions for the M
 - Pre-production material status
 - Dunnage inventory levels
 - Incoming material tracking
-
-**Outside Service Coordinator:**
-
-- Parts ready for shipment
-- Parts at 3rd party (status tracking)
-- Parts returning
-- 3rd party performance metrics
 
 **IT Department:**
 
@@ -502,7 +469,6 @@ This document consolidates all known requirements and design decisions for the M
    - Quality
    - Setup Technician
    - Inventory Specialist
-   - Outside Service Coordinator
    - IT Department
    - Die Shop
    - Fabrication & Welding

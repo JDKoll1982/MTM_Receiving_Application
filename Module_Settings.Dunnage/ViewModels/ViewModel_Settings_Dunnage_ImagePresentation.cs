@@ -28,7 +28,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImagePresentation : ViewM
     private int _defaultThumbnailSize = 96;
 
     [ObservableProperty]
-    private string _defaultVisualSource = "PartThenTypeThenIcon";
+    private string _defaultVisualSource = "Part , Type then Icon";
 
     public ViewModel_Settings_Dunnage_ImagePresentation(
         IService_SettingsCoreFacade settingsCore,
@@ -153,7 +153,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImagePresentation : ViewM
 
             if (string.IsNullOrWhiteSpace(DefaultVisualSource))
             {
-                DefaultVisualSource = "PartThenTypeThenIcon";
+                DefaultVisualSource = "Part , Type then Icon";
             }
         }
         catch (Exception ex)

@@ -2,8 +2,6 @@
     x:Class="MTM_Receiving_Application.Module_Settings.Volvo.Views.View_Settings_Volvo_EmailRecipients"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls"
-    xmlns:views="using:MTM_Receiving_Application.Module_Settings.Volvo.Views"
-    x:DataType="views:View_Settings_Volvo_EmailRecipients">
+    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
     <controls:Control_SettingsEmailRecipientsEditor EditorViewModel="{x:Bind ViewModel, Mode=OneWay}" />
 </Page>

@@ -20,6 +20,8 @@ public sealed partial class View_Settings_Users : Page
     {
         ViewModel.XamlRoot = XamlRoot;
         await ViewModel.LoadUsersCommand.ExecuteAsync(null);
+        UserSearchTextBox.Text = ViewModel.SearchText;
+        ShowDeactivatedFilterCheckBox.IsChecked = ViewModel.ShowDeactivatedOnly;
     }
 
     private void VisualPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -38,12 +40,19 @@ public sealed partial class View_Settings_Users : Page
         }
     }
 
-    private void DeactivateSelectedUser_Click(object sender, RoutedEventArgs e)
+    private async void ToggleSelectedUserActive_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedUser is not null)
-        {
-            ViewModel.DeactivateUserCommand.Execute(ViewModel.SelectedUser);
-        }
+        await ViewModel.ToggleSelectedUserActiveAsync();
+    }
+
+    private void UserSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        ViewModel.SearchText = UserSearchTextBox.Text;
+    }
+
+    private void ShowDeactivatedFilterCheckBox_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ShowDeactivatedOnly = ShowDeactivatedFilterCheckBox.IsChecked;
     }
 
     private async void SaveUserRole_Click(object sender, RoutedEventArgs e)

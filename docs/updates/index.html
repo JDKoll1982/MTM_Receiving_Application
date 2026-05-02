@@ -4,134 +4,132 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Updates — MTM Receiving Application</title>
-    <link rel="stylesheet" href="../features/shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
-<a href="#main-content" class="skip-link">Skip to main content</a>
-
-<header class="top-nav" role="banner">
-    <a href="../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
-    <div class="top-nav-sep" aria-hidden="true"></div>
-    <nav aria-label="Module navigation">
-        <ul class="top-nav-links">
-            <li><a href="../features/receiving/index.html"      ><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
-            <li><a href="../features/dunnage/index.html"        ><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
-            <li><a href="../features/reporting/index.html"      ><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
-            <li><a href="../features/volvo/index.html"          ><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
-            <li><a href="../features/shiprec-tools/index.html"  ><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
-            <li><a href="../database/index.html"                ><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
-            <li><a href="index.html" class="is-current"         ><span class="nav-icon" aria-hidden="true">🆕</span> Updates</a></li>
-        </ul>
-    </nav>
-</header>
-
-<div class="page-layout">
-
-    <nav class="sidebar" aria-label="On this page">
-        <p class="sidebar-label">Versions</p>
-        <ul class="sidebar-nav">
-            <li><a href="#releases">Releases</a></li>
-            <li><a href="#templates">Templates</a></li>
-        </ul>
-    </nav>
-
-    <main id="main-content" class="main-content">
-
-        <div class="module-hero">
-            <div class="module-badge">🆕 Updates</div>
-            <h1>Application Updates</h1>
-            <p class="lead">
-                Release notes and update pages for each version of the MTM Receiving Application.
-                Each release page summarises what changed, why it matters, and what — if anything —
-                users need to do after the update.
-            </p>
-        </div>
-
-        <!-- Releases -->
-        <section id="releases" class="content-section">
-            <h2>Releases</h2>
-            <div class="table-wrapper">
-                <table class="schema-table">
-                    <thead>
-                        <tr>
-                            <th>Version</th>
-                            <th>Date</th>
-                            <th>Summary</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><a href="1.5.0/index.html"><strong>1.5.0</strong></a></td>
-                            <td>May 1, 2026</td>
-                            <td>Purchase Receipt Entry support tools, a direct save button on Receiving reconciliation settings, and a clearer reconciliation process guide</td>
-                        </tr>
-                        <tr>
-                            <td><a href="1.4.1/index.html"><strong>1.4.2</strong></a></td>
-                            <td>April 29, 2026</td>
-                            <td>Label buttons now open templates more cleanly in LabelView, with Explorer shortcuts that select saved files and a tidier workflow footer layout</td>
-                        </tr>
-                        <tr>
-                            <td><a href="1.4.0/index.html"><strong>1.4.0</strong></a></td>
-                            <td>April 29, 2026</td>
-                            <td>Quick label-launch buttons in Receiving, plus new settings pages for LabelView and module label template paths</td>
-                        </tr>
-                        <tr>
-                            <td><a href="1.3.0/index.html"><strong>1.3.0</strong></a></td>
-                            <td>April 27, 2026</td>
-                            <td>Non-PO Receiving and Dunnage support, a new location reconciliation review step, built-in help pages, and smoother default-mode handling</td>
-                        </tr>
-                        <tr>
-                            <td><a href="1.2.0/index.html"><strong>1.2.0</strong></a></td>
-                            <td>April 27, 2026</td>
-                            <td>Receiving reconciliation settings, easier in-app documentation access, and clearer startup account-setup feedback</td>
-                        </tr>
-                        <tr>
-                            <td><a href="1.1.0/index.html"><strong>1.1.0</strong></a></td>
-                            <td>April 26, 2026</td>
-                            <td>Keyboard shortcuts for Receiving &amp; Dunnage, faster date filtering in Reports, accurate end-date ranges</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Application Updates</h1>
+                    <p class="hero-copy">Release notes for each MTM Receiving Application version. Use these pages to see what changed, why it matters, and whether your team needs to do anything after an update.</p>
+                </div>
             </div>
-        </section>
-
-        <!-- Templates -->
-        <section id="templates" class="content-section">
-            <h2>Templates</h2>
-            <p>
-                Use the mockup page as the reference layout when generating new release notes.
-                It documents the required content rhythm, interaction patterns, and card structure
-                for all versioned update pages.
-            </p>
-            <div class="table-wrapper">
-                <table class="schema-table">
-                    <thead>
-                        <tr>
-                            <th>Template</th>
-                            <th>Purpose</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><a href="mockup/index.html">Update page mockup</a></td>
-                            <td>Reference layout and content pattern for all end-user release pages</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="hero-meta">
+                <span class="badge">Latest release 2.0.0</span>
+                <span class="meta-text">Updated May 2, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#releases">View release history</button>
+                    <button type="button" class="button button-secondary" id="copy-version" data-copy-text="2.0.0">Copy latest version</button>
+                </div>
             </div>
-        </section>
+        </header>
 
-    </main>
-</div>
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#latest">Latest release</a>
+                    <a href="#releases">Release history</a>
+                    <a href="#templates">Template guidance</a>
+                </nav>
+                <p class="sidebar-note">Use the latest version number when reporting an issue to your supervisor or the MTM IT support team.</p>
+            </aside>
 
-<footer class="page-footer" role="contentinfo">
-    <span>MTM Receiving Application</span>
-    <span aria-hidden="true">·</span>
-    <a href="../index.html">Documentation Home</a>
-</footer>
+            <div class="main-column">
+                <section id="latest" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Latest release</p>
+                        <h2>Version 2.0.0 at a glance</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Supported workflows only</p>
+                            <p class="highlight-text">The standalone Outside Service module was removed, while the ShipRec Outside Service History lookup remains available.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Faster account management</p>
+                            <p class="highlight-text">Core Settings user management now supports search, inactive-user filtering, and account reactivation from the same screen.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Cleaner settings pages</p>
+                            <p class="highlight-text">Receiving, Dunnage, Reporting, Volvo, and Core Settings pages were tightened up with simpler labels and less visual clutter.</p>
+                        </article>
+                    </div>
+                </section>
 
-<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+                <section id="releases" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Release history</p>
+                        <h2>Available update pages</h2>
+                        <p class="muted-note">Newest releases stay at the top of the list.</p>
+                    </div>
+                    <div class="release-table-wrapper">
+                        <table class="release-table">
+                            <thead>
+                                <tr>
+                                    <th>Version</th>
+                                    <th>Date</th>
+                                    <th>Summary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><a class="release-link" href="2.0.0/index.html"><strong>2.0.0</strong></a></td>
+                                    <td>May 2, 2026</td>
+                                    <td>The standalone Outside Service module was removed, ShipRec retained its Outside Service History lookup, user management gained search and reactivation controls, and settings pages were streamlined across supported modules.</td>
+                                </tr>
+                                <tr>
+                                    <td><a class="release-link" href="1.5.0/index.html"><strong>1.5.0</strong></a></td>
+                                    <td>May 1, 2026</td>
+                                    <td>Purchase Receipt Entry support tools, a direct save button on Receiving reconciliation settings, and a clearer reconciliation process guide</td>
+                                </tr>
+                                <tr>
+                                    <td><a class="release-link" href="1.4.1/index.html"><strong>1.4.2</strong></a></td>
+                                    <td>April 29, 2026</td>
+                                    <td>Label buttons now open templates more cleanly in LabelView, with Explorer shortcuts that select saved files and a tidier workflow footer layout</td>
+                                </tr>
+                                <tr>
+                                    <td><a class="release-link" href="1.4.0/index.html"><strong>1.4.0</strong></a></td>
+                                    <td>April 29, 2026</td>
+                                    <td>Quick label-launch buttons in Receiving, plus new settings pages for LabelView and module label template paths</td>
+                                </tr>
+                                <tr>
+                                    <td><a class="release-link" href="1.3.0/index.html"><strong>1.3.0</strong></a></td>
+                                    <td>April 27, 2026</td>
+                                    <td>Non-PO Receiving and Dunnage support, a new location reconciliation review step, built-in help pages, and smoother default-mode handling</td>
+                                </tr>
+                                <tr>
+                                    <td><a class="release-link" href="1.2.0/index.html"><strong>1.2.0</strong></a></td>
+                                    <td>April 27, 2026</td>
+                                    <td>Receiving reconciliation settings, easier in-app documentation access, and clearer startup account-setup feedback</td>
+                                </tr>
+                                <tr>
+                                    <td><a class="release-link" href="1.1.0/index.html"><strong>1.1.0</strong></a></td>
+                                    <td>April 26, 2026</td>
+                                    <td>Keyboard shortcuts for Receiving &amp; Dunnage, faster date filtering in Reports, accurate end-date ranges</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
+                <section id="templates" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Template guidance</p>
+                        <h2>Release pages follow one shared pattern</h2>
+                    </div>
+                    <p>Use the <a class="release-link" href="mockup/index.html">update page mockup</a> as the content and layout reference for future release pages. Version folders should contain only the release <strong>index.html</strong> page and reuse the shared <strong>styles.css</strong> and <strong>app.js</strong> files in this folder.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="app.js"></script>
 </body>
 </html>

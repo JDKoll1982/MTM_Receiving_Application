@@ -55,7 +55,7 @@
     ],
     "validationHints": [
       "Confirm Infor Visual connection and credential checks still target the intended data source",
-      "Confirm mock-mode PO, part, location, and outside-service responses now come from the generated JSON catalog instead of hard-coded C# lists",
+      "Confirm mock-mode PO, part, and location responses now come from the generated JSON catalog instead of hard-coded C# lists",
       "Confirm database helper behavior remains aligned with existing DAO usage",
       "Confirm Infor Visual DAO construction now rejects connection strings that are not explicitly read-only"
     ]

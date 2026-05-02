@@ -93,8 +93,8 @@
   </ItemGroup>
   <!-- Exclude test project files from compilation -->
   <ItemGroup>
+    <Compile Remove=".agent_work\**" />
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
-    <Compile Remove="Module_OutsideService\**" />
     <Compile Remove="Scripts\McpServers\**" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_System.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
@@ -104,17 +104,16 @@
     <Compile Remove="Module_Settings.Core\Views\View_Settings_Logging.xaml.cs" />
     <Compile Remove="Properties\**" />
     <Compile Remove="obj_verify\**" />
+    <EmbeddedResource Remove=".agent_work\**" />
     <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
     <EmbeddedResource Remove="Properties\**" />
     <EmbeddedResource Remove="obj_verify\**" />
+    <None Remove=".agent_work\**" />
     <None Remove="MTM_Receiving_Application.Tests\**" />
     <None Remove="Properties\**" />
     <None Remove="obj_verify\**" />
+    <Page Remove=".agent_work\**" />
     <Page Remove="MTM_Receiving_Application.Tests\**" />
-    <Page Remove="Module_OutsideService\**" />
-    <Page Remove="Module_Settings.Core\Views\View_Settings_System.xaml" />
-    <Page Remove="Module_Settings.Core\Views\View_Settings_Database.xaml" />
-    <Page Remove="Module_Settings.Core\Views\View_Settings_Logging.xaml" />
     <Page Remove="Properties\**" />
     <Page Remove="obj_verify\**" />
     <ApplicationDefinition Remove="obj_verify\**" />
@@ -173,10 +172,6 @@
     <None Include=".vscode\settings.json" />
   </ItemGroup>
   <!-- Properties Files -->
-  <ItemGroup>
-    <None Include="Scripts\Add-AsyncSuffix.ps1" />
-    <None Include="Scripts\PlanApp.md" />
-  </ItemGroup>
   <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -321,5 +316,12 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="docs\development\CopilotForms\data\module-metadata\Module_OutsideService\" />
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove=".agent_work\**" />
   </ItemGroup>
 </Project>
