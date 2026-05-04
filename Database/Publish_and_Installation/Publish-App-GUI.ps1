@@ -45,6 +45,7 @@ $script:PollTimer = $null
 $script:OutFile = $null
 $script:PublishStagingPath = $null
 $script:selectedOption = $null
+$script:LastSyncProgressRender = [datetime]::MinValue
 
 function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
@@ -208,7 +209,8 @@ function Sync-PublishOutputDirectory {
     param(
         [string]$SourcePath,
         [string]$DestinationPath,
-        [string[]]$PreserveNames = @()
+        [string[]]$PreserveNames = @(),
+        [scriptblock]$ProgressAction = $null
     )
 
     if ([string]::IsNullOrWhiteSpace($SourcePath) -or -not (Test-Path -LiteralPath $SourcePath)) {
@@ -220,6 +222,17 @@ function Sync-PublishOutputDirectory {
     $sourceDirectories = @(Get-ChildItem -LiteralPath $SourcePath -Directory -Force -Recurse -ErrorAction SilentlyContinue)
     $sourceFiles = @(Get-ChildItem -LiteralPath $SourcePath -File -Force -Recurse -ErrorAction SilentlyContinue)
     $sourceRelativePaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $targetItems = @(Get-ChildItem -LiteralPath $DestinationPath -Force -Recurse -ErrorAction SilentlyContinue | Sort-Object FullName -Descending)
+    $totalSteps = $targetItems.Count + $sourceDirectories.Count + $sourceFiles.Count
+    if ($totalSteps -le 0) {
+        $totalSteps = 1
+    }
+
+    $currentStep = 0
+
+    if ($null -ne $ProgressAction) {
+        & $ProgressAction $currentStep $totalSteps 'Preparing deployment target'
+    }
 
     foreach ($directory in $sourceDirectories) {
         [void]$sourceRelativePaths.Add([System.IO.Path]::GetRelativePath($SourcePath, $directory.FullName))
@@ -230,12 +243,16 @@ function Sync-PublishOutputDirectory {
     }
 
     $removedItems = 0
-    $targetItems = @(Get-ChildItem -LiteralPath $DestinationPath -Force -Recurse -ErrorAction SilentlyContinue | Sort-Object FullName -Descending)
     foreach ($targetItem in $targetItems) {
         $relativePath = [System.IO.Path]::GetRelativePath($DestinationPath, $targetItem.FullName)
         $topLevelName = ($relativePath -split '[\\/]', 2)[0]
 
         if ($PreserveNames -contains $topLevelName) {
+            $currentStep++
+            if ($null -ne $ProgressAction) {
+                & $ProgressAction $currentStep $totalSteps 'Reviewing deployment target'
+            }
+
             continue
         }
 
@@ -243,12 +260,22 @@ function Sync-PublishOutputDirectory {
             Remove-Item -LiteralPath $targetItem.FullName -Recurse -Force -ErrorAction Stop
             $removedItems++
         }
+
+        $currentStep++
+        if ($null -ne $ProgressAction) {
+            & $ProgressAction $currentStep $totalSteps 'Removing stale files'
+        }
     }
 
     foreach ($directory in ($sourceDirectories | Sort-Object FullName)) {
         $relativePath = [System.IO.Path]::GetRelativePath($SourcePath, $directory.FullName)
         $destinationDirectory = Join-Path $DestinationPath $relativePath
         New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
+
+        $currentStep++
+        if ($null -ne $ProgressAction) {
+            & $ProgressAction $currentStep $totalSteps 'Preparing folders'
+        }
     }
 
     $copiedFiles = 0
@@ -264,11 +291,26 @@ function Sync-PublishOutputDirectory {
 
         if (Test-FilesMatch -SourcePath $file.FullName -DestinationPath $destinationFile) {
             $skippedFiles++
+            $currentStep++
+            if ($null -ne $ProgressAction) {
+                & $ProgressAction $currentStep $totalSteps 'Checking unchanged files'
+            }
+
             continue
         }
 
         Copy-Item -LiteralPath $file.FullName -Destination $destinationFile -Force
         $copiedFiles++
+
+        $currentStep++
+        if ($null -ne $ProgressAction) {
+            & $ProgressAction $currentStep $totalSteps 'Copying publish files'
+        }
+    }
+
+    if ($currentStep -lt $totalSteps -and $null -ne $ProgressAction) {
+        $currentStep = $totalSteps
+        & $ProgressAction $currentStep $totalSteps 'Finalizing sync'
     }
 
     return [pscustomobject]@{
@@ -452,6 +494,7 @@ function Update-PublishOptionList {
         $publishButton.IsEnabled = $false
     }
 
+    Set-PublishProgressState -Visible $false
     Update-OutputPathDisplay
     Update-PublishStatus 'Ready. Select a publish option above and click Publish.'
 }
@@ -511,7 +554,8 @@ function Stop-PublishSession {
 
 function Update-PublishStatus {
     param(
-        [string]$Message
+        [string]$Message,
+        [switch]$SkipLog
     )
 
     $statusText.Text = $Message
@@ -521,7 +565,90 @@ function Update-PublishStatus {
     }
 
     $script:LastStatusMessage = $Message
+
+    if ($SkipLog) {
+        return
+    }
+
     Add-PublishLogText "[STATUS $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $Message`r`n"
+}
+
+function Set-PublishProgressState {
+    param(
+        [bool]$Visible,
+        [bool]$IsIndeterminate = $true,
+        [double]$Value = 0,
+        [double]$Maximum = 100
+    )
+
+    if ($null -eq $publishProgress) {
+        return
+    }
+
+    $publishProgress.Minimum = 0
+    $publishProgress.Maximum = if ($Maximum -gt 0) {
+        $Maximum
+    }
+    else {
+        100
+    }
+    $publishProgress.IsIndeterminate = $IsIndeterminate
+    $publishProgress.Value = if ($IsIndeterminate) {
+        0
+    }
+    else {
+        [Math]::Min([Math]::Max($Value, 0), $publishProgress.Maximum)
+    }
+    $publishProgress.Visibility = if ($Visible) {
+        [System.Windows.Visibility]::Visible
+    }
+    else {
+        [System.Windows.Visibility]::Collapsed
+    }
+}
+
+function Invoke-PublishUiRefresh {
+    if ($null -eq $window -or $null -eq $window.Dispatcher) {
+        return
+    }
+
+    $frame = New-Object System.Windows.Threading.DispatcherFrame
+    $callback = [System.Windows.Threading.DispatcherOperationCallback]{
+        param($state)
+
+        $state.Continue = $false
+        return $null
+    }
+
+    $null = $window.Dispatcher.BeginInvoke(
+        [System.Windows.Threading.DispatcherPriority]::Background,
+        $callback,
+        $frame)
+    [System.Windows.Threading.Dispatcher]::PushFrame($frame)
+}
+
+function Update-SyncProgress {
+    param(
+        [int]$CompletedSteps,
+        [int]$TotalSteps,
+        [string]$Phase,
+        [switch]$Force
+    )
+
+    $safeTotal = [Math]::Max($TotalSteps, 1)
+    $safeCompleted = [Math]::Min([Math]::Max($CompletedSteps, 0), $safeTotal)
+    $now = Get-Date
+
+    if (-not $Force -and $safeCompleted -lt $safeTotal -and (($now - $script:LastSyncProgressRender).TotalMilliseconds -lt 125)) {
+        return
+    }
+
+    $script:LastSyncProgressRender = $now
+    $percentComplete = [int][Math]::Floor(($safeCompleted / [double]$safeTotal) * 100)
+
+    Set-PublishProgressState -Visible $true -IsIndeterminate $false -Value $safeCompleted -Maximum $safeTotal
+    Update-PublishStatus -Message "Syncing staged publish output to the deployment target... $Phase ($safeCompleted of $safeTotal, $percentComplete%)" -SkipLog
+    Invoke-PublishUiRefresh
 }
 
 $script:Options = @(
@@ -841,6 +968,7 @@ $optionList.Add_SelectionChanged({
         $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
         $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
         $outputText.Text = ""
+        Set-PublishProgressState -Visible $false
         Update-PublishStatus "Ready to publish: $($script:selectedOption.Label)"
         $publishButton.IsEnabled = $true
     })
@@ -920,7 +1048,7 @@ LogFile: $($script:PublishLogFile)
 
 "@
         Add-PublishLogText $outputText.Text
-        $publishProgress.Visibility = [System.Windows.Visibility]::Visible
+    Set-PublishProgressState -Visible $true -IsIndeterminate $true
         $publishButton.IsEnabled = $false
         Update-PublishStatus "Publishing - please wait..."
 
@@ -1009,19 +1137,27 @@ LogFile: $($script:PublishLogFile)
                 Stop-PublishSession
 
                 $mergeSummaryText = ''
+                $syncCompleted = $false
                 if ($publishExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($stagingPath)) {
                     if (Confirm-SyncStagedPublishOutput -DestinationPath $script:currentOutputPath -StagingPath $stagingPath -OptionLabel $opt.Label) {
                         try {
-                            Update-PublishStatus "Syncing staged publish output to the deployment target..."
-                            $mergeResult = Sync-PublishOutputDirectory -SourcePath $stagingPath -DestinationPath $script:currentOutputPath -PreserveNames @('_PublishLogs')
+                            Add-PublishLogText "`r`nSync Started`r`nDeployment target: $($script:currentOutputPath)`r`n"
+                            $script:LastSyncProgressRender = [datetime]::MinValue
+                            $mergeResult = Sync-PublishOutputDirectory -SourcePath $stagingPath -DestinationPath $script:currentOutputPath -PreserveNames @('_PublishLogs') -ProgressAction {
+                                param($completedSteps, $totalSteps, $phase)
+
+                                Update-SyncProgress -CompletedSteps $completedSteps -TotalSteps $totalSteps -Phase $phase
+                            }
                             $mergeSummaryText = "`nSync completed to: $($script:currentOutputPath)`nReused unchanged files: $($mergeResult.SkippedFiles)`nCopied new or changed files: $($mergeResult.CopiedFiles)`nRemoved stale files/folders: $($mergeResult.RemovedItems)"
                             Add-PublishLogText "`r`nSync Summary`r`nReused unchanged files: $($mergeResult.SkippedFiles)`r`nCopied new or changed files: $($mergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($mergeResult.RemovedItems)`r`n"
+                            Update-PublishStatus "Publish and sync completed successfully."
+                            $syncCompleted = $true
                             Remove-Item -LiteralPath $stagingPath -Recurse -Force -ErrorAction SilentlyContinue
                             $script:PublishStagingPath = $null
                         }
                         catch {
                             $script:PublishStagingPath = $null
-                            $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
+                            Set-PublishProgressState -Visible $false
                             $publishButton.IsEnabled = $true
                             $errorBorder.Visibility = [System.Windows.Visibility]::Visible
                             $errorText.Text = "Publish succeeded, but syncing the staged output failed. Staged output: $stagingPath`nLog file: $script:PublishLogFile`n$($_.Exception.Message)"
@@ -1033,11 +1169,15 @@ LogFile: $($script:PublishLogFile)
                     else {
                         $mergeSummaryText = "`nStaged output retained locally: $stagingPath`nDeployment target not updated yet."
                         Add-PublishLogText "`r`nSync Deferred`r`nStaged output retained locally: $stagingPath`r`n"
+                        Update-PublishStatus "Publish completed successfully. Sync to the deployment target was deferred."
                         $script:PublishStagingPath = $null
                     }
                 }
 
-                $publishProgress.Visibility = [System.Windows.Visibility]::Collapsed
+                if (-not $syncCompleted) {
+                    Set-PublishProgressState -Visible $false
+                }
+
                 $publishButton.IsEnabled = $true
 
                 if ($publishExitCode -eq 0) {
