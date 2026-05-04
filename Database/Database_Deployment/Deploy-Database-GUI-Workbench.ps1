@@ -4,7 +4,7 @@
 # mode, so delimiter-based scripts are normalized before execution in that mode.
 
 param(
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -41,7 +41,7 @@ $script:Config = [ordered]@{
     }
     Providers = [ordered]@{
         Mamp = [ordered]@{
-            Server   = 'localhost'
+            Server   = '172.16.1.104'
             Port     = '3306'
             User     = 'root'
             Password = 'root'
@@ -50,7 +50,7 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-BEGIN
     Security  = [ordered]@{
         EnvironmentVariableName = 'MTM_AUTH_USER_SECRET_KEY'
-        SharedServerIp          = 'localhost'
+        SharedServerIp          = '172.16.1.104'
         LocalSecretDirectory    = Join-Path $env:ProgramData 'MTM Receiving Application\Security'
         LocalSecretFileName     = 'MTM_AUTH_USER_SECRET_KEY.txt'
         SharedSecretDirectory   = '\\MTMANU-FS01\Expo Drive\Software Development\Live Applications\MTM_Application_Keys'
@@ -59,8 +59,8 @@ $script:Config = [ordered]@{
     # AUTH-SECRET-LOGIC-END
     HostSwap  = [ordered]@{
         ShowButton          = $true
-        localValue          = 'localhost'
-        SharedHostValue     = 'localhost'
+        localValue          = '172.16.1.104'
+        SharedHostValue     = '172.16.1.104'
         ExcludedDirectories = @('.git', '.vs', 'bin', 'obj', 'TestResults')
         IncludedExtensions  = @(
             '.bat', '.cmd', '.config', '.cs', '.csproj', '.css', '.fs', '.go', '.htm', '.html',
@@ -572,7 +572,7 @@ function Test-IslocalValue {
         return $false
     }
 
-    return $HostName.Trim().ToLowerInvariant() -in @('localhost', '127.0.0.1', '::1')
+    return $HostName.Trim().ToLowerInvariant() -in @('172.16.1.104', '127.0.0.1', '::1')
 }
 
 function New-AuthSecretValue {
@@ -708,7 +708,7 @@ function Convert-HostReferenceText {
         [string]$ToHost
     )
 
-    $placeholder = 'localhost'
+    $placeholder = '172.16.1.104'
     return $Content.Replace($FromHost, $placeholder).Replace($ToHost, $FromHost).Replace($placeholder, $ToHost)
 }
 
@@ -791,10 +791,10 @@ function Update-HostProfilesAfterSwap {
 
 function Invoke-RepoHostReferenceSwap {
     $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-    $localhost = $script:Config.HostSwap.localValue
+    $172.16.1.104 = $script:Config.HostSwap.localValue
     $sharedHost = $script:Config.HostSwap.SharedHostValue
-    $fromHost = if (Test-IslocalValue -HostName $script:CurrentServer) { $localhost } else { $sharedHost }
-    $toHost = if ($fromHost -eq $localhost) { $sharedHost } else { $localhost }
+    $fromHost = if (Test-IslocalValue -HostName $script:CurrentServer) { $172.16.1.104 } else { $sharedHost }
+    $toHost = if ($fromHost -eq $172.16.1.104) { $sharedHost } else { $172.16.1.104 }
     $filesChanged = 0
     $repoFiles = @(Get-RepoFilesForHostSwap -RepoRoot $repoRoot)
     $totalFiles = $repoFiles.Count

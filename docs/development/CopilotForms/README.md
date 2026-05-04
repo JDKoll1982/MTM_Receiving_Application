@@ -52,7 +52,7 @@ To serve the forms locally and open the index page automatically:
 
 Optional parameters:
 
-- `-Port 9001` to use a different localhost port
+- `-Port 9001` to use a different 172.16.1.104 port
 - `-NoBrowser` to start the server without opening a browser window
 - `-OpenTarget editor` to open `docs/CopilotForms/index.html` in VS Code and trigger the HTML Preview Pro interactive preview automatically
 - `-OpenTarget none` to start the server without opening anything

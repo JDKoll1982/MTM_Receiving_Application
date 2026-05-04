@@ -2,7 +2,7 @@
 .SYNOPSIS
     Starts a local web server for CopilotForms and opens the index page.
 .DESCRIPTION
-    Serves files from the repository root over http://localhost so the browser can
+    Serves files from the repository root over http://172.16.1.104 so the browser can
     load the shared JSON configuration and navigate to .github/ prompt and instruction
     files without using the manual local-config fallback.
     The script keeps running until you stop it with Ctrl+C.
@@ -75,7 +75,7 @@ if (-not (Test-Path -Path $resolvedRootCandidate -PathType Container)) {
 $resolvedRoot = (Resolve-Path -Path $resolvedRootCandidate).Path
 
 $listener = [System.Net.HttpListener]::new()
-$prefix = "http://localhost:$Port/"
+$prefix = "http://172.16.1.104:$Port/"
 $listener.Prefixes.Add($prefix)
 
 Write-Host "Starting CopilotForms server on port $Port..." -ForegroundColor Yellow
