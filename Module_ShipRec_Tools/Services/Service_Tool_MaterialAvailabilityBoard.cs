@@ -22,6 +22,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     private const string CardBorder = "#D0DAE5";
     private const string AccentBackground = "#E9D5FF";
     private const string AccentForeground = "#1F1633";
+    private const int PartColorClassCount = 15;
+    private const int ManualTransferRowCount = 5;
 
     private static readonly Dictionary<string, string> UsageUnitMap = new(
         StringComparer.OrdinalIgnoreCase
@@ -161,58 +163,26 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             var html = new StringBuilder();
             var plainText = new StringBuilder();
-            var subtitle =
-                $"<strong>{HtmlEncode(safeSearchLabel)}:</strong> {HtmlEncode(safeSearchTerm)}";
+            var partColorClasses = BuildPartColorClasses(cards);
 
-            html.AppendLine(
-                "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
-            );
-            html.AppendLine(
-                "<div style='font-size: 16pt; font-weight: 700; text-align: center; margin-bottom: 8px;'>Material Availability Board</div>"
-            );
-            html.AppendLine(
-                $"<div style='font-size: 10pt; color: #445566; text-align: center; margin: 0 0 16px 0;'>{subtitle}</div>"
-            );
+            html.AppendLine("<div class='summary-print'>");
 
             plainText.AppendLine("Material Availability Board");
             plainText.AppendLine($"{safeSearchLabel}: {safeSearchTerm}");
 
             foreach (var card in cards)
             {
-                html.AppendLine("<div class='material-card'>");
-                AppendSectionStart(
+                var partColorClass = GetPartColorClass(partColorClasses, card.PartId);
+
+                html.AppendLine($"<div class='material-card {partColorClass}'>");
+                AppendSectionStart(html, CardBackground, CardBorder, partColorClass);
+                AppendPartBanner(
                     html,
                     $"{card.PartId} - {card.PartDescription}",
-                    CardBackground,
-                    CardBorder,
                     AccentBackground,
-                    AccentForeground
+                    AccentForeground,
+                    partColorClass
                 );
-
-                html.AppendLine("<div style='padding: 12px 16px 0 16px;'>");
-                html.AppendLine(
-                    "<table style='border-collapse: collapse; width: 100%; table-layout: auto; margin: 0 0 16px 0;'>"
-                );
-                html.AppendLine("<thead>");
-                html.AppendLine(
-                    $"<tr style='background-color: {AccentBackground}; color: {AccentForeground}; font-weight: 700;'>"
-                );
-                AppendHeaderCell(html, card.QuantitySummaryLabel, null);
-                AppendHeaderCell(html, "Total on hand", null);
-                AppendHeaderCell(html, "Locations", null);
-                AppendHeaderCell(html, "Next summary", null);
-                html.AppendLine("</tr>");
-                html.AppendLine("</thead>");
-                html.AppendLine("<tbody>");
-                html.AppendLine("<tr style='background-color: #ffffff;'>");
-                AppendBodyCell(html, card.QuantitySummaryDisplay, "right");
-                AppendBodyCell(html, card.TotalPositiveQuantityDisplay, "right");
-                AppendBodyCell(html, card.LocationCountSummary);
-                AppendBodyCell(html, card.NextRunSummaryDisplay);
-                html.AppendLine("</tr>");
-                html.AppendLine("</tbody>");
-                html.AppendLine("</table>");
-                html.AppendLine("</div>");
 
                 plainText.AppendLine();
                 plainText.AppendLine($"{card.PartId} - {card.PartDescription}");
@@ -221,10 +191,14 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 plainText.AppendLine($"Locations: {card.LocationCountSummary}");
                 plainText.AppendLine($"Next summary: {card.NextRunSummaryDisplay}");
 
-                AppendLocationsSection(html, plainText, card);
-                AppendIncomingSection(html, plainText, card);
-                AppendAssociatedPartsSection(html, plainText, card);
+                AppendLocationsSection(html, plainText, card, partColorClass);
 
+                if (card.HasIncomingSupply)
+                {
+                    AppendIncomingSection(html, plainText, card, partColorClass);
+                }
+
+                AppendAssociatedPartsSection(html, plainText, card, partColorClass);
                 AppendSectionEnd(html);
                 html.AppendLine("</div>");
             }
@@ -271,13 +245,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             html.AppendLine(
                 "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
             );
-            AppendSectionStart(
-                html,
-                $"Incoming Material - {card.PartId}",
-                CardBackground,
-                CardBorder,
-                AccentBackground,
-                AccentForeground
+            AppendSectionStart(html, CardBackground, CardBorder);
+            html.AppendLine(
+                $"<div style='padding: 12px 16px; background-color: {AccentBackground}; color: {AccentForeground}; font-size: 12pt; font-weight: 700;'>Incoming Material - {HtmlEncode(card.PartId)}</div>"
             );
             html.AppendLine("<div style='padding: 12px 16px;'>");
             html.AppendLine(
@@ -387,13 +357,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             html.AppendLine(
                 "<div style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>"
             );
-            AppendSectionStart(
-                html,
-                $"Work Order Details - {associatedRun.WorkOrderDisplay}",
-                CardBackground,
-                CardBorder,
-                AccentBackground,
-                AccentForeground
+            AppendSectionStart(html, CardBackground, CardBorder);
+            html.AppendLine(
+                $"<div style='padding: 12px 16px; background-color: {AccentBackground}; color: {AccentForeground}; font-size: 12pt; font-weight: 700;'>Work Order Details - {HtmlEncode(associatedRun.WorkOrderDisplay)}</div>"
             );
             html.AppendLine("<div style='padding: 12px 16px;'>");
             html.AppendLine(
@@ -1274,11 +1240,12 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     private static void AppendLocationsSection(
         StringBuilder html,
         StringBuilder plainText,
-        Model_Tool_MaterialAvailabilityCard card
+        Model_Tool_MaterialAvailabilityCard card,
+        string partColorClass
     )
     {
         html.AppendLine(
-            "<div style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Current Locations</div>"
+            $"<div class='section-title {partColorClass}' style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Current Locations</div>"
         );
 
         plainText.AppendLine("Current Locations");
@@ -1286,21 +1253,20 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         if (!card.HasCurrentLocations)
         {
             html.AppendLine(
-                "<div style='padding: 0 16px 16px 16px; font-size: 10pt; color: #6b7280;'>No positive-quantity locations were found for this part in warehouse 002.</div>"
+                "<div class='empty-message'>No positive-quantity locations were found for this part in warehouse 002.</div>"
             );
             plainText.AppendLine(
                 "No positive-quantity locations were found for this part in warehouse 002."
             );
+            AppendManualInventoryTransfersSection(html, partColorClass);
             return;
         }
 
         html.AppendLine(
-            "<div style='padding: 0 16px 16px 16px;'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
+            "<div class='table-wrapper'><table class='current-locations-table' style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
         );
         html.AppendLine("<thead>");
-        html.AppendLine(
-            $"<tr style='background-color: {AccentBackground}; color: {AccentForeground}; font-weight: 700;'>"
-        );
+        html.AppendLine($"<tr class='thead-row {partColorClass}'>");
         AppendHeaderCell(html, "Location", null);
         AppendHeaderCell(html, "Qty", null);
         html.AppendLine("</tr>");
@@ -1310,46 +1276,49 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         foreach (var location in card.CurrentLocations)
         {
-            html.AppendLine("<tr style='background-color: #ffffff;'>");
+            html.AppendLine($"<tr class='data-row {partColorClass}'>");
             AppendBodyCell(html, location.LocationLabel);
             AppendBodyCell(html, location.QuantityDisplay, "right");
             html.AppendLine("</tr>");
             plainText.AppendLine($"{location.LocationLabel}\t{location.QuantityDisplay}");
         }
 
+        var totalOnHand = card.CurrentLocations.Sum(location => location.Quantity);
+        html.AppendLine($"<tr class='total-row {partColorClass}'>");
+        AppendBodyCell(html, "Total on Hand", cssClass: "total-label");
+        AppendBodyCell(html, FormatWhole(totalOnHand), "right", "total-value");
+        html.AppendLine("</tr>");
+        plainText.AppendLine($"Total on Hand\t{FormatWhole(totalOnHand)}");
+
         html.AppendLine("</tbody>");
         html.AppendLine("</table></div>");
+        AppendSectionEnd(html);
+
+        AppendManualInventoryTransfersSection(html, partColorClass);
     }
 
     private static void AppendIncomingSection(
         StringBuilder html,
         StringBuilder plainText,
-        Model_Tool_MaterialAvailabilityCard card
+        Model_Tool_MaterialAvailabilityCard card,
+        string partColorClass
     )
     {
-        html.AppendLine(
-            "<div style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Incoming Material</div>"
-        );
-        plainText.AppendLine("Incoming Material");
-
         if (!card.HasIncomingSupply)
         {
-            html.AppendLine(
-                "<div style='padding: 0 16px 16px 16px; font-size: 10pt; color: #6b7280;'>No qualifying incoming material was found for the selected look-ahead window.</div>"
-            );
-            plainText.AppendLine(
-                "No qualifying incoming material was found for the selected look-ahead window."
-            );
             return;
         }
 
         html.AppendLine(
-            "<div style='padding: 0 16px 8px 16px;'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
+            $"<div class='section-title {partColorClass}' style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Incoming Material</div>"
+        );
+        plainText.AppendLine("Incoming Material");
+
+        html.AppendLine(
+            "<div class='table-wrapper compact-bottom'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
         );
         html.AppendLine("<thead>");
-        html.AppendLine(
-            $"<tr style='background-color: {AccentBackground}; color: {AccentForeground}; font-weight: 700;'>"
-        );
+        html.AppendLine($"<tr class='thead-row {partColorClass}'>");
         AppendHeaderCell(html, "Received", null);
         AppendHeaderCell(html, "Ordered", null);
         AppendHeaderCell(html, "Remaining", null);
@@ -1359,7 +1328,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         html.AppendLine("</tr>");
         html.AppendLine("</thead>");
         html.AppendLine("<tbody>");
-        html.AppendLine("<tr style='background-color: #ffffff;'>");
+        html.AppendLine($"<tr class='data-row {partColorClass}'>");
         AppendBodyCell(html, card.IncomingRollup.ReceivedQtyDisplay, "right");
         AppendBodyCell(html, card.IncomingRollup.OrderedQtyDisplay, "right");
         AppendBodyCell(html, card.IncomingRollup.RemainingQtyDisplay, "right");
@@ -1380,12 +1349,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         }
 
         html.AppendLine(
-            "<div style='padding: 0 16px 16px 16px;'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
+            "<div class='table-wrapper'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
         );
         html.AppendLine("<thead>");
-        html.AppendLine(
-            $"<tr style='background-color: {AccentBackground}; color: {AccentForeground}; font-weight: 700;'>"
-        );
+        html.AppendLine($"<tr class='thead-row {partColorClass}'>");
         AppendHeaderCell(html, "Date label", null);
         AppendHeaderCell(html, "Date", null);
         html.AppendLine("</tr>");
@@ -1395,7 +1362,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         foreach (var upcomingDate in card.UpcomingDates)
         {
-            html.AppendLine("<tr style='background-color: #ffffff;'>");
+            html.AppendLine($"<tr class='data-row {partColorClass}'>");
             AppendBodyCell(html, upcomingDate.Label);
             AppendBodyCell(
                 html,
@@ -1414,30 +1381,29 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     private static void AppendAssociatedPartsSection(
         StringBuilder html,
         StringBuilder plainText,
-        Model_Tool_MaterialAvailabilityCard card
+        Model_Tool_MaterialAvailabilityCard card,
+        string partColorClass
     )
     {
         html.AppendLine(
-            "<div style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Associated Parts</div>"
+            $"<div class='section-title {partColorClass}' style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Associated Parts</div>"
         );
         plainText.AppendLine("Associated Parts");
 
         if (!card.HasAssociatedPartRuns)
         {
             html.AppendLine(
-                "<div style='padding: 0 16px 16px 16px; font-size: 10pt; color: #6b7280;'>No associated parts were found for this material.</div>"
+                "<div class='empty-message'>No associated parts were found for this material.</div>"
             );
             plainText.AppendLine("No associated parts were found for this material.");
             return;
         }
 
         html.AppendLine(
-            "<div style='padding: 0 16px 16px 16px;'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
+            "<div class='table-wrapper'><table style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
         );
         html.AppendLine("<thead>");
-        html.AppendLine(
-            $"<tr style='background-color: {AccentBackground}; color: {AccentForeground}; font-weight: 700;'>"
-        );
+        html.AppendLine($"<tr class='thead-row {partColorClass}'>");
         AppendHeaderCell(html, "Associated part", null);
         AppendHeaderCell(html, "Description", null);
         AppendHeaderCell(html, "Work order", null);
@@ -1450,15 +1416,15 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         foreach (var associatedRun in card.AssociatedPartRuns)
         {
-            html.AppendLine("<tr style='background-color: #ffffff;'>");
+            html.AppendLine($"<tr class='data-row {partColorClass}'>");
             AppendBodyCell(html, associatedRun.AssociatedPartNumber);
             AppendBodyCell(html, associatedRun.AssociatedPartDescription);
             AppendBodyCell(html, associatedRun.WorkOrderDisplay);
             AppendBodyCell(html, associatedRun.RunTimingLabel);
-            AppendBodyCell(html, associatedRun.NextRunDateDisplay);
+            AppendBodyCell(html, GetAssociatedRunDateDisplay(associatedRun));
             html.AppendLine("</tr>");
             plainText.AppendLine(
-                $"{associatedRun.AssociatedPartNumber}\t{associatedRun.AssociatedPartDescription}\t{associatedRun.WorkOrderDisplay}\t{associatedRun.RunTimingLabel}\t{associatedRun.NextRunDateDisplay}"
+                $"{associatedRun.AssociatedPartNumber}\t{associatedRun.AssociatedPartDescription}\t{associatedRun.WorkOrderDisplay}\t{associatedRun.RunTimingLabel}\t{GetAssociatedRunDateDisplay(associatedRun)}"
             );
         }
 
@@ -1474,33 +1440,138 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         );
     }
 
-    private static void AppendBodyCell(StringBuilder html, string? value, string alignment = "left")
+    private static void AppendBodyCell(
+        StringBuilder html,
+        string? value,
+        string alignment = "left",
+        string? cssClass = null
+    )
     {
+        var classAttribute = string.IsNullOrWhiteSpace(cssClass)
+            ? string.Empty
+            : $" class='{cssClass}'";
+
         html.AppendLine(
-            $"<td style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: {alignment}; vertical-align: top;'>{HtmlEncode(value)}</td>"
+            $"<td{classAttribute} style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: {alignment}; vertical-align: top;'>{HtmlEncode(value)}</td>"
         );
     }
 
     private static void AppendSectionStart(
         StringBuilder html,
-        string heading,
         string cardBackground,
         string cardBorder,
+        string? partColorClass = null
+    )
+    {
+        var classAttribute = string.IsNullOrWhiteSpace(partColorClass)
+            ? "print-section"
+            : $"print-section {partColorClass}";
+
+        html.AppendLine(
+            $"<div class='{classAttribute}' style='margin: 0 0 16px 0; background-color: {cardBackground};'>"
+        );
+    }
+
+    private static void AppendPartBanner(
+        StringBuilder html,
+        string heading,
         string accentBackground,
-        string accentForeground
+        string accentForeground,
+        string? partColorClass = null
     )
     {
         html.AppendLine(
-            $"<div style='margin: 0 0 16px 0; border: 1px solid {cardBorder}; border-radius: 4px; overflow: hidden; background-color: {cardBackground};'>"
-        );
-        html.AppendLine(
-            $"<div style='padding: 12px 16px; background-color: {accentBackground}; color: {accentForeground}; font-size: 12pt; font-weight: 700;'>{HtmlEncode(heading)}</div>"
+            $"<div class='part-header {partColorClass}' style='padding: 12px 16px; background-color: {accentBackground}; color: {accentForeground}; font-size: 16pt; font-weight: 700; text-align: center;'>{HtmlEncode(heading)}</div>"
         );
     }
 
     private static void AppendSectionEnd(StringBuilder html)
     {
         html.AppendLine("</div>");
+    }
+
+    private static void AppendManualInventoryTransfersSection(
+        StringBuilder html,
+        string partColorClass
+    )
+    {
+        html.AppendLine(
+            $"<div class='section-title {partColorClass}' style='padding: 0 16px 12px 16px; font-size: 11pt; font-weight: 700; color: #1f2937;'>Manual Inventory Transfers</div>"
+        );
+        html.AppendLine(
+            "<div class='table-wrapper'><table class='manual-transfer-table' style='border-collapse: collapse; width: 100%; table-layout: auto;'>"
+        );
+        html.AppendLine($"<thead><tr class='thead-row {partColorClass}'>");
+        AppendHeaderCell(html, "Time", null);
+        AppendHeaderCell(html, "From Location", null);
+        AppendHeaderCell(html, "To Location", null);
+        AppendHeaderCell(html, "Qty", null);
+        html.AppendLine("</tr></thead>");
+        html.AppendLine("<tbody>");
+
+        for (var rowIndex = 0; rowIndex < ManualTransferRowCount; rowIndex++)
+        {
+            html.AppendLine($"<tr class='manual-row {partColorClass}'>");
+            html.AppendLine("<td>&nbsp;</td>");
+            html.AppendLine("<td>&nbsp;</td>");
+            html.AppendLine("<td>&nbsp;</td>");
+            html.AppendLine("<td>&nbsp;</td>");
+            html.AppendLine("</tr>");
+        }
+
+        html.AppendLine("</tbody></table></div>");
+    }
+
+    private static Dictionary<string, string> BuildPartColorClasses(
+        IReadOnlyList<Model_Tool_MaterialAvailabilityCard> cards
+    )
+    {
+        var colorClasses = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var colorIndex = 0;
+
+        foreach (
+            var partId in cards
+                .Select(card => card.PartId)
+                .Where(partId => string.IsNullOrWhiteSpace(partId) is false)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        )
+        {
+            colorClasses[partId] = $"p-{colorIndex % PartColorClassCount}";
+            colorIndex++;
+        }
+
+        return colorClasses;
+    }
+
+    private static string GetPartColorClass(
+        IReadOnlyDictionary<string, string> partColorClasses,
+        string? partId
+    )
+    {
+        if (string.IsNullOrWhiteSpace(partId))
+        {
+            return "p-0";
+        }
+
+        return partColorClasses.TryGetValue(partId, out var colorClass) ? colorClass : "p-0";
+    }
+
+    private static string GetAssociatedRunDateDisplay(
+        Model_Tool_MaterialAvailabilityAssociatedPartRun associatedRun
+    )
+    {
+        return associatedRun.ScheduledStartDate?.ToString(
+                "MM/dd/yyyy",
+                CultureInfo.InvariantCulture
+            )
+            ?? associatedRun.NextDueToRunDate?.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)
+            ?? "No scheduled date";
+    }
+
+    private static string FormatWhole(decimal value)
+    {
+        return decimal.Round(value, 0, MidpointRounding.AwayFromZero)
+            .ToString("0", CultureInfo.InvariantCulture);
     }
 
     private static Model_FormattedReportDocument BuildTransactionSheetDocument(
@@ -1624,10 +1695,133 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     {
         return """
 @page { margin: 0.35in; }
-body { margin: 0; background: #ffffff; }
-.material-card { break-after: page; page-break-after: always; }
-.material-card:last-child { break-after: auto; page-break-after: auto; }
+body { margin: 0; background: #ffffff; font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #111827; }
+.summary-print { max-width: 1120px; margin: 0 auto; padding: 20px; font-family: sans-serif; color: #111827; box-sizing: border-box; background: #ffffff; }
+.material-card { break-after: page; page-break-after: always; break-inside: avoid; page-break-inside: avoid; margin-bottom: 24px; }
+.material-card:last-child { break-after: auto; page-break-after: auto; margin-bottom: 0; }
+.print-section { box-shadow: none; background: #ffffff !important; border-radius: 8px !important; break-inside: avoid; page-break-inside: avoid; }
+.part-header { border-bottom: 1px solid #d0dae5; color: #0f172a !important; }
+.section-title { page-break-after: avoid; margin-top: 2px; }
+.table-wrapper { padding: 0 16px 16px 16px; }
+.compact-bottom { padding-bottom: 8px; }
+.empty-message { padding: 0 16px 16px 16px; font-size: 10pt; color: #6b7280; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+}
+th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 700;
+    border: 1px solid #ccc;
+}
+td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+.data-row td { background: #ffffff; }
+.total-row { font-weight: bold; border-top: 2px solid #666; }
+.total-row td { font-weight: bold; }
+.manual-transfer-table { margin-bottom: 0; }
+.manual-row td { height: 40px; border: 1px solid #999; }
+/* Per-palette: header dark / total mid / data light / part-header banner */
+.thead-row.p-0 th { background-color: #90CAF9; color: #1f2937; }
+.total-row.p-0 td { background-color: #BBDEFB; }
+.data-row.p-0:nth-child(odd) td { background-color: #E3F2FD; }
+.data-row.p-0:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-0 td { background-color: #E3F2FD; }
+.part-header.p-0 { background-color: #E3F2FD !important; }
+.thead-row.p-1 th { background-color: #CE93D8; color: #1f2937; }
+.total-row.p-1 td { background-color: #E1BEE7; }
+.data-row.p-1:nth-child(odd) td { background-color: #F3E5F5; }
+.data-row.p-1:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-1 td { background-color: #F3E5F5; }
+.part-header.p-1 { background-color: #F3E5F5 !important; }
+.thead-row.p-2 th { background-color: #A5D6A7; color: #1f2937; }
+.total-row.p-2 td { background-color: #C8E6C9; }
+.data-row.p-2:nth-child(odd) td { background-color: #E8F5E9; }
+.data-row.p-2:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-2 td { background-color: #E8F5E9; }
+.part-header.p-2 { background-color: #E8F5E9 !important; }
+.thead-row.p-3 th { background-color: #FFCC80; color: #1f2937; }
+.total-row.p-3 td { background-color: #FFE0B2; }
+.data-row.p-3:nth-child(odd) td { background-color: #FFF3E0; }
+.data-row.p-3:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-3 td { background-color: #FFF3E0; }
+.part-header.p-3 { background-color: #FFF3E0 !important; }
+.thead-row.p-4 th { background-color: #EF9A9A; color: #1f2937; }
+.total-row.p-4 td { background-color: #FFCDD2; }
+.data-row.p-4:nth-child(odd) td { background-color: #FFEBEE; }
+.data-row.p-4:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-4 td { background-color: #FFEBEE; }
+.part-header.p-4 { background-color: #FFEBEE !important; }
+.thead-row.p-5 th { background-color: #80CBC4; color: #1f2937; }
+.total-row.p-5 td { background-color: #B2DFDB; }
+.data-row.p-5:nth-child(odd) td { background-color: #E0F2F1; }
+.data-row.p-5:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-5 td { background-color: #E0F2F1; }
+.part-header.p-5 { background-color: #E0F2F1 !important; }
+.thead-row.p-6 th { background-color: #FFF176; color: #1f2937; }
+.total-row.p-6 td { background-color: #FFF59D; }
+.data-row.p-6:nth-child(odd) td { background-color: #FFF9C4; }
+.data-row.p-6:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-6 td { background-color: #FFF9C4; }
+.part-header.p-6 { background-color: #FFF9C4 !important; }
+.thead-row.p-7 th { background-color: #F48FB1; color: #1f2937; }
+.total-row.p-7 td { background-color: #F8BBD0; }
+.data-row.p-7:nth-child(odd) td { background-color: #FCE4EC; }
+.data-row.p-7:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-7 td { background-color: #FCE4EC; }
+.part-header.p-7 { background-color: #FCE4EC !important; }
+.thead-row.p-8 th { background-color: #9FA8DA; color: #1f2937; }
+.total-row.p-8 td { background-color: #C5CAE9; }
+.data-row.p-8:nth-child(odd) td { background-color: #E8EAF6; }
+.data-row.p-8:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-8 td { background-color: #E8EAF6; }
+.part-header.p-8 { background-color: #E8EAF6 !important; }
+.thead-row.p-9 th { background-color: #B0BEC5; color: #1f2937; }
+.total-row.p-9 td { background-color: #CFD8DC; }
+.data-row.p-9:nth-child(odd) td { background-color: #ECEFF1; }
+.data-row.p-9:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-9 td { background-color: #ECEFF1; }
+.part-header.p-9 { background-color: #ECEFF1 !important; }
+.thead-row.p-10 th { background-color: #C5E1A5; color: #1f2937; }
+.total-row.p-10 td { background-color: #DCEDC8; }
+.data-row.p-10:nth-child(odd) td { background-color: #F1F8E9; }
+.data-row.p-10:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-10 td { background-color: #F1F8E9; }
+.part-header.p-10 { background-color: #F1F8E9 !important; }
+.thead-row.p-11 th { background-color: #80DEEA; color: #1f2937; }
+.total-row.p-11 td { background-color: #B2EBF2; }
+.data-row.p-11:nth-child(odd) td { background-color: #E0F7FA; }
+.data-row.p-11:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-11 td { background-color: #E0F7FA; }
+.part-header.p-11 { background-color: #E0F7FA !important; }
+.thead-row.p-12 th { background-color: #FFD54F; color: #1f2937; }
+.total-row.p-12 td { background-color: #FFECB3; }
+.data-row.p-12:nth-child(odd) td { background-color: #FFF8E1; }
+.data-row.p-12:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-12 td { background-color: #FFF8E1; }
+.part-header.p-12 { background-color: #FFF8E1 !important; }
+.thead-row.p-13 th { background-color: #F48FB1; color: #1f2937; }
+.total-row.p-13 td { background-color: #F8BBD0; }
+.data-row.p-13:nth-child(odd) td { background-color: #FCE4EC; }
+.data-row.p-13:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-13 td { background-color: #FCE4EC; }
+.part-header.p-13 { background-color: #F8BBD0 !important; }
+.thead-row.p-14 th { background-color: #B39DDB; color: #1f2937; }
+.total-row.p-14 td { background-color: #D1C4E9; }
+.data-row.p-14:nth-child(odd) td { background-color: #EDE7F6; }
+.data-row.p-14:nth-child(even) td { background-color: #ffffff; }
+.manual-row.p-14 td { background-color: #EDE7F6; }
+.part-header.p-14 { background-color: #EDE7F6 !important; }
 @media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
     .material-card { break-inside: avoid; page-break-inside: avoid; }
 }
 """;

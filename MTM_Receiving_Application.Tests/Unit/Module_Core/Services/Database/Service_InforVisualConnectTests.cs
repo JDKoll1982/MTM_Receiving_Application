@@ -190,6 +190,47 @@ public sealed class Service_InforVisualConnectTests
         result.Data![0].InputPartNumber.Should().Be("MMC-100");
     }
 
+    [Fact]
+    public async Task MockCatalog_ShouldExposeBoardDataForMmc0000650_WhenMockModeIsEnabled()
+    {
+        var catalog = new Service_InforVisualMockDataCatalog().GetCatalog();
+        var service = CreateService(useMockData: true, catalog: catalog);
+
+        var currentStockResult = await service.GetMaterialAvailabilityCurrentStockAsync(
+            null,
+            "MMC0000650",
+            "002"
+        );
+        var incomingSupplyResult = await service.GetMaterialAvailabilityIncomingSupplyAsync(
+            null,
+            "MMC0000650",
+            "002"
+        );
+        var associatedRunsResult = await service.GetMaterialAvailabilityAssociatedPartRunsAsync(
+            null,
+            "MMC0000650",
+            "002"
+        );
+
+        currentStockResult.IsSuccess.Should().BeTrue();
+        currentStockResult.Data.Should().NotBeNullOrEmpty();
+        currentStockResult
+            .Data!.Select(row => row.LocationId)
+            .Should()
+            .Contain(new[] { "RECV", "V-D0-08" });
+
+        incomingSupplyResult.IsSuccess.Should().BeTrue();
+        incomingSupplyResult.Data.Should().NotBeNullOrEmpty();
+        incomingSupplyResult.Data!.Should().Contain(row => row.PONumber == "PO-062200");
+
+        associatedRunsResult.IsSuccess.Should().BeTrue();
+        associatedRunsResult.Data.Should().NotBeNullOrEmpty();
+        associatedRunsResult
+            .Data!.Select(row => row.AssociatedPartNumber)
+            .Should()
+            .Contain(new[] { "G020978", "G020958" });
+    }
+
     private static Service_InforVisualConnect CreateService(
         bool useMockData,
         Model_InforVisualMockDataCatalog? catalog = null
@@ -252,7 +293,8 @@ public sealed class Service_InforVisualConnectTests
                     PartType = "Sheet",
                     QtyOrdered = 2400,
                     UnitOfMeasure = "EA",
-                    Description = "Mock sheet part for Guided Wizard non-PO fuzzy search validation",
+                    Description =
+                        "Mock sheet part for Guided Wizard non-PO fuzzy search validation",
                     DefaultLocationId = "S-00",
                     RemainingQuantity = 480,
                 },

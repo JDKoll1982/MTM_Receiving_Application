@@ -13,8 +13,102 @@
     </UserControl.Resources>
 
     <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
-        <Grid Padding="16">
-            <StackPanel Spacing="12">
+        <Grid Padding="20">
+            <StackPanel Spacing="16">
+                <Border
+                    Padding="24"
+                    HorizontalAlignment="Stretch"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel HorizontalAlignment="Stretch" Spacing="20">
+                        <Grid ColumnSpacing="16" RowSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="6">
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="Part Number:" />
+                                <TextBlock
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}" />
+                            </StackPanel>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}"
+                                TextAlignment="Right"
+                                TextWrapping="WrapWholeWords" />
+
+                            <StackPanel
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Orientation="Horizontal"
+                                Spacing="6">
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="Description:" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <NumberBox
+                                x:Name="NumberOfLoadsNumberBox"
+                                Grid.Column="0"
+                                MinWidth="240"
+                                MaxWidth="480"
+                                HorizontalAlignment="Stretch"
+                                AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"
+                                Header="{x:Bind ViewModel.LoadEntryHeaderText, Mode=OneWay}"
+                                LargeChange="10"
+                                Maximum="99"
+                                Minimum="1"
+                                SmallChange="1"
+                                SpinButtonPlacementMode="Inline"
+                                Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBox
+                                Grid.Column="1"
+                                MinWidth="240"
+                                MaxWidth="480"
+                                HorizontalAlignment="Stretch"
+                                Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
+                                LostFocus="LocationTextBox_LostFocus"
+                                PlaceholderText="Enter receiving location"
+                                Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
                 <Border
                     Padding="20"
                     HorizontalAlignment="Stretch"
@@ -22,152 +116,72 @@
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8">
-                    <StackPanel HorizontalAlignment="Stretch" Spacing="16">
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            FlowDirection="LeftToRight"
-                            Spacing="6">
-                            <FontIcon
-                                HorizontalAlignment="Center"
-                                FontSize="48"
-                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                Glyph="&#xE7B8;" />
-                            <StackPanel HorizontalAlignment="Center" Spacing="0">
-                                <TextBox
-                                    HorizontalAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    FontSize="16"
-                                    FontWeight="SemiBold"
-                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                    IsReadOnly="True"
-                                    IsTabStop="False"
-                                    Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}"
-                                    TextAlignment="Center" />
-                                <TextBox
-                                    HorizontalAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    FontSize="12"
-                                    FontWeight="Normal"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    IsReadOnly="True"
-                                    IsTabStop="False"
-                                    Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
-                                    TextAlignment="Center" />
-                            </StackPanel>
-                        </StackPanel>
-
-                        <NumberBox
-                            x:Name="NumberOfLoadsNumberBox"
-                            MinWidth="240"
-                            MaxWidth="480"
-                            HorizontalAlignment="Stretch"
-                            AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"
-                            Header="{x:Bind ViewModel.LoadEntryHeaderText, Mode=OneWay}"
-                            LargeChange="10"
-                            Maximum="99"
-                            Minimum="1"
-                            SmallChange="1"
-                            SpinButtonPlacementMode="Inline"
-                            Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                        <TextBox
-                            MinWidth="240"
-                            MaxWidth="480"
-                            HorizontalAlignment="Stretch"
-                            Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
-                            LostFocus="LocationTextBox_LostFocus"
-                            PlaceholderText="Enter receiving location"
-                            Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="{x:Bind ViewModel.LoadEntryLocationInstructionText, Mode=OneWay}"
-                            TextAlignment="Center" />
-
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}"
-                            TextAlignment="Center" />
-                    </StackPanel>
-                </Border>
-
-                <Border
-                    Padding="16"
-                    HorizontalAlignment="Stretch"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                    <StackPanel Spacing="8">
-                        <StackPanel Spacing="2">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Recommended Locations" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Current stock inventory suggestions from Infor Visual. WC, NCM, FG, RECV, and your ignored locations are excluded automatically."
-                                TextWrapping="WrapWholeWords" />
-                        </StackPanel>
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Recommended Locations" />
 
                         <ProgressRing
                             Width="24"
                             Height="24"
                             HorizontalAlignment="Left"
+                            Visibility="{x:Bind ViewModel.IsRecommendedLocationsLoading, Mode=OneWay}"
                             IsActive="{x:Bind ViewModel.IsRecommendedLocationsLoading, Mode=OneWay}" />
 
-                        <ItemsControl ItemsSource="{x:Bind ViewModel.RecommendedLocations, Mode=OneWay}" Visibility="{x:Bind ViewModel.HasRecommendedLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="models:Model_ReceivingRecommendedLocation">
-                                    <Button
-                                        Margin="0,0,0,6"
-                                        Padding="10"
-                                        HorizontalContentAlignment="Stretch"
-                                        Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
-                                        BorderThickness="1"
-                                        Click="RecommendedLocationButton_Click"
-                                        CornerRadius="6"
-                                        Tag="{x:Bind}">
-                                        <Grid ColumnSpacing="8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
+                        <ScrollViewer
+                            Margin="0,4,0,0"
+                            HorizontalScrollBarVisibility="Auto"
+                            HorizontalScrollMode="Enabled"
+                            VerticalScrollBarVisibility="Disabled"
+                            VerticalScrollMode="Disabled"
+                            Visibility="{x:Bind ViewModel.HasRecommendedLocations, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <ItemsControl HorizontalAlignment="Center" ItemsSource="{x:Bind ViewModel.RecommendedLocations, Mode=OneWay}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
 
-                                            <FontIcon
-                                                Grid.Column="0"
-                                                VerticalAlignment="Center"
-                                                FontSize="16"
-                                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                                Glyph="&#xE8B7;" />
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Model_ReceivingRecommendedLocation">
+                                        <Button
+                                            MinWidth="210"
+                                            Padding="12"
+                                            HorizontalContentAlignment="Stretch"
+                                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            Click="RecommendedLocationButton_Click"
+                                            CornerRadius="8"
+                                            Tag="{x:Bind}">
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
 
-                                            <StackPanel Grid.Column="1" Spacing="1">
-                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind DisplayLocation}" />
-                                                <TextBlock
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind QuantityDisplay}" />
-                                                <TextBlock
-                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Text="{x:Bind ReasonText}" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                                <FontIcon
+                                                    Grid.Column="0"
+                                                    VerticalAlignment="Center"
+                                                    FontSize="16"
+                                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                    Glyph="&#xE8B7;" />
 
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="{x:Bind ViewModel.RecommendedLocationsMessage, Mode=OneWay}"
-                            TextWrapping="WrapWholeWords" />
+                                                <StackPanel Grid.Column="1" Spacing="1">
+                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind DisplayLocation}" />
+                                                    <TextBlock
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                        Text="{x:Bind QuantityDisplay}" />
+                                                    <TextBlock
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                        Text="{x:Bind ReasonText}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
                     </StackPanel>
                 </Border>
             </StackPanel>

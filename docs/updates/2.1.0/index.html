@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application — Version 2.1.0</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 2.1.0</h1>
+                    <p class="hero-copy">This update improves the Material Availability Board print-out with color-coded parts, a handwriting table for manual inventory transfers, a calculated total on hand, and smarter section rendering. The Receiving load-entry screen also gets a cleaner side-by-side layout.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 2.1.0</span>
+                <span class="meta-text">Released May 5, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Collapse all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+                <p class="sidebar-note">Use this version number if you need help from a supervisor or the MTM IT support team after the update.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What stands out in this release</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Manual transfer table</p>
+                            <p class="highlight-text">Every printed Material Availability Board card now includes a five-row handwriting table for recording manual inventory moves on the shop floor.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Color-coded part cards</p>
+                            <p class="highlight-text">Each unique part number on the printed board gets a consistent pastel background color so related rows and sections stay easy to follow at a glance.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Cleaner load entry</p>
+                            <p class="highlight-text">The Receiving load entry form now shows the part number and description in a cleaner two-column layout with the quantity and location fields side by side.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="ui">Interface</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Manual Inventory Transfers table added to each Material Availability Board card</summary>
+                        <p>Printed cards now include a five-row, pre-formatted table below the Current Locations section. Each row has columns for Time, From Location, To Location, Qty, and Initials. Rows are sized for comfortable handwriting so staff can record transfers directly on the printed sheet without needing a separate form.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Total on Hand footer row added to Current Locations table</summary>
+                        <p>The Current Locations table now shows a bold <strong>Total on Hand</strong> row at the bottom that sums all positive-quantity location amounts. This gives a quick check against physical counts without manually adding up each location line.</p>
+                    </details>
+
+                    <details class="change-item" data-category="ui" open>
+                        <summary>Each unique part number receives a consistent color on the printed board</summary>
+                        <p>Up to fifteen unique parts each get a distinct pastel background color that applies to the card header, table rows, and section titles. When more than fifteen unique parts appear, colors cycle back to the beginning. The coloring persists across all sections for the same part so the printed output stays easy to read and organize on the floor.</p>
+                    </details>
+
+                    <details class="change-item" data-category="ui" open>
+                        <summary>Incoming Material section only appears when incoming data is present</summary>
+                        <p>Previously the Incoming Material section was always rendered on each card, sometimes showing a blank or empty-state block. It now only appears when a part actually has incoming supply data. Cards with no incoming material are shorter and less cluttered.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Associated Parts run date now uses the correct fallback order</summary>
+                        <p>The run date shown in the Associated Parts table now tries the scheduled start date first, then the forecasted next due date, and shows <em>No scheduled date</em> only when neither date is available. This prevents blank run-date cells on cards where a scheduled start date exists.</p>
+                    </details>
+
+                    <details class="change-item" data-category="ui" open>
+                        <summary>Receiving load entry form redesigned with a side-by-side layout</summary>
+                        <p>The load entry screen now displays the part number as a labeled inline field and places the part description below it. The quantity and location inputs sit side by side rather than stacked, which reduces scrolling and makes the two most important entry fields easier to scan together.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means in practice</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Fewer separate forms on the floor</h3>
+                            <p>The manual transfer table is printed directly on the Material Availability Board card, so staff can record inventory moves without carrying a separate piece of paper. At end of shift the completed card is a single document that shows both the starting state and every adjustment made during the run.</p>
+                        </article>
+                        <article>
+                            <h3>Faster quantity verification</h3>
+                            <p>The Total on Hand row means anyone picking up a printed card can immediately compare the system total to a physical count without doing arithmetic on the printed location lines.</p>
+                        </article>
+                        <article>
+                            <h3>Easier to follow on a busy floor</h3>
+                            <p>Color-coded cards let team members quickly identify which rows belong to which part at a glance, even when multiple cards are spread out on a bench or pinned to a board.</p>
+                        </article>
+                        <article>
+                            <h3>Cleaner printed output</h3>
+                            <p>Hiding the Incoming Material section when no supply is pending reduces paper waste and removes visual clutter from cards that would otherwise carry an empty placeholder section.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>No action required</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update. All changes apply automatically the next time you print a Material Availability Board or open the Receiving load entry screen.</p>
+                    <ul class="action-list">
+                        <li>If you print Material Availability Board cards regularly, the new layout takes effect immediately — no settings change is needed.</li>
+                        <li>The transfer table rows are blank by design and intended for handwriting after printing.</li>
+                        <li>If your printed cards look different than expected, confirm you are on version 2.1.0 by checking the About screen or asking your MTM IT contact.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Questions about the printed board or load entry?</h2>
+                    </div>
+                    <p>If you need help after this update, share the version number shown at the top of this page (<strong>2.1.0</strong>) with your supervisor or the MTM IT support team. That helps them confirm you are on the release that added the color-coded board cards, the manual transfer table, and the updated load entry layout.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

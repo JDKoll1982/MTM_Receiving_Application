@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -1099,6 +1101,11 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                 [
                     new Model_Tool_MaterialAvailabilityLocation
                     {
+                        LocationId = "A-01",
+                        Quantity = 29396,
+                    },
+                    new Model_Tool_MaterialAvailabilityLocation
+                    {
                         LocationId = "RECV",
                         Quantity = 2000,
                         IsSearchLocation = true,
@@ -1127,8 +1134,23 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
                         AssociatedPartNumber = "A66-17608-000",
                         AssociatedPartDescription = "Assembly",
                         WorkOrderDisplay = "WO-070016",
+                        ScheduledStartDate = new DateTime(2026, 04, 13),
                         NextDueToRunDate = new DateTime(2026, 04, 14),
                         IsFutureOrTodayRun = true,
+                    },
+                    new Model_Tool_MaterialAvailabilityAssociatedPartRun
+                    {
+                        AssociatedPartNumber = "A66-17609-000",
+                        AssociatedPartDescription = "Assembly 2",
+                        WorkOrderDisplay = "WO-070017",
+                        NextDueToRunDate = new DateTime(2026, 04, 15),
+                        IsFutureOrTodayRun = true,
+                    },
+                    new Model_Tool_MaterialAvailabilityAssociatedPartRun
+                    {
+                        AssociatedPartNumber = "A66-17610-000",
+                        AssociatedPartDescription = "Assembly 3",
+                        WorkOrderDisplay = "WO-070018",
                     },
                 ],
             },
@@ -1146,17 +1168,156 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
         result.Data!.DocumentTitle.Should().Be("Material Availability Board");
-        result.Data!.HtmlFragment.Should().Contain("Material Availability Board");
-        result.Data.HtmlFragment.Should().Contain("<strong>Warehouse Location:</strong> RECV");
+        result.Data.HtmlFragment.Should().Contain("class='summary-print'");
+        result.Data.HtmlFragment.Should().NotContain("class='summary-print main-border'");
+        result.Data!.HtmlFragment.Should().NotContain("Material Availability Board");
+        result.Data.HtmlFragment.Should().NotContain("<strong>Warehouse Location:</strong> RECV");
         result.Data.HtmlFragment.Should().NotContain("Warehouse scope:");
         result.Data.HtmlFragment.Should().NotContain("Look Ahead:");
         result.Data.HtmlFragment.Should().Contain("23-11669-100 - Stud, Weld 5/16-18 x 1.000");
         result.Data.HtmlFragment.Should().Contain("WO-070016");
         result.Data.HtmlFragment.Should().Contain("Associated Parts");
-        result.Data.HtmlFragment.Should().Contain("class='material-card'");
+        result.Data.HtmlFragment.Should().Contain("class='material-card p-0'");
+        result.Data.HtmlFragment.Should().NotContain("Next summary");
+        result.Data.HtmlFragment.Should().Contain("Total on Hand");
+        result.Data.HtmlFragment.Should().Contain("31396");
+        result.Data.HtmlFragment.Should().Contain("Manual Inventory Transfers");
+        Regex.Matches(result.Data.HtmlFragment, "class='manual-row p-0'").Should().HaveCount(5);
+        result.Data.HtmlFragment.Should().Contain("04/13/2026");
+        result.Data.HtmlFragment.Should().Contain("04/15/2026");
+        result.Data.HtmlFragment.Should().Contain("No scheduled date");
         result.Data.PageCss.Should().Contain("page-break-after: always");
+        result.Data.PageCss.Should().Contain("-webkit-print-color-adjust: exact");
+        result
+            .Data.PageCss.Should()
+            .Contain(".summary-print { max-width: 1120px; margin: 0 auto; padding: 20px;");
+        result.Data.PageCss.Should().NotContain(".main-border {");
+        result.Data.PageCss.Should().NotContain(".report-title {");
+        result.Data.PageCss.Should().NotContain(".report-subtitle {");
         result.Data.PlainText.Should().Contain("Material Availability Board");
         result.Data.PlainText.Should().Contain("A66-17608-000");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldOmitIncomingSectionWhenNoIncomingDataExists()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new()
+            {
+                PartId = "PART-NO-INCOMING",
+                PartDescription = "No Incoming",
+                CurrentLocations =
+                [
+                    new Model_Tool_MaterialAvailabilityLocation
+                    {
+                        LocationId = "RECV",
+                        Quantity = 10,
+                    },
+                ],
+            },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Part",
+            "PART-NO-INCOMING",
+            "002",
+            "30",
+            false
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.HtmlFragment.Should().NotContain("Incoming Material");
+        result
+            .Data.HtmlFragment.Should()
+            .NotContain(
+                "No qualifying incoming material was found for the selected look-ahead window."
+            );
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldShowManualTransferTableWhenNoCurrentLocationsExist()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "PART-NO-LOCATIONS", PartDescription = "No Locations" },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Part",
+            "PART-NO-LOCATIONS",
+            "002",
+            "30",
+            false
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result
+            .Data!.HtmlFragment.Should()
+            .Contain("No positive-quantity locations were found for this part in warehouse 002.");
+        result.Data.HtmlFragment.Should().Contain("Manual Inventory Transfers");
+        Regex.Matches(result.Data.HtmlFragment, "class='manual-row p-0'").Should().HaveCount(5);
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldAssignWrappingPartColorClassesAndExposePaletteCss()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>();
+
+        for (var index = 0; index < 16; index++)
+        {
+            cards.Add(
+                new Model_Tool_MaterialAvailabilityCard
+                {
+                    PartId = $"PART-{index:00}",
+                    PartDescription = $"Part {index:00}",
+                    CurrentLocations =
+                    [
+                        new Model_Tool_MaterialAvailabilityLocation
+                        {
+                            LocationId = $"L-{index:00}",
+                            Quantity = index + 1,
+                        },
+                    ],
+                }
+            );
+        }
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Part",
+            "Palette",
+            "002",
+            "30",
+            false
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        Regex.Matches(result.Data!.HtmlFragment, "class='material-card p-0'").Should().HaveCount(2);
+        result.Data.HtmlFragment.Should().Contain("class='material-card p-14'");
+
+        foreach (var index in Enumerable.Range(0, 15))
+        {
+            result.Data.PageCss.Should().Contain($".thead-row.p-{index} th {{ background-color:");
+            result.Data.PageCss.Should().Contain($".part-header.p-{index} {{ background-color:");
+        }
     }
 
     [Fact]

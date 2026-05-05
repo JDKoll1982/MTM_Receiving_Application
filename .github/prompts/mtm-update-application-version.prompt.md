@@ -35,10 +35,19 @@ Explain the reasoning briefly before editing files.
 Update these files together:
 
 1. `appsettings.json`
-   - Set `Application.Version` to the chosen version.
+   - Set `Application.Version` to the chosen version (3-part semver, e.g. `2.1.0`).
 
 2. `Database/Database_Deployment/Sql_Files/SeedData/05_seed_software_version.sql`
-   - Update the seeded `required_version` value.
+   - Update the seeded `required_version` value (3-part semver).
+
+3. `MTM_Receiving_Application.csproj`
+   - Update `<Version>`, `<AssemblyVersion>`, and `<FileVersion>` to `{version}.0` (4-part, e.g. `2.1.0.0`).
+
+4. `appxmanifest.xml`
+   - Update the `Version` attribute on the `<Identity>` element (4-part, e.g. `2.1.0.0`).
+
+5. `Package.appxmanifest`
+   - Update the `Version` attribute on the `<Identity>` element (4-part, e.g. `2.1.0.0`).
 
 If additional version sources are discovered later in the repo, update them too and mention them explicitly.
 
@@ -82,7 +91,8 @@ Requirements for `docs/updates/index.html`:
 
 ## Step 5 - Validate Consistency
 
-- Confirm the same version string appears in every updated file.
+- Confirm the same 3-part version string appears in `appsettings.json` and `05_seed_software_version.sql`.
+- Confirm the same 4-part version string (`{version}.0`) appears in `MTM_Receiving_Application.csproj` (`<Version>`, `<AssemblyVersion>`, `<FileVersion>`), `appxmanifest.xml` (`<Identity Version>`), and `Package.appxmanifest` (`<Identity Version>`).
 - Confirm the chosen bump matches the actual scope of the uncommitted changes.
 - Confirm the generated HTML page matches the chosen version folder name and references the shared `../styles.css` and `../app.js` files.
 - Confirm `docs/updates/index.html` includes the new version entry with the correct link and summary.

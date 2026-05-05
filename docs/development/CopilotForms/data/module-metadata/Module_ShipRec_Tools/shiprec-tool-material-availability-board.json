@@ -2,7 +2,7 @@
   "id": "shiprec-tool-material-availability-board",
   "module": "Module_ShipRec_Tools",
   "name": "Material Availability Board",
-  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, roll up incoming material using an ordered PO-line and PO-header date fallback chain, surface associated work orders by scheduled start date with explicit Past Job, Currently Running, and Future Run timing states, keep associated parts visible even when no scheduled run date is available, normalize work-order display values, open incoming-material and work-order detail dialogs, and print either a full summary or a handwritten transaction sheet as HTML.",
+  "summary": "Read-only ShipRec analysis tool that lets users search by warehouse location or part number, review per-part stock cards, current positive-quantity locations, roll up incoming material using an ordered PO-line and PO-header date fallback chain, surface associated work orders by scheduled start date with explicit Past Job, Currently Running, and Future Run timing states, keep associated parts visible even when no scheduled run date is available, normalize work-order display values, open incoming-material and work-order detail dialogs, and print either a color-coded full summary with location totals and manual transfer rows or a handwritten transaction sheet as HTML.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs",
@@ -80,6 +80,7 @@
       "Compact summary surfaces",
       "Next-run warning banner",
       "Current locations list",
+      "Manual inventory transfer table",
       "Incoming material rollup block",
       "Incoming material detail dialog",
       "Associated part next-run list",
@@ -123,6 +124,9 @@
       "Work-order details open in a categorized modal and print from a settings-driven field list",
       "Cards start collapsed on initial load and after each search",
       "Print opens a browser-hosted HTML document that mirrors the reporting-style section and table layout for the current board results",
+      "Full summary print removes the old per-card summary table and adds a Total on Hand footer plus a five-row manual transfer grid under Current Locations",
+      "Full summary print omits the Incoming Material section entirely when no incoming supply exists for a card",
+      "Full summary print applies consistent per-part color classes across each card's rows and sections",
       "Location-based print flow offers a second transaction-sheet layout with repeatable page headers and per-coil destination fields",
       "Work-order displays are normalized to a single WO- prefix in the UI and print output"
     ],
@@ -142,6 +146,11 @@
       "Confirm estimated coil use warns when the requirement-based estimate exceeds current on-hand quantity",
       "Confirm the work-order modal Show all chip reveals the logic-only fields unless disabled in settings",
       "Confirm Print is only useful after results are loaded and the generated document includes the current search term, warehouse scope, look-ahead window, and card details",
+      "Confirm the full summary print includes a Current Locations total row when location rows exist and a five-row Manual Inventory Transfers table for each card",
+      "Confirm cards with no positive-quantity Current Locations still show the Manual Inventory Transfers grid beneath the empty-state message",
+      "Confirm cards with no incoming supply omit the Incoming Material heading and tables entirely in the full summary print",
+      "Confirm associated-part Run date values in the full summary print prefer scheduled start, then next due-to-run, then No scheduled date",
+      "Confirm the full summary print CSS exposes the p-0 through p-14 palette and uses print color adjustment so part colors render on paper",
       "Confirm location-based printing offers Full Summary and Transaction Sheet choices",
       "Confirm the transaction sheet uses repeated table headers and enough blank handwriting space for multiple coil moves",
       "Confirm work-order values with duplicate WO- prefixes are normalized before display and any downstream matching"
