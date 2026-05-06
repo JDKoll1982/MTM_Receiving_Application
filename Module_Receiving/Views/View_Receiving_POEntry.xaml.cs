@@ -6,7 +6,7 @@ using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
-    public sealed partial class View_Receiving_POEntry : UserControl
+    public sealed partial class View_Receiving_POEntry : UserControl, IReceivingWorkflowFocusable
     {
         public ViewModel_Receiving_POEntry ViewModel { get; }
         private readonly IService_Focus _focusService;
@@ -25,6 +25,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             this.InitializeComponent();
 
             _focusService.AttachFocusOnVisibility(this, PoNumberTextBox);
+        }
+
+        /// <summary>
+        /// Moves focus to the PO entry field whenever guided mode re-enters this step.
+        /// </summary>
+        public void FocusForAccess()
+        {
+            _focusService.SetFocus(PoNumberTextBox);
         }
 
         private void POTextBox_LostFocus(object sender, RoutedEventArgs e)

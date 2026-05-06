@@ -7,7 +7,7 @@ using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
-    public sealed partial class View_Receiving_PackageType : UserControl
+    public sealed partial class View_Receiving_PackageType : UserControl, IReceivingWorkflowFocusable
     {
         public ViewModel_Receiving_PackageType ViewModel
         {
@@ -38,6 +38,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             this.InitializeComponent();
             AttachPackagePerLoadFocus();
+        }
+
+        /// <summary>
+        /// Moves focus to the package input whenever guided mode re-enters this step.
+        /// </summary>
+        public void FocusForAccess()
+        {
+            FocusFirstPackagesPerLoadInput();
         }
 
         private void AttachPackagePerLoadFocus()

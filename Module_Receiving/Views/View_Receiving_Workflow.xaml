@@ -226,9 +226,9 @@
                         Style="{StaticResource AccentButtonStyle}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}" />
                     <Button
-                        Command="{x:Bind ViewModel.ResetLabelDataCommand}"
-                        Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}" />
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -283,13 +283,21 @@
                     Command="{x:Bind ViewModel.OpenReceivingLabelCommand}"
                     Style="{StaticResource WindowChromeStyle}"
                     ToolTipService.ToolTip="Open Receiving Label">
-                    <FontIcon FontSize="16" Glyph="&#xE8A5;" />
+                    <Image Width="18" Height="18">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-receiving.svg" />
+                        </Image.Source>
+                    </Image>
                 </Button>
                 <Button
                     Command="{x:Bind ViewModel.OpenMiniReceivingLabelCommand}"
                     Style="{StaticResource WindowChromeStyle}"
                     ToolTipService.ToolTip="Open Mini-Receiving Label">
-                    <FontIcon FontSize="16" Glyph="&#xE7C3;" />
+                    <Image Width="18" Height="18">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-mini-receiving.svg" />
+                        </Image.Source>
+                    </Image>
                 </Button>
                 <Button
                     Click="HelpButton_Click"

@@ -80,7 +80,68 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ReviewHost.Content = reviewView;
             ReconciliationReviewHost.Content = reconciliationReviewView;
 
+            Loaded += View_Receiving_Workflow_Loaded;
+            Unloaded += View_Receiving_Workflow_Unloaded;
+
             _ = LoadShortcutsAsync();
+        }
+
+        private void View_Receiving_Workflow_Loaded(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+
+            _workflowService.StepChanged -= WorkflowService_StepChanged;
+            _workflowService.StepChanged += WorkflowService_StepChanged;
+            RequestFocusForCurrentStep();
+        }
+
+        private void View_Receiving_Workflow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+
+            _workflowService.StepChanged -= WorkflowService_StepChanged;
+        }
+
+        private void WorkflowService_StepChanged(object? sender, EventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            RequestFocusForCurrentStep();
+        }
+
+        private void RequestFocusForCurrentStep()
+        {
+            if (DispatcherQueue == null)
+            {
+                return;
+            }
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    ResolveFocusableStepView()?.FocusForAccess();
+                });
+            });
+        }
+
+        private IReceivingWorkflowFocusable? ResolveFocusableStepView()
+        {
+            return _workflowService.CurrentStep switch
+            {
+                Enum_ReceivingWorkflowStep.POEntry => POEntryHost.Content as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.LoadEntry =>
+                    LoadEntryHost.Content as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry =>
+                    WeightQuantityHost.Content as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.HeatLotEntry =>
+                    HeatLotHost.Content as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.PackageTypeEntry =>
+                    PackageTypeHost.Content as IReceivingWorkflowFocusable,
+                _ => null,
+            };
         }
 
         private async void HelpButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

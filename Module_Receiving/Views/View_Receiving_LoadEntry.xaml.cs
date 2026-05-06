@@ -9,7 +9,7 @@ using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
-    public sealed partial class View_Receiving_LoadEntry : UserControl
+    public sealed partial class View_Receiving_LoadEntry : UserControl, IReceivingWorkflowFocusable
     {
         public ViewModel_Receiving_LoadEntry ViewModel { get; }
 
@@ -29,6 +29,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             InitializeComponent();
 
             _focusService.AttachFocusOnVisibility(this, NumberOfLoadsNumberBox);
+        }
+
+        /// <summary>
+        /// Moves focus to the primary load-count input whenever guided mode re-enters this step.
+        /// </summary>
+        public void FocusForAccess()
+        {
+            _focusService.SetFocus(NumberOfLoadsNumberBox);
         }
 
         private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)

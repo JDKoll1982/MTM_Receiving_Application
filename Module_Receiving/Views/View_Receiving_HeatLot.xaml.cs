@@ -7,7 +7,7 @@ using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
-    public sealed partial class View_Receiving_HeatLot : UserControl
+    public sealed partial class View_Receiving_HeatLot : UserControl, IReceivingWorkflowFocusable
     {
         public ViewModel_Receiving_HeatLot ViewModel
         {
@@ -36,6 +36,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             DataContext = ViewModel;
             this.InitializeComponent();
             AttachLoadFocus();
+        }
+
+        /// <summary>
+        /// Moves focus to the first heat or lot input whenever guided mode re-enters this step.
+        /// </summary>
+        public void FocusForAccess()
+        {
+            FocusFirstLoadHeatLotInput();
         }
 
         private void AttachLoadFocus()

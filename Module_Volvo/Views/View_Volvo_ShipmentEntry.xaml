@@ -84,7 +84,11 @@
 
             <Button Grid.Column="4" Command="{x:Bind ViewModel.OpenVolvoLabelCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE8A5;" />
+                    <Image Width="18" Height="18">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-volvo.svg" />
+                        </Image.Source>
+                    </Image>
                     <TextBlock Text="Open Label" />
                 </StackPanel>
             </Button>

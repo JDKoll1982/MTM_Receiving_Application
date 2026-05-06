@@ -7,7 +7,7 @@ using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
-    public sealed partial class View_Receiving_WeightQuantity : UserControl
+    public sealed partial class View_Receiving_WeightQuantity : UserControl, IReceivingWorkflowFocusable
     {
         public ViewModel_Receiving_WeightQuantity ViewModel
         {
@@ -36,6 +36,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             DataContext = ViewModel;
             this.InitializeComponent();
             AttachLoadFocus();
+        }
+
+        /// <summary>
+        /// Moves focus to the first weight or quantity input whenever guided mode re-enters this step.
+        /// </summary>
+        public void FocusForAccess()
+        {
+            FocusFirstLoadQuantityInput();
         }
 
         private void AttachLoadFocus()
