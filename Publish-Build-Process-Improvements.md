@@ -26,7 +26,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 
 ## Recommended Changes
 
-### 1. Make Local Staging Plus Differential Sync The Default Publish Path - Yes, even for share-based deployment, when deployment finishes prompt the user to sync to the share as a separate step.
+### 1. Make Local Staging Plus Differential Sync The Default Publish Path
 
 **What I saw now**
 
@@ -60,7 +60,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 - No application runtime behavior would change.
 - Temp disk usage on the build machine would increase during publish.
 
-### 2. Add A Fast Publish Path That Skips Restore And Optionally Skips Build, when the user clicks publish prompt the user to choose between a normal publish and a fast republish that reuses the last build output if the project and package inputs have not changed.
+### 2. Add A Fast Publish Path That Skips Restore And Optionally Skips Build
 
 **What I saw now**
 
@@ -94,7 +94,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 - The script would need a reliable rule for when cached build output is still valid.
 - Documentation for operators would need one short note explaining when to use normal publish vs fast republish.
 
-### 3. Reduce Default Publish Verbosity And Keep Detailed Logging As Opt-In - Yes, change the default verbosity to minimal or normal, and add an explicit toggle for detailed logging when troubleshooting.
+### 3. Reduce Default Publish Verbosity And Keep Detailed Logging As Opt-In
 
 **What I saw now**
 
@@ -127,7 +127,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 - No impact on produced binaries.
 - Support workflows improve because diagnostic logging becomes intentional instead of always-on.
 
-### 4. Replace Hash-Every-File Sync With A Cheaper Differential Copy Strategy - Yes, the staged sync should use a faster file comparison strategy that does not require hashing every file on source and destination.
+### 4. Replace Hash-Every-File Sync With A Cheaper Differential Copy Strategy
 
 **What I saw now**
 
@@ -158,7 +158,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 - No impact on application binaries.
 - Needs one validation pass to ensure `_PublishLogs` and any intentionally preserved folders still behave correctly.
 
-### 5. Align The ReadyToRun Option With The Current Project Safety Policy - Yes, reclassify ReadyToRun as `experimental` and hide it behind an advanced toggle.
+### 5. Align The ReadyToRun Option With The Current Project Safety Policy
 
 **What I saw now**
 
@@ -192,7 +192,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 - Application code would not change.
 - This is mainly a deployment safety improvement.
 
-### 6. Make MSIX Tooling Conditional For Packaging Scenarios Only - Yes, enable MSIX tooling only for packaging workflows that require it.
+### 6. Make MSIX Tooling Conditional For Packaging Scenarios Only
 
 **What I saw now**
 
@@ -226,7 +226,7 @@ The 2026-04-29 self-contained publish completed successfully in `00:04:37.72`, b
 
 ## Secondary Investigation Worth Doing
 
-### Investigate Why Non-`en-US` Resource Files Still Copy During Publish - Yes, measure which packages introduce the extra `.mui` files and confirm whether they are required for WinUI, Windows App SDK, or framework dependencies before trying to filter them out.
+### Investigate Why Non-`en-US` Resource Files Still Copy During Publish
 
 **What I saw now**
 

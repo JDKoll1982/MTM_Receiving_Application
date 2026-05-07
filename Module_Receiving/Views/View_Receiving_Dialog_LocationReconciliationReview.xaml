@@ -228,7 +228,7 @@
                                         VerticalAlignment="Center"
                                         FontSize="16"
                                         FontWeight="SemiBold"
-                                        Text="Transaction Information"
+                                        Text="Transfer Evidence"
                                         TextAlignment="Center"
                                         TextDecorations="Underline" />
 
@@ -238,21 +238,21 @@
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Moved Date: " />
+                                        Text="Transfer Date: " />
                                     <TextBlock
                                         Grid.Row="1"
                                         Grid.Column="4"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Moved Time: " />
+                                        Text="Transfer Time: " />
                                     <TextBlock
                                         Grid.Row="2"
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Moved By:" />
+                                        Text="Visual User:" />
 
                                     <TextBox
                                         Grid.Row="1"
@@ -324,7 +324,7 @@
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Quantity:" />
+                                            Text="Saved Qty:" />
                                         <TextBlock
                                             Grid.Row="2"
                                             Grid.Column="0"
@@ -410,7 +410,7 @@
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Quantity:" />
+                                            Text="Allocated Qty:" />
                                         <TextBox
                                             Grid.Row="1"
                                             Grid.Column="1"
@@ -426,7 +426,7 @@
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Reference:" />
+                                            Text="Method:" />
                                         <TextBox
                                             Grid.Row="2"
                                             Grid.Column="1"
@@ -440,6 +440,27 @@
                                 </StackPanel>
                             </Border>
                         </Grid>
+
+                        <Border
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Why This Destination Was Chosen" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind ViewModel.CurrentEvidenceSummaryText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Text="{x:Bind ViewModel.CurrentReasonText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
 
                     </StackPanel>
 

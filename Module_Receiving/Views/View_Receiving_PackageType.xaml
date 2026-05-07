@@ -115,8 +115,8 @@
                                 <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{Binding ElementName=Root, Path=ViewModel.PackageTypeWeightPerPackageText}" />
-                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{Binding WeightPerPackage, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} lbs'}" />
+                                    Text="{x:Bind WeightPerPackageLabel, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind WeightPerPackageValueDisplay, Mode=OneWay}" />
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

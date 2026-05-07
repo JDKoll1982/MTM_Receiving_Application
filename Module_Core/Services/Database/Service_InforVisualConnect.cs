@@ -529,6 +529,77 @@ public class Service_InforVisualConnect : IService_InforVisual
         }
     }
 
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationTransferMovement>>
+    > GetReceivingLocationTransferMovementsAsync(string partID, DateTime receivedDate)
+    {
+        if (string.IsNullOrWhiteSpace(partID))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransferMovement>>(
+                "Part ID cannot be null or empty"
+            );
+        }
+
+        if (UseMockData)
+        {
+            var normalizedPart = partID.Trim().ToUpperInvariant();
+
+            var transactions = (_mockDataCatalog.GetReceivingTransactions() ?? [])
+                .Where(transaction =>
+                    string.Equals(
+                        transaction.PartID,
+                        normalizedPart,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && transaction.TransactionDate.Date >= receivedDate.Date.AddDays(-2)
+                    && transaction.TransactionDate.Date <= receivedDate.Date.AddDays(2)
+                    && string.IsNullOrWhiteSpace(transaction.ReceiptLocationId) is false
+                    && string.IsNullOrWhiteSpace(transaction.CurrentLocationId) is false
+                    && !string.Equals(
+                        transaction.ReceiptLocationId,
+                        transaction.CurrentLocationId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .OrderBy(transaction => transaction.TransactionDate)
+                .ThenBy(transaction => transaction.PONumber)
+                .ThenBy(transaction => transaction.POLineNumber)
+                .ThenBy(transaction => transaction.CurrentLocationId)
+                .Select(transaction => new Model_InforVisualLocationTransferMovement
+                {
+                    PartId = transaction.PartID,
+                    PONumber = transaction.PONumber,
+                    POLineNumber = transaction.POLineNumber,
+                    SourceWarehouseId = transaction.ReceiptWarehouseId,
+                    SourceLocationId = transaction.ReceiptLocationId,
+                    DestinationWarehouseId = transaction.CurrentWarehouseId,
+                    DestinationLocationId = transaction.CurrentLocationId,
+                    TransferQuantity = transaction.Quantity,
+                    TransactionDate = transaction.TransactionDate,
+                    TransactionUserId = transaction.UserId,
+                })
+                .ToList();
+
+            return Model_Dao_Result_Factory.Success(transactions);
+        }
+
+        try
+        {
+            return await _dao.GetReceivingLocationTransferMovementsAsync(partID, receivedDate);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Unexpected error retrieving receiving location transfer movements for part {partID}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransferMovement>>(
+                $"Unexpected error: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     #endregion
 
     #region Helper Methods - Model Conversion

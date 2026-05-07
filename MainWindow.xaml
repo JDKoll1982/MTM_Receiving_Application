@@ -100,54 +100,6 @@
             Loaded="NavView_Loaded"
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
-            <NavigationView.PaneFooter>
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="8"
-                    Margin="12,8,12,12">
-                    <Button
-                        Click="OpenReceivingLabelButton_Click"
-                        Style="{StaticResource WindowChromeStyle}"
-                        ToolTipService.ToolTip="Open Receiving Label">
-                        <Image Width="18" Height="18">
-                            <Image.Source>
-                                <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-receiving.svg" />
-                            </Image.Source>
-                        </Image>
-                    </Button>
-                    <Button
-                        Click="OpenMiniReceivingLabelButton_Click"
-                        Style="{StaticResource WindowChromeStyle}"
-                        ToolTipService.ToolTip="Open Mini-Receiving Label">
-                        <Image Width="18" Height="18">
-                            <Image.Source>
-                                <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-mini-receiving.svg" />
-                            </Image.Source>
-                        </Image>
-                    </Button>
-                    <Button
-                        Click="OpenVolvoLabelButton_Click"
-                        Style="{StaticResource WindowChromeStyle}"
-                        ToolTipService.ToolTip="Open Volvo Label">
-                        <Image Width="18" Height="18">
-                            <Image.Source>
-                                <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-volvo.svg" />
-                            </Image.Source>
-                        </Image>
-                    </Button>
-                    <Button
-                        Click="OpenDunnageLabelButton_Click"
-                        Style="{StaticResource WindowChromeStyle}"
-                        ToolTipService.ToolTip="Open Dunnage Label">
-                        <Image Width="18" Height="18">
-                            <Image.Source>
-                                <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-dunnage.svg" />
-                            </Image.Source>
-                        </Image>
-                    </Button>
-                </StackPanel>
-            </NavigationView.PaneFooter>
             <NavigationView.Header>
                 <Grid MinHeight="100" Padding="0,0,40,0">
                     <Grid.RowDefinitions>
@@ -263,6 +215,56 @@
                         <FontIcon Glyph="&#xE946;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItem SelectsOnInvoked="False">
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="12,8,12,12">
+                        <Button
+                            Click="OpenReceivingLabelButton_Click"
+                            Style="{StaticResource WindowChromeStyle}"
+                            ToolTipService.ToolTip="Open Receiving Label">
+                            <Image Width="18" Height="18">
+                                <Image.Source>
+                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-receiving.svg" />
+                                </Image.Source>
+                            </Image>
+                        </Button>
+                        <Button
+                            Click="OpenMiniReceivingLabelButton_Click"
+                            Style="{StaticResource WindowChromeStyle}"
+                            ToolTipService.ToolTip="Open Mini-Receiving Label">
+                            <Image Width="18" Height="18">
+                                <Image.Source>
+                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-mini-receiving.svg" />
+                                </Image.Source>
+                            </Image>
+                        </Button>
+                        <Button
+                            Click="OpenVolvoLabelButton_Click"
+                            Style="{StaticResource WindowChromeStyle}"
+                            ToolTipService.ToolTip="Open Volvo Label">
+                            <Image Width="18" Height="18">
+                                <Image.Source>
+                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-volvo.svg" />
+                                </Image.Source>
+                            </Image>
+                        </Button>
+                        <Button
+                            Click="OpenDunnageLabelButton_Click"
+                            Style="{StaticResource WindowChromeStyle}"
+                            ToolTipService.ToolTip="Open Dunnage Label">
+                            <Image Width="18" Height="18">
+                                <Image.Source>
+                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-dunnage.svg" />
+                                </Image.Source>
+                            </Image>
+                        </Button>
+                    </StackPanel>
+                </NavigationViewItem>
+                <NavigationViewItemSeparator />
             </NavigationView.FooterMenuItems>
 
             <Frame

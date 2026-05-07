@@ -271,6 +271,8 @@
       "Confirm each shared MainWindow footer label button opens the intended label in LabelView when setup is complete",
       "Confirm the Receiving workflow shortcuts can duplicate Dunnage workflow shortcuts without cross-module conflicts because only one workflow page is active at a time",
       "Confirm validation still blocks invalid input",
+      "Confirm Guided PO Entry and Manual Mode accept blanket-order PO values with a trailing B, normalize them to PO-######B, and keep PO text uppercase while typing",
+      "Confirm Heat / Lot entry uppercases typed text immediately and saved review values stay uppercase",
       "Confirm Guided Wizard non-PO Lookup Part reuses the shared fuzzy search picker and resolves the selected part into the workflow state",
       "Confirm guided Non-PO reaching Review without a PO opens the non-PO reference dialog before Review instead of at final save",
       "Confirm the guided Non-PO dialog prefills the last saved reference for the current part when one exists",

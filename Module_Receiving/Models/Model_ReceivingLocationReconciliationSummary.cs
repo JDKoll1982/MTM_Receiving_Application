@@ -27,6 +27,8 @@ public sealed class Model_ReceivingLocationReconciliationSummary
 
     public int ErrorCount { get; set; }
 
+    public int TransferEvidenceRowsScanned { get; set; }
+
     public int TotalRowsScanned => CurrentLabelRowsScanned + HistoryRowsScanned;
 
     public int TotalRowsUpdated => CurrentLabelRowsUpdated + HistoryRowsUpdated;

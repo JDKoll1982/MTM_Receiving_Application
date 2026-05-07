@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -14,44 +15,36 @@ using MTM_Receiving_Application.Module_Receiving.Settings;
 namespace MTM_Receiving_Application.Module_Receiving.Services;
 
 /// <summary>
-/// Reconciles saved receiving locations using InforVisual receipt history and current inventory.
+/// Reconciles saved receiving locations against same-day Infor Visual transfer movements.
 /// </summary>
 public sealed class Service_ReceivingLocationReconciliation
     : IService_ReceivingLocationReconciliation
 {
     private static readonly DateTime AllHistoryStartDate = new(2000, 1, 1);
-    private const string WorkCenterLocationId = "WC";
-    private static readonly string[] DefaultRecommendedLocationExclusions =
-    [
-        "WC",
-        "NCM",
-        "FG",
-        "RECV",
-    ];
     private static readonly Regex CanonicalPoPattern = new(
         @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[A-Za-z]?)$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant
     );
 
+    private const string DeterministicAllocationMethod =
+        "Transfer-based exact-fit then best-fit allocation";
+
     private readonly IService_MySQL_Receiving _mySqlReceiving;
     private readonly IService_InforVisual _inforVisual;
     private readonly IService_LoggingUtility _logger;
     private readonly IService_ReceivingSettings _receivingSettings;
-    private readonly IService_UserSessionManager _sessionManager;
 
     public Service_ReceivingLocationReconciliation(
         IService_MySQL_Receiving mySqlReceiving,
         IService_InforVisual inforVisual,
         IService_LoggingUtility logger,
-        IService_ReceivingSettings receivingSettings,
-        IService_UserSessionManager sessionManager
+        IService_ReceivingSettings receivingSettings
     )
     {
         _mySqlReceiving = mySqlReceiving;
         _inforVisual = inforVisual;
         _logger = logger;
         _receivingSettings = receivingSettings;
-        _sessionManager = sessionManager;
     }
 
     public async Task<
@@ -63,12 +56,7 @@ public sealed class Service_ReceivingLocationReconciliation
         DateTime? receivedDate
     )
     {
-        if (string.IsNullOrWhiteSpace(poNumber))
-        {
-            return Model_Dao_Result_Factory.Success(new List<Model_ReceivingRecommendedLocation>());
-        }
-
-        if (string.IsNullOrWhiteSpace(partId))
+        if (string.IsNullOrWhiteSpace(poNumber) || string.IsNullOrWhiteSpace(partId))
         {
             return Model_Dao_Result_Factory.Success(new List<Model_ReceivingRecommendedLocation>());
         }
@@ -88,10 +76,6 @@ public sealed class Service_ReceivingLocationReconciliation
         }
 
         var ignoredLocations = await GetIgnoredLocationsAsync();
-        foreach (var locationId in DefaultRecommendedLocationExclusions)
-        {
-            ignoredLocations.Add(Normalize(locationId));
-        }
 
         var recommendations = evidenceResult
             .Data.Where(row =>
@@ -112,16 +96,14 @@ public sealed class Service_ReceivingLocationReconciliation
                     .OrderByDescending(date => date)
                     .FirstOrDefault();
 
-                var reasonText = latestActivityDate.HasValue
-                    ? $"latest activity {latestActivityDate.Value:MM/dd/yyyy}"
-                    : "current stock evidence";
-
                 return new Model_ReceivingRecommendedLocation
                 {
                     WarehouseId = sample.CurrentWarehouseId?.Trim() ?? string.Empty,
                     LocationId = sample.CurrentLocationId?.Trim() ?? string.Empty,
                     QuantityOnHand = group.Sum(row => row.CurrentQuantity),
-                    ReasonText = reasonText,
+                    ReasonText = latestActivityDate.HasValue
+                        ? $"latest activity {latestActivityDate.Value:MM/dd/yyyy}"
+                        : "current stock evidence",
                 };
             })
             .OrderByDescending(location => location.QuantityOnHand)
@@ -163,25 +145,21 @@ public sealed class Service_ReceivingLocationReconciliation
                 );
             }
 
+            var ignoredLocations = await GetIgnoredLocationsAsync();
             var currentLabelRows = currentLabelsResult.Data ?? [];
             var historyRows = historyResult.Data ?? [];
-            var ignoredLocations = await GetIgnoredLocationsAsync();
 
             summary.CurrentLabelRowsScanned = currentLabelRows.Count;
             summary.HistoryRowsScanned = historyRows.Count;
 
-            var currentLabelItems = await ReconcileRowsAsync(
-                currentLabelRows,
-                "Current Labels",
-                ignoredLocations
-            );
-            foreach (var item in currentLabelItems)
+            foreach (
+                var item in await ReconcileRowsAsync(currentLabelRows, "Current Labels", ignoredLocations)
+            )
             {
                 RecordPreviewDecision(item, summary);
             }
 
-            var historyItems = await ReconcileRowsAsync(historyRows, "History", ignoredLocations);
-            foreach (var item in historyItems)
+            foreach (var item in await ReconcileRowsAsync(historyRows, "History", ignoredLocations))
             {
                 RecordPreviewDecision(item, summary);
             }
@@ -211,7 +189,7 @@ public sealed class Service_ReceivingLocationReconciliation
             );
         }
 
-        if (item.SourceLoad == null)
+        if (item.SourceLoad is null)
         {
             return Model_Dao_Result_Factory.Failure<Model_ReceivingLocationReconciliationItem>(
                 "The reconciliation row is missing its source load data."
@@ -253,7 +231,7 @@ public sealed class Service_ReceivingLocationReconciliation
         try
         {
             var previewResult = await PreviewLocationsAsync(includeAllHistory);
-            if (!previewResult.IsSuccess || previewResult.Data == null)
+            if (!previewResult.IsSuccess || previewResult.Data is null)
             {
                 return Model_Dao_Result_Factory.Failure<Model_ReceivingLocationReconciliationSummary>(
                     previewResult.ErrorMessage
@@ -262,13 +240,14 @@ public sealed class Service_ReceivingLocationReconciliation
 
             var summary = previewResult.Data;
 
-            foreach (var item in summary.UpdatedItems)
+            foreach (var item in summary.UpdatedItems.ToList())
             {
                 var applyResult = await ApplyLocationUpdateAsync(item);
                 if (!applyResult.IsSuccess)
                 {
-                    summary.ErrorCount++;
+                    item.Resolution = "Error";
                     item.Details = applyResult.ErrorMessage;
+                    summary.ErrorCount++;
                     summary.UnresolvedItems.Add(item);
                     continue;
                 }
@@ -315,8 +294,7 @@ public sealed class Service_ReceivingLocationReconciliation
             if (load.IsNonPOItem)
             {
                 item.Resolution = "Skipped";
-                item.Details =
-                    "Non-PO rows cannot be reconciled against InforVisual purchase-order history.";
+                item.Details = "Non-PO rows cannot be reconciled against Infor Visual transfer evidence.";
                 items.Add(item);
                 continue;
             }
@@ -324,17 +302,15 @@ public sealed class Service_ReceivingLocationReconciliation
             if (string.IsNullOrWhiteSpace(load.PartID) || string.IsNullOrWhiteSpace(load.PoNumber))
             {
                 item.Resolution = "Skipped";
-                item.Details =
-                    "Part ID and PO number are both required for location reconciliation.";
+                item.Details = "Part ID and PO number are both required for location reconciliation.";
                 items.Add(item);
                 continue;
             }
 
-            var inforVisualPoNumber = NormalizeInforVisualPoNumber(load.PoNumber);
-            if (string.IsNullOrWhiteSpace(inforVisualPoNumber))
+            if (string.IsNullOrWhiteSpace(NormalizeInforVisualPoNumber(load.PoNumber)))
             {
                 item.Resolution = "Skipped";
-                item.Details = "PO number could not be normalized to InforVisual format.";
+                item.Details = "PO number could not be normalized to Infor Visual format.";
                 items.Add(item);
                 continue;
             }
@@ -343,63 +319,301 @@ public sealed class Service_ReceivingLocationReconciliation
         }
 
         foreach (
-            var receiptGroup in validLoads.GroupBy(load => new ReconciliationGroupKey(
-                NormalizeInforVisualPoNumber(load.PoNumber),
-                Normalize(load.PartID),
-                Normalize(load.PoLineNumber),
-                load.ReceivedDate.Date
-            ))
+            var receiptGroup in validLoads.GroupBy(load =>
+                new ReconciliationGroupKey(Normalize(load.PartID), load.ReceivedDate.Date)
+            )
         )
         {
-            var templateLoad = receiptGroup.First();
-            var evidenceResult = await _inforVisual.GetReceivingLocationEvidenceAsync(
-                receiptGroup.Key.PoNumber,
+            var groupLoads = receiptGroup.ToList();
+            var templateLoad = groupLoads[0];
+            var movementsResult = await _inforVisual.GetReceivingLocationTransferMovementsAsync(
                 templateLoad.PartID.Trim(),
-                string.IsNullOrWhiteSpace(templateLoad.PoLineNumber)
-                    ? null
-                    : templateLoad.PoLineNumber.Trim(),
-                templateLoad.ReceivedDate
+                templateLoad.ReceivedDate.Date
             );
 
-            if (!evidenceResult.IsSuccess)
+            if (!movementsResult.IsSuccess)
             {
                 items.AddRange(
-                    receiptGroup.Select(load =>
+                    groupLoads.Select(load =>
                     {
                         var item = CreateBaseItem(load, dataSource);
                         item.Resolution = "Error";
-                        item.Details = evidenceResult.ErrorMessage;
+                        item.Details = movementsResult.ErrorMessage;
                         return item;
                     })
                 );
                 continue;
             }
 
-            var historyResult = await _inforVisual.GetReceivingLocationTransactionHistoryAsync(
-                receiptGroup.Key.PoNumber,
-                templateLoad.PartID.Trim(),
-                string.IsNullOrWhiteSpace(templateLoad.PoLineNumber)
-                    ? null
-                    : templateLoad.PoLineNumber.Trim(),
-                templateLoad.ReceivedDate
-            );
-
-            var transactionHistory = historyResult.IsSuccess
-                ? historyResult.Data ?? []
-                : new List<Model_InforVisualLocationTransaction>();
-
             items.AddRange(
-                ResolveLocationDecisions(
-                    receiptGroup.ToList(),
+                ResolveTransferBasedGroup(
+                    groupLoads,
                     dataSource,
-                    evidenceResult.Data ?? [],
-                    transactionHistory,
+                    movementsResult.Data ?? [],
                     ignoredLocations
                 )
             );
         }
 
         return items;
+    }
+
+    private List<Model_ReceivingLocationReconciliationItem> ResolveTransferBasedGroup(
+        List<Model_ReceivingLoad> loads,
+        string dataSource,
+        List<Model_InforVisualLocationTransferMovement> allMovements,
+        HashSet<string> ignoredLocations
+    )
+    {
+        var items = loads
+            .Select(load => CreateBaseItem(load, dataSource))
+            .OrderByDescending(item => item.SavedRowQuantity)
+            .ThenBy(item => item.SourceLoad?.LoadNumber ?? int.MaxValue)
+            .ThenBy(item => item.LoadId)
+            .ToList();
+
+        var relevantMovements = SelectRelevantMovements(loads, allMovements);
+        if (relevantMovements.Count == 0)
+        {
+            foreach (var item in items)
+            {
+                item.Resolution = "NotFound";
+                item.Details =
+                    "No same-day Infor Visual transfer movements were found for this material that could explain a saved location change.";
+            }
+
+            return items;
+        }
+
+        var allBuckets = BuildTransferBuckets(relevantMovements);
+        if (allBuckets.Count == 0)
+        {
+            foreach (var item in items)
+            {
+                item.Resolution = "Ambiguous";
+                item.Details =
+                    "Transfer movements were found, but they did not yield any net destination quantity after chained moves were resolved.";
+            }
+
+            return items;
+        }
+
+        var candidateBuckets = allBuckets
+            .Where(bucket => !ignoredLocations.Contains(bucket.NormalizedLocation))
+            .ToList();
+
+        if (candidateBuckets.Count == 0)
+        {
+            var ignoredLocationList = string.Join(
+                ", ",
+                allBuckets.Select(bucket => bucket.DisplayLocation).Distinct(StringComparer.OrdinalIgnoreCase)
+            );
+
+            foreach (var item in items)
+            {
+                item.Resolution = "IgnoredBySettings";
+                item.Details =
+                    $"Transfer evidence points only to destination locations currently ignored by user preference: {ignoredLocationList}.";
+            }
+
+            return items;
+        }
+
+        foreach (var item in items)
+        {
+            var selectedBucket = candidateBuckets
+                .Where(bucket => bucket.RemainingQuantity >= item.SavedRowQuantity)
+                .OrderBy(bucket => bucket.RemainingQuantity - item.SavedRowQuantity)
+                .ThenByDescending(bucket => bucket.LatestTransactionDate)
+                .ThenBy(bucket => bucket.DisplayLocation, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault();
+
+            if (selectedBucket is null)
+            {
+                var largestRemainingBucket = candidateBuckets
+                    .OrderByDescending(bucket => bucket.RemainingQuantity)
+                    .ThenBy(bucket => bucket.DisplayLocation, StringComparer.OrdinalIgnoreCase)
+                    .FirstOrDefault();
+
+                item.Resolution = "Ambiguous";
+                item.Details = largestRemainingBucket is null
+                    ? "Transfer evidence was found, but no destination quantity remained after allocating earlier rows in the same part-and-day reconciliation group."
+                    : string.Create(
+                        CultureInfo.InvariantCulture,
+                        $"Transfer evidence remains, but the largest unallocated destination bucket is only {largestRemainingBucket.RemainingQuantity:0.##} {item.QuantityUnitOfMeasure} at {largestRemainingBucket.DisplayLocation}. This row requires {item.SavedRowQuantity:0.##} {item.QuantityUnitOfMeasure}."
+                    );
+                continue;
+            }
+
+            item.ProposedLocation = selectedBucket.LocationId;
+            item.MatchedLocationQuantity = selectedBucket.RemainingQuantity;
+            item.QuantityMoved = item.SavedRowQuantity;
+            item.QuantityDifference = Math.Abs(selectedBucket.RemainingQuantity - item.SavedRowQuantity);
+            item.AllocationMethod = DeterministicAllocationMethod;
+            item.MovedAt = selectedBucket.LatestTransactionDate;
+            item.MovedByUserId = selectedBucket.TransactionUserId;
+            item.TransferMovementCount = selectedBucket.TransferCount;
+            item.EvidenceSourceLocations = selectedBucket.SourceLocationsText;
+            item.Resolution = LocationsEqual(item.ExistingLocation, item.ProposedLocation)
+                ? "Unchanged"
+                : "Updated";
+            item.Details = string.Create(
+                CultureInfo.InvariantCulture,
+                $"Allocated by transfer-based exact-fit then best-fit allocation using {selectedBucket.TransferCount} transfer(s) with a net confirmed quantity of {selectedBucket.NetQuantity:0.##} {item.QuantityUnitOfMeasure} ending at {selectedBucket.DisplayLocation}. Sources: {selectedBucket.SourceLocationsText}. Latest confirmed move: {selectedBucket.LatestTransactionDate:M/d/yyyy h:mm tt}."
+            );
+
+            selectedBucket.RemainingQuantity -= item.SavedRowQuantity;
+        }
+
+        return items;
+    }
+
+    private static List<Model_InforVisualLocationTransferMovement> SelectRelevantMovements(
+        List<Model_ReceivingLoad> loads,
+        List<Model_InforVisualLocationTransferMovement> allMovements
+    )
+    {
+        var pendingMovements = allMovements
+            .Where(movement =>
+                string.IsNullOrWhiteSpace(movement.SourceLocationId) is false
+                && string.IsNullOrWhiteSpace(movement.DestinationLocationId) is false
+                && !LocationsEqual(movement.SourceLocationId, movement.DestinationLocationId)
+            )
+            .OrderBy(movement => movement.TransactionDate)
+            .ThenBy(movement => movement.DestinationTransactionId)
+            .ThenBy(movement => movement.SourceTransactionId)
+            .ThenBy(movement => movement.SourceLocationId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(movement => movement.DestinationLocationId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var seedLocations = new HashSet<string>(
+            loads.Select(load => Normalize(load.InitialLocation))
+                .Where(location => string.IsNullOrWhiteSpace(location) is false),
+            StringComparer.OrdinalIgnoreCase
+        );
+        var allowedPoKeys = new HashSet<string>(
+            loads.Select(load => BuildPoKey(load.PoNumber, load.PoLineNumber))
+                .Where(key => string.IsNullOrWhiteSpace(key) is false),
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        var relevantMovements = new List<Model_InforVisualLocationTransferMovement>();
+        var reachedLocations = new HashSet<string>(seedLocations, StringComparer.OrdinalIgnoreCase);
+        var iteration = 0;
+        var maxIterations = Math.Max(1, pendingMovements.Count * pendingMovements.Count);
+        var madeProgress = true;
+
+        while (madeProgress && pendingMovements.Count > 0 && iteration < maxIterations)
+        {
+            madeProgress = false;
+            iteration++;
+
+            for (var index = pendingMovements.Count - 1; index >= 0; index--)
+            {
+                var movement = pendingMovements[index];
+                var sourceLocation = Normalize(movement.SourceLocationId);
+                var destinationLocation = Normalize(movement.DestinationLocationId);
+                var poKey = BuildPoKey(movement.PONumber, movement.POLineNumber);
+
+                if (!reachedLocations.Contains(sourceLocation) && !allowedPoKeys.Contains(poKey))
+                {
+                    continue;
+                }
+
+                relevantMovements.Add(movement);
+                pendingMovements.RemoveAt(index);
+                reachedLocations.Add(sourceLocation);
+                reachedLocations.Add(destinationLocation);
+                madeProgress = true;
+            }
+        }
+
+        return relevantMovements
+            .OrderBy(movement => movement.TransactionDate)
+            .ThenBy(movement => movement.DestinationTransactionId)
+            .ThenBy(movement => movement.SourceTransactionId)
+            .ToList();
+    }
+
+    private static List<TransferBucket> BuildTransferBuckets(
+        IReadOnlyCollection<Model_InforVisualLocationTransferMovement> movements
+    )
+    {
+        var inboundByLocation = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        var outboundByLocation = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        var inboundEvidence = new Dictionary<
+            string,
+            List<Model_InforVisualLocationTransferMovement>
+        >(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var movement in movements)
+        {
+            var sourceLocation = Normalize(movement.SourceLocationId);
+            var destinationLocation = Normalize(movement.DestinationLocationId);
+
+            if (!outboundByLocation.TryAdd(sourceLocation, movement.TransferQuantity))
+            {
+                outboundByLocation[sourceLocation] += movement.TransferQuantity;
+            }
+
+            if (!inboundByLocation.TryAdd(destinationLocation, movement.TransferQuantity))
+            {
+                inboundByLocation[destinationLocation] += movement.TransferQuantity;
+            }
+
+            if (!inboundEvidence.TryGetValue(destinationLocation, out var evidenceList))
+            {
+                evidenceList = [];
+                inboundEvidence[destinationLocation] = evidenceList;
+            }
+
+            evidenceList.Add(movement);
+        }
+
+        var buckets = new List<TransferBucket>();
+        foreach (var location in inboundByLocation.Keys)
+        {
+            var netQuantity = inboundByLocation[location]
+                - outboundByLocation.GetValueOrDefault(location, 0);
+            if (netQuantity <= 0)
+            {
+                continue;
+            }
+
+            var evidenceRows = inboundEvidence[location];
+            var latestInbound = evidenceRows
+                .OrderByDescending(row => row.TransactionDate)
+                .ThenByDescending(row => row.DestinationTransactionId)
+                .First();
+
+            buckets.Add(
+                new TransferBucket
+                {
+                    WarehouseId = latestInbound.DestinationWarehouseId,
+                    LocationId = latestInbound.DestinationLocationId,
+                    NormalizedLocation = location,
+                    NetQuantity = netQuantity,
+                    RemainingQuantity = netQuantity,
+                    LatestTransactionDate = latestInbound.TransactionDate,
+                    TransactionUserId = latestInbound.TransactionUserId,
+                    TransferCount = evidenceRows.Count,
+                    SourceLocationsText = string.Join(
+                        ", ",
+                        evidenceRows
+                            .Select(row => row.SourceLocationId.Trim())
+                            .Where(source => string.IsNullOrWhiteSpace(source) is false)
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .OrderBy(source => source, StringComparer.OrdinalIgnoreCase)
+                    ),
+                }
+            );
+        }
+
+        return buckets
+            .OrderByDescending(bucket => bucket.NetQuantity)
+            .ThenByDescending(bucket => bucket.LatestTransactionDate)
+            .ThenBy(bucket => bucket.DisplayLocation, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     private static Model_ReceivingLocationReconciliationItem CreateBaseItem(
@@ -423,674 +637,8 @@ public sealed class Service_ReceivingLocationReconciliation
             MatchedLocationQuantity = 0,
             QuantityUnitOfMeasure = load.UnitOfMeasure,
             SourceLoad = load,
+            EvidenceSourceLocations = string.Empty,
         };
-    }
-
-    private static List<Model_ReceivingLocationReconciliationItem> ResolveLocationDecisions(
-        List<Model_ReceivingLoad> loads,
-        string dataSource,
-        List<Model_InforVisualLocationEvidence> evidenceRows,
-        List<Model_InforVisualLocationTransaction> transactionHistoryRows,
-        HashSet<string> ignoredLocations
-    )
-    {
-        var items = loads
-            .Select(load => CreateBaseItem(load, dataSource))
-            .OrderByDescending(item => item.SavedRowQuantity)
-            .ThenBy(item => item.SourceLoad?.LoadNumber ?? int.MaxValue)
-            .ThenBy(item => item.LoadId)
-            .ToList();
-
-        var allBuckets = BuildCandidateBuckets(evidenceRows);
-        var historyTracker = new ReconciliationHistoryTracker(transactionHistoryRows);
-        var availableBuckets = allBuckets
-            .Where(bucket => !ignoredLocations.Contains(bucket.NormalizedLocation))
-            .ToList();
-        var receiptCount = evidenceRows.Select(row => row.ReceiptCount).DefaultIfEmpty(0).Max();
-        var totalSavedQuantity = loads.Sum(load => load.WeightQuantity);
-        var totalMatchedTransferQuantity = GetTotalMatchedTransferQuantity(evidenceRows, allBuckets);
-
-        if (allBuckets.Count == 0)
-        {
-            foreach (var item in items)
-            {
-                if (
-                    TryResolveWorkCenterFallback(
-                        loads,
-                        evidenceRows,
-                        transactionHistoryRows,
-                        out var workCenterMovedAt,
-                        out var workCenterUserId,
-                        out var workCenterDetails
-                    )
-                )
-                {
-                    item.ProposedLocation = WorkCenterLocationId;
-                    item.MatchedLocationQuantity = 0;
-                    item.QuantityMoved = 0;
-                    item.MovedAt = workCenterMovedAt;
-                    item.MovedByUserId = workCenterUserId;
-                    item.AllocationMethod = "Validated work-center transfer and adjustment history";
-                    item.QuantityDifference = 0;
-                    item.Resolution = LocationsEqual(item.ExistingLocation, WorkCenterLocationId)
-                        ? "Unchanged"
-                        : "Updated";
-                    item.Details = workCenterDetails;
-                    continue;
-                }
-
-                item.Resolution = "NotFound";
-                item.Details =
-                    receiptCount > 0
-                        ? "Receipt history exists, but no current on-hand inventory location could be identified for the part."
-                        : "No matching InforVisual receipt history or current inventory was found for the row.";
-            }
-
-            return items;
-        }
-
-        if (availableBuckets.Count == 0)
-        {
-            var ignoredLocationList = string.Join(
-                ", ",
-                allBuckets
-                    .Select(bucket => bucket.DisplayName)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-            );
-
-            foreach (var item in items)
-            {
-                item.Resolution = "IgnoredBySettings";
-                item.Details =
-                    $"All candidate destination locations are currently ignored by user preference: {ignoredLocationList}.";
-            }
-
-            return items;
-        }
-
-        foreach (var item in items)
-        {
-            var selection = SelectBestBucket(item, availableBuckets, historyTracker);
-            if (selection.Bucket is null)
-            {
-                var aggregateSelection = SelectAggregateTransferBucket(
-                    item,
-                    availableBuckets,
-                    totalSavedQuantity,
-                    totalMatchedTransferQuantity
-                );
-
-                if (
-                    aggregateSelection.Bucket is not null
-                    || string.IsNullOrWhiteSpace(aggregateSelection.Resolution) is false
-                )
-                {
-                    selection = aggregateSelection;
-                }
-            }
-
-            if (selection.Bucket is null)
-            {
-                if (
-                    TryResolvePendingVisualReceipt(
-                        item,
-                        loads,
-                        allBuckets,
-                        evidenceRows,
-                        historyTracker,
-                        out var pendingDetails
-                    )
-                )
-                {
-                    item.Resolution = "PendingVisualReceipt";
-                    item.Details = pendingDetails;
-                    continue;
-                }
-
-                item.Resolution = selection.Resolution;
-                item.Details = selection.Details;
-                continue;
-            }
-
-            var selectedBucket = selection.Bucket;
-            var quantityBeforeAllocation = selectedBucket.RemainingQuantity;
-
-            item.ProposedLocation = selectedBucket.LocationId;
-            item.MatchedLocationQuantity = quantityBeforeAllocation;
-            item.QuantityMoved = selection.UsesAllocatedRowQuantity
-                ? item.SavedRowQuantity
-                : quantityBeforeAllocation;
-
-            if (
-                selection.UsesExactHistoryQuantity
-                && historyTracker.TryConsumeExact(
-                    selectedBucket.LocationId,
-                    item.SavedRowQuantity,
-                    out var matchedTransaction
-                )
-            )
-            {
-                item.MovedByUserId = matchedTransaction?.UserId ?? string.Empty;
-                item.MovedAt = matchedTransaction?.TransactionDate;
-            }
-            else
-            {
-                item.MovedByUserId = selectedBucket.MovedByUserId;
-                item.MovedAt = selectedBucket.MovedAt;
-            }
-
-            item.AllocationMethod = selection.AllocationMethod;
-            item.QuantityDifference = selection.UsesAllocatedRowQuantity
-                ? 0
-                : Math.Abs(quantityBeforeAllocation - item.SavedRowQuantity);
-            item.Resolution = selection.Resolution;
-
-            item.Details = string.Create(
-                CultureInfo.InvariantCulture,
-                $"{selection.Details} Remaining destination quantity before allocation: {quantityBeforeAllocation:0.##} {item.QuantityUnitOfMeasure}."
-            );
-
-            selectedBucket.RemainingQuantity = Math.Max(
-                0,
-                selectedBucket.RemainingQuantity - item.SavedRowQuantity
-            );
-        }
-
-        return items;
-    }
-
-    private static List<ReconciliationLocationBucket> BuildCandidateBuckets(
-        IEnumerable<Model_InforVisualLocationEvidence> evidenceRows
-    )
-    {
-        return evidenceRows
-            .Where(row => !string.IsNullOrWhiteSpace(row.CurrentLocationId))
-            .GroupBy(row => new
-            {
-                Warehouse = Normalize(row.CurrentWarehouseId),
-                Location = Normalize(row.CurrentLocationId),
-            })
-            .Select(group =>
-            {
-                var evidence = group
-                    .OrderByDescending(row =>
-                        row.MatchedTransactionDate ?? row.LatestTransactionDate
-                    )
-                    .ThenByDescending(row => row.CurrentQuantity)
-                    .First();
-
-                var matchedTransactionQuantity = group.Sum(row => row.MatchedTransactionQuantity);
-                var currentQuantity = group.Max(row => row.CurrentQuantity);
-                var availableQuantity =
-                    matchedTransactionQuantity > 0 ? matchedTransactionQuantity : currentQuantity;
-
-                return new ReconciliationLocationBucket
-                {
-                    WarehouseId = evidence.CurrentWarehouseId.Trim(),
-                    LocationId = evidence.CurrentLocationId.Trim(),
-                    CurrentQuantity = currentQuantity,
-                    EvidenceQuantity = availableQuantity,
-                    RemainingQuantity = availableQuantity,
-                    HasMatchedTransferQuantity = matchedTransactionQuantity > 0,
-                    AllocationBasis =
-                        matchedTransactionQuantity > 0
-                            ? "Matched PO transfer quantity"
-                            : "Current on-hand inventory quantity",
-                    MovedByUserId = !string.IsNullOrWhiteSpace(evidence.MatchedTransactionUserId)
-                        ? evidence.MatchedTransactionUserId.Trim()
-                        : evidence.LatestTransactionUserId.Trim(),
-                    MovedAt =
-                        evidence.MatchedTransactionDate
-                        ?? evidence.LatestTransactionDate
-                        ?? evidence.LatestReceiptEvidenceDate,
-                };
-            })
-            .Where(bucket => bucket.RemainingQuantity > 0)
-            .OrderByDescending(bucket => bucket.RemainingQuantity)
-            .ThenBy(bucket => bucket.DisplayName, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-    }
-
-    private static BucketSelectionResult SelectBestBucket(
-        Model_ReceivingLocationReconciliationItem item,
-        IReadOnlyList<ReconciliationLocationBucket> buckets,
-        ReconciliationHistoryTracker historyTracker
-    )
-    {
-        var candidates = buckets.Where(bucket => bucket.RemainingQuantity > 0).ToList();
-        if (candidates.Count == 0)
-        {
-            return new BucketSelectionResult(
-                null,
-                "Skipped",
-                string.Empty,
-                "No remaining destination quantity was available after earlier rows in the same receipt group were allocated.",
-                false,
-                false
-            );
-        }
-
-        var sameLocationHistoryCandidates = candidates
-            .Where(bucket =>
-                LocationsEqual(bucket.LocationId, item.ExistingLocation)
-                && bucket.RemainingQuantity >= item.SavedRowQuantity
-                && historyTracker.HasExact(bucket.LocationId, item.SavedRowQuantity)
-            )
-            .ToList();
-
-        if (sameLocationHistoryCandidates.Count == 1)
-        {
-            return new BucketSelectionResult(
-                sameLocationHistoryCandidates[0],
-                "Unchanged",
-                "Same location and quantity history match",
-                "The current location already has an exact matching movement for this load quantity.",
-                true,
-                false
-            );
-        }
-
-        var exactHistoryCandidates = candidates
-            .Where(bucket =>
-                bucket.RemainingQuantity >= item.SavedRowQuantity
-                && historyTracker.HasExact(bucket.LocationId, item.SavedRowQuantity)
-            )
-            .ToList();
-
-        if (exactHistoryCandidates.Count == 1)
-        {
-            var resolution = LocationsEqual(
-                exactHistoryCandidates[0].LocationId,
-                item.ExistingLocation
-            )
-                ? "Unchanged"
-                : "Updated";
-
-            return new BucketSelectionResult(
-                exactHistoryCandidates[0],
-                resolution,
-                "Exact quantity transaction-history match",
-                $"Transaction history contains one exact movement match for this load quantity in {exactHistoryCandidates[0].DisplayName}.",
-                true,
-                false
-            );
-        }
-
-        var newestExactHistoryCandidate = SelectUniqueNewestHistoryCandidate(
-            exactHistoryCandidates,
-            item.SavedRowQuantity,
-            historyTracker
-        );
-        if (newestExactHistoryCandidate is not null)
-        {
-            var resolution = LocationsEqual(
-                newestExactHistoryCandidate.LocationId,
-                item.ExistingLocation
-            )
-                ? "Unchanged"
-                : "Updated";
-
-            return new BucketSelectionResult(
-                newestExactHistoryCandidate,
-                resolution,
-                "Newest exact quantity transaction-history match",
-                $"Transaction history shows the newest exact movement for this load quantity at {newestExactHistoryCandidate.DisplayName}.",
-                true,
-                false
-            );
-        }
-
-        var sameLocationExactByTotal = candidates.FirstOrDefault(bucket =>
-            LocationsEqual(bucket.LocationId, item.ExistingLocation)
-            && bucket.RemainingQuantity == item.SavedRowQuantity
-        );
-        if (sameLocationExactByTotal is not null)
-        {
-            return new BucketSelectionResult(
-                sameLocationExactByTotal,
-                "Unchanged",
-                "Same location and exact total match",
-                "The current location total exactly matches this saved load quantity.",
-                false,
-                false
-            );
-        }
-
-        var exactMatches = candidates
-            .Where(bucket => bucket.RemainingQuantity == item.SavedRowQuantity)
-            .ToList();
-        if (exactMatches.Count == 1)
-        {
-            var resolution = LocationsEqual(exactMatches[0].LocationId, item.ExistingLocation)
-                ? "Unchanged"
-                : "Updated";
-
-            return new BucketSelectionResult(
-                exactMatches[0],
-                resolution,
-                "Exact quantity match",
-                $"Exact quantity match selected {exactMatches[0].DisplayName} using {exactMatches[0].AllocationBasis.ToLowerInvariant()}.",
-                false,
-                false
-            );
-        }
-
-        if (exactMatches.Count > 1)
-        {
-            var sameLocationExactMatch = exactMatches.FirstOrDefault(bucket =>
-                LocationsEqual(bucket.LocationId, item.ExistingLocation)
-            );
-            if (sameLocationExactMatch is not null)
-            {
-                return new BucketSelectionResult(
-                    sameLocationExactMatch,
-                    "Unchanged",
-                    "Same location exact total match",
-                    $"The current location {sameLocationExactMatch.DisplayName} is one of the exact quantity matches, so the load can stay where it is.",
-                    false,
-                    false
-                );
-            }
-
-            var newestExactBucket = SelectUniqueNewestBucket(exactMatches);
-            if (newestExactBucket is not null)
-            {
-                return new BucketSelectionResult(
-                    newestExactBucket,
-                    "Updated",
-                    "Newest exact quantity evidence",
-                    $"Multiple exact quantity totals existed, so the newest evidence location {newestExactBucket.DisplayName} was selected.",
-                    false,
-                    false
-                );
-            }
-
-            return new BucketSelectionResult(
-                null,
-                "Ambiguous",
-                string.Empty,
-                $"Multiple destination locations have the same exact remaining quantity for this row: {string.Join(", ", exactMatches.Select(bucket => bucket.DisplayName))}.",
-                false,
-                false
-            );
-        }
-
-        return new BucketSelectionResult(
-            null,
-            "NotFound",
-            string.Empty,
-            "No current destination location has an exact quantity match or a full aggregate receipt-group transfer match for this load.",
-            false,
-            false
-        );
-    }
-
-    private static BucketSelectionResult SelectAggregateTransferBucket(
-        Model_ReceivingLocationReconciliationItem item,
-        IReadOnlyList<ReconciliationLocationBucket> candidates,
-        decimal totalSavedQuantity,
-        decimal totalMatchedTransferQuantity
-    )
-    {
-        if (totalSavedQuantity <= 0 || totalMatchedTransferQuantity <= 0)
-        {
-            return new BucketSelectionResult(null, string.Empty, string.Empty, string.Empty, false, false);
-        }
-
-        if (totalMatchedTransferQuantity != totalSavedQuantity)
-        {
-            return new BucketSelectionResult(null, string.Empty, string.Empty, string.Empty, false, false);
-        }
-
-        var aggregateCandidates = candidates
-            .Where(bucket =>
-                bucket.HasMatchedTransferQuantity
-                && bucket.EvidenceQuantity == totalMatchedTransferQuantity
-                && bucket.RemainingQuantity >= item.SavedRowQuantity
-            )
-            .ToList();
-
-        if (aggregateCandidates.Count == 1)
-        {
-            var resolution = LocationsEqual(aggregateCandidates[0].LocationId, item.ExistingLocation)
-                ? "Unchanged"
-                : "Updated";
-
-            return new BucketSelectionResult(
-                aggregateCandidates[0],
-                resolution,
-                "Aggregate same-day transfer quantity match",
-                string.Create(
-                    CultureInfo.InvariantCulture,
-                    $"A single destination location has matched PO transfer evidence for the full {totalMatchedTransferQuantity:0.##} {item.QuantityUnitOfMeasure} receipt-day total, so this row can be allocated to {aggregateCandidates[0].DisplayName}."
-                ),
-                false,
-                true
-            );
-        }
-
-        if (aggregateCandidates.Count > 1)
-        {
-            return new BucketSelectionResult(
-                null,
-                "Ambiguous",
-                string.Empty,
-                "Multiple destination locations appear to hold the full aggregate transfer quantity for this receipt-day group.",
-                false,
-                false
-            );
-        }
-
-        return new BucketSelectionResult(null, string.Empty, string.Empty, string.Empty, false, false);
-    }
-
-    private static decimal GetTotalMatchedTransferQuantity(
-        IReadOnlyList<Model_InforVisualLocationEvidence> evidenceRows,
-        IReadOnlyList<ReconciliationLocationBucket> allBuckets
-    )
-    {
-        var totalFromQuery = evidenceRows
-            .Select(row => row.TotalMatchedTransactionQuantity)
-            .DefaultIfEmpty(0)
-            .Max();
-
-        if (totalFromQuery > 0)
-        {
-            return totalFromQuery;
-        }
-
-        return allBuckets.Where(bucket => bucket.HasMatchedTransferQuantity).Sum(bucket => bucket.EvidenceQuantity);
-    }
-
-    private static ReconciliationLocationBucket? SelectUniqueNewestHistoryCandidate(
-        IEnumerable<ReconciliationLocationBucket> candidates,
-        decimal quantity,
-        ReconciliationHistoryTracker historyTracker
-    )
-    {
-        var datedCandidates = candidates
-            .Select(candidate => new
-            {
-                Candidate = candidate,
-                LatestDate = historyTracker.GetLatestExactDate(candidate.LocationId, quantity),
-            })
-            .Where(entry => entry.LatestDate.HasValue)
-            .OrderByDescending(entry => entry.LatestDate)
-            .ToList();
-
-        if (datedCandidates.Count < 2)
-        {
-            return datedCandidates.FirstOrDefault()?.Candidate;
-        }
-
-        return datedCandidates[0].LatestDate > datedCandidates[1].LatestDate
-            ? datedCandidates[0].Candidate
-            : null;
-    }
-
-    private static ReconciliationLocationBucket? SelectUniqueNewestBucket(
-        IEnumerable<ReconciliationLocationBucket> candidates
-    )
-    {
-        var orderedCandidates = candidates
-            .Where(candidate => candidate.MovedAt.HasValue)
-            .OrderByDescending(candidate => candidate.MovedAt)
-            .ToList();
-
-        if (orderedCandidates.Count == 0)
-        {
-            return null;
-        }
-
-        if (orderedCandidates.Count == 1)
-        {
-            return orderedCandidates[0];
-        }
-
-        return orderedCandidates[0].MovedAt > orderedCandidates[1].MovedAt
-            ? orderedCandidates[0]
-            : null;
-    }
-
-    private static bool TryResolvePendingVisualReceipt(
-        Model_ReceivingLocationReconciliationItem item,
-        IReadOnlyList<Model_ReceivingLoad> loads,
-        IReadOnlyList<ReconciliationLocationBucket> buckets,
-        IReadOnlyList<Model_InforVisualLocationEvidence> evidenceRows,
-        ReconciliationHistoryTracker historyTracker,
-        out string details
-    )
-    {
-        details = string.Empty;
-
-        var totalSavedQuantity = loads.Sum(load => load.WeightQuantity);
-        var totalVisibleQuantity = buckets.Sum(bucket => bucket.RemainingQuantity);
-        var missingQuantity = totalSavedQuantity - totalVisibleQuantity;
-        if (missingQuantity <= 0)
-        {
-            return false;
-        }
-
-        if (historyTracker.HasExact(item.ExistingLocation, item.SavedRowQuantity))
-        {
-            return false;
-        }
-
-        var latestReceiptLocation = evidenceRows
-            .Select(row => row.LatestReceiptLocationId)
-            .FirstOrDefault(location => !string.IsNullOrWhiteSpace(location));
-        var looksLikeReceiptSide =
-            LocationsEqual(item.ExistingLocation, latestReceiptLocation)
-            || Normalize(item.ExistingLocation)
-                .StartsWith("RECV", StringComparison.OrdinalIgnoreCase);
-        if (!looksLikeReceiptSide)
-        {
-            return false;
-        }
-
-        details = string.Create(
-            CultureInfo.InvariantCulture,
-            $"MTM currently shows {totalSavedQuantity:0.##} {item.QuantityUnitOfMeasure} for this PO and part, while InforVisual currently shows {totalVisibleQuantity:0.##}. The missing {missingQuantity:0.##} may indicate that the PO receipt has not posted into InforVisual yet."
-        );
-        return true;
-    }
-
-    private static bool TryResolveWorkCenterFallback(
-        IReadOnlyList<Model_ReceivingLoad> loads,
-        IReadOnlyList<Model_InforVisualLocationEvidence> evidenceRows,
-        IReadOnlyList<Model_InforVisualLocationTransaction> transactionHistoryRows,
-        out DateTime? movedAt,
-        out string movedByUserId,
-        out string details
-    )
-    {
-        movedAt = null;
-        movedByUserId = string.Empty;
-        details = string.Empty;
-
-        if (loads.Count == 0 || transactionHistoryRows.Count == 0)
-        {
-            return false;
-        }
-
-        var totalSavedQuantity = loads.Sum(load => load.WeightQuantity);
-        if (totalSavedQuantity <= 0)
-        {
-            return false;
-        }
-
-        var hasReceiptEvidence =
-            evidenceRows.Any(row =>
-                row.ReceiptCount > 0 || !string.IsNullOrWhiteSpace(row.LatestReceiptLocationId)
-            )
-            || transactionHistoryRows.Any(row => !string.IsNullOrWhiteSpace(row.ReceiptLocationId));
-        if (!hasReceiptEvidence)
-        {
-            return false;
-        }
-
-        var workCenterTransactions = transactionHistoryRows
-            .Where(row => IsWorkCenterLocation(row.LocationId))
-            .OrderBy(row => row.TransactionDate)
-            .ThenBy(row => row.TransactionId ?? int.MaxValue)
-            .ToList();
-        if (workCenterTransactions.Count == 0)
-        {
-            return false;
-        }
-
-        var firstInboundToWorkCenter = workCenterTransactions.FirstOrDefault(row =>
-            row.Quantity > 0
-        );
-        if (firstInboundToWorkCenter is null)
-        {
-            return false;
-        }
-
-        var totalInboundToWorkCenter = workCenterTransactions
-            .Where(row => row.Quantity > 0)
-            .Sum(row => row.Quantity);
-        if (totalInboundToWorkCenter < totalSavedQuantity)
-        {
-            return false;
-        }
-
-        var totalOutboundFromWorkCenter = workCenterTransactions
-            .Where(row =>
-                row.Quantity < 0 && row.TransactionDate >= firstInboundToWorkCenter.TransactionDate
-            )
-            .Sum(row => Math.Abs(row.Quantity));
-        if (totalOutboundFromWorkCenter < totalSavedQuantity)
-        {
-            return false;
-        }
-
-        movedAt = firstInboundToWorkCenter.TransactionDate;
-        movedByUserId = firstInboundToWorkCenter.UserId?.Trim() ?? string.Empty;
-        details = string.Create(
-            CultureInfo.InvariantCulture,
-            $"No current on-hand inventory remains in InforVisual. Transaction history shows this receipt group moved into {WorkCenterLocationId} and later fully removed from that work-center location, so MTM should retain {WorkCenterLocationId} as the last validated saved location."
-        );
-        return true;
-    }
-
-    private static string NormalizeInforVisualPoNumber(string? poNumber)
-    {
-        if (string.IsNullOrWhiteSpace(poNumber))
-        {
-            return string.Empty;
-        }
-
-        var trimmed = poNumber.Trim().ToUpperInvariant();
-        var match = CanonicalPoPattern.Match(trimmed);
-        if (!match.Success)
-        {
-            return trimmed;
-        }
-
-        var digits = match.Groups["digits"].Value;
-        var suffix = match.Groups["suffix"].Value.ToUpperInvariant();
-        return string.Create(CultureInfo.InvariantCulture, $"PO-{digits.PadLeft(6, '0')}{suffix}");
     }
 
     private static void RecordPreviewDecision(
@@ -1106,6 +654,7 @@ public sealed class Service_ReceivingLocationReconciliation
             case "Unchanged":
                 summary.UnchangedCount++;
                 break;
+            case "IgnoredBySettings":
             case "Ambiguous":
                 summary.AmbiguousCount++;
                 summary.UnresolvedItems.Add(item);
@@ -1114,72 +663,70 @@ public sealed class Service_ReceivingLocationReconciliation
                 summary.NotFoundCount++;
                 summary.UnresolvedItems.Add(item);
                 break;
-            case "Skipped":
-                summary.SkippedCount++;
-                summary.UnresolvedItems.Add(item);
-                break;
-            case "IgnoredBySettings":
-                summary.SkippedCount++;
-                break;
-            case "PendingVisualReceipt":
-                summary.SkippedCount++;
+            case "Error":
+                summary.ErrorCount++;
                 summary.UnresolvedItems.Add(item);
                 break;
             default:
-                summary.ErrorCount++;
-                summary.UnresolvedItems.Add(item);
+                summary.SkippedCount++;
                 break;
         }
     }
 
     private async Task<HashSet<string>> GetIgnoredLocationsAsync()
     {
-        var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
-        var stored = await _receivingSettings.GetStringAsync(
-            ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson,
-            currentUserId
-        );
-
-        if (string.IsNullOrWhiteSpace(stored))
-        {
-            stored = ReceivingSettingsDefaults.StringDefaults[
-                ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson
-            ];
-        }
-
         try
         {
-            var locations = System.Text.Json.JsonSerializer.Deserialize<string[]>(stored) ?? [];
+            var ignoredLocationsJson = await _receivingSettings.GetStringAsync(
+                ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson
+            );
+            if (string.IsNullOrWhiteSpace(ignoredLocationsJson))
+            {
+                return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            var ignoredLocations = JsonSerializer.Deserialize<List<string>>(ignoredLocationsJson) ?? [];
             return new HashSet<string>(
-                locations.Select(Normalize),
+                ignoredLocations.Select(Normalize).Where(location => string.IsNullOrWhiteSpace(location) is false),
                 StringComparer.OrdinalIgnoreCase
             );
         }
-        catch
+        catch (Exception ex)
         {
-            var locations = stored.Split(
-                new[] { '\r', '\n', ',', ';' },
-                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+            _logger.LogWarning(
+                $"Failed to load ignored reconciliation locations. Continuing without exclusions. {ex.Message}"
             );
-            return new HashSet<string>(
-                locations.Select(Normalize),
-                StringComparer.OrdinalIgnoreCase
-            );
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
     }
 
-    private static bool LocationsEqual(string? left, string? right)
+    private static string NormalizeInforVisualPoNumber(string? poNumber)
     {
-        return string.Equals(Normalize(left), Normalize(right), StringComparison.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(poNumber))
+        {
+            return string.Empty;
+        }
+
+        var match = CanonicalPoPattern.Match(poNumber.Trim());
+        if (!match.Success)
+        {
+            return string.Empty;
+        }
+
+        var digits = match.Groups["digits"].Value.PadLeft(6, '0');
+        var suffix = match.Groups["suffix"].Value.ToUpperInvariant();
+        return $"PO-{digits}{suffix}";
     }
 
-    private static bool IsWorkCenterLocation(string? locationId)
+    private static string BuildPoKey(string? poNumber, string? poLineNumber)
     {
-        return string.Equals(
-            Normalize(locationId),
-            WorkCenterLocationId,
-            StringComparison.OrdinalIgnoreCase
-        );
+        var canonicalPoNumber = NormalizeInforVisualPoNumber(poNumber);
+        if (string.IsNullOrWhiteSpace(canonicalPoNumber))
+        {
+            return string.Empty;
+        }
+
+        return $"{canonicalPoNumber}|{Normalize(poLineNumber)}";
     }
 
     private static string Normalize(string? value)
@@ -1187,120 +734,35 @@ public sealed class Service_ReceivingLocationReconciliation
         return string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim().ToUpperInvariant();
     }
 
-    private sealed record ReconciliationGroupKey(
-        string PoNumber,
-        string PartId,
-        string PoLineNumber,
-        DateTime ReceivedDate
-    );
+    private static bool LocationsEqual(string? left, string? right)
+    {
+        return string.Equals(Normalize(left), Normalize(right), StringComparison.OrdinalIgnoreCase);
+    }
 
-    private sealed class ReconciliationLocationBucket
+    private sealed record ReconciliationGroupKey(string PartId, DateTime ReceivedDate);
+
+    private sealed class TransferBucket
     {
         public string WarehouseId { get; init; } = string.Empty;
 
         public string LocationId { get; init; } = string.Empty;
 
-        public decimal CurrentQuantity { get; init; }
+        public string NormalizedLocation { get; init; } = string.Empty;
 
-        public decimal EvidenceQuantity { get; init; }
+        public decimal NetQuantity { get; init; }
 
         public decimal RemainingQuantity { get; set; }
 
-        public bool HasMatchedTransferQuantity { get; init; }
+        public DateTime LatestTransactionDate { get; init; }
 
-        public string AllocationBasis { get; init; } = string.Empty;
+        public string TransactionUserId { get; init; } = string.Empty;
 
-        public string MovedByUserId { get; init; } = string.Empty;
+        public int TransferCount { get; init; }
 
-        public DateTime? MovedAt { get; init; }
+        public string SourceLocationsText { get; init; } = string.Empty;
 
-        public string NormalizedLocation => Normalize(LocationId);
-
-        public string DisplayName =>
-            string.IsNullOrWhiteSpace(WarehouseId) ? LocationId : $"{WarehouseId}/{LocationId}";
-    }
-
-    private sealed record BucketSelectionResult(
-        ReconciliationLocationBucket? Bucket,
-        string Resolution,
-        string AllocationMethod,
-        string Details,
-        bool UsesExactHistoryQuantity,
-        bool UsesAllocatedRowQuantity
-    );
-
-    private sealed class ReconciliationHistoryTracker
-    {
-        private readonly Dictionary<
-            string,
-            Queue<Model_InforVisualLocationTransaction>
-        > _exactHistoryByLocationAndQuantity;
-
-        public ReconciliationHistoryTracker(
-            IEnumerable<Model_InforVisualLocationTransaction> transactionHistoryRows
-        )
-        {
-            _exactHistoryByLocationAndQuantity = transactionHistoryRows
-                .Where(row => !string.IsNullOrWhiteSpace(row.LocationId) && row.Quantity > 0)
-                .GroupBy(row => BuildKey(row.LocationId, row.Quantity))
-                .ToDictionary(
-                    group => group.Key,
-                    group => new Queue<Model_InforVisualLocationTransaction>(
-                        group.OrderByDescending(row => row.TransactionDate)
-                    ),
-                    StringComparer.OrdinalIgnoreCase
-                );
-        }
-
-        public bool HasExact(string locationId, decimal quantity)
-        {
-            return _exactHistoryByLocationAndQuantity.TryGetValue(
-                    BuildKey(locationId, quantity),
-                    out var historyRows
-                )
-                && historyRows.Count > 0;
-        }
-
-        public DateTime? GetLatestExactDate(string locationId, decimal quantity)
-        {
-            return
-                _exactHistoryByLocationAndQuantity.TryGetValue(
-                    BuildKey(locationId, quantity),
-                    out var historyRows
-                )
-                && historyRows.Count > 0
-                ? historyRows.Peek().TransactionDate
-                : null;
-        }
-
-        public bool TryConsumeExact(
-            string locationId,
-            decimal quantity,
-            out Model_InforVisualLocationTransaction? transaction
-        )
-        {
-            transaction = null;
-            if (
-                !_exactHistoryByLocationAndQuantity.TryGetValue(
-                    BuildKey(locationId, quantity),
-                    out var historyRows
-                )
-                || historyRows.Count == 0
-            )
-            {
-                return false;
-            }
-
-            transaction = historyRows.Dequeue();
-            return true;
-        }
-
-        private static string BuildKey(string locationId, decimal quantity)
-        {
-            return string.Create(
-                CultureInfo.InvariantCulture,
-                $"{Normalize(locationId)}|{quantity:0.########}"
-            );
-        }
+        public string DisplayLocation => string.IsNullOrWhiteSpace(WarehouseId)
+            ? LocationId
+            : $"{WarehouseId} / {LocationId}";
     }
 }

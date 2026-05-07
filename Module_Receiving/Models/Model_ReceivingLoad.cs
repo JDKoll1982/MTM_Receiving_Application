@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 
@@ -10,6 +11,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     /// </summary>
     public partial class Model_ReceivingLoad : ObservableObject
     {
+        private static readonly Regex CanonicalPoNumberPattern = new(
+            @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[Bb]?)$",
+            RegexOptions.IgnoreCase
+        );
+
         [ObservableProperty]
         private Guid _loadID = Guid.NewGuid();
 
@@ -151,6 +157,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             OnPropertyChanged(nameof(PackageTypeDisplayName));
         }
 
+        partial void OnPoNumberChanged(string? value)
+        {
+            var normalizedPoNumber = NormalizePoNumber(value);
+            if (string.Equals(value, normalizedPoNumber, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            PoNumber = normalizedPoNumber;
+        }
+
+        partial void OnHeatLotNumberChanged(string value)
+        {
+            var normalizedHeatLotNumber = NormalizeHeatLotNumber(value);
+            if (string.Equals(value, normalizedHeatLotNumber, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            HeatLotNumber = normalizedHeatLotNumber;
+        }
+
         partial void OnPackageTypeNameChanged(string value)
         {
             if (Enum.TryParse<Enum_PackageType>(value, out var result))
@@ -172,6 +200,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             CalculateWeightPerPackage();
         }
 
+        partial void OnWeightPerPackageChanged(decimal value)
+        {
+            OnPropertyChanged(nameof(WeightPerPackageDisplay));
+            OnPropertyChanged(nameof(WeightPerPackageValueDisplay));
+        }
+
         /// <summary>
         /// Calculates and updates WeightPerPackage when package count changes.
         /// </summary>
@@ -180,15 +214,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             CalculateWeightPerPackage();
         }
 
+        partial void OnUnitOfMeasureChanged(string value)
+        {
+            OnPropertyChanged(nameof(WeightPerPackageLabel));
+            OnPropertyChanged(nameof(WeightPerPackageDisplay));
+            OnPropertyChanged(nameof(WeightPerPackageValueDisplay));
+        }
+
         /// <summary>
-        /// Calculates weight per package: WeightQuantity ÷ PackagesPerLoad.
+        /// Calculates the per-package quantity by dividing the entered quantity across packages.
         /// </summary>
         private void CalculateWeightPerPackage()
         {
             if (PackagesPerLoad > 0)
             {
-                // Round to whole number as requested
-                WeightPerPackage = Math.Round(WeightQuantity / PackagesPerLoad, 0);
+                WeightPerPackage = Math.Ceiling(WeightQuantity / PackagesPerLoad);
             }
             else
             {
@@ -197,9 +237,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         }
 
         /// <summary>
-        /// Display property for review grid showing weight per package with unit.
+        /// Gets the label shown for the per-package quantity in Guided Mode.
         /// </summary>
-        public string WeightPerPackageDisplay => $"{WeightPerPackage:F0} lbs per {PackageTypeName}";
+        public string WeightPerPackageLabel => $"{GetDisplayUnitOfMeasure()} per Package";
+
+        /// <summary>
+        /// Gets the formatted per-package quantity value with the Infor Visual unit type.
+        /// </summary>
+        public string WeightPerPackageValueDisplay => $"{WeightPerPackage:F0} {GetDisplayUnitOfMeasure()}";
+
+        /// <summary>
+        /// Display property for review grid showing per-package quantity with unit.
+        /// </summary>
+        public string WeightPerPackageDisplay =>
+            $"{WeightPerPackage:F0} {GetDisplayUnitOfMeasure()} per {PackageTypeName}";
 
         /// <summary>
         /// Display property for PO number handling null values.
@@ -210,5 +261,36 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         /// Display property for load number (used in DataTemplates where x:Bind cannot call into the parent ViewModel).
         /// </summary>
         public string LoadDisplayText => $"Load {LoadNumber}";
+
+        private string GetDisplayUnitOfMeasure()
+        {
+            return string.IsNullOrWhiteSpace(UnitOfMeasure) ? "Units" : UnitOfMeasure.Trim().ToUpperInvariant();
+        }
+
+        private static string? NormalizePoNumber(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            var trimmedValue = value.Trim();
+            var match = CanonicalPoNumberPattern.Match(trimmedValue);
+            if (!match.Success)
+            {
+                return trimmedValue;
+            }
+
+            var digits = match.Groups["digits"].Value;
+            var suffix = match.Groups["suffix"].Value.ToUpperInvariant();
+            return $"PO-{digits.PadLeft(6, '0')}{suffix}";
+        }
+
+        private static string NormalizeHeatLotNumber(string value)
+        {
+            return string.IsNullOrWhiteSpace(value)
+                ? string.Empty
+                : value.Trim().ToUpperInvariant();
+        }
     }
 }

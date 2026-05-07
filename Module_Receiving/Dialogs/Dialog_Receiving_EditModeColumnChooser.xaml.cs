@@ -253,7 +253,7 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
             "RemainingQuantity" => "Remaining Quantity",
             "PackagesPerLoad" => "Packages per Load",
             "PackageType" => "Package Type",
-            "WeightPerPackage" => "Weight per Package",
+            "WeightPerPackage" => "UOM per Package",
             "IsNonPOItem" => "Non-PO Item",
             "UserId" => "Created By User",
             "EmployeeNumber" => "Created By Employee Number",

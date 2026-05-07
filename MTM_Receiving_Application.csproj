@@ -6,9 +6,9 @@
     <EnableDefaultPageItems>true</EnableDefaultPageItems>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>MTM_Receiving_Application</RootNamespace>
-    <Version>2.2.0.0</Version>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
+    <Version>2.4.0.0</Version>
+    <AssemblyVersion>2.4.0.0</AssemblyVersion>
+    <FileVersion>2.4.0.0</FileVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- x64 only — all manufacturing floor PCs are x64 Windows. ARM64 and x86 removed
          to eliminate parallel build file-lock issues and reduce build time. -->

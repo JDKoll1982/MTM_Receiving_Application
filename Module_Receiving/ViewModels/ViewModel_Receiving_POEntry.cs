@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -34,6 +35,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private DateTime? _currentPoHeaderPromiseDate;
         private NotifyCollectionChangedEventHandler? _partsCollectionChangedHandler;
         private bool _isClearingRestrictedSelection;
+        private static readonly Regex CanonicalPoNumberPattern = new(
+            @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[Bb]?)$",
+            RegexOptions.IgnoreCase
+        );
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -265,31 +270,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private void PoTextBoxLostFocus()
         {
-            // Auto-correction only on LostFocus (not TextChanged)
             if (string.IsNullOrWhiteSpace(PoNumber))
             {
                 return;
             }
 
-            // Trim and uppercase first
-            string value = PoNumber.Trim().ToUpper();
+            if (TryNormalizePoNumber(PoNumber, out var normalizedPoNumber, out _))
+            {
+                PoNumber = normalizedPoNumber;
+                return;
+            }
 
-            // Format the PO number
-            if (value.StartsWith("PO-", StringComparison.OrdinalIgnoreCase))
-            {
-                // Extract number part and reformat
-                string numberPart = value.Substring(3);
-                if (numberPart.All(char.IsDigit) && numberPart.Length <= 6)
-                {
-                    PoNumber = $"PO-{numberPart.PadLeft(6, '0')}";
-                }
-            }
-            else if (value.All(char.IsDigit) && value.Length <= 6)
-            {
-                // Just numbers - add PO- prefix and pad
-                PoNumber = $"PO-{value.PadLeft(6, '0')}";
-            }
-            // If invalid format, leave as-is and let validation message show
+            PoNumber = PoNumber.Trim().ToUpperInvariant();
         }
 
         [RelayCommand]
@@ -555,9 +547,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         partial void OnPoNumberChanged(string value)
         {
-            // Validate PO number format (validation only, no auto-correction)
-            // Auto-correction happens only on LostFocus
-
             if (string.IsNullOrWhiteSpace(value))
             {
                 _workflowService.CurrentPONumber = string.Empty;
@@ -568,62 +557,49 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
-            string validatedPO = value.Trim();
-            bool isValid = false;
-
-            // Check if value starts with "po-" or "PO-" (case insensitive)
-            if (validatedPO.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
+            if (!TryNormalizePoNumber(value, out var validatedPoNumber, out var validationMessage))
             {
-                // Extract the number part after "PO-"
-                string numberPart = validatedPO.Substring(3);
-
-                // Check if it's all digits and validate length
-                if (numberPart.All(char.IsDigit))
-                {
-                    if (numberPart.Length <= 6)
-                    {
-                        validatedPO = $"PO-{numberPart.PadLeft(6, '0')}";
-                        isValid = true;
-                    }
-                    else
-                    {
-                        PoValidationMessage = "PO number must be 6 digits or less";
-                        IsLoadPOEnabled = false;
-                        return;
-                    }
-                }
-                else
-                {
-                    PoValidationMessage = "Invalid PO format. Use: PO-NNNNNN (6 digits)";
-                    IsLoadPOEnabled = false;
-                    return;
-                }
-            }
-            else if (validatedPO.All(char.IsDigit))
-            {
-                // Just numbers, no prefix
-                if (validatedPO.Length <= 6)
-                {
-                    validatedPO = $"PO-{validatedPO.PadLeft(6, '0')}";
-                    isValid = true;
-                }
-                else
-                {
-                    PoValidationMessage = "PO number must be 6 digits or less";
-                    IsLoadPOEnabled = false;
-                    return;
-                }
-            }
-            else
-            {
-                PoValidationMessage = "Invalid PO format. Enter: 66868 or PO-066868";
+                PoValidationMessage = validationMessage;
                 IsLoadPOEnabled = false;
                 return;
             }
 
-            _workflowService.CurrentPONumber = validatedPO;
-            IsLoadPOEnabled = isValid;
-            PoValidationMessage = isValid ? string.Empty : "Invalid PO number format";
+            _workflowService.CurrentPONumber = validatedPoNumber;
+            IsLoadPOEnabled = true;
+            PoValidationMessage = string.Empty;
+        }
+
+        private static bool TryNormalizePoNumber(
+            string? value,
+            out string normalizedPoNumber,
+            out string validationMessage
+        )
+        {
+            normalizedPoNumber = string.Empty;
+            validationMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var match = CanonicalPoNumberPattern.Match(value.Trim());
+            if (!match.Success)
+            {
+                validationMessage = "Invalid PO format. Enter: 66868, 66868B, PO-066868, or PO-066868B";
+                return false;
+            }
+
+            var digits = match.Groups["digits"].Value;
+            if (digits.Length > 6)
+            {
+                validationMessage = "PO number must be 6 digits or less";
+                return false;
+            }
+
+            var suffix = match.Groups["suffix"].Value.ToUpperInvariant();
+            normalizedPoNumber = $"PO-{digits.PadLeft(6, '0')}{suffix}";
+            return true;
         }
 
         partial void OnPartIDChanged(string value)

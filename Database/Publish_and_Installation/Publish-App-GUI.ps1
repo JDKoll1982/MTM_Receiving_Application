@@ -49,8 +49,15 @@ $script:LastSyncProgressRender = [datetime]::MinValue
 $script:PublishCompletionHandled = $false
 $script:IsPublishInProgress = $false
 $script:IsSyncInProgress = $false
-$script:SyncWorker = $null
+$script:SyncProcess = $null
+$script:SyncPollTimer = $null
+$script:SyncOutFile = $null
+$script:SyncLastPos = 0L
 $script:ExistingBuildAvailability = $null
+$script:ProtectedDeploymentRelativePaths = @(
+    'Assets\DunnageImages',
+    'Assets/DunnageImages'
+)
 
 function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
@@ -113,6 +120,86 @@ function Set-SelectedSatelliteLanguage {
     }
 
     $satelliteLanguagesComboBox.SelectedIndex = 0
+}
+
+function Test-PathIsEqualOrChild {
+    param(
+        [string]$BasePath,
+        [string]$CandidatePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($BasePath) -or [string]::IsNullOrWhiteSpace($CandidatePath)) {
+        return $false
+    }
+
+    try {
+        $normalizedBase = [System.IO.Path]::GetFullPath($BasePath).TrimEnd('\', '/')
+        $normalizedCandidate = [System.IO.Path]::GetFullPath($CandidatePath).TrimEnd('\', '/')
+    }
+    catch {
+        return $false
+    }
+
+    if ([string]::Equals($normalizedBase, $normalizedCandidate, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $true
+    }
+
+    $candidateWithSeparator = "$normalizedCandidate\"
+    $baseWithSeparator = "$normalizedBase\"
+    return $candidateWithSeparator.StartsWith($baseWithSeparator, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Get-OutputPathValidationResult {
+    param(
+        [string]$OutputRootPath,
+        [hashtable]$Option
+    )
+
+    if ([string]::IsNullOrWhiteSpace($OutputRootPath)) {
+        return [pscustomobject]@{
+            IsValid = $false
+            Message = 'Choose a publish output folder before publishing.'
+        }
+    }
+
+    try {
+        $resolvedRoot = [System.IO.Path]::GetFullPath($OutputRootPath)
+    }
+    catch {
+        return [pscustomobject]@{
+            IsValid = $false
+            Message = 'The selected publish output folder is not a valid path.'
+        }
+    }
+
+    $resolvedDestination = if ($null -eq $Option) {
+        $resolvedRoot
+    }
+    else {
+        [System.IO.Path]::GetFullPath((Join-Path $resolvedRoot $Option.Folder))
+    }
+
+    if (Test-PathIsEqualOrChild -BasePath $repoRoot -CandidatePath $resolvedRoot) {
+        return [pscustomobject]@{
+            IsValid = $false
+            Message = 'The publish output folder cannot be inside the source-code repository.'
+        }
+    }
+
+    $stagingRoot = Join-Path $env:LOCALAPPDATA 'MTM Receiving Application\PublishTool\Staging'
+    if (Test-PathIsEqualOrChild -BasePath $stagingRoot -CandidatePath $resolvedRoot) {
+        return [pscustomobject]@{
+            IsValid = $false
+            Message = 'The publish output folder cannot be the tool''s temporary staging folder.'
+        }
+    }
+
+    return [pscustomobject]@{
+        IsValid = $true
+        Message = ''
+        OutputRootPath = $resolvedRoot
+        DestinationPath = $resolvedDestination
+    }
 }
 
 function Test-PublishOutputDirectoryHasFiles {
@@ -546,7 +633,7 @@ function Update-ExistingBuildCheckboxState {
         $wasDisabled = -not $useExistingBuildCheckBox.IsEnabled
         $useExistingBuildCheckBox.IsEnabled = $true
         if ($wasDisabled -or $null -eq $useExistingBuildCheckBox.IsChecked) {
-            $useExistingBuildCheckBox.IsChecked = $true
+            $useExistingBuildCheckBox.IsChecked = $false
         }
 
         $useExistingBuildCheckBox.ToolTip = "Reuse the compatible existing build output from $($availability.BuildOutputPath) by adding --no-build to dotnet publish."
@@ -732,9 +819,20 @@ function Select-OutputRootFolder {
 
     try {
         if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK -and -not [string]::IsNullOrWhiteSpace($dialog.SelectedPath)) {
-            $script:OutputRootPath = $dialog.SelectedPath
+            $validationResult = Get-OutputPathValidationResult -OutputRootPath $dialog.SelectedPath -Option $script:selectedOption
+            if (-not $validationResult.IsValid) {
+                [System.Windows.MessageBox]::Show(
+                    $validationResult.Message,
+                    'Unsafe Publish Output Folder',
+                    [System.Windows.MessageBoxButton]::OK,
+                    [System.Windows.MessageBoxImage]::Warning) | Out-Null
+                Update-PublishStatus $validationResult.Message
+                return
+            }
+
+            $script:OutputRootPath = $validationResult.OutputRootPath
             Update-OutputPathDisplay
-            Update-PublishStatus "Publish output folder updated."
+            Update-PublishStatus 'Publish output folder updated.'
         }
     }
     finally {
@@ -775,17 +873,37 @@ function Stop-PublishSession {
 }
 
 function Reset-SyncWorker {
-    if ($null -eq $script:SyncWorker) {
-        return
+    if ($null -ne $script:SyncPollTimer) {
+        try {
+            $script:SyncPollTimer.Stop()
+        }
+        catch {
+        }
+
+        $script:SyncPollTimer = $null
     }
 
-    try {
-        $script:SyncWorker.Dispose()
-    }
-    catch {
+    if ($null -ne $script:SyncProcess) {
+        try {
+            $script:SyncProcess.Dispose()
+        }
+        catch {
+        }
+
+        $script:SyncProcess = $null
     }
 
-    $script:SyncWorker = $null
+    if (-not [string]::IsNullOrWhiteSpace($script:SyncOutFile)) {
+        try {
+            Remove-Item -LiteralPath $script:SyncOutFile -Force -ErrorAction SilentlyContinue
+        }
+        catch {
+        }
+
+        $script:SyncOutFile = $null
+    }
+
+    $script:SyncLastPos = 0L
 }
 
 function Set-OperationUiState {
@@ -933,62 +1051,100 @@ function Start-PublishOutputSync {
     Set-OperationUiState -IsBusy $true
     $script:LastSyncProgressRender = [datetime]::MinValue
 
-    Set-PublishProgressState -Visible $true -IsIndeterminate $false -Value 0 -Maximum 1
+    Set-PublishProgressState -Visible $true -IsIndeterminate $true
     Update-PublishStatus "Starting migration of the staged publish output to the shared drive..."
     Add-PublishLogText "`r`nSync Started`r`nDeployment target: $DestinationPath`r`n"
 
-    $worker = New-Object System.ComponentModel.BackgroundWorker
-    $worker.WorkerReportsProgress = $true
+    $syncStagingPath = $StagingPath
+    $syncDestinationPath = $DestinationPath
+    $syncPublishExitCode = $PublishExitCode
 
-    $worker.add_DoWork({
-            param($sender, $eventArgs)
+    $script:SyncOutFile = [System.IO.Path]::GetTempFileName()
+    $script:SyncLastPos = 0L
+    $protectedDirectories = @('_PublishLogs') + $script:ProtectedDeploymentRelativePaths
+    $quotedProtectedDirectories = @($protectedDirectories | ForEach-Object { "`"$_`"" }) -join ' '
+    $syncCommand = "robocopy `"$syncStagingPath`" `"$syncDestinationPath`" /MIR /R:1 /W:1 /XJ /XD $quotedProtectedDirectories"
+    $syncCmdArgs = "/c $syncCommand > `"$($script:SyncOutFile)`" 2>&1"
 
-            $syncContext = $eventArgs.Argument
-            $progressAction = {
-                param($completedSteps, $totalSteps, $phase)
+    $syncPsi = New-Object System.Diagnostics.ProcessStartInfo
+    $syncPsi.FileName = 'cmd.exe'
+    $syncPsi.Arguments = $syncCmdArgs
+    $syncPsi.UseShellExecute = $false
+    $syncPsi.CreateNoWindow = $true
 
-                $sender.ReportProgress(0, [pscustomobject]@{
-                        CompletedSteps = $completedSteps
-                        TotalSteps     = $totalSteps
-                        Phase          = $phase
-                    })
+    $script:SyncProcess = New-Object System.Diagnostics.Process
+    $script:SyncProcess.StartInfo = $syncPsi
+    $script:SyncProcess.Start() | Out-Null
+
+    $script:SyncPollTimer = New-Object System.Windows.Threading.DispatcherTimer
+    $script:SyncPollTimer.Interval = [TimeSpan]::FromMilliseconds(200)
+    $script:SyncPollTimer.Add_Tick({
+            try {
+                $fs = [System.IO.File]::Open($script:SyncOutFile,
+                    [System.IO.FileMode]::Open,
+                    [System.IO.FileAccess]::Read,
+                    [System.IO.FileShare]::ReadWrite)
+                $fs.Seek($script:SyncLastPos, [System.IO.SeekOrigin]::Begin) | Out-Null
+                $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
+                $newText = $reader.ReadToEnd()
+                $script:SyncLastPos = $fs.Position
+                $reader.Dispose()
+                $fs.Dispose()
+
+                if ($newText.Length -gt 0) {
+                    $outputText.Text += $newText
+                    Add-PublishLogText $newText
+                    $lastLine = ($newText -split "`n" | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 1)
+                    if ($lastLine) {
+                        Update-PublishStatus $lastLine.Trim()
+                    }
+
+                    $outputScrollViewer.ScrollToEnd()
+                }
+            }
+            catch {
             }
 
-            $mergeResult = Sync-PublishOutputDirectory -SourcePath $syncContext.StagingPath -DestinationPath $syncContext.DestinationPath -PreserveNames @('_PublishLogs') -ProgressAction $progressAction
-            $eventArgs.Result = [pscustomobject]@{
-                MergeResult     = $mergeResult
-                StagingPath     = $syncContext.StagingPath
-                DestinationPath = $syncContext.DestinationPath
-                PublishExitCode = $syncContext.PublishExitCode
-            }
-        })
-
-    $worker.add_ProgressChanged({
-            param($sender, $eventArgs)
-
-            if ($null -eq $eventArgs.UserState) {
+            if (-not $script:SyncProcess.HasExited) {
                 return
             }
 
-            Update-SyncProgress -CompletedSteps $eventArgs.UserState.CompletedSteps -TotalSteps $eventArgs.UserState.TotalSteps -Phase $eventArgs.UserState.Phase -Force
-        })
+            $script:SyncPollTimer.Stop()
 
-    $worker.add_RunWorkerCompleted({
-            param($sender, $eventArgs)
+            try {
+                $fs = [System.IO.File]::Open($script:SyncOutFile,
+                    [System.IO.FileMode]::Open,
+                    [System.IO.FileAccess]::Read,
+                    [System.IO.FileShare]::ReadWrite)
+                $fs.Seek($script:SyncLastPos, [System.IO.SeekOrigin]::Begin) | Out-Null
+                $reader = New-Object System.IO.StreamReader($fs, [System.Text.Encoding]::UTF8)
+                $tail = $reader.ReadToEnd()
+                $reader.Dispose()
+                $fs.Dispose()
 
+                if ($tail.Length -gt 0) {
+                    $outputText.Text += $tail
+                    Add-PublishLogText $tail
+                }
+            }
+            catch {
+            }
+
+            $syncExitCode = $script:SyncProcess.ExitCode
             $script:IsSyncInProgress = $false
             Reset-SyncWorker
+            Set-PublishProgressState -Visible $false
+            Set-OperationUiState -IsBusy $false
+            $outputScrollViewer.ScrollToEnd()
 
-            if ($null -ne $eventArgs.Error) {
+            if ($syncExitCode -ge 8) {
                 $script:PublishStagingPath = $null
-                Set-PublishProgressState -Visible $false
-                Set-OperationUiState -IsBusy $false
                 $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
                 $errorBorder.Visibility = [System.Windows.Visibility]::Visible
-                $errorText.Text = "Publish succeeded, but migrating the staged output failed. Staged output: $StagingPath`nLog file: $script:PublishLogFile`n$($eventArgs.Error.Message)"
-                Update-PublishStatus "Publish migration failed - check build output."
-                Add-PublishLogText "`r`nSync Failed: $($eventArgs.Error.Message)`r`n"
-                Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $PublishExitCode`r`n"
+                $errorText.Text = "Publish succeeded, but migrating the staged output failed. Staged output: $syncStagingPath`nLog file: $script:PublishLogFile`nRobocopy exit code: $syncExitCode"
+                Update-PublishStatus 'Publish migration failed - check build output.'
+                Add-PublishLogText "`r`nSync Failed: Robocopy exit code $syncExitCode`r`n"
+                Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $syncPublishExitCode`r`n"
 
                 try {
                     Save-PublishLog
@@ -999,37 +1155,27 @@ function Start-PublishOutputSync {
                 return
             }
 
-            $syncResult = $eventArgs.Result
-            $mergeSummaryText = "`nMigration completed to: $($syncResult.DestinationPath)`nReused unchanged files: $($syncResult.MergeResult.SkippedFiles)`nCopied new or changed files: $($syncResult.MergeResult.CopiedFiles)`nRemoved stale files/folders: $($syncResult.MergeResult.RemovedItems)"
-            Add-PublishLogText "`r`nSync Summary`r`nReused unchanged files: $($syncResult.MergeResult.SkippedFiles)`r`nCopied new or changed files: $($syncResult.MergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($syncResult.MergeResult.RemovedItems)`r`n"
-
-            if (Test-Path -LiteralPath $syncResult.StagingPath) {
-                Remove-Item -LiteralPath $syncResult.StagingPath -Recurse -Force -ErrorAction SilentlyContinue
+            if (-not [string]::IsNullOrWhiteSpace($syncStagingPath) -and (Test-Path -LiteralPath $syncStagingPath)) {
+                Remove-Item -LiteralPath $syncStagingPath -Recurse -Force -ErrorAction SilentlyContinue
             }
 
             $script:PublishStagingPath = $null
-            Set-PublishProgressState -Visible $false
-            Set-OperationUiState -IsBusy $false
+            $mergeSummaryText = "`nMigration completed to: $syncDestinationPath`nRobocopy exit code: $syncExitCode"
+            Add-PublishLogText "`r`nSync Summary`r`nRobocopy exit code: $syncExitCode`r`n"
             $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
             $successBorder.Visibility = [System.Windows.Visibility]::Visible
-            $successText.Text = "Publish succeeded!`nOutput folder: $($syncResult.DestinationPath)`nLog file: $script:PublishLogFile$mergeSummaryText"
-            $outputText.Text += "`r`nMigration completed to: $($syncResult.DestinationPath)`r`n"
-            Update-PublishStatus "Publish and migration completed successfully."
-            Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $($syncResult.PublishExitCode)`r`n"
+            $successText.Text = "Publish succeeded!`nOutput folder: $syncDestinationPath`nLog file: $script:PublishLogFile$mergeSummaryText"
+            $outputText.Text += "`r`nMigration completed to: $syncDestinationPath`r`n"
+            Update-PublishStatus 'Publish and migration completed successfully.'
+            Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $syncPublishExitCode`r`n"
 
             try {
                 Save-PublishLog
             }
             catch {
             }
-        })
-
-    $script:SyncWorker = $worker
-    $worker.RunWorkerAsync([pscustomobject]@{
-            StagingPath     = $StagingPath
-            DestinationPath = $DestinationPath
-            PublishExitCode = $PublishExitCode
-        })
+        }.GetNewClosure())
+    $script:SyncPollTimer.Start()
 }
 
 $script:Options = @(
@@ -1080,42 +1226,41 @@ $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MTM Receiving Application - Publish Tool"
-        Height="740" Width="940"
-        MinHeight="640" MinWidth="800"
+        Height="860" Width="1180"
+        MinHeight="760" MinWidth="1040"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResizeWithGrip"
         Background="#F5F5F5">
-    <Grid Margin="20">
+    <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="310"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="365"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,14">
+        <StackPanel Grid.Row="0" Margin="0,0,0,18">
             <TextBlock Text="MTM Receiving Application"
-                       FontSize="22" FontWeight="Bold" Foreground="#2196F3"/>
+                       FontSize="24" FontWeight="Bold" Foreground="#2196F3"/>
             <TextBlock Text="Publish Tool - select an option on the left, review the notes, then click Publish."
-                       FontSize="13" Foreground="#666"/>
+                       FontSize="14" Foreground="#666" Margin="0,4,0,0"/>
         </StackPanel>
 
         <!-- Options list + Notes side-by-side -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="295"/>
-                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="18"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left: option list -->
             <Border Grid.Column="0" Background="White" BorderBrush="#DDD"
-                    BorderThickness="1" CornerRadius="5">
+                    BorderThickness="1" CornerRadius="6" Padding="0,4,0,4">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Publish Options"
-                               FontWeight="Bold" Foreground="#444" Margin="12,10,12,6"/>
+                               FontWeight="Bold" FontSize="14" Foreground="#444" Margin="14,12,14,8"/>
                     <ListBox Name="OptionList" BorderThickness="0" Background="Transparent"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              VirtualizingPanel.IsVirtualizing="False"/>
@@ -1124,13 +1269,13 @@ $xaml = @"
 
             <!-- Right: notes + output path -->
             <Border Grid.Column="2" Background="White" BorderBrush="#DDD"
-                    BorderThickness="1" CornerRadius="5" Padding="15">
+                    BorderThickness="1" CornerRadius="6" Padding="18">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Option Notes"
-                               FontWeight="Bold" Foreground="#444" Margin="0,0,0,8"/>
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
-                        <Separator Margin="0,0,0,10"/>
-                        <TextBlock Text="Output Path" FontWeight="Bold" Foreground="#444" Margin="0,0,0,4"/>
+                               FontWeight="Bold" FontSize="14" Foreground="#444" Margin="0,0,0,10"/>
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+                        <Separator Margin="0,0,0,12"/>
+                        <TextBlock Text="Output Path" FontWeight="Bold" FontSize="13" Foreground="#444" Margin="0,0,0,6"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -1140,8 +1285,8 @@ $xaml = @"
                                      Name="OutputPathText"
                                      IsReadOnly="True"
                                      FontFamily="Consolas"
-                                     FontSize="11"
-                                     Padding="5,4"
+                                     FontSize="12"
+                                     Padding="7,6"
                                      BorderBrush="#CCC"
                                      BorderThickness="1"
                                      VerticalContentAlignment="Center"
@@ -1149,135 +1294,159 @@ $xaml = @"
                             <Button Grid.Column="1"
                                     Name="BrowseOutputPathButton"
                                     Content="Browse..."
-                                    Margin="8,0,0,0"
-                                    MinWidth="90"/>
+                                    Margin="10,0,0,0"
+                                    MinWidth="108"
+                                    Height="34"
+                                    Padding="12,6"/>
                         </Grid>
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <TextBlock Name="NotesText" TextWrapping="Wrap"
-                                   Foreground="#333" LineHeight="19"
+                                   Foreground="#333" FontSize="13" LineHeight="21"
                                    Text="Select a publish option on the left to see notes here."/>
                     </ScrollViewer>
                 </DockPanel>
             </Border>
         </Grid>
 
-        <!-- Project path -->
-        <Border Grid.Row="2" Background="White" BorderBrush="#DDD"
-                BorderThickness="1" CornerRadius="5" Padding="12" Margin="0,10,0,0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="62"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Project:" FontWeight="Bold" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Name="ProjectPathText"
-                         FontFamily="Consolas" FontSize="11" Padding="5,4"
-                         BorderBrush="#CCC" BorderThickness="1" VerticalContentAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Lang:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,0,0"/>
-                <ComboBox Grid.Row="1" Grid.Column="1" Name="SatelliteLanguagesComboBox"
-                          Margin="0,10,0,0"
-                          FontSize="11"
-                          Padding="5,4"
-                          BorderBrush="#CCC"
-                          BorderThickness="1"
-                          IsEditable="False"
-                          IsTextSearchEnabled="True"
-                          MaxDropDownHeight="320"
-                          ToolTip="Optional. Pick one language to limit satellite resources, or leave the default option selected to publish all available languages."/>
+        <Grid Grid.Row="2" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="430"/>
+                <ColumnDefinition Width="18"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Extras:" FontWeight="Bold" VerticalAlignment="Top" Margin="0,10,0,0"/>
-                <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,10,0,0">
-                    <CheckBox Name="AutoMigrateCheckBox"
-                              Content="Automatically migrate the staged publish output to the shared drive after publish"
-                              IsChecked="True"
-                              ToolTip="When enabled, a successful publish immediately migrates the locally staged output to the selected shared-drive folder without prompting."/>
-                    <CheckBox Name="UseExistingBuildCheckBox"
-                              Content="Use the existing compatible bin build when available (publish with --no-build)"
-                              Margin="0,8,0,0"
-                              IsChecked="True"
-                              IsEnabled="False"
-                              ToolTip="Disabled until the script finds a compatible existing build for the selected publish option."/>
-                    <TextBlock Name="ExistingBuildStatusText"
-                               Margin="22,4,0,0"
-                               FontSize="11"
-                               Foreground="#8A6D3B"
-                               TextWrapping="Wrap"
-                               Text="Select a publish option to check whether an existing compatible build can be reused."/>
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <CheckBox Name="DetailedLoggingCheckBox"
-                                  Content="Detailed logging"
-                                  ToolTip="Enable verbose publish output only when troubleshooting."/>
-                        <CheckBox Name="ShowExperimentalOptionsCheckBox"
-                                  Content="Show experimental options"
-                                  Margin="18,0,0,0"
-                                  ToolTip="Displays advanced publish options such as ReadyToRun that are not part of the normal supported path."/>
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Status / build output -->
-        <Border Grid.Row="3" Background="White" BorderBrush="#DDD"
-                BorderThickness="1" CornerRadius="5" Padding="12" Margin="0,8,0,0">
-            <StackPanel>
-                <Grid Margin="0,0,0,6">
+            <!-- Project path / settings -->
+            <Border Grid.Column="0" Background="White" BorderBrush="#DDD"
+                    BorderThickness="1" CornerRadius="6" Padding="16">
+                <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="74"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Name="StatusText"
-                               Text="Ready. Select an option above and click Publish."
-                               FontWeight="Bold" FontSize="13" Foreground="#555"
-                               VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Column="1" Name="PublishProgress"
-                                 Width="130" Height="8"
-                                 IsIndeterminate="True" Visibility="Collapsed"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Project:" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="ProjectPathText"
+                             FontFamily="Consolas" FontSize="12" Padding="7,6"
+                             BorderBrush="#CCC" BorderThickness="1" VerticalContentAlignment="Center"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Lang:" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" Margin="0,12,0,0"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Name="SatelliteLanguagesComboBox"
+                              Margin="0,12,0,0"
+                              FontSize="12"
+                              Padding="7,6"
+                              BorderBrush="#CCC"
+                              BorderThickness="1"
+                              IsEditable="False"
+                              IsTextSearchEnabled="True"
+                              MaxDropDownHeight="320"
+                              ToolTip="Optional. Pick one language to limit satellite resources, or leave the default option selected to publish all available languages."/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Extras:" FontWeight="Bold" FontSize="13" VerticalAlignment="Top" Margin="0,14,0,0"/>
+                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,14,0,0">
+                        <CheckBox Name="AutoMigrateCheckBox"
+                                  Content="Automatically migrate the staged publish output to the shared drive after publish"
+                                  IsChecked="True"
+                                  FontSize="12"
+                                  ToolTip="When enabled, a successful publish immediately migrates the locally staged output to the selected shared-drive folder without prompting."/>
+                        <CheckBox Name="UseExistingBuildCheckBox"
+                                  Content="Use the existing compatible bin build when available (publish with --no-build)"
+                                  Margin="0,10,0,0"
+                                  IsChecked="False"
+                                  IsEnabled="False"
+                                  FontSize="12"
+                                  ToolTip="Disabled until the script finds a compatible existing build for the selected publish option."/>
+                        <TextBlock Name="ExistingBuildStatusText"
+                                   Margin="24,5,0,0"
+                                   FontSize="11"
+                                   Foreground="#8A6D3B"
+                                   TextWrapping="Wrap"
+                                   LineHeight="18"
+                                   Text="Select a publish option to check whether an existing compatible build can be reused."/>
+                        <WrapPanel Margin="0,12,0,0" ItemHeight="28" ItemWidth="190">
+                            <CheckBox Name="DetailedLoggingCheckBox"
+                                      Content="Detailed logging"
+                                      FontSize="12"
+                                      Margin="0,0,14,6"
+                                      ToolTip="Enable verbose publish output only when troubleshooting."/>
+                            <CheckBox Name="ShowExperimentalOptionsCheckBox"
+                                      Content="Show experimental options"
+                                      FontSize="12"
+                                      Margin="0,0,0,6"
+                                      ToolTip="Displays advanced publish options such as ReadyToRun that are not part of the normal supported path."/>
+                        </WrapPanel>
+                    </StackPanel>
                 </Grid>
+            </Border>
 
-                <!-- Build output (dark terminal style) -->
-                <Border Name="OutputBorder" Background="#1E1E1E" CornerRadius="3"
-                        Margin="0,4,0,0" Visibility="Collapsed">
-                    <ScrollViewer Name="OutputScrollViewer" Height="130"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Auto">
-                        <TextBlock Name="OutputText" FontFamily="Consolas" FontSize="10"
-                                   Foreground="#D4D4D4" TextWrapping="Wrap" Margin="8"/>
-                    </ScrollViewer>
-                </Border>
+            <!-- Status / build output -->
+            <Border Grid.Column="2" Background="White" BorderBrush="#DDD"
+                    BorderThickness="1" CornerRadius="6" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <!-- Success -->
-                <Border Name="SuccessBorder" Background="#E8F5E9" BorderBrush="#4CAF50"
-                        BorderThickness="1" CornerRadius="3" Padding="12"
-                        Margin="0,6,0,0" Visibility="Collapsed">
-                    <TextBlock Name="SuccessText" Foreground="#2E7D32"
-                               FontWeight="Bold" TextWrapping="Wrap"/>
-                </Border>
+                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Name="StatusText"
+                                   Text="Ready. Select an option above and click Publish."
+                                   FontWeight="Bold" FontSize="14" Foreground="#555"
+                                   VerticalAlignment="Center" TextWrapping="Wrap"/>
+                        <ProgressBar Grid.Column="1" Name="PublishProgress"
+                                     Width="170" Height="10"
+                                     Margin="14,0,0,0"
+                                     IsIndeterminate="True" Visibility="Collapsed"/>
+                    </Grid>
 
-                <!-- Error -->
-                <Border Name="ErrorBorder" Background="#FFEBEE" BorderBrush="#F44336"
-                        BorderThickness="1" CornerRadius="3" Padding="12"
-                        Margin="0,6,0,0" Visibility="Collapsed">
-                    <TextBlock Name="ErrorText" Foreground="#C62828" TextWrapping="Wrap"/>
-                </Border>
-            </StackPanel>
-        </Border>
+                    <Border Grid.Row="1" Name="OutputBorder" Background="#1E1E1E" CornerRadius="4"
+                            Margin="0,4,0,0" Visibility="Collapsed">
+                        <ScrollViewer Name="OutputScrollViewer"
+                                      MinHeight="260"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <TextBlock Name="OutputText" FontFamily="Consolas" FontSize="11"
+                                       Foreground="#D4D4D4" TextWrapping="Wrap" Margin="10"/>
+                        </ScrollViewer>
+                    </Border>
+
+                    <Border Grid.Row="2" Name="SuccessBorder" Background="#E8F5E9" BorderBrush="#4CAF50"
+                            BorderThickness="1" CornerRadius="4" Padding="14"
+                            Margin="0,10,0,0" Visibility="Collapsed">
+                        <TextBlock Name="SuccessText" Foreground="#2E7D32"
+                                   FontWeight="Bold" FontSize="13" TextWrapping="Wrap" LineHeight="20"/>
+                    </Border>
+
+                    <Border Grid.Row="3" Name="ErrorBorder" Background="#FFEBEE" BorderBrush="#F44336"
+                            BorderThickness="1" CornerRadius="4" Padding="14"
+                            Margin="0,10,0,0" Visibility="Collapsed">
+                        <TextBlock Name="ErrorText" Foreground="#C62828" FontSize="13" TextWrapping="Wrap" LineHeight="20"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal"
-                    HorizontalAlignment="Right" Margin="0,12,0,0">
+        <StackPanel Grid.Row="3" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button Name="PublishButton" Content="Publish"
-                    Width="130" Height="36"
+                    Width="144" Height="40"
                     Background="#2196F3" Foreground="White"
                     BorderThickness="0" FontWeight="Bold" FontSize="14"
                     Cursor="Hand" IsEnabled="False"/>
             <Button Name="CloseButton" Content="Close"
-                    Width="100" Height="36" Margin="10,0,0,0"
+                    Width="110" Height="40" Margin="12,0,0,0"
                     Background="#9E9E9E" Foreground="White"
                     BorderThickness="0" Cursor="Hand"/>
         </StackPanel>
@@ -1400,7 +1569,21 @@ $publishButton.Add_Click({
         Remove-PublishStagingDirectory
 
         $opt = $script:selectedOption
-        $script:currentOutputPath = Get-EffectiveOutputPath -Option $opt
+    $outputPathValidation = Get-OutputPathValidationResult -OutputRootPath $script:OutputRootPath -Option $opt
+    if (-not $outputPathValidation.IsValid) {
+        $script:PublishCompletionHandled = $false
+        $script:IsPublishInProgress = $false
+        $script:IsSyncInProgress = $false
+        $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+        $errorText.Text = $outputPathValidation.Message
+        $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
+        Update-PublishStatus 'Publish blocked - choose a safer output folder.'
+        return
+    }
+
+    $script:OutputRootPath = $outputPathValidation.OutputRootPath
+    $script:currentOutputPath = $outputPathValidation.DestinationPath
         $projectPath = $projectPathText.Text
 
         if ([string]::IsNullOrWhiteSpace($projectPath) -or -not (Test-Path -LiteralPath $projectPath)) {
@@ -1643,10 +1826,10 @@ $closeButton.Add_Click({
     })
 
 $window.Add_Closing({
-        param($sender, $eventArgs)
+        param($closingSender, $closingEventArgs)
 
         if ($script:IsPublishInProgress -or $script:IsSyncInProgress) {
-            $eventArgs.Cancel = $true
+            $closingEventArgs.Cancel = $true
             Update-PublishStatus 'Wait for the current publish or migration operation to finish before closing the tool.'
             return
         }

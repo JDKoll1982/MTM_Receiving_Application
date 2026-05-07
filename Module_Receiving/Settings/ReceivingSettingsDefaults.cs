@@ -59,7 +59,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.ManualEntryColumnHeatLot] = "Heat/Lot",
             [ReceivingSettingsKeys.UiText.ManualEntryColumnPkgType] = "Pkg Type",
             [ReceivingSettingsKeys.UiText.ManualEntryColumnPkgsPerLoad] = "Pkgs/Load",
-            [ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg] = "Wt/Pkg",
+            [ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg] = "UOM/Pkg",
             [ReceivingSettingsKeys.UiText.ManualEntryColumnPoNumber] = "PO Number",
 
             // Edit mode
@@ -84,7 +84,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.EditModeColumnHeatLot] = "Heat/Lot",
             [ReceivingSettingsKeys.UiText.EditModeColumnPkgType] = "Pkg Type",
             [ReceivingSettingsKeys.UiText.EditModeColumnPkgsPerLoad] = "Pkgs/Load",
-            [ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg] = "Wt/Pkg",
+            [ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg] = "UOM/Pkg",
 
             // Default visible columns (comma-separated keys), search-by, sort, and page-size
             [ReceivingSettingsKeys.UiText.EditModeColumnVisibility] =

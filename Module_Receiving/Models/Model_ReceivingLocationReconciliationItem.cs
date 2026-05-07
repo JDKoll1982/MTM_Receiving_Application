@@ -39,6 +39,10 @@ public sealed class Model_ReceivingLocationReconciliationItem
 
     public decimal QuantityDifference { get; set; }
 
+    public int TransferMovementCount { get; set; }
+
+    public string EvidenceSourceLocations { get; set; } = string.Empty;
+
     public string MovedByUserId { get; set; } = string.Empty;
 
     public DateTime? MovedAt { get; set; }

@@ -45,7 +45,7 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     private bool _isLoadingPreview;
 
     [ObservableProperty]
-    private string _loadingMessage = "Reconciling saved locations from InforVisual...";
+    private string _loadingMessage = "Reconciling saved locations from Infor Visual transfer history...";
 
     [ObservableProperty]
     private int _savedCount;
@@ -95,17 +95,17 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     public string DialogTitle =>
         IsSummaryVisible
-            ? "InforVisual Reconciliation Summary"
-            : "Review InforVisual Location Changes";
+            ? "In For Visual Transfer Reconciliation Summary"
+            : "Review Infor Visual Transfer-Based Location Changes";
 
     public string DialogDescription =>
         IsSummaryVisible
-            ? "All rows that needed review have been saved or ignored. Review the outcome before closing this window."
-            : "Review each suggested location update before it is saved to MTM. Save applies the new location. Ignore leaves the saved row unchanged.";
+            ? "All rows that needed review have been saved or ignored. Review the transfer-based outcome before closing this window."
+            : "Review each transfer-backed location update before it is saved to MTM. Save applies the inferred destination. Ignore leaves the saved row unchanged.";
 
     public string ProgressText =>
         TotalCandidateCount == 0
-            ? "No saved rows need a location change review."
+            ? "No saved rows need a transfer-based location review."
             : $"{SavedCount + IgnoredCount + 1} of {TotalCandidateCount}";
 
     public double ProgressPercent =>
@@ -128,8 +128,13 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     public string CurrentQuantityMovedText =>
         CurrentItem == null ? "Unknown"
         : string.IsNullOrWhiteSpace(CurrentItem.QuantityUnitOfMeasure)
-            ? $"{CurrentItem.MatchedLocationQuantity:0.##}"
-        : $"{CurrentItem.MatchedLocationQuantity:0.##} {CurrentItem.QuantityUnitOfMeasure}";
+            ? $"{CurrentItem.QuantityMoved:0.##}"
+        : $"{CurrentItem.QuantityMoved:0.##} {CurrentItem.QuantityUnitOfMeasure}";
+
+    public string CurrentEvidenceSummaryText =>
+        CurrentItem == null
+            ? string.Empty
+            : $"{CurrentItem.TransferMovementCount} transfer(s) considered. Source locations: {ValueOrUnknown(CurrentItem.EvidenceSourceLocations)}";
 
     public string CurrentAllocationMethodText => ValueOrUnknown(CurrentItem?.AllocationMethod);
 
@@ -151,10 +156,10 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
     public string CurrentReasonText => CurrentItem?.Details ?? string.Empty;
 
     public string SummaryHeadline =>
-        SavedCount > 0 ? "Reconciliation review completed" : "No location changes were saved";
+        SavedCount > 0 ? "Transfer reconciliation review completed" : "No transfer-backed location changes were saved";
 
     public string SummaryDescription =>
-        $"Saved {SavedCount} row(s), ignored {IgnoredCount} row(s), left {PreviewSummary?.UnchangedCount ?? 0} unchanged, and found {NeedsAttentionCount} row(s) that still need manual attention.";
+        $"Saved {SavedCount} row(s), ignored {IgnoredCount} row(s), left {PreviewSummary?.UnchangedCount ?? 0} unchanged, and found {NeedsAttentionCount} row(s) that still need manual transfer review.";
 
     public string SavedSectionTitle => $"Saved Changes ({SavedCount})";
 
@@ -181,7 +186,7 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
         _isRefreshingPreview = true;
         IsLoadingPreview = true;
-        LoadingMessage = "Reconciling saved locations from InforVisual...";
+        LoadingMessage = "Reconciling saved locations from Infor Visual transfer history...";
 
         try
         {
@@ -342,6 +347,7 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
         OnPropertyChanged(nameof(CurrentNewLocationText));
         OnPropertyChanged(nameof(CurrentSavedRowQuantityText));
         OnPropertyChanged(nameof(CurrentQuantityMovedText));
+        OnPropertyChanged(nameof(CurrentEvidenceSummaryText));
         OnPropertyChanged(nameof(CurrentAllocationMethodText));
         OnPropertyChanged(nameof(CurrentMovedByUserIdText));
         OnPropertyChanged(nameof(CurrentMovedDateText));
@@ -365,7 +371,7 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     private static bool ShouldDisplayUnresolvedItem(Model_ReceivingLocationReconciliationItem item)
     {
-        return !string.Equals(item.Resolution, "NotFound", StringComparison.OrdinalIgnoreCase);
+        return !string.Equals(item.Resolution, "Skipped", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FormatPONumber(string? input)

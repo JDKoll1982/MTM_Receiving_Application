@@ -97,7 +97,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             if (!_regex.IsMatch(poNumber))
             {
                 return Model_ReceivingValidationResult.Error(
-                    "PO number must be numeric (up to 6 digits) or in PO-###### format"
+                    "PO number must be numeric (up to 6 digits), may include a PO- prefix, and may end with B for blanket orders"
                 );
             }
 

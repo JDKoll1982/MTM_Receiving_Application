@@ -24,4 +24,12 @@ public sealed partial class View_Dunnage_PartSelectionView : UserControl
         System.Diagnostics.Debug.WriteLine("Dunnage_PartSelectionView: OnLoaded called");
         await ViewModel.InitializeAsync();
     }
+
+    private async void OnDisplayFormatPreferenceToggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch toggleSwitch)
+        {
+            await ViewModel.HandleDisplayFormatChangedAsync(toggleSwitch.IsOn);
+        }
+    }
 }

@@ -99,6 +99,8 @@ public class Model_DunnagePart : INotifyPropertyChanged
             {
                 OnPropertyChanged(nameof(HasImagePath));
                 OnPropertyChanged(nameof(ImageSource));
+                OnPropertyChanged(nameof(HasPreferredVisual));
+                OnPropertyChanged(nameof(PreferredVisualSource));
             }
         }
     }
@@ -112,6 +114,8 @@ public class Model_DunnagePart : INotifyPropertyChanged
             {
                 OnPropertyChanged(nameof(HasDunnageTypeImagePath));
                 OnPropertyChanged(nameof(DunnageTypeImageSource));
+                OnPropertyChanged(nameof(HasPreferredVisual));
+                OnPropertyChanged(nameof(PreferredVisualSource));
             }
         }
     }
@@ -148,6 +152,10 @@ public class Model_DunnagePart : INotifyPropertyChanged
 
     public ImageSource? DunnageTypeImageSource =>
         Helper_DunnageImagePaths.CreateImageSource(DunnageTypeImagePath);
+
+    public ImageSource? PreferredVisualSource => ImageSource ?? DunnageTypeImageSource;
+
+    public bool HasPreferredVisual => PreferredVisualSource is not null;
 
     public string DunnageSpecValuesJson =>
         string.IsNullOrWhiteSpace(SpecValues) ? "{}" : SpecValues;

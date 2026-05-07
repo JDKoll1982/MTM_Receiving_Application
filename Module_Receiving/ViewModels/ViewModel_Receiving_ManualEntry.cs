@@ -99,7 +99,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _manualEntryColumnPkgsPerLoadText = "Pkgs/Load";
 
         [ObservableProperty]
-        private string _manualEntryColumnWtPerPkgText = "Wt/Pkg";
+        private string _manualEntryColumnWtPerPkgText = "UOM/Pkg";
 
         public bool IsMockLocationMode => _validationService.UseMockLocationList;
 

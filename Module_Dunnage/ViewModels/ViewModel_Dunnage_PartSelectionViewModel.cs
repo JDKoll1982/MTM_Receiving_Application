@@ -18,6 +18,7 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -34,6 +35,10 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     private readonly IService_UserPrivileges _userPrivileges;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_ViewModelRegistry _viewModelRegistry;
+    private readonly IService_DunnageSettings _dunnageSettings;
+
+    private bool _isRestoringDisplayFormatPreference;
+    private bool _persistedImageDisplayPreference = true;
 
     public ViewModel_Dunnage_PartSelection(
         IService_DunnageWorkflow workflowService,
@@ -43,6 +48,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         IService_ViewModelRegistry viewModelRegistry,
         IService_UserPrivileges userPrivileges,
         IService_UserSessionManager sessionManager,
+        IService_DunnageSettings dunnageSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -56,6 +62,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         _viewModelRegistry = viewModelRegistry;
         _userPrivileges = userPrivileges;
         _sessionManager = sessionManager;
+        _dunnageSettings = dunnageSettings;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -160,6 +167,9 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     [ObservableProperty]
     private bool _hasSelectedPartSpecs;
 
+    [ObservableProperty]
+    private bool _isImageDisplayPreferred;
+
     /// <summary>
     /// Helper property for UI binding
     /// </summary>
@@ -204,6 +214,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             StatusMessage = "Loading parts...";
 
             await EnsurePrivilegeStateAsync();
+            await LoadDisplayPreferenceAsync();
 
             // Get selected type from workflow
             SelectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
@@ -242,6 +253,108 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         {
             IsBusy = false;
         }
+    }
+
+    #endregion
+
+    #region Display Format Preference
+
+    public async Task HandleDisplayFormatChangedAsync(bool isImageDisplayPreferred)
+    {
+        if (_isRestoringDisplayFormatPreference)
+        {
+            return;
+        }
+
+        if (IsImageDisplayPreferred != isImageDisplayPreferred)
+        {
+            _isRestoringDisplayFormatPreference = true;
+            IsImageDisplayPreferred = isImageDisplayPreferred;
+            _isRestoringDisplayFormatPreference = false;
+        }
+
+        if (isImageDisplayPreferred == _persistedImageDisplayPreference)
+        {
+            return;
+        }
+
+        await SetDisplayFormatPreferenceAsync(isImageDisplayPreferred);
+    }
+
+    private async Task LoadDisplayPreferenceAsync()
+    {
+        _isRestoringDisplayFormatPreference = true;
+
+        try
+        {
+            var savedPreference = await _dunnageSettings.GetBoolAsync(
+                DunnageSettingsKeys.UserPreferences.PreferPartImages,
+                GetCurrentUserId()
+            );
+
+            _persistedImageDisplayPreference = savedPreference;
+            IsImageDisplayPreferred = savedPreference;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"PartSelection: Failed to load saved display preference. Falling back to image cards. Error: {ex.Message}",
+                "PartSelection"
+            );
+
+            _persistedImageDisplayPreference = true;
+            IsImageDisplayPreferred = true;
+        }
+        finally
+        {
+            _isRestoringDisplayFormatPreference = false;
+        }
+    }
+
+    private async Task SetDisplayFormatPreferenceAsync(bool isImageDisplayPreferred)
+    {
+        try
+        {
+            await _dunnageSettings.SaveStringAsync(
+                DunnageSettingsKeys.UserPreferences.PreferPartImages,
+                isImageDisplayPreferred ? "true" : "false",
+                GetCurrentUserId()
+            );
+
+            _persistedImageDisplayPreference = isImageDisplayPreferred;
+            StatusMessage = isImageDisplayPreferred
+                ? "Part selection display set to image cards"
+                : "Part selection display set to drop-down";
+
+            _logger.LogInfo(
+                $"PartSelection: Display preference saved as {(isImageDisplayPreferred ? "image-cards" : "drop-down")}",
+                "PartSelection"
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"PartSelection: Failed to save display preference. Error: {ex.Message}",
+                "PartSelection"
+            );
+
+            _isRestoringDisplayFormatPreference = true;
+            IsImageDisplayPreferred = _persistedImageDisplayPreference;
+            _isRestoringDisplayFormatPreference = false;
+
+            await _errorHandler.HandleErrorAsync(
+                "Failed to save part selection display preference",
+                Enum_ErrorSeverity.Warning,
+                ex,
+                true
+            );
+        }
+    }
+
+    private int? GetCurrentUserId()
+    {
+        int? employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        return employeeNumber.HasValue && employeeNumber.Value > 0 ? employeeNumber : null;
     }
 
     #endregion

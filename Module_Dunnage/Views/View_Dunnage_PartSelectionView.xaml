@@ -55,8 +55,41 @@
         <!--  Part Selection Form  -->
         <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
             <StackPanel Spacing="24">
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <Grid ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Display Format" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Switch between the part drop-down and image cards for the selected dunnage type." />
+                        </StackPanel>
+
+                        <ToggleSwitch
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Header="Show image cards"
+                            IsOn="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=TwoWay}"
+                            OffContent="Drop-down"
+                            OnContent="Image Cards"
+                            Toggled="OnDisplayFormatPreferenceToggled" />
+                    </Grid>
+                </Border>
+
                 <!--  Part Dropdown  -->
-                <StackPanel Spacing="12">
+                <StackPanel
+                    Spacing="12"
+                    Visibility="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Select Part" />
                     <ComboBox
                         x:Name="PartNumberComboBox"
@@ -66,6 +99,107 @@
                         ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
                         PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartSelection'), Mode=OneWay}"
                         SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel
+                    Spacing="12"
+                    Visibility="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Select Part" />
+
+                    <GridView
+                        x:Name="PartCardGridView"
+                        HorizontalAlignment="Stretch"
+                        IsItemClickEnabled="False"
+                        ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.HorizontalScrollMode="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollMode="Auto"
+                        SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                        SelectionMode="Single">
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                        <GridView.ItemContainerStyle>
+                            <Style TargetType="GridViewItem">
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </GridView.ItemContainerStyle>
+                        <GridView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Model_DunnagePart">
+                                <Border
+                                    Margin="4"
+                                    Padding="12"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <Border
+                                            Grid.Row="0"
+                                            Width="96"
+                                            Height="96"
+                                            Margin="0,0,0,10"
+                                            HorizontalAlignment="Center"
+                                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Visibility="{x:Bind HasPreferredVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Image Source="{x:Bind PreferredVisualSource, Mode=OneWay}" Stretch="Uniform" />
+                                        </Border>
+
+                                        <Border
+                                            Grid.Row="0"
+                                            Width="96"
+                                            Height="96"
+                                            Margin="0,0,0,10"
+                                            HorizontalAlignment="Center"
+                                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Visibility="{x:Bind HasPreferredVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
+                                            <FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontSize="36"
+                                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                                Glyph="&#xE8B7;" />
+                                        </Border>
+
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            HorizontalAlignment="Center"
+                                            MaxLines="1"
+                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind PartId}"
+                                            ToolTipService.ToolTip="{x:Bind PartId}" />
+
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Margin="0,4,0,0"
+                                            HorizontalAlignment="Center"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind QuantityType}"
+                                            TextAlignment="Center"
+                                            TextWrapping="WrapWholeWords" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
                 </StackPanel>
 
                 <!--  Part Details Card  -->

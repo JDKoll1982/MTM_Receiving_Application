@@ -213,7 +213,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 );
                 RecommendedLocationsMessage =
                     RecommendedLocations.Count == 0
-                        ? "No recommended locations were found after applying the default and user-configured ignore list."
+                        ? "No recommended locations with positive on-hand quantity were found."
                         : $"{RecommendedLocations.Count} recommended location(s) found from current stock inventory.";
             }
             catch (Exception ex)

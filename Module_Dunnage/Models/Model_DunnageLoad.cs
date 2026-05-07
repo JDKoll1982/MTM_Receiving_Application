@@ -273,19 +273,17 @@ public partial class Model_DunnageLoad : ObservableObject
 
     private static string NormalizePoNumber(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        return Helper_DunnagePoNumber.FormatForEntry(value);
+    }
+
+    partial void OnPoNumberChanged(string value)
+    {
+        var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(value);
+        if (string.Equals(value, normalizedPoNumber, StringComparison.Ordinal))
         {
-            return string.Empty;
+            return;
         }
 
-        var trimmedValue = value.Trim();
-
-        if (!trimmedValue.All(char.IsDigit))
-        {
-            return trimmedValue;
-        }
-
-        var paddedValue = trimmedValue.PadLeft(6, '0');
-        return $"PO-{paddedValue}";
+        PoNumber = normalizedPoNumber;
     }
 }

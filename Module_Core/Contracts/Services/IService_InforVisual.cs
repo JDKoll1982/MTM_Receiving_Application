@@ -88,6 +88,16 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Retrieves resolved transfer movements for one part around a receiving date.
+        /// Each row represents a source-to-destination inventory move with the Visual user and timestamp.
+        /// </summary>
+        /// <param name="partID">Exact part identifier.</param>
+        /// <param name="receivedDate">Receipt-date anchor used to scope transfer evidence.</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualLocationTransferMovement>>
+        > GetReceivingLocationTransferMovementsAsync(string partID, DateTime receivedDate);
+
+        /// <summary>
         /// Validates that the Infor Visual database connection is available.
         /// </summary>
         /// <returns>True if connection successful, false otherwise</returns>

@@ -381,7 +381,7 @@
                 <!--  WeightPerPackage  -->
                 <controls:DataGridTextColumn
                     Width="Auto"
-                    Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}"
+                    Binding="{Binding WeightPerPackageValueDisplay}"
                     Header="{x:Bind ViewModel.EditModeColumnWtPerPkgText, Mode=OneWay}"
                     IsReadOnly="True"
                     Tag="WeightPerPackage" />

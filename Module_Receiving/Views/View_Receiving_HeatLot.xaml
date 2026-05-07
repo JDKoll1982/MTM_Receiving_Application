@@ -2,6 +2,7 @@
     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_HeatLot"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:MTM_Receiving_Application.Module_Core.Behaviors"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -84,6 +85,7 @@
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.HeatLotAccessibilityName}"
+                                        behaviors:Behavior_TextBoxCharacterCasing.ForceUppercase="True"
                                         Header="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldHeaderText}"
                                         PlaceholderText="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldPlaceholderText}"
                                         Text="{Binding HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

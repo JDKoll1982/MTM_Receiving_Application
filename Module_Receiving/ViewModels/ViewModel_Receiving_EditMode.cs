@@ -209,7 +209,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _editModeColumnPkgsPerLoadText = "Pkgs/Load";
 
         [ObservableProperty]
-        private string _editModeColumnWtPerPkgText = "Wt/Pkg";
+        private string _editModeColumnWtPerPkgText = "UOM/Pkg";
 
         // ------------------------------------------------------------------ event — tells the View to open the column-chooser dialog
         /// <summary>Raised when the user clicks the "Columns" toolbar button.</summary>
@@ -636,7 +636,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 new() { Key = "RemainingQuantity", Header = "Remaining Qty" },
                 new() { Key = "PackagesPerLoad", Header = "Pkgs/Load" },
                 new() { Key = "PackageType", Header = "Pkg Type" },
-                new() { Key = "WeightPerPackage", Header = "Wt/Pkg" },
+                new() { Key = "WeightPerPackage", Header = "UOM/Pkg" },
                 new() { Key = "IsNonPOItem", Header = "Non-PO?" },
                 new() { Key = "UserId", Header = "User" },
                 new() { Key = "EmployeeNumber", Header = "Employee #" },

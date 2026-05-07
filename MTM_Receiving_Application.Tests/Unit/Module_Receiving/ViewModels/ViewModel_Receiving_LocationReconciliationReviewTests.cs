@@ -3,7 +3,6 @@ using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Xunit;
 
@@ -12,9 +11,62 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
 public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
 {
     [Fact]
-    public void Initialize_ShouldHideNotFoundItemsFromVisibleUnresolvedList()
+    public void Initialize_ShouldKeepNotFoundItemsVisibleInNeedsAttentionList()
     {
-        var viewModel = new ViewModel_Receiving_LocationReconciliationReview(
+        var viewModel = CreateViewModel();
+        var summary = new Model_ReceivingLocationReconciliationSummary();
+
+        summary.UnresolvedItems.Add(
+            new Model_ReceivingLocationReconciliationItem
+            {
+                PartID = "PART-1",
+                Resolution = "NotFound",
+                Details = "No transfer evidence was found.",
+            }
+        );
+        summary.UnresolvedItems.Add(
+            new Model_ReceivingLocationReconciliationItem
+            {
+                PartID = "PART-2",
+                Resolution = "Ambiguous",
+                Details = "A leftover quantity requires manual review.",
+            }
+        );
+
+        viewModel.Initialize(summary);
+
+        viewModel.NeedsAttentionCount.Should().Be(2);
+        viewModel.VisibleUnresolvedItems.Should().HaveCount(2);
+        viewModel.SummaryDescription.Should().Contain("2 row(s) that still need manual transfer review");
+    }
+
+    [Fact]
+    public void CurrentEvidenceSummaryText_ShouldDescribeTransferEvidenceAndUnknownSources()
+    {
+        var viewModel = CreateViewModel();
+        var summary = new Model_ReceivingLocationReconciliationSummary();
+
+        summary.UpdatedItems.Add(
+            new Model_ReceivingLocationReconciliationItem
+            {
+                PartID = "PART-1",
+                Resolution = "Updated",
+                TransferMovementCount = 2,
+                EvidenceSourceLocations = string.Empty,
+                ProposedLocation = "V-A0-01",
+            }
+        );
+
+        viewModel.Initialize(summary);
+
+        viewModel.CurrentEvidenceSummaryText.Should().Be(
+            "2 transfer(s) considered. Source locations: Unknown"
+        );
+    }
+
+    private static ViewModel_Receiving_LocationReconciliationReview CreateViewModel()
+    {
+        return new ViewModel_Receiving_LocationReconciliationReview(
             new Mock<IService_ReceivingLocationReconciliation>().Object,
             new Mock<IService_ReceivingWorkflow>().Object,
             new Mock<IService_ReceivingSettings>().Object,
@@ -23,31 +75,5 @@ public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
         );
-
-        var summary = new Model_ReceivingLocationReconciliationSummary();
-        summary.UnresolvedItems.Add(
-            new Model_ReceivingLocationReconciliationItem
-            {
-                PartID = "PART-1",
-                Resolution = "NotFound",
-                Details = "No exact quantity match was found.",
-            }
-        );
-        summary.UnresolvedItems.Add(
-            new Model_ReceivingLocationReconciliationItem
-            {
-                PartID = "PART-2",
-                Resolution = "Ambiguous",
-                Details = "Multiple exact quantity matches were found.",
-            }
-        );
-
-        viewModel.Initialize(summary);
-
-        viewModel.NeedsAttentionCount.Should().Be(1);
-        viewModel.HasUnresolvedItems.Should().BeTrue();
-        viewModel.VisibleUnresolvedItems.Should().ContainSingle();
-        viewModel.VisibleUnresolvedItems[0].PartID.Should().Be("PART-2");
-        viewModel.SummaryDescription.Should().Contain("1 row(s) that still need manual attention");
     }
 }

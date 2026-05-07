@@ -392,6 +392,87 @@ public class Dao_InforVisualConnection
         }
     }
 
+    /// <summary>
+    /// Retrieves resolved transfer movements for one part around a receipt-date anchor.
+    /// Uses: 18_GetReceivingLocationTransferMovements.sql
+    /// </summary>
+    /// <param name="partNumber"></param>
+    /// <param name="receivedDate"></param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationTransferMovement>>
+    > GetReceivingLocationTransferMovementsAsync(string partNumber, DateTime receivedDate)
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Retrieving receiving location transfer movements for part {partNumber} on {receivedDate:yyyy-MM-dd}"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "18_GetReceivingLocationTransferMovements.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PartId", partNumber);
+            command.Parameters.AddWithValue("@ReceivedDate", receivedDate);
+
+            var movements = new List<Model_InforVisualLocationTransferMovement>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                movements.Add(
+                    new Model_InforVisualLocationTransferMovement
+                    {
+                        PartId = reader["PartId"].ToString() ?? string.Empty,
+                        PONumber = reader["PONumber"].ToString() ?? string.Empty,
+                        POLineNumber = reader["POLineNumber"].ToString() ?? string.Empty,
+                        SourceWarehouseId = reader["SourceWarehouseId"].ToString() ?? string.Empty,
+                        SourceLocationId = reader["SourceLocationId"].ToString() ?? string.Empty,
+                        DestinationWarehouseId =
+                            reader["DestinationWarehouseId"].ToString() ?? string.Empty,
+                        DestinationLocationId =
+                            reader["DestinationLocationId"].ToString() ?? string.Empty,
+                        TransferQuantity =
+                            reader["TransferQuantity"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["TransferQuantity"]),
+                        TransactionDate =
+                            reader["TransactionDate"] == DBNull.Value
+                                ? DateTime.MinValue
+                                : Convert.ToDateTime(reader["TransactionDate"]),
+                        TransactionUserId =
+                            reader["TransactionUserId"].ToString() ?? string.Empty,
+                        SourceTransactionId =
+                            reader["SourceTransactionId"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["SourceTransactionId"]),
+                        DestinationTransactionId =
+                            reader["DestinationTransactionId"] == DBNull.Value
+                                ? null
+                                : Convert.ToInt32(reader["DestinationTransactionId"]),
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(movements);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error retrieving receiving location transfer movements for part {partNumber}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransferMovement>>(
+                $"Error retrieving receiving location transfer movements: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     #endregion
 
     #region Part Queries
