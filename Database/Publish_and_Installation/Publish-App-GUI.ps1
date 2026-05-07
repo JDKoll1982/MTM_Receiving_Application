@@ -50,6 +50,7 @@ $script:PublishCompletionHandled = $false
 $script:IsPublishInProgress = $false
 $script:IsSyncInProgress = $false
 $script:SyncWorker = $null
+$script:ExistingBuildAvailability = $null
 
 function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
@@ -352,6 +353,215 @@ function Get-AutoMigrateToSharedDrive {
     return $true -eq [bool]$autoMigrateCheckBox.IsChecked
 }
 
+function Get-UseExistingBuildOutput {
+    if ($null -eq $useExistingBuildCheckBox) {
+        return $false
+    }
+
+    return $true -eq [bool]$useExistingBuildCheckBox.IsChecked
+}
+
+function Get-ProjectPublishMetadata {
+    param(
+        [string]$ProjectPath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ProjectPath) -or -not (Test-Path -LiteralPath $ProjectPath)) {
+        return $null
+    }
+
+    try {
+        $projectXml = [xml](Get-Content -LiteralPath $ProjectPath -Raw -ErrorAction Stop)
+        $propertyGroups = @($projectXml.Project.PropertyGroup)
+
+        $targetFramework = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.TargetFramework) } | Select-Object -First 1).TargetFramework
+        if ([string]::IsNullOrWhiteSpace($targetFramework)) {
+            $targetFrameworks = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.TargetFrameworks) } | Select-Object -First 1).TargetFrameworks
+            if (-not [string]::IsNullOrWhiteSpace($targetFrameworks)) {
+                $targetFramework = ($targetFrameworks -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+            }
+        }
+
+        $platforms = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.Platforms) } | Select-Object -First 1).Platforms
+        $platformTarget = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.PlatformTarget) } | Select-Object -First 1).PlatformTarget
+        $runtimeIdentifiers = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.RuntimeIdentifiers) } | Select-Object -First 1).RuntimeIdentifiers
+
+        $platform = $null
+        if (-not [string]::IsNullOrWhiteSpace($platforms)) {
+            $platform = ($platforms -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+        }
+
+        if ([string]::IsNullOrWhiteSpace($platform)) {
+            $platform = $platformTarget
+        }
+
+        $runtimeIdentifier = $null
+        if (-not [string]::IsNullOrWhiteSpace($runtimeIdentifiers)) {
+            $runtimeIdentifier = ($runtimeIdentifiers -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+        }
+
+        return [pscustomobject]@{
+            TargetFramework  = [string]$targetFramework
+            Platform         = [string]$platform
+            RuntimeIdentifier = [string]$runtimeIdentifier
+            ProjectDirectory = Split-Path -Path $ProjectPath -Parent
+            ProjectName      = [System.IO.Path]::GetFileNameWithoutExtension($ProjectPath)
+        }
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-PublishOptionBuildSettings {
+    param(
+        [hashtable]$Option,
+        [pscustomobject]$ProjectMetadata
+    )
+
+    if ($null -eq $Option) {
+        return $null
+    }
+
+    $configuration = 'Release'
+    $runtimeIdentifier = if ($null -ne $ProjectMetadata -and -not [string]::IsNullOrWhiteSpace($ProjectMetadata.RuntimeIdentifier)) {
+        $ProjectMetadata.RuntimeIdentifier
+    }
+    else {
+        'win-x64'
+    }
+
+    if ($Option.Args -match '(?<!\S)-c\s+(?<Configuration>[^\s]+)') {
+        $configuration = $matches.Configuration
+    }
+
+    if ($Option.Args -match '(?<!\S)-r\s+(?<RuntimeIdentifier>[^\s]+)') {
+        $runtimeIdentifier = $matches.RuntimeIdentifier
+    }
+
+    return [pscustomobject]@{
+        Configuration    = [string]$configuration
+        RuntimeIdentifier = [string]$runtimeIdentifier
+        RequiresPublishBuild = ($Option.Args -match 'PublishReadyToRun=true|PublishTrimmed=true')
+    }
+}
+
+function Test-DirectoryHasFilesRecursively {
+    param(
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
+        return $false
+    }
+
+    return $null -ne (Get-ChildItem -LiteralPath $Path -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1)
+}
+
+function Get-CompatibleExistingBuildAvailability {
+    param(
+        [string]$ProjectPath,
+        [hashtable]$Option
+    )
+
+    if ($null -eq $Option) {
+        return [pscustomobject]@{
+            IsAvailable = $false
+            BuildOutputPath = ''
+            Reason = 'Select a publish option to check whether an existing compatible build can be reused.'
+        }
+    }
+
+    $projectMetadata = Get-ProjectPublishMetadata -ProjectPath $ProjectPath
+    if ($null -eq $projectMetadata) {
+        return [pscustomobject]@{
+            IsAvailable = $false
+            BuildOutputPath = ''
+            Reason = 'Enter a valid project path before checking for an existing compatible build.'
+        }
+    }
+
+    $buildSettings = Get-PublishOptionBuildSettings -Option $Option -ProjectMetadata $projectMetadata
+    if ($buildSettings.RequiresPublishBuild) {
+        return [pscustomobject]@{
+            IsAvailable = $false
+            BuildOutputPath = ''
+            Reason = 'This publish option changes publish-time compilation, so it must build during publish and cannot safely reuse the current bin output.'
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($projectMetadata.TargetFramework) -or [string]::IsNullOrWhiteSpace($projectMetadata.Platform)) {
+        return [pscustomobject]@{
+            IsAvailable = $false
+            BuildOutputPath = ''
+            Reason = 'Could not determine the target framework and platform from the selected project file.'
+        }
+    }
+
+    $binCandidates = @(
+        (Join-Path $projectMetadata.ProjectDirectory (Join-Path 'bin' (Join-Path $projectMetadata.Platform (Join-Path $buildSettings.Configuration (Join-Path $projectMetadata.TargetFramework $buildSettings.RuntimeIdentifier))))),
+        (Join-Path $projectMetadata.ProjectDirectory (Join-Path 'bin' (Join-Path $projectMetadata.Platform (Join-Path $buildSettings.Configuration $projectMetadata.TargetFramework))))
+    ) | Select-Object -Unique
+
+    $objCandidates = @(
+        (Join-Path $projectMetadata.ProjectDirectory (Join-Path 'obj' (Join-Path $projectMetadata.Platform (Join-Path $buildSettings.Configuration (Join-Path $projectMetadata.TargetFramework $buildSettings.RuntimeIdentifier))))),
+        (Join-Path $projectMetadata.ProjectDirectory (Join-Path 'obj' (Join-Path $projectMetadata.Platform (Join-Path $buildSettings.Configuration $projectMetadata.TargetFramework))))
+    ) | Select-Object -Unique
+
+    foreach ($binCandidate in $binCandidates) {
+        if (-not (Test-DirectoryHasFilesRecursively -Path $binCandidate)) {
+            continue
+        }
+
+        foreach ($objCandidate in $objCandidates) {
+            if (-not (Test-DirectoryHasFilesRecursively -Path $objCandidate)) {
+                continue
+            }
+
+            return [pscustomobject]@{
+                IsAvailable = $true
+                BuildOutputPath = $binCandidate
+                Reason = "Compatible existing build found under $binCandidate"
+            }
+        }
+    }
+
+    $expectedPath = $binCandidates | Select-Object -First 1
+    return [pscustomobject]@{
+        IsAvailable = $false
+        BuildOutputPath = ''
+        Reason = "No compatible existing build was found for $($buildSettings.Configuration) / $($projectMetadata.TargetFramework) / $($buildSettings.RuntimeIdentifier). Build the project first so $expectedPath contains the matching output."
+    }
+}
+
+function Update-ExistingBuildCheckboxState {
+    if ($null -eq $useExistingBuildCheckBox -or $null -eq $existingBuildStatusText) {
+        return
+    }
+
+    $availability = Get-CompatibleExistingBuildAvailability -ProjectPath $projectPathText.Text -Option $script:selectedOption
+    $script:ExistingBuildAvailability = $availability
+
+    if ($availability.IsAvailable) {
+        $wasDisabled = -not $useExistingBuildCheckBox.IsEnabled
+        $useExistingBuildCheckBox.IsEnabled = $true
+        if ($wasDisabled -or $null -eq $useExistingBuildCheckBox.IsChecked) {
+            $useExistingBuildCheckBox.IsChecked = $true
+        }
+
+        $useExistingBuildCheckBox.ToolTip = "Reuse the compatible existing build output from $($availability.BuildOutputPath) by adding --no-build to dotnet publish."
+        $existingBuildStatusText.Text = "Compatible existing build found: $($availability.BuildOutputPath)"
+        $existingBuildStatusText.Foreground = $brushConverter.ConvertFromString('#2E7D32')
+        return
+    }
+
+    $useExistingBuildCheckBox.IsChecked = $false
+    $useExistingBuildCheckBox.IsEnabled = $false
+    $useExistingBuildCheckBox.ToolTip = $availability.Reason
+    $existingBuildStatusText.Text = $availability.Reason
+    $existingBuildStatusText.Foreground = $brushConverter.ConvertFromString('#8A6D3B')
+}
+
 function Add-PublishLogText {
     param(
         [string]$Text
@@ -590,6 +800,7 @@ function Set-OperationUiState {
             $satelliteLanguagesComboBox,
             $detailedLoggingCheckBox,
             $showExperimentalOptionsCheckBox,
+            $useExistingBuildCheckBox,
             $autoMigrateCheckBox)) {
         if ($null -ne $control) {
             $control.IsEnabled = -not $IsBusy
@@ -986,6 +1197,18 @@ $xaml = @"
                               Content="Automatically migrate the staged publish output to the shared drive after publish"
                               IsChecked="True"
                               ToolTip="When enabled, a successful publish immediately migrates the locally staged output to the selected shared-drive folder without prompting."/>
+                    <CheckBox Name="UseExistingBuildCheckBox"
+                              Content="Use the existing compatible bin build when available (publish with --no-build)"
+                              Margin="0,8,0,0"
+                              IsChecked="True"
+                              IsEnabled="False"
+                              ToolTip="Disabled until the script finds a compatible existing build for the selected publish option."/>
+                    <TextBlock Name="ExistingBuildStatusText"
+                               Margin="22,4,0,0"
+                               FontSize="11"
+                               Foreground="#8A6D3B"
+                               TextWrapping="Wrap"
+                               Text="Select a publish option to check whether an existing compatible build can be reused."/>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                         <CheckBox Name="DetailedLoggingCheckBox"
                                   Content="Detailed logging"
@@ -1090,6 +1313,8 @@ if ($null -eq $satelliteLanguagesComboBox -and $null -ne $window) {
     $satelliteLanguagesComboBox = [System.Windows.LogicalTreeHelper]::FindLogicalNode($window, "SatelliteLanguagesComboBox")
 }
 $autoMigrateCheckBox = $window.FindName("AutoMigrateCheckBox")
+$useExistingBuildCheckBox = $window.FindName("UseExistingBuildCheckBox")
+$existingBuildStatusText = $window.FindName("ExistingBuildStatusText")
 $detailedLoggingCheckBox = $window.FindName("DetailedLoggingCheckBox")
 $showExperimentalOptionsCheckBox = $window.FindName("ShowExperimentalOptionsCheckBox")
 $statusText = $window.FindName("StatusText")
@@ -1125,6 +1350,7 @@ if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
 # ---------------------------------------------------------------------------
 $brushConverter = New-Object System.Windows.Media.BrushConverter
 Update-PublishOptionList
+Update-ExistingBuildCheckboxState
 Set-OperationUiState -IsBusy $false
 
 # ---------------------------------------------------------------------------
@@ -1149,6 +1375,7 @@ $optionList.Add_SelectionChanged({
         Set-PublishProgressState -Visible $false
         Update-PublishStatus "Ready to publish: $($script:selectedOption.Label)"
         $publishButton.IsEnabled = $true
+        Update-ExistingBuildCheckboxState
     })
 
 $browseOutputPathButton.Add_Click({
@@ -1157,6 +1384,11 @@ $browseOutputPathButton.Add_Click({
 
 $showExperimentalOptionsCheckBox.Add_Click({
         Update-PublishOptionList
+    Update-ExistingBuildCheckboxState
+    })
+
+$projectPathText.Add_TextChanged({
+    Update-ExistingBuildCheckboxState
     })
 
 # ---------------------------------------------------------------------------
@@ -1204,7 +1436,15 @@ $publishButton.Add_Click({
         $script:PublishStagingPath = New-PublishStagingDirectory
         $publishOutputPath = $script:PublishStagingPath
         $selectedPublishVerbosity = Get-SelectedPublishVerbosity
-        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg -v $selectedPublishVerbosity -o `"$publishOutputPath`""
+        Update-ExistingBuildCheckboxState
+        $useExistingBuild = $script:ExistingBuildAvailability.IsAvailable -and (Get-UseExistingBuildOutput)
+        $noBuildArg = if ($useExistingBuild) {
+            ' --no-build'
+        }
+        else {
+            ''
+        }
+        $publishCommand = "dotnet publish `"$projectPath`" $($opt.Args)$satelliteLanguagesArg$noBuildArg -v $selectedPublishVerbosity -o `"$publishOutputPath`""
 
         Update-PublishStatus "Preparing local staged publish output..."
 
@@ -1228,6 +1468,8 @@ PublishMode: Local staging first
 PublishCommandOutput: $publishOutputPath
 Verbosity: $selectedPublishVerbosity
 SatelliteResourceLanguages: $(if ([string]::IsNullOrWhiteSpace($satelliteLanguages)) { 'all' } else { $satelliteLanguages })
+ReuseExistingBuildOutput: $(if ($useExistingBuild) { 'enabled' } else { 'disabled' })
+ExistingBuildPath: $(if ($useExistingBuild) { $script:ExistingBuildAvailability.BuildOutputPath } else { 'n/a' })
 Command: $publishCommand
 LogFile: $($script:PublishLogFile)
 
