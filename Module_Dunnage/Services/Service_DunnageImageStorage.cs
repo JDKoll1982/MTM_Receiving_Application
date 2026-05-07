@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -20,6 +21,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services;
 public class Service_DunnageImageStorage : IService_DunnageImageStorage
 {
     private const string SettingsCategory = "Dunnage";
+    private const string TempFolderName = "Temp";
     private const string TypeImagePrefix = "DunnageType";
     private static readonly string[] SupportedExtensions = [".png", ".jpg", ".jpeg"];
 
@@ -52,10 +54,99 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
                     : string.Empty;
 
             Helper_DunnageImagePaths.SetRootFolder(configuredRootFolder);
+            Helper_DunnageImagePaths.EnsureLocalCacheFolder();
         }
         catch
         {
             Helper_DunnageImagePaths.SetRootFolder(null);
+            Helper_DunnageImagePaths.EnsureLocalCacheFolder();
+        }
+    }
+
+    public async Task SyncLocalCacheAsync()
+    {
+        await Task.Yield();
+
+        try
+        {
+            await RefreshConfiguredRootFolderAsync();
+
+            var sharedRootFolder = Helper_DunnageImagePaths.SharedRootFolder;
+            var localCacheRootFolder = Helper_DunnageImagePaths.LocalCacheRootFolder;
+
+            Directory.CreateDirectory(localCacheRootFolder);
+            if (Directory.Exists(sharedRootFolder) is false)
+            {
+                return;
+            }
+
+            var sharedRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var sharedImagePath in Directory.EnumerateFiles(
+                sharedRootFolder,
+                "*",
+                SearchOption.AllDirectories
+            ))
+            {
+                if (IsSupportedExtension(Path.GetExtension(sharedImagePath)) is false)
+                {
+                    continue;
+                }
+
+                var relativePath = Path.GetRelativePath(sharedRootFolder, sharedImagePath);
+                if (ShouldSkipFromLocalSync(relativePath))
+                {
+                    continue;
+                }
+
+                sharedRelativePaths.Add(relativePath);
+
+                var localCachePath = Path.Combine(localCacheRootFolder, relativePath);
+                var localCacheDirectory = Path.GetDirectoryName(localCachePath);
+                if (string.IsNullOrWhiteSpace(localCacheDirectory) is false)
+                {
+                    Directory.CreateDirectory(localCacheDirectory);
+                }
+
+                if (ShouldCopyToLocalCache(sharedImagePath, localCachePath))
+                {
+                    File.Copy(sharedImagePath, localCachePath, overwrite: true);
+                    File.SetLastWriteTimeUtc(
+                        localCachePath,
+                        File.GetLastWriteTimeUtc(sharedImagePath)
+                    );
+                }
+            }
+
+            foreach (var localCacheImagePath in Directory.EnumerateFiles(
+                localCacheRootFolder,
+                "*",
+                SearchOption.AllDirectories
+            ))
+            {
+                if (IsSupportedExtension(Path.GetExtension(localCacheImagePath)) is false)
+                {
+                    continue;
+                }
+
+                var relativePath = Path.GetRelativePath(localCacheRootFolder, localCacheImagePath);
+                if (ShouldSkipFromLocalSync(relativePath))
+                {
+                    continue;
+                }
+
+                if (sharedRelativePaths.Contains(relativePath))
+                {
+                    continue;
+                }
+
+                File.Delete(localCacheImagePath);
+            }
+
+            CleanupEmptyCacheDirectories(localCacheRootFolder);
+        }
+        catch
+        {
+            // Cache synchronization is a best-effort startup optimization and should not block app usage.
         }
     }
 
@@ -63,8 +154,8 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
     {
         await RefreshConfiguredRootFolderAsync();
 
-        return Directory.Exists(Helper_DunnageImagePaths.RootFolder)
-            ? Helper_DunnageImagePaths.RootFolder
+        return Directory.Exists(Helper_DunnageImagePaths.SharedRootFolder)
+            ? Helper_DunnageImagePaths.SharedRootFolder
             : null;
     }
 
@@ -74,7 +165,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
 
         try
         {
-            var absolutePath = ResolveAbsoluteImagePath(imagePath);
+            var absolutePath = ResolveSharedAbsoluteImagePath(imagePath);
             if (string.IsNullOrWhiteSpace(absolutePath))
             {
                 return Model_Dao_Result_Factory.Failure<string>("Image file path is required.");
@@ -95,7 +186,10 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
                 );
             }
 
-            var tempDirectory = Path.Combine(Helper_DunnageImagePaths.RootFolder, "Temp");
+            var tempDirectory = Path.Combine(
+                Helper_DunnageImagePaths.LocalCacheRootFolder,
+                TempFolderName
+            );
             Directory.CreateDirectory(tempDirectory);
 
             targetFilePath = Path.Combine(tempDirectory, $"{Guid.NewGuid():N}{extension}");
@@ -230,12 +324,20 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         try
         {
             var absolutePath = GetAbsolutePath(relativeImagePath);
-            if (string.IsNullOrWhiteSpace(absolutePath) || File.Exists(absolutePath) is false)
+            if (string.IsNullOrWhiteSpace(absolutePath) is false && File.Exists(absolutePath))
             {
-                return Task.FromResult(Model_Dao_Result_Factory.Success());
+                File.Delete(absolutePath);
             }
 
-            File.Delete(absolutePath);
+            var cachedAbsolutePath = Helper_DunnageImagePaths.GetCachedAbsolutePath(relativeImagePath);
+            if (
+                string.IsNullOrWhiteSpace(cachedAbsolutePath) is false
+                && File.Exists(cachedAbsolutePath)
+            )
+            {
+                File.Delete(cachedAbsolutePath);
+            }
+
             return Task.FromResult(Model_Dao_Result_Factory.Success());
         }
         catch (Exception ex)
@@ -253,7 +355,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
 
     public string? GetNormalizedFullPath(string? imagePath)
     {
-        var absolutePath = ResolveAbsoluteImagePath(imagePath);
+        var absolutePath = ResolveSharedAbsoluteImagePath(imagePath);
         if (string.IsNullOrWhiteSpace(absolutePath))
         {
             return null;
@@ -262,7 +364,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         return TryConvertMappedDriveToUnc(absolutePath, out var uncPath) ? uncPath : absolutePath;
     }
 
-    private string? ResolveAbsoluteImagePath(string? imagePath)
+    private string? ResolveSharedAbsoluteImagePath(string? imagePath)
     {
         if (string.IsNullOrWhiteSpace(imagePath))
         {
@@ -301,7 +403,10 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         await RefreshConfiguredRootFolderAsync();
 
         var safeFolderName = string.IsNullOrWhiteSpace(folderName) ? "Shared" : folderName.Trim();
-        var targetDirectory = Path.Combine(Helper_DunnageImagePaths.RootFolder, safeFolderName);
+        var targetDirectory = Path.Combine(
+            Helper_DunnageImagePaths.SharedRootFolder,
+            safeFolderName
+        );
         Directory.CreateDirectory(targetDirectory);
 
         var targetFileName = string.IsNullOrWhiteSpace(preferredFileName)
@@ -369,7 +474,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
         }
 
         var sourceFullPath = Path.GetFullPath(sourceFilePath);
-        var configuredRoot = Path.GetFullPath(Helper_DunnageImagePaths.RootFolder);
+        var configuredRoot = Path.GetFullPath(Helper_DunnageImagePaths.SharedRootFolder);
         var rootWithSeparator =
             configuredRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
             + Path.DirectorySeparatorChar;
@@ -398,6 +503,59 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
     {
         return string.IsNullOrWhiteSpace(extension) is false
             && SupportedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static bool ShouldCopyToLocalCache(string sharedImagePath, string localCachePath)
+    {
+        if (File.Exists(localCachePath) is false)
+        {
+            return true;
+        }
+
+        var sharedInfo = new FileInfo(sharedImagePath);
+        var localInfo = new FileInfo(localCachePath);
+        return sharedInfo.Length != localInfo.Length
+            || sharedInfo.LastWriteTimeUtc != localInfo.LastWriteTimeUtc;
+    }
+
+    private static bool ShouldSkipFromLocalSync(string relativePath)
+    {
+        var normalizedPath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        return normalizedPath.StartsWith(
+            TempFolderName + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase
+        );
+    }
+
+    private static void CleanupEmptyCacheDirectories(string localCacheRootFolder)
+    {
+        if (Directory.Exists(localCacheRootFolder) is false)
+        {
+            return;
+        }
+
+        foreach (
+            var directory in Directory
+                .EnumerateDirectories(localCacheRootFolder, "*", SearchOption.AllDirectories)
+                .OrderByDescending(path => path.Length)
+        )
+        {
+            var relativePath = Path.GetRelativePath(localCacheRootFolder, directory);
+            if (ShouldSkipFromLocalSync(relativePath))
+            {
+                continue;
+            }
+
+            if (
+                Directory.EnumerateFileSystemEntries(directory).Any()
+                || string.Equals(directory, localCacheRootFolder, StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                continue;
+            }
+
+            Directory.Delete(directory, recursive: false);
+        }
     }
 
     private static Guid GetEncoderId(string extension)

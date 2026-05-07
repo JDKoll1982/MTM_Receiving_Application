@@ -124,16 +124,6 @@
                 Orientation="Horizontal"
                 Spacing="12">
                 <Button
-                    Command="{x:Bind ViewModel.OpenDunnageLabelCommand}"
-                    Style="{StaticResource WindowChromeStyle}"
-                    ToolTipService.ToolTip="Open Dunnage Label">
-                    <Image Width="18" Height="18">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-dunnage.svg" />
-                        </Image.Source>
-                    </Image>
-                </Button>
-                <Button
                     Click="HelpButton_Click"
                     Style="{StaticResource WindowChromeStyle}"
                     ToolTipService.ToolTip="Click for help about the current step">

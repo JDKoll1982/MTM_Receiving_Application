@@ -76,6 +76,7 @@ public partial class App : Application
 
         var dunnageImageStorage = _host.Services.GetRequiredService<IService_DunnageImageStorage>();
         await dunnageImageStorage.RefreshConfiguredRootFolderAsync();
+        _ = dunnageImageStorage.SyncLocalCacheAsync();
 
         var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
         var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();

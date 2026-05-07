@@ -47,7 +47,6 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Spacing="4">
@@ -82,18 +81,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="4" Command="{x:Bind ViewModel.OpenVolvoLabelCommand}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Image Width="18" Height="18">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-volvo.svg" />
-                        </Image.Source>
-                    </Image>
-                    <TextBlock Text="Open Label" />
-                </StackPanel>
-            </Button>
-
-            <Button Grid.Column="5" Command="{x:Bind ViewModel.ViewHistoryCommand}">
+            <Button Grid.Column="4" Command="{x:Bind ViewModel.ViewHistoryCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <SymbolIcon Symbol="Calendar" />
                     <TextBlock Text="View History" />

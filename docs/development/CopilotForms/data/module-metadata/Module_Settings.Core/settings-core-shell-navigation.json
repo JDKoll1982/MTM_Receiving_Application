@@ -2,7 +2,7 @@
   "id": "settings-core-shell-navigation",
   "module": "Module_Settings.Core",
   "name": "Settings Shell And Navigation",
-  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page and the LabelView executable page, which now includes an open-folder shortcut for the saved executable path.",
+  "summary": "Core settings shell metadata for the shared MainWindow experience, including the runtime NavigationView swap between production routes and settings routes, built-in settings-item toggle behavior, a shared pane-footer label-launch cluster that remains anchored above the Settings item in both app and settings modes, back navigation inside settings hubs, placeholder control usage, compatibility host plumbing for existing settings pages, and the Core navigation cards that route to shared configuration pages such as the Material Availability field settings page and the LabelView executable page, which now includes an open-folder shortcut for the saved executable path.",
   "owner": "Platform Team",
   "relatedFiles": [
     "Module_Settings.Core/Contracts/Services/IService_SettingsPagination.cs",
@@ -67,6 +67,7 @@
       "Navigation step buttons",
       "Core navigation cards",
       "LabelView settings card",
+      "Shared pane-footer label launch buttons",
       "Built-in back navigation",
       "Cancel, save, and reset actions",
       "Open-folder shortcut for the LabelView executable path",
@@ -78,6 +79,7 @@
       "Move between settings areas",
       "Open the Material Availability field settings page from the Core hub",
       "Open the LabelView executable settings page from the Core hub",
+      "Open any configured label from the shared pane footer without leaving the shell layout",
       "Open File Explorer for the saved LabelView executable folder or Documents when no folder is available",
       "Return to the originating module's default route after leaving settings mode",
       "Use the built-in back button to return to the active module hub",
@@ -94,6 +96,7 @@
     "validationHints": [
       "Confirm the MainWindow navigation items swap between production routes and settings routes when the built-in Settings item is clicked",
       "Confirm the built-in Settings item text changes to Return while settings mode is active",
+      "Confirm the shared pane-footer label button cluster stays above the built-in Settings item in both app mode and settings mode",
       "Confirm leaving Receiving or Dunnage for settings prompts before unsaved work is cleared",
       "Confirm leaving settings returns to the originating module's default route",
       "Confirm navigation buttons still page correctly",

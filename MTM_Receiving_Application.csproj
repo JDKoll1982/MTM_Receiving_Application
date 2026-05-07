@@ -6,9 +6,9 @@
     <EnableDefaultPageItems>true</EnableDefaultPageItems>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>MTM_Receiving_Application</RootNamespace>
-    <Version>2.1.1.0</Version>
-    <AssemblyVersion>2.1.1.0</AssemblyVersion>
-    <FileVersion>2.1.1.0</FileVersion>
+    <Version>2.2.0.0</Version>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- x64 only — all manufacturing floor PCs are x64 Windows. ARM64 and x86 removed
          to eliminate parallel build file-lock issues and reduce build time. -->
@@ -134,6 +134,16 @@
     <Content Include="Assets\Icons\open-label-mini-receiving.svg" />
     <Content Include="Assets\Icons\open-label-receiving.svg" />
     <Content Include="Assets\Icons\open-label-volvo.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="**\*.png;**\*.jpg;**\*.jpeg;**\*.gif;**\*.webp;**\*.svg;**\*.ico;**\*.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <None Update="**\*.png;**\*.jpg;**\*.jpeg;**\*.gif;**\*.webp;**\*.svg;**\*.ico;**\*.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />

@@ -46,6 +46,10 @@ $script:OutFile = $null
 $script:PublishStagingPath = $null
 $script:selectedOption = $null
 $script:LastSyncProgressRender = [datetime]::MinValue
+$script:PublishCompletionHandled = $false
+$script:IsPublishInProgress = $false
+$script:IsSyncInProgress = $false
+$script:SyncWorker = $null
 
 function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
@@ -340,6 +344,14 @@ function Get-ShowExperimentalOptions {
     return $true -eq [bool]$showExperimentalOptionsCheckBox.IsChecked
 }
 
+function Get-AutoMigrateToSharedDrive {
+    if ($null -eq $autoMigrateCheckBox) {
+        return $true
+    }
+
+    return $true -eq [bool]$autoMigrateCheckBox.IsChecked
+}
+
 function Add-PublishLogText {
     param(
         [string]$Text
@@ -552,6 +564,47 @@ function Stop-PublishSession {
     }
 }
 
+function Reset-SyncWorker {
+    if ($null -eq $script:SyncWorker) {
+        return
+    }
+
+    try {
+        $script:SyncWorker.Dispose()
+    }
+    catch {
+    }
+
+    $script:SyncWorker = $null
+}
+
+function Set-OperationUiState {
+    param(
+        [bool]$IsBusy
+    )
+
+    foreach ($control in @(
+            $optionList,
+            $browseOutputPathButton,
+            $projectPathText,
+            $satelliteLanguagesComboBox,
+            $detailedLoggingCheckBox,
+            $showExperimentalOptionsCheckBox,
+            $autoMigrateCheckBox)) {
+        if ($null -ne $control) {
+            $control.IsEnabled = -not $IsBusy
+        }
+    }
+
+    if ($null -ne $publishButton) {
+        $publishButton.IsEnabled = (-not $IsBusy) -and ($null -ne $script:selectedOption)
+    }
+
+    if ($null -ne $closeButton) {
+        $closeButton.IsEnabled = -not $IsBusy
+    }
+}
+
 function Update-PublishStatus {
     param(
         [string]$Message,
@@ -649,6 +702,123 @@ function Update-SyncProgress {
     Set-PublishProgressState -Visible $true -IsIndeterminate $false -Value $safeCompleted -Maximum $safeTotal
     Update-PublishStatus -Message "Syncing staged publish output to the deployment target... $Phase ($safeCompleted of $safeTotal, $percentComplete%)" -SkipLog
     Invoke-PublishUiRefresh
+}
+
+function Start-PublishOutputSync {
+    param(
+        [string]$StagingPath,
+        [string]$DestinationPath,
+        [hashtable]$Option,
+        [int]$PublishExitCode
+    )
+
+    if ([string]::IsNullOrWhiteSpace($StagingPath) -or -not (Test-Path -LiteralPath $StagingPath)) {
+        throw "The staged publish output path is not available for sync: $StagingPath"
+    }
+
+    Reset-SyncWorker
+
+    $script:IsSyncInProgress = $true
+    Set-OperationUiState -IsBusy $true
+    $script:LastSyncProgressRender = [datetime]::MinValue
+
+    Set-PublishProgressState -Visible $true -IsIndeterminate $false -Value 0 -Maximum 1
+    Update-PublishStatus "Starting migration of the staged publish output to the shared drive..."
+    Add-PublishLogText "`r`nSync Started`r`nDeployment target: $DestinationPath`r`n"
+
+    $worker = New-Object System.ComponentModel.BackgroundWorker
+    $worker.WorkerReportsProgress = $true
+
+    $worker.add_DoWork({
+            param($sender, $eventArgs)
+
+            $syncContext = $eventArgs.Argument
+            $progressAction = {
+                param($completedSteps, $totalSteps, $phase)
+
+                $sender.ReportProgress(0, [pscustomobject]@{
+                        CompletedSteps = $completedSteps
+                        TotalSteps     = $totalSteps
+                        Phase          = $phase
+                    })
+            }
+
+            $mergeResult = Sync-PublishOutputDirectory -SourcePath $syncContext.StagingPath -DestinationPath $syncContext.DestinationPath -PreserveNames @('_PublishLogs') -ProgressAction $progressAction
+            $eventArgs.Result = [pscustomobject]@{
+                MergeResult     = $mergeResult
+                StagingPath     = $syncContext.StagingPath
+                DestinationPath = $syncContext.DestinationPath
+                PublishExitCode = $syncContext.PublishExitCode
+            }
+        })
+
+    $worker.add_ProgressChanged({
+            param($sender, $eventArgs)
+
+            if ($null -eq $eventArgs.UserState) {
+                return
+            }
+
+            Update-SyncProgress -CompletedSteps $eventArgs.UserState.CompletedSteps -TotalSteps $eventArgs.UserState.TotalSteps -Phase $eventArgs.UserState.Phase -Force
+        })
+
+    $worker.add_RunWorkerCompleted({
+            param($sender, $eventArgs)
+
+            $script:IsSyncInProgress = $false
+            Reset-SyncWorker
+
+            if ($null -ne $eventArgs.Error) {
+                $script:PublishStagingPath = $null
+                Set-PublishProgressState -Visible $false
+                Set-OperationUiState -IsBusy $false
+                $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
+                $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+                $errorText.Text = "Publish succeeded, but migrating the staged output failed. Staged output: $StagingPath`nLog file: $script:PublishLogFile`n$($eventArgs.Error.Message)"
+                Update-PublishStatus "Publish migration failed - check build output."
+                Add-PublishLogText "`r`nSync Failed: $($eventArgs.Error.Message)`r`n"
+                Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $PublishExitCode`r`n"
+
+                try {
+                    Save-PublishLog
+                }
+                catch {
+                }
+
+                return
+            }
+
+            $syncResult = $eventArgs.Result
+            $mergeSummaryText = "`nMigration completed to: $($syncResult.DestinationPath)`nReused unchanged files: $($syncResult.MergeResult.SkippedFiles)`nCopied new or changed files: $($syncResult.MergeResult.CopiedFiles)`nRemoved stale files/folders: $($syncResult.MergeResult.RemovedItems)"
+            Add-PublishLogText "`r`nSync Summary`r`nReused unchanged files: $($syncResult.MergeResult.SkippedFiles)`r`nCopied new or changed files: $($syncResult.MergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($syncResult.MergeResult.RemovedItems)`r`n"
+
+            if (Test-Path -LiteralPath $syncResult.StagingPath) {
+                Remove-Item -LiteralPath $syncResult.StagingPath -Recurse -Force -ErrorAction SilentlyContinue
+            }
+
+            $script:PublishStagingPath = $null
+            Set-PublishProgressState -Visible $false
+            Set-OperationUiState -IsBusy $false
+            $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
+            $successBorder.Visibility = [System.Windows.Visibility]::Visible
+            $successText.Text = "Publish succeeded!`nOutput folder: $($syncResult.DestinationPath)`nLog file: $script:PublishLogFile$mergeSummaryText"
+            $outputText.Text += "`r`nMigration completed to: $($syncResult.DestinationPath)`r`n"
+            Update-PublishStatus "Publish and migration completed successfully."
+            Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $($syncResult.PublishExitCode)`r`n"
+
+            try {
+                Save-PublishLog
+            }
+            catch {
+            }
+        })
+
+    $script:SyncWorker = $worker
+    $worker.RunWorkerAsync([pscustomobject]@{
+            StagingPath     = $StagingPath
+            DestinationPath = $DestinationPath
+            PublishExitCode = $PublishExitCode
+        })
 }
 
 $script:Options = @(
@@ -810,15 +980,21 @@ $xaml = @"
                           MaxDropDownHeight="320"
                           ToolTip="Optional. Pick one language to limit satellite resources, or leave the default option selected to publish all available languages."/>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Extras:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,10,0,0"/>
-                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="0,10,0,0">
-                    <CheckBox Name="DetailedLoggingCheckBox"
-                              Content="Detailed logging"
-                              ToolTip="Enable verbose publish output only when troubleshooting."/>
-                    <CheckBox Name="ShowExperimentalOptionsCheckBox"
-                              Content="Show experimental options"
-                              Margin="18,0,0,0"
-                              ToolTip="Displays advanced publish options such as ReadyToRun that are not part of the normal supported path."/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Extras:" FontWeight="Bold" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,10,0,0">
+                    <CheckBox Name="AutoMigrateCheckBox"
+                              Content="Automatically migrate the staged publish output to the shared drive after publish"
+                              IsChecked="True"
+                              ToolTip="When enabled, a successful publish immediately migrates the locally staged output to the selected shared-drive folder without prompting."/>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <CheckBox Name="DetailedLoggingCheckBox"
+                                  Content="Detailed logging"
+                                  ToolTip="Enable verbose publish output only when troubleshooting."/>
+                        <CheckBox Name="ShowExperimentalOptionsCheckBox"
+                                  Content="Show experimental options"
+                                  Margin="18,0,0,0"
+                                  ToolTip="Displays advanced publish options such as ReadyToRun that are not part of the normal supported path."/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
@@ -913,6 +1089,7 @@ $satelliteLanguagesComboBox = $window.FindName("SatelliteLanguagesComboBox")
 if ($null -eq $satelliteLanguagesComboBox -and $null -ne $window) {
     $satelliteLanguagesComboBox = [System.Windows.LogicalTreeHelper]::FindLogicalNode($window, "SatelliteLanguagesComboBox")
 }
+$autoMigrateCheckBox = $window.FindName("AutoMigrateCheckBox")
 $detailedLoggingCheckBox = $window.FindName("DetailedLoggingCheckBox")
 $showExperimentalOptionsCheckBox = $window.FindName("ShowExperimentalOptionsCheckBox")
 $statusText = $window.FindName("StatusText")
@@ -948,6 +1125,7 @@ if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
 # ---------------------------------------------------------------------------
 $brushConverter = New-Object System.Windows.Media.BrushConverter
 Update-PublishOptionList
+Set-OperationUiState -IsBusy $false
 
 # ---------------------------------------------------------------------------
 # Selection changed - update notes panel
@@ -994,6 +1172,9 @@ $publishButton.Add_Click({
         $projectPath = $projectPathText.Text
 
         if ([string]::IsNullOrWhiteSpace($projectPath) -or -not (Test-Path -LiteralPath $projectPath)) {
+            $script:PublishCompletionHandled = $false
+            $script:IsPublishInProgress = $false
+            $script:IsSyncInProgress = $false
             $errorBorder.Visibility = [System.Windows.Visibility]::Visible
             $errorText.Text = "The selected project file does not exist. Update the Project path to the current MTM_Receiving_Application.csproj before publishing."
             $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
@@ -1001,6 +1182,10 @@ $publishButton.Add_Click({
             Update-PublishStatus "Publish blocked - project file path is invalid."
             return
         }
+
+        $script:PublishCompletionHandled = $false
+        $script:IsPublishInProgress = $true
+        $script:IsSyncInProgress = $false
 
         $satelliteLanguages = if ([string]::IsNullOrWhiteSpace((Get-SelectedSatelliteLanguageCode))) {
             ''
@@ -1049,7 +1234,7 @@ LogFile: $($script:PublishLogFile)
 "@
         Add-PublishLogText $outputText.Text
     Set-PublishProgressState -Visible $true -IsIndeterminate $true
-        $publishButton.IsEnabled = $false
+    Set-OperationUiState -IsBusy $true
         Update-PublishStatus "Publishing - please wait..."
 
         # Redirect stdout+stderr to a temp file via cmd /c.
@@ -1101,6 +1286,12 @@ LogFile: $($script:PublishLogFile)
 
                 if (-not $script:publishProcess.HasExited) { return }
 
+                if ($script:PublishCompletionHandled) {
+                    return
+                }
+
+                $script:PublishCompletionHandled = $true
+
                 # Process exited - do one final read to capture the last bytes
                 $script:pollTimer.Stop()
                 try {
@@ -1129,69 +1320,67 @@ LogFile: $($script:PublishLogFile)
                 }
 
                 $publishExitCode = $script:publishProcess.ExitCode
+                $stagingPath = $script:PublishStagingPath
                 Stop-PublishSession
+                $script:IsPublishInProgress = $false
 
                 $outputScrollViewer.ScrollToEnd()
 
-                $stagingPath = $script:PublishStagingPath
-                Stop-PublishSession
-
                 $mergeSummaryText = ''
-                $syncCompleted = $false
                 if ($publishExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($stagingPath)) {
-                    if (Confirm-SyncStagedPublishOutput -DestinationPath $script:currentOutputPath -StagingPath $stagingPath -OptionLabel $opt.Label) {
+                    if (Get-AutoMigrateToSharedDrive) {
                         try {
-                            Add-PublishLogText "`r`nSync Started`r`nDeployment target: $($script:currentOutputPath)`r`n"
-                            $script:LastSyncProgressRender = [datetime]::MinValue
-                            $mergeResult = Sync-PublishOutputDirectory -SourcePath $stagingPath -DestinationPath $script:currentOutputPath -PreserveNames @('_PublishLogs') -ProgressAction {
-                                param($completedSteps, $totalSteps, $phase)
-
-                                Update-SyncProgress -CompletedSteps $completedSteps -TotalSteps $totalSteps -Phase $phase
-                            }
-                            $mergeSummaryText = "`nSync completed to: $($script:currentOutputPath)`nReused unchanged files: $($mergeResult.SkippedFiles)`nCopied new or changed files: $($mergeResult.CopiedFiles)`nRemoved stale files/folders: $($mergeResult.RemovedItems)"
-                            Add-PublishLogText "`r`nSync Summary`r`nReused unchanged files: $($mergeResult.SkippedFiles)`r`nCopied new or changed files: $($mergeResult.CopiedFiles)`r`nRemoved stale files/folders: $($mergeResult.RemovedItems)`r`n"
-                            Update-PublishStatus "Publish and sync completed successfully."
-                            $syncCompleted = $true
-                            Remove-Item -LiteralPath $stagingPath -Recurse -Force -ErrorAction SilentlyContinue
-                            $script:PublishStagingPath = $null
+                            Start-PublishOutputSync -StagingPath $stagingPath -DestinationPath $script:currentOutputPath -Option $opt -PublishExitCode $publishExitCode
+                            return
                         }
                         catch {
                             $script:PublishStagingPath = $null
+                            $script:IsSyncInProgress = $false
                             Set-PublishProgressState -Visible $false
-                            $publishButton.IsEnabled = $true
+                            Set-OperationUiState -IsBusy $false
+                            $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
                             $errorBorder.Visibility = [System.Windows.Visibility]::Visible
-                            $errorText.Text = "Publish succeeded, but syncing the staged output failed. Staged output: $stagingPath`nLog file: $script:PublishLogFile`n$($_.Exception.Message)"
-                            Update-PublishStatus "Publish sync failed - check build output."
-                            Add-PublishLogText "`r`nSync Failed: $($_.Exception.Message)`r`n"
+                            $errorText.Text = "Publish succeeded, but migration to the shared drive could not be started. Staged output: $stagingPath`nLog file: $script:PublishLogFile`n$($_.Exception.Message)"
+                            Update-PublishStatus "Publish migration failed to start - check build output."
+                            Add-PublishLogText "`r`nSync Failed To Start: $($_.Exception.Message)`r`n"
+                            Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $publishExitCode`r`n"
+                            try {
+                                Save-PublishLog
+                            }
+                            catch {
+                            }
                             return
                         }
                     }
-                    else {
-                        $mergeSummaryText = "`nStaged output retained locally: $stagingPath`nDeployment target not updated yet."
-                        Add-PublishLogText "`r`nSync Deferred`r`nStaged output retained locally: $stagingPath`r`n"
-                        Update-PublishStatus "Publish completed successfully. Sync to the deployment target was deferred."
-                        $script:PublishStagingPath = $null
-                    }
+
+                    $mergeSummaryText = "`nStaged output retained locally: $stagingPath`nAutomatic migration to the shared drive was disabled for this publish."
+                    Add-PublishLogText "`r`nSync Deferred`r`nStaged output retained locally: $stagingPath`r`n"
+                    Update-PublishStatus "Publish completed successfully. Automatic migration was disabled, so the staged output was retained locally."
+                    $script:PublishStagingPath = $null
                 }
 
-                if (-not $syncCompleted) {
-                    Set-PublishProgressState -Visible $false
-                }
-
-                $publishButton.IsEnabled = $true
+                Set-PublishProgressState -Visible $false
+                Set-OperationUiState -IsBusy $false
 
                 if ($publishExitCode -eq 0) {
+                    $errorBorder.Visibility = [System.Windows.Visibility]::Collapsed
                     $successBorder.Visibility = [System.Windows.Visibility]::Visible
                     $successText.Text = "Publish succeeded!`nOutput folder: $script:currentOutputPath`nLog file: $script:PublishLogFile$mergeSummaryText"
                     Update-PublishStatus "Publish completed successfully!"
                 }
                 else {
+                    $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
                     $errorBorder.Visibility = [System.Windows.Visibility]::Visible
                     $errorText.Text = "Publish failed (exit code $publishExitCode). See the build output above for details.`nLog file: $script:PublishLogFile"
                     Update-PublishStatus "Publish failed - check build output."
                 }
 
                 Add-PublishLogText "`r`nCompleted: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`r`nExitCode: $publishExitCode`r`n"
+                try {
+                    Save-PublishLog
+                }
+                catch {
+                }
             })
         $script:pollTimer.Start()
     })
@@ -1200,13 +1389,28 @@ LogFile: $($script:PublishLogFile)
 # Close button
 # ---------------------------------------------------------------------------
 $closeButton.Add_Click({
+        if ($script:IsPublishInProgress -or $script:IsSyncInProgress) {
+            Update-PublishStatus 'Wait for the current publish or migration operation to finish before closing the tool.'
+            return
+        }
+
         Stop-PublishSession
+        Reset-SyncWorker
         Remove-PublishStagingDirectory
         $window.Close()
     })
 
 $window.Add_Closing({
+        param($sender, $eventArgs)
+
+        if ($script:IsPublishInProgress -or $script:IsSyncInProgress) {
+            $eventArgs.Cancel = $true
+            Update-PublishStatus 'Wait for the current publish or migration operation to finish before closing the tool.'
+            return
+        }
+
         Stop-PublishSession
+        Reset-SyncWorker
         Remove-PublishStagingDirectory
     })
 

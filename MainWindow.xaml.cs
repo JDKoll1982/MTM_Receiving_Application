@@ -12,12 +12,17 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Contracts;
+using MTM_Receiving_Application.Module_Volvo.Settings;
 using Windows.Graphics;
 
 namespace MTM_Receiving_Application
@@ -31,6 +36,11 @@ namespace MTM_Receiving_Application
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IService_LabelViewLauncher _labelViewLauncher;
+        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_DunnageSettings _dunnageSettings;
+        private readonly IService_VolvoSettings _volvoSettings;
+        private readonly IService_ErrorHandler _errorHandler;
         private readonly List<object> _applicationMenuItems = new();
         private readonly List<object> _applicationFooterItems = new();
         private readonly List<object> _settingsMenuItems = new();
@@ -116,7 +126,12 @@ namespace MTM_Receiving_Application
             ViewModel_Shared_MainWindow viewModel,
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
-            IServiceProvider serviceProvider
+            IServiceProvider serviceProvider,
+            IService_LabelViewLauncher labelViewLauncher,
+            IService_ReceivingSettings receivingSettings,
+            IService_DunnageSettings dunnageSettings,
+            IService_VolvoSettings volvoSettings,
+            IService_ErrorHandler errorHandler
         )
         {
             InitializeComponent();
@@ -124,6 +139,11 @@ namespace MTM_Receiving_Application
             _sessionManager = sessionManager;
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _labelViewLauncher = labelViewLauncher;
+            _receivingSettings = receivingSettings;
+            _dunnageSettings = dunnageSettings;
+            _volvoSettings = volvoSettings;
+            _errorHandler = errorHandler;
 
             _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
             _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
@@ -351,6 +371,115 @@ namespace MTM_Receiving_Application
             }
 
             NavigateWithDI(route.PageType, route.Title);
+        }
+
+        private async void OpenReceivingLabelButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            await OpenLabelAsync(
+                () => _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Labels.ReceivingLabelPath),
+                typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
+                "Receiving Label",
+                "Receiving label settings"
+            );
+        }
+
+        private async void OpenMiniReceivingLabelButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            await OpenLabelAsync(
+                () =>
+                    _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Labels.MiniReceivingLabelPath
+                    ),
+                typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
+                "Mini-Receiving Label",
+                "Receiving label settings"
+            );
+        }
+
+        private async void OpenVolvoLabelButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            await OpenLabelAsync(
+                () => _volvoSettings.GetStringAsync(VolvoSettingsKeys.Labels.VolvoLabelPath),
+                typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
+                "Volvo Label",
+                "Volvo label settings"
+            );
+        }
+
+        private async void OpenDunnageLabelButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            await OpenLabelAsync(
+                () => _dunnageSettings.GetStringAsync(DunnageSettingsKeys.Labels.DunnageLabelPath),
+                typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
+                "Dunnage Label",
+                "Dunnage label settings"
+            );
+        }
+
+        private async Task OpenLabelAsync(
+            Func<Task<string>> getLabelPathAsync,
+            Type settingsPageType,
+            string labelName,
+            string settingsAreaName
+        )
+        {
+            var executablePath = await _labelViewLauncher.ResolveExecutablePathAsync();
+            if (string.IsNullOrWhiteSpace(executablePath))
+            {
+                await RedirectToLabelSettingsPageAsync(
+                    typeof(View_Settings_LabelViewExecutable),
+                    "LabelView is not configured. Opening LabelView settings."
+                );
+                return;
+            }
+
+            var labelPath = await getLabelPathAsync();
+            if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
+            {
+                await RedirectToLabelSettingsPageAsync(
+                    settingsPageType,
+                    $"{labelName} path is missing or invalid. Opening {settingsAreaName}."
+                );
+                return;
+            }
+
+            var launchResult = await _labelViewLauncher.LaunchLabelAsync(labelPath);
+            if (!launchResult.IsSuccess)
+            {
+                await _errorHandler.HandleDaoErrorAsync(launchResult, nameof(OpenLabelAsync));
+                return;
+            }
+
+            ViewModel.NotificationService.ShowStatus(
+                $"{labelName} opened in LabelView.",
+                Module_Core.Models.Enums.InfoBarSeverity.Success
+            );
+        }
+
+        private async Task RedirectToLabelSettingsPageAsync(Type pageType, string statusMessage)
+        {
+            var navigationSucceeded = await NavigateToSettingsPageAsync(pageType);
+            if (navigationSucceeded)
+            {
+                ViewModel.NotificationService.ShowStatus(
+                    statusMessage,
+                    Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
+                return;
+            }
+
+            await _errorHandler.HandleErrorAsync(
+                "Unable to open the required settings page.",
+                Enum_ErrorSeverity.Warning
+            );
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

@@ -2,7 +2,7 @@
   "id": "settings-dunnage-shell",
   "module": "Module_Settings.Dunnage",
   "name": "Dunnage Settings Shell",
-  "summary": "Category-based Dunnage settings workflow rebuilt around live setting behavior only: personal defaults, shared image assets, image presentation, workflow visuals, keyboard shortcuts, and a label-files page for the Dunnage LabelView template path with an open-folder shortcut. The retired overview, permissions, and audit placeholder pages remain on disk only and are no longer part of runtime navigation.",
+  "summary": "Category-based Dunnage settings workflow rebuilt around live setting behavior only: personal defaults, shared image assets, image presentation, workflow visuals, keyboard shortcuts, and a label-files page for the Dunnage LabelView template path with an open-folder shortcut. The shared image-assets page still configures the source-of-truth network folder, while the app now mirrors that folder into Assets/DunnageImages automatically in the background at startup for local-first rendering. The retired overview, permissions, and audit placeholder pages remain on disk only and are no longer part of runtime navigation.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs",
@@ -85,6 +85,7 @@
       "Change the default Dunnage location used when guided entry leaves location blank",
       "Tune personal thumbnail size and part-image preference",
       "Choose the shared folder used for Dunnage images",
+      "Let the app mirror the configured shared folder into the local Dunnage image cache automatically without exposing a separate cache setting",
       "Set the maximum image import file size",
       "Control whether type and part images appear in Dunnage screens",
       "Control when images appear during the Dunnage workflow",
@@ -110,6 +111,7 @@
       "Confirm the Label Files page opens the saved Dunnage label folder or Documents from its Open Folder button",
       "Confirm personal defaults still validate Dunnage location values with fuzzy suggestions",
       "Confirm the image-assets page updates the shared image folder and file size limit",
+      "Confirm changing the shared Dunnage image folder updates the source folder used by the automatic local cache sync on the next startup",
       "Confirm the image-presentation and workflow-visual pages preserve the existing Dunnage setting keys",
       "Confirm the keyboard-shortcuts page persists Dunnage shortcut changes per user and updates the Ctrl+T toggle setting",
       "Confirm search destinations no longer include retired Dunnage overview, permissions, or audit pages"

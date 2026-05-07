@@ -2,7 +2,7 @@
   "id": "core-startup-system-config",
   "module": "Module_Core",
   "name": "Startup And System Config",
-  "summary": "Startup lifecycle orchestration, coordinated application shutdown, application and workstation defaults, software-version enforcement against MySQL, and system-level configuration models shared across the app.",
+  "summary": "Startup lifecycle orchestration, coordinated application shutdown, a background Dunnage image-cache synchronization pass that mirrors the configured shared image folder into Assets/DunnageImages for local-first rendering, application and workstation defaults, software-version enforcement against MySQL, and system-level configuration models shared across the app.",
   "owner": "Platform Team",
   "relatedFiles": [
     "App.xaml.cs",
@@ -14,6 +14,9 @@
     "Module_Core/Defaults/WorkstationDefaults.cs",
     "Module_Core/Services/Service_ApplicationShutdown.cs",
     "Module_Core/Services/Startup/Service_OnStartup_AppLifecycle.cs",
+    "Module_Dunnage/Contracts/IService_DunnageImageStorage.cs",
+    "Module_Dunnage/Services/Service_DunnageImageStorage.cs",
+    "Module_Dunnage/Helpers/Helper_DunnageImagePaths.cs",
     "Module_Core/Services/Versioning/Service_SoftwareVersionMonitor.cs",
     "Module_Core/Models/Systems/Model_AppSettings.cs",
     "Module_Core/Models/Systems/Model_SoftwareVersion.cs",
@@ -38,6 +41,7 @@
   "uiHints": {
     "workflowAreas": [
       "Application startup",
+      "Background Dunnage image cache sync",
       "Coordinated app shutdown",
       "Software version enforcement",
       "System configuration",
@@ -45,6 +49,7 @@
     ],
     "validationHints": [
       "Confirm startup lifecycle and workstation defaults still initialize the app as expected",
+      "Confirm startup creates Assets/DunnageImages and starts the Dunnage image-cache sync without blocking the app shell",
       "Confirm startup cancellation, lockout, and fatal-startup paths now shut the app down through the coordinated shutdown flow",
       "Confirm startup seeds software_version when the table is empty and closes the app on version mismatch",
       "Confirm the recurring version monitor closes the app after acknowledgment or timeout when the required version changes"

@@ -19,7 +19,12 @@ public sealed class Service_DunnageImageStorageTests
     [Fact]
     public async Task CreateRotatedWorkingCopyAsync_ShouldSwapImageDimensions()
     {
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
         Helper_DunnageImagePaths.SetRootFolder(null);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
 
         var service = new Service_DunnageImageStorage(CreateSettingsCoreFacade().Object);
         var sourcePath = Path.Combine(
@@ -50,13 +55,23 @@ public sealed class Service_DunnageImageStorageTests
             {
                 File.Delete(sourcePath);
             }
+
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
         }
     }
 
     [Fact]
     public async Task CreateRotatedWorkingCopyAsync_ShouldFailWhenImageDoesNotExist()
     {
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
         Helper_DunnageImagePaths.SetRootFolder(null);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
 
         var service = new Service_DunnageImageStorage(CreateSettingsCoreFacade().Object);
 
@@ -66,13 +81,23 @@ public sealed class Service_DunnageImageStorageTests
 
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessage.Should().Contain("was not found");
+
+        if (Directory.Exists(localCacheRoot))
+        {
+            Directory.Delete(localCacheRoot, true);
+        }
     }
 
     [Fact]
     public async Task GetConfiguredRootFolderAsync_ShouldReturnConfiguredFolder_WhenSettingExists()
     {
         var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
         Directory.CreateDirectory(configuredFolder);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
 
         try
         {
@@ -90,6 +115,11 @@ public sealed class Service_DunnageImageStorageTests
             {
                 Directory.Delete(configuredFolder, true);
             }
+
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
         }
     }
 
@@ -97,8 +127,13 @@ public sealed class Service_DunnageImageStorageTests
     public async Task ImportTypeImageAsync_ShouldRenameFile_WhenSourceIsAlreadyUnderConfiguredRoot()
     {
         var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
         var sourceFolder = Path.Combine(configuredFolder, "Incoming");
         Directory.CreateDirectory(sourceFolder);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
 
         var sourcePath = Path.Combine(sourceFolder, "old-name.png");
 
@@ -125,6 +160,11 @@ public sealed class Service_DunnageImageStorageTests
             {
                 Directory.Delete(configuredFolder, true);
             }
+
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
         }
     }
 
@@ -132,8 +172,13 @@ public sealed class Service_DunnageImageStorageTests
     public async Task ImportPartImageAsync_ShouldRenameFile_WhenSourceIsAlreadyUnderConfiguredRoot()
     {
         var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
         var sourceFolder = Path.Combine(configuredFolder, "Incoming");
         Directory.CreateDirectory(sourceFolder);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
 
         var sourcePath = Path.Combine(sourceFolder, "old-name.jpg");
 
@@ -159,6 +204,96 @@ public sealed class Service_DunnageImageStorageTests
             if (Directory.Exists(configuredFolder))
             {
                 Directory.Delete(configuredFolder, true);
+            }
+
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task SyncLocalCacheAsync_ShouldMirrorConfiguredFolderIntoLocalCache()
+    {
+        var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
+        var partsFolder = Path.Combine(configuredFolder, "Parts");
+        Directory.CreateDirectory(partsFolder);
+        Directory.CreateDirectory(localCacheRoot);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
+
+        var sharedImagePath = Path.Combine(partsFolder, "Pallet-PART-300.png");
+        var staleLocalImagePath = Path.Combine(localCacheRoot, "Parts", "obsolete.png");
+
+        try
+        {
+            await WritePngAsync(sharedImagePath, width: 2, height: 2);
+            Directory.CreateDirectory(Path.GetDirectoryName(staleLocalImagePath)!);
+            await WritePngAsync(staleLocalImagePath, width: 1, height: 1);
+
+            var service = new Service_DunnageImageStorage(
+                CreateSettingsCoreFacade(configuredFolder).Object
+            );
+
+            await service.SyncLocalCacheAsync();
+
+            var cachedImagePath = Path.Combine(localCacheRoot, "Parts", "Pallet-PART-300.png");
+            File.Exists(cachedImagePath).Should().BeTrue();
+            File.Exists(staleLocalImagePath).Should().BeFalse();
+        }
+        finally
+        {
+            if (Directory.Exists(configuredFolder))
+            {
+                Directory.Delete(configuredFolder, true);
+            }
+
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void GetDisplayAbsolutePath_ShouldPreferLocalCacheAndFallbackToConfiguredRoot()
+    {
+        var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");
+        var localCacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-cache-{Guid.NewGuid():N}"
+        );
+        var relativePath = Path.Combine("Parts", "Pallet-PART-300.png");
+        var sharedImagePath = Path.Combine(configuredFolder, relativePath);
+        var localImagePath = Path.Combine(localCacheRoot, relativePath);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(sharedImagePath)!);
+        Directory.CreateDirectory(Path.GetDirectoryName(localImagePath)!);
+        Helper_DunnageImagePaths.SetRootFolder(configuredFolder);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
+
+        try
+        {
+            File.WriteAllText(sharedImagePath, "shared");
+            Helper_DunnageImagePaths.GetDisplayAbsolutePath(relativePath).Should().Be(sharedImagePath);
+
+            File.WriteAllText(localImagePath, "local");
+            Helper_DunnageImagePaths.GetDisplayAbsolutePath(relativePath).Should().Be(localImagePath);
+        }
+        finally
+        {
+            if (Directory.Exists(configuredFolder))
+            {
+                Directory.Delete(configuredFolder, true);
+            }
+
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
             }
         }
     }

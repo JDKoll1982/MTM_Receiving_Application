@@ -2,13 +2,15 @@
   "id": "dunnage-management",
   "module": "Module_Dunnage",
   "name": "Dunnage Management",
-  "summary": "Dunnage workflow and MySQL-backed setup and transaction tracking for types, parts, specs, inventory, and load review, with footer access to open the configured Dunnage label in LabelView.",
+  "summary": "Dunnage workflow and MySQL-backed setup and transaction tracking for types, parts, specs, inventory, and load review, with shared MainWindow pane-footer access to open the configured Dunnage label in LabelView.",
   "owner": "Operations Team",
   "relatedFiles": [
     "Module_Dunnage/Contracts/IService_DunnageWorkflow.cs",
     "Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs",
     "Module_Dunnage/Services/Service_DunnageWorkflow.cs",
     "Module_Dunnage/Services/Service_MySQL_Dunnage.cs",
+    "MainWindow.xaml",
+    "MainWindow.xaml.cs",
     "Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs",
     "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml",
     "Module_Dunnage/Models/Model_DunnageSession.cs",
@@ -48,14 +50,14 @@
       "Part actions",
       "Quantity entry field",
       "Validation message area",
-      "Open Dunnage Label action"
+      "Shared shell Open Dunnage Label action"
     ],
     "userActions": [
       "Pick a type",
       "Pick a part",
       "Enter a valid quantity",
       "Review and save a dunnage session",
-      "Open the configured Dunnage label in LabelView from the workflow footer"
+      "Open the configured Dunnage label in LabelView from the shared MainWindow footer"
     ],
     "preserveRules": [
       "Keep quantity validation unchanged",
@@ -86,7 +88,7 @@
     "validationHints": [
       "Confirm the same guarded steps still work",
       "Confirm quantity validation still behaves correctly",
-      "Confirm the footer label button opens LabelView when a Dunnage label path is configured and redirects to Dunnage label settings when it is not"
+      "Confirm the shared MainWindow Dunnage label button opens LabelView when a Dunnage label path is configured and redirects to Dunnage label settings when it is not"
     ],
     "mockupSections": [
       "Step header",

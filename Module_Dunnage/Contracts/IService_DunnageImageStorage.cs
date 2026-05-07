@@ -10,6 +10,8 @@ public interface IService_DunnageImageStorage
 {
     Task RefreshConfiguredRootFolderAsync();
 
+    Task SyncLocalCacheAsync();
+
     Task<string?> GetConfiguredRootFolderAsync();
 
     Task<Model_Dao_Result<string>> ImportImageAsync(string sourceFilePath, string folderName);
