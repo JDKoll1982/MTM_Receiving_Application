@@ -15,8 +15,6 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="12">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Workflow Defaults" />
-
                         <ComboBox
                             DisplayMemberPath="DisplayName"
                             Header="Default Mode On Startup"

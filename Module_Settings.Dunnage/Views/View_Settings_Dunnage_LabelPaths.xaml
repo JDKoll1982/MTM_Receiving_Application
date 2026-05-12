@@ -26,12 +26,6 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="16">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Dunnage Label File" />
-                        <TextBlock
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Set the full path to the LabelView template file used by Dunnage. Leave the field blank to clear the saved path."
-                            TextWrapping="WrapWholeWords" />
-
                         <StackPanel Spacing="4">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Dunnage Label" />
                             <Grid ColumnSpacing="12">

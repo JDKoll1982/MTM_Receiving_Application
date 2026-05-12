@@ -253,6 +253,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Workflow Defaults",
                 "Configure startup mode, review defaults, and developer-only workflow options."
             ),
+            "View_Settings_Receiving_KeyboardShortcuts" => (
+                "Keyboard Shortcuts",
+                "Configure the Receiving workflow shortcuts and the simple navigation toggle."
+            ),
             "View_Settings_Receiving_LabelPaths" => (
                 "Label Files",
                 "Configure the LabelView template paths used by Receiving workflow label buttons."
@@ -278,6 +282,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             "View_Settings_Dunnage_WorkflowVisuals" => (
                 "Workflow Visuals",
                 "Control when Dunnage images appear during the workflow and how missing images should fall back."
+            ),
+            "View_Settings_Dunnage_KeyboardShortcuts" => (
+                "Keyboard Shortcuts",
+                "Configure the Dunnage workflow shortcuts and the simple navigation toggle."
             ),
             "View_Settings_Dunnage_LabelPaths" => (
                 "Label Files",

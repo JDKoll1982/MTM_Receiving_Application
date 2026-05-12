@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -29,9 +30,40 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
+        [NotifyPropertyChangedFor(nameof(CurrentHeaderContextSubtitle))]
         private string _currentStepTitle = "Receiving - Mode Selection";
 
         public string CurrentHeaderTitle => CurrentStepTitle;
+        public string? CurrentHeaderContextSubtitle => _workflowService.CurrentStep switch
+        {
+            Enum_ReceivingWorkflowStep.ModeSelection =>
+                "Choose how you want to enter Receiving data: guided workflow, manual entry, edit mode, or reconciliation.",
+            Enum_ReceivingWorkflowStep.POEntry =>
+                "Enter a PO number or switch to the non-PO flow before loading parts.",
+            Enum_ReceivingWorkflowStep.PartSelection =>
+                "Choose the receiving part that should be used for the loads you are about to create.",
+            Enum_ReceivingWorkflowStep.LoadEntry =>
+                "Confirm the number of loads and review the selected part context before continuing.",
+            Enum_ReceivingWorkflowStep.WeightQuantityEntry =>
+                "Enter the weight and quantity details for each generated load.",
+            Enum_ReceivingWorkflowStep.HeatLotEntry =>
+                "Capture heat and lot information for each load before moving to package type.",
+            Enum_ReceivingWorkflowStep.PackageTypeEntry =>
+                "Set the package type for each load so labels and saved records use the right packaging.",
+            Enum_ReceivingWorkflowStep.Review =>
+                "Review every generated load before saving labels and database records.",
+            Enum_ReceivingWorkflowStep.ReconciliationReview =>
+                "Review the saved-location differences before deciding which reconciliation updates to keep.",
+            Enum_ReceivingWorkflowStep.ManualEntry =>
+                "Enter or revise rows directly when the guided workflow is not the best fit.",
+            Enum_ReceivingWorkflowStep.EditMode =>
+                "Inspect and update existing receiving rows directly from the edit grid.",
+            Enum_ReceivingWorkflowStep.Saving =>
+                "Saving labels, queue files, and receiving records now.",
+            Enum_ReceivingWorkflowStep.Complete =>
+                "Receiving save work is complete. Start a new entry or return to mode selection.",
+            _ => null,
+        };
 
         /// <summary>
         /// Called when CurrentStepTitle changes - ensures MainWindow header updates
@@ -442,10 +474,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     break;
             }
 
-            // Update help content based on step
-            HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(
-                _workflowService.CurrentStep
-            );
+            // Help content relies on WinUI factories and can be unavailable in unit-test contexts.
+            try
+            {
+                HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(
+                    _workflowService.CurrentStep
+                );
+            }
+            catch (COMException ex)
+            {
+                HelpContent = null;
+                _logger.LogWarning(
+                    $"Skipping workflow help generation for {_workflowService.CurrentStep}: {ex.Message}"
+                );
+            }
 
             _logger.LogInfo(
                 $"Visibility updated. Current Step: {_workflowService.CurrentStep}, Title: {CurrentStepTitle}"

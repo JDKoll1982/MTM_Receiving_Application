@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
 public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
 {
     [Fact]
-    public void Initialize_ShouldKeepNotFoundItemsVisibleInNeedsAttentionList()
+    public void Initialize_ShouldExcludeNotFoundItemsFromNeedsAttentionList()
     {
         var viewModel = CreateViewModel();
         var summary = new Model_ReceivingLocationReconciliationSummary();
@@ -35,9 +35,10 @@ public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
 
         viewModel.Initialize(summary);
 
-        viewModel.NeedsAttentionCount.Should().Be(2);
-        viewModel.VisibleUnresolvedItems.Should().HaveCount(2);
-        viewModel.SummaryDescription.Should().Contain("2 row(s) that still need manual transfer review");
+        viewModel.NeedsAttentionCount.Should().Be(1);
+        viewModel.VisibleUnresolvedItems.Should().HaveCount(1);
+        viewModel.VisibleUnresolvedItems[0].PartID.Should().Be("PART-2");
+        viewModel.SummaryDescription.Should().Contain("1 row(s) that still need manual transfer review");
     }
 
     [Fact]

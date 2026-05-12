@@ -14,22 +14,6 @@
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8">
-                    <StackPanel Spacing="8">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Keyboard Shortcuts" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Configure the Receiving workflow shortcuts. These bindings are scoped to the active workflow page, so they can safely overlap with other workflow modules such as Dunnage."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
-                </Border>
-
-                <Border
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
                     <StackPanel Spacing="16">
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Workflow Actions" />
 

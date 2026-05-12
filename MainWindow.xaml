@@ -101,7 +101,7 @@
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
             <NavigationView.Header>
-                <Grid MinHeight="100" Padding="0,0,40,0">
+                <Grid MinHeight="80" Padding="0,0,40,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="64" />

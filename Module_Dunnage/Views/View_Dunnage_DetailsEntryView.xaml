@@ -16,26 +16,13 @@
     <Grid Padding="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <!--  Header  -->
-        <StackPanel
-            Grid.Row="0"
-            Margin="0,0,0,16"
-            Spacing="8">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Enter Details" />
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.GetTip('Dunnage.DetailsEntry'), Mode=OneWay}" />
-        </StackPanel>
 
         <!--  Inventory Notification  -->
         <InfoBar
             Title="Inventory Action Required"
-            Grid.Row="1"
+            Grid.Row="0"
             Margin="0,0,0,12"
             IsClosable="False"
             IsOpen="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}"
@@ -43,7 +30,7 @@
             Severity="Informational" />
 
         <!--  Details Form  -->
-        <ScrollViewer Grid.Row="2" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">
             <StackPanel Spacing="12">
                 <!--  PO Number and Location Card  -->
                 <Border

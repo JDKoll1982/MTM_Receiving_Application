@@ -26,12 +26,6 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="12">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="LabelView 2022" />
-                        <TextBlock
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Set the full path to the LabelView executable used to open label template files."
-                            TextWrapping="WrapWholeWords" />
-
                         <StackPanel Spacing="4">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Executable Path" />
                             <Grid ColumnSpacing="12">

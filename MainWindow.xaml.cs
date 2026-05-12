@@ -8,6 +8,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Material.Icons;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
@@ -37,9 +38,9 @@ namespace MTM_Receiving_Application
         private readonly IService_LoggingUtility _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IService_LabelViewLauncher _labelViewLauncher;
-        private readonly IService_ReceivingSettings _receivingSettings;
-        private readonly IService_DunnageSettings _dunnageSettings;
-        private readonly IService_VolvoSettings _volvoSettings;
+        private readonly IService_ReceivingUserLabelSettings _receivingUserLabelSettings;
+        private readonly IService_DunnageUserLabelSettings _dunnageUserLabelSettings;
+        private readonly IService_VolvoUserLabelSettings _volvoUserLabelSettings;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly List<object> _applicationMenuItems = new();
         private readonly List<object> _applicationFooterItems = new();
@@ -128,9 +129,9 @@ namespace MTM_Receiving_Application
             IService_LoggingUtility logger,
             IServiceProvider serviceProvider,
             IService_LabelViewLauncher labelViewLauncher,
-            IService_ReceivingSettings receivingSettings,
-            IService_DunnageSettings dunnageSettings,
-            IService_VolvoSettings volvoSettings,
+            IService_ReceivingUserLabelSettings receivingUserLabelSettings,
+            IService_DunnageUserLabelSettings dunnageUserLabelSettings,
+            IService_VolvoUserLabelSettings volvoUserLabelSettings,
             IService_ErrorHandler errorHandler
         )
         {
@@ -140,9 +141,9 @@ namespace MTM_Receiving_Application
             _logger = logger;
             _serviceProvider = serviceProvider;
             _labelViewLauncher = labelViewLauncher;
-            _receivingSettings = receivingSettings;
-            _dunnageSettings = dunnageSettings;
-            _volvoSettings = volvoSettings;
+            _receivingUserLabelSettings = receivingUserLabelSettings;
+            _dunnageUserLabelSettings = dunnageUserLabelSettings;
+            _volvoUserLabelSettings = volvoUserLabelSettings;
             _errorHandler = errorHandler;
 
             _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
@@ -378,7 +379,7 @@ namespace MTM_Receiving_Application
             _ = sender;
             _ = e;
             await OpenLabelAsync(
-                () => _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Labels.ReceivingLabelPath),
+                () => _receivingUserLabelSettings.GetReceivingLabelPathAsync(),
                 typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
                 "Receiving Label",
                 "Receiving label settings"
@@ -390,10 +391,7 @@ namespace MTM_Receiving_Application
             _ = sender;
             _ = e;
             await OpenLabelAsync(
-                () =>
-                    _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Labels.MiniReceivingLabelPath
-                    ),
+                () => _receivingUserLabelSettings.GetMiniReceivingLabelPathAsync(),
                 typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
                 "Mini-Receiving Label",
                 "Receiving label settings"
@@ -405,7 +403,7 @@ namespace MTM_Receiving_Application
             _ = sender;
             _ = e;
             await OpenLabelAsync(
-                () => _volvoSettings.GetStringAsync(VolvoSettingsKeys.Labels.VolvoLabelPath),
+                () => _volvoUserLabelSettings.GetVolvoLabelPathAsync(),
                 typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
                 "Volvo Label",
                 "Volvo label settings"
@@ -417,7 +415,7 @@ namespace MTM_Receiving_Application
             _ = sender;
             _ = e;
             await OpenLabelAsync(
-                () => _dunnageSettings.GetStringAsync(DunnageSettingsKeys.Labels.DunnageLabelPath),
+                () => _dunnageUserLabelSettings.GetDunnageLabelPathAsync(),
                 typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
                 "Dunnage Label",
                 "Dunnage label settings"
@@ -1346,15 +1344,25 @@ namespace MTM_Receiving_Application
             });
         }
 
-        private void TrackHeaderProvider(IViewModel_HeaderTitleProvider viewModel)
+        private void ResetHeaderContext() { }
+
+        private void UpdateHeader(IViewModel_HeaderTitleProvider viewModel)
         {
             UpdateHeaderText(viewModel.CurrentHeaderTitle);
+        }
+
+        private void TrackHeaderProvider(IViewModel_HeaderTitleProvider viewModel)
+        {
+            UpdateHeader(viewModel);
 
             _currentPropertyChangedHandler = (s, args) =>
             {
-                if (args.PropertyName == nameof(IViewModel_HeaderTitleProvider.CurrentHeaderTitle))
+                if (
+                    string.IsNullOrEmpty(args.PropertyName)
+                    || args.PropertyName == nameof(IViewModel_HeaderTitleProvider.CurrentHeaderTitle)
+                )
                 {
-                    UpdateHeaderText(viewModel.CurrentHeaderTitle);
+                    UpdateHeader(viewModel);
                 }
             };
 
@@ -1376,6 +1384,11 @@ namespace MTM_Receiving_Application
             if (!string.IsNullOrWhiteSpace(fallbackTitle))
             {
                 UpdateHeaderText(fallbackTitle);
+                ResetHeaderContext();
+            }
+            else
+            {
+                ResetHeaderContext();
             }
         }
 

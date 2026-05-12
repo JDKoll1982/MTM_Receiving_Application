@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
 
 public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Base
 {
-    private readonly IService_DunnageSettings _dunnageSettings;
+    private readonly IService_DunnageUserLabelSettings _userLabelSettings;
     private readonly IService_LabelViewLauncher _labelViewLauncher;
 
     [ObservableProperty]
@@ -22,7 +22,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
     private string _dunnageLabelPath = string.Empty;
 
     public ViewModel_Settings_Dunnage_LabelPaths(
-        IService_DunnageSettings dunnageSettings,
+        IService_DunnageUserLabelSettings userLabelSettings,
         IService_LabelViewLauncher labelViewLauncher,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -30,8 +30,8 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
     )
         : base(errorHandler, logger, notificationService)
     {
-        _dunnageSettings =
-            dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
+        _userLabelSettings =
+            userLabelSettings ?? throw new ArgumentNullException(nameof(userLabelSettings));
         _labelViewLauncher =
             labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
         Title = "Dunnage Label Paths";
@@ -67,10 +67,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
         try
         {
             IsBusy = true;
-            await _dunnageSettings.SaveStringAsync(
-                DunnageSettingsKeys.Labels.DunnageLabelPath,
-                DunnageLabelPath ?? string.Empty
-            );
+            await _userLabelSettings.SaveDunnageLabelPathAsync(DunnageLabelPath ?? string.Empty);
             StatusMessage = "Dunnage label path saved.";
         }
         catch (Exception ex)
@@ -94,9 +91,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
         try
         {
             IsBusy = true;
-            DunnageLabelPath = await _dunnageSettings.GetStringAsync(
-                DunnageSettingsKeys.Labels.DunnageLabelPath
-            );
+            DunnageLabelPath = await _userLabelSettings.GetDunnageLabelPathAsync();
             StatusMessage = "Dunnage label path loaded.";
         }
         catch (Exception ex)

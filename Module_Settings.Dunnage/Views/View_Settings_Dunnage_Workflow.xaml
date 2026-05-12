@@ -15,13 +15,6 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="16">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Dunnage Workflow" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Control where Dunnage visuals appear during the guided workflow and whether missing part images should fall back to the selected type image."
-                            TextWrapping="Wrap" />
-
                         <ToggleSwitch Header="Show type images during type selection" IsOn="{x:Bind ViewModel.ShowTypeImagesOnTypeSelection, Mode=TwoWay}" />
 
                         <ToggleSwitch Header="Show part images during part selection" IsOn="{x:Bind ViewModel.ShowPartImagesOnPartSelection, Mode=TwoWay}" />

@@ -49,6 +49,26 @@ public sealed class ViewModel_Receiving_WorkflowTests
         viewModel.CanClearLabelData.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task StepChanged_ShouldExposeHeaderContextSubtitle()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_ReceivingWorkflowStep currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+
+        currentStep = Enum_ReceivingWorkflowStep.Review;
+        workflow.Raise(service => service.StepChanged += null, workflow.Object, EventArgs.Empty);
+
+        viewModel.CurrentHeaderTitle.Should().Be("Receiving - Review & Save");
+        viewModel.CurrentHeaderContextSubtitle.Should().Be(
+            "Review every generated load before saving labels and database records."
+        );
+    }
+
     private static Mock<IService_ReceivingWorkflow> CreateWorkflowMock()
     {
         var workflow = new Mock<IService_ReceivingWorkflow>();

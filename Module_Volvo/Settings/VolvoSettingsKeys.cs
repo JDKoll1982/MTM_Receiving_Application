@@ -6,4 +6,10 @@ public static class VolvoSettingsKeys
     {
         public const string VolvoLabelPath = "Volvo.Labels.VolvoLabelPath";
     }
+
+    public static class UserLabels
+    {
+        public const string Category = "Volvo.UserLabels";
+        public const string VolvoLabelPath = "VolvoLabelPath";
+    }
 }

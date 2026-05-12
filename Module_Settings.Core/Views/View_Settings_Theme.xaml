@@ -12,37 +12,31 @@
 
     <Border
         Padding="20"
-Background="{ThemeResource LayerFillColorDefaultBrush}"
-BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-BorderThickness="1"
-CornerRadius="6"
+        Background="{ThemeResource LayerFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1"
+        CornerRadius="6"
         Margin="50">
         <Grid Padding="24" RowSpacing="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Spacing="4">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="UI Theme" />
-                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="Control the application appearance, density, and accent styling." />
-            </StackPanel>
-
             <InfoBar
-            Grid.Row="1"
-            IsClosable="False"
-            IsOpen="True"
-            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-            Severity="Informational" />
+                Grid.Row="0"
+                IsClosable="False"
+                IsOpen="True"
+                Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                Severity="Informational" />
 
             <Border
-            Grid.Row="2"
-            Padding="20"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            CornerRadius="6">
+                Grid.Row="1"
+                Padding="20"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="6">
                 <Grid ColumnSpacing="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -52,18 +46,18 @@ CornerRadius="6"
                     <StackPanel Grid.Column="0" Spacing="4">
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Application Theme" />
                         <TextBlock
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Choose Light, Dark, or System Default and save the preference for the current user."
-                        TextWrapping="Wrap" />
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Choose Light, Dark, or System Default and save the preference for the current user."
+                            TextWrapping="Wrap" />
                     </StackPanel>
 
                     <ComboBox
-                    Grid.Column="1"
-                    Width="180"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    ItemsSource="{x:Bind ViewModel.ThemeOptions, Mode=OneWay}"
-                    SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+                        Grid.Column="1"
+                        Width="180"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        ItemsSource="{x:Bind ViewModel.ThemeOptions, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
                 </Grid>
             </Border>
         </Grid>

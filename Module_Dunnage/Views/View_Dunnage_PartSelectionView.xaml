@@ -15,77 +15,9 @@
     </UserControl.Resources>
 
     <Grid Padding="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <!--  Header  -->
-        <StackPanel
-            Grid.Row="0"
-            Margin="0,0,0,24"
-            Spacing="8">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Border
-                    Width="48"
-                    Height="48"
-                    Padding="3"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Visibility="{x:Bind ViewModel.HasSelectedTypeImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Image Source="{x:Bind ViewModel.SelectedTypeImageSource, Mode=OneWay}" Stretch="Uniform" />
-                </Border>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Select Part - " />
-                <mi:MaterialIcon
-                    Width="24"
-                    Height="24"
-                    VerticalAlignment="Center"
-                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                    Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}" />
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}" />
-            </StackPanel>
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.GetTip('Dunnage.PartSelection'), Mode=OneWay}" />
-        </StackPanel>
-
         <!--  Part Selection Form  -->
-        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
+        <ScrollViewer Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
             <StackPanel Spacing="24">
-                <Border
-                    Padding="16"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                    <Grid ColumnSpacing="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" Spacing="4">
-                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Display Format" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Switch between the part drop-down and image cards for the selected dunnage type." />
-                        </StackPanel>
-
-                        <ToggleSwitch
-                            Grid.Column="1"
-                            HorizontalAlignment="Right"
-                            Header="Show image cards"
-                            IsOn="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=TwoWay}"
-                            OffContent="Drop-down"
-                            OnContent="Image Cards"
-                            Toggled="OnDisplayFormatPreferenceToggled" />
-                    </Grid>
-                </Border>
-
                 <!--  Part Dropdown  -->
                 <StackPanel
                     Spacing="12"
@@ -330,13 +262,21 @@
                 </Border>
 
                 <!--  Action Buttons  -->
-                <StackPanel Orientation="Horizontal" Spacing="12">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
                     <Button
-                        HorizontalAlignment="Left"
+                        Grid.Column="0"
                         Command="{x:Bind ViewModel.QuickAddPartCommand}"
                         Style="{StaticResource AccentButtonStyle}"
                         Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE710;" />
                             <TextBlock Text="Add New Part" />
@@ -344,11 +284,10 @@
                     </Button>
 
                     <Button
-                        HorizontalAlignment="Left"
+                        Grid.Column="1"
                         Command="{x:Bind ViewModel.EditPartCommand}"
                         ToolTipService.ToolTip="Edit the selected part's specifications and home location"
                         Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE70F;" />
                             <TextBlock Text="Edit Part" />
@@ -356,7 +295,7 @@
                     </Button>
 
                     <Button
-                        HorizontalAlignment="Left"
+                        Grid.Column="2"
                         Command="{x:Bind ViewModel.DeletePartCommand}"
                         ToolTipService.ToolTip="Permanently delete the selected part"
                         Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -367,7 +306,7 @@
                     </Button>
 
                     <Button
-                        HorizontalAlignment="Left"
+                        Grid.Column="3"
                         Command="{x:Bind ViewModel.LoadPartsCommand}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Refresh'), Mode=OneWay}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
@@ -375,7 +314,19 @@
                             <TextBlock Text="Refresh Parts" />
                         </StackPanel>
                     </Button>
-                </StackPanel>
+
+                    <!--  Column 4 is the * spacer  -->
+
+                    <ToggleSwitch
+                        Grid.Column="5"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        IsOn="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=TwoWay}"
+                        OffContent="Drop-down"
+                        OnContent="Image Cards"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.DisplayFormatToggleTooltip, Mode=OneWay}"
+                        Toggled="OnDisplayFormatPreferenceToggled" />
+                </Grid>
             </StackPanel>
         </ScrollViewer>
     </Grid>

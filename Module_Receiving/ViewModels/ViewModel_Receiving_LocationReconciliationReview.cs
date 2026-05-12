@@ -371,7 +371,8 @@ public partial class ViewModel_Receiving_LocationReconciliationReview : ViewMode
 
     private static bool ShouldDisplayUnresolvedItem(Model_ReceivingLocationReconciliationItem item)
     {
-        return !string.Equals(item.Resolution, "Skipped", StringComparison.OrdinalIgnoreCase);
+        return !string.Equals(item.Resolution, "Skipped", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(item.Resolution, "NotFound", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FormatPONumber(string? input)

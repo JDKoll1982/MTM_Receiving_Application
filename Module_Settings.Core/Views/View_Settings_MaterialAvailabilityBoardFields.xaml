@@ -7,19 +7,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Spacing="4">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Material Availability Work Order Fields" />
-            <TextBlock
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="Control which work-order details appear in the Material Availability work-order modal and which of those fields are included in print output. Logic-only fields can stay hidden by default but still be revealed with the Show all chip."
-                TextWrapping="WrapWholeWords" />
-        </StackPanel>
-
         <Border
-            Grid.Row="1"
+            Grid.Row="0"
             Padding="16"
             Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -57,7 +48,7 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="2" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <ItemsControl ItemsSource="{x:Bind ViewModel.FieldGroups, Mode=OneWay}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:Model_Settings_MaterialAvailabilityFieldGroup">

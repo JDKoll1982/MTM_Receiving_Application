@@ -1,13 +1,17 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -43,6 +47,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         _windowService = windowService;
         _workflowService.StepChanged += OnWorkflowStepChanged;
         _workflowService.NavigationLockChanged += OnNavigationLockChanged;
+        _workflowService.CurrentSession.PropertyChanged += OnCurrentSessionPropertyChanged;
 
         DunnageLines = new ObservableCollection<Model_DunnageLine>();
         _currentLine = new Model_DunnageLine();
@@ -109,6 +114,10 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
+    [NotifyPropertyChangedFor(nameof(CurrentHeaderContextTitle))]
+    [NotifyPropertyChangedFor(nameof(CurrentHeaderContextSubtitle))]
+    [NotifyPropertyChangedFor(nameof(CurrentHeaderContextImageSource))]
+    [NotifyPropertyChangedFor(nameof(CurrentHeaderContextIconKind))]
     private string _currentStepTitle = "Dunnage - Mode Selection";
 
     [ObservableProperty]
@@ -119,7 +128,82 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private bool _canClearLabelData;
 
     public string CurrentHeaderTitle => CurrentStepTitle;
+    public string? CurrentHeaderContextTitle => GetHeaderContextTitle();
+
+    public string? CurrentHeaderContextSubtitle => GetHeaderContextSubtitle();
+
+    public ImageSource? CurrentHeaderContextImageSource =>
+        !IsPartSelectionVisible
+            ? null
+            : Helper_DunnageImagePaths.CreateImageSource(
+                _workflowService.CurrentSession.SelectedType?.ImagePath
+            );
+
+    public MaterialIconKind? CurrentHeaderContextIconKind
+    {
+        get
+        {
+            if (!IsPartSelectionVisible)
+            {
+                return null;
+            }
+
+            var selectedIcon = _workflowService.CurrentSession.SelectedType?.Icon;
+            if (
+                !string.IsNullOrWhiteSpace(selectedIcon)
+                && Enum.TryParse(selectedIcon, true, out MaterialIconKind kind)
+            )
+            {
+                return kind;
+            }
+
+            return MaterialIconKind.PackageVariantClosed;
+        }
+    }
+
     public bool CanNavigate => !IsNavigationLocked;
+
+    private string? GetHeaderContextTitle()
+    {
+        if (IsPartSelectionVisible)
+        {
+            return string.IsNullOrWhiteSpace(_workflowService.CurrentSession.SelectedTypeName)
+                ? "Select Part"
+                : $"Select Part - {_workflowService.CurrentSession.SelectedTypeName}";
+        }
+
+        if (IsQuantityEntryVisible)
+        {
+            return "Enter Loads";
+        }
+
+        if (IsDetailsEntryVisible)
+        {
+            return "Enter Details";
+        }
+
+        return null;
+    }
+
+    private string? GetHeaderContextSubtitle()
+    {
+        if (IsPartSelectionVisible)
+        {
+            return "Use the search function to quickly find parts. Parts with a green badge are tracked in inventory.";
+        }
+
+        if (IsQuantityEntryVisible)
+        {
+            return "Set the number of loads and enter the quantity for each load.";
+        }
+
+        if (IsDetailsEntryVisible)
+        {
+            return "Enter the PO number, confirm the location, and review per-load details before saving.";
+        }
+
+        return null;
+    }
 
     #endregion
 
@@ -179,7 +263,34 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                 break;
         }
 
+        NotifyHeaderContextChanged();
+
         _ = RefreshClearLabelDataAvailabilityAsync();
+    }
+
+    private void OnCurrentSessionPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!IsPartSelectionVisible)
+        {
+            return;
+        }
+
+        if (
+            string.IsNullOrEmpty(e.PropertyName)
+            || e.PropertyName == nameof(Model_DunnageSession.SelectedType)
+            || e.PropertyName == nameof(Model_DunnageSession.SelectedTypeName)
+        )
+        {
+            NotifyHeaderContextChanged();
+        }
+    }
+
+    private void NotifyHeaderContextChanged()
+    {
+        OnPropertyChanged(nameof(CurrentHeaderContextTitle));
+        OnPropertyChanged(nameof(CurrentHeaderContextSubtitle));
+        OnPropertyChanged(nameof(CurrentHeaderContextImageSource));
+        OnPropertyChanged(nameof(CurrentHeaderContextIconKind));
     }
 
     private async Task RefreshClearLabelDataAvailabilityAsync()

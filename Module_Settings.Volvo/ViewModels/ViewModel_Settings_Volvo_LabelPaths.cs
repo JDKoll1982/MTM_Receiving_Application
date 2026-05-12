@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Settings.Volvo.ViewModels;
 public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
 {
     private readonly IService_LabelViewLauncher _labelViewLauncher;
-    private readonly IService_VolvoSettings _volvoSettings;
+    private readonly IService_VolvoUserLabelSettings _userLabelSettings;
 
     [ObservableProperty]
     private string _statusMessage = "Loading settings...";
@@ -22,7 +22,7 @@ public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
     private string _volvoLabelPath = string.Empty;
 
     public ViewModel_Settings_Volvo_LabelPaths(
-        IService_VolvoSettings volvoSettings,
+        IService_VolvoUserLabelSettings userLabelSettings,
         IService_LabelViewLauncher labelViewLauncher,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -30,7 +30,7 @@ public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
     )
         : base(errorHandler, logger, notificationService)
     {
-        _volvoSettings = volvoSettings ?? throw new ArgumentNullException(nameof(volvoSettings));
+        _userLabelSettings = userLabelSettings ?? throw new ArgumentNullException(nameof(userLabelSettings));
         _labelViewLauncher =
             labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
         Title = "Volvo Label Paths";
@@ -66,10 +66,7 @@ public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            await _volvoSettings.SaveStringAsync(
-                VolvoSettingsKeys.Labels.VolvoLabelPath,
-                VolvoLabelPath ?? string.Empty
-            );
+            await _userLabelSettings.SaveVolvoLabelPathAsync(VolvoLabelPath ?? string.Empty);
             StatusMessage = "Volvo label path saved.";
         }
         catch (Exception ex)
@@ -93,9 +90,7 @@ public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
         try
         {
             IsBusy = true;
-            VolvoLabelPath = await _volvoSettings.GetStringAsync(
-                VolvoSettingsKeys.Labels.VolvoLabelPath
-            );
+            VolvoLabelPath = await _userLabelSettings.GetVolvoLabelPathAsync();
             StatusMessage = "Volvo label path loaded.";
         }
         catch (Exception ex)

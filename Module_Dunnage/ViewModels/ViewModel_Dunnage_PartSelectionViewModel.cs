@@ -168,7 +168,16 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     private bool _hasSelectedPartSpecs;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayFormatToggleTooltip))]
     private bool _isImageDisplayPreferred;
+
+    /// <summary>
+    /// Tooltip for the display-format toggle that describes what clicking it will do.
+    /// </summary>
+    public string DisplayFormatToggleTooltip =>
+        IsImageDisplayPreferred
+            ? "Switch to drop-down list view"
+            : "Switch to image card view";
 
     /// <summary>
     /// Helper property for UI binding

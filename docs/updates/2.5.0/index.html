@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application - Version 2.5.0</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 2.5.0</h1>
+                    <p class="hero-copy">This update adds contextual guidance text to the Receiving and Dunnage workflow headers, tightens reconciliation accuracy with a strict date-scoped validation check, and cleans up redundant on-screen headers across settings and workflow views.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 2.5.0</span>
+                <span class="meta-text">Released May 8, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Collapse all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="2.5.0">Copy version</button>
+                <p class="sidebar-note">Use this version number if you need help from a supervisor or the MTM IT support team after the update.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What stands out in this release</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Step-by-step guidance in the header</p>
+                            <p class="highlight-text">Receiving and Dunnage workflow pages now show a short description of the current step directly in the application header, so you always know what to do next without opening a help panel.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Reconciliation is more precise</p>
+                            <p class="highlight-text">The app now verifies that the total quantity assigned to each receiving location exactly matches what Infor Visual recorded for that location on the receipt date. Rows that don't match are flagged for manual review instead of being saved with a questionable location.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Cleaner settings and workflow screens</p>
+                            <p class="highlight-text">Redundant title and description blocks have been removed from settings and workflow views. The same context is now shown in the page header, which keeps each screen less cluttered.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Receiving workflow now shows a short guide line for each step</summary>
+                        <p>While you move through Receiving — from PO entry through part selection, weight and quantity entry, heat and lot, package type, and final review — the application header shows a plain-language sentence explaining what that step is asking you to do. The text updates automatically as you advance through the workflow.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage workflow header now shows the selected part type with image or icon</summary>
+                        <p>During the Dunnage Part Selection step, the page header updates to show the name of the selected dunnage type alongside its image or icon. The header also shows a brief guide line during Quantity Entry and Details Entry steps, consistent with how the Receiving workflow behaves.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage display format toggle moved to the action button row</summary>
+                        <p>The switch that toggles between part drop-down and image card view has moved from a standalone card at the top of the Part Selection form to the right side of the action button bar at the bottom. This frees up vertical space and groups the control closer to where parts are displayed. The toggle now also shows a tooltip that describes what will happen when you click it.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Reconciliation rejects ambiguous allocations when quantity totals don't match exactly</summary>
+                        <p>Previously, the app could assign a receiving row to a destination location even when the combined quantity of rows assigned to that location didn't match the actual quantity Infor Visual recorded being transferred there on the receipt date. Those rows are now marked as Ambiguous and returned to Needs Attention so an operator can review them directly.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Rows where no transfer was found no longer appear in the reconciliation review list</summary>
+                        <p>When reconciliation finds no transfer history for a receiving row, it now treats that as "no evidence of a location change" — the saved location is assumed to still be current and the row is not shown under Needs Attention. Only rows that have active evidence of a conflict, an error, or an ambiguous match are surfaced for review.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Current-label and history rows are now reconciled together in one pass</summary>
+                        <p>Previously, rows from the Current Labels source and rows from History were reconciled in two separate passes, which could cause the app to miss relationships between rows from different sources that share the same part and receipt date. They are now grouped and reconciled together so cross-source comparisons work correctly.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Settings and workflow screens no longer repeat the page title inside the content area</summary>
+                        <p>Several settings pages — including Label Files, Keyboard Shortcuts, Workflow Defaults, Shared Paths, UI Theme, and LabelView Executable — previously showed a title and description block at the top of the content area in addition to the title shown in the settings window sidebar. Those embedded headers have been removed. The page title and description now come from the settings navigation sidebar only. The settings window navigation for Keyboard Shortcuts pages has also been updated with correct display names.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means in practice</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Less time orienting during the workflow</h3>
+                            <p>The guide text in the header gives operators a quick reminder of what each step expects without requiring them to open help or look for a label inside the page content.</p>
+                        </article>
+                        <article>
+                            <h3>Fewer incorrect location saves in reconciliation</h3>
+                            <p>The new date-scoped quantity check catches cases where the app would have previously saved a location based on a partial match. Those rows now stay in Needs Attention so the correct location can be confirmed manually.</p>
+                        </article>
+                        <article>
+                            <h3>A less cluttered screen on every settings page</h3>
+                            <p>Removing duplicate header blocks from settings views leaves more room for the actual controls and reduces visual noise during configuration tasks.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>No action required</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update. All workflow guide text, reconciliation improvements, and screen layout changes take effect automatically after the new version is installed.</p>
+                    <ul class="action-list">
+                        <li>Look for the short guide line in the page header as you step through Receiving or Dunnage — it updates automatically at each step.</li>
+                        <li>If a reconciliation row appears under Needs Attention with an "Ambiguous" status, review it manually and apply the correct location using the review grid.</li>
+                        <li>Rows labeled "NotFound" in reconciliation are now treated as having a current, valid saved location and will not appear in the review list.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Questions about the new workflow guidance or reconciliation behavior?</h2>
+                    </div>
+                    <p>If a reconciliation row is stuck in Needs Attention after this update, or if any workflow step shows unexpected behavior, contact your supervisor or the MTM IT support team and reference version <strong>2.5.0</strong>.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

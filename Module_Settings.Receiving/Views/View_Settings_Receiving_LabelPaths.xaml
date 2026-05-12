@@ -26,12 +26,6 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="16">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Receiving Label Files" />
-                        <TextBlock
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Set the full paths to the LabelView template files used by Receiving. Leave a field blank to clear that label path."
-                            TextWrapping="WrapWholeWords" />
-
                         <StackPanel Spacing="4">
                             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Receiving Label" />
                             <Grid ColumnSpacing="12">

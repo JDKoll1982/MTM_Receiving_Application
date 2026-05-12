@@ -21,19 +21,22 @@
   <!-- xUnit packages (per project standards) -->
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.5" />
-    <PackageReference Include="FsCheck.Xunit" Version="3.3.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageReference Include="Verify.Xunit" Version="31.10.0" />
+    <PackageReference Include="FsCheck.Xunit" Version="3.3.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageReference Include="Verify.Xunit" Version="31.12.5" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
+    <PackageReference Include="coverlet.collector" Version="10.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="18.0.1">
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="18.5.1">
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Xunit.SkippableFact" Version="1.5.61" />
@@ -42,13 +45,13 @@
   <!-- Mocking and Assertions -->
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.20.72" />
-    <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    <PackageReference Include="FluentAssertions" Version="8.9.0" />
   </ItemGroup>
 
   <!-- Database Testing -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
-    <PackageReference Include="MySql.Data" Version="9.6.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.7" />
+    <PackageReference Include="MySql.Data" Version="9.7.0" />
   </ItemGroup>
 
   <!--Reference
@@ -64,12 +67,7 @@
     <None Remove="Unit\Module_OutsideService\**" />
   </ItemGroup>
 
-  <Target
-    Name="RestoreReferencedWinUIAssetsForTests"
-    AfterTargets="ResolveProjectReferences"
-    BeforeTargets="CopyFilesToOutputDirectory"
-    Condition="Exists('$(_ReferencedAppWinUIAssetSourceDir)')"
-  >
+  <Target Name="RestoreReferencedWinUIAssetsForTests" AfterTargets="ResolveProjectReferences" BeforeTargets="CopyFilesToOutputDirectory" Condition="Exists('$(_ReferencedAppWinUIAssetSourceDir)')">
     <ItemGroup>
       <_ReferencedWinUIAsset Include="$(_ReferencedAppWinUIAssetSourceDir)\map.html">
         <TargetPath>$(_ReferencedAppWinUIAssetOutputDir)\map.html</TargetPath>
@@ -80,10 +78,6 @@
     </ItemGroup>
 
     <MakeDir Directories="$(_ReferencedAppWinUIAssetOutputDir)" />
-    <Copy
-      SourceFiles="@(_ReferencedWinUIAsset)"
-      DestinationFiles="@(_ReferencedWinUIAsset->'%(TargetPath)')"
-      SkipUnchangedFiles="true"
-    />
+    <Copy SourceFiles="@(_ReferencedWinUIAsset)" DestinationFiles="@(_ReferencedWinUIAsset->'%(TargetPath)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>

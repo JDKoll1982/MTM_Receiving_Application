@@ -152,14 +152,11 @@ public sealed class Service_ReceivingLocationReconciliation
             summary.CurrentLabelRowsScanned = currentLabelRows.Count;
             summary.HistoryRowsScanned = historyRows.Count;
 
-            foreach (
-                var item in await ReconcileRowsAsync(currentLabelRows, "Current Labels", ignoredLocations)
-            )
-            {
-                RecordPreviewDecision(item, summary);
-            }
+            var taggedLoads = currentLabelRows
+                .Select(l => (Load: l, DataSource: "Current Labels"))
+                .Concat(historyRows.Select(l => (Load: l, DataSource: "History")));
 
-            foreach (var item in await ReconcileRowsAsync(historyRows, "History", ignoredLocations))
+            foreach (var item in await ReconcileRowsAsync(taggedLoads, ignoredLocations))
             {
                 RecordPreviewDecision(item, summary);
             }
@@ -279,15 +276,14 @@ public sealed class Service_ReceivingLocationReconciliation
     }
 
     private async Task<List<Model_ReceivingLocationReconciliationItem>> ReconcileRowsAsync(
-        IEnumerable<Model_ReceivingLoad> loads,
-        string dataSource,
+        IEnumerable<(Model_ReceivingLoad Load, string DataSource)> taggedLoads,
         HashSet<string> ignoredLocations
     )
     {
         var items = new List<Model_ReceivingLocationReconciliationItem>();
-        var validLoads = new List<Model_ReceivingLoad>();
+        var validTaggedLoads = new List<(Model_ReceivingLoad Load, string DataSource)>();
 
-        foreach (var load in loads)
+        foreach (var (load, dataSource) in taggedLoads)
         {
             var item = CreateBaseItem(load, dataSource);
 
@@ -315,17 +311,17 @@ public sealed class Service_ReceivingLocationReconciliation
                 continue;
             }
 
-            validLoads.Add(load);
+            validTaggedLoads.Add((load, dataSource));
         }
 
         foreach (
-            var receiptGroup in validLoads.GroupBy(load =>
-                new ReconciliationGroupKey(Normalize(load.PartID), load.ReceivedDate.Date)
+            var receiptGroup in validTaggedLoads.GroupBy(tagged =>
+                new ReconciliationGroupKey(Normalize(tagged.Load.PartID), tagged.Load.ReceivedDate.Date)
             )
         )
         {
-            var groupLoads = receiptGroup.ToList();
-            var templateLoad = groupLoads[0];
+            var groupTaggedLoads = receiptGroup.ToList();
+            var templateLoad = groupTaggedLoads[0].Load;
             var movementsResult = await _inforVisual.GetReceivingLocationTransferMovementsAsync(
                 templateLoad.PartID.Trim(),
                 templateLoad.ReceivedDate.Date
@@ -334,9 +330,9 @@ public sealed class Service_ReceivingLocationReconciliation
             if (!movementsResult.IsSuccess)
             {
                 items.AddRange(
-                    groupLoads.Select(load =>
+                    groupTaggedLoads.Select(tagged =>
                     {
-                        var item = CreateBaseItem(load, dataSource);
+                        var item = CreateBaseItem(tagged.Load, tagged.DataSource);
                         item.Resolution = "Error";
                         item.Details = movementsResult.ErrorMessage;
                         return item;
@@ -347,8 +343,7 @@ public sealed class Service_ReceivingLocationReconciliation
 
             items.AddRange(
                 ResolveTransferBasedGroup(
-                    groupLoads,
-                    dataSource,
+                    groupTaggedLoads,
                     movementsResult.Data ?? [],
                     ignoredLocations
                 )
@@ -359,14 +354,16 @@ public sealed class Service_ReceivingLocationReconciliation
     }
 
     private List<Model_ReceivingLocationReconciliationItem> ResolveTransferBasedGroup(
-        List<Model_ReceivingLoad> loads,
-        string dataSource,
+        List<(Model_ReceivingLoad Load, string DataSource)> taggedLoads,
         List<Model_InforVisualLocationTransferMovement> allMovements,
         HashSet<string> ignoredLocations
     )
     {
-        var items = loads
-            .Select(load => CreateBaseItem(load, dataSource))
+        var receivedDate = taggedLoads[0].Load.ReceivedDate.Date;
+        var loads = taggedLoads.ConvertAll(t => t.Load);
+
+        var items = taggedLoads
+            .Select(tagged => CreateBaseItem(tagged.Load, tagged.DataSource))
             .OrderByDescending(item => item.SavedRowQuantity)
             .ThenBy(item => item.SourceLoad?.LoadNumber ?? int.MaxValue)
             .ThenBy(item => item.LoadId)
@@ -419,6 +416,8 @@ public sealed class Service_ReceivingLocationReconciliation
             return items;
         }
 
+        var bucketAssignments = new Dictionary<TransferBucket, List<Model_ReceivingLocationReconciliationItem>>();
+
         foreach (var item in items)
         {
             var selectedBucket = candidateBuckets
@@ -463,6 +462,59 @@ public sealed class Service_ReceivingLocationReconciliation
             );
 
             selectedBucket.RemainingQuantity -= item.SavedRowQuantity;
+
+            if (!bucketAssignments.TryGetValue(selectedBucket, out var assignedList))
+            {
+                assignedList = [];
+                bucketAssignments[selectedBucket] = assignedList;
+            }
+
+            assignedList.Add(item);
+        }
+
+        // Strict date-scoped totals validation: the sum of rows allocated to each bucket must
+        // exactly equal the net quantity transferred to that location on the receipt date or the
+        // following calendar day. This prevents consecutive-day receipts of the same part from
+        // contaminating each other's validation through the ±2 day discovery window.
+        foreach (var (bucket, assignedItems) in bucketAssignments)
+        {
+            var dateScopedReferenceQuantity =
+                relevantMovements
+                    .Where(m =>
+                        string.Equals(Normalize(m.DestinationLocationId), bucket.NormalizedLocation, StringComparison.OrdinalIgnoreCase)
+                        && (m.TransactionDate.Date == receivedDate || m.TransactionDate.Date == receivedDate.AddDays(1)))
+                    .Sum(m => m.TransferQuantity)
+                - relevantMovements
+                    .Where(m =>
+                        string.Equals(Normalize(m.SourceLocationId), bucket.NormalizedLocation, StringComparison.OrdinalIgnoreCase)
+                        && (m.TransactionDate.Date == receivedDate || m.TransactionDate.Date == receivedDate.AddDays(1)))
+                    .Sum(m => m.TransferQuantity);
+
+            var allocatedSum = assignedItems.Sum(item => item.SavedRowQuantity);
+
+            if (allocatedSum == dateScopedReferenceQuantity)
+            {
+                continue;
+            }
+
+            var uom = assignedItems[0].QuantityUnitOfMeasure;
+            foreach (var item in assignedItems)
+            {
+                item.Resolution = "Ambiguous";
+                item.ProposedLocation = string.Empty;
+                item.MatchedLocationQuantity = 0;
+                item.QuantityMoved = 0;
+                item.QuantityDifference = 0;
+                item.AllocationMethod = string.Empty;
+                item.MovedAt = null;
+                item.MovedByUserId = string.Empty;
+                item.TransferMovementCount = 0;
+                item.EvidenceSourceLocations = string.Empty;
+                item.Details = string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"Allocation rejected: rows assigned to {bucket.DisplayLocation} sum to {allocatedSum:0.##} {uom} but the confirmed transfer quantity to that location for the receipt date window is {dateScopedReferenceQuantity:0.##} {uom}. The full transferred quantity must be consumed by the allocated rows."
+                );
+            }
         }
 
         return items;
@@ -661,7 +713,8 @@ public sealed class Service_ReceivingLocationReconciliation
                 break;
             case "NotFound":
                 summary.NotFoundCount++;
-                summary.UnresolvedItems.Add(item);
+                // No transfer movements found = no evidence of a location change;
+                // the saved location is assumed current and nothing needs to be updated.
                 break;
             case "Error":
                 summary.ErrorCount++;

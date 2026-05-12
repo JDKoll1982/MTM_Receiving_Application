@@ -14,25 +14,8 @@
     </UserControl.Resources>
 
     <Grid Padding="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <!--  Header  -->
-        <StackPanel
-            Grid.Row="0"
-            Margin="0,0,0,16"
-            Spacing="8">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Enter Loads" />
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="Set the number of loads and enter the quantity for each load." />
-        </StackPanel>
-
         <!--  Quantity Input  -->
-        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Spacing="12">
                 <Border
                     Padding="16"

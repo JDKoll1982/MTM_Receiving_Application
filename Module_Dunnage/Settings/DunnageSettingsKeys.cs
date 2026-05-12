@@ -7,6 +7,12 @@ public static class DunnageSettingsKeys
         public const string DunnageLabelPath = "Dunnage.Labels.DunnageLabelPath";
     }
 
+    public static class UserLabels
+    {
+        public const string Category = "Dunnage.UserLabels";
+        public const string DunnageLabelPath = "DunnageLabelPath";
+    }
+
     public static class Application
     {
         public const string DefaultImageLocation = "Dunnage.Application.DefaultImageLocation";

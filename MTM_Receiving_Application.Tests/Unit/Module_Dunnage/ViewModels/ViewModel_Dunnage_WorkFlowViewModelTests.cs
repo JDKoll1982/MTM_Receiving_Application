@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
+using Material.Icons;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -43,6 +44,94 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         viewModel.IsImagePartSearchVisible.Should().BeTrue();
         viewModel.IsModeSelectionVisible.Should().BeFalse();
         viewModel.CurrentHeaderTitle.Should().Be("Dunnage - Search Parts by Image");
+        viewModel.CurrentHeaderContextTitle.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task StepChanged_ShouldExposePartSelectionHeaderContext()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        var session = new Model_DunnageSession
+        {
+            SelectedTypeName = "Bags",
+            SelectedType = new Model_DunnageType { Icon = "PackageVariantClosed" },
+        };
+
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+        workflow.SetupGet(service => service.CurrentSession).Returns(session);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+
+        currentStep = Enum_DunnageWorkflowStep.PartSelection;
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
+
+        viewModel.IsPartSelectionVisible.Should().BeTrue();
+        viewModel.CurrentHeaderTitle.Should().Be("Dunnage - Select Part");
+        viewModel.CurrentHeaderContextTitle.Should().Be("Select Part - Bags");
+        viewModel.CurrentHeaderContextSubtitle.Should().Be(
+            "Use the search function to quickly find parts. Parts with a green badge are tracked in inventory."
+        );
+        viewModel.CurrentHeaderContextIconKind.Should().Be(
+            MaterialIconKind.PackageVariantClosed
+        );
+    }
+
+    [Fact]
+    public async Task StepChanged_ShouldExposeQuantityEntryHeaderContext()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+
+        currentStep = Enum_DunnageWorkflowStep.QuantityEntry;
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
+
+        viewModel.IsQuantityEntryVisible.Should().BeTrue();
+        viewModel.CurrentHeaderContextTitle.Should().Be("Enter Loads");
+        viewModel.CurrentHeaderContextSubtitle.Should().Be(
+            "Set the number of loads and enter the quantity for each load."
+        );
+        viewModel.CurrentHeaderContextIconKind.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task StepChanged_ShouldExposeDetailsEntryHeaderContext()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+
+        currentStep = Enum_DunnageWorkflowStep.DetailsEntry;
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
+
+        viewModel.IsDetailsEntryVisible.Should().BeTrue();
+        viewModel.CurrentHeaderContextTitle.Should().Be("Enter Details");
+        viewModel.CurrentHeaderContextSubtitle.Should().Be(
+            "Enter the PO number, confirm the location, and review per-load details before saving."
+        );
+        viewModel.CurrentHeaderContextIconKind.Should().BeNull();
     }
 
     [Fact]

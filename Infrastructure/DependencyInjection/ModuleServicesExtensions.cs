@@ -119,6 +119,7 @@ public static class ModuleServicesExtensions
             Module_Receiving.Services.Service_ReceivingSettings
         >();
         services.AddSingleton<IService_ReceivingShortcuts, Service_ReceivingShortcuts>();
+        services.AddSingleton<IService_ReceivingUserLabelSettings, Service_ReceivingUserLabelSettings>();
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -182,6 +183,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
         services.AddSingleton<IService_DunnageShortcuts, Service_DunnageShortcuts>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
+        services.AddSingleton<IService_DunnageUserLabelSettings, Service_DunnageUserLabelSettings>();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
@@ -258,6 +260,7 @@ public static class ModuleServicesExtensions
         });
         services.AddSingleton<IService_VolvoRecipientSettings, Service_VolvoRecipientSettings>();
         services.AddSingleton<IService_VolvoSettings, Service_VolvoSettings>();
+        services.AddSingleton<IService_VolvoUserLabelSettings, Service_VolvoUserLabelSettings>();
 
         // ViewModels (Transient)
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();

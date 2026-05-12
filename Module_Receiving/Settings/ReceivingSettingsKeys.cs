@@ -11,6 +11,13 @@ public static class ReceivingSettingsKeys
         public const string MiniReceivingLabelPath = "Receiving.Labels.MiniReceivingLabelPath";
     }
 
+    public static class UserLabels
+    {
+        public const string Category = "Receiving.UserLabels";
+        public const string ReceivingLabelPath = "ReceivingLabelPath";
+        public const string MiniReceivingLabelPath = "MiniReceivingLabelPath";
+    }
+
     public static class UiText
     {
         public const string ModeSelectionGuidedTitle = "Receiving.UiText.ModeSelection.GuidedTitle";
