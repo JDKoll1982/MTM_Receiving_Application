@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTM Receiving Application - Version 2.6.0</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Personalized Label Locations</h1>
+                    <p class="hero-copy">Each user can now set their own label file locations for all four label types, replacing the previous application-wide settings.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 2.6.0</span>
+                <span class="meta-text">Released January 2025</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version">Copy version</button>
+                <p class="sidebar-note">Version 2.6.0 introduces user-specific label file locations for better flexibility in multi-user workstations.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>Key improvements in this release</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Personal label paths</p>
+                            <p class="highlight-text">Each user can now configure their own label file locations instead of sharing one set of paths across the entire application.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">All four labels supported</p>
+                            <p class="highlight-text">User-specific settings are available for Receiving Label, Mini-Receiving Label, Volvo Label, and Dunnage Label.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">One-time setup required</p>
+                            <p class="highlight-text">After updating, you'll need to configure your label file locations in the settings pages for each module you use.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Technical details</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Settings</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>User-scoped label settings</summary>
+                        <p>Label file paths are now stored per user in the database instead of as application-wide settings. This means:</p>
+                        <ul>
+                            <li>Each user can point to different label files based on their workstation or preference</li>
+                            <li>Switching users on a shared workstation will automatically use that user's configured paths</li>
+                            <li>Label settings are now found in the module-specific settings pages (Receiving, Dunnage, Volvo)</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Settings page updates</summary>
+                        <p>The label path configuration pages in Settings have been updated to save your personal preferences instead of system-wide settings. Your saved paths will only apply when you're logged in.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Label button behavior</summary>
+                        <p>The four label buttons in the main window footer continue to work the same way, but now they open the label files you've personally configured rather than a shared application setting.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>Benefits for your workflow</h2>
+                    </div>
+                    <div class="impact-content">
+                        <h3>Multi-user workstations</h3>
+                        <p>If you share a workstation with other users, you can now each maintain your own label file locations without overwriting each other's settings. This is especially helpful when different users work with different label templates or file servers.</p>
+
+                        <h3>Personal preferences</h3>
+                        <p>You can customize label paths to match your specific workflow, network drive mappings, or local file structure without affecting other users.</p>
+
+                        <h3>Easier troubleshooting</h3>
+                        <p>When a label fails to open, IT can quickly check whether the issue is with your personal settings or a system-wide problem, making support faster and more targeted.</p>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">What you need to do</p>
+                        <h2>Required setup after update</h2>
+                    </div>
+                    <div class="action-content">
+                        <div class="callout callout-warning">
+                            <p class="callout-title">⚠️ Action required</p>
+                            <p>After this update is installed, you must configure your label file paths in the settings pages before you can use the label buttons.</p>
+                        </div>
+
+                        <h3>Setup steps</h3>
+                        <ol>
+                            <li>Click the <strong>Settings</strong> icon in the navigation menu</li>
+                            <li>Navigate to <strong>Receiving Settings</strong> and open <strong>Label Paths</strong></li>
+                            <li>Enter the full file paths for:
+                                <ul>
+                                    <li>Receiving Label (e.g., <code>\\server\labels\receiving.lbl</code>)</li>
+                                    <li>Mini-Receiving Label (e.g., <code>\\server\labels\mini-receiving.lbl</code>)</li>
+                                </ul>
+                            </li>
+                            <li>Click <strong>Save</strong></li>
+                            <li>Repeat for <strong>Dunnage Settings → Label Paths</strong> if you use dunnage labels</li>
+                            <li>Repeat for <strong>Volvo Settings → Label Paths</strong> if you use Volvo labels</li>
+                        </ol>
+
+                        <h3>First time opening a label</h3>
+                        <p>If you click a label button before configuring the path, the application will redirect you to the appropriate settings page automatically. Just enter your path and try again.</p>
+
+                        <h3>Need your old paths?</h3>
+                        <p>Contact IT or your supervisor to get the standard label file paths for your workstation. The previous application-wide settings are no longer used after this update.</p>
+                    </div>
+                </section>
+
+                <section id="support" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Need help?</p>
+                        <h2>Support resources</h2>
+                    </div>
+                    <div class="support-content">
+                        <p>If you have questions about this update or need assistance configuring your label paths:</p>
+                        <ul>
+                            <li>Contact IT Support for help locating your label files on the network</li>
+                            <li>Ask your supervisor for the standard label file paths used in your department</li>
+                            <li>Check the in-app help documentation (press F1 or click the Help icon)</li>
+                        </ul>
+
+                        <div class="callout callout-info">
+                            <p class="callout-title">ℹ️ For IT and support staff</p>
+                            <p>User label paths are stored in the <code>settings_core_user</code> database table under categories:</p>
+                            <ul>
+                                <li><code>Receiving.UserLabels</code></li>
+                                <li><code>Dunnage.UserLabels</code></li>
+                                <li><code>Volvo.UserLabels</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <p>MTM Receiving Application &copy; 2025 MTM Tool and Manufacturing</p>
+            <p><a href="../index.html">View all releases</a></p>
+        </footer>
+    </div>
+    <script src="../app.js"></script>
+</body>
+</html>

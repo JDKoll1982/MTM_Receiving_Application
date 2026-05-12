@@ -109,6 +109,6 @@ public class Service_VolvoUserLabelSettings : IService_VolvoUserLabelSettings
 
     private int GetCurrentUserId()
     {
-        return _sessionManager.CurrentSession?.User?.Id ?? 0;
+        return _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
     }
 }

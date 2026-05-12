@@ -137,6 +137,6 @@ public class Service_ReceivingUserLabelSettings : IService_ReceivingUserLabelSet
 
     private int GetCurrentUserId()
     {
-        return _sessionManager.CurrentSession?.User?.Id ?? 0;
+        return _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
     }
 }
