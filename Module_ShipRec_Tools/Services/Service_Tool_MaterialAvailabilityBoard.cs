@@ -1468,7 +1468,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             : $"print-section {partColorClass}";
 
         html.AppendLine(
-            $"<div class='{classAttribute}' style='margin: 0 0 16px 0; background-color: {cardBackground};'>"
+            $"<div class='{classAttribute}' style='margin: 0 0 16px 0; background-color: {cardBackground}; border: 1px solid {cardBorder};'>"
         );
     }
 

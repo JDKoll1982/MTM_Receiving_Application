@@ -89,6 +89,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private bool _isQualityHoldAcknowledged;
 
         [ObservableProperty]
+        private bool _isReprint;
+
+        [ObservableProperty]
         private string _qualityHoldRestrictionType = string.Empty;
 
         // Additional fields from Infor Visual / PO data
@@ -244,7 +247,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         /// <summary>
         /// Gets the formatted per-package quantity value with the Infor Visual unit type.
         /// </summary>
-        public string WeightPerPackageValueDisplay => $"{WeightPerPackage:F0} {GetDisplayUnitOfMeasure()}";
+        public string WeightPerPackageValueDisplay =>
+            $"{WeightPerPackage:F0} {GetDisplayUnitOfMeasure()}";
 
         /// <summary>
         /// Display property for review grid showing per-package quantity with unit.
@@ -264,7 +268,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
 
         private string GetDisplayUnitOfMeasure()
         {
-            return string.IsNullOrWhiteSpace(UnitOfMeasure) ? "Units" : UnitOfMeasure.Trim().ToUpperInvariant();
+            return string.IsNullOrWhiteSpace(UnitOfMeasure)
+                ? "Units"
+                : UnitOfMeasure.Trim().ToUpperInvariant();
         }
 
         private static string? NormalizePoNumber(string? value)

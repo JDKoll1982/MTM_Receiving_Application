@@ -40,6 +40,7 @@ BEGIN
         employee_number,
         is_quality_hold_required,
         is_quality_hold_acknowledged,
+        is_reprint,
         quality_hold_restriction_type
     FROM receiving_label_data
     ORDER BY load_number ASC;

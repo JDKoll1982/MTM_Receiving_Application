@@ -15,6 +15,62 @@
     </Window.SystemBackdrop>
 
     <Grid>
+        <Grid.Resources>
+            <!--
+                Per-button style for the label-file shortcut buttons in the nav pane footer.
+                Provides individual hover/pressed highlighting and a discrete rounded border.
+            -->
+            <Style x:Key="LabelFileButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="8" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Border
+                                    x:Name="BackgroundBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                                <ContentPresenter
+                                    x:Name="ContentPresenter"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="BackgroundBorder.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                                <Setter Target="BackgroundBorder.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="BackgroundBorder.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                                <Setter Target="BackgroundBorder.BorderBrush" Value="{ThemeResource ControlStrokeColorSecondaryBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentPresenter.Opacity" Value="0.38" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -217,50 +273,122 @@
                 </NavigationViewItem>
                 <NavigationViewItemSeparator />
                 <NavigationViewItem SelectsOnInvoked="False">
+                    <!--  Suppress the full-row hover highlight so only individual buttons glow  -->
+                    <NavigationViewItem.Resources>
+                        <SolidColorBrush x:Key="NavigationViewItemBackgroundPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="NavigationViewItemBackgroundPressed" Color="Transparent" />
+                        <SolidColorBrush x:Key="NavigationViewItemRevealBackgroundPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="NavigationViewItemRevealBackgroundPressed" Color="Transparent" />
+                        <SolidColorBrush x:Key="NavigationViewItemBorderBrushPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="NavigationViewItemBorderBrushPressed" Color="Transparent" />
+                    </NavigationViewItem.Resources>
                     <StackPanel
+                        Margin="12,8,12,12"
                         HorizontalAlignment="Center"
                         Orientation="Horizontal"
-                        Spacing="8"
-                        Margin="12,8,12,12">
+                        Spacing="6">
+                        <!--  Receiving label: bold green R  -->
                         <Button
                             Click="OpenReceivingLabelButton_Click"
-                            Style="{StaticResource WindowChromeStyle}"
+                            Style="{StaticResource LabelFileButtonStyle}"
                             ToolTipService.ToolTip="Open Receiving Label">
-                            <Image Width="18" Height="18">
-                                <Image.Source>
-                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-receiving.svg" />
-                                </Image.Source>
-                            </Image>
+                            <Grid Width="35" Height="35">
+                                <Border
+                                    Background="#F8FAFB"
+                                    BorderBrush="#374151"
+                                    BorderThickness="1.5"
+                                    CornerRadius="3" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Foreground="#16a34a"
+                                    Text="R" />
+                            </Grid>
                         </Button>
+                        <!--  Mini-Receiving label: small red 'mini' above bold green R  -->
                         <Button
                             Click="OpenMiniReceivingLabelButton_Click"
-                            Style="{StaticResource WindowChromeStyle}"
+                            Style="{StaticResource LabelFileButtonStyle}"
                             ToolTipService.ToolTip="Open Mini-Receiving Label">
-                            <Image Width="18" Height="18">
-                                <Image.Source>
-                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-mini-receiving.svg" />
-                                </Image.Source>
-                            </Image>
+                            <Grid Width="35" Height="35">
+                                <Border
+                                    Background="#F8FAFB"
+                                    BorderBrush="#374151"
+                                    BorderThickness="1.5"
+                                    CornerRadius="3" />
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="-2">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="8"
+                                        Foreground="#dc2626"
+                                        Text="mini" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="19"
+                                        FontWeight="Bold"
+                                        Foreground="#16a34a"
+                                        Text="R" />
+                                </StackPanel>
+                            </Grid>
                         </Button>
-                        <Button
-                            Click="OpenVolvoLabelButton_Click"
-                            Style="{StaticResource WindowChromeStyle}"
-                            ToolTipService.ToolTip="Open Volvo Label">
-                            <Image Width="18" Height="18">
-                                <Image.Source>
-                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-volvo.svg" />
-                                </Image.Source>
-                            </Image>
-                        </Button>
+                        <!--  Separator between receiving group and dunnage  -->
+                        <Rectangle
+                            Width="1"
+                            Height="30"
+                            Margin="2,0"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                        <!--  Dunnage label: bold blue D  -->
                         <Button
                             Click="OpenDunnageLabelButton_Click"
-                            Style="{StaticResource WindowChromeStyle}"
+                            Style="{StaticResource LabelFileButtonStyle}"
                             ToolTipService.ToolTip="Open Dunnage Label">
-                            <Image Width="18" Height="18">
-                                <Image.Source>
-                                    <SvgImageSource UriSource="ms-appx:///Assets/Icons/open-label-dunnage.svg" />
-                                </Image.Source>
-                            </Image>
+                            <Grid Width="35" Height="35">
+                                <Border
+                                    Background="#F8FAFB"
+                                    BorderBrush="#374151"
+                                    BorderThickness="1.5"
+                                    CornerRadius="3" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Foreground="#1d4ed8"
+                                    Text="D" />
+                            </Grid>
+                        </Button>
+                        <!--  Separator between dunnage and volvo  -->
+                        <Rectangle
+                            Width="1"
+                            Height="30"
+                            Margin="2,0"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                        <!--  Volvo label: bold black V  -->
+                        <Button
+                            Click="OpenVolvoLabelButton_Click"
+                            Style="{StaticResource LabelFileButtonStyle}"
+                            ToolTipService.ToolTip="Open Volvo Label">
+                            <Grid Width="35" Height="35">
+                                <Border
+                                    Background="#F8FAFB"
+                                    BorderBrush="#374151"
+                                    BorderThickness="1.5"
+                                    CornerRadius="3" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Foreground="#111827"
+                                    Text="V" />
+                            </Grid>
                         </Button>
                     </StackPanel>
                 </NavigationViewItem>

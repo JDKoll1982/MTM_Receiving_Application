@@ -103,6 +103,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<int> UpdateCurrentLabelDataAsync(List<Model_ReceivingLoad> loads);
 
         /// <summary>
+        /// Copies a single row from receiving_history back into receiving_label_data
+        /// so it can be re-printed. Sets is_reprint = 1 on the queued row.
+        /// </summary>
+        /// <param name="historyId">The receiving_history.id of the row to requeue.</param>
+        public Task<Model_Dao_Result<int>> InsertFromHistoryAsync(int historyId);
+
+        /// <summary>
         /// Returns all reusable non-PO reference entries for Receiving.
         /// </summary>
         public Task<Model_Dao_Result<List<Model_ReceivingNonPOEntry>>> GetNonPOEntriesAsync();

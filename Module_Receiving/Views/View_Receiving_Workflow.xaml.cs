@@ -118,28 +118,30 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return;
             }
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ResolveFocusableStepView()?.FocusForAccess();
-                });
-            });
+            // Use Low priority so this runs after all pending Normal-priority UI work
+            // (NavigationView selection animations, frame navigation callbacks, etc.)
+            // has settled. This prevents other UI operations from stealing focus back
+            // after we set it.
+            DispatcherQueue.TryEnqueue(
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
+                () => ResolveFocusableStepView()?.FocusForAccess()
+            );
         }
 
         private IReceivingWorkflowFocusable? ResolveFocusableStepView()
         {
             return _workflowService.CurrentStep switch
             {
-                Enum_ReceivingWorkflowStep.POEntry => POEntryHost.Content as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.LoadEntry =>
-                    LoadEntryHost.Content as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.WeightQuantityEntry =>
-                    WeightQuantityHost.Content as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.HeatLotEntry =>
-                    HeatLotHost.Content as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.PackageTypeEntry =>
-                    PackageTypeHost.Content as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.POEntry => POEntryHost.Content
+                    as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.LoadEntry => LoadEntryHost.Content
+                    as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry => WeightQuantityHost.Content
+                    as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.HeatLotEntry => HeatLotHost.Content
+                    as IReceivingWorkflowFocusable,
+                Enum_ReceivingWorkflowStep.PackageTypeEntry => PackageTypeHost.Content
+                    as IReceivingWorkflowFocusable,
                 _ => null,
             };
         }

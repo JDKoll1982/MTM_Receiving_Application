@@ -530,8 +530,55 @@ public class Dao_ReceivingLabelData
             EmployeeNumber = ReadInt(row, "employee_number"),
             IsQualityHoldRequired = ReadBool(row, "is_quality_hold_required"),
             IsQualityHoldAcknowledged = ReadBool(row, "is_quality_hold_acknowledged"),
+            IsReprint = ReadBool(row, "is_reprint"),
             QualityHoldRestrictionType = ReadString(row, "quality_hold_restriction_type"),
         };
+    }
+
+    public async Task<Model_Dao_Result<int>> InsertFromHistoryAsync(
+        int historyId,
+        string queuedBy,
+        int employeeNumber
+    )
+    {
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                "sp_Receiving_LabelData_InsertFromHistory",
+                connection
+            )
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
+
+            command.Parameters.AddWithValue("p_history_id", historyId);
+            command.Parameters.AddWithValue("p_queued_by", queuedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            int inserted = 0;
+            if (await reader.ReadAsync())
+            {
+                inserted = Convert.ToInt32(reader["rows_inserted"]);
+            }
+
+            return Model_Dao_Result_Factory.Success<int>(inserted);
+        }
+        catch (MySqlException ex) when (ex.Number == 1644)
+        {
+            // SQLSTATE 45000 — already queued for reprint
+            return Model_Dao_Result_Factory.Failure<int>(ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Error queuing history record {historyId} for reprint: {ex.Message}",
+                ex
+            );
+        }
     }
 
     private static bool HasColumn(DataRow row, string columnName) =>

@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS receiving_label_data (
     is_non_po_item TINYINT (1) NOT NULL DEFAULT 0 COMMENT '1 when the part has no PO or was not found in Infor Visual',
     is_quality_hold_required TINYINT (1) NOT NULL DEFAULT 0 COMMENT '1 when the part requires a quality hold acknowledgment',
     is_quality_hold_acknowledged TINYINT (1) NOT NULL DEFAULT 0 COMMENT '1 when quality hold has been formally acknowledged',
+    is_reprint TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 when this row was re-queued from receiving_history for a label reprint',
     quality_hold_restriction_type VARCHAR(255) NULL COMMENT 'Restriction type code from the quality hold check',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
     INDEX idx_load_id (load_id) COMMENT 'Index for GUID-based session lookups',

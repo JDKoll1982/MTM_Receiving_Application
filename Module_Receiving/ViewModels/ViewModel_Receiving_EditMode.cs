@@ -908,6 +908,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
+        partial void OnSelectedLoadChanged(Model_ReceivingLoad? value)
+        {
+            ReprintFromHistoryCommand.NotifyCanExecuteChanged();
+        }
+
         /// <summary>
         /// Notifies that command execution status has changed.
         /// </summary>
@@ -916,6 +921,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SaveCommand.NotifyCanExecuteChanged();
             RemoveRowCommand.NotifyCanExecuteChanged();
             SelectAllCommand.NotifyCanExecuteChanged();
+            ReprintFromHistoryCommand.NotifyCanExecuteChanged();
         }
 
         public void HandleCurrentLabelQueueCleared()
@@ -1786,6 +1792,71 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private bool CanSave()
         {
             return _filteredLoads.Count > 0 || _deletedLoads.Count > 0;
+        }
+
+        private bool CanReprintFromHistory() =>
+            CurrentDataSource == Enum_DataSourceType.History
+            && SelectedLoad?.HistoryRecordID.HasValue == true
+            && !IsBusy;
+
+        /// <summary>
+        /// Queues the selected history row back into the active label print queue for reprint.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanReprintFromHistory))]
+        private async Task ReprintFromHistoryAsync()
+        {
+            if (SelectedLoad?.HistoryRecordID is not int historyId)
+            {
+                return;
+            }
+
+            if (IsBusy)
+            {
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+                StatusMessage = "Queuing for reprint\u2026";
+
+                var result = await _mysqlService.InsertFromHistoryAsync(historyId);
+                if (!result.IsSuccess)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        result.ErrorMessage ?? "Failed to queue record for reprint.",
+                        Enum_ErrorSeverity.Warning
+                    );
+                    return;
+                }
+
+                ShowStatus(
+                    $"Part {SelectedLoad.PartID} queued for reprint. Switch to Current Labels to verify.",
+                    InfoBarSeverity.Success
+                );
+
+                // Re-enable "Clear Label Data" on the workflow VM — the queue is no longer empty.
+                foreach (
+                    var workflowVm in _viewModelRegistry.GetViewModels<ViewModel_Receiving_Workflow>()
+                )
+                {
+                    await workflowVm.RefreshClearLabelDataAvailabilityAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Medium,
+                    nameof(ReprintFromHistoryAsync),
+                    nameof(ViewModel_Receiving_EditMode)
+                );
+            }
+            finally
+            {
+                IsBusy = false;
+                ReprintFromHistoryCommand.NotifyCanExecuteChanged();
+            }
         }
 
         /// <summary>

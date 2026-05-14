@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 2.7.0 — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 2.7.0</h1>
+                    <p class="hero-copy">Reprint labels directly from receiving history, plus a refreshed label-shortcut bar in the navigation footer.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 2.7.0</span>
+                <span class="meta-text">Released May 14, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="2.7.0">Copy version</button>
+                <p class="sidebar-note">Use this version number when reporting an issue to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What's new in 2.7.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Reprint from History</p>
+                            <p class="highlight-text">Find any previously received load in History view and send it back to the print queue with one click — no re-entering data required.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Clear button stays active</p>
+                            <p class="highlight-text">After queuing a reprint the "Clear Label Data" button re-enables automatically, so you can clear the queue as soon as labels are printed.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Refreshed label shortcuts</p>
+                            <p class="highlight-text">The four label-launch buttons in the navigation footer now show clear letter icons (R, R-mini, D, V) with hover highlights and visual separators.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details for each improvement</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Reprint a label from Receiving History</summary>
+                        <p>
+                            In Edit Mode, switch the data source to <strong>History</strong>. Select any received load,
+                            then click the new <strong>Reprint</strong> button. The application copies that load back
+                            into the active label queue with a reprint marker so it will not be archived a second time
+                            when you clear the queue. Switch back to <strong>Current Labels</strong> to confirm it is
+                            there, then print as normal.
+                        </p>
+                        <p>
+                            A guard prevents the same history record from being queued twice. If you try to reprint
+                            an entry that is already waiting, you will see a warning message instead.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Clear Label Data button re-enables after a reprint</summary>
+                        <p>
+                            Previously, if you cleared the label queue and then sent a history entry back for
+                            reprint, the <strong>Clear Label Data</strong> button remained grayed out until you
+                            navigated away and back. That is fixed — the button enables itself immediately once
+                            the reprint row lands in the queue.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Refreshed label shortcut buttons in the navigation footer</summary>
+                        <p>
+                            The four quick-launch buttons at the bottom of the navigation panel were redesigned.
+                            Each button now shows a bold letter icon — <strong>R</strong> (Receiving),
+                            <strong>R&nbsp;mini</strong> (Mini-Receiving), <strong>D</strong> (Dunnage), and
+                            <strong>V</strong> (Volvo) — on a bordered card with individual hover and press
+                            highlighting. Visual separators between the groups make scanning easier.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Reprint rows skip archival when the queue is cleared</summary>
+                        <p>
+                            When you clear your label queue, the application moves rows to receiving history.
+                            Rows that were queued as reprints are already in history, so they are now skipped
+                            during the archive step and only deleted — no duplicate history entries are created.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Database update required before first use</summary>
+                        <p>
+                            This release adds a new <code>is_reprint</code> column to the receiving label data
+                            table and a new stored procedure. Your IT administrator or database manager needs to
+                            run migration script <strong>09_Migration_receiving_reprint_flag.sql</strong> once
+                            against the <code>mtm_receiving_application</code> database before you use the
+                            Reprint from History feature.
+                        </p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>How this update helps your daily work</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>No more re-entering data for reprints</h3>
+                            <p>When a label is damaged, lost, or printed incorrectly, you can now pull the original entry straight from history and send it to the printer. Every field — part number, PO, quantity, heat — comes over exactly as it was received.</p>
+                        </article>
+                        <article>
+                            <h3>Cleaner queue management</h3>
+                            <p>The Clear Label Data button responds immediately when a reprint is queued, so there is no awkward wait or navigation needed before you can finish clearing the queue.</p>
+                        </article>
+                        <article>
+                            <h3>Easier label file access</h3>
+                            <p>The refreshed label shortcut bar makes it quicker to identify and open the right label template at a glance — especially useful on days when you switch between receiving types.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>One administrator step is required</h2>
+                    </div>
+                    <p class="action-state warning">A database migration must be applied before using the Reprint from History feature.</p>
+                    <ul class="action-list">
+                        <li>Ask your IT administrator or database manager to run <strong>09_Migration_receiving_reprint_flag.sql</strong> against the <code>mtm_receiving_application</code> database.</li>
+                        <li>Regular operators do not need to do anything themselves — just update the application and let IT know about the migration.</li>
+                        <li>All other changes in this release (the Clear button fix and label shortcut redesign) work immediately after updating with no extra steps.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Contact MTM IT support</h2>
+                    </div>
+                    <p>If something does not look right after updating, note the version number shown at the top of this page (<strong>2.7.0</strong>) and report it to your supervisor or the MTM IT support team. If the Reprint button is not visible, confirm the migration script has been applied to the database.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

@@ -57,6 +57,7 @@ BEGIN
         -- repurposed to store packages_per_load during archival.
         -- load_guid uniquely identifies app-generated records; the
         -- ON DUPLICATE KEY clause prevents double-archiving.
+        -- Rows with is_reprint = 1 are already in receiving_history; skip the INSERT for them.
         INSERT INTO receiving_history
         (
             load_guid,
@@ -122,8 +123,9 @@ BEGIN
             rld.part_skid_sequence                                     AS part_skid_sequence,
             rld.part_skid_total                                        AS part_skid_total
           FROM receiving_label_data rld
-          WHERE COALESCE(p_clear_all, 0) = 1
-              OR rld.employee_number = p_employee_number
+          WHERE rld.is_reprint = 0
+            AND (COALESCE(p_clear_all, 0) = 1
+              OR rld.employee_number = p_employee_number)
         ON DUPLICATE KEY UPDATE
             quantity         = VALUES(quantity),
             part_id          = VALUES(part_id),
@@ -155,6 +157,7 @@ BEGIN
             part_skid_sequence = VALUES(part_skid_sequence),
             part_skid_total  = VALUES(part_skid_total);
 
+        -- Delete all matching rows (including reprint rows — they don't need to go to history).
         DELETE FROM receiving_label_data
         WHERE COALESCE(p_clear_all, 0) = 1
            OR employee_number = p_employee_number;

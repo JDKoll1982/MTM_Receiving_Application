@@ -433,6 +433,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return await _receivingNonPoEntryDao.UpsertPartDefaultAsync(partId, value, updatedBy);
         }
 
+        public async Task<Model_Dao_Result<int>> InsertFromHistoryAsync(int historyId)
+        {
+            var currentUser = _sessionManager?.CurrentSession?.User;
+            var queuedBy = currentUser?.WindowsUsername ?? "SYSTEM";
+            var employeeNumber = currentUser?.EmployeeNumber ?? 0;
+
+            _logger.LogInfo($"Queuing history record {historyId} for reprint by {queuedBy}");
+            return await _receivingLabelDataDao.InsertFromHistoryAsync(
+                historyId,
+                queuedBy,
+                employeeNumber
+            );
+        }
+
         private async Task<(
             bool HasContext,
             int EmployeeNumber,
