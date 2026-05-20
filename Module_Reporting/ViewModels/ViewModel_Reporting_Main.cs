@@ -37,10 +37,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     public event EventHandler? PreviewRequested;
 
     [ObservableProperty]
-    private DateTimeOffset _startDate = DateTimeOffset.Now.AddDays(-7);
+    private DateTimeOffset? _startDate = DateTimeOffset.Now.AddDays(-7);
 
     [ObservableProperty]
-    private DateTimeOffset _endDate = DateTimeOffset.Now;
+    private DateTimeOffset? _endDate = DateTimeOffset.Now;
 
     [ObservableProperty]
     private string _selectedDateRangePreset = CustomDateRangePreset;
@@ -245,8 +245,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             ShowStatus("Checking data availability...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.CheckAvailabilityAsync(
-                StartDate.DateTime,
-                EndDate.DateTime
+                (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
+                (EndDate ?? DateTimeOffset.Now).DateTime
             );
 
             if (result.IsSuccess && result.Data != null)
@@ -527,7 +527,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 "Receiving",
                 "Detailed receiving rows captured for the selected date range.",
                 () =>
-                    _reportingService.GetReceivingHistoryAsync(StartDate.DateTime, EndDate.DateTime)
+                    _reportingService.GetReceivingHistoryAsync(
+                        (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
+                        (EndDate ?? DateTimeOffset.Now).DateTime
+                    )
             );
         }
 
@@ -536,7 +539,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Dunnage",
                 "Detailed dunnage activity captured for the selected date range.",
-                () => _reportingService.GetDunnageHistoryAsync(StartDate.DateTime, EndDate.DateTime)
+                () => _reportingService.GetDunnageHistoryAsync(
+                        (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
+                        (EndDate ?? DateTimeOffset.Now).DateTime
+                    )
             );
         }
 
@@ -545,7 +551,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Volvo",
                 "Detailed Volvo activity captured for the selected date range.",
-                () => _reportingService.GetVolvoHistoryAsync(StartDate.DateTime, EndDate.DateTime)
+                () => _reportingService.GetVolvoHistoryAsync(
+                        (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
+                        (EndDate ?? DateTimeOffset.Now).DateTime
+                    )
             );
         }
     }
@@ -918,9 +927,11 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private string GetDateRangeText()
     {
-        return StartDate.Date == EndDate.Date
-            ? $"{StartDate:M/d/yyyy}"
-            : $"{StartDate:M/d/yyyy} - {EndDate:M/d/yyyy}";
+        var start = StartDate ?? DateTimeOffset.Now.AddDays(-7);
+        var end = EndDate ?? DateTimeOffset.Now;
+        return start.Date == end.Date
+            ? $"{start:M/d/yyyy}"
+            : $"{start:M/d/yyyy} - {end:M/d/yyyy}";
     }
 
     private void OnPreviewModuleCardPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -1149,7 +1160,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             YesterdayDateRangePreset => today.AddDays(-1),
             TodayDateRangePreset => today,
             ThisWeekDateRangePreset => GetStartOfWeek(today),
-            _ => StartDate.Date,
+            _ => StartDate?.Date ?? DateTime.Today.AddDays(-7),
         };
 
         var endDate = preset == YesterdayDateRangePreset ? today.AddDays(-1) : today;
@@ -1225,8 +1236,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
     }
 
-    partial void OnStartDateChanged(DateTimeOffset value)
+    partial void OnStartDateChanged(DateTimeOffset? value)
     {
+        if (value is null)
+        {
+            return;
+        }
+
         if (!_isApplyingDateRangePreset && SelectedDateRangePreset != CustomDateRangePreset)
         {
             SelectedDateRangePreset = CustomDateRangePreset;
@@ -1240,8 +1256,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         ResetForDateRangeChange();
     }
 
-    partial void OnEndDateChanged(DateTimeOffset value)
+    partial void OnEndDateChanged(DateTimeOffset? value)
     {
+        if (value is null)
+        {
+            return;
+        }
+
         if (!_isApplyingDateRangePreset && SelectedDateRangePreset != CustomDateRangePreset)
         {
             SelectedDateRangePreset = CustomDateRangePreset;
