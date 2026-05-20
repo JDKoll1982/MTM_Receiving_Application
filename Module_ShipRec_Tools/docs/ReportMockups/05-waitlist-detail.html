@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>05 Waitlist Detail — Customer Pull n' Pack Mockups</title>
+    <link rel="stylesheet" href="../../../docs/features/shared/styles.css" />
+    <link rel="stylesheet" href="shared/mockups.css" />
+</head>
+<body data-mock-page="05-waitlist-detail.html">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header class="top-nav" role="banner"><a href="index.html" class="top-nav-brand">MTM</a><div class="top-nav-sep"></div><nav aria-label="Module navigation"><ul class="top-nav-links"><li><a href="../../../docs/features/shiprec-tools/index.html" class="is-current"><span class="nav-icon">🛠️</span> ShipRec Tools</a></li></ul></nav></header>
+<div class="page-layout">
+    <nav class="sidebar" aria-label="Waitlist detail mockup navigation"><p class="sidebar-label">This Screen</p><ul class="sidebar-nav"><li><a href="#overview">Overview</a></li><li><a href="#preview">Mockup Preview</a></li><li><a href="#notes">Review Notes</a></li></ul><p class="sidebar-section-label">Package Screens</p><ul class="sidebar-nav"><li><a href="index.html">Package Index</a></li><li><a data-mock-link="04-waitlist-queue.html" href="04-waitlist-queue.html">04 Waitlist Queue</a></li><li><a data-mock-link="05-waitlist-detail.html" href="05-waitlist-detail.html">05 Waitlist Detail</a></li><li><a data-mock-link="09-pull-list-print.html" href="09-pull-list-print.html">09 Pull List Print</a></li></ul></nav>
+    <main id="main-content" class="main-content">
+        <div id="overview" class="module-hero mockup-intro"><div class="module-badge">05 Screen</div><h1>Waitlist Detail Work State</h1><p class="lead">Focused material-handler state for accepting, completing, cancelling, or marking a pull request as a problem with note-driven accountability.</p><div class="mockup-meta"><span class="mockup-chip is-blue">Task-focused</span><span class="mockup-chip">Problem notes visible</span><span class="mockup-chip">Fast status changes</span></div></div>
+        <section id="preview" class="content-section"><h2>Mockup Preview</h2>
+            <div class="app-window">
+                <div class="app-titlebar"><div class="window-chrome"><span class="window-dot is-red"></span><span class="window-dot is-gold"></span><span class="window-dot is-green"></span></div><div class="titlebar-copy"><strong>MTM Receiving Application</strong><span>Ship/Rec Tools · Waitlist Detail</span></div><div class="titlebar-user">Material Handler · Mark S.</div></div>
+                <div class="app-modulebar"><span class="module-pill is-active">🛠️ Ship/Rec Tools</span><span class="module-pill">⚙️ Settings</span></div>
+                <div class="app-shell">
+                    <aside class="app-nav"><p class="app-nav-label">Waitlist Workflow</p><ul class="app-nav-links"><li><a href="02-report-page.html">Report View</a></li><li><a href="04-waitlist-queue.html">Waitlist Queue</a></li><li><span class="is-current">Selected Work Item</span></li></ul><div class="app-nav-note">This view should help the handler act quickly and move back to the queue without losing context.</div></aside>
+                    <div class="app-workspace">
+                        <div class="workspace-header"><div><h2>Waitlist Item · CO-46092</h2><p>Problem-state example showing location mismatch and required notes.</p></div><div class="command-row"><span class="cmd">Back to Queue</span><span class="cmd primary">Save Update</span></div></div>
+                        <div class="workspace-split">
+                            <div class="detail-stack">
+                                <div class="surface-card"><h3>Item Context</h3><div class="info-list"><div class="info-item"><span class="label">Customer</span><span class="value">VOLVO</span></div><div class="info-item"><span class="label">Order</span><span class="value">CO-46092</span></div><div class="info-item"><span class="label">Parent Part</span><span class="value mono">2158840</span></div><div class="info-item"><span class="label">Requested Location</span><span class="value">A-14-02</span></div><div class="info-item"><span class="label">Requested Qty</span><span class="value">180</span></div><div class="info-item"><span class="label">Pulled By</span><span class="value">Pending</span></div></div></div>
+                                <div class="alert-strip danger"><span>⚠</span><div><strong>Problem state requires a useful note.</strong> The UI should strongly encourage a real explanation when the handler cannot complete the pull as requested.</div></div>
+                                <div class="surface-card"><h3>Handler Notes</h3><div class="fake-textarea">Location A-14-02 only had 96 pieces physically present. Reported on-hand did not match count. Secondary location should be reviewed before item can be completed.</div></div>
+                            </div>
+                            <div class="detail-stack">
+                                <div class="surface-card"><h3>Status Actions</h3><div class="button-row"><span class="cmd">Accepted</span><span class="cmd success">Completed</span><span class="cmd">Cancelled</span><span class="cmd danger">Problem</span></div></div>
+                                <div class="surface-card"><h3>Current Status</h3><div class="flow-strip"><span class="state-pill is-red">Problem</span><span class="metric-pill">Last Updated By: Mark S.</span><span class="metric-pill">05/20 07:14 AM</span></div></div>
+                                <div class="surface-card"><h3>Save Result</h3><div class="alert-strip success"><span>✓</span><div><strong>Problem update saved.</strong> Request remains visible in the open queue until resolved or cancelled.</div></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="notes" class="content-section"><h2>Review Notes</h2><ul><li>The detail state is designed for execution, not browsing.</li><li>Problem handling is note-driven and intentionally more explicit than a normal accepted/completed update.</li><li>Return-to-queue flow stays visible so handlers can keep moving.</li></ul></section>
+    </main>
+</div>
+<footer class="page-footer" role="contentinfo"><span>MTM Receiving Application</span><span aria-hidden="true">·</span><span>Mockup 05</span></footer>
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../../docs/features/shared/app.js"></script><script src="shared/mockups.js"></script>
+</body>
+</html>

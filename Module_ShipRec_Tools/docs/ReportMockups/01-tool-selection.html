@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>01 Tool Selection — Customer Pull n' Pack Mockups</title>
+    <link rel="stylesheet" href="../../../docs/features/shared/styles.css" />
+    <link rel="stylesheet" href="shared/mockups.css" />
+</head>
+<body data-mock-page="01-tool-selection.html">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header class="top-nav" role="banner">
+    <a href="index.html" class="top-nav-brand" aria-label="Mockup home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../../docs/features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../../docs/features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../../docs/features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../../docs/features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../../docs/features/shiprec-tools/index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="page-layout">
+    <nav class="sidebar" aria-label="Tool selection mockup navigation">
+        <p class="sidebar-label">This Screen</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#preview">Mockup Preview</a></li>
+            <li><a href="#notes">Review Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Package Screens</p>
+        <ul class="sidebar-nav">
+            <li><a href="index.html">Package Index</a></li>
+            <li><a data-mock-link="01-tool-selection.html" href="01-tool-selection.html">01 Tool Selection</a></li>
+            <li><a data-mock-link="02-report-page.html" href="02-report-page.html">02 Report Page</a></li>
+            <li><a data-mock-link="03-waitlist-entry.html" href="03-waitlist-entry.html">03 Waitlist Entry</a></li>
+            <li><a data-mock-link="04-waitlist-queue.html" href="04-waitlist-queue.html">04 Waitlist Queue</a></li>
+            <li><a data-mock-link="05-waitlist-detail.html" href="05-waitlist-detail.html">05 Waitlist Detail</a></li>
+            <li><a data-mock-link="06-settings.html" href="06-settings.html">06 Settings</a></li>
+            <li><a data-mock-link="07-empty-state.html" href="07-empty-state.html">07 Empty State</a></li>
+        </ul>
+    </nav>
+    <main id="main-content" class="main-content">
+        <div id="overview" class="module-hero mockup-intro">
+            <div class="module-badge">01 Screen</div>
+            <h1>Ship/Rec Tools Tool Selection</h1>
+            <p class="lead">The new Customer Pull n' Pack tool appears as a natural addition to the existing Ship/Rec tool-selection experience.</p>
+            <div class="mockup-meta">
+                <span class="mockup-chip is-blue">Existing shell preserved</span>
+                <span class="mockup-chip">New tool card only</span>
+                <span class="mockup-chip">Low-risk entry point</span>
+            </div>
+        </div>
+
+        <section id="preview" class="content-section">
+            <h2>Mockup Preview</h2>
+            <div class="app-window">
+                <div class="app-titlebar">
+                    <div class="window-chrome"><span class="window-dot is-red"></span><span class="window-dot is-gold"></span><span class="window-dot is-green"></span></div>
+                    <div class="titlebar-copy"><strong>MTM Receiving Application</strong><span>Main Window · Ship/Rec Tools</span></div>
+                    <div class="titlebar-user">John K · Shift A</div>
+                </div>
+                <div class="app-modulebar">
+                    <span class="module-pill">📦 Receiving</span>
+                    <span class="module-pill">📋 Dunnage</span>
+                    <span class="module-pill">📊 Reporting</span>
+                    <span class="module-pill">🚚 Volvo</span>
+                    <span class="module-pill is-active">🛠️ Ship/Rec Tools</span>
+                    <span class="module-pill">⚙️ Settings</span>
+                </div>
+                <div class="app-shell">
+                    <aside class="app-nav">
+                        <p class="app-nav-label">Ship/Rec Tools</p>
+                        <ul class="app-nav-links">
+                            <li><span class="is-current">Tool Selection</span></li>
+                            <li><a href="#">Material Availability Board</a></li>
+                            <li><a href="#">Outside Service History</a></li>
+                            <li><a href="#">Customer Pull n' Pack</a></li>
+                        </ul>
+                        <div class="app-nav-note">The new tool should land in the same tool-selection system users already know.</div>
+                    </aside>
+                    <div class="app-workspace">
+                        <div class="workspace-header">
+                            <div>
+                                <h2>Ship/Rec Tools</h2>
+                                <p>Select a utility tool for reporting, lookup, or warehouse execution.</p>
+                            </div>
+                            <div class="command-row">
+                                <span class="cmd">Refresh Tool List</span>
+                                <span class="cmd">Open Help</span>
+                            </div>
+                        </div>
+
+                        <div class="helper-list">
+                            <div class="info-card card-blue">
+                                <div class="info-card-icon">📊</div>
+                                <h3>Material Availability Board</h3>
+                                <p>Live view of inbound and material dependency status for fast warehouse decisions.</p>
+                            </div>
+                            <div class="info-card card-green">
+                                <div class="info-card-icon">📋</div>
+                                <h3>Outside Service History</h3>
+                                <p>Read-only lookup of prior outside service activity sourced from Infor Visual.</p>
+                            </div>
+                            <div class="info-card card-gold">
+                                <div class="info-card-icon">📦</div>
+                                <h3>Customer Pull n' Pack</h3>
+                                <p>Interactive pull-and-pack reporting with linked MTM waitlist workflow for warehouse execution.</p>
+                            </div>
+                        </div>
+
+                        <div class="alert-strip success">
+                            <span>✓</span>
+                            <div><strong>Recommended first-run behavior.</strong> Users enter the feature from the same tool-selection experience and do not need a new navigation model to find it.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Review Notes</h2>
+            <ul>
+                <li>The card set stays visually consistent with existing Ship/Rec tools.</li>
+                <li>The new feature reads as a practical warehouse/reporting tool, not a separate subsystem.</li>
+                <li>No extra shell, dashboard landing page, or navigation invention is introduced here.</li>
+            </ul>
+        </section>
+    </main>
+</div>
+<footer class="page-footer" role="contentinfo"><span>MTM Receiving Application</span><span aria-hidden="true">·</span><span>Mockup 01</span></footer>
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../../docs/features/shared/app.js"></script>
+<script src="shared/mockups.js"></script>
+</body>
+</html>

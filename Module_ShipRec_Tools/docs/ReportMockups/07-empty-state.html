@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>07 Empty State — Customer Pull n' Pack Mockups</title>
+    <link rel="stylesheet" href="../../../docs/features/shared/styles.css" />
+    <link rel="stylesheet" href="shared/mockups.css" />
+</head>
+<body data-mock-page="07-empty-state.html">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header class="top-nav" role="banner"><a href="index.html" class="top-nav-brand">MTM</a><div class="top-nav-sep"></div><nav aria-label="Module navigation"><ul class="top-nav-links"><li><a href="../../../docs/features/shiprec-tools/index.html" class="is-current"><span class="nav-icon">🛠️</span> ShipRec Tools</a></li></ul></nav></header>
+<div class="page-layout">
+    <nav class="sidebar" aria-label="Empty state mockup navigation"><p class="sidebar-label">This Screen</p><ul class="sidebar-nav"><li><a href="#overview">Overview</a></li><li><a href="#preview">Mockup Preview</a></li><li><a href="#notes">Review Notes</a></li></ul><p class="sidebar-section-label">Package Screens</p><ul class="sidebar-nav"><li><a href="index.html">Package Index</a></li><li><a data-mock-link="02-report-page.html" href="02-report-page.html">02 Report Page</a></li><li><a data-mock-link="07-empty-state.html" href="07-empty-state.html">07 Empty State</a></li></ul></nav>
+    <main id="main-content" class="main-content">
+        <div id="overview" class="module-hero mockup-intro"><div class="module-badge">07 Screen</div><h1>No Open Demand Empty State</h1><p class="lead">When a valid customer has no open demand in the selected date range, the tool stays usable and clearly explains the state instead of looking broken.</p><div class="mockup-meta"><span class="mockup-chip is-blue">Valid empty state</span><span class="mockup-chip">Filters still visible</span><span class="mockup-chip">Actionable next step</span></div></div>
+        <section id="preview" class="content-section"><h2>Mockup Preview</h2>
+            <div class="app-window">
+                <div class="app-titlebar"><div class="window-chrome"><span class="window-dot is-red"></span><span class="window-dot is-gold"></span><span class="window-dot is-green"></span></div><div class="titlebar-copy"><strong>MTM Receiving Application</strong><span>Ship/Rec Tools · Customer Pull n' Pack</span></div><div class="titlebar-user">Review User</div></div>
+                <div class="app-modulebar"><span class="module-pill is-active">🛠️ Ship/Rec Tools</span><span class="module-pill">⚙️ Settings</span></div>
+                <div class="app-shell">
+                    <aside class="app-nav"><p class="app-nav-label">Customer Pull n' Pack</p><ul class="app-nav-links"><li><span class="is-current">Report View</span></li><li><a href="04-waitlist-queue.html">Waitlist Page</a></li><li><a href="06-settings.html">Settings</a></li></ul><div class="app-nav-note">This state should still feel like the normal tool. Only the result set is empty.</div></aside>
+                    <div class="app-workspace">
+                        <div class="workspace-header"><div><h2>Customer Pull n' Pack</h2><p>Customer selected successfully, but there is no current demand in the active date range.</p></div><div class="command-row"><span class="cmd primary">Refresh</span><span class="cmd">Change Customer</span><span class="cmd">Adjust Date Range</span></div></div>
+                        <div class="filters-grid">
+                            <div class="field-card span-4"><span class="field-label">Customer</span><div class="fake-search">MACK · Mack Trucks</div></div>
+                            <div class="field-card span-2"><span class="field-label">Date From</span><div class="fake-input">2026-05-20</div></div>
+                            <div class="field-card span-2"><span class="field-label">Date To</span><div class="fake-input">2026-05-27</div></div>
+                            <div class="field-card span-2"><span class="field-label">Sort</span><div class="fake-select">Pull Date</div></div>
+                            <div class="field-card span-2"><span class="field-label">Quick Filter</span><div class="fake-select">All Rows</div></div>
+                        </div>
+                        <div class="empty-state"><div><h3>No open demand found for MACK in the selected range.</h3><p>The customer selection is valid, but there are no rows to display for the current date range and filters. Choose another customer, widen the date range, or refresh if data was expected.</p><div class="button-row" style="justify-content:center;margin-top:18px;"><span class="cmd primary">Choose Different Customer</span><span class="cmd">Change Date Range</span><span class="cmd">Refresh</span></div></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="notes" class="content-section"><h2>Review Notes</h2><ul><li>The shell and filter controls stay visible so the feature still feels active.</li><li>The message is explicit about what happened and what the user can do next.</li><li>This should replace a blank report rendering state.</li></ul></section>
+    </main>
+</div>
+<footer class="page-footer" role="contentinfo"><span>MTM Receiving Application</span><span aria-hidden="true">·</span><span>Mockup 07</span></footer>
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../../docs/features/shared/app.js"></script><script src="shared/mockups.js"></script>
+</body>
+</html>

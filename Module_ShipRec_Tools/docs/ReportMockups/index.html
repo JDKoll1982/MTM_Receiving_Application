@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Pull n' Pack Mockups — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../../../docs/features/shared/styles.css" />
+    <link rel="stylesheet" href="shared/mockups.css" />
+</head>
+<body data-mock-page="index.html">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../../docs/index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../../docs/features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../../docs/features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../../docs/features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../../docs/features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../../docs/features/shiprec-tools/index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+    <nav class="sidebar" aria-label="Mockup package navigation">
+        <p class="sidebar-label">Mockup Package</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#docs">Package Docs</a></li>
+            <li><a href="#screens">HTML Screens</a></li>
+            <li><a href="#prints">Print Screens</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Screen Files</p>
+        <ul class="sidebar-nav">
+            <li><a data-mock-link="01-tool-selection.html" href="01-tool-selection.html">01 Tool Selection</a></li>
+            <li><a data-mock-link="02-report-page.html" href="02-report-page.html">02 Report Page</a></li>
+            <li><a data-mock-link="03-waitlist-entry.html" href="03-waitlist-entry.html">03 Waitlist Entry</a></li>
+            <li><a data-mock-link="04-waitlist-queue.html" href="04-waitlist-queue.html">04 Waitlist Queue</a></li>
+            <li><a data-mock-link="05-waitlist-detail.html" href="05-waitlist-detail.html">05 Waitlist Detail</a></li>
+            <li><a data-mock-link="06-settings.html" href="06-settings.html">06 Settings</a></li>
+            <li><a data-mock-link="07-empty-state.html" href="07-empty-state.html">07 Empty State</a></li>
+            <li><a data-mock-link="08-floor-copy-print.html" href="08-floor-copy-print.html">08 Floor Copy Print</a></li>
+            <li><a data-mock-link="09-pull-list-print.html" href="09-pull-list-print.html">09 Pull List Print</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+        <div class="module-hero mockup-intro">
+            <div class="module-badge">🧪 Mockup Package</div>
+            <h1>Customer Pull n' Pack Mockups</h1>
+            <p class="lead">Complete first-pass review package for the Customer Pull n' Pack feature, including report, waitlist, settings, empty-state, and print flows.</p>
+            <div class="mockup-meta">
+                <span class="mockup-chip is-blue">WinUI 3 aligned</span>
+                <span class="mockup-chip">CommunityToolkit aware</span>
+                <span class="mockup-chip">HTML review package</span>
+                <span class="mockup-chip">MTM shell preserved</span>
+            </div>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>This package is built from the current feature spec and prompt, with the waitlist treated as a separate entity from the report and the material handler working primarily from a dedicated waitlist page.</p>
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body"><strong>Review intent.</strong> These files are complete HTML mockups for review. They are not implementation code, but they intentionally use realistic WinUI and CommunityToolkit-style control choices.</div>
+            </div>
+        </section>
+
+        <section id="docs" class="content-section">
+            <h2>Package Docs</h2>
+            <div class="mock-link-grid">
+                <a class="mock-link-card" href="README.md"><h3>README</h3><p>Package entry guide and review order.</p></a>
+                <a class="mock-link-card" href="HTML_FileMap.md"><h3>HTML File Map</h3><p>Shared asset and screen file responsibilities.</p></a>
+                <a class="mock-link-card" href="CustomerPullPackWaitlist_MockupPackage_01.md"><h3>Main Package</h3><p>Full seven-screen package outline.</p></a>
+                <a class="mock-link-card" href="CustomerPullPackWaitlist_MockupVisualDirection_01.md"><h3>Visual Direction</h3><p>Tighter visual rules for the full feature flow.</p></a>
+                <a class="mock-link-card" href="CustomerPullPackWaitlist_HandlerWorkflow_MockupPackage_01.md"><h3>Handler Package</h3><p>Narrower package for material-handler workflow.</p></a>
+                <a class="mock-link-card" href="CustomerPullPackWaitlist_HandlerWorkflow_VisualDirection_01.md"><h3>Handler Visual Direction</h3><p>Tighter guidance for handler queue/detail screens.</p></a>
+            </div>
+        </section>
+
+        <section id="screens" class="content-section">
+            <h2>HTML Screens</h2>
+            <div class="mock-link-grid">
+                <a class="mock-link-card" href="01-tool-selection.html"><h3>01 Tool Selection</h3><p>Ship/Rec entry point with the new tool card.</p></a>
+                <a class="mock-link-card" href="02-report-page.html"><h3>02 Report Page</h3><p>Main report screen with row-to-waitlist actions.</p></a>
+                <a class="mock-link-card" href="03-waitlist-entry.html"><h3>03 Waitlist Entry</h3><p>Create or edit a waitlist item from a report row.</p></a>
+                <a class="mock-link-card" href="04-waitlist-queue.html"><h3>04 Waitlist Queue</h3><p>Dedicated work queue for material handlers.</p></a>
+                <a class="mock-link-card" href="05-waitlist-detail.html"><h3>05 Waitlist Detail</h3><p>Focused handler work state and problem handling.</p></a>
+                <a class="mock-link-card" href="06-settings.html"><h3>06 Settings</h3><p>Feature defaults and waitlist-related settings.</p></a>
+                <a class="mock-link-card" href="07-empty-state.html"><h3>07 Empty State</h3><p>No-open-demand state for valid customer selections.</p></a>
+            </div>
+        </section>
+
+        <section id="prints" class="content-section">
+            <h2>Print Screens</h2>
+            <div class="mock-link-grid">
+                <a class="mock-link-card" href="08-floor-copy-print.html"><h3>08 Floor Copy Print</h3><p>Report-style landscape print preview aligned to the spec and screenshots.</p></a>
+                <a class="mock-link-card" href="09-pull-list-print.html"><h3>09 Pull List Print</h3><p>Warehouse pull-list print preview grouped by sub-part.</p></a>
+            </div>
+        </section>
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Customer Pull n' Pack Mockups</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../../docs/features/shared/app.js"></script>
+<script src="shared/mockups.js"></script>
+</body>
+</html>

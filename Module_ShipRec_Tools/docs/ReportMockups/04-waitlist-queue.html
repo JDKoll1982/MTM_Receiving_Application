@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>04 Waitlist Queue — Customer Pull n' Pack Mockups</title>
+    <link rel="stylesheet" href="../../../docs/features/shared/styles.css" />
+    <link rel="stylesheet" href="shared/mockups.css" />
+</head>
+<body data-mock-page="04-waitlist-queue.html">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header class="top-nav" role="banner"><a href="index.html" class="top-nav-brand">MTM</a><div class="top-nav-sep"></div><nav aria-label="Module navigation"><ul class="top-nav-links"><li><a href="../../../docs/features/shiprec-tools/index.html" class="is-current"><span class="nav-icon">🛠️</span> ShipRec Tools</a></li></ul></nav></header>
+<div class="page-layout">
+    <nav class="sidebar" aria-label="Waitlist queue mockup navigation"><p class="sidebar-label">This Screen</p><ul class="sidebar-nav"><li><a href="#overview">Overview</a></li><li><a href="#preview">Mockup Preview</a></li><li><a href="#notes">Review Notes</a></li></ul><p class="sidebar-section-label">Package Screens</p><ul class="sidebar-nav"><li><a href="index.html">Package Index</a></li><li><a data-mock-link="02-report-page.html" href="02-report-page.html">02 Report Page</a></li><li><a data-mock-link="04-waitlist-queue.html" href="04-waitlist-queue.html">04 Waitlist Queue</a></li><li><a data-mock-link="05-waitlist-detail.html" href="05-waitlist-detail.html">05 Waitlist Detail</a></li><li><a data-mock-link="09-pull-list-print.html" href="09-pull-list-print.html">09 Pull List Print</a></li></ul></nav>
+    <main id="main-content" class="main-content">
+        <div id="overview" class="module-hero mockup-intro"><div class="module-badge">04 Screen</div><h1>Dedicated Waitlist Queue</h1><p class="lead">The primary work screen for material handlers, optimized for queue scanning, status filtering, and quick movement into selected work items.</p><div class="mockup-meta"><span class="mockup-chip is-blue">Handler-first</span><span class="mockup-chip">Queue/detail split</span><span class="mockup-chip">Print pull list ready</span></div></div>
+        <section id="preview" class="content-section"><h2>Mockup Preview</h2>
+            <div class="app-window">
+                <div class="app-titlebar"><div class="window-chrome"><span class="window-dot is-red"></span><span class="window-dot is-gold"></span><span class="window-dot is-green"></span></div><div class="titlebar-copy"><strong>MTM Receiving Application</strong><span>Ship/Rec Tools · Waitlist Page</span></div><div class="titlebar-user">Material Handler · Mark S.</div></div>
+                <div class="app-modulebar"><span class="module-pill">📦 Receiving</span><span class="module-pill">📋 Dunnage</span><span class="module-pill">📊 Reporting</span><span class="module-pill">🚚 Volvo</span><span class="module-pill is-active">🛠️ Ship/Rec Tools</span><span class="module-pill">⚙️ Settings</span></div>
+                <div class="app-shell">
+                    <aside class="app-nav">
+                        <p class="app-nav-label">Customer Pull n' Pack</p>
+                        <ul class="app-nav-links"><li><a href="02-report-page.html">Report View</a></li><li><span class="is-current">Waitlist Page</span></li><li><a href="06-settings.html">Settings</a></li><li><a href="09-pull-list-print.html">Pull List Print</a></li></ul>
+                        <div class="app-nav-note">Handlers work from the waitlist page, not from the report page. This surface is optimized for status changes and queue movement.</div>
+                    </aside>
+                    <div class="app-workspace">
+                        <div class="workspace-header"><div><h2>Waitlist Work Queue</h2><p>Open MTM-managed pull requests linked to the Customer Pull n' Pack report.</p></div><div class="command-row"><span class="cmd primary">Open Selected Item</span><span class="cmd">Refresh Queue</span><span class="cmd warn">Print Pull List</span></div></div>
+                        <div class="filters-grid">
+                            <div class="field-card span-3"><span class="field-label">Status</span><div class="fake-select">Accepted + Problem</div></div>
+                            <div class="field-card span-3"><span class="field-label">Location</span><div class="fake-select">Any location</div></div>
+                            <div class="field-card span-3"><span class="field-label">Customer</span><div class="fake-select">VOLVO</div></div>
+                            <div class="field-card span-3"><span class="field-label">Requester</span><div class="fake-search">Search person</div></div>
+                        </div>
+                        <div class="queue-split narrow-left">
+                            <div class="table-shell">
+                                <div class="table-header"><div><h3>Open Work Queue</h3><div class="table-sub">Default filter keeps the view focused on actionable items.</div></div><div class="flow-strip"><span class="state-pill is-blue">Accepted</span><span class="state-pill is-red">Problem</span></div></div>
+                                <table class="mock-table"><thead><tr><th>Status</th><th>Customer Order</th><th>Part</th><th>Location</th><th>Requested Qty</th><th>Requested By</th></tr></thead><tbody><tr class="is-selected"><td><span class="state-pill is-blue">Accepted</span></td><td class="mono">CO-46102</td><td class="mono">8870214</td><td>C-03-05</td><td>120</td><td>John Kollman</td></tr><tr><td><span class="state-pill is-red">Problem</span></td><td class="mono">CO-46092</td><td class="mono">2158840</td><td>A-14-02</td><td>180</td><td>Sara P.</td></tr><tr><td><span class="state-pill is-blue">Accepted</span></td><td class="mono">CO-46111</td><td class="mono">5528019</td><td>D-11-03</td><td>40</td><td>Jake M.</td></tr></tbody></table>
+                            </div>
+                            <div class="detail-stack">
+                                <div class="surface-card"><h3>Selected Work Item</h3><div class="info-list"><div class="info-item"><span class="label">Order</span><span class="value">CO-46102</span></div><div class="info-item"><span class="label">Status</span><span class="value">Accepted</span></div><div class="info-item"><span class="label">Part</span><span class="value mono">8870214</span></div><div class="info-item"><span class="label">Location</span><span class="value">C-03-05</span></div><div class="info-item"><span class="label">Requested Qty</span><span class="value">120</span></div><div class="info-item"><span class="label">Last Updated</span><span class="value">05/20 06:42 AM</span></div></div></div>
+                                <div class="alert-strip success"><span>✓</span><div><strong>Queue-first working mode.</strong> Handlers can stay in the queue, select work, and move into detail without returning to the report.</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="notes" class="content-section"><h2>Review Notes</h2><ul><li>This screen is intentionally more operational than analytical.</li><li>The queue is the primary visual element, with selected-item detail as secondary context.</li><li>Default filters keep handlers focused on actionable work.</li></ul></section>
+    </main>
+</div>
+<footer class="page-footer" role="contentinfo"><span>MTM Receiving Application</span><span aria-hidden="true">·</span><span>Mockup 04</span></footer>
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../../docs/features/shared/app.js"></script><script src="shared/mockups.js"></script>
+</body>
+</html>
