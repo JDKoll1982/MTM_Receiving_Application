@@ -40,9 +40,8 @@
                                     Text="{x:Bind ViewModel.DunnageLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="1"
-                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
-                                    CommandParameter="{x:Bind ViewModel.DunnageLabelPath, Mode=OneWay}"
-                                    Content="Open Folder"
+                                    Click="PickDunnageLabelFileButton_Click"
+                                    Content="Browse..."
                                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                             </Grid>
                         </StackPanel>

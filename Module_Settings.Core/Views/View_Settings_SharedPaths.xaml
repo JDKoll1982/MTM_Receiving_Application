@@ -30,10 +30,22 @@
                     <StackPanel Spacing="4">
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Export Root Path" />
                         <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Root directory for all application exports and reports." />
-                        <TextBox
-                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                            PlaceholderText="e.g. C:/MTM/Exports"
-                            Text="{x:Bind ViewModel.ExportRootPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                PlaceholderText="e.g. C:/MTM/Exports"
+                                Text="{x:Bind ViewModel.ExportRootPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Grid.Column="1"
+                                Click="BrowseExportRootPathButton_Click"
+                                Content="Browse..."
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                        </Grid>
                     </StackPanel>
                 </StackPanel>
 

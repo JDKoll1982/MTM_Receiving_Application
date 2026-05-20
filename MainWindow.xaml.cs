@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Material.Icons;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -629,6 +629,24 @@ namespace MTM_Receiving_Application
                     "file paths"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                    "LabelView",
+                    "Configure the LabelView executable path used when opening label template files",
+                    "labelview",
+                    "labelview executable",
+                    "labelview path",
+                    "label view"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields),
+                    "Material Availability Fields",
+                    "Control which work-order details are shown in the Material Availability dialog and print output",
+                    "material availability",
+                    "material availability board",
+                    "material availability fields",
+                    "work order details"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub),
                     "Receiving Settings",
                     "Receiving settings categories",
@@ -677,6 +695,22 @@ namespace MTM_Receiving_Application
                     "receiving workflow options"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts),
+                    "Receiving Keyboard Shortcuts",
+                    "Configure the Receiving workflow shortcuts and the simple navigation toggle",
+                    "receiving shortcuts",
+                    "receiving keyboard shortcuts",
+                    "keyboard shortcuts receiving"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
+                    "Receiving Label Files",
+                    "Configure the LabelView template paths used by Receiving workflow label buttons",
+                    "receiving label files",
+                    "receiving label paths",
+                    "receiving label templates"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
                     "Dunnage Settings",
                     "Dunnage settings categories",
@@ -716,6 +750,22 @@ namespace MTM_Receiving_Application
                     "dunnage workflow"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_KeyboardShortcuts),
+                    "Dunnage Keyboard Shortcuts",
+                    "Configure the Dunnage workflow shortcuts and the simple navigation toggle",
+                    "dunnage shortcuts",
+                    "dunnage keyboard shortcuts",
+                    "keyboard shortcuts dunnage"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
+                    "Dunnage Label Files",
+                    "Configure the LabelView template path used for Dunnage labels",
+                    "dunnage label files",
+                    "dunnage label paths",
+                    "dunnage label templates"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
                     "Reporting Settings",
                     "Reporting settings placeholder",
@@ -723,11 +773,43 @@ namespace MTM_Receiving_Application
                     "reporting navigation"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients),
+                    "Reporting Email Recipients",
+                    "Configure email recipients for end-of-day report delivery",
+                    "reporting email",
+                    "reporting email recipients",
+                    "report recipients"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub),
                     "Volvo Settings",
                     "Volvo settings hub",
                     "volvo settings",
                     "volvo navigation"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog),
+                    "Volvo Part Catalog",
+                    "Manage Volvo part master data, import catalog rows, and launch part maintenance actions",
+                    "volvo parts",
+                    "volvo part catalog",
+                    "volvo catalog"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_EmailRecipients),
+                    "Volvo Email Recipients",
+                    "Configure email recipients for Volvo dunnage requisition notifications",
+                    "volvo email",
+                    "volvo email recipients",
+                    "volvo notifications"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
+                    "Volvo Label Files",
+                    "Configure the LabelView template path used for Volvo labels",
+                    "volvo label files",
+                    "volvo label paths",
+                    "volvo label templates"
                 ),
             ];
         }
@@ -1359,7 +1441,8 @@ namespace MTM_Receiving_Application
             {
                 if (
                     string.IsNullOrEmpty(args.PropertyName)
-                    || args.PropertyName == nameof(IViewModel_HeaderTitleProvider.CurrentHeaderTitle)
+                    || args.PropertyName
+                        == nameof(IViewModel_HeaderTitleProvider.CurrentHeaderTitle)
                 )
                 {
                     UpdateHeader(viewModel);

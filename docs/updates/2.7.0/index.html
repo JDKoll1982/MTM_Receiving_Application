@@ -15,7 +15,7 @@
                 <div>
                     <p class="eyebrow">MTM Receiving Application</p>
                     <h1>Version 2.7.0</h1>
-                    <p class="hero-copy">Reprint labels directly from receiving history, plus a refreshed label-shortcut bar in the navigation footer.</p>
+                    <p class="hero-copy">Reprint labels directly from receiving history, pick label template files and folder paths with a Browse button instead of typing them by hand, and find any settings page faster with an expanded title-bar search.</p>
                 </div>
             </div>
             <div class="hero-meta">
@@ -60,6 +60,14 @@
                         <article class="highlight-card accent-gold">
                             <p class="highlight-title">Refreshed label shortcuts</p>
                             <p class="highlight-text">The four label-launch buttons in the navigation footer now show clear letter icons (R, R-mini, D, V) with hover highlights and visual separators.</p>
+                        </article>
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Browse for files and folders</p>
+                            <p class="highlight-text">Every label path setting and the export root path now have a Browse button — open a file picker dialog and navigate to the file instead of typing the full path by hand.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">More settings in search</p>
+                            <p class="highlight-text">Ten additional settings pages — including keyboard shortcuts, label file paths, email recipients, and LabelView — are now reachable directly from the title-bar search.</p>
                         </article>
                     </div>
                 </section>
@@ -123,6 +131,48 @@
                         </p>
                     </details>
 
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Browse button on label path settings</summary>
+                        <p>
+                            The <strong>Receiving Label Files</strong>, <strong>Dunnage Label Files</strong>, and <strong>Volvo Label Files</strong> settings pages
+                            previously showed an <em>Open Folder</em> button that opened the folder containing the configured file. That button has been replaced with a
+                            <strong>Browse...</strong> button that opens a standard Windows file picker filtered to <code>.lbl</code> files. Navigate to and select your
+                            label template file directly — the full path fills in automatically. The mini-receiving label path on the Receiving page has the same Browse button.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Browse button for the Export Root Path and LabelView executable</summary>
+                        <p>
+                            <strong>Shared Paths</strong> in Core Settings now has a <strong>Browse...</strong> folder-picker button next to the Export Root Path field
+                            so you can navigate to the destination folder instead of typing the UNC or local path.
+                        </p>
+                        <p>
+                            The <strong>LabelView</strong> settings page has the same improvement: a <strong>Browse...</strong> button opens a file picker filtered
+                            to <code>.exe</code> files so you can locate the LabelView executable by clicking rather than typing.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Ten more settings pages reachable from the title-bar search</summary>
+                        <p>
+                            The application-wide search box now covers ten additional settings destinations that were previously missing:
+                        </p>
+                        <ul>
+                            <li>LabelView (Core Settings)</li>
+                            <li>Material Availability Fields (Core Settings)</li>
+                            <li>Receiving Keyboard Shortcuts</li>
+                            <li>Receiving Label Files</li>
+                            <li>Dunnage Keyboard Shortcuts</li>
+                            <li>Dunnage Label Files</li>
+                            <li>Reporting Email Recipients</li>
+                            <li>Volvo Part Catalog</li>
+                            <li>Volvo Email Recipients</li>
+                            <li>Volvo Label Files</li>
+                        </ul>
+                        <p>Type any of the bolded terms above into the search box and the matching settings page will appear as a result.</p>
+                    </details>
+
                     <details class="change-item" data-category="support" open>
                         <summary>Database update required before first use</summary>
                         <p>
@@ -152,6 +202,14 @@
                         <article>
                             <h3>Easier label file access</h3>
                             <p>The refreshed label shortcut bar makes it quicker to identify and open the right label template at a glance — especially useful on days when you switch between receiving types.</p>
+                        </article>
+                        <article>
+                            <h3>No more typing long file paths in settings</h3>
+                            <p>Every settings field that previously required you to type or paste a full path now has a Browse button. Click it, navigate in the standard Windows dialog, and the path fills itself in. This reduces typos and removes the need to keep a separate note with file locations.</p>
+                        </article>
+                        <article>
+                            <h3>Find any setting faster</h3>
+                            <p>Ten settings pages that were not previously reachable via search are now indexed. You can jump directly to Keyboard Shortcuts, Label Files, Email Recipients, or the Volvo Part Catalog from the title bar without navigating through the settings hub menus.</p>
                         </article>
                     </div>
                 </section>

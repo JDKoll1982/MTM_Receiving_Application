@@ -40,9 +40,8 @@
                                     Text="{x:Bind ViewModel.ExecutablePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="1"
-                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
-                                    CommandParameter="{x:Bind ViewModel.ExecutablePath, Mode=OneWay}"
-                                    Content="Open Folder"
+                                    Click="PickExecutableFileButton_Click"
+                                    Content="Browse..."
                                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                             </Grid>
                         </StackPanel>

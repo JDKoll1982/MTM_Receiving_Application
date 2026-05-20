@@ -40,9 +40,8 @@
                                     Text="{x:Bind ViewModel.ReceivingLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="1"
-                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
-                                    CommandParameter="{x:Bind ViewModel.ReceivingLabelPath, Mode=OneWay}"
-                                    Content="Open Folder"
+                                    Click="PickReceivingLabelFileButton_Click"
+                                    Content="Browse..."
                                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                             </Grid>
                         </StackPanel>
@@ -61,9 +60,8 @@
                                     Text="{x:Bind ViewModel.MiniReceivingLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="1"
-                                    Command="{x:Bind ViewModel.OpenFolderCommand}"
-                                    CommandParameter="{x:Bind ViewModel.MiniReceivingLabelPath, Mode=OneWay}"
-                                    Content="Open Folder"
+                                    Click="PickMiniReceivingLabelFileButton_Click"
+                                    Content="Browse..."
                                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                             </Grid>
                         </StackPanel>
