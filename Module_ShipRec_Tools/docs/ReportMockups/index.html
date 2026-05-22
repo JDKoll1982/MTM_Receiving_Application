@@ -1,118 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Customer Pull n' Pack Mockups — MTM Receiving Application</title>
-    <link rel="stylesheet" href="../../../docs/features/shared/styles.css" />
-    <link rel="stylesheet" href="shared/mockups.css" />
+    <title>Customer Pull n' Pack Mockup Launcher</title>
+    <style>
+        :root {
+            --bg: #ece7dc;
+            --panel: #ffffff;
+            --panel-alt: #f6f2ea;
+            --line: rgba(27, 24, 21, 0.12);
+            --text: #1f1b17;
+            --text-soft: #544a42;
+            --text-muted: #7a6c64;
+            --blue: #2f5880;
+            --blue-soft: rgba(47, 88, 128, 0.12);
+            --gold: #a1772e;
+            --gold-soft: rgba(161, 119, 46, 0.14);
+            --shadow: 0 20px 48px rgba(17, 14, 12, 0.16), 0 4px 14px rgba(17, 14, 12, 0.08);
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-pill: 999px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+            background: radial-gradient(circle at top left, rgba(47, 88, 128, 0.12), transparent 30%),
+                        radial-gradient(circle at bottom right, rgba(161, 119, 46, 0.12), transparent 34%),
+                        var(--bg);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 28px 20px 40px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .head {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            padding: 14px 20px;
+            background: linear-gradient(180deg, #faf8f2 0%, #f1ece2 100%);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .head strong { display: block; font-size: 0.95rem; }
+        .head span { display: block; font-size: 0.8rem; color: var(--text-muted); }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: var(--radius-pill);
+            background: var(--blue-soft);
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+            padding: 24px;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: 2rem;
+            letter-spacing: -0.03em;
+            line-height: 1.08;
+        }
+
+        .hero p {
+            margin: 0 0 16px;
+            color: var(--text-soft);
+            max-width: 760px;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 11px;
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--line);
+            background: var(--panel-alt);
+            color: var(--text-soft);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        a.button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid var(--line);
+            color: var(--text-soft);
+            background: var(--panel);
+        }
+
+        a.button.primary {
+            background: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .side-card {
+            background: var(--panel-alt);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+        }
+
+        .side-card h2 {
+            margin: 0 0 8px;
+            font-size: 0.98rem;
+        }
+
+        .side-card p,
+        .side-card li {
+            color: var(--text-soft);
+            font-size: 0.9rem;
+        }
+
+        .side-card ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .callout {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: var(--gold-soft);
+            border-left: 4px solid var(--gold);
+            color: var(--text-soft);
+        }
+
+        .preview {
+            margin-top: 22px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: #e9e3d8;
+        }
+
+        .preview-head {
+            padding: 10px 14px;
+            background: #f8f4ec;
+            border-bottom: 1px solid var(--line);
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .preview-body {
+            padding: 18px;
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 14px;
+        }
+
+        .preview-nav,
+        .preview-main {
+            background: #fff;
+            border: 1px solid rgba(27,24,21,0.10);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .preview-nav strong,
+        .preview-main strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.86rem;
+        }
+
+        .preview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .preview-item {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #f7f4ed;
+            color: var(--text-soft);
+            font-size: 0.82rem;
+        }
+
+        .preview-item.active {
+            background: var(--blue-soft);
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .preview-paper {
+            margin-top: 10px;
+            border: 1px solid #6d6d6d;
+            background: #fff;
+            padding: 12px;
+            min-height: 220px;
+        }
+
+        .paper-row {
+            display: grid;
+            grid-template-columns: 1fr auto 130px 190px;
+            gap: 6px;
+            padding: 8px 0;
+            border-bottom: 1px solid #3f3f3f;
+            font-size: 0.73rem;
+        }
+
+        .qty-box {
+            display: inline-block;
+            min-width: 46px;
+            padding: 1px 8px;
+            text-align: center;
+            background: #ff6767;
+            font-weight: 800;
+        }
+
+        @media (max-width: 980px) {
+            .content,
+            .preview-body {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body data-mock-page="index.html">
-<a href="#main-content" class="skip-link">Skip to main content</a>
+<body>
+    <div class="page">
+        <div class="card">
+            <div class="head">
+                <div>
+                    <strong>Customer Pull n' Pack Mockup Launcher</strong>
+                    <span>Launches the standalone mock shell in a new browser tab</span>
+                </div>
+                <div class="badge">Launcher Only</div>
+            </div>
 
-<header class="top-nav" role="banner">
-    <a href="../../../docs/index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
-    <div class="top-nav-sep" aria-hidden="true"></div>
-    <nav aria-label="Module navigation">
-        <ul class="top-nav-links">
-            <li><a href="../../../docs/features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
-            <li><a href="../../../docs/features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
-            <li><a href="../../../docs/features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
-            <li><a href="../../../docs/features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
-            <li><a href="../../../docs/features/shiprec-tools/index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
-        </ul>
-    </nav>
-</header>
+            <div class="content">
+                <div class="hero">
+                    <h1>Open the standalone mock shell from here</h1>
+                    <p>The actual interactive mockup now lives in a separate `index.html` under `StandaloneShell/`. This launcher exists only to start that shell in a new tab so the mockup stays isolated from this documentation entry point.</p>
 
-<div class="page-layout">
-    <nav class="sidebar" aria-label="Mockup package navigation">
-        <p class="sidebar-label">Mockup Package</p>
-        <ul class="sidebar-nav">
-            <li><a href="#overview">Overview</a></li>
-            <li><a href="#docs">Package Docs</a></li>
-            <li><a href="#screens">HTML Screens</a></li>
-            <li><a href="#prints">Print Screens</a></li>
-        </ul>
+                    <div class="chip-row">
+                        <span class="chip">New tab launch</span>
+                        <span class="chip">MainWindow-style shell</span>
+                        <span class="chip">Spec-driven navigation</span>
+                        <span class="chip">Crystal-style report mimic</span>
+                    </div>
 
-        <p class="sidebar-section-label">Screen Files</p>
-        <ul class="sidebar-nav">
-            <li><a data-mock-link="01-tool-selection.html" href="01-tool-selection.html">01 Tool Selection</a></li>
-            <li><a data-mock-link="02-report-page.html" href="02-report-page.html">02 Report Page</a></li>
-            <li><a data-mock-link="03-waitlist-entry.html" href="03-waitlist-entry.html">03 Waitlist Entry</a></li>
-            <li><a data-mock-link="04-waitlist-queue.html" href="04-waitlist-queue.html">04 Waitlist Queue</a></li>
-            <li><a data-mock-link="05-waitlist-detail.html" href="05-waitlist-detail.html">05 Waitlist Detail</a></li>
-            <li><a data-mock-link="06-settings.html" href="06-settings.html">06 Settings</a></li>
-            <li><a data-mock-link="07-empty-state.html" href="07-empty-state.html">07 Empty State</a></li>
-            <li><a data-mock-link="08-floor-copy-print.html" href="08-floor-copy-print.html">08 Floor Copy Print</a></li>
-            <li><a data-mock-link="09-pull-list-print.html" href="09-pull-list-print.html">09 Pull List Print</a></li>
-        </ul>
-    </nav>
+                    <div class="button-row">
+                        <a class="button primary" href="StandaloneShell/index.html" target="_blank" rel="noopener noreferrer">Open Standalone Mock Shell</a>
+                        <a class="button" href="README.md">Open Package README</a>
+                        <a class="button" href="HTML_FileMap.md">Open HTML File Map</a>
+                    </div>
 
-    <main id="main-content" class="main-content">
-        <div class="module-hero mockup-intro">
-            <div class="module-badge">🧪 Mockup Package</div>
-            <h1>Customer Pull n' Pack Mockups</h1>
-            <p class="lead">Complete first-pass review package for the Customer Pull n' Pack feature, including report, waitlist, settings, empty-state, and print flows.</p>
-            <div class="mockup-meta">
-                <span class="mockup-chip is-blue">WinUI 3 aligned</span>
-                <span class="mockup-chip">CommunityToolkit aware</span>
-                <span class="mockup-chip">HTML review package</span>
-                <span class="mockup-chip">MTM shell preserved</span>
+                    <div class="callout">
+                        <strong>Intent:</strong> the shell app is the mockup. This page is only the entry path to it.
+                    </div>
+
+                    <div class="preview">
+                        <div class="preview-head">Shell preview at a glance</div>
+                        <div class="preview-body">
+                            <div class="preview-nav">
+                                <strong>Shell navigation</strong>
+                                <div class="preview-list">
+                                    <div class="preview-item">Tool Selection</div>
+                                    <div class="preview-item active">Pack / Pull Report</div>
+                                    <div class="preview-item">Waitlist Queue</div>
+                                    <div class="preview-item">Settings</div>
+                                    <div class="preview-item">Floor Copy Print</div>
+                                </div>
+                            </div>
+                            <div class="preview-main">
+                                <strong>Crystal-style report surface</strong>
+                                <div class="preview-paper">
+                                    <div style="font-size:0.72rem; font-weight:700; margin-bottom:8px;">Volvo/Mack Pull N' pack Report (By Due Date)</div>
+                                    <div class="paper-row">
+                                        <div><strong>P/N:20461010</strong></div>
+                                        <div>QTY TO PACK:<span class="qty-box">550</span></div>
+                                        <div>FG ON HAND: 40</div>
+                                        <div>SUB PARTS ON HAND: 4,696</div>
+                                    </div>
+                                    <div class="paper-row" style="grid-template-columns: 72px 88px 72px 1fr; border-bottom:0;">
+                                        <div>5/27/26</div>
+                                        <div>CO-086516</div>
+                                        <div>DD-E0-01</div>
+                                        <div>Volvo - Volvo Group (10)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="side">
+                    <div class="side-card">
+                        <h2>What changed</h2>
+                        <ul>
+                            <li>The interactive mockup is no longer the current `index.html`.</li>
+                            <li>The standalone shell has its own `index.html` in `StandaloneShell/`.</li>
+                            <li>The standalone shell opens in a new tab so it remains a mock environment.</li>
+                        </ul>
+                    </div>
+
+                    <div class="side-card">
+                        <h2>Standalone shell path</h2>
+                        <p><strong>Relative path:</strong> `StandaloneShell/index.html`</p>
+                        <p>That file contains the MainWindow-style mock shell and the full feature navigation flow.</p>
+                    </div>
+
+                    <div class="side-card">
+                        <h2>Review focus</h2>
+                        <p>Use the standalone shell to review:</p>
+                        <ul>
+                            <li>tool selection</li>
+                            <li>pack / pull report</li>
+                            <li>waitlist queue and handler workflow</li>
+                            <li>settings</li>
+                            <li>print previews</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <section id="overview" class="content-section">
-            <h2>Overview</h2>
-            <p>This package is built from the current feature spec and prompt, with the waitlist treated as a separate entity from the report and the material handler working primarily from a dedicated waitlist page.</p>
-            <div class="callout callout-info">
-                <span class="callout-icon" aria-hidden="true">ℹ️</span>
-                <div class="callout-body"><strong>Review intent.</strong> These files are complete HTML mockups for review. They are not implementation code, but they intentionally use realistic WinUI and CommunityToolkit-style control choices.</div>
-            </div>
-        </section>
-
-        <section id="docs" class="content-section">
-            <h2>Package Docs</h2>
-            <div class="mock-link-grid">
-                <a class="mock-link-card" href="README.md"><h3>README</h3><p>Package entry guide and review order.</p></a>
-                <a class="mock-link-card" href="HTML_FileMap.md"><h3>HTML File Map</h3><p>Shared asset and screen file responsibilities.</p></a>
-                <a class="mock-link-card" href="CustomerPullPackWaitlist_MockupPackage_01.md"><h3>Main Package</h3><p>Full seven-screen package outline.</p></a>
-                <a class="mock-link-card" href="CustomerPullPackWaitlist_MockupVisualDirection_01.md"><h3>Visual Direction</h3><p>Tighter visual rules for the full feature flow.</p></a>
-                <a class="mock-link-card" href="CustomerPullPackWaitlist_HandlerWorkflow_MockupPackage_01.md"><h3>Handler Package</h3><p>Narrower package for material-handler workflow.</p></a>
-                <a class="mock-link-card" href="CustomerPullPackWaitlist_HandlerWorkflow_VisualDirection_01.md"><h3>Handler Visual Direction</h3><p>Tighter guidance for handler queue/detail screens.</p></a>
-            </div>
-        </section>
-
-        <section id="screens" class="content-section">
-            <h2>HTML Screens</h2>
-            <div class="mock-link-grid">
-                <a class="mock-link-card" href="01-tool-selection.html"><h3>01 Tool Selection</h3><p>Ship/Rec entry point with the new tool card.</p></a>
-                <a class="mock-link-card" href="02-report-page.html"><h3>02 Report Page</h3><p>Main report screen with row-to-waitlist actions.</p></a>
-                <a class="mock-link-card" href="03-waitlist-entry.html"><h3>03 Waitlist Entry</h3><p>Create or edit a waitlist item from a report row.</p></a>
-                <a class="mock-link-card" href="04-waitlist-queue.html"><h3>04 Waitlist Queue</h3><p>Dedicated work queue for material handlers.</p></a>
-                <a class="mock-link-card" href="05-waitlist-detail.html"><h3>05 Waitlist Detail</h3><p>Focused handler work state and problem handling.</p></a>
-                <a class="mock-link-card" href="06-settings.html"><h3>06 Settings</h3><p>Feature defaults and waitlist-related settings.</p></a>
-                <a class="mock-link-card" href="07-empty-state.html"><h3>07 Empty State</h3><p>No-open-demand state for valid customer selections.</p></a>
-            </div>
-        </section>
-
-        <section id="prints" class="content-section">
-            <h2>Print Screens</h2>
-            <div class="mock-link-grid">
-                <a class="mock-link-card" href="08-floor-copy-print.html"><h3>08 Floor Copy Print</h3><p>Report-style landscape print preview aligned to the spec and screenshots.</p></a>
-                <a class="mock-link-card" href="09-pull-list-print.html"><h3>09 Pull List Print</h3><p>Warehouse pull-list print preview grouped by sub-part.</p></a>
-            </div>
-        </section>
-    </main>
-</div>
-
-<footer class="page-footer" role="contentinfo">
-    <span>MTM Receiving Application</span>
-    <span aria-hidden="true">·</span>
-    <span>Customer Pull n' Pack Mockups</span>
-</footer>
-
-<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
-<script src="../../../docs/features/shared/app.js"></script>
-<script src="shared/mockups.js"></script>
+    </div>
 </body>
 </html>

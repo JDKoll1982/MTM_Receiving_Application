@@ -90,7 +90,8 @@ Main application shell -> Ship/Rec Tools -> Customer Pull n' Pack
 - shortage and state filters
 - command area for refresh and print
 - dense main report grid using a realistic DataGrid-style surface
-- row-level action to create or update waitlist entry
+- selectable customer-order lines so the user can choose one or more lines they are actively working
+- row-level or selection-level action to create or update waitlist entries from the chosen lines
 - visible waitlist-linked indicator on rows that already have a related waitlist record
 - obvious shortage visual treatment matching the current report intent
 
@@ -100,8 +101,9 @@ Main application shell -> Ship/Rec Tools -> Customer Pull n' Pack
 - apply filters
 - review shortage rows
 - sort by pull date, shortage, or order
-- create a waitlist entry from a row
-- update an existing linked waitlist entry
+- select the relevant customer-order line or lines for one parent part
+- create waitlist entries from the selected lines
+- update existing linked waitlist entries for the selected lines
 - print current report view
 
 ### Short rationale
@@ -134,8 +136,9 @@ Main application shell -> Ship/Rec Tools -> Customer Pull n' Pack -> Waitlist En
 
 - modal or side-panel edit surface that feels native to WinUI
 - read-only context block showing customer, order, part, and source row information
-- requested location field
-- requested quantity field
+- selected customer-order line list with checkbox-style selection or confirmation
+- selectable sub-part location list so the user chooses locations instead of typing them
+- requested quantity shown as derived from the selected line or lines
 - requester name prefilled from current app user
 - handler notes field if editing existing record
 - status selector when editing existing record
@@ -143,20 +146,23 @@ Main application shell -> Ship/Rec Tools -> Customer Pull n' Pack -> Waitlist En
 
 ### Key user actions
 
-- create new waitlist entry from report row
-- update linked waitlist entry
+- create new waitlist entries from the selected report lines without typing locations manually
+- update linked waitlist entries for the selected report lines
+- choose the sub-part location or locations to attach to the waitlist entry
 - save changes
 - cancel without saving
 
 ### Short rationale
 
-This screen should feel like an operational edit surface, not a form builder. The user needs enough source context to trust what they are editing without leaving the report page.
+This screen should feel like an operational edit surface, not a form builder. The user needs enough source context to trust what they are editing without leaving the report page, and the creation path should avoid manual typing for new waitlist entries by using report-line and sub-part-location selection.
 
 ### Mockup notes
 
 - `ContentDialog` or a task-focused side panel would both be valid directions.
 - The design should make the source report context obvious.
 - Internal keys do not need to dominate the UI, but the layout should imply reliable record linkage.
+- The user should be able to select one or more CO lines they are working on and one or more sub-part locations before saving.
+- For new waitlist creation, the default interaction should not require typing a location or quantity manually.
 
 ---
 

@@ -98,9 +98,9 @@ Given that feature description, do this:
 
 5. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
 
-5a. **Generate Workflow Data Blocks**: For EACH user story that involves user workflows or interactions:
+5a. **Generate Workflow Data Blocks And Mermaid Diagrams**: For EACH user story that involves user workflows or interactions:
    
-   **CRITICAL**: Do NOT generate raw Mermaid diagrams. Instead, generate structured WORKFLOW_DATA blocks that will be parsed by MermaidGenerator.ps1.
+   **CRITICAL**: Generate structured WORKFLOW_DATA blocks first, then generate the matching raw Mermaid diagrams directly in the spec file. Do NOT rely on MermaidProcessor.ps1 or MermaidGenerator.ps1 being present.
    
    **Format**: Immediately after the user story's acceptance scenarios, add:
    
@@ -130,7 +130,7 @@ Given that feature description, do this:
    --><!-- WORKFLOW_END: {UserStory}.{Workflow} -->
    ```
    
-   **IMPORTANT**: The workflow data is wrapped in `<!--` and `-->` to hide it from markdown preview while keeping it parseable by MermaidGenerator.ps1.
+   **IMPORTANT**: The workflow data is wrapped in `<!--` and `-->` to hide it from markdown preview while keeping it machine-readable for future tooling.
    ```
    
    **Field Requirements:**
@@ -180,17 +180,31 @@ Given that feature description, do this:
      - Complex multi-step interactions
    - Number workflows sequentially: 1.1, 1.2, 1.3, etc.
    
-   **After WORKFLOW_DATA blocks, add placeholder for diagrams:**
+   **After WORKFLOW_DATA blocks, add the actual Mermaid diagrams directly:**
    
    ```markdown
    ## User Story [N] Workflow Diagrams
    
    ### Workflow {N}.{X}: {Title}
-   
-   > **Note**: Run `MermaidProcessor.ps1 -Action Generate` to generate diagrams from WORKFLOW_DATA blocks.
-   
-   <!-- Mermaid diagram will be inserted here by MermaidGenerator.ps1 -->
+
+    ```mermaid
+    flowchart {DIRECTION}
+          Start([Start]) --> NextStep[Next Step]
+    ```
    ```
+
+    **Diagram requirements:**
+    - Convert every WORKFLOW_DATA block into a Mermaid `flowchart` using the same direction.
+    - Emit one Mermaid fenced code block per workflow subsection.
+    - Map shapes as follows:
+       - `stadium` -> `([Label])`
+       - `rect` -> `[Label]`
+       - `diamond` -> `{Label}`
+       - `circle` -> `((Label))`
+       - `hexagon` -> `{{Label}}`
+    - Preserve edge labels from `CONNECTION: A -> B [Label]` as Mermaid edge text, e.g. `A -->|Yes| B`.
+    - Use the same node IDs as the WORKFLOW_DATA block where practical.
+    - Keep the diagrams in sync with the structured workflow data in the same spec revision.
    
    **Example Complete WORKFLOW_DATA Block:**
    
@@ -243,13 +257,19 @@ Given that feature description, do this:
    CONNECTION: Step2 -> End
    <!-- WORKFLOW_END: 1.1 -->
    
-   ## User Story 1 Workflow Diagrams
-   
-   ### Workflow 1.1: Complete 3-Step Guided Workflow
-   
-   > **Note**: Run `MermaidProcessor.ps1 -Action Generate` to generate diagrams from WORKFLOW_DATA blocks.
-   
-   <!-- Mermaid diagram will be inserted here by MermaidGenerator.ps1 -->
+      ## User Story 1 Workflow Diagrams
+
+      ### Workflow 1.1: Complete 3-Step Guided Workflow
+
+      ```mermaid
+      flowchart TD
+         Start([User selects<br/>Guided Mode]) --> Step1[Step 1: Order & Part Selection]
+         Step1 --> ValidateStep1{Step 1<br/>valid?}
+         ValidateStep1 -->|No| ShowErrors[Show validation errors]
+         ValidateStep1 -->|Yes| Step2[Step 2: Load Details]
+         ShowErrors --> Step1
+         Step2 --> End([Workflow complete])
+      ```
    ```
 
 6. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
